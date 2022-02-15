@@ -1,0 +1,139 @@
+/* stylelint-disable block-opening-brace-newline-before, block-opening-brace-newline-after,
+	block-closing-brace-space-after, declaration-block-single-line-max-declarations,
+	declaration-block-semicolon-newline-after, selector-list-comma-newline-after */
+
+.cm-mw-pagename { text-decoration: underline; }
+
+.cm-mw-matching { background-color: #ffd700; }
+
+.cm-mw-skipformatting { background-color: #adf; }
+.cm-mw-list { color: #08f; font-weight: bold; }
+.cm-mw-doubleUnderscore, .cm-mw-signature, .cm-mw-hr { color: #08f; font-weight: bold; background-color: #eee; }
+.cm-mw-indenting { color: #08f; font-weight: bold; }
+.cm-mw-mnemonic { color: #290; }
+.cm-mw-comment { color: #84a0a0; font-weight: normal; }
+.cm-mw-apostrophes-bold, .cm-mw-apostrophes-italic { color: #08f; }
+
+pre.CodeMirror-line.cm-mw-section-1,
+pre.CodeMirror-line-like.cm-mw-section-1 {
+	font-size: 1.8em;
+	line-height: 1.2em;
+}
+pre.CodeMirror-line.cm-mw-section-2,
+pre.CodeMirror-line-like.cm-mw-section-2 {
+	font-size: 1.5em;
+	line-height: 1.2em;
+}
+pre.CodeMirror-line.cm-mw-section-3,
+pre.CodeMirror-line-like.cm-mw-section-3 {
+	font-weight: bold;
+}
+pre.CodeMirror-line.cm-mw-section-4,
+pre.CodeMirror-line-like.cm-mw-section-4 {
+	font-weight: bold;
+}
+pre.CodeMirror-line.cm-mw-section-5,
+pre.CodeMirror-line-like.cm-mw-section-5 {
+	font-weight: bold;
+}
+pre.CodeMirror-line.cm-mw-section-6,
+pre.CodeMirror-line-like.cm-mw-section-6 {
+	font-weight: bold;
+}
+.cm-mw-section-header { color: #08f; font-weight: normal; }
+
+.cm-mw-template { color: #80c; font-weight: normal; }
+.cm-mw-template-name { color: #80c; font-weight: bold; }
+.cm-mw-template-name-mnemonic { font-weight: normal; }
+.cm-mw-template-argument-name { color: #80c; font-weight: bold; }
+.cm-mw-template-delimiter { color: #80c; font-weight: bold; }
+.cm-mw-template-bracket { color: #80c; font-weight: bold; }
+
+.cm-mw-templatevariable { color: #f50; font-weight: normal; }
+.cm-mw-templatevariable-name { color: #f50; font-weight: bold; }
+.cm-mw-templatevariable-bracket { color: #f50; font-weight: normal; }
+.cm-mw-templatevariable-delimiter { color: #f50; font-weight: bold; }
+
+.cm-mw-parserfunction { font-weight: normal; }
+.cm-mw-parserfunction-name { color: #a11; font-weight: bold; }
+.cm-mw-parserfunction-bracket { color: #a11; font-weight: bold; }
+.cm-mw-parserfunction-delimiter { color: #a11; font-weight: bold; }
+
+pre.CodeMirror-line.cm-mw-exttag,
+pre.CodeMirror-line-like.cm-mw-exttag {
+	background-color: rgba( 119, 0, 170, 0.02 );
+}
+.cm-mw-exttag { background-color: rgba( 119, 0, 170, 0.04 ); }
+.cm-mw-exttag-name { color: #290; font-weight: bold; }
+.cm-mw-exttag-bracket { color: #290; font-weight: normal; }
+.cm-mw-exttag-attribute { color: #290; font-weight: normal; }
+
+.cm-mw-htmltag-name { color: #290; font-weight: bold; }
+.cm-mw-htmltag-bracket { color: #290; font-weight: normal; }
+.cm-mw-htmltag-attribute { color: #290; font-weight: normal; }
+
+pre.CodeMirror-line.cm-mw-tag-pre,
+pre.CodeMirror-line-like.cm-mw-tag-pre,
+.cm-mw-tag-pre {
+	background-color: rgba( 0, 0, 0, 0.04 );
+}
+pre.CodeMirror-line.cm-mw-tag-nowiki,
+pre.CodeMirror-line-like.cm-mw-tag-nowiki,
+.cm-mw-tag-nowiki {
+	background-color: rgba( 0, 0, 0, 0.04 );
+}
+
+.cm-mw-link { color: #36c; font-weight: normal; }
+.cm-mw-link-pagename { color: #36c; font-weight: normal; }
+.cm-mw-link-tosection { color: #18e; font-weight: normal; }
+.cm-mw-link-bracket { color: #36c; font-weight: normal; }
+/* .cm-mw-link-text { } */
+.cm-mw-link-delimiter { color: #36c; font-weight: normal; }
+
+.cm-mw-extlink, .cm-mw-free-extlink { color: #36c; font-weight: normal; }
+.cm-mw-extlink-protocol, .cm-mw-free-extlink-protocol { color: #36c; font-weight: bold; }
+/* .cm-mw-extlink-text { } */
+.cm-mw-extlink-bracket { color: #36c; font-weight: bold; }
+
+.cm-mw-table-bracket { color: #e0e; font-weight: bold; }
+.cm-mw-table-delimiter { color: #e0e; font-weight: bold; }
+.cm-mw-table-definition { color: #e0e; font-weight: normal; }
+.cm-mw-table-caption { font-weight: bold; }
+
+/* .cm-mw-template-ground {} */
+.cm-mw-template2-ground { background-color: rgba( 170, 17, 17, 0.04 ); }
+.cm-mw-template3-ground { background-color: rgba( 170, 17, 17, 0.08 ); }
+.cm-mw-template-ext-ground { background-color: rgba( 119, 0, 170, 0.04 ); }
+.cm-mw-template-ext2-ground { background-color: rgba( 119, 0, 170, 0.08 ); }
+.cm-mw-template-ext3-ground { background-color: rgba( 119, 0, 170, 0.12 ); }
+.cm-mw-template-link-ground { background-color: rgba( 34, 17, 153, 0.04 ); }
+.cm-mw-template-ext-link-ground { background-color: rgba( 77, 9, 162, 0.08 ); }
+.cm-mw-template-ext2-link-ground { background-color: rgba( 91, 6, 164, 0.12 ); }
+.cm-mw-template-ext3-link-ground { background-color: rgba( 98, 4, 166, 0.16 ); }
+.cm-mw-template2-ext-ground { background-color: rgba( 145, 9, 94, 0.08 ); }
+.cm-mw-template2-ext2-ground { background-color: rgba( 136, 6, 119, 0.12 ); }
+.cm-mw-template2-ext3-ground { background-color: rgba( 132, 4, 132, 0.16 ); }
+.cm-mw-template2-link-ground { background-color: rgba( 102, 17, 85, 0.08 ); }
+.cm-mw-template2-ext-link-ground { background-color: rgba( 108, 11, 113, 0.12 ); }
+.cm-mw-template2-ext2-link-ground { background-color: rgba( 111, 9, 128, 0.16 ); }
+.cm-mw-template2-ext3-link-ground { background-color: rgba( 112, 7, 136, 0.2 ); }
+.cm-mw-template3-ext-ground { background-color: rgba( 153, 11, 68, 0.12 ); }
+.cm-mw-template3-ext2-ground { background-color: rgba( 145, 9, 94, 0.16 ); }
+.cm-mw-template3-ext3-ground { background-color: rgba( 139, 7, 109, 0.2 ); }
+.cm-mw-template3-link-ground { background-color: rgba( 125, 17, 62, 0.12 ); }
+.cm-mw-template3-ext-link-ground { background-color: rgba( 123, 13, 89, 0.16 ); }
+.cm-mw-template3-ext2-link-ground { background-color: rgba( 122, 10, 105, 0.2 ); }
+.cm-mw-template3-ext3-link-ground { background-color: rgba( 122, 9, 116, 0.24 ); }
+.cm-mw-ext-ground { background-color: rgba( 119, 0, 170, 0.04 ); }
+.cm-mw-ext2-ground { background-color: rgba( 119, 0, 170, 0.08 ); }
+.cm-mw-ext3-ground { background-color: rgba( 119, 0, 170, 0.12 ); }
+.cm-mw-ext-link-ground { background-color: rgba( 34, 17, 153, 0.04 ); }
+.cm-mw-ext2-link-ground { background-color: rgba( 77, 9, 162, 0.08 ); }
+.cm-mw-ext3-link-ground { background-color: rgba( 91, 6, 164, 0.12 ); }
+.cm-mw-link-ground { background-color: rgba( 34, 17, 153, 0.04 ); }
+
+.cm-mw-matchingbracket {
+	background-color: #eee;
+	box-shadow: inset 0 0 1px 1px #999;
+	font-weight: bold;
+}
