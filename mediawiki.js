@@ -458,7 +458,7 @@
 				}
 				if ( stream.match( '/>' ) ) {
 					state.tokenize = state.stack.pop();
-					return makeLocalStyle( 'mw-htmltag-bracket', state );
+					return makeLocalStyle( name in voidHtmlTags ? 'mw-htmltag-bracket' : 'error', state );
 				}
 				return eatWikiText( 'mw-htmltag-attribute', '' )( stream, state );
 			};
