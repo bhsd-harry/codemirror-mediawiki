@@ -1,6 +1,21 @@
 ( function ( CodeMirror ) {
 	'use strict';
 
+	var permittedHtmlTags = {
+			b: true, bdi: true, del: true, i: true, ins: true, img: true,
+			u: true, font: true, big: true, small: true, sub: true, sup: true,
+			h1: true, h2: true, h3: true, h4: true, h5: true, h6: true, cite: true,
+			code: true, em: true, s: true, strike: true, strong: true, tt: true,
+			var: true, div: true, center: true, blockquote: true, q: true, ol: true, ul: true,
+			dl: true, table: true, caption: true, pre: true, ruby: true, rb: true,
+			rp: true, rt: true, rtc: true, p: true, span: true, abbr: true, dfn: true,
+			kbd: true, samp: true, data: true, time: true, mark: true, br: true,
+			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
+			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
+		},
+		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
+		mwConfig, urlProtocols;
+
 	function eatMnemonic( stream, style, mnemonicStyle ) {
 		var ok;
 		if ( stream.eat( '#' ) ) {
@@ -19,23 +34,114 @@
 		return style;
 	}
 
+	function makeLocalStyle( style, state, endGround ) {
+		var ground = '';
+		switch ( state.nTemplate ) {
+			case 0:
+				break;
+			case 1:
+				ground += '-template';
+				break;
+			case 2:
+				ground += '-template2';
+				break;
+			default:
+				ground += '-template3';
+				break;
+		}
+		switch ( state.nExt ) {
+			case 0:
+				break;
+			case 1:
+				ground += '-ext';
+				break;
+			case 2:
+				ground += '-ext2';
+				break;
+			default:
+				ground += '-ext3';
+				break;
+		}
+		if ( state.nLink > 0 ) {
+			ground += '-link';
+		}
+		if ( ground !== '' ) {
+			style = 'mw' + ground + '-ground ' + style;
+		}
+		if ( endGround ) {
+			state[ endGround ]--;
+		}
+		return style;
+	}
+
+	function eatBlock( style, terminator ) {
+		return function ( stream, state ) {
+			while ( !stream.eol() ) {
+				if ( stream.match( terminator ) ) {
+					state.tokenize = state.stack.pop();
+					break;
+				}
+				stream.next();
+			}
+			return makeLocalStyle( style, state );
+		};
+	}
+
+	function eatEnd( style ) {
+		return function ( stream, state ) {
+			stream.skipToEnd();
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( style, state );
+		};
+	}
+
+	function eatChar( char, style ) {
+		return function ( stream, state ) {
+			state.tokenize = state.stack.pop();
+			if ( stream.eat( char ) ) {
+				return makeLocalStyle( style, state );
+			}
+			return makeLocalStyle( 'error', state );
+		};
+	}
+
+	function eatFreeExternalLinkProtocol( stream, state ) {
+		stream.match( urlProtocols );
+		state.tokenize = eatFreeExternalLink;
+		return makeLocalStyle( 'mw-free-extlink-protocol', state );
+	}
+
+	function eatFreeExternalLink( stream, state ) {
+		if ( stream.eol() ) {
+			// @todo error message
+		} else if ( stream.match( /^[^\s\u00a0{[\]<>~).,']*/ ) ) {
+			if ( stream.peek() === '~' ) {
+				if ( !stream.match( /^~{3,}/, false ) ) {
+					stream.match( /^~*/ );
+					return makeLocalStyle( 'mw-free-extlink', state );
+				}
+			} else if ( stream.peek() === '{' ) {
+				if ( !stream.match( /^\{\{/, false ) ) {
+					stream.next();
+					return makeLocalStyle( 'mw-free-extlink', state );
+				}
+			} else if ( stream.peek() === '\'' ) {
+				if ( !stream.match( '\'\'', false ) ) {
+					stream.next();
+					return makeLocalStyle( 'mw-free-extlink', state );
+				}
+			} else if ( stream.match( /^[).,]+(?=[^\s\u00a0{[\]<>~).,])/ ) ) {
+				return makeLocalStyle( 'mw-free-extlink', state );
+			}
+		}
+		state.tokenize = state.stack.pop();
+		return makeLocalStyle( 'mw-free-extlink', state );
+	}
+
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
-		var mwConfig = config.mwConfig,
-			urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' ),
-			permittedHtmlTags = {
-				b: true, bdi: true, del: true, i: true, ins: true, img: true,
-				u: true, font: true, big: true, small: true, sub: true, sup: true,
-				h1: true, h2: true, h3: true, h4: true, h5: true, h6: true, cite: true,
-				code: true, em: true, s: true, strike: true, strong: true, tt: true,
-				var: true, div: true, center: true, blockquote: true, q: true, ol: true, ul: true,
-				dl: true, table: true, caption: true, pre: true, ruby: true, rb: true,
-				rp: true, rt: true, rtc: true, p: true, span: true, abbr: true, dfn: true,
-				kbd: true, samp: true, data: true, time: true, mark: true, br: true,
-				wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
-				tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
-			},
-			voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-			mTokens = [],
+		mwConfig = config.mwConfig;
+		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
+		var mTokens = [],
 			isBold, isItalic, firstsingleletterword, firstmultiletterword, firstspace, mBold, mItalic, mStyle;
 
 		function makeStyle( style, state, endGround ) {
@@ -46,77 +152,6 @@
 				style += ' em';
 			}
 			return makeLocalStyle( style, state, endGround );
-		}
-
-		function makeLocalStyle( style, state, endGround ) {
-			var ground = '';
-			switch ( state.nTemplate ) {
-				case 0:
-					break;
-				case 1:
-					ground += '-template';
-					break;
-				case 2:
-					ground += '-template2';
-					break;
-				default:
-					ground += '-template3';
-					break;
-			}
-			switch ( state.nExt ) {
-				case 0:
-					break;
-				case 1:
-					ground += '-ext';
-					break;
-				case 2:
-					ground += '-ext2';
-					break;
-				default:
-					ground += '-ext3';
-					break;
-			}
-			if ( state.nLink > 0 ) {
-				ground += '-link';
-			}
-			if ( ground !== '' ) {
-				style = 'mw' + ground + '-ground ' + style;
-			}
-			if ( endGround ) {
-				state[ endGround ]--;
-			}
-			return style;
-		}
-
-		function eatBlock( style, terminator ) {
-			return function ( stream, state ) {
-				while ( !stream.eol() ) {
-					if ( stream.match( terminator ) ) {
-						state.tokenize = state.stack.pop();
-						break;
-					}
-					stream.next();
-				}
-				return makeLocalStyle( style, state );
-			};
-		}
-
-		function eatEnd( style ) {
-			return function ( stream, state ) {
-				stream.skipToEnd();
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( style, state );
-			};
-		}
-
-		function eatChar( char, style ) {
-			return function ( stream, state ) {
-				state.tokenize = state.stack.pop();
-				if ( stream.eat( char ) ) {
-					return makeLocalStyle( style, state );
-				}
-				return makeLocalStyle( 'error', state );
-			};
 		}
 
 		function eatSectionHeader( count ) {
@@ -593,39 +628,6 @@
 				}
 				return eatWikiText( isHead ? 'strong' : '', isHead ? 'strong' : '' )( stream, state );
 			};
-		}
-
-		function eatFreeExternalLinkProtocol( stream, state ) {
-			stream.match( urlProtocols );
-			state.tokenize = eatFreeExternalLink;
-			return makeLocalStyle( 'mw-free-extlink-protocol', state );
-		}
-
-		function eatFreeExternalLink( stream, state ) {
-			if ( stream.eol() ) {
-				// @todo error message
-			} else if ( stream.match( /^[^\s\u00a0{[\]<>~).,']*/ ) ) {
-				if ( stream.peek() === '~' ) {
-					if ( !stream.match( /^~{3,}/, false ) ) {
-						stream.match( /^~*/ );
-						return makeLocalStyle( 'mw-free-extlink', state );
-					}
-				} else if ( stream.peek() === '{' ) {
-					if ( !stream.match( /^\{\{/, false ) ) {
-						stream.next();
-						return makeLocalStyle( 'mw-free-extlink', state );
-					}
-				} else if ( stream.peek() === '\'' ) {
-					if ( !stream.match( '\'\'', false ) ) {
-						stream.next();
-						return makeLocalStyle( 'mw-free-extlink', state );
-					}
-				} else if ( stream.match( /^[).,]+(?=[^\s\u00a0{[\]<>~).,])/ ) ) {
-					return makeLocalStyle( 'mw-free-extlink', state );
-				}
-			}
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-free-extlink', state );
 		}
 
 		function eatWikiText( style, mnemonicStyle ) {
