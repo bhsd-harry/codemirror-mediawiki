@@ -932,7 +932,9 @@
 
 		return {
 			startState: function () {
-				return { tokenize: eatWikiText( '', '' ), stack: [], InHtmlTag: [], extName: false, extMode: false, extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
+				return {
+					tokenize: eatWikiText( '', '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
+					extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
 			},
 			copyState: function ( state ) {
 				return {
