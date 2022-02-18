@@ -273,7 +273,7 @@
 			}
 			if ( stream.eatSpace() ) {
 				state.tokenize = inExternalLinkText;
-				return makeStyle( '', state );
+				return makeLocalStyle( '', state );
 			}
 			if ( stream.match( /^[^\s\u00a0\]{&~']+/ ) || stream.eatSpace() ) {
 				if ( stream.peek() === '\'' ) {
@@ -321,7 +321,7 @@
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
 			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
-				return makeStyle( 'mw-link-pagename mw-pagename', state );
+				return makeLocalStyle( 'mw-link-pagename mw-pagename', state );
 			}
 			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
 		}
