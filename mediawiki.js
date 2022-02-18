@@ -307,6 +307,27 @@
 			return eatWikiText( 'mw-extlink-text', '' )( stream, state );
 		}
 
+		function inFileLink( stream, state ) {
+			if ( stream.sol() ) {
+				state.nLink--;
+				// @todo error message
+				state.tokenize = state.stack.pop();
+				return;
+			}
+			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
+				state.tokenize = eatLinkText( true );
+				return makeLocalStyle( 'mw-link-delimiter', state );
+			}
+			if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			}
+			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+				return makeStyle( 'mw-link-pagename mw-pagename', state );
+			}
+			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
+		}
+
 		function inLink( stream, state ) {
 			if ( stream.sol() ) {
 				state.nLink--;
@@ -353,13 +374,15 @@
 			return eatWikiText( 'mw-link-tosection', '' )( stream, state );
 		}
 
-		function eatLinkText() {
+		function eatLinkText( isFile ) {
 			var linkIsBold, linkIsItalic;
 			return function ( stream, state ) {
-				var tmpstyle;
 				if ( stream.match( ']]' ) ) {
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+				}
+				if ( isFile && stream.eat( '|' ) ) {
+					return makeLocalStyle( 'mw-link-delimiter', state );
 				}
 				if ( stream.match( '\'\'\'' ) ) {
 					linkIsBold = !linkIsBold;
@@ -369,14 +392,15 @@
 					linkIsItalic = !linkIsItalic;
 					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
 				}
-				tmpstyle = 'mw-link-text';
+				var tmpstyle = 'mw-link-text',
+					regex = isFile ? /^[^'\]{&~<|]+/ : /^[^'\]{&~<]+/;
 				if ( linkIsBold ) {
 					tmpstyle += ' strong';
 				}
 				if ( linkIsItalic ) {
 					tmpstyle += ' em';
 				}
-				if ( stream.match( /^[^'\]{&~<]+/ ) ) {
+				if ( stream.match( regex ) ) {
 					return makeStyle( tmpstyle, state );
 				}
 				return eatWikiText( tmpstyle, '' )( stream, state );
@@ -695,7 +719,12 @@
 							if ( /[^\]|[]/.test( stream.peek() ) ) {
 								state.nLink++;
 								state.stack.push( state.tokenize );
-								state.tokenize = inLink;
+								var nsIds = mw.config.get( 'wgNamespaceIds' ),
+									nsFile = Object.keys( nsIds ).filter( function ( ns ) {
+										return nsIds[ ns ] === 6;
+									} ).join( '|' ),
+									nsFileRegex = new RegExp( '^[\\s\\u00a0]*(' + nsFile + ')[\\s\\u00a0]*:', 'i' );
+								state.tokenize = stream.match( nsFileRegex, false ) ? inFileLink : inLink;
 								return makeLocalStyle( 'mw-link-bracket', state );
 							}
 						} else {
