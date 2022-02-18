@@ -726,7 +726,7 @@
 							} else {
 								return 'mw-skipformatting';
 							}
-						// break is not necessary here, falls through
+							// break is not necessary here, falls through
 						case '{':
 							if ( stream.eat( '|' ) ) {
 								stream.eatSpace();
@@ -823,7 +823,7 @@
 							tagname = tagname[ 0 ].toLowerCase();
 							if ( tagname in mwConfig.tags ) { // Parser function
 								if ( isCloseTag === true ) {
-								// @todo message
+									// @todo message
 									return 'error';
 								}
 								stream.backUp( tagname.length );
@@ -833,11 +833,11 @@
 							}
 							if ( tagname in permittedHtmlTags ) { // Html tag
 								if ( isCloseTag === true && tagname !== state.InHtmlTag.pop() ) {
-								// @todo message
+									// @todo message
 									return 'error';
 								}
 								if ( isCloseTag === true && tagname in voidHtmlTags ) {
-								// @todo message
+									// @todo message
 									return 'error';
 								}
 								stream.backUp( tagname.length );
