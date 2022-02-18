@@ -504,10 +504,10 @@
 			return function ( stream, state ) {
 				var ret;
 				if ( state.extMode === false ) {
-					ret = origString === false && stream.sol() ? 'line-cm-mw-exttag' : 'mw-exttag';
+					ret = 'mw-exttag';
 					stream.skipToEnd();
 				} else {
-					ret = ( origString === false && stream.sol() ? 'line-cm-mw-tag-' : 'mw-tag-' ) + state.extName;
+					ret = 'mw-tag-' + state.extName;
 					ret += ' ' + state.extMode.token( stream, state.extState, origString === false );
 				}
 				if ( stream.eol() ) {
@@ -990,21 +990,12 @@
 
 	CodeMirror.defineMIME( 'text/mediawiki', 'mediawiki' );
 
-	function eatNowiki( style, lineStyle ) {
-		return function ( stream, state, ownLine ) {
-			var s;
-			if ( ownLine && stream.sol() ) {
-				state.ownLine = true;
-			} else if ( ownLine === false && state.ownLine ) {
-				state.ownLine = false;
-			}
-			s = state.ownLine ? lineStyle : style;
-			if ( stream.match( /^[^&]+/ ) ) {
-				return s;
-			}
-			stream.next(); // eat &
-			return eatMnemonic( stream, s, s );
-		};
+	function eatNowiki( stream ) {
+		if ( stream.match( /^[^&]+/ ) ) {
+			return '';
+		}
+		stream.next(); // eat &
+		return eatMnemonic( stream, '', '' );
 	}
 
 	CodeMirror.defineMode( 'mw-tag-pre', function ( /* config, parserConfig */ ) {
@@ -1012,7 +1003,7 @@
 			startState: function () {
 				return {};
 			},
-			token: eatNowiki( 'mw-tag-pre', 'line-cm-mw-tag-pre' )
+			token: eatNowiki
 		};
 	} );
 
@@ -1021,7 +1012,7 @@
 			startState: function () {
 				return {};
 			},
-			token: eatNowiki( 'mw-tag-nowiki', 'line-cm-mw-tag-nowiki' )
+			token: eatNowiki
 		};
 	} );
 }( CodeMirror ) );
