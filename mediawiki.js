@@ -390,6 +390,7 @@
 					chars--;
 					name += stream.next();
 				}
+				name = name.toLowerCase();
 				if ( stream.eol() ) {
 					// @todo error message
 					state.tokenize = state.stack.pop();
