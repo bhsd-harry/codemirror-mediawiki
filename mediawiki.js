@@ -770,7 +770,7 @@
 						}
 						break;
 					case '<':
-						isCloseTag = stream.eat( '/' );
+						isCloseTag = Boolean( stream.eat( '/' ) );
 						tagname = stream.match( /^[^>/\s\u00a0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/ );
 						if ( stream.match( '!--' ) ) { // comment
 							return chain( eatBlock( 'mw-comment', '-->' ) );
