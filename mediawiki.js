@@ -601,7 +601,7 @@
 			return eatWikiText( '', '' )( stream, state );
 		}
 
-		function eatTableRow( isStart, isHead ) {
+		function eatTableRow( expectAttr, isHead ) {
 			return function ( stream, state ) {
 				if ( stream.sol() ) {
 					if ( stream.match( /^[\s\u00a0]*[|!]/, false ) ) {
@@ -612,13 +612,15 @@
 					if ( stream.match( /^[^'|{[<&~!]+/ ) ) {
 						return makeStyle( isHead ? 'strong' : '', state );
 					}
-					if ( stream.match( '||' ) || isHead && stream.match( '!!' ) || isStart && stream.eat( '|' ) ) {
+					if ( stream.match( '||' ) || isHead && stream.match( '!!' ) ) {
 						isBold = false;
 						isItalic = false;
-						if ( isStart ) {
-							state.tokenize = eatTableRow( false, isHead );
-						}
+						state.tokenize = eatTableRow( true, isHead );
 						return makeLocalStyle( 'mw-table-delimiter', state );
+					}
+					if ( expectAttr && stream.eat( '|' ) ) {
+						state.tokenize = eatTableRow( false, isHead );
+						return makeLocalStyle( 'mw-table-delimiter2', state );
 					}
 				}
 				return eatWikiText( isHead ? 'strong' : '', isHead ? 'strong' : '' )( stream, state );
