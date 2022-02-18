@@ -695,19 +695,25 @@
 							break;
 						case '*':
 						case '#':
-							if ( stream.match( /^[*#]*:*/ ) ) {
-								return 'mw-list';
+							mt = stream.match( /^[*#;:]*/ );
+							if ( /;/.test( mt[ 0 ] ) ) {
+								isBold = true;
 							}
-							break;
+							return 'mw-list';
+						case ';':
+							isBold = true;
+							stream.match( /^[*#;:]*/ );
+							return 'mw-list';
 						case ':':
 							if ( stream.match( /^:*{\|/, false ) ) { // Highlight indented tables :{|, bug T108454
 								state.stack.push( state.tokenize );
 								state.tokenize = eatStartTable;
 							}
-							if ( stream.match( /^:*[*#]*/ ) ) {
-								return 'mw-indenting';
+							mt = stream.match( /^[*#;:]*/ );
+							if ( /;/.test( mt[ 0 ] ) ) {
+								isBold = true;
 							}
-							break;
+							return 'mw-list';
 						case ' ':
 							if ( stream.match( /^[\s\u00a0]*:*{\|/, false ) ) { // Leading spaces is the correct syntax for a table, bug T108454
 								stream.eatSpace();

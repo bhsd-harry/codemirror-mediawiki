@@ -2,7 +2,7 @@
 
 /* miscellaneous */
 .cm-mw-skipformatting { background-color: #adf; }
-.cm-mw-list, .cm-mw-indenting { color: #08f; font-weight: bold; }
+.cm-mw-list { color: #08f; font-weight: bold; }
 .cm-mw-doubleUnderscore, .cm-mw-signature, .cm-mw-hr { color: #08f; font-weight: bold; background-color: #eee; }
 .cm-mw-mnemonic { color: #290; }
 .cm-mw-comment { color: #84a0a0; font-weight: normal; }
