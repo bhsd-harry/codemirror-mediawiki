@@ -990,6 +990,21 @@
 
 	CodeMirror.defineMIME( 'text/mediawiki', 'mediawiki' );
 
+	function eatPre( stream, state ) {
+		if ( stream.match( /^[^&<]+/ ) ) {
+			return '';
+		}
+		if ( stream.eat( '<' ) ) {
+			if ( !state.nowiki && stream.match( 'nowiki>' ) || state.nowiki && stream.match( '/nowiki>' ) ) {
+				state.nowiki = !state.nowiki;
+				return 'mw-comment mw-ext-nowiki';
+			}
+			return '';
+		}
+		stream.next(); // eat &
+		return eatMnemonic( stream, '', '' );
+	}
+
 	function eatNowiki( stream ) {
 		if ( stream.match( /^[^&]+/ ) ) {
 			return '';
@@ -1003,7 +1018,7 @@
 			startState: function () {
 				return {};
 			},
-			token: eatNowiki
+			token: eatPre
 		};
 	} );
 
