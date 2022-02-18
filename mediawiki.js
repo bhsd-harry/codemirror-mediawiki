@@ -47,7 +47,6 @@
 				break;
 			default:
 				ground += '-template3';
-				break;
 		}
 		switch ( state.nExt ) {
 			case 0:
@@ -60,7 +59,6 @@
 				break;
 			default:
 				ground += '-ext3';
-				break;
 		}
 		if ( state.nLink > 0 ) {
 			ground += '-link';
@@ -878,17 +876,18 @@
 						}
 						break;
 					default:
-						if ( /[\s\u00a0]/.test( ch ) ) {
-							stream.eatSpace();
-							if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
-								state.stack.push( state.tokenize );
-								state.tokenize = eatFreeExternalLinkProtocol;
-								return makeStyle( style, state );
-							}
+						stream.backUp( 1 ); // highlight free external links, bug T108448
+						if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
+							state.stack.push( state.tokenize );
+							return eatFreeExternalLinkProtocol( stream, state );
 						}
-						break;
+						stream.next();
 				}
-				stream.match( /^[^\s\u00a0_>}[\]<{'|&:~]+/ );
+				if ( /\w/.test( ch ) ) {
+					stream.match( /^[^_>}[\]<{'|&:~]+/ );
+				} else {
+					stream.match( /^[^\w>}[\]<{'|&:~]+/ );
+				}
 				return makeStyle( style, state );
 			};
 		}
