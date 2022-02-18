@@ -285,7 +285,7 @@
 						stream.next();
 					}
 				}
-				return makeStyle( 'mw-extlink', state );
+				return makeLocalStyle( 'mw-extlink', state );
 			}
 			return eatWikiText( 'mw-extlink', '' )( stream, state );
 		}
