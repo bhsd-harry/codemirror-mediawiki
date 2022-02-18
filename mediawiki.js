@@ -335,9 +335,10 @@
 				state.tokenize = state.stack.pop();
 				return;
 			}
+			var makeFunc = stream.match( /^[\s\u00a0]*[^\]]+\|/, false ) ? makeLocalStyle : makeStyle;
 			if ( stream.match( /^[\s\u00a0]*#[\s\u00a0]*/ ) ) {
-				state.tokenize = inLinkToSection;
-				return makeLocalStyle( 'mw-link', state );
+				state.tokenize = inLinkToSection( makeFunc );
+				return makeFunc( 'mw-link', state );
 			}
 			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
 				state.tokenize = eatLinkText();
@@ -348,30 +349,32 @@
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
 			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
-				return makeStyle( 'mw-link-pagename mw-pagename', state );
+				return makeFunc( 'mw-link-pagename mw-pagename', state );
 			}
 			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
 		}
 
-		function inLinkToSection( stream, state ) {
-			if ( stream.sol() ) {
-				// @todo error message
-				state.nLink--;
-				state.tokenize = state.stack.pop();
-				return;
-			}
-			if ( stream.match( /^[^|\]&~{}]+/ ) ) { // FIXME '{{' brokes Link, sample [[z{{page]]
-				return makeLocalStyle( 'mw-link-tosection', state );
-			}
-			if ( stream.eat( '|' ) ) {
-				state.tokenize = eatLinkText();
-				return makeLocalStyle( 'mw-link-delimiter', state );
-			}
-			if ( stream.match( ']]' ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-			}
-			return eatWikiText( 'mw-link-tosection', '' )( stream, state );
+		function inLinkToSection( makeFunc ) {
+			return function ( stream, state ) {
+				if ( stream.sol() ) {
+					// @todo error message
+					state.nLink--;
+					state.tokenize = state.stack.pop();
+					return;
+				}
+				if ( stream.match( /^[^|\]&~{}]+/ ) ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+					return makeFunc( 'mw-link-tosection', state );
+				}
+				if ( stream.eat( '|' ) ) {
+					state.tokenize = eatLinkText();
+					return makeLocalStyle( 'mw-link-delimiter', state );
+				}
+				if ( stream.match( ']]' ) ) {
+					state.tokenize = state.stack.pop();
+					return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+				}
+				return eatWikiText( 'mw-link-tosection', '' )( stream, state );
+			};
 		}
 
 		function eatLinkText( isFile ) {
