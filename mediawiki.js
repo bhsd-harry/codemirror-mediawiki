@@ -166,7 +166,7 @@
 		}
 
 		function inParserFunctionName( stream, state ) {
-			if ( stream.match( /^#?[^:}{~]+/ ) ) { // FIXME: {{#name}} and {{uc}} are wrong, must have ':'
+			if ( stream.match( /^#?[^:}{~|<>[\]]+/ ) ) { // FIXME: {{#name}} and {{uc}} are wrong, must have ':'
 				return makeLocalStyle( 'mw-parserfunction-name', state );
 			}
 			if ( stream.eat( ':' ) ) {
@@ -177,7 +177,7 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 			}
-			return eatWikiText( 'mw-parserfunction', '' )( stream, state );
+			return eatWikiText( 'error', '' )( stream, state );
 		}
 
 		function inParserFunctionArguments( stream, state ) {
