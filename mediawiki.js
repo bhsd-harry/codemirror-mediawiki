@@ -439,11 +439,11 @@
 					return makeLocalStyle( 'mw-htmltag-name', state );
 				} // it is the extension tag
 				if ( isCloseTag ) {
-					state.tokenize = eatChar( '>', 'mw-exttag-bracket mw-ext-' + name );
+					state.tokenize = eatChar( '>', 'mw-exttag-bracket' );
 				} else {
 					state.tokenize = eatExtTagAttribute( name );
 				}
-				return makeLocalStyle( 'mw-exttag-name mw-ext-' + name, state );
+				return makeLocalStyle( 'mw-exttag-name', state );
 			};
 		}
 
@@ -470,7 +470,7 @@
 		function eatExtTagAttribute( name ) {
 			return function ( stream, state ) {
 				if ( stream.match( /^(?:"[^"]*"|'[^']*'|[^>/<{&~])+/ ) ) {
-					return makeLocalStyle( 'mw-exttag-attribute mw-ext-' + name, state );
+					return makeLocalStyle( 'mw-exttag-attribute', state );
 				}
 				if ( stream.eat( '>' ) ) {
 					state.extName = name;
@@ -479,13 +479,13 @@
 						state.extState = CodeMirror.startState( state.extMode );
 					}
 					state.tokenize = eatExtTagArea( name );
-					return makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+					return makeLocalStyle( 'mw-exttag-bracket', state );
 				}
 				if ( stream.match( '/>' ) ) {
 					state.tokenize = state.stack.pop();
-					return makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+					return makeLocalStyle( 'mw-exttag-bracket', state );
 				}
-				return eatWikiText( 'mw-exttag-attribute mw-ext-' + name, '' )( stream, state );
+				return eatWikiText( 'mw-exttag-attribute', '' )( stream, state );
 			};
 		}
 
@@ -523,7 +523,7 @@
 				stream.next(); // eat <
 				stream.next(); // eat /
 				state.tokenize = eatTagName( name.length, true, false );
-				return makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+				return makeLocalStyle( 'mw-exttag-bracket', state );
 			};
 		}
 
@@ -788,7 +788,7 @@
 								stream.backUp( tagname.length );
 								state.stack.push( state.tokenize );
 								state.tokenize = eatTagName( tagname.length, isCloseTag, false );
-								return makeLocalStyle( 'mw-exttag-bracket mw-ext-' + tagname, state );
+								return makeLocalStyle( 'mw-exttag-bracket', state );
 							}
 							if ( tagname in permittedHtmlTags ) { // Html tag
 								if ( isCloseTag === true && tagname !== state.InHtmlTag.pop() ) {
@@ -1029,7 +1029,7 @@
 		if ( stream.eat( '<' ) ) {
 			if ( !state.nowiki && stream.match( 'nowiki>' ) || state.nowiki && stream.match( '/nowiki>' ) ) {
 				state.nowiki = !state.nowiki;
-				return 'mw-comment mw-ext-nowiki';
+				return 'mw-comment';
 			}
 			return '';
 		}
