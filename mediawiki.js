@@ -209,7 +209,7 @@
 					state.tokenize = state.stack.pop();
 					return;
 				}
-				if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|}<{&~]+/ ) ) {
+				if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|&~#<>[\]{}]+/ ) ) {
 					state.tokenize = eatTemplatePageName( true );
 					return makeLocalStyle( 'mw-template-name mw-pagename', state );
 				} else if ( stream.eatSpace() ) {
@@ -217,6 +217,8 @@
 						return makeLocalStyle( 'mw-template-name', state );
 					}
 					return makeLocalStyle( 'mw-template-name mw-pagename', state );
+				} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
+					return makeLocalStyle( 'error', state );
 				}
 				return eatWikiText( 'mw-template-name mw-pagename', 'mw-template-name-mnemonic mw-pagename' )( stream, state );
 			};
@@ -320,8 +322,10 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
-			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|&~#<>[\]{}]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
 				return makeLocalStyle( 'mw-link-pagename mw-pagename', state );
+			} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
+				return makeLocalStyle( 'error', state );
 			}
 			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
 		}
@@ -346,8 +350,10 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
-			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|&~#<>[\]{}]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
 				return makeFunc( 'mw-link-pagename mw-pagename', state );
+			} else if ( !stream.match( '{{', false ) && stream.eat( /[<>[\]{}]/ ) ) {
+				return makeLocalStyle( 'error', state );
 			}
 			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
 		}
