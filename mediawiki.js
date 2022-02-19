@@ -400,7 +400,7 @@
 					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
 				}
 				var tmpstyle = 'mw-link-text',
-					regex = isFile ? /^[^'\]{&~<|]+/ : /^[^'\]{&~<]+/;
+					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
 				if ( linkIsBold ) {
 					tmpstyle += ' strong';
 				}
