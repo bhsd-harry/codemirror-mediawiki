@@ -14,20 +14,18 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
+		span = document.createElement( 'span' ),
 		mwConfig, urlProtocols;
 
+	function isEntity( str ) {
+		span.innerHTML = str;
+		return span.textContent.length === 1;
+	}
+
 	function eatMnemonic( stream, style ) {
-		var ok;
-		if ( stream.eat( '#' ) ) {
-			if ( stream.eat( 'x' ) ) {
-				ok = stream.eatWhile( /[a-fA-F\d]/ ) && stream.eat( ';' );
-			} else {
-				ok = stream.eatWhile( /[\d]/ ) && stream.eat( ';' );
-			}
-		} else {
-			ok = stream.eatWhile( /\w/ ) && stream.eat( ';' );
-		}
-		if ( ok ) {
+		// no dangerous character should appear in results
+		var entity = stream.match( /^(?:#x[a-fA-F\d]+|#\d+|[a-zA-Z\d]+)/ );
+		if ( entity && stream.eat( ';' ) && isEntity( '&' + entity[ 0 ] + ';' ) ) {
 			return style + ' mw-mnemonic';
 		}
 		return style;
