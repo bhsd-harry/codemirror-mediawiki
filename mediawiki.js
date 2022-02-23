@@ -60,13 +60,10 @@
 		if ( state.nLink > 0 ) {
 			ground += '-link';
 		}
-		if ( ground !== '' ) {
-			style = 'mw' + ground + '-ground ' + style;
-		}
 		if ( endGround ) {
 			state[ endGround ]--;
 		}
-		return style;
+		return style + ( ground && ' mw' + ground + '-ground' );
 	}
 
 	function eatBlock( style, terminator ) {
@@ -107,13 +104,10 @@
 			isBold, isItalic, firstsingleletterword, firstmultiletterword, firstspace, mBold, mItalic, mStyle;
 
 		function makeStyle( style, state, endGround ) {
-			if ( isBold ) {
-				style += ' strong';
-			}
-			if ( isItalic ) {
-				style += ' em';
-			}
-			return makeLocalStyle( style, state, endGround );
+			return makeLocalStyle(
+				style + ( isBold ? ' strong' : '' ) + ( isItalic ? ' em' : '' ),
+				state, endGround
+			);
 		}
 
 		function eatSectionHeader( count ) {
@@ -244,8 +238,7 @@
 
 		function eatExternalLinkProtocol( chars ) {
 			return function ( stream, state ) {
-				while ( chars > 0 ) {
-					chars--;
+				for ( var i = 0; i < chars; i++ ) {
 					stream.next();
 				}
 				if ( stream.eol() ) {
@@ -414,8 +407,7 @@
 		function eatTagName( chars, isCloseTag, isHtmlTag ) {
 			return function ( stream, state ) {
 				var name = '';
-				while ( chars > 0 ) {
-					chars--;
+				for ( var i = 0; i < chars; i++ ) {
 					name += stream.next();
 				}
 				name = name.toLowerCase();
@@ -661,7 +653,7 @@
 			return makeStyle( 'mw-free-extlink', state );
 		}
 
-		function eatWikiText( style, mnemonicStyle ) {
+		function eatWikiText( style ) {
 			return function ( stream, state ) {
 				var ch, tmp, mt, name, isCloseTag, tagname,
 					sol = stream.sol();
