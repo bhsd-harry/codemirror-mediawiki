@@ -4,7 +4,6 @@
 .cm-mw-skipformatting { background-color: #adf; }
 .cm-mw-list { color: #08f; font-weight: bold; }
 .cm-mw-doubleUnderscore, .cm-mw-signature, .cm-mw-hr { color: #08f; font-weight: bold; background-color: #eee; }
-.cm-mw-mnemonic { color: #290; }
 .cm-mw-comment { color: #84a0a0; font-weight: normal; }
 .cm-mw-apostrophes-bold, .cm-mw-apostrophes-italic { color: #08f; }
 
@@ -40,6 +39,9 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-table-bracket, .cm-mw-table-delimiter { color: #e0e; font-weight: bold; }
 .cm-mw-table-definition, .cm-mw-table-delimiter2 { color: #e0e; font-weight: normal; }
 .cm-mw-table-caption { font-weight: bold; }
+
+/* mnemonic */
+.cm-mw-mnemonic { color: #84a0a0; }
 
 /* backgrounds */
 .cm-mw-tag-pre, .cm-mw-tag-nowiki { background-color: rgba( 0, 0, 0, 0.04 ); }

@@ -16,7 +16,7 @@
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		mwConfig, urlProtocols;
 
-	function eatMnemonic( stream, style, mnemonicStyle ) {
+	function eatMnemonic( stream, style ) {
 		var ok;
 		if ( stream.eat( '#' ) ) {
 			if ( stream.eat( 'x' ) ) {
@@ -25,11 +25,10 @@
 				ok = stream.eatWhile( /[\d]/ ) && stream.eat( ';' );
 			}
 		} else {
-			ok = stream.eatWhile( /[\w.\-:]/ ) && stream.eat( ';' );
+			ok = stream.eatWhile( /\w/ ) && stream.eat( ';' );
 		}
 		if ( ok ) {
-			mnemonicStyle += ' mw-mnemonic';
-			return mnemonicStyle;
+			return style + ' mw-mnemonic';
 		}
 		return style;
 	}
@@ -128,7 +127,7 @@
 					}
 					return null; // style is null
 				}
-				return eatWikiText( '', '' )( stream, state );
+				return eatWikiText( '' )( stream, state );
 			};
 		}
 
@@ -160,7 +159,7 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
-			return eatWikiText( 'mw-templatevariable', '' )( stream, state );
+			return eatWikiText( 'mw-templatevariable' )( stream, state );
 		}
 
 		function inParserFunctionName( stream, state ) {
@@ -175,7 +174,7 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 			}
-			return eatWikiText( 'error', '' )( stream, state );
+			return eatWikiText( 'error' )( stream, state );
 		}
 
 		function inParserFunctionArguments( stream, state ) {
@@ -187,7 +186,7 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 			}
-			return eatWikiText( 'mw-parserfunction', '' )( stream, state );
+			return eatWikiText( 'mw-parserfunction' )( stream, state );
 		}
 
 		function eatTemplatePageName( haveAte ) {
@@ -220,7 +219,7 @@
 				} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
 					return makeLocalStyle( 'error', state );
 				}
-				return eatWikiText( 'mw-template-name mw-pagename', 'mw-template-name-mnemonic mw-pagename' )( stream, state );
+				return eatWikiText( 'mw-template-name mw-pagename' )( stream, state );
 			};
 		}
 
@@ -241,7 +240,7 @@
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
 				}
-				return eatWikiText( 'mw-template', '' )( stream, state );
+				return eatWikiText( 'mw-template' )( stream, state );
 			};
 		}
 
@@ -287,7 +286,7 @@
 				}
 				return makeLocalStyle( 'mw-extlink', state );
 			}
-			return eatWikiText( 'mw-extlink', '' )( stream, state );
+			return eatWikiText( 'mw-extlink' )( stream, state );
 		}
 
 		function inExternalLinkText( stream, state ) {
@@ -304,7 +303,7 @@
 			if ( stream.match( /^[^'\]{&~<]+/ ) ) {
 				return makeStyle( 'mw-extlink-text', state );
 			}
-			return eatWikiText( 'mw-extlink-text', '' )( stream, state );
+			return eatWikiText( 'mw-extlink-text' )( stream, state );
 		}
 
 		function inFileLink( stream, state ) {
@@ -327,7 +326,7 @@
 			} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
 				return makeLocalStyle( 'error', state );
 			}
-			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
+			return eatWikiText( 'mw-link-pagename mw-pagename' )( stream, state );
 		}
 
 		function inLink( stream, state ) {
@@ -355,7 +354,7 @@
 			} else if ( !stream.match( '{{', false ) && stream.eat( /[<>[\]{}]/ ) ) {
 				return makeLocalStyle( 'error', state );
 			}
-			return eatWikiText( 'mw-link-pagename mw-pagename', 'mw-pagename' )( stream, state );
+			return eatWikiText( 'mw-link-pagename mw-pagename' )( stream, state );
 		}
 
 		function inLinkToSection( makeFunc ) {
@@ -377,7 +376,7 @@
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 				}
-				return eatWikiText( 'mw-link-tosection', '' )( stream, state );
+				return eatWikiText( 'mw-link-tosection' )( stream, state );
 			};
 		}
 
@@ -410,7 +409,7 @@
 				if ( stream.match( regex ) ) {
 					return makeStyle( tmpstyle, state );
 				}
-				return eatWikiText( tmpstyle, '' )( stream, state );
+				return eatWikiText( tmpstyle )( stream, state );
 			};
 		}
 
@@ -467,7 +466,7 @@
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( name in voidHtmlTags ? 'mw-htmltag-bracket' : 'error', state );
 				}
-				return eatWikiText( 'mw-htmltag-attribute', '' )( stream, state );
+				return eatWikiText( 'mw-htmltag-attribute' )( stream, state );
 			};
 		}
 
@@ -489,7 +488,7 @@
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-exttag-bracket', state );
 				}
-				return eatWikiText( 'mw-exttag-attribute', '' )( stream, state );
+				return eatWikiText( 'mw-exttag-attribute' )( stream, state );
 			};
 		}
 
@@ -563,7 +562,7 @@
 				state.tokenize = inTable;
 				return inTable( stream, state );
 			}
-			return eatWikiText( 'mw-table-definition', '' )( stream, state );
+			return eatWikiText( 'mw-table-definition' )( stream, state );
 		}
 
 		function inTableCaption( stream, state ) {
@@ -571,7 +570,7 @@
 				state.tokenize = inTable;
 				return inTable( stream, state );
 			}
-			return eatWikiText( 'mw-table-caption', '' )( stream, state );
+			return eatWikiText( 'mw-table-caption' )( stream, state );
 		}
 
 		function inTable( stream, state ) {
@@ -602,7 +601,7 @@
 					return makeLocalStyle( 'mw-table-delimiter', state );
 				}
 			}
-			return eatWikiText( '', '' )( stream, state );
+			return eatWikiText( '' )( stream, state );
 		}
 
 		function eatTableRow( expectAttr, isHead ) {
@@ -627,7 +626,7 @@
 						return makeLocalStyle( 'mw-table-delimiter2', state );
 					}
 				}
-				return eatWikiText( isHead ? 'strong' : '', isHead ? 'strong' : '' )( stream, state );
+				return eatWikiText( isHead ? 'strong' : '' )( stream, state );
 			};
 		}
 
@@ -745,7 +744,7 @@
 
 				switch ( ch ) {
 					case '&':
-						return makeStyle( eatMnemonic( stream, style, mnemonicStyle ), state );
+						return makeStyle( eatMnemonic( stream, style ), state );
 					case '\'':
 						if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
 							break;
@@ -939,7 +938,7 @@
 		return {
 			startState: function () {
 				return {
-					tokenize: eatWikiText( '', '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
+					tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
 					extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
 			},
 			copyState: function ( state ) {
@@ -1049,7 +1048,7 @@
 			return '';
 		}
 		stream.next(); // eat &
-		return eatMnemonic( stream, '', '' );
+		return eatMnemonic( stream, '' );
 	}
 
 	function eatNowiki( stream ) {
@@ -1057,7 +1056,7 @@
 			return '';
 		}
 		stream.next(); // eat &
-		return eatMnemonic( stream, '', '' );
+		return eatMnemonic( stream, '' );
 	}
 
 	CodeMirror.defineMode( 'mw-tag-pre', function ( /* config, parserConfig */ ) {
