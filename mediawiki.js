@@ -68,12 +68,11 @@
 
 	function eatBlock( style, terminator ) {
 		return function ( stream, state ) {
-			while ( !stream.eol() ) {
-				if ( stream.match( terminator ) ) {
-					state.tokenize = state.stack.pop();
-					break;
-				}
-				stream.next();
+			if ( !stream.skipTo( terminator ) ) {
+				stream.skipToEnd();
+			} else {
+				stream.match( terminator );
+				state.tokenize = state.stack.pop();
 			}
 			return makeLocalStyle( style, state );
 		};
