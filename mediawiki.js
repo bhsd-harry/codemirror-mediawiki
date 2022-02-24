@@ -89,10 +89,8 @@
 	function eatChar( char, style ) {
 		return function ( stream, state ) {
 			state.tokenize = state.stack.pop();
-			if ( stream.eat( char ) ) {
-				return makeLocalStyle( style, state );
-			}
-			return makeLocalStyle( 'error', state );
+			stream.eat( char );
+			return makeLocalStyle( style, state );
 		};
 	}
 
@@ -423,11 +421,7 @@
 				}
 
 				if ( isHtmlTag ) {
-					if ( isCloseTag && !( name in voidHtmlTags ) ) {
-						state.tokenize = eatChar( '>', 'mw-htmltag-bracket' );
-					} else {
-						state.tokenize = eatHtmlTagAttribute( name );
-					}
+					state.tokenize = eatHtmlTagAttribute( name, isCloseTag && !( name in voidHtmlTags ) );
 					return makeLocalStyle( 'mw-htmltag-name', state );
 				} // it is the extension tag
 				if ( isCloseTag ) {
@@ -439,23 +433,27 @@
 			};
 		}
 
-		function eatHtmlTagAttribute( name ) {
+		function eatHtmlTagAttribute( name, isCloseTag ) {
+			var style = 'mw-htmltag-attribute' + ( isCloseTag ? ' error' : '' );
 			return function ( stream, state ) {
 				if ( stream.match( /^[^>/<{&~]+/ ) ) {
-					return makeLocalStyle( 'mw-htmltag-attribute', state );
+					return makeLocalStyle( style, state );
 				}
 				if ( stream.eat( '>' ) ) {
-					if ( !( name in voidHtmlTags ) ) {
+					if ( !( name in voidHtmlTags || isCloseTag ) ) {
 						state.InHtmlTag.push( name );
 					}
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-htmltag-bracket', state );
 				}
 				if ( stream.match( '/>' ) ) {
+					if ( !( name in voidHtmlTags || isCloseTag ) ) { // HTML5 standard
+						state.InHtmlTag.push( name );
+					}
 					state.tokenize = state.stack.pop();
-					return makeLocalStyle( name in voidHtmlTags ? 'mw-htmltag-bracket' : 'error', state );
+					return makeLocalStyle( name in voidHtmlTags ? style : 'mw-htmltag-bracket error', state );
 				}
-				return eatWikiText( 'mw-htmltag-attribute' )( stream, state );
+				return eatWikiText( style )( stream, state );
 			};
 		}
 
