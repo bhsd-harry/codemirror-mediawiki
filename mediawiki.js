@@ -125,12 +125,12 @@
 
 		function eatSectionHeader( count ) {
 			return function ( stream, state ) {
-				if ( stream.match( /^[^&<[{~_]+/ ) ) {
+				if ( stream.match( /^[^&<[{~_']+/ ) ) {
 					if ( stream.eol() ) {
 						stream.backUp( count );
 						state.tokenize = eatEnd( 'mw-section-header' );
 					}
-					return null; // style is null
+					return makeStyle( '', state );
 				}
 				return eatWikiText( '' )( stream, state );
 			};
