@@ -124,7 +124,7 @@
 
 		function eatSectionHeader( count ) {
 			return function ( stream, state ) {
-				if ( stream.match( /^[^&<[{~]+/ ) ) {
+				if ( stream.match( /^[^&<[{~_]+/ ) ) {
 					if ( stream.eol() ) {
 						stream.backUp( count );
 						state.tokenize = eatEnd( 'mw-section-header' );
