@@ -761,10 +761,9 @@
 								return makeLocalStyle( 'mw-link-bracket', state );
 							}
 						} else {
-							mt = stream.match( urlProtocols );
+							mt = stream.match( urlProtocols, false );
 							if ( mt ) {
 								state.nLink++;
-								stream.backUp( mt[ 0 ].length );
 								state.stack.push( state.tokenize );
 								state.tokenize = eatExternalLinkProtocol( mt[ 0 ].length );
 								return makeLocalStyle( 'mw-extlink-bracket', state );
@@ -785,9 +784,8 @@
 								return makeLocalStyle( 'mw-parserfunction-bracket', state );
 							}
 							// Check for parser function without '#'
-							name = stream.match( /^([^\s\u00a0}[\]<{'|&:]+)(:|[\s\u00a0]*)(\}\}?)?(.)?/ );
+							name = stream.match( /^([^\s\u00a0}[\]<{'|&:]+)(:|[\s\u00a0]*)(\}\}?)?(.)?/, false );
 							if ( name ) {
-								stream.backUp( name[ 0 ].length );
 								if ( ( name[ 2 ] === ':' || name[ 4 ] === undefined || name[ 3 ] === '}}' ) && ( name[ 1 ].toLowerCase() in mwConfig.functionSynonyms[ 0 ] || name[ 1 ] in mwConfig.functionSynonyms[ 1 ] ) ) {
 									state.nExt++;
 									state.stack.push( state.tokenize );
@@ -804,7 +802,7 @@
 						break;
 					case '<':
 						isCloseTag = Boolean( stream.eat( '/' ) );
-						tagname = stream.match( /^[^>/\s\u00a0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/ );
+						tagname = stream.match( /^[^>/\s\u00a0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/, false );
 						if ( stream.match( '!--' ) ) { // comment
 							state.stack.push( state.tokenize );
 							state.tokenize = eatBlock( 'mw-comment', '-->' );
@@ -817,7 +815,6 @@
 									// @todo message
 									return 'error';
 								}
-								stream.backUp( tagname.length );
 								state.stack.push( state.tokenize );
 								state.tokenize = eatTagName( tagname.length, isCloseTag, false );
 								return makeLocalStyle( 'mw-exttag-bracket', state );
@@ -831,13 +828,11 @@
 									// @todo message
 									return 'error';
 								}
-								stream.backUp( tagname.length );
 								state.stack.push( state.tokenize );
 								// || ( tagname in voidHtmlTags ) because opening void tags should also be treated as the closing tag.
 								state.tokenize = eatTagName( tagname.length, isCloseTag || tagname in voidHtmlTags, true );
 								return makeLocalStyle( 'mw-htmltag-bracket', state );
 							}
-							stream.backUp( tagname.length );
 						}
 						break;
 					case '~':
