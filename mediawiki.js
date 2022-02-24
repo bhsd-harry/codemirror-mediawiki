@@ -14,23 +14,12 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-		span = document.createElement( 'span' ),
+		span = document.createElement( 'span' ), // used for isEntity()
 		mwConfig, urlProtocols;
 
-	function isEntity( str ) {
-		span.innerHTML = str;
-		return span.textContent.length === 1;
-	}
-
-	function eatMnemonic( stream, style ) {
-		// no dangerous character should appear in results
-		var entity = stream.match( /^(?:#x[a-fA-F\d]+|#\d+|[a-zA-Z\d]+)/ );
-		if ( entity && stream.eat( ';' ) && isEntity( '&' + entity[ 0 ] + ';' ) ) {
-			return style + ' mw-mnemonic';
-		}
-		return style;
-	}
-
+	/**
+	 * add background
+	 */
 	function makeLocalStyle( style, state, endGround ) {
 		var ground = '';
 		switch ( state.nTemplate ) {
@@ -66,6 +55,23 @@
 		return style + ( ground && ' mw' + ground + '-ground' );
 	}
 
+	function isEntity( str ) {
+		span.innerHTML = str;
+		return span.textContent.length === 1;
+	}
+
+	/**
+	 * simply eat HTML entities
+	 */
+	function eatMnemonic( stream, style ) {
+		// no dangerous character should appear in results
+		var entity = stream.match( /^(?:#x[a-fA-F\d]+|#\d+|[a-zA-Z\d]+)/ );
+		if ( entity && stream.eat( ';' ) && isEntity( '&' + entity[ 0 ] + ';' ) ) {
+			return style + ' mw-mnemonic';
+		}
+		return style;
+	}
+
 	/**
 	 * simply eat until a block ends with specified terminator
 	 */
@@ -81,6 +87,9 @@
 		};
 	}
 
+	/**
+	 * simply eat until the end of line
+	 */
 	function eatEnd( style ) {
 		return function ( stream, state ) {
 			stream.skipToEnd();
@@ -89,6 +98,9 @@
 		};
 	}
 
+	/**
+	 * simply eat one character if it must be there
+	 */
 	function eatChar( char, style ) {
 		return function ( stream, state ) {
 			state.tokenize = state.stack.pop();
