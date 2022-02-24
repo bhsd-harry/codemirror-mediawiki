@@ -395,11 +395,11 @@
 				}
 				if ( stream.match( '\'\'\'' ) ) {
 					linkIsBold = !linkIsBold;
-					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
+					return makeLocalStyle( 'mw-link-text mw-apostrophes-bold', state );
 				}
 				if ( stream.match( '\'\'' ) ) {
 					linkIsItalic = !linkIsItalic;
-					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
+					return makeLocalStyle( 'mw-link-text mw-apostrophes-italic', state );
 				}
 				var tmpstyle = 'mw-link-text',
 					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
