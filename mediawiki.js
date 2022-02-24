@@ -408,17 +408,7 @@
 					name += stream.next();
 				}
 				name = name.toLowerCase();
-				if ( stream.eol() ) {
-					// @todo error message
-					state.tokenize = state.stack.pop();
-					return makeLocalStyle( isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', state );
-				}
 				stream.eatSpace();
-				if ( stream.eol() ) {
-					// @todo error message
-					state.tokenize = state.stack.pop();
-					return makeLocalStyle( isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', state );
-				}
 
 				if ( isHtmlTag ) {
 					state.tokenize = eatHtmlTagAttribute( name, isCloseTag && !( name in voidHtmlTags ) );
