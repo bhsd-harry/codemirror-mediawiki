@@ -5,7 +5,7 @@
 .cm-mw-list { color: #08f; font-weight: bold; }
 .cm-mw-doubleUnderscore, .cm-mw-signature, .cm-mw-hr { color: #08f; font-weight: bold; background-color: #eee; }
 .cm-mw-comment { color: #84a0a0; font-weight: normal; }
-.cm-mw-apostrophes-bold, .cm-mw-apostrophes-italic { color: #08f; }
+.cm-mw-apostrophes { color: #08f; }
 
 /* section title */
 .CodeMirror pre.cm-mw-section-1 { font-size: 1.8em; line-height: 1.2em; }
