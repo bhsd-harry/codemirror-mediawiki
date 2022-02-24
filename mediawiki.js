@@ -66,6 +66,9 @@
 		return style + ( ground && ' mw' + ground + '-ground' );
 	}
 
+	/**
+	 * simply eat until a block ends with specified terminator
+	 */
 	function eatBlock( style, terminator ) {
 		return function ( stream, state ) {
 			if ( !stream.skipTo( terminator ) ) {
@@ -645,12 +648,6 @@
 				var ch, tmp, mt, name, isCloseTag, tagname,
 					sol = stream.sol();
 
-				function chain( parser ) {
-					state.stack.push( state.tokenize );
-					state.tokenize = parser;
-					return parser( stream, state );
-				}
-
 				if ( sol ) {
 					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 						state.stack.push( state.tokenize );
@@ -797,7 +794,9 @@
 						isCloseTag = Boolean( stream.eat( '/' ) );
 						tagname = stream.match( /^[^>/\s\u00a0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/ );
 						if ( stream.match( '!--' ) ) { // comment
-							return chain( eatBlock( 'mw-comment', '-->' ) );
+							state.stack.push( state.tokenize );
+							state.tokenize = eatBlock( 'mw-comment', '-->' );
+							return 'mw-comment';
 						}
 						if ( tagname ) {
 							tagname = tagname[ 0 ].toLowerCase();
