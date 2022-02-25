@@ -142,13 +142,29 @@
 		state.apos = {};
 	}
 
+	/**
+	 * special characters that can start wikitext syntax:
+	 * '----'   : <hr> (line start)
+	 * '='      : <h1> ~ <h6> (line start)
+	 * /[#*:;]/ : <ol>, <ul>, <dl> (line start)
+	 * ' '      : <pre> (line start)
+	 * '{|'     : <table> (line start)
+	 * '{{'     : parser functions and templates
+	 * '{{{'    : variables
+	 * '&'      : HTML entities
+	 * "''"     : <i>, <b>
+	 * '~~~'    : signature
+	 * '__'     : behavior switch
+	 * '['      : <a>
+	 * '<'      : tags
+	 */
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
 
 		function eatSectionHeader( count ) {
 			return function ( stream, state ) {
-				if ( stream.match( /^[^&<[{~_']+/ ) ) {
+				if ( stream.match( /^[^{&'~_[<]+/ ) ) {
 					if ( stream.eol() ) {
 						stream.backUp( count );
 						state.tokenize = eatEnd( 'mw-section-header' );
@@ -160,7 +176,7 @@
 		}
 
 		function inVariable( stream, state ) { // can be multiline
-			if ( stream.match( /^[^{}|]+/ ) ) {
+			if ( stream.match( /^[^|}{]+/ ) ) {
 				return makeLocalStyle( 'mw-templatevariable-name', state );
 			} else if ( stream.eat( '|' ) ) {
 				state.tokenize = inVariableDefault( state );
@@ -178,20 +194,29 @@
 		function inVariableDefault( stateObj ) {
 			stateObj.aposStack.push( stateObj.apos );
 			stateObj.apos = {};
+			var first = true;
 			return function ( stream, state ) {
+				var style = first ? 'mw-templatevariable' : 'error';
 				if ( stream.sol() ) {
 					clearApos( state );
+					if ( /[-=#*:; ]/.test( stream.peek() ) ) {
+						return eatWikiText( style )( stream, state );
+					}
 				}
-				if ( stream.match( /^[^}&<[{~_']+/ ) ) {
-					return makeStyle( 'mw-templatevariable', state );
-				} else if ( stream.eat( "'" ) ) {
-					return eatApos( 'mw-templatevariable' )( stream, state );
+				if ( stream.match( /^[^|}{&'~_[<]+/ ) ) {
+					return makeStyle( style, state );
+				} else if ( stream.eat( '|' ) ) {
+					first = false;
+					return makeLocalStyle( 'error', state );
 				} else if ( stream.match( '}}}' ) ) {
 					state.tokenize = state.stack.pop();
 					state.apos = state.aposStack.pop();
 					return makeLocalStyle( 'mw-templatevariable-bracket', state );
+				} else if ( stream.match( /^(?:&|''|~~~|__|[[<]|{{)/, false ) ) {
+					return eatWikiText( 'mw-templatevariable' )( stream, state );
 				}
-				return eatWikiText( 'mw-templatevariable' )( stream, state );
+				stream.next();
+				return makeStyle( style, state );
 			};
 		}
 
@@ -525,7 +550,7 @@
 				var origString = false,
 					from = stream.pos,
 					to,
-					pattern = new RegExp( '</' + name + '\\s*>', 'i' ),
+					pattern = new RegExp( '</' + name + '[\\s\\xa0]*>', 'i' ),
 					m = pattern.exec( from ? stream.string.slice( from ) : stream.string );
 
 				if ( m ) {
@@ -713,7 +738,7 @@
 							}
 							break;
 						case '=':
-							tmp = stream.match( /^(={0,5})(.+?(=\1\s*))$/ );
+							tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
 							if ( tmp ) { // Title
 								stream.backUp( tmp[ 2 ].length );
 								state.stack.push( state.tokenize );
