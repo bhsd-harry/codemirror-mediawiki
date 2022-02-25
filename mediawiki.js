@@ -58,9 +58,10 @@
 	/**
 	 * show bold and/or italic font in addition to makeLocalStyle()
 	 */
-	function makeStyle( style, state, endGround ) {
+	function makeStyle( style, state, endGround, apos ) {
+		apos = apos || state.apos;
 		return makeLocalStyle(
-			style + ( state.isBold ? ' strong' : '' ) + ( state.isItalic ? ' em' : '' ),
+			style + ( apos.bold ? ' strong' : '' ) + ( apos.italic ? ' em' : '' ),
 			state, endGround
 		);
 	}
@@ -559,8 +560,7 @@
 
 		function inTableCaption( stream, state ) {
 			if ( stream.sol() ) {
-				state.isBold = false;
-				state.isItalic = false;
+				state.apos = {};
 				if ( stream.match( /^[\s\u00a0]*[|!]/, false ) ) {
 					state.tokenize = inTable;
 					return inTable( stream, state );
@@ -603,8 +603,7 @@
 		function eatTableRow( expectAttr, isHead ) {
 			return function ( stream, state ) {
 				if ( stream.sol() ) {
-					state.isBold = false;
-					state.isItalic = false;
+					state.apos = {};
 					if ( stream.match( /^[\s\u00a0]*[|!]/, false ) ) {
 						state.tokenize = inTable;
 						return inTable( stream, state );
@@ -614,8 +613,7 @@
 						return makeStyle( isHead ? 'strong' : '', state );
 					}
 					if ( stream.match( '||' ) || isHead && stream.match( '!!' ) ) {
-						state.isBold = false;
-						state.isItalic = false;
+						state.apos = {};
 						state.tokenize = eatTableRow( true, isHead );
 						return makeLocalStyle( 'mw-table-delimiter', state );
 					}
@@ -667,8 +665,7 @@
 					sol = stream.sol();
 
 				if ( sol ) {
-					state.isBold = false;
-					state.isItalic = false;
+					state.apos = {};
 					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 						state.stack.push( state.tokenize );
 						state.tokenize = eatFreeExternalLink;
@@ -694,11 +691,11 @@
 						case '#':
 							mt = stream.match( /^[*#;:]*/ );
 							if ( /;/.test( mt[ 0 ] ) ) {
-								state.isBold = true;
+								state.apos.bold = true;
 							}
 							return 'mw-list';
 						case ';':
-							state.isBold = true;
+							state.apos.bold = true;
 							stream.match( /^[*#;:]*/ );
 							return 'mw-list';
 						case ':':
@@ -708,7 +705,7 @@
 							}
 							mt = stream.match( /^[*#;:]*/ );
 							if ( /;/.test( mt[ 0 ] ) ) {
-								state.isBold = true;
+								state.apos.bold = true;
 							}
 							return 'mw-list';
 						case ' ':
@@ -744,10 +741,10 @@
 							break;
 						}
 						if ( stream.match( '\'\'' ) ) { // bold
-							state.isBold = !state.isBold;
+							state.apos.bold = !state.apos.bold;
 							return makeLocalStyle( 'mw-apostrophes', state );
 						} else if ( stream.eat( '\'' ) ) { // italic
-							state.isItalic = !state.isItalic;
+							state.apos.italic = !state.apos.italic;
 							return makeLocalStyle( 'mw-apostrophes', state );
 						}
 						break;
@@ -889,8 +886,7 @@
 			startState: function () {
 				return {
 					tokenize: eatWikiText( '' ),
-					stack: [], InHtmlTag: [],
-					isBold: false, isItalic: false,
+					stack: [], InHtmlTag: [], apos: {},
 					extName: false, extMode: false, extState: false,
 					nTemplate: 0, nLink: 0, nExt: 0
 				};
@@ -900,8 +896,7 @@
 					tokenize: state.tokenize,
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
-					isBold: state.isBold,
-					isItalic: state.isItalic,
+					apos: state.apos,
 					extName: state.extName,
 					extMode: state.extMode,
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
