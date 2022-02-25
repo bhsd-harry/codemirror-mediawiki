@@ -893,10 +893,10 @@
 						}
 						stream.next();
 				}
-				if ( /[^\x20-\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x8f\u00a0]/.test( ch ) ) { // \w and non-ascii unicode
-					stream.match( /^[^\x20-\x2f\x3a-\x40\x5b-\x60\x7b-\x8f\u00a0]+/ ); // except '_'
-				} else { // ascii except /[\w>}[\]<{'|&:~]/ and \u00a0
-					stream.match( /^[\x20-\x25\x28-\x2f\x3b\x3d\x3f-\x40\x5c\x5e\x60\x7f-\x8f\u00a0]+/ );
+				if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( ch ) ) { // \w and non-ascii unicode except \xa0
+					stream.match( /^[A-Za-z0-9\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
+				} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
+					stream.match( /^[^\w>}[\]<{'|&:~\x80-\x9f\u00a1-\uffff]+/ );
 				}
 				return makeStyle( style, state, null, apos );
 			};
