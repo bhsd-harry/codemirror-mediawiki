@@ -31,7 +31,8 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-exttag-bracket, .cm-mw-exttag-attribute, .cm-mw-htmltag-bracket, .cm-mw-htmltag-attribute { color: #290; font-weight: normal; }
 
 /* link */
-.cm-mw-link-pagename, .cm-mw-link-bracket, .cm-mw-link-delimiter, .cm-mw-extlink, .cm-mw-free-extlink { color: #36c; font-weight: normal; }
+.cm-mw-link-pagename { color: #36c; }
+.cm-mw-link-bracket, .cm-mw-link-delimiter, .cm-mw-extlink, .cm-mw-free-extlink { color: #36c; font-weight: normal; }
 .cm-mw-link, .cm-mw-link-tosection { color: #18e; font-weight: normal; }
 .cm-mw-extlink-protocol, .cm-mw-free-extlink-protocol, .cm-mw-extlink-bracket { color: #36c; font-weight: bold; }
 
