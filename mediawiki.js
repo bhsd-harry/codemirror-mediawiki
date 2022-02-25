@@ -120,6 +120,23 @@
 		};
 	}
 
+	function eatApos( makeFunc, style, apos ) {
+		return function ( stream, state ) {
+			apos = apos || state.apos;
+			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
+				return makeFunc( style, state, null, apos );
+			}
+			if ( stream.match( '\'\'' ) ) { // bold
+				apos.bold = !apos.bold;
+				return makeLocalStyle( 'mw-apostrophes', state );
+			} else if ( stream.eat( '\'' ) ) { // italic
+				apos.italic = !apos.italic;
+				return makeLocalStyle( 'mw-apostrophes', state );
+			}
+			return makeFunc( style, state, null, apos );
+		};
+	}
+
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
@@ -142,7 +159,7 @@
 				return makeLocalStyle( 'mw-templatevariable-name', state );
 			}
 			if ( stream.eat( '|' ) ) {
-				state.tokenize = inVariableDefault;
+				state.tokenize = inVariableDefault();
 				return makeLocalStyle( 'mw-templatevariable-delimiter', state );
 			}
 			if ( stream.match( '}}}' ) ) {
@@ -156,18 +173,25 @@
 			return makeLocalStyle( 'mw-templatevariable-name', state );
 		}
 
-		function inVariableDefault( stream, state ) {
-			if ( stream.sol() ) {
-				state.apos = {};
-			}
-			if ( stream.match( /^[^}&<[{~_']+/ ) ) {
-				return makeLocalStyle( 'mw-templatevariable', state );
-			}
-			if ( stream.match( '}}}' ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-templatevariable-bracket', state );
-			}
-			return eatWikiText( 'mw-templatevariable' )( stream, state );
+		function inVariableDefault() {
+			var apos = {};
+			return function ( stream, state ) {
+				if ( stream.sol() ) {
+					state.apos = {};
+					apos = {};
+				}
+				if ( stream.match( /^[^}&<[{~_']+/ ) ) {
+					return makeStyle( 'mw-templatevariable', state, null, apos );
+				}
+				if ( stream.eat( '\'' ) ) {
+					return eatApos( makeStyle, 'mw-templatevariable', apos )( stream, state );
+				}
+				if ( stream.match( '}}}' ) ) {
+					state.tokenize = state.stack.pop();
+					return makeLocalStyle( 'mw-templatevariable-bracket', state );
+				}
+				return eatWikiText( 'mw-templatevariable' )( stream, state );
+			};
 		}
 
 		function inParserFunctionName( stream, state ) {

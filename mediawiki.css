@@ -19,7 +19,7 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-template-argument-name { color: #b0c; font-weight: normal; }
 
 /* template variable */
-.cm-mw-templatevariable { color: #ff9500; font-weight: normal; }
+.cm-mw-templatevariable { color: #ff9500; }
 .cm-mw-templatevariable-name, .cm-mw-templatevariable-delimiter, .cm-mw-templatevariable-bracket { color: #f50; font-weight: bold; }
 
 /* parser function */
