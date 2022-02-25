@@ -120,9 +120,10 @@
 		};
 	}
 
-	function eatApos( makeFunc, style, apos ) {
+	function eatApos( makeFunc, style, apos, or ) {
 		return function ( stream, state ) {
 			apos = apos || state.apos;
+			var tmpApos;
 			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
 				return makeFunc( style, state, null, apos );
 			}
@@ -133,7 +134,13 @@
 				apos.italic = !apos.italic;
 				return makeLocalStyle( 'mw-apostrophes', state );
 			}
-			return makeFunc( style, state, null, apos );
+			if ( or ) {
+				tmpApos = {
+					bold: apos.bold || state.apos.bold,
+					italic: apos.italic || state.apos.italic
+				};
+			}
+			return makeFunc( style, state, null, tmpApos || apos );
 		};
 	}
 
@@ -412,7 +419,7 @@
 		}
 
 		function eatLinkText( isFile ) {
-			var linkIsBold, linkIsItalic;
+			var apos = {};
 			return function ( stream, state ) {
 				if ( stream.match( ']]' ) ) {
 					state.tokenize = state.stack.pop();
@@ -421,26 +428,18 @@
 				if ( isFile && stream.eat( '|' ) ) {
 					return makeLocalStyle( 'mw-link-delimiter', state );
 				}
-				if ( stream.match( '\'\'\'' ) ) {
-					linkIsBold = !linkIsBold;
-					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
+				if ( stream.eat( '\'' ) ) {
+					return eatApos( makeStyle, 'mw-link-text', apos, true )( stream, state );
 				}
-				if ( stream.match( '\'\'' ) ) {
-					linkIsItalic = !linkIsItalic;
-					return makeLocalStyle( 'mw-link-text mw-apostrophes', state );
-				}
-				var tmpstyle = 'mw-link-text',
+				var tmpApos = {
+						bold: apos.bold || state.apos.bold,
+						italic: apos.italic || state.apos.italic
+					},
 					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
-				if ( linkIsBold ) {
-					tmpstyle += ' strong';
-				}
-				if ( linkIsItalic ) {
-					tmpstyle += ' em';
-				}
 				if ( stream.match( regex ) ) {
-					return makeStyle( tmpstyle, state );
+					return makeStyle( 'mw-link-text', state, null, tmpApos );
 				}
-				return eatWikiText( tmpstyle )( stream, state );
+				return eatWikiText( 'mw-link-text' )( stream, state );
 			};
 		}
 
