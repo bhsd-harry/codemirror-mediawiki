@@ -763,17 +763,7 @@
 					case '&':
 						return makeStyle( eatMnemonic( stream, style ), state );
 					case '\'':
-						if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
-							break;
-						}
-						if ( stream.match( '\'\'' ) ) { // bold
-							state.apos.bold = !state.apos.bold;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						} else if ( stream.eat( '\'' ) ) { // italic
-							state.apos.italic = !state.apos.italic;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						}
-						break;
+						return eatApos( makeStyle, style )( stream, state );
 					case '[':
 						if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 							stream.eatSpace();
