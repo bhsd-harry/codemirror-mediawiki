@@ -148,9 +148,8 @@
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
-			if ( stream.match( '{{{' ) ) {
-				state.stack.push( state.tokenize );
-				return makeLocalStyle( 'mw-templatevariable-bracket', state );
+			if ( stream.match( '{{', false ) ) {
+				return eatWikiText( 'mw-templatevariable-name' )( stream, state );
 			}
 			stream.next();
 			return makeLocalStyle( 'mw-templatevariable-name', state );
