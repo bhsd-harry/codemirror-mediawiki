@@ -159,7 +159,7 @@
 			};
 		}
 
-		function inVariable( stream, state ) {
+		function inVariable( stream, state ) { // can be multiline
 			if ( stream.match( /^[^{}|]+/ ) ) {
 				return makeLocalStyle( 'mw-templatevariable-name', state );
 			} else if ( stream.eat( '|' ) ) {
@@ -195,15 +195,19 @@
 			};
 		}
 
-		function inParserFunctionName( stream, state ) {
-			if ( stream.match( /^#?[^:{}~|<>[\]#]+/ ) ) {
+		function inParserFunctionName( stream, state ) { // ignore multiline syntax
+			if ( stream.match( '}}' ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+			} else if ( stream.sol() ) {
+				state.tokenize = state.stack.pop();
+				state.nExt--;
+				return;
+			} else if ( stream.match( /^[^:{}~|<>[\]]+/ ) ) {
 				return makeLocalStyle( 'mw-parserfunction-name', state );
 			} else if ( stream.eat( ':' ) ) {
 				state.tokenize = inParserFunctionArguments( state );
 				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-			} else if ( stream.match( '}}' ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 			} else if ( stream.match( '{{', false ) ) {
 				return eatWikiText( 'mw-parserfunction-name' )( stream, state );
 			}
