@@ -211,7 +211,7 @@
 				return makeLocalStyle( 'mw-parserfunction-name', state );
 			}
 			if ( stream.eat( ':' ) ) {
-				state.tokenize = inParserFunctionArguments;
+				state.tokenize = inParserFunctionArguments();
 				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 			}
 			if ( stream.match( '}}' ) ) {
@@ -225,16 +225,25 @@
 			return 'error';
 		}
 
-		function inParserFunctionArguments( stream, state ) {
-			if ( stream.match( /^[^|}{[<&~]+/ ) ) {
-				return makeLocalStyle( 'mw-parserfunction', state );
-			} else if ( stream.eat( '|' ) ) {
-				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-			} else if ( stream.match( '}}' ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
-			}
-			return eatWikiText( 'mw-parserfunction' )( stream, state );
+		function inParserFunctionArguments() {
+			var apos = {};
+			return function ( stream, state ) {
+				if ( stream.sol() ) {
+					apos = {};
+				}
+				if ( stream.match( /^[^|}&<[{~_']+/ ) ) {
+					return makeStyle( 'mw-parserfunction', state, null, apos );
+				} else if ( stream.eat( '|' ) ) {
+					apos = {};
+					return makeLocalStyle( 'mw-parserfunction-delimiter', state );
+				} else if ( stream.match( '}}' ) ) {
+					state.tokenize = state.stack.pop();
+					return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+				} else if ( stream.eat( '\'' ) ) {
+					return eatApos( makeStyle, 'mw-parserfunction', apos )( stream, state );
+				}
+				return eatWikiText( 'mw-parserfunction' )( stream, state );
+			};
 		}
 
 		function eatTemplatePageName( haveAte ) {
