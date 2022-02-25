@@ -58,23 +58,11 @@
 	/**
 	 * show bold and/or italic font in addition to makeLocalStyle()
 	 */
-	function makeStyle( style, state, endGround, apos ) {
-		var tmpApos = apos || state.apos;
+	function makeStyle( style, state, endGround ) {
 		return makeLocalStyle(
-			style + ( tmpApos.bold ? ' strong' : '' ) + ( tmpApos.italic ? ' em' : '' ),
+			style + ( state.apos.bold ? ' strong' : '' ) + ( state.apos.italic ? ' em' : '' ),
 			state, endGround
 		);
-	}
-
-	/**
-	 * show bold and/or italic font based on both global and local apostrophe states
-	 */
-	function makeOrStyle( style, state, endGround, apos ) {
-		var tmpApos = {
-			bold: apos.bold || state.apos.bold,
-			italic: apos.italic || state.apos.italic
-		};
-		return makeStyle( style, state, endGround, tmpApos );
 	}
 
 	function isEntity( str ) {
@@ -131,21 +119,27 @@
 		};
 	}
 
-	function eatApos( makeFunc, style, apos ) {
+	function eatApos( style ) {
 		return function ( stream, state ) {
-			apos = apos || state.apos; // eslint-disable-line no-param-reassign
 			// skip the irrelevant apostrophes ( >5 or =4 )
 			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) {
-				return makeFunc( style, state, null, apos );
+				return makeStyle( style, state );
 			} else if ( stream.match( '\'\'' ) ) { // bold
-				apos.bold = !apos.bold;
+				state.apos.bold = !state.apos.bold;
 				return makeLocalStyle( 'mw-apostrophes', state );
 			} else if ( stream.eat( '\'' ) ) { // italic
-				apos.italic = !apos.italic;
+				state.apos.italic = !state.apos.italic;
 				return makeLocalStyle( 'mw-apostrophes', state );
 			}
-			return makeFunc( style, state, null, apos );
+			return makeStyle( style, state );
 		};
+	}
+
+	function clearApos( state ) {
+		state.aposStack = state.aposStack.map( function () {
+			return {};
+		} );
+		state.apos = {};
 	}
 
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
@@ -169,7 +163,7 @@
 			if ( stream.match( /^[^{}|]+/ ) ) {
 				return makeLocalStyle( 'mw-templatevariable-name', state );
 			} else if ( stream.eat( '|' ) ) {
-				state.tokenize = inVariableDefault();
+				state.tokenize = inVariableDefault( state );
 				return makeLocalStyle( 'mw-templatevariable-delimiter', state );
 			} else if ( stream.match( '}}}' ) ) {
 				state.tokenize = state.stack.pop();
@@ -181,22 +175,23 @@
 			return makeLocalStyle( 'mw-templatevariable-name', state );
 		}
 
-		function inVariableDefault() {
-			var apos = {};
+		function inVariableDefault( stateObj ) {
+			stateObj.aposStack.push( stateObj.apos );
+			stateObj.apos = {};
 			return function ( stream, state ) {
 				if ( stream.sol() ) {
-					state.apos = {};
-					apos = {};
+					clearApos( state );
 				}
 				if ( stream.match( /^[^}&<[{~_']+/ ) ) {
-					return makeStyle( 'mw-templatevariable', state, null, apos );
+					return makeStyle( 'mw-templatevariable', state );
 				} else if ( stream.eat( '\'' ) ) {
-					return eatApos( makeStyle, 'mw-templatevariable', apos )( stream, state );
+					return eatApos( 'mw-templatevariable' )( stream, state );
 				} else if ( stream.match( '}}}' ) ) {
 					state.tokenize = state.stack.pop();
+					state.apos = state.aposStack.pop();
 					return makeLocalStyle( 'mw-templatevariable-bracket', state );
 				}
-				return eatWikiText( 'mw-templatevariable', apos )( stream, state );
+				return eatWikiText( 'mw-templatevariable' )( stream, state );
 			};
 		}
 
@@ -204,7 +199,7 @@
 			if ( stream.match( /^#?[^:{}~|<>[\]#]+/ ) ) {
 				return makeLocalStyle( 'mw-parserfunction-name', state );
 			} else if ( stream.eat( ':' ) ) {
-				state.tokenize = inParserFunctionArguments();
+				state.tokenize = inParserFunctionArguments( state );
 				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 			} else if ( stream.match( '}}' ) ) {
 				state.tokenize = state.stack.pop();
@@ -216,24 +211,26 @@
 			return 'error';
 		}
 
-		function inParserFunctionArguments() {
-			var apos = {};
+		function inParserFunctionArguments( stateObj ) {
+			stateObj.aposStack.push( stateObj.apos );
+			stateObj.apos = {};
 			return function ( stream, state ) {
 				if ( stream.sol() ) {
-					apos = {};
+					clearApos( state );
 				}
 				if ( stream.match( /^[^|}&<[{~_']+/ ) ) {
-					return makeStyle( 'mw-parserfunction', state, null, apos );
+					return makeStyle( 'mw-parserfunction', state );
 				} else if ( stream.eat( '|' ) ) {
-					apos = {};
+					state.apos = {};
 					return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 				} else if ( stream.match( '}}' ) ) {
 					state.tokenize = state.stack.pop();
+					state.apos = state.aposStack.pop();
 					return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 				} else if ( stream.eat( '\'' ) ) {
-					return eatApos( makeStyle, 'mw-parserfunction', apos )( stream, state );
+					return eatApos( 'mw-parserfunction' )( stream, state );
 				}
-				return eatWikiText( 'mw-parserfunction', apos )( stream, state );
+				return eatWikiText( 'mw-parserfunction' )( stream, state );
 			};
 		}
 
@@ -361,7 +358,7 @@
 				return;
 			}
 			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
-				state.tokenize = eatLinkText( true );
+				state.tokenize = eatLinkText( state, true );
 				return makeLocalStyle( 'mw-link-delimiter', state );
 			}
 			if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
@@ -389,7 +386,7 @@
 				return makeFunc( 'mw-link', state );
 			}
 			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
-				state.tokenize = eatLinkText();
+				state.tokenize = eatLinkText( state );
 				return makeLocalStyle( 'mw-link-delimiter', state );
 			}
 			if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
@@ -416,7 +413,7 @@
 					return makeFunc( 'mw-link-tosection', state );
 				}
 				if ( stream.eat( '|' ) ) {
-					state.tokenize = eatLinkText();
+					state.tokenize = eatLinkText( state );
 					return makeLocalStyle( 'mw-link-delimiter', state );
 				}
 				if ( stream.match( ']]' ) ) {
@@ -427,24 +424,30 @@
 			};
 		}
 
-		function eatLinkText( isFile ) {
-			var apos = {};
+		function eatLinkText( stateObj, isFile ) {
+			stateObj.aposStack.push( stateObj.apos );
+			if ( stateObj.nLink < 2 ) {
+				stateObj.apos = {};
+			}
 			return function ( stream, state ) {
 				if ( stream.match( ']]' ) ) {
 					state.tokenize = state.stack.pop();
+					if ( stateObj.nLink < 2 ) {
+						state.apos = state.aposStack.pop();
+					}
 					return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 				}
 				if ( isFile && stream.eat( '|' ) ) {
 					return makeLocalStyle( 'mw-link-delimiter', state );
 				}
 				if ( stream.eat( '\'' ) ) {
-					return eatApos( makeOrStyle, 'mw-link-text', apos )( stream, state );
+					return eatApos( 'mw-link-text' )( stream, state );
 				}
 				var regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
 				if ( stream.match( regex ) ) {
-					return makeOrStyle( 'mw-link-text', state, null, apos );
+					return makeStyle( 'mw-link-text', state );
 				}
-				return eatWikiText( 'mw-link-text', apos )( stream, state );
+				return eatWikiText( 'mw-link-text' )( stream, state );
 			};
 		}
 
@@ -690,12 +693,12 @@
 			return makeStyle( 'mw-free-extlink', state );
 		}
 
-		function eatWikiText( style, apos ) {
+		function eatWikiText( style ) {
 			return function ( stream, state ) {
 				var ch, tmp, mt, name, isCloseTag, tagname;
 
 				if ( stream.sol() ) {
-					state.apos = {};
+					clearApos( state );
 					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 						state.stack.push( state.tokenize );
 						state.tokenize = eatFreeExternalLink;
@@ -765,9 +768,9 @@
 
 				switch ( ch ) {
 					case '&':
-						return makeStyle( eatMnemonic( stream, style ), state, null, apos );
+						return makeStyle( eatMnemonic( stream, style ), state );
 					case '\'':
-						return eatApos( makeStyle, style )( stream, state );
+						return eatApos( style )( stream, state );
 					case '[':
 						if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 							stream.eatSpace();
@@ -871,7 +874,7 @@
 							if ( !stream.eol() ) {
 								stream.backUp( 2 ); // Leave last two underscore symbols for processing again in next iteration
 							}
-							return makeStyle( style, state, null, apos ); // Optimization: skip regex function at the end for EOL and backuped symbols
+							return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 						} else if ( tmp === 2 ) { // Check on double underscore Magic Word
 							name = stream.match( /^([^\s\u00a0>}[\]<{'|&:~]+?)__/ ); // The same as the end of function except '_' inside and with '__' at the end of string
 							if ( name && name[ 0 ] ) {
@@ -881,7 +884,7 @@
 								if ( !stream.eol() ) {
 									stream.backUp( 2 ); // Two underscore symbols at the end can be begining of other double undescored Magic Word
 								}
-								return makeStyle( style, state, null, apos ); // Optimization: skip regex function at the end for EOL and backuped symbols
+								return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 							}
 						}
 						break;
@@ -898,7 +901,7 @@
 				} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
 					stream.match( /^[^\w>}[\]<{'|&:~\x80-\x9f\u00a1-\uffff]+/ );
 				}
-				return makeStyle( style, state, null, apos );
+				return makeStyle( style, state );
 			};
 		}
 
@@ -906,7 +909,8 @@
 			startState: function () {
 				return {
 					tokenize: eatWikiText( '' ),
-					stack: [], InHtmlTag: [], apos: {},
+					stack: [], InHtmlTag: [],
+					apos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
 					nTemplate: 0, nLink: 0, nExt: 0
 				};
@@ -917,6 +921,7 @@
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
 					apos: state.apos,
+					aposStack: state.aposStack.concat( [] ),
 					extName: state.extName,
 					extMode: state.extMode,
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
