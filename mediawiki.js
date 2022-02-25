@@ -59,11 +59,22 @@
 	 * show bold and/or italic font in addition to makeLocalStyle()
 	 */
 	function makeStyle( style, state, endGround, apos ) {
-		apos = apos || state.apos;
+		var tmpApos = apos || state.apos;
 		return makeLocalStyle(
-			style + ( apos.bold ? ' strong' : '' ) + ( apos.italic ? ' em' : '' ),
+			style + ( tmpApos.bold ? ' strong' : '' ) + ( tmpApos.italic ? ' em' : '' ),
 			state, endGround
 		);
+	}
+
+	/**
+	 * show bold and/or italic font based on both global and local apostrophe states
+	 */
+	function makeOrStyle( style, state, endGround, apos ) {
+		var tmpApos = {
+			bold: apos.bold || state.apos.bold,
+			italic: apos.italic || state.apos.italic
+		};
+		return makeStyle( style, state, endGround, tmpApos );
 	}
 
 	function isEntity( str ) {
@@ -120,11 +131,11 @@
 		};
 	}
 
-	function eatApos( makeFunc, style, apos, or ) {
+	function eatApos( makeFunc, style, apos ) {
 		return function ( stream, state ) {
-			apos = apos || state.apos;
-			var tmpApos;
-			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
+			apos = apos || state.apos; // eslint-disable-line no-param-reassign
+			// skip the irrelevant apostrophes ( >5 or =4 )
+			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) {
 				return makeFunc( style, state, null, apos );
 			}
 			if ( stream.match( '\'\'' ) ) { // bold
@@ -134,13 +145,7 @@
 				apos.italic = !apos.italic;
 				return makeLocalStyle( 'mw-apostrophes', state );
 			}
-			if ( or ) {
-				tmpApos = {
-					bold: apos.bold || state.apos.bold,
-					italic: apos.italic || state.apos.italic
-				};
-			}
-			return makeFunc( style, state, null, tmpApos || apos );
+			return makeFunc( style, state, null, apos );
 		};
 	}
 
@@ -429,15 +434,11 @@
 					return makeLocalStyle( 'mw-link-delimiter', state );
 				}
 				if ( stream.eat( '\'' ) ) {
-					return eatApos( makeStyle, 'mw-link-text', apos, true )( stream, state );
+					return eatApos( makeOrStyle, 'mw-link-text', apos )( stream, state );
 				}
-				var tmpApos = {
-						bold: apos.bold || state.apos.bold,
-						italic: apos.italic || state.apos.italic
-					},
-					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
+				var regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
 				if ( stream.match( regex ) ) {
-					return makeStyle( 'mw-link-text', state, null, tmpApos );
+					return makeOrStyle( 'mw-link-text', state, null, apos );
 				}
 				return eatWikiText( 'mw-link-text' )( stream, state );
 			};
