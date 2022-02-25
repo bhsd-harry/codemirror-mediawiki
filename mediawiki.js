@@ -157,6 +157,9 @@
 		}
 
 		function inVariableDefault( stream, state ) {
+			if ( stream.sol() ) {
+				state.apos = {};
+			}
 			if ( stream.match( /^[^}&<[{~_']+/ ) ) {
 				return makeLocalStyle( 'mw-templatevariable', state );
 			}
