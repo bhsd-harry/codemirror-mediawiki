@@ -238,7 +238,8 @@
 			};
 		}
 
-		function eatTemplatePageName( haveAte ) {
+		function eatTemplatePageName() {
+			var haveAte = false;
 			return function ( stream, state ) {
 				if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) {
 					state.tokenize = eatTemplateArgument( true );
@@ -255,18 +256,14 @@
 					var style = 'mw-template-name' + ( haveAte && !stream.eol() ? ' mw-pagename' : '' );
 					return makeLocalStyle( style, state );
 				} else if ( stream.match( /^[^\s\xa0|}&#<>[\]{]+/ ) ) {
-					if ( !haveAte ) {
-						state.tokenize = eatTemplatePageName( true );
-					}
+					haveAte = true;
 					return makeLocalStyle( 'mw-template-name mw-pagename', state );
 				} else if ( stream.match( '<!--' ) ) {
 					state.stack.push( state.tokenize );
 					state.tokenize = eatBlock( 'mw-comment', '-->' );
 					return makeLocalStyle( 'mw-comment', state );
 				} else if ( stream.match( /^(?:&|{{)/, false ) ) {
-					if ( !haveAte ) {
-						state.tokenize = eatTemplatePageName( true );
-					}
+					haveAte = true;
 					return eatWikiText( 'mw-template-name mw-pagename' )( stream, state );
 				}
 				stream.next();
@@ -827,7 +824,7 @@
 							// Template
 							state.nTemplate++;
 							state.stack.push( state.tokenize );
-							state.tokenize = eatTemplatePageName( false );
+							state.tokenize = eatTemplatePageName();
 							return makeLocalStyle( 'mw-template-bracket', state );
 						}
 						break;
