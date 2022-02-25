@@ -196,7 +196,7 @@
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-templatevariable-bracket', state );
 				}
-				return eatWikiText( 'mw-templatevariable' )( stream, state );
+				return eatWikiText( 'mw-templatevariable', apos )( stream, state );
 			};
 		}
 
@@ -233,7 +233,7 @@
 				} else if ( stream.eat( '\'' ) ) {
 					return eatApos( makeStyle, 'mw-parserfunction', apos )( stream, state );
 				}
-				return eatWikiText( 'mw-parserfunction' )( stream, state );
+				return eatWikiText( 'mw-parserfunction', apos )( stream, state );
 			};
 		}
 
@@ -444,7 +444,7 @@
 				if ( stream.match( regex ) ) {
 					return makeOrStyle( 'mw-link-text', state, null, apos );
 				}
-				return eatWikiText( 'mw-link-text' )( stream, state );
+				return eatWikiText( 'mw-link-text', apos )( stream, state );
 			};
 		}
 
@@ -690,12 +690,11 @@
 			return makeStyle( 'mw-free-extlink', state );
 		}
 
-		function eatWikiText( style ) {
+		function eatWikiText( style, apos ) {
 			return function ( stream, state ) {
-				var ch, tmp, mt, name, isCloseTag, tagname,
-					sol = stream.sol();
+				var ch, tmp, mt, name, isCloseTag, tagname;
 
-				if ( sol ) {
+				if ( stream.sol() ) {
 					state.apos = {};
 					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 						state.stack.push( state.tokenize );
@@ -766,7 +765,7 @@
 
 				switch ( ch ) {
 					case '&':
-						return makeStyle( eatMnemonic( stream, style ), state );
+						return makeStyle( eatMnemonic( stream, style ), state, null, apos );
 					case '\'':
 						return eatApos( makeStyle, style )( stream, state );
 					case '[':
@@ -872,7 +871,7 @@
 							if ( !stream.eol() ) {
 								stream.backUp( 2 ); // Leave last two underscore symbols for processing again in next iteration
 							}
-							return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
+							return makeStyle( style, state, null, apos ); // Optimization: skip regex function at the end for EOL and backuped symbols
 						} else if ( tmp === 2 ) { // Check on double underscore Magic Word
 							name = stream.match( /^([^\s\u00a0>}[\]<{'|&:~]+?)__/ ); // The same as the end of function except '_' inside and with '__' at the end of string
 							if ( name && name[ 0 ] ) {
@@ -882,7 +881,7 @@
 								if ( !stream.eol() ) {
 									stream.backUp( 2 ); // Two underscore symbols at the end can be begining of other double undescored Magic Word
 								}
-								return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
+								return makeStyle( style, state, null, apos ); // Optimization: skip regex function at the end for EOL and backuped symbols
 							}
 						}
 						break;
@@ -899,7 +898,7 @@
 				} else { // ascii except /[\w>}[\]<{'|&:~]/ and \u00a0
 					stream.match( /^[\x20-\x25\x28-\x2f\x3b\x3d\x3f-\x40\x5c\x5e\x60\x7f-\x8f\u00a0]+/ );
 				}
-				return makeStyle( style, state );
+				return makeStyle( style, state, null, apos );
 			};
 		}
 
