@@ -242,7 +242,7 @@
 			var haveAte = false;
 			return function ( stream, state ) {
 				if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) {
-					state.tokenize = eatTemplateArgument( true );
+					state.tokenize = eatTemplateArgument();
 					return makeLocalStyle( 'mw-template-delimiter', state );
 				} else if ( stream.match( /^[\s\xa0]*}}/ ) ) {
 					state.tokenize = state.stack.pop();
@@ -271,18 +271,16 @@
 			};
 		}
 
-		function eatTemplateArgument( expectArgName ) {
+		function eatTemplateArgument() {
+			var expectArgName = true;
 			return function ( stream, state ) {
-				if ( expectArgName && stream.eatWhile( /[^=|}{[<&~]/ ) ) {
-					if ( stream.eat( '=' ) ) {
-						state.tokenize = eatTemplateArgument( false );
-						return makeLocalStyle( 'mw-template-argument-name', state );
-					}
-					return makeLocalStyle( 'mw-template', state );
-				} else if ( stream.eatWhile( /[^|}{[<&~]/ ) ) {
+				if ( expectArgName && stream.match( /^[^=|}{]*=/ ) ) {
+					expectArgName = false;
+					return makeLocalStyle( 'mw-template-argument-name', state );
+				} else if ( stream.match( /^[^|}&<[{~_']+/ ) ) {
 					return makeLocalStyle( 'mw-template', state );
 				} else if ( stream.eat( '|' ) ) {
-					state.tokenize = eatTemplateArgument( true );
+					expectArgName = true;
 					return makeLocalStyle( 'mw-template-delimiter', state );
 				} else if ( stream.match( '}}' ) ) {
 					state.tokenize = state.stack.pop();
