@@ -242,7 +242,7 @@
 				state.apos = state.aposStack.pop();
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
-			return eatWikiTextOther( 'mw-templatevariable', makeStyle( style, state ) )( stream, state );
+			return eatWikiTextOther( 'mw-templatevariable', makeStyle, style )( stream, state );
 		};
 	}
 
@@ -260,7 +260,7 @@
 			state.tokenize = inParserFunctionArguments( state );
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 		} else if ( stream.match( '{{', false ) ) {
-			return eatWikiTextOther( 'mw-parserfunction-name', makeLocalStyle( 'error', state ) )( stream, state );
+			return eatWikiTextOther( 'mw-parserfunction-name', makeLocalStyle, 'error' )( stream, state );
 		}
 		stream.next();
 		return makeLocalStyle( 'error', state );
@@ -806,7 +806,7 @@
 		};
 	}
 
-	function eatWikiTextOther( style, defaults ) {
+	function eatWikiTextOther( style, makeFunc, defaultStyle ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
 				tmp, mt, name, isCloseTag, tagname;
@@ -925,7 +925,7 @@
 						}
 					}
 			}
-			return typeof defaults === 'function' ? defaults( style, state ) : defaults;
+			return makeFunc( defaultStyle === undefined ? style : defaultStyle, state );
 		};
 	}
 
@@ -947,7 +947,7 @@
 				stream.backUp( 1 );
 			}
 
-			result = eatWikiTextOther( style )( stream, state );
+			result = eatWikiTextOther( style, makeStyle )( stream, state );
 			if ( result !== undefined ) {
 				return result;
 			}
