@@ -171,7 +171,7 @@
 					}
 					return makeStyle( '', state );
 				}
-				return eatWikiText( '' )( stream, state );
+				return eatWikiTextOther( '', makeStyle )( stream, state );
 			};
 		}
 
@@ -184,11 +184,8 @@
 			} else if ( stream.match( '}}}' ) ) {
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
-			} else if ( stream.match( '{{', false ) ) {
-				return eatWikiText( 'mw-templatevariable-name' )( stream, state );
 			}
-			stream.next();
-			return makeLocalStyle( 'mw-templatevariable-name', state );
+			return eatWikiTextOther( 'mw-templatevariable-name', makeLocalStyle )( stream, state );
 		}
 
 		function inVariableDefault( stateObj ) {
@@ -200,7 +197,7 @@
 				if ( stream.sol() ) {
 					clearApos( state );
 					if ( /[-=#*:; ]/.test( stream.peek() ) ) {
-						return eatWikiText( style )( stream, state );
+						return eatWikiTextSol( style, makeStyle )( stream, state );
 					}
 				}
 				if ( stream.match( /^[^|}{&'~_[<]+/ ) ) {
@@ -212,11 +209,8 @@
 					state.tokenize = state.stack.pop();
 					state.apos = state.aposStack.pop();
 					return makeLocalStyle( 'mw-templatevariable-bracket', state );
-				} else if ( stream.match( /^(?:&|''|~~~|__|[[<]|{{)/, false ) ) {
-					return eatWikiText( 'mw-templatevariable' )( stream, state );
 				}
-				stream.next();
-				return makeStyle( style, state );
+				return eatWikiTextOther( 'mw-templatevariable', makeStyle( style, state ) )( stream, state );
 			};
 		}
 
@@ -234,10 +228,10 @@
 				state.tokenize = inParserFunctionArguments( state );
 				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 			} else if ( stream.match( '{{', false ) ) {
-				return eatWikiText( 'mw-parserfunction-name' )( stream, state );
+				return eatWikiTextOther( 'mw-parserfunction-name', makeLocalStyle( 'error', state ) )( stream, state );
 			}
 			stream.next();
-			return 'error';
+			return makeLocalStyle( 'error', state );
 		}
 
 		function inParserFunctionArguments( stateObj ) {
@@ -256,10 +250,8 @@
 					state.tokenize = state.stack.pop();
 					state.apos = state.aposStack.pop();
 					return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
-				} else if ( stream.eat( "'" ) ) {
-					return eatApos( 'mw-parserfunction' )( stream, state );
 				}
-				return eatWikiText( 'mw-parserfunction' )( stream, state );
+				return eatWikiTextOther( 'mw-parserfunction', makeStyle )( stream, state );
 			};
 		}
 
@@ -289,7 +281,7 @@
 					return makeLocalStyle( 'mw-comment', state );
 				} else if ( stream.match( /^(?:&|{{)/, false ) ) {
 					haveAte = true;
-					return eatWikiText( 'mw-template-name mw-pagename' )( stream, state );
+					return eatWikiTextOther( 'mw-template-name mw-pagename', makeLocalStyle )( stream, state );
 				}
 				stream.next();
 				return makeLocalStyle( 'error', state );
@@ -719,79 +711,75 @@
 			return makeStyle( 'mw-free-extlink', state );
 		}
 
-		function eatWikiText( style ) {
+		function eatWikiTextSol( defaults, makeFunc ) {
 			return function ( stream, state ) {
-				var ch, tmp, mt, name, isCloseTag, tagname;
-
-				if ( stream.sol() ) {
-					clearApos( state );
-					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
-						state.stack.push( state.tokenize );
-						state.tokenize = eatFreeExternalLink;
-						return makeLocalStyle( 'mw-free-extlink-protocol', state );
-					}
-					ch = stream.next();
-					switch ( ch ) {
-						case '-':
-							if ( stream.match( /^----*/ ) ) {
-								return 'mw-hr';
-							}
-							break;
-						case '=':
-							tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
-							if ( tmp ) { // Title
-								stream.backUp( tmp[ 2 ].length );
-								state.stack.push( state.tokenize );
-								state.tokenize = eatSectionHeader( tmp[ 3 ].length );
-								return 'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 );
-							}
-							break;
-						case '*':
-						case '#':
-							mt = stream.match( /^[*#;:]*/ );
-							if ( /;/.test( mt[ 0 ] ) ) {
-								state.apos.bold = true;
-							}
-							return 'mw-list';
-						case ';':
+				var ch = stream.next(),
+					tmp, mt;
+				switch ( ch ) {
+					case '-':
+						if ( stream.match( /^----*/ ) ) {
+							return 'mw-hr';
+						}
+						break;
+					case '=':
+						tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+						if ( tmp ) { // Title
+							stream.backUp( tmp[ 2 ].length );
+							state.stack.push( state.tokenize );
+							state.tokenize = eatSectionHeader( tmp[ 3 ].length );
+							return 'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 );
+						}
+						break;
+					case '*':
+					case '#':
+						mt = stream.match( /^[*#;:]*/ );
+						if ( /;/.test( mt[ 0 ] ) ) {
 							state.apos.bold = true;
-							stream.match( /^[*#;:]*/ );
-							return 'mw-list';
-						case ':':
-							if ( stream.match( /^:*{\|/, false ) ) { // Highlight indented tables :{|, bug T108454
+						}
+						return 'mw-list';
+					case ';':
+						state.apos.bold = true;
+						stream.match( /^[*#;:]*/ );
+						return 'mw-list';
+					case ':':
+						if ( stream.match( /^:*{\|/, false ) ) { // Highlight indented tables :{|, bug T108454
+							state.stack.push( state.tokenize );
+							state.tokenize = eatStartTable;
+						}
+						mt = stream.match( /^[*#;:]*/ );
+						if ( /;/.test( mt[ 0 ] ) ) {
+							state.apos.bold = true;
+						}
+						return 'mw-list';
+					case ' ':
+						if ( stream.match( /^[\s\xa0]*:*{\|/, false ) ) { // Leading spaces is the correct syntax for a table, bug T108454
+							stream.eatSpace();
+							if ( stream.match( /^:+/ ) ) { // ::{|
 								state.stack.push( state.tokenize );
 								state.tokenize = eatStartTable;
+								return 'mw-indenting';
 							}
-							mt = stream.match( /^[*#;:]*/ );
-							if ( /;/.test( mt[ 0 ] ) ) {
-								state.apos.bold = true;
-							}
-							return 'mw-list';
-						case ' ':
-							if ( stream.match( /^[\s\xa0]*:*{\|/, false ) ) { // Leading spaces is the correct syntax for a table, bug T108454
-								stream.eatSpace();
-								if ( stream.match( /^:+/ ) ) { // ::{|
-									state.stack.push( state.tokenize );
-									state.tokenize = eatStartTable;
-									return 'mw-indenting';
-								}
-								stream.eat( '{' );
-							} else {
-								return 'mw-skipformatting';
-							}
-							// break is not necessary here, falls through
-						case '{':
-							if ( stream.eat( '|' ) ) {
-								stream.eatSpace();
-								state.stack.push( state.tokenize );
-								state.tokenize = inTableDefinition;
-								return 'mw-table-bracket';
-							}
-					}
-				} else {
-					ch = stream.next();
+							stream.eat( '{' );
+						} else {
+							return 'mw-skipformatting';
+						}
+						// break is not necessary here, falls through
+					case '{':
+						if ( stream.eat( '|' ) ) {
+							stream.eatSpace();
+							state.stack.push( state.tokenize );
+							state.tokenize = inTableDefinition;
+							return 'mw-table-bracket';
+						}
 				}
+				return makeFunc ? makeFunc( defaults, state ) : defaults;
+			};
+		}
 
+		function eatWikiTextOther( style, defaults ) {
+			return function ( stream, state ) {
+				var ch = stream.next(),
+					tmp, mt, name, isCloseTag, tagname;
 				switch ( ch ) {
 					case '&':
 						return makeStyle( eatMnemonic( stream, style ), state );
@@ -913,16 +901,39 @@
 								return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 							}
 						}
-						break;
-					default:
-						stream.backUp( 1 ); // highlight free external links, bug T108448
-						if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
-							state.stack.push( state.tokenize );
-							return eatFreeExternalLinkProtocol( stream, state );
-						}
-						stream.next();
 				}
-				if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( ch ) ) { // \w and non-ascii unicode except \xa0
+				return typeof defaults === 'function' ? defaults( style, state ) : defaults;
+			};
+		}
+
+		function eatWikiText( style ) {
+			return function ( stream, state ) {
+				var result;
+
+				if ( stream.sol() ) {
+					clearApos( state );
+					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
+						state.stack.push( state.tokenize );
+						state.tokenize = eatFreeExternalLink;
+						return makeLocalStyle( 'mw-free-extlink-protocol', state );
+					}
+					result = eatWikiTextSol()( stream, state );
+					if ( result !== undefined ) {
+						return result;
+					}
+					stream.backUp( 1 );
+				}
+
+				result = eatWikiTextOther( style )( stream, state );
+				if ( result !== undefined ) {
+					return result;
+				}
+				stream.backUp( 1 ); // highlight free external links, bug T108448
+				if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
+					state.stack.push( state.tokenize );
+					return eatFreeExternalLinkProtocol( stream, state );
+				}
+				if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
 					stream.match( /^[A-Za-z0-9\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
 				} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
 					stream.match( /^[^\w>}[\]<{'|&:~\x80-\x9f\u00a1-\uffff]+/ );
