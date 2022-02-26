@@ -129,11 +129,11 @@
 		};
 	}
 
-	function eatApos( style ) {
+	function eatApos( style, makeFunc ) {
 		return function ( stream, state ) {
 			// skip the irrelevant apostrophes ( >5 or =4 )
 			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) {
-				return makeStyle( style, state );
+				return makeFunc( style, state );
 			} else if ( stream.match( "''" ) ) { // bold
 				state.apos.bold = !state.apos.bold;
 				return makeLocalStyle( 'mw-apostrophes', state );
@@ -141,7 +141,7 @@
 				state.apos.italic = !state.apos.italic;
 				return makeLocalStyle( 'mw-apostrophes', state );
 			}
-			return makeStyle( style, state );
+			return makeFunc( style, state );
 		};
 	}
 
@@ -291,7 +291,7 @@
 		var haveAte = false;
 		return function ( stream, state ) {
 			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) {
-				state.tokenize = eatTemplateArgument();
+				state.tokenize = eatTemplateArgument( state );
 				return makeLocalStyle( 'mw-template-delimiter', state );
 			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) {
 				state.tokenize = state.stack.pop();
@@ -318,7 +318,9 @@
 		};
 	}
 
-	function eatTemplateArgument() {
+	function eatTemplateArgument( stateObj ) {
+		stateObj.aposStack.push( stateObj.apos );
+		stateObj.apos = {};
 		var expectArgName = true;
 		return function ( stream, state ) {
 			if ( expectArgName && stream.match( /^[^=|}{]*=/ ) ) {
@@ -331,6 +333,7 @@
 				return makeLocalStyle( 'mw-template-delimiter', state );
 			} else if ( stream.match( '}}' ) ) {
 				state.tokenize = state.stack.pop();
+				state.apos = state.aposStack.pop();
 				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
 			}
 			return eatWikiText( 'mw-template' )( stream, state );
@@ -489,7 +492,7 @@
 				return makeLocalStyle( 'mw-link-delimiter', state );
 			}
 			if ( stream.eat( "'" ) ) {
-				return eatApos( 'mw-link-text' )( stream, state );
+				return eatApos( 'mw-link-text', makeStyle )( stream, state );
 			}
 			var regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
 			if ( stream.match( regex ) ) {
@@ -814,7 +817,7 @@
 				case '&':
 					return makeStyle( eatMnemonic( stream, style ), state );
 				case "'":
-					return eatApos( style )( stream, state );
+					return eatApos( style, makeFunc )( stream, state );
 				case '[':
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						stream.eatSpace();
