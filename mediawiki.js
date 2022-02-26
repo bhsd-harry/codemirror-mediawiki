@@ -15,6 +15,11 @@
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		span = document.createElement( 'span' ), // used for isEntity()
+		nsIds = mw.config.get( 'wgNamespaceIds' ),
+		nsFile = Object.keys( nsIds ).filter( function ( ns ) {
+			return nsIds[ ns ] === 6;
+		} ).join( '|' ),
+		nsFileRegex = new RegExp( '^[\\s\\xa0]*(' + nsFile + ')[\\s\\xa0]*:', 'i' ),
 		mwConfig, urlProtocols;
 
 	/**
@@ -144,23 +149,49 @@
 
 	/**
 	 * special characters that can start wikitext syntax:
+	 * line start : - = # * : ; SPACE {
+	 * other      : { & ' ~ _ [ <
+	 * details    :
 	 * '----'   : <hr> (line start)
 	 * '='      : <h1> ~ <h6> (line start)
-	 * /[#*:;]/ : <ol>, <ul>, <dl> (line start)
+	 * #        : <ol> (line start)
+	 * *        : <ul> (line start)
+	 * ;        : <dt> (line start)
+	 * :        : <dd> (line start)
 	 * ' '      : <pre> (line start)
 	 * '{|'     : <table> (line start)
 	 * '{{'     : parser functions and templates
 	 * '{{{'    : variables
 	 * '&'      : HTML entities
-	 * "''"     : <i>, <b>
+	 * "''"     : <i> <b>
 	 * '~~~'    : signature
 	 * '__'     : behavior switch
 	 * '['      : <a>
 	 * '<'      : tags
 	 */
+
+	/**
+	 * illegal characters in page name
+	 * # < > [ ] _ { | }
+	 */
+
+	/**
+	 * additional illegal characters in file name
+	 * / > < : &
+	 */
+
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
+
+		/**
+		 * function template
+		 * 1. stream.sol()
+		 * 2. plain text
+		 * 3. unique syntax
+		 * 4. common wikitext
+		 * 5. fallback
+		 */
 
 		function eatSectionHeader( count ) {
 			return function ( stream, state ) {
@@ -791,11 +822,6 @@
 							if ( /[^\]|[]/.test( stream.peek() ) ) {
 								state.nLink++;
 								state.stack.push( state.tokenize );
-								var nsIds = mw.config.get( 'wgNamespaceIds' ),
-									nsFile = Object.keys( nsIds ).filter( function ( ns ) {
-										return nsIds[ ns ] === 6;
-									} ).join( '|' ),
-									nsFileRegex = new RegExp( '^[\\s\\xa0]*(' + nsFile + ')[\\s\\xa0]*:', 'i' );
 								state.tokenize = stream.match( nsFileRegex, false ) ? inFileLink : inLink;
 								return makeLocalStyle( 'mw-link-bracket', state );
 							}
