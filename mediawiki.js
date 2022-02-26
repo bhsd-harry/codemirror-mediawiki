@@ -100,7 +100,6 @@
 				stream.skipToEnd();
 			} else {
 				stream.match( terminator );
-				state.tokenize = state.stack.pop();
 			}
 			return makeFunc( style, state );
 		};
@@ -307,9 +306,7 @@
 				haveAte = true;
 				return makeLocalStyle( 'mw-template-name mw-pagename', state );
 			} else if ( stream.match( '<!--' ) ) {
-				state.stack.push( state.tokenize );
-				state.tokenize = eatBlock( 'mw-comment', '-->', makeLocalStyle );
-				return makeLocalStyle( 'mw-comment', state );
+				return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
 			} else if ( stream.match( /^(?:&|{{)/, false ) ) {
 				haveAte = true;
 				return eatWikiTextOther( 'mw-template-name mw-pagename', makeLocalStyle )( stream, state );
@@ -869,9 +866,7 @@
 					isCloseTag = Boolean( stream.eat( '/' ) );
 					tagname = stream.match( /^[^>/\s\xa0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/, false );
 					if ( stream.match( '!--' ) ) { // comment
-						state.stack.push( state.tokenize );
-						state.tokenize = eatBlock( 'mw-comment', '-->', makeLocalStyle );
-						return 'mw-comment';
+						return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
 					}
 					if ( tagname ) {
 						tagname = tagname[ 0 ].toLowerCase();
