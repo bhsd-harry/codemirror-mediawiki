@@ -129,6 +129,9 @@
 		};
 	}
 
+	/**
+	 * eat apostrophes and modify apostrophe-related states
+	 */
 	function eatApos( style, makeFunc ) {
 		return function ( stream, state ) {
 			// skip the irrelevant apostrophes ( >5 or =4 )
@@ -145,6 +148,9 @@
 		};
 	}
 
+	/**
+	 * reset apostrophe states
+	 */
 	function clearApos( state ) {
 		state.aposStack = state.aposStack.map( function () {
 			return {};
@@ -194,54 +200,69 @@
 	 * 5. fallback
 	 */
 
+	/**
+	 * eat section header when the number of ending characters is already known
+	 */
 	function eatSectionHeader( count ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^[^{&'~_[<]+/ ) ) {
+			// 1. impossible to be stream.sol()
+			if ( stream.match( /^[^{&'~_[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) {
 					stream.backUp( count );
 					state.tokenize = eatEnd( 'mw-section-header', makeLocalStyle );
 				}
 				return makeStyle( '', state );
 			}
-			return eatWikiTextOther( '', makeStyle )( stream, state );
+			// 3. no unique syntax
+			return eatWikiTextOther( '', makeStyle )( stream, state ); // 4. common wikitext, without fallback
 		};
 	}
 
-	function inVariable( stream, state ) { // can be multiline
-		if ( stream.match( /^[^|}{]+/ ) ) {
+	/**
+	 * template variable name
+	 * It is uncommon, but it can be multiline
+	 * Unique syntax: |, }}}
+	 * Valid wikitext syntax: {{, {{{
+	 */
+	function inVariable( stream, state ) {
+		// 1. nothing happens at stream.sol()
+		if ( stream.match( /^[^|}{]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-templatevariable-name', state );
-		} else if ( stream.eat( '|' ) ) {
-			state.tokenize = inVariableDefault( state );
+		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
+			state.tokenize = inVariableDefault();
 			return makeLocalStyle( 'mw-templatevariable-delimiter', state );
-		} else if ( stream.match( '}}}' ) ) {
+		} else if ( stream.match( '}}}' ) ) { // 3. unique syntax: }}}
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-templatevariable-bracket', state );
 		}
+		// 4. limited common wikitext: {{, {{{; without fallback
 		return eatWikiTextOther( 'mw-templatevariable-name', makeLocalStyle )( stream, state );
 	}
 
-	function inVariableDefault( stateObj ) {
-		stateObj.aposStack.push( stateObj.apos );
-		stateObj.apos = {};
-		var first = true;
-		return function ( stream, state ) {
-			var style = first ? 'mw-templatevariable' : 'error';
+	/**
+	 * template variable default
+	 * It can be multiline, with line-start wikitext syntax valid
+	 * Unique syntax: |, }}}
+	 */
+	function inVariableDefault() {
+		var style = 'mw-templatevariable';
+		return function ( stream, state ) { // 1. stream.sol(), excluding {|
 			if ( stream.sol() ) {
-				clearApos( state );
+				state.apos = {}; // do not change state.aposStack
 				if ( /[-=#*:; ]/.test( stream.peek() ) ) {
 					return eatWikiTextSol( style, makeStyle )( stream, state );
 				}
 			}
-			if ( stream.match( /^[^|}{&'~_[<]+/ ) ) {
+			if ( stream.match( /^[^|}{&'~_[<]+/ ) ) { // 2. plain text
 				return makeStyle( style, state );
-			} else if ( stream.eat( '|' ) ) {
-				first = false;
+			} else if ( stream.eat( '|' ) ) { // 3. unique syntax: | (redundant defaults)
+				style = 'error';
 				return makeLocalStyle( 'error', state );
-			} else if ( stream.match( '}}}' ) ) {
+			} else if ( stream.match( '}}}' ) ) { // 3. unique syntax: }}}
 				state.tokenize = state.stack.pop();
-				state.apos = state.aposStack.pop();
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
+			// 4. common wikitext without fallback
 			return eatWikiTextOther( 'mw-templatevariable', makeStyle, style )( stream, state );
 		};
 	}
