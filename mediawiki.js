@@ -117,12 +117,14 @@
 	}
 
 	/**
-	 * simply eat one character
+	 * simply eat characters
 	 */
-	function eatChar( style, makeFunc ) {
+	function eatChars( chars, style, makeFunc ) {
 		return function ( stream, state ) {
 			state.tokenize = state.stack.pop();
-			stream.next();
+			for ( var i = 0; i < chars; i++ ) {
+				stream.next();
+			}
 			return makeFunc( style, state );
 		};
 	}
@@ -511,7 +513,7 @@
 				return makeLocalStyle( 'mw-htmltag-name', state );
 			} // it is the extension tag
 			if ( isCloseTag ) {
-				state.tokenize = eatChar( 'mw-exttag-bracket', makeLocalStyle );
+				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle );
 			} else {
 				state.tokenize = eatExtTagAttribute( name );
 			}
