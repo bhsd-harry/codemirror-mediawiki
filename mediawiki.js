@@ -220,7 +220,7 @@
 
 	/**
 	 * template variable name
-	 * It is uncommon, but it can be multiline
+	 * Uncommon but possibly multiline
 	 * Unique syntax: |, }}}
 	 * Valid wikitext syntax: {{, {{{
 	 */
@@ -241,8 +241,9 @@
 
 	/**
 	 * template variable default
-	 * It can be multiline, with line-start wikitext syntax valid
+	 * Can be multiline, with line-start wikitext syntax valid
 	 * Unique syntax: |, }}}
+	 * Invalid wikitext syntax: {|
 	 */
 	function inVariableDefault() {
 		var style = 'mw-templatevariable';
@@ -267,22 +268,29 @@
 		};
 	}
 
-	function inParserFunctionName( stream, state ) { // ignore multiline syntax
-		if ( stream.match( /^[\s\xa0]*}}/ ) ) {
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
-		} else if ( stream.sol() ) {
+	/**
+	 * parser function name
+	 * Should not be multiline
+	 * Unique syntax: :, }}
+	 * Valid wikitext syntax: {{, {{{
+	 */
+	function inParserFunctionName( stream, state ) {
+		if ( stream.sol() ) { // 1. stream.sol(), exit
 			state.tokenize = state.stack.pop();
 			state.nExt--;
 			return;
-		} else if ( stream.match( /^[^:{}~|<>[\]]+/ ) ) {
+		} else if ( stream.match( /^[^:}{]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-parserfunction-name', state );
-		} else if ( stream.eat( ':' ) ) {
+		} else if ( stream.match( '}}' ) ) { // 3. Unique syntax: }}
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+		} else if ( stream.eat( ':' ) ) { // 3. Unique syntax: :
 			state.tokenize = inParserFunctionArguments( state );
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-		} else if ( stream.match( '{{', false ) ) {
+		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
 			return eatWikiTextOther( 'mw-parserfunction-name', makeLocalStyle, 'error' )( stream, state );
 		}
+		// 5. fallback
 		stream.next();
 		return makeLocalStyle( 'error', state );
 	}
