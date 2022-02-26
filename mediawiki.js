@@ -94,7 +94,7 @@
 	/**
 	 * simply eat until a block ends with specified terminator
 	 */
-	function eatBlock( style, terminator ) {
+	function eatBlock( style, terminator, makeFunc ) {
 		return function ( stream, state ) {
 			if ( !stream.skipTo( terminator ) ) {
 				stream.skipToEnd();
@@ -102,29 +102,29 @@
 				stream.match( terminator );
 				state.tokenize = state.stack.pop();
 			}
-			return makeLocalStyle( style, state );
+			return makeFunc( style, state );
 		};
 	}
 
 	/**
 	 * simply eat until the end of line
 	 */
-	function eatEnd( style ) {
+	function eatEnd( style, makeFunc ) {
 		return function ( stream, state ) {
 			stream.skipToEnd();
 			state.tokenize = state.stack.pop();
-			return makeLocalStyle( style, state );
+			return makeFunc( style, state );
 		};
 	}
 
 	/**
-	 * simply eat one character if it must be there
+	 * simply eat one character
 	 */
-	function eatChar( char, style ) {
+	function eatChar( style, makeFunc ) {
 		return function ( stream, state ) {
 			state.tokenize = state.stack.pop();
-			stream.eat( char );
-			return makeLocalStyle( style, state );
+			stream.next();
+			return makeFunc( style, state );
 		};
 	}
 
@@ -198,7 +198,7 @@
 			if ( stream.match( /^[^{&'~_[<]+/ ) ) {
 				if ( stream.eol() ) {
 					stream.backUp( count );
-					state.tokenize = eatEnd( 'mw-section-header' );
+					state.tokenize = eatEnd( 'mw-section-header', makeLocalStyle );
 				}
 				return makeStyle( '', state );
 			}
@@ -308,7 +308,7 @@
 				return makeLocalStyle( 'mw-template-name mw-pagename', state );
 			} else if ( stream.match( '<!--' ) ) {
 				state.stack.push( state.tokenize );
-				state.tokenize = eatBlock( 'mw-comment', '-->' );
+				state.tokenize = eatBlock( 'mw-comment', '-->', makeLocalStyle );
 				return makeLocalStyle( 'mw-comment', state );
 			} else if ( stream.match( /^(?:&|{{)/, false ) ) {
 				haveAte = true;
@@ -514,7 +514,7 @@
 				return makeLocalStyle( 'mw-htmltag-name', state );
 			} // it is the extension tag
 			if ( isCloseTag ) {
-				state.tokenize = eatChar( '>', 'mw-exttag-bracket' );
+				state.tokenize = eatChar( 'mw-exttag-bracket', makeLocalStyle );
 			} else {
 				state.tokenize = eatExtTagAttribute( name );
 			}
@@ -870,7 +870,7 @@
 					tagname = stream.match( /^[^>/\s\xa0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/, false );
 					if ( stream.match( '!--' ) ) { // comment
 						state.stack.push( state.tokenize );
-						state.tokenize = eatBlock( 'mw-comment', '-->' );
+						state.tokenize = eatBlock( 'mw-comment', '-->', makeLocalStyle );
 						return 'mw-comment';
 					}
 					if ( tagname ) {
