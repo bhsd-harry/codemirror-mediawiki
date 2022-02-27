@@ -84,7 +84,7 @@
 	 * simply eat white spaces without returned styles
 	 */
 	function eatSpace( stream ) {
-		return stream.match( /^[\s\xa0]*/ );
+		return stream.match( /^[\s\xa0]+/ );
 	}
 
 	/**
@@ -108,13 +108,19 @@
 	 * simply eat until a block ends with specified terminator
 	 */
 	function eatBlock( style, terminator, makeFunc ) {
-		return function ( stream, state ) {
+		function parser( stream, state ) {
 			if ( !stream.skipTo( terminator ) ) {
 				stream.skipToEnd();
 			} else {
 				stream.match( terminator );
+				state.tokenize = state.stack.pop();
 			}
 			return makeFunc( style, state );
+		}
+		return function ( stream, state ) {
+			state.stack.push( state.tokenize );
+			state.tokenize = parser;
+			return parser( stream, state );
 		};
 	}
 
@@ -141,6 +147,11 @@
 			return makeFunc( style, state );
 		};
 	}
+
+	/**
+	 * eat comment
+	 */
+	var eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
 
 	/**
 	 * eat apostrophes and modify apostrophe-related states
@@ -320,7 +331,15 @@
 		stateObj.apos = {};
 		var haveEaten = false;
 		return function ( stream, state ) {
-			if ( stream.sol() ) { // 1. stream.sol()
+			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+				state.apos = {};
+				haveEaten = false;
+				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
+			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
+				state.tokenize = state.stack.pop();
+				state.apos = state.aposStack.pop();
+				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+			} else if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
 				if ( ( haveEaten ? /[-=#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
 					return eatWikiTextSol( 'mw-parserfunction' )( stream, state );
@@ -332,48 +351,63 @@
 					haveEaten = true;
 				}
 				return makeStyle( 'mw-parserfunction', state );
-			} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
-				state.apos = {};
-				haveEaten = false;
-				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-			} else if ( stream.match( '}}' ) ) { // 3. unique syntax: }}
-				state.tokenize = state.stack.pop();
-				state.apos = state.aposStack.pop();
-				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
+				haveEaten = true;
 			}
 			// 4. common wikitext without fallback
 			return eatWikiTextOther( makeStyle, 'mw-parserfunction', 'mw-parserfunction' )( stream, state );
 		};
 	}
 
-	function eatTemplatePageName() {
+	/**
+	 * eat general page name without syntax details
+	 * @param {RegExp} regex - regex for plain text; must exclude [&#<>[\]{}|]
+	 * @return {(string|undefined)}
+	 */
+	function eatPageName( regex, makeFunc, style ) {
 		var haveEaten = false;
 		return function ( stream, state ) {
-			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) {
+			// 1. not handling stream.sol() here
+			if ( eatSpace( stream ) ) { // 2. plain text
+				return makeFunc( style + ( haveEaten && !stream.eol() ? ' mw-pagename' : '' ), state );
+			} else if ( stream.match( regex ) ) { // 2. plain text
+				haveEaten = true;
+				return makeFunc( style + ' mw-pagename', state );
+			} else if ( stream.match( '<!--' ) ) { // 4. common wikitext: <!--
+				return eatComment( stream, state );
+			} else if ( stream.match( /^(?:&|{{)/ ) ) { // 4. common wikitext: &, {{, {{{
+				haveEaten = true;
+				return eatWikiTextOther( makeFunc, style + 'mw-pagename', 'error' )( stream, state );
+			}
+			stream.next(); // 5. fallback: undefined
+		};
+	}
+
+	/**
+	 * template page name
+	 * Can be multiline, if the next line starts with '|' or '}}'
+	 * Unique syntax: |, }}
+	 */
+	function eatTemplatePageName() {
+		return function ( stream, state ) {
+			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 				state.tokenize = eatTemplateArgument( state );
 				return makeLocalStyle( 'mw-template-delimiter', state );
-			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) {
+			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
-			} else if ( stream.sol() ) {
+			} else if ( stream.sol() ) { // 1. stream.sol()
 				// @todo error message
 				state.nTemplate--;
 				state.tokenize = state.stack.pop();
 				return;
-			} else if ( stream.match( /^[\s\xa0]+/ ) ) {
-				var style = 'mw-template-name' + ( haveEaten && !stream.eol() ? ' mw-pagename' : '' );
-				return makeLocalStyle( style, state );
-			} else if ( stream.match( /^[^\s\xa0|}&#<>[\]{]+/ ) ) {
-				haveEaten = true;
-				return makeLocalStyle( 'mw-template-name mw-pagename', state );
-			} else if ( stream.match( '<!--' ) ) {
-				return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
-			} else if ( stream.match( /^(?:&|{{)/, false ) ) {
-				haveEaten = true;
-				return eatWikiTextOther( makeLocalStyle, 'mw-template-name mw-pagename', 'error' )( stream, state );
 			}
-			stream.next();
-			return makeLocalStyle( 'error', state );
+			// 2. plain text; 4. common wikitext
+			var style = eatPageName( /^[^\s\xa0|}&#<>[\]{]+/, makeLocalStyle, 'mw-template-name' )( stream, state );
+			if ( style !== undefined ) {
+				return style;
+			}
+			return makeLocalStyle( 'error', state ); // 5. fallback
 		};
 	}
 
@@ -922,7 +956,7 @@
 						// Check for parser function without '#'
 						name = stream.match( /^([^\s\xa0}{:]+)(:|[\s\xa0]*)(}}?)?(.)?/, false );
 						if ( name ) {
-							if ( ( name[ 2 ] === ':' || name[ 4 ] === undefined || name[ 3 ] === '}}' )
+							if ( ( name[ 2 ] === ':' || name[ 3 ] === '}}' || name[ 3 ] === '}' && name[ 4 ] === undefined )
 								&& ( name[ 1 ].toLowerCase() in mwConfig.functionSynonyms[ 0 ] || name[ 1 ] in mwConfig.functionSynonyms[ 1 ] )
 							) {
 								state.nExt++;
@@ -940,7 +974,7 @@
 					break;
 				case '<':
 					if ( stream.match( '!--' ) ) { // comment
-						return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
+						return eatComment( stream, state );
 					}
 					var isCloseTag = Boolean( stream.eat( '/' ) );
 					name = stream.match( /^[0-9a-zA-Z]+/, false ); // HTML5 standard
