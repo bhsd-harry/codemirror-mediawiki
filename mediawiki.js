@@ -23,7 +23,7 @@
 			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 				return nsIds[ ns ] === 6;
 			} ).join( '|' );
-		return new RegExp( '^[\\s\\xa0]*(' + nsFile + ')[\\s\\xa0]*:', 'i' );
+		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:', 'i' );
 	}
 
 	/**
@@ -78,6 +78,13 @@
 			style + ( state.apos.bold ? ' strong' : '' ) + ( state.apos.italic ? ' em' : '' ),
 			state, endGround
 		);
+	}
+
+	/**
+	 * simply eat white spaces without returned styles
+	 */
+	function eatSpace( stream ) {
+		return stream.match( /^[\s\xa0]*/ );
 	}
 
 	/**
@@ -805,7 +812,7 @@
 	function eatWikiTextSol( style ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
-				tmp, mt;
+				mt;
 			switch ( ch ) {
 				case '-':
 					if ( stream.match( /^-{3,}/ ) ) {
@@ -813,7 +820,7 @@
 					}
 					break;
 				case '=':
-					tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+					var tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
 					if ( tmp ) {
 						stream.backUp( tmp[ 2 ].length );
 						state.stack.push( state.tokenize );
@@ -858,7 +865,7 @@
 					// fall through
 				case '{':
 					if ( stream.eat( '|' ) ) {
-						stream.match( /^[\s\xa0]*/ );
+						eatSpace( stream );
 						state.stack.push( state.tokenize );
 						state.tokenize = inTableDefinition;
 						return makeLocalStyle( 'mw-table-bracket', state );
@@ -868,26 +875,34 @@
 		};
 	}
 
-	function eatWikiTextOther( style, makeFunc, defaultStyle ) {
+	/**
+	 * common wikitext syntax not at start of line
+	 * Eat at least one character
+	 * @param {(string|undefined)} style - Default style
+	 * @param {function} makeFunc
+	 * @param {(string|undefined)} errorStyle - Error style, if different from default
+	 * @returns {(string|undefined)}
+	 */
+	function eatWikiTextOther( style, makeFunc, errorStyle ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
-				tmp, mt, name, isCloseTag, tagname;
+				name;
 			switch ( ch ) {
 				case '&':
-					return makeStyle( eatMnemonic( stream, style ), state );
+					return makeFunc( eatMnemonic( stream, style ), state );
 				case "'":
 					return eatApos( style, makeFunc )( stream, state );
 				case '[':
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
-						stream.eatSpace();
-						if ( /[^\]|[]/.test( stream.peek() ) ) {
+						eatSpace( stream );
+						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // invalid link
 							state.nLink++;
 							state.stack.push( state.tokenize );
 							state.tokenize = stream.match( nsFileRegex, false ) ? inFileLink : inLink;
 							return makeLocalStyle( 'mw-link-bracket', state );
 						}
 					} else {
-						mt = stream.match( urlProtocols, false );
+						var mt = stream.match( urlProtocols, false );
 						if ( mt ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
@@ -897,8 +912,9 @@
 					}
 					break;
 				case '{':
-					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) { // Template parameter (skip parameters inside a template transclusion, Bug: T108450)
-						stream.eatSpace();
+					// Template parameter (skip parameters inside a template transclusion, Bug: T108450)
+					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
+						eatSpace( stream );
 						state.stack.push( state.tokenize );
 						state.tokenize = inVariable;
 						return makeLocalStyle( 'mw-templatevariable-bracket', state );
@@ -910,9 +926,11 @@
 							return makeLocalStyle( 'mw-parserfunction-bracket', state );
 						}
 						// Check for parser function without '#'
-						name = stream.match( /^([^\s\xa0}[\]<{'|&:]+)(:|[\s\xa0]*)(}}?)?(.)?/, false );
+						name = stream.match( /^([^\s\xa0}{:]+)(:|[\s\xa0]*)(}}?)?(.)?/, false );
 						if ( name ) {
-							if ( ( name[ 2 ] === ':' || name[ 4 ] === undefined || name[ 3 ] === '}}' ) && ( name[ 1 ].toLowerCase() in mwConfig.functionSynonyms[ 0 ] || name[ 1 ] in mwConfig.functionSynonyms[ 1 ] ) ) {
+							if ( ( name[ 2 ] === ':' || name[ 4 ] === undefined || name[ 3 ] === '}}' )
+								&& ( name[ 1 ].toLowerCase() in mwConfig.functionSynonyms[ 0 ] || name[ 1 ] in mwConfig.functionSynonyms[ 1 ] )
+							) {
 								state.nExt++;
 								state.stack.push( state.tokenize );
 								state.tokenize = inParserFunctionName;
@@ -927,33 +945,31 @@
 					}
 					break;
 				case '<':
-					isCloseTag = Boolean( stream.eat( '/' ) );
-					tagname = stream.match( /^[^>/\s\xa0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/, false );
 					if ( stream.match( '!--' ) ) { // comment
 						return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
 					}
-					if ( tagname ) {
-						tagname = tagname[ 0 ].toLowerCase();
-						if ( tagname in mwConfig.tags ) { // Parser function
+					var isCloseTag = Boolean( stream.eat( '/' ) );
+					name = stream.match( /^[0-9a-zA-Z]+/, false ); // HTML5 standard
+					if ( name ) {
+						var tagname = name[ 0 ].toLowerCase();
+						if ( tagname in mwConfig.tags ) { // extension tag
 							if ( isCloseTag === true ) {
 								// @todo message
-								return 'error';
+								return makeLocalStyle( 'error', state );
 							}
 							state.stack.push( state.tokenize );
 							state.tokenize = eatTagName( tagname.length, isCloseTag, false );
 							return makeLocalStyle( 'mw-exttag-bracket', state );
-						}
-						if ( tagname in permittedHtmlTags ) { // Html tag
-							if ( isCloseTag === true && tagname !== state.InHtmlTag.pop() ) {
-								// @todo message
-								return 'error';
-							}
-							if ( isCloseTag === true && tagname in voidHtmlTags ) {
-								// @todo message
-								return 'error';
+						} else if ( tagname in permittedHtmlTags ) { // Html tag
+							if ( isCloseTag === true ) {
+								if ( tagname !== state.InHtmlTag[ state.InHtmlTag.length - 1 ] ) {
+									// @todo message
+									return makeLocalStyle( 'error', state );
+								}
+								state.InHtmlTag.pop();
 							}
 							state.stack.push( state.tokenize );
-							// || ( tagname in voidHtmlTags ) because opening void tags should also be treated as the closing tag.
+							// void tags are self-closing
 							state.tokenize = eatTagName( tagname.length, isCloseTag || tagname in voidHtmlTags, true );
 							return makeLocalStyle( 'mw-htmltag-bracket', state );
 						}
@@ -961,33 +977,33 @@
 					break;
 				case '~':
 					if ( stream.match( /^~{2,4}/ ) ) {
-						return 'mw-signature';
+						return 'mw-signature'; // has own background
 					}
 					break;
-				case '_': // Maybe double undescored Magic Word as __TOC__
-					tmp = 1;
+				case '_':
+					var tmp = 1;
 					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
 						tmp++;
 					}
 					if ( tmp > 2 ) { // Many underscore symbols
 						if ( !stream.eol() ) {
-							stream.backUp( 2 ); // Leave last two underscore symbols for processing again in next iteration
+							// Leave last two underscore symbols for processing again in next iteration
+							stream.backUp( 2 );
 						}
-						return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
-						name = stream.match( /^([^\s\xa0>}[\]<{'|&:~]+?)__/ ); // The same as the end of function except '_' inside and with '__' at the end of string
-						if ( name && name[ 0 ] ) {
-							if ( '__' + name[ 0 ].toLowerCase() in mwConfig.doubleUnderscore[ 0 ] || '__' + name[ 0 ] in mwConfig.doubleUnderscore[ 1 ] ) {
-								return 'mw-doubleUnderscore';
+						name = stream.match( /^[^\s\xa0{}&'~[\]<>|:]+?__/ );
+						if ( name ) {
+							var varname = '__' + name[ 0 ];
+							if ( varname.toLowerCase() in mwConfig.doubleUnderscore[ 0 ] || varname in mwConfig.doubleUnderscore[ 1 ] ) {
+								return 'mw-doubleUnderscore'; // has own background
+							} else if ( !stream.eol() ) {
+								// Leave last two underscore symbols for processing again in next iteration
+								stream.backUp( 2 );
 							}
-							if ( !stream.eol() ) {
-								stream.backUp( 2 ); // Two underscore symbols at the end can be begining of other double undescored Magic Word
-							}
-							return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 						}
 					}
 			}
-			return makeFunc( defaultStyle === undefined ? style : defaultStyle, state );
+			return makeFunc( errorStyle === undefined ? style : errorStyle, state );
 		};
 	}
 
