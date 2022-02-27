@@ -227,7 +227,7 @@
 				return makeStyle( '', state );
 			}
 			// 3. no unique syntax
-			return eatWikiTextOther( '', makeStyle )( stream, state ); // 4. common wikitext, without fallback
+			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext, without fallback
 		};
 	}
 
@@ -249,7 +249,7 @@
 			return makeLocalStyle( 'mw-templatevariable-bracket', state );
 		}
 		// 4. limited common wikitext: {{, {{{; without fallback
-		return eatWikiTextOther( 'mw-templatevariable-name', makeLocalStyle )( stream, state );
+		return eatWikiTextOther( makeLocalStyle, '', 'mw-templatevariable-name' )( stream, state );
 	}
 
 	/**
@@ -277,7 +277,7 @@
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( 'mw-templatevariable', makeStyle, style )( stream, state );
+			return eatWikiTextOther( makeStyle, style, style )( stream, state );
 		};
 	}
 
@@ -301,7 +301,7 @@
 			state.tokenize = inParserFunctionArguments( state );
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
-			return eatWikiTextOther( 'mw-parserfunction-name', makeLocalStyle, 'error' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, '', 'error' )( stream, state );
 		}
 		// 5. fallback
 		stream.next();
@@ -342,7 +342,7 @@
 				return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( 'mw-parserfunction', makeStyle )( stream, state );
+			return eatWikiTextOther( makeStyle, 'mw-parserfunction', 'mw-parserfunction' )( stream, state );
 		};
 	}
 
@@ -370,7 +370,7 @@
 				return eatBlock( 'mw-comment', '-->', makeLocalStyle )( stream, state );
 			} else if ( stream.match( /^(?:&|{{)/, false ) ) {
 				haveEaten = true;
-				return eatWikiTextOther( 'mw-template-name mw-pagename', makeLocalStyle )( stream, state );
+				return eatWikiTextOther( makeLocalStyle, 'mw-template-name mw-pagename', 'error' )( stream, state );
 			}
 			stream.next();
 			return makeLocalStyle( 'error', state );
@@ -878,12 +878,12 @@
 	/**
 	 * common wikitext syntax not at start of line
 	 * Eat at least one character
-	 * @param {(string|undefined)} style - Default style
 	 * @param {function} makeFunc
-	 * @param {(string|undefined)} errorStyle - Error style, if different from default
+	 * @param {(string|undefined)} style - Default style, only for &, ', ~, _
+	 * @param {(string|undefined)} errorStyle - Error style, only for [, {, <
 	 * @returns {(string|undefined)}
 	 */
-	function eatWikiTextOther( style, makeFunc, errorStyle ) {
+	function eatWikiTextOther( makeFunc, style, errorStyle ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
 				name;
@@ -979,7 +979,7 @@
 					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
-					break;
+					return makeFunc( style, state );
 				case '_':
 					var tmp = 1;
 					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
@@ -1002,8 +1002,9 @@
 							}
 						}
 					}
+					return makeFunc( style, state );
 			}
-			return makeFunc( errorStyle === undefined ? style : errorStyle, state );
+			return makeFunc( errorStyle, state );
 		};
 	}
 
@@ -1013,7 +1014,8 @@
 
 			if ( stream.sol() ) {
 				clearApos( state );
-				if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
+				// highlight free external links, bug T108448
+				if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
 					state.stack.push( state.tokenize );
 					state.tokenize = eatFreeExternalLink;
 					return makeLocalStyle( 'mw-free-extlink-protocol', state );
@@ -1025,7 +1027,7 @@
 				stream.backUp( 1 );
 			}
 
-			result = eatWikiTextOther( style, makeStyle )( stream, state );
+			result = eatWikiTextOther( makeStyle )( stream, state );
 			if ( result !== undefined ) {
 				return result;
 			}
