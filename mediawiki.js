@@ -1077,26 +1077,34 @@
 		};
 	}
 
+	/**
+	 * eat <pre>
+	 * Unique syntax: <nowiki>
+	 * Valid wikitext syntax: &
+	 */
 	function eatPre( stream, state ) {
-		if ( stream.match( /^[^&<]+/ ) ) {
+		if ( stream.match( /^[^&<]+/ ) ) { // 2. plain text
 			return '';
-		}
-		if ( stream.eat( '<' ) ) {
+		} else if ( stream.eat( '<' ) ) { // 3. unique syntax: <nowiki> and </nowiki>
 			if ( !state.nowiki && stream.match( 'nowiki>' ) || state.nowiki && stream.match( '/nowiki>' ) ) {
 				state.nowiki = !state.nowiki;
 				return 'mw-comment';
 			}
 			return '';
 		}
-		stream.next(); // eat &
+		stream.next(); // 4. common wikitext: &; no fallback
 		return eatMnemonic( stream, '' );
 	}
 
+	/**
+	 * eat <nowiki>
+	 * Valid wikitext syntax: &
+	 */
 	function eatNowiki( stream ) {
-		if ( stream.match( /^[^&]+/ ) ) {
+		if ( stream.match( /^[^&]+/ ) ) { // 2. plain text
 			return '';
 		}
-		stream.next(); // eat &
+		stream.next(); // 4. common wikitext: &; no fallback
 		return eatMnemonic( stream, '' );
 	}
 
