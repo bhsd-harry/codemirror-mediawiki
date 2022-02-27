@@ -23,7 +23,7 @@
 			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 				return nsIds[ ns ] === 6;
 			} ).join( '|' );
-		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:', 'i' );
+		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*', 'i' );
 	}
 
 	/**
@@ -91,7 +91,7 @@
 	/**
 	 * simply eat HTML entities
 	 */
-	function eatMnemonic( stream, style ) {
+	function eatMnemonic( stream, style, errorStyle ) {
 		function isEntity( str ) {
 			span.innerHTML = str;
 			return span.textContent.length === 1;
@@ -102,7 +102,7 @@
 		if ( entity && stream.eat( ';' ) && isEntity( '&' + entity[ 0 ] + ';' ) ) {
 			return style + ' mw-mnemonic';
 		}
-		return style;
+		return errorStyle === undefined ? style : errorStyle;
 	}
 
 	/**
@@ -144,9 +144,11 @@
 	/**
 	 * simply eat characters
 	 */
-	function eatChars( chars, style, makeFunc ) {
+	function eatChars( chars, style, makeFunc, pop ) {
 		return function ( stream, state ) {
-			state.tokenize = state.stack.pop();
+			if ( pop ) {
+				state.tokenize = state.stack.pop();
+			}
 			for ( var i = 0; i < chars; i++ ) {
 				stream.next();
 			}
@@ -213,7 +215,7 @@
 
 	/**
 	 * additional illegal characters in file name
-	 * / > < : &
+	 * / : &
 	 */
 
 	/**
@@ -376,7 +378,7 @@
 				return eatComment( stream, state );
 			} else if ( stream.match( /^(?:&|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
 				option.haveEaten = true;
-				return eatWikiTextOther( makeFunc, style + 'mw-pagename', 'error' )( stream, state );
+				return eatWikiTextOther( makeFunc, style + 'mw-pagename', 'error', option.ampStyle )( stream, state );
 			}
 			stream.next(); // 5. fallback
 			return makeFunc( 'error', state );
@@ -531,27 +533,77 @@
 		return eatWikiTextOther( makeStyle, 'mw-extlink-text', 'mw-extlink-text' )( stream, state );
 	}
 
+	/**
+	 * eat already known file link namespace
+	 */
+	function inFileLinkNamespace( chars ) {
+		return function ( stream, state ) {
+			state.tokenize = inFileLink;
+			return eatChars( chars, 'mw-link-pagename mw-pagename', makeLocalStyle )( stream, state );
+		};
+	}
+
+	/**
+	 * file link
+	 * Cannot be multiline
+	 * Unique syntax: |, ]]
+	 */
 	function inFileLink( stream, state ) {
-		if ( stream.sol() ) {
+		if ( stream.sol() ) { // 1. stream.sol()
 			state.nLink--;
 			// @todo error message
 			state.tokenize = state.stack.pop();
 			return;
-		}
-		if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) {
-			state.tokenize = eatLinkText( state, true );
+		} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+			if ( state.nLink === 1 ) {
+				state.aposStack.push( state.apos );
+				state.apos = {};
+			}
+			state.tokenize = eatFileLinkText;
 			return makeLocalStyle( 'mw-link-delimiter', state );
-		}
-		if ( stream.match( /^[\s\xa0]*]]/ ) ) {
+		} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 		}
-		if ( stream.match( /^[\s\xa0]*[^\s\xa0|&~#<>[\]{}]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
-			return makeLocalStyle( 'mw-link-pagename mw-pagename', state );
-		} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
-			return makeLocalStyle( 'error', state );
+		// 2. plain text; 4. common wikitext; 5. fallback
+		var style = eatPageName(
+			/^[^\s\xa0|}&#<>[\]{/:]+/,
+			makeLocalStyle,
+			'mw-link-pagename',
+			{ haveEaten: true, ampStyle: 'error' }
+		)( stream, state );
+		return style;
+	}
+
+	/**
+	 * file link text
+	 * Can be multiline
+	 * Not differentiating parameters, so can be wrong
+	 * Unique syntax: |, ]], =
+	 * Invalid wikitext syntax: *, #, :, ;, SPACE
+	 */
+	function eatFileLinkText( stream, state ) {
+		if ( stream.sol() ) { // 1. stream.sol()
+			if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
+				return eatWikiTextSol( 'mw-link-text' )( stream, state );
+			}
 		}
-		return eatWikiText( 'mw-link-pagename mw-pagename' )( stream, state );
+		if ( stream.match( /^[^\]|{&'~_[<]+/ ) ) { // 2. plain text
+			return makeStyle( 'mw-link-text', state );
+		} else if ( stream.match( ']]' ) ) { // 3. unique syntax: ]]
+			state.tokenize = state.stack.pop();
+			if ( state.nLink === 1 ) {
+				state.apos = state.aposStack.pop();
+			}
+			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
+			if ( state.nLink === 1 ) {
+				state.apos = {};
+			}
+			return makeLocalStyle( 'mw-link-delimiter', state );
+		}
+		// 4. common wiki text without fallback
+		return eatWikiTextOther( makeStyle, 'mw-link-text', 'mw-link-text' )( stream, state );
 	}
 
 	function inLink( stream, state ) {
@@ -646,7 +698,7 @@
 				return makeLocalStyle( 'mw-htmltag-name', state );
 			} // it is the extension tag
 			if ( isCloseTag ) {
-				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle );
+				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
 			} else {
 				state.tokenize = eatExtTagAttribute( name );
 			}
@@ -946,15 +998,16 @@
 	 * @param {function} makeFunc
 	 * @param {(string|undefined)} style - Default style, only for &, ', ~, _
 	 * @param {(string|undefined)} errorStyle - Error style, only for [, {, <
+	 * @param {(string|undefined)} ampStyle - Special style for &, default as style
 	 * @returns {(string|undefined)}
 	 */
-	function eatWikiTextOther( makeFunc, style, errorStyle ) {
+	function eatWikiTextOther( makeFunc, style, errorStyle, ampStyle ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
-				name;
+				name, mt;
 			switch ( ch ) {
 				case '&':
-					return makeFunc( eatMnemonic( stream, style ), state );
+					return makeFunc( eatMnemonic( stream, style, ampStyle ), state );
 				case "'":
 					return eatApos( style, makeFunc )( stream, state );
 				case '[':
@@ -963,11 +1016,12 @@
 						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // invalid link
 							state.nLink++;
 							state.stack.push( state.tokenize );
-							state.tokenize = stream.match( nsFileRegex, false ) ? inFileLink : inLink;
+							mt = stream.match( nsFileRegex, false );
+							state.tokenize = mt ? inFileLinkNamespace( mt[ 0 ].length ) : inLink;
 							return makeLocalStyle( 'mw-link-bracket', state );
 						}
 					} else {
-						var mt = stream.match( urlProtocols, false );
+						mt = stream.match( urlProtocols, false );
 						if ( mt ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
