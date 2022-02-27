@@ -82,6 +82,20 @@
 	}
 
 	/**
+	 * show bold and/or italic font based on both local and parent apostrophe states
+	 */
+	function makeOrStyle( style, state, endGround ) {
+		if ( style === undefined ) {
+			return;
+		}
+		var orState = $.extend( {}, state, { apos: {
+			bold: state.apos.bold || state.parentApos.bold,
+			italic: state.apos.italic || state.parentApos.italic
+		} } );
+		return makeStyle( style, orState, endGround );
+	}
+
+	/**
 	 * simply eat white spaces without returned styles
 	 */
 	function eatSpace( stream ) {
@@ -562,6 +576,7 @@
 			return;
 		} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 			if ( state.nLink === 1 ) {
+				state.parentApos = state.apos;
 				state.aposStack.push( state.apos );
 				state.apos = {};
 			}
@@ -597,6 +612,7 @@
 			state.tokenize = state.stack.pop();
 			if ( state.nLink === 1 ) {
 				state.apos = state.aposStack.pop();
+				state.parentApos = {};
 			}
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
@@ -621,7 +637,7 @@
 			state.tokenize = state.stack.pop();
 			return;
 		}
-		var makeFunc = stream.match( /^[^\]]*\|/, false ) ? makeLocalStyle : makeStyle;
+		var makeFunc = stream.match( /^[^\]]*\|/, false ) ? makeLocalStyle : makeOrStyle;
 		if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
 			state.tokenize = inLinkToSection( makeFunc );
 			return makeFunc( 'mw-link', state );
@@ -641,6 +657,11 @@
 		return eatPageName( /^[^\s\xa0|\]#&<>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
 	}
 
+	/**
+	 * internal link hash
+	 * Cannot be multiline
+	 * Unique syntax: |, ]]
+	 */
 	function inLinkToSection( makeFunc ) {
 		return function ( stream, state ) {
 			if ( stream.sol() ) {
@@ -672,8 +693,9 @@
 	function eatLinkText( stream, state ) {
 		if ( stream.match( ']]' ) ) {
 			state.tokenize = state.stack.pop();
-			if ( state.nLink < 2 ) {
+			if ( state.nLink === 1 ) {
 				state.apos = state.aposStack.pop();
+				state.parentApos = {};
 			}
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 		}
@@ -682,7 +704,7 @@
 		}
 		var regex = /^[^'\]{&~<]+/;
 		if ( stream.match( regex ) ) {
-			return makeStyle( 'mw-link-text', state );
+			return makeOrStyle( 'mw-link-text', state );
 		}
 		return eatWikiText( 'mw-link-text' )( stream, state );
 	}
@@ -1213,7 +1235,7 @@
 				return {
 					tokenize: eatWikiText(),
 					stack: [], InHtmlTag: [],
-					apos: {}, aposStack: [],
+					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
 					nTemplate: 0, nLink: 0, nExt: 0
 				};
@@ -1224,6 +1246,7 @@
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
 					apos: state.apos,
+					parentApos: state.parentApos,
 					aposStack: state.aposStack.concat( [] ),
 					extName: state.extName,
 					extMode: state.extMode,
