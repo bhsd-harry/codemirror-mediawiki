@@ -770,12 +770,6 @@
 		};
 	}
 
-	function eatFreeExternalLinkProtocol( stream, state ) {
-		stream.match( urlProtocols );
-		state.tokenize = eatFreeExternalLink;
-		return makeStyle( 'mw-free-extlink-protocol', state );
-	}
-
 	function eatFreeExternalLink( stream, state ) {
 		if ( stream.eol() ) {
 			// @todo error message
@@ -1008,18 +1002,19 @@
 		};
 	}
 
+	/**
+	 * eat general wikitext
+	 * 1. eatWikiTextSol() if necessary
+	 * 2. eatWikiTextOther()
+	 * 3. eat free external link
+	 * 4. eat plain text which does not interfere with free external links
+	 */
 	function eatWikiText( style ) {
 		return function ( stream, state ) {
 			var result;
 
 			if ( stream.sol() ) {
 				clearApos( state );
-				// highlight free external links, bug T108448
-				if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
-					state.stack.push( state.tokenize );
-					state.tokenize = eatFreeExternalLink;
-					return makeLocalStyle( 'mw-free-extlink-protocol', state );
-				}
 				result = eatWikiTextSol()( stream, state );
 				if ( result !== undefined ) {
 					return result;
@@ -1031,15 +1026,18 @@
 			if ( result !== undefined ) {
 				return result;
 			}
-			stream.backUp( 1 ); // highlight free external links, bug T108448
-			if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
+			stream.backUp( 1 );
+
+			// highlight free external links, bug T108448
+			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
 				state.stack.push( state.tokenize );
-				return eatFreeExternalLinkProtocol( stream, state );
+				state.tokenize = eatFreeExternalLink;
+				return makeLocalStyle( 'mw-free-extlink-protocol', state );
 			}
 			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
 				stream.match( /^[A-Za-z0-9\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
 			} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
-				stream.match( /^[^\w>}[\]<{'|&:~\x80-\x9f\u00a1-\uffff]+/ );
+				stream.match( /^[^\w{&'~_[<|:\x80-\x9f\u00a1-\uffff]+/ );
 			}
 			return makeStyle( style || '', state );
 		};
