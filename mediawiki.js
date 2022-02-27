@@ -1133,10 +1133,9 @@
 				return state.tokenize( stream, state );
 			},
 			blankLine: function ( state ) {
-				var ret;
 				if ( state.extName ) {
 					if ( state.extMode ) {
-						ret = '';
+						var ret = '';
 						if ( state.extMode.blankLine ) {
 							ret = ' ' + state.extMode.blankLine( state.extState );
 						}
