@@ -74,10 +74,11 @@
 		if ( style === undefined ) {
 			return;
 		}
-		return makeLocalStyle(
-			style + ( state.apos.bold ? ' strong' : '' ) + ( state.apos.italic ? ' em' : '' ),
-			state, endGround
-		);
+		var tags = state.InHtmlTag.join(),
+			strong = state.apos.bold || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
+			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
+		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
 	}
 
 	/**
