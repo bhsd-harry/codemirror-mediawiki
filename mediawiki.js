@@ -125,6 +125,11 @@
 	}
 
 	/**
+	 * eat comment
+	 */
+	var eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
+
+	/**
 	 * simply eat until the end of line
 	 */
 	function eatEnd( style, makeFunc ) {
@@ -147,11 +152,6 @@
 			return makeFunc( style, state );
 		};
 	}
-
-	/**
-	 * eat comment
-	 */
-	var eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
 
 	/**
 	 * eat apostrophes and modify apostrophe-related states
@@ -253,7 +253,7 @@
 		if ( stream.match( /^[^|}{]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-templatevariable-name', state );
 		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
-			state.tokenize = inVariableDefault();
+			state.tokenize = inVariableDefault( 'mw-templatevariable' );
 			return makeLocalStyle( 'mw-templatevariable-delimiter', state );
 		} else if ( stream.match( '}}}' ) ) { // 3. unique syntax: }}}
 			state.tokenize = state.stack.pop();
@@ -269,8 +269,7 @@
 	 * Unique syntax: |, }}}
 	 * Invalid wikitext syntax: {|
 	 */
-	function inVariableDefault() {
-		var style = 'mw-templatevariable';
+	function inVariableDefault( style ) {
 		return function ( stream, state ) { // 1. stream.sol(), excluding {|
 			if ( stream.sol() ) {
 				state.apos = {}; // do not change state.aposStack
@@ -281,7 +280,7 @@
 			if ( stream.match( /^[^|}{&'~_[<]+/ ) ) { // 2. plain text
 				return makeStyle( style, state );
 			} else if ( stream.eat( '|' ) ) { // 3. unique syntax: | (redundant defaults)
-				style = 'error';
+				state.tokenize = inVariableDefault( 'error' );
 				return makeLocalStyle( 'error', state );
 			} else if ( stream.match( '}}}' ) ) { // 3. unique syntax: }}}
 				state.tokenize = state.stack.pop();
@@ -309,7 +308,9 @@
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 		} else if ( stream.eat( ':' ) ) { // 3. unique syntax: :
-			state.tokenize = inParserFunctionArguments( state );
+			state.aposStack.push( state.apos );
+			state.apos = {};
+			state.tokenize = inParserFunctionArguments( false );
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
 			return eatWikiTextOther( makeLocalStyle, '', 'error' )( stream, state );
@@ -326,14 +327,11 @@
 	 * Unique syntax: |, }}
 	 * Invalid wikitext syntax: {|
 	 */
-	function inParserFunctionArguments( stateObj ) {
-		stateObj.aposStack.push( stateObj.apos );
-		stateObj.apos = {};
-		var haveEaten = false;
+	function inParserFunctionArguments( haveEaten ) {
 		return function ( stream, state ) {
 			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 				state.apos = {};
-				haveEaten = false;
+				state.tokenize = inParserFunctionArguments( false );
 				return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
 				state.tokenize = state.stack.pop();
@@ -348,11 +346,11 @@
 			var mt = stream.match( /^[^|}&<[{~_']+/ );
 			if ( mt ) { // 2. plain text
 				if ( !haveEaten && /[^\s\xa0]/.test( mt[ 0 ] ) ) {
-					haveEaten = true;
+					state.tokenize = inParserFunctionArguments( true );
 				}
 				return makeStyle( 'mw-parserfunction', state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
-				haveEaten = true;
+				state.tokenize = inParserFunctionArguments( true );
 			}
 			// 4. common wikitext without fallback
 			return eatWikiTextOther( makeStyle, 'mw-parserfunction', 'mw-parserfunction' )( stream, state );
@@ -362,24 +360,25 @@
 	/**
 	 * eat general page name without syntax details
 	 * @param {RegExp} regex - regex for plain text; must exclude [&#<>[\]{}|]
+	 * @param {Object.<'haveEaten', boolean>} option
 	 * @return {(string|undefined)}
 	 */
-	function eatPageName( regex, makeFunc, style ) {
-		var haveEaten = false;
+	function eatPageName( regex, makeFunc, style, option ) {
 		return function ( stream, state ) {
 			// 1. not handling stream.sol() here
 			if ( eatSpace( stream ) ) { // 2. plain text
-				return makeFunc( style + ( haveEaten && !stream.eol() ? ' mw-pagename' : '' ), state );
+				return makeFunc( style + ( option.haveEaten && !stream.eol() ? ' mw-pagename' : '' ), state );
 			} else if ( stream.match( regex ) ) { // 2. plain text
-				haveEaten = true;
+				option.haveEaten = true;
 				return makeFunc( style + ' mw-pagename', state );
 			} else if ( stream.match( '<!--' ) ) { // 4. common wikitext: <!--
 				return eatComment( stream, state );
-			} else if ( stream.match( /^(?:&|{{)/ ) ) { // 4. common wikitext: &, {{, {{{
-				haveEaten = true;
+			} else if ( stream.match( /^(?:&|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
+				option.haveEaten = true;
 				return eatWikiTextOther( makeFunc, style + 'mw-pagename', 'error' )( stream, state );
 			}
-			stream.next(); // 5. fallback: undefined
+			stream.next(); // 5. fallback
+			return makeFunc( 'error', state );
 		};
 	}
 
@@ -388,10 +387,12 @@
 	 * Can be multiline, if the next line starts with '|' or '}}'
 	 * Unique syntax: |, }}
 	 */
-	function eatTemplatePageName() {
+	function eatTemplatePageName( option ) {
 		return function ( stream, state ) {
 			if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
-				state.tokenize = eatTemplateArgument( state );
+				state.aposStack.push( state.apos );
+				state.apos = {};
+				state.tokenize = eatTemplateArgument( true, false );
 				return makeLocalStyle( 'mw-template-delimiter', state );
 			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
 				state.tokenize = state.stack.pop();
@@ -402,34 +403,52 @@
 				state.tokenize = state.stack.pop();
 				return;
 			}
-			// 2. plain text; 4. common wikitext
-			var style = eatPageName( /^[^\s\xa0|}&#<>[\]{]+/, makeLocalStyle, 'mw-template-name' )( stream, state );
-			if ( style !== undefined ) {
-				return style;
+			// 2. plain text; 4. common wikitext; 5. fallback
+			var style = eatPageName( /^[^\s\xa0|}&#<>[\]{]+/, makeLocalStyle, 'mw-template-name', option )( stream, state );
+			if ( option.haveEaten ) {
+				state.tokenize = eatTemplatePageName( option );
 			}
-			return makeLocalStyle( 'error', state ); // 5. fallback
+			return style;
 		};
 	}
 
-	function eatTemplateArgument( stateObj ) {
-		stateObj.aposStack.push( stateObj.apos );
-		stateObj.apos = {};
-		var expectArgName = true;
+	/**
+	 * template argument
+	 * Can be multiline; white spaces (including newline) trimmed
+	 * Apply local apostrophe states
+	 * Unique syntax: =, |, }}
+	 * Invalid wikitext syntax: {|, =
+	 */
+	function eatTemplateArgument( expectArgName, haveEaten ) {
 		return function ( stream, state ) {
-			if ( expectArgName && stream.match( /^[^=|}{]*=/ ) ) {
-				expectArgName = false;
+			if ( expectArgName && stream.match( /^[^=|}{]*=/ ) ) { // 3. unique syntax: =
+				state.tokenize = eatTemplateArgument( false, false );
 				return makeLocalStyle( 'mw-template-argument-name', state );
-			} else if ( stream.match( /^[^|}&<[{~_']+/ ) ) {
-				return makeLocalStyle( 'mw-template', state );
-			} else if ( stream.eat( '|' ) ) {
-				expectArgName = true;
+			} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+				state.apos = {};
+				state.tokenize = eatTemplateArgument( true, false );
 				return makeLocalStyle( 'mw-template-delimiter', state );
-			} else if ( stream.match( '}}' ) ) {
+			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
 				state.tokenize = state.stack.pop();
 				state.apos = state.aposStack.pop();
 				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
+			} else if ( stream.sol() ) { // 1. stream.sol()
+				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
+				if ( ( haveEaten ? /[-#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
+					return eatWikiTextSol( 'mw-template' )( stream, state );
+				}
 			}
-			return eatWikiText( 'mw-template' )( stream, state );
+			var mt = stream.match( /^[^|}&<[{~_']+/ );
+			if ( mt ) { // 2. plain text
+				if ( !haveEaten && /[^\s\xa0]/.test( mt[ 0 ] ) ) {
+					state.tokenize = eatTemplateArgument( expectArgName, true );
+				}
+				return makeStyle( 'mw-template', state );
+			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
+				state.tokenize = eatTemplateArgument( expectArgName, true );
+			}
+			// 4. common wikitext without fallback
+			return eatWikiTextOther( makeStyle, 'mw-template', 'mw-template' )( stream, state );
 		};
 	}
 
@@ -968,7 +987,7 @@
 						// Template
 						state.nTemplate++;
 						state.stack.push( state.tokenize );
-						state.tokenize = eatTemplatePageName();
+						state.tokenize = eatTemplatePageName( { haveEaten: false } );
 						return makeLocalStyle( 'mw-template-bracket', state );
 					}
 					break;
