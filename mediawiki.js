@@ -474,7 +474,7 @@
 	/**
 	 * external link url without protocol
 	 * Cannot be multiline
-	 * Unique syntax: SPACE, ], '
+	 * Unique syntax: SPACE, ], '', [, [[, ~~~, <, >
 	 * Valid wikitext syntax: &, {{, {{{
 	 */
 	function inExternalLink( stream, state ) {
@@ -482,7 +482,7 @@
 			state.nLink--;
 			// @todo error message
 			state.tokenize = state.stack.pop();
-		} else if ( stream.match( /^[^\s\xa0\]&{']+/ ) ) { // 2. plain text
+		} else if ( stream.match( /^[^\s\xa0\]'~[<{&]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-extlink', state );
 		} else if ( stream.match( /^[\s\xa0]*]/ ) ) { // 3. unique syntax: ]
 			state.tokenize = state.stack.pop();
@@ -490,28 +490,45 @@
 		} else if ( eatSpace( stream ) ) { // 3. unique syntax: SPACE
 			state.tokenize = inExternalLinkText;
 			return makeLocalStyle( '', state );
-		} else if ( stream.match( "''", false ) ) { // 3. unique syntax: ''
+		} else if ( stream.match( /^~{3,5}/ ) ) { // 3. unique syntax: ~~~
+			state.nLink--;
+			state.tokenize = state.stack.pop();
+			return makeStyle( 'error', state );
+		} else if ( stream.match( '[[', false ) ) { // 3. unique syntax: [[
+			state.nLink--;
+			state.tokenize = state.stack.pop();
+		} else if ( stream.match( /^(?:[[<>]|'')/, false ) ) { // 3. unique syntax: [, <, >, ''
 			state.tokenize = inExternalLinkText;
 		} else { // 4. limited common wikitext: &, {{, {{{; without fallback
-			return eatWikiText( 'mw-extlink' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, 'mw-extlink', 'mw-extlink' )( stream, state );
 		}
 	}
 
+	/**
+	 * external link text
+	 * Cannot be multiline
+	 * Unique syntax: ], ~~~, [[
+	 * Invalid wikitext syntax: [
+	 */
 	function inExternalLinkText( stream, state ) {
-		if ( stream.sol() ) {
+		if ( stream.sol() ) { // 1. stream.sol()
 			state.nLink--;
 			// @todo error message
 			state.tokenize = state.stack.pop();
 			return;
-		}
-		if ( stream.eat( ']' ) ) {
+		} else if ( stream.match( /^[^\]~[{&'_<]+/ ) ) { // 2. plain text
+			return makeStyle( 'mw-extlink-text', state );
+		} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' );
-		}
-		if ( stream.match( /^[^'\]{&~<]+/ ) ) {
+		} else if ( stream.match( /^(?:~{3,4}(?!~)|\[\[)/, false ) ) { // 3. unique syntax: ~~~, [[
+			state.nLink--;
+			state.tokenize = state.stack.pop();
+		} else if ( stream.eat( '[' ) ) { // 4. invalid wikitext: [
 			return makeStyle( 'mw-extlink-text', state );
 		}
-		return eatWikiText( 'mw-extlink-text' )( stream, state );
+		// 4. common wikitext without fallback
+		return eatWikiTextOther( makeStyle, 'mw-extlink-text', 'mw-extlink-text' )( stream, state );
 	}
 
 	function inFileLink( stream, state ) {
@@ -997,7 +1014,7 @@
 						return eatComment( stream, state );
 					}
 					var isCloseTag = Boolean( stream.eat( '/' ) );
-					name = stream.match( /^[0-9a-zA-Z]+/, false ); // HTML5 standard
+					name = stream.match( /^[\da-zA-Z]+/, false ); // HTML5 standard
 					if ( name ) {
 						var tagname = name[ 0 ].toLowerCase();
 						if ( tagname in mwConfig.tags ) { // extension tag
@@ -1091,7 +1108,7 @@
 				return makeLocalStyle( 'mw-free-extlink-protocol', state );
 			}
 			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
-				stream.match( /^[A-Za-z0-9\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
+				stream.match( /^[A-Za-z\d\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
 			} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
 				stream.match( /^[^\w{&'~_[<|:\x80-\x9f\u00a1-\uffff]+/ );
 			}
