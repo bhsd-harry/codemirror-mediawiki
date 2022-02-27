@@ -453,11 +453,13 @@
 		};
 	}
 
+	/**
+	 * eat already known external link protocol
+	 * Cannot be multiline
+	 */
 	function eatExternalLinkProtocol( chars ) {
 		return function ( stream, state ) {
-			for ( var i = 0; i < chars; i++ ) {
-				stream.next();
-			}
+			var style = eatChars( chars, 'mw-extlink-protocol', makeLocalStyle );
 			if ( stream.eol() ) {
 				state.nLink--;
 				// @todo error message
@@ -465,7 +467,7 @@
 			} else {
 				state.tokenize = inExternalLink;
 			}
-			return makeLocalStyle( 'mw-extlink-protocol', state );
+			return style;
 		};
 	}
 
@@ -1082,10 +1084,12 @@
 			}
 			stream.backUp( 1 );
 
-			// highlight free external links, bug T108448
+			// highlight free external links, bug T108448; cannot be multiline
 			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
-				state.stack.push( state.tokenize );
-				state.tokenize = eatFreeExternalLink;
+				if ( !stream.eol() ) {
+					state.stack.push( state.tokenize );
+					state.tokenize = eatFreeExternalLink;
+				}
 				return makeLocalStyle( 'mw-free-extlink-protocol', state );
 			}
 			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
