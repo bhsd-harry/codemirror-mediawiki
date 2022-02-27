@@ -141,7 +141,7 @@
 	function eatApos( style, makeFunc ) {
 		return function ( stream, state ) {
 			// skip the irrelevant apostrophes ( >5 or =4 )
-			if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) {
+			if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'{3}(?!')/, false ) ) {
 				return makeFunc( style, state );
 			} else if ( stream.match( "''" ) ) { // bold
 				state.apos.bold = !state.apos.bold;
@@ -796,65 +796,72 @@
 		return makeStyle( 'mw-free-extlink', state );
 	}
 
+	/**
+	 * common wikitext syntax at start of line
+	 * Eat at least one character
+	 * @param {(string|undefined)} style - Default style
+	 * @returns {(string|undefined)}
+	 */
 	function eatWikiTextSol( style ) {
 		return function ( stream, state ) {
 			var ch = stream.next(),
 				tmp, mt;
 			switch ( ch ) {
 				case '-':
-					if ( stream.match( /^----*/ ) ) {
-						return 'mw-hr';
+					if ( stream.match( /^-{3,}/ ) ) {
+						return 'mw-hr'; // has own background
 					}
 					break;
 				case '=':
 					tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
-					if ( tmp ) { // Title
+					if ( tmp ) {
 						stream.backUp( tmp[ 2 ].length );
 						state.stack.push( state.tokenize );
 						state.tokenize = eatSectionHeader( tmp[ 3 ].length );
-						return 'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 );
+						return makeLocalStyle(
+							'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 ),
+							state
+						);
 					}
 					break;
 				case '*':
 				case '#':
+				case ';':
 					mt = stream.match( /^[*#;:]*/ );
-					if ( /;/.test( mt[ 0 ] ) ) {
+					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
 						state.apos.bold = true;
 					}
-					return 'mw-list';
-				case ';':
-					state.apos.bold = true;
-					stream.match( /^[*#;:]*/ );
-					return 'mw-list';
+					return makeLocalStyle( 'mw-list', state );
 				case ':':
-					if ( stream.match( /^:*{\|/, false ) ) { // Highlight indented tables :{|, bug T108454
+					if ( stream.match( /^:*[\s\xa0]*(?={\|)/ ) ) { // Highlight indented tables :{|, bug T108454
 						state.stack.push( state.tokenize );
 						state.tokenize = eatStartTable;
+						return makeLocalStyle( 'mw-list', state );
 					}
 					mt = stream.match( /^[*#;:]*/ );
 					if ( /;/.test( mt[ 0 ] ) ) {
 						state.apos.bold = true;
 					}
-					return 'mw-list';
+					return makeLocalStyle( 'mw-list', state );
 				case ' ':
-					if ( stream.match( /^[\s\xa0]*:*{\|/, false ) ) { // Leading spaces is the correct syntax for a table, bug T108454
-						stream.eatSpace();
-						if ( stream.match( /^:+/ ) ) { // ::{|
+					mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ );
+					if ( mt ) { // Leading spaces is the correct syntax for a table, bug T108454
+						if ( mt[ 1 ] ) {
 							state.stack.push( state.tokenize );
 							state.tokenize = eatStartTable;
-							return 'mw-indenting';
+							return makeLocalStyle( 'mw-list', state );
 						}
 						stream.eat( '{' );
 					} else {
-						return 'mw-skipformatting';
+						return 'mw-skipformatting'; // has own background
 					}
-					// break is not necessary here, falls through
+					// fall through
 				case '{':
 					if ( stream.eat( '|' ) ) {
-						stream.eatSpace();
+						stream.match( /^[\s\xa0]*/ );
 						state.stack.push( state.tokenize );
 						state.tokenize = inTableDefinition;
-						return 'mw-table-bracket';
+						return makeLocalStyle( 'mw-table-bracket', state );
 					}
 			}
 			return makeLocalStyle( style, state );
