@@ -985,6 +985,7 @@
 	/**
 	 * table caption
 	 * Can be multiline
+	 * Unique syntax: |, ! (not correctly handled now)
 	 */
 	function inTableCaption( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol()
@@ -997,35 +998,39 @@
 		return eatWikiText( 'mw-table-caption' )( stream, state ); // 4. all common wikitext, without fallback
 	}
 
+	/**
+	 * general table
+	 * Usually at stream.sol(); rarely outside table
+	 * Unique syntax: |, |-, |+, |}, !
+	 */
 	function inTable( stream, state ) {
-		if ( stream.sol() ) {
-			stream.eatSpace();
+		if ( stream.sol() ) { // 1. stream.sol()
+			eatSpace( stream );
 			if ( stream.eat( '|' ) ) {
-				if ( stream.eat( '-' ) ) {
-					stream.eatSpace();
+				if ( stream.eat( '-' ) ) { // 3. unique syntax: |-
+					eatSpace( stream );
 					state.tokenize = inTableDefinition;
 					return makeLocalStyle( 'mw-table-delimiter', state );
 				}
-				if ( stream.eat( '+' ) ) {
+				if ( stream.eat( '+' ) ) { // 3. unique syntax: |+
 					stream.eatSpace();
 					state.tokenize = inTableCaption;
 					return makeLocalStyle( 'mw-table-delimiter', state );
 				}
-				if ( stream.eat( '}' ) ) {
+				if ( stream.eat( '}' ) ) { // 3. unique syntax: |}
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-table-bracket', state );
 				}
 				stream.eatSpace();
-				state.tokenize = eatTableRow( true, false );
+				state.tokenize = eatTableRow( true, false ); // 3. unique syntax: |
 				return makeLocalStyle( 'mw-table-delimiter', state );
-			}
-			if ( stream.eat( '!' ) ) {
-				stream.eatSpace();
+			} else if ( stream.eat( '!' ) ) {
+				eatSpace( stream );
 				state.tokenize = eatTableRow( true, true );
-				return makeLocalStyle( 'mw-table-delimiter', state );
+				return makeLocalStyle( 'mw-table-delimiter', state ); // 3. unique syntax: !
 			}
 		}
-		return eatWikiText( '' )( stream, state );
+		return eatWikiText( '' )( stream, state ); // 4. all common wikitext, without fallback
 	}
 
 	function eatTableRow( expectAttr, isHead ) {
