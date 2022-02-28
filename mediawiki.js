@@ -1065,31 +1065,34 @@
 		};
 	}
 
+	/**
+	 * free external link after protocol
+	 * Cannot be multiline
+	 * Unique syntax: [, ], <, >, "
+	 * Invalid wikitext syntax: ~~~, ''
+	 * Valid wikitext syntax: __, {{, {{{, &
+	 * Invalid characters: ! ) \ : ; , . ?
+	 */
 	function eatFreeExternalLink( stream, state ) {
-		if ( stream.eol() ) {
+		if ( stream.sol() ) { // 1. stream.sol()
 			// @todo error message
-		} else if ( stream.match( /^[^\s\xa0{[\]<>~).,']*/ ) ) {
-			if ( stream.peek() === '~' ) {
-				if ( !stream.match( /^~{3,}/, false ) ) {
-					stream.match( /^~*/ );
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.peek() === '{' ) {
-				if ( !stream.match( '{{', false ) ) {
-					stream.next();
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.peek() === "'" ) {
-				if ( !stream.match( "''", false ) ) {
-					stream.next();
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.match( /^[).,]+(?=[^\s\xa0{[\]<>~).,])/ ) ) {
-				return makeStyle( 'mw-free-extlink', state );
-			}
+			clearApos( state );
+			state.tokenize = state.stack.pop();
+			return;
+		} else if ( stream.match( /^[^\s\xa0[\]<>"{&'~_!)\\:;,.?]+/ ) ) { // 2. plain text
+			return makeStyle( 'mw-free-extlink', state );
+		} else if ( stream.match( /^(?:[[\]<>"]|~{3}|'')/, false ) ) {
+			// 3. unique syntax: [, ], <, >, "; 4. invalid common wikitext: ~~~, ''
+			state.tokenize = state.stack.pop();
+			return;
+		} else if ( /[_{&]/.test( stream.peek() ) ) { // 4. limited common wikitext: __, {{, {{{, &
+			return eatWikiTextOther( makeStyle, 'mw-free-extlink', 'mw-free-extlink' );
+		} else if ( stream.match( /[!)\\:;,.?]*(?=[\s\xa0]|$)/, false ) ) { // 3. invalid characters
+			state.tokenize = state.stack.pop();
+			return;
 		}
-		state.tokenize = state.stack.pop();
-		return makeStyle( 'mw-free-extlink', state );
+		stream.next();
+		return makeStyle( 'mw-free-extlink', state ); // 5. fallback
 	}
 
 	/**
