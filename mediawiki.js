@@ -723,7 +723,7 @@
 				return eatWikiTextOther( makeFunc, 'mw-link-tosection', 'mw-link-tosection' )( stream, state );
 			}
 			var mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
-			if ( mt ) { // 3. invalid syntax or characters: tags, ~~~, {, }, [, ]
+			if ( mt ) { // 4. invalid syntax or characters: tags, ~~~, {, }, [, ]
 				var fullname = mt[ 0 ],
 					name = ( mt[ 2 ] || '' ).toLowerCase();
 				if ( fullname[ 0 ] === '~' || name in mwConfig.tags || name in permittedHtmlTags ) {
@@ -782,52 +782,84 @@
 		return eatWikiTextOther( makeOrStyle, 'mw-link-text', 'mw-link-text' )( stream, state );
 	}
 
-	function eatTagName( chars, isCloseTag, isHtmlTag ) {
-		return function ( stream, state ) {
-			var name = '';
-			for ( var i = 0; i < chars; i++ ) {
-				name += stream.next();
-			}
-			name = name.toLowerCase();
-			stream.eatSpace();
+	/**
+	 * simply eat tag attributes if the tag name is not followed by whitespace
+	 */
+	function eatInvalidTagAttribute( stream, state ) {
+		var style = eatBlock( 'error', '>', makeLocalStyle )( stream, state );
+		stream.backUp( 1 );
+		return style;
+	}
 
-			if ( isHtmlTag ) {
-				state.tokenize = eatHtmlTagAttribute( name, isCloseTag && !( name in voidHtmlTags ) );
-				return makeLocalStyle( 'mw-htmltag-name', state );
-			} // it is the extension tag
-			if ( isCloseTag ) {
+	/**
+	 * eat already known tag name
+	 * @param {string} name - tag name in lower case
+	 * @param {boolean} isCloseTag - truly closing tag
+	 */
+	function eatTagName( name, isCloseTag, isHtmlTag ) {
+		return function ( stream, state ) {
+			state.nInvisible++;
+			var style = eatChars( name.length, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', makeLocalStyle )( stream, state );
+			if ( !eatSpace( stream ) && !stream.eol() && !stream.match( /^\/?>/, false ) ) { // invalid tag syntax
+				state.tokenize = eatInvalidTagAttribute;
+				state.stack.push( isHtmlTag ? eatHtmlTagAttribute( name, isCloseTag ) : eatExtTagAttribute( name ) );
+			} else if ( isHtmlTag ) {
+				state.tokenize = eatHtmlTagAttribute( name, isCloseTag );
+			} else if ( isCloseTag ) { // extension tag
 				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
 			} else {
 				state.tokenize = eatExtTagAttribute( name );
 			}
-			return makeLocalStyle( 'mw-exttag-name', state );
+			return style;
 		};
 	}
 
+	/**
+	 * HTML tag attribute
+	 * Can be multiline
+	 * Unique syntax: >, /, <
+	 * Valid wikitext syntax: ~~~, &, {{, {{{, <
+	 * @param {boolean} isCloseTag - truly closing
+	 */
 	function eatHtmlTagAttribute( name, isCloseTag ) {
 		var style = 'mw-htmltag-attribute' + ( isCloseTag ? ' error' : '' );
 		return function ( stream, state ) {
-			if ( stream.match( /^[^>/<{&~]+/ ) ) {
+			// 1. nothings happens at stream.sol()
+			if ( stream.match( /^[^>/<{&~]+/ ) ) { // 2. plain text
 				return makeLocalStyle( style, state );
-			}
-			if ( stream.eat( '>' ) ) {
-				if ( !( name in voidHtmlTags || isCloseTag ) ) {
+			} else if ( stream.eat( '>' ) ) { // 3. unique syntax: >
+				if ( !( isCloseTag || name in voidHtmlTags ) ) {
 					state.InHtmlTag.push( name );
 				}
 				state.tokenize = state.stack.pop();
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-htmltag-bracket', state );
-			}
-			if ( stream.match( '/>' ) ) {
-				if ( !( name in voidHtmlTags || isCloseTag ) ) { // HTML5 standard
+			} else if ( stream.match( '/>' ) ) { // 3. unique syntax: />
+				if ( !( isCloseTag || name in voidHtmlTags ) ) { // HTML5 standard
 					state.InHtmlTag.push( name );
 				}
 				state.tokenize = state.stack.pop();
-				return makeLocalStyle( name in voidHtmlTags ? style : 'mw-htmltag-bracket error', state );
+				state.nInvisible--;
+				return makeLocalStyle( 'mw-htmltag-bracket' + ( name in voidHtmlTags ? '' : ' error' ), state );
+			} else if ( stream.eat( '<' ) ) { // 3. unique syntax: <
+				if ( stream.match( '!--' ) ) {
+					return eatComment( stream, state );
+				}
+				state.tokenize = state.stack.pop();
+				state.nInvisible--;
+				return;
 			}
-			return eatWikiText( style )( stream, state );
+			// 4. limited common wikitext: {{, {{{, &, ~~~; without fallback
+			return eatWikiTextOther( makeLocalStyle, style, style )( stream, state );
 		};
 	}
 
+	/**
+	 * extension tag attribute
+	 * Can be multiline
+	 * Unique syntax: >, /
+	 * Valid wikitext syntax: ~~~, &, {{, {{{, <
+	 */
 	function eatExtTagAttribute( name ) {
 		return function ( stream, state ) {
 			if ( stream.match( /^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/ ) ) {
@@ -883,7 +915,7 @@
 		return function ( stream, state ) {
 			stream.next(); // eat <
 			stream.next(); // eat /
-			state.tokenize = eatTagName( name.length, true, false );
+			state.tokenize = eatTagName( name, true, false );
 			return makeLocalStyle( 'mw-exttag-bracket', state );
 		};
 	}
@@ -1185,7 +1217,7 @@
 								return makeLocalStyle( 'error', state );
 							}
 							state.stack.push( state.tokenize );
-							state.tokenize = eatTagName( tagname.length, isCloseTag, false );
+							state.tokenize = eatTagName( tagname, isCloseTag, false );
 							return makeLocalStyle( 'mw-exttag-bracket', state );
 						} else if ( tagname in permittedHtmlTags ) { // Html tag
 							if ( isCloseTag === true ) {
@@ -1196,8 +1228,7 @@
 								state.InHtmlTag.pop();
 							}
 							state.stack.push( state.tokenize );
-							// void tags are self-closing
-							state.tokenize = eatTagName( tagname.length, isCloseTag || tagname in voidHtmlTags, true );
+							state.tokenize = eatTagName( tagname, isCloseTag, true );
 							return makeLocalStyle( 'mw-htmltag-bracket', state );
 						}
 					}
