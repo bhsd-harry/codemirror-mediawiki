@@ -750,18 +750,18 @@
 	 * internal link text
 	 * Can be multiline
 	 * Unique syntax: ]]
-	 * Invalid wikitext syntax: [, [[, ~~~~, =, SPACE, #, *, ;, :
+	 * Invalid wikitext syntax: [, [[, ~~~~, SPACE, #, *, ;, :
 	 */
 	function eatLinkText( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol()
-			if ( stream.match( /^(?:-{4}|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
+			if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
 				return eatWikiTextSol( 'mw-link-text' )( stream, state );
 			}
 		}
 		if ( stream.match( /^(?:[^\][~{&'<]+|\[(?!\[))/ ) ) { // 2. plain text
 			return makeOrStyle( 'mw-link-text', state );
 		}
-		var mt = stream.match( /^(?:]]|\[\[|~{3,4})/ );
+		var mt = stream.match( /^(?:]]|\[\[|~{3,4}(?!~))/ );
 		if ( mt ) { // 3. unique syntax: ]], [[, ~~~~
 			state.tokenize = state.stack.pop();
 			if ( state.nLink === 1 ) {
