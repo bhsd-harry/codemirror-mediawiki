@@ -975,22 +975,26 @@
 			return;
 		} else if ( stream.match( /^[^{&~<]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-table-definition', state );
-		} else if ( stream.match( /^(?:{{|&|~{3}|<!--)/, false ) ) { // 4. limited valid wikitext
+		} else if ( stream.match( /^(?:{{|&|~{3}|<!--)/, false ) ) { // 4. limited common wikitext
 			return eatWikiTextOther( makeLocalStyle, 'mw-table-definition', 'mw-table-definition' )( stream, state );
 		}
 		stream.next();
 		return makeLocalStyle( 'mw-table-definition', state ); // fallback
 	}
 
+	/**
+	 * table caption
+	 * Can be multiline
+	 */
 	function inTableCaption( stream, state ) {
-		if ( stream.sol() ) {
-			state.apos = {};
+		if ( stream.sol() ) { // 1. stream.sol()
+			clearApos( state );
 			if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) {
 				state.tokenize = inTable;
 				return;
 			}
 		}
-		return eatWikiText( 'mw-table-caption' )( stream, state );
+		return eatWikiText( 'mw-table-caption' )( stream, state ); // 4. all common wikitext, without fallback
 	}
 
 	function inTable( stream, state ) {
