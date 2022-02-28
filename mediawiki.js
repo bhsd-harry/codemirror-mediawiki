@@ -27,6 +27,28 @@
 	}
 
 	/**
+	 * @typedef Apos
+	 * @type {object}
+	 * @property {boolean} bold
+	 * @property {boolean} italic
+	 */
+
+	/**
+	 * @typedef state
+	 * @type {object}
+	 * @property {function} tokenize - current token
+	 * @property {Array.<function>} stack - ancestor tokens
+	 * @property {Array.<string>} InHtmlTag - ancestor HTML tags
+	 * @property {Apos} apos - apostrophe states
+	 * @property {Apos} parentApos - parent apostrophe states
+	 * @property {Array.<Apos>} aposStack - ancestor apostrophe states
+	 * @property {number} nTemplate - ancestor templates
+	 * @property {number} nLink - ancestor links
+	 * @property {number} nExt - ancestor parser functions
+	 * @property {number} nInvisible - ancestor invisible syntax
+	 */
+
+	/**
 	 * add background
 	 */
 	function makeLocalStyle( style, state, endGround ) {
