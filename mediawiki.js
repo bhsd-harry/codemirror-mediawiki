@@ -858,27 +858,29 @@
 	 * extension tag attribute
 	 * Can be multiline
 	 * Unique syntax: >, /
-	 * Valid wikitext syntax: ~~~, &, {{, {{{, <
+	 * Valid wikitext syntax: &, {{, {{{
 	 */
 	function eatExtTagAttribute( name ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/ ) ) {
+			// 1. nothings happens at stream.sol()
+			if ( stream.match( /^[^>/{&]+/ ) ) { // 2. plain text
 				return makeLocalStyle( 'mw-exttag-attribute', state );
-			}
-			if ( stream.eat( '>' ) ) {
+			} else if ( stream.eat( '>' ) ) { // 3. unique syntax: >
 				state.extName = name;
 				if ( name in mwConfig.tagModes ) {
 					state.extMode = CodeMirror.getMode( { mwConfig: mwConfig }, mwConfig.tagModes[ name ] );
 					state.extState = CodeMirror.startState( state.extMode );
 				}
 				state.tokenize = eatExtTagArea( name );
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-exttag-bracket', state );
-			}
-			if ( stream.match( '/>' ) ) {
+			} else if ( stream.match( '/>' ) ) { // 3. unique syntax: />
 				state.tokenize = state.stack.pop();
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-exttag-bracket', state );
 			}
-			return eatWikiText( 'mw-exttag-attribute' )( stream, state );
+			// 4. limited common wikitext: {{, {{{, &; without fallback
+			return eatWikiTextOther( makeLocalStyle, 'mw-exttag-attribute', 'mw-exttag-attribute' )( stream, state );
 		};
 	}
 
