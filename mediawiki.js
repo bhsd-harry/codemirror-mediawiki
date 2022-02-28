@@ -1043,6 +1043,7 @@
 		return function ( stream, state ) {
 			if ( expectAttr && !stream.match( /^[^|]*(?=\|\||!!|$)/, false ) ) {
 				state.nInvisible++;
+				style += ' mw-table-definition';
 			}
 			if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state );
