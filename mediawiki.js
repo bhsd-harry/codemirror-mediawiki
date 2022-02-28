@@ -385,7 +385,7 @@
 
 	/**
 	 * eat general page name without syntax details
-	 * @param {RegExp} regex - regex for plain text; must exclude [&#<>[\]{}|]
+	 * @param {RegExp} regex - regex for plain text; must exclude [&#<~>[\]{}|]
 	 * @param {Object.<'haveEaten', boolean>} option
 	 * @return {(string|undefined)}
 	 */
@@ -399,7 +399,9 @@
 				return makeFunc( style + ' mw-pagename', state );
 			} else if ( stream.match( '<!--' ) ) { // 4. common wikitext: <!--
 				return eatComment( stream, state );
-			} else if ( stream.match( /^(?:&|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
+			} else if ( stream.match( /^~{3,5}/ ) ) { // 4. common wikitext: ~~~
+				return makeFunc( 'error', state );
+			} else if ( stream.match( /^(?:[&~]|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
 				option.haveEaten = true;
 				var defaultStyle = style + ' mw-pagename',
 					ampStyle = option.ampStyle === undefined ? defaultStyle : option.ampStyle;
@@ -435,7 +437,7 @@
 				return;
 			}
 			// 2. plain text; 4. common wikitext; 5. fallback
-			var style = eatPageName( /^[^\s\xa0|}&#<>[\]{]+/, makeLocalStyle, 'mw-template-name', option )( stream, state );
+			var style = eatPageName( /^[^\s\xa0|}&#<~>[\]{]+/, makeLocalStyle, 'mw-template-name', option )( stream, state );
 			if ( option.haveEaten ) {
 				state.tokenize = eatTemplatePageName( option );
 			}
@@ -605,7 +607,7 @@
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 		}
 		// 2. plain text; 4. common wikitext; 5. fallback
-		return eatPageName( /^[^\s\xa0|}&#<>[\]{/:]+/, makeLocalStyle, 'mw-link-pagename', {
+		return eatPageName( /^[^\s\xa0|}&#<~>[\]{/:]+/, makeLocalStyle, 'mw-link-pagename', {
 			haveEaten: true,
 			ampStyle: 'error'
 		} )( stream, state );
@@ -680,7 +682,7 @@
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
 			// 2. plain text; 4. common wikitext; 5. fallback
-			return eatPageName( /^[^\s\xa0|\]#&<>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
+			return eatPageName( /^[^\s\xa0|\]#&<~>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
 		};
 	}
 
