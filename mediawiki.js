@@ -139,7 +139,6 @@
 		return function ( stream, state ) {
 			state.stack.push( state.tokenize );
 			state.tokenize = parser;
-			return parser( stream, state );
 		};
 	}
 
@@ -934,7 +933,7 @@
 	}
 
 	/**
-	 * extension tag token
+	 * extension tag tokens
 	 */
 	function eatExtTokens( origString ) {
 		return function ( stream, state ) {
@@ -953,19 +952,34 @@
 		};
 	}
 
+	/**
+	 * eat already known tabel start
+	 */
 	function eatStartTable( stream, state ) {
-		stream.match( '{|' );
-		stream.eatSpace();
+		var style = eatChars( 2, 'mw-table-bracket', makeLocalStyle );
+		eatSpace( stream );
 		state.tokenize = inTableDefinition;
-		return 'mw-table-bracket';
+		state.nInvisible++;
+		return style;
 	}
 
+	/**
+	 * table definition
+	 * Cannot be multiline
+	 * Valid wikitext syntax: {{, {{{, &, ~~~, <!--
+	 */
 	function inTableDefinition( stream, state ) {
-		if ( stream.sol() ) {
+		if ( stream.sol() ) { // 1. stream.sol()
 			state.tokenize = inTable;
-			return inTable( stream, state );
+			state.nInvisible--;
+			return;
+		} else if ( stream.match( /^[^{&~<]+/ ) ) { // 2. plain text
+			return makeLocalStyle( 'mw-table-definition', state );
+		} else if ( stream.match( /^(?:{{|&|~{3}|<!--)/, false ) ) { // 4. limited valid wikitext
+			return eatWikiTextOther( makeLocalStyle, 'mw-table-definition', 'mw-table-definition' )( stream, state );
 		}
-		return eatWikiText( 'mw-table-definition' )( stream, state );
+		stream.next();
+		return makeLocalStyle( 'mw-table-definition', state ); // fallback
 	}
 
 	function inTableCaption( stream, state ) {
@@ -973,7 +987,7 @@
 			state.apos = {};
 			if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) {
 				state.tokenize = inTable;
-				return inTable( stream, state );
+				return;
 			}
 		}
 		return eatWikiText( 'mw-table-caption' )( stream, state );
@@ -1016,7 +1030,7 @@
 				state.apos = {};
 				if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) {
 					state.tokenize = inTable;
-					return inTable( stream, state );
+					return;
 				}
 			} else {
 				if ( stream.match( /^[^'|{[<&~!]+/ ) ) {
