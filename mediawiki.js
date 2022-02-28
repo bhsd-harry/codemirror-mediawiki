@@ -112,7 +112,7 @@
 		}
 
 		// no dangerous character should appear in results
-		var entity = stream.match( /^(?:#x[a-fA-F\d]+|#\d+|[a-zA-Z\d]+)/ );
+		var entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
 		if ( entity ) {
 			var semi = stream.eat( ';' );
 			if ( semi && isEntity( '&' + entity[ 0 ] + ';' ) ) {
@@ -251,7 +251,7 @@
 	function eatSectionHeader( count ) {
 		return function ( stream, state ) {
 			// 1. impossible to be stream.sol()
-			if ( stream.match( /^[^{&'~_[<]+/ ) ) { // 2. plain text
+			if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) {
 					stream.backUp( count );
 					state.tokenize = eatEnd( 'mw-section-header', makeLocalStyle );
@@ -555,7 +555,7 @@
 			// @todo error message
 			state.tokenize = state.stack.pop();
 			return;
-		} else if ( stream.match( /^[^\]~[{&'_<]+/ ) ) { // 2. plain text
+		} else if ( stream.match( /^[^\]~[{&'<]+/ ) ) { // 2. plain text
 			return makeStyle( 'mw-extlink-text', state );
 		} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
 			state.tokenize = state.stack.pop();
@@ -626,7 +626,7 @@
 				return eatWikiTextSol( 'mw-link-text' )( stream, state );
 			}
 		}
-		if ( stream.match( /^[^\]|{&'~_[<]+/ ) ) { // 2. plain text
+		if ( stream.match( /^[^\]|{&'~[<]+/ ) ) { // 2. plain text
 			return makeStyle( 'mw-link-text', state );
 		} else if ( stream.match( ']]' ) ) { // 3. unique syntax: ]]
 			state.tokenize = state.stack.pop();
@@ -651,6 +651,7 @@
 	 * Unique syntax: |, ]], #
 	 */
 	function inLink( invisible ) {
+		var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
 		return function ( stream, state ) {
 			if ( stream.sol() ) { // 1. stream.sol()
 				state.nLink--;
@@ -661,9 +662,8 @@
 				}
 				return;
 			}
-			var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
 			if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
-				state.tokenize = inLinkToSection( makeFunc );
+				state.tokenize = inLinkToSection( invisible );
 				return makeFunc( 'mw-link', state );
 			} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 				state.tokenize = eatLinkText;
@@ -690,32 +690,61 @@
 	 * internal link hash
 	 * Cannot be multiline
 	 * Unique syntax: |, ]]
+	 * Valid wikitext syntax: &, {{, {{{, <!--
+	 * Invalid wikitext syntax: ~~~, HTML tags, complete extension tags
+	 * Invalid characters: { } [ ]
 	 */
-	function inLinkToSection( makeFunc ) {
+	function inLinkToSection( invisible ) {
+		var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
 		return function ( stream, state ) {
 			if ( stream.sol() ) { // 1. stream.sol()
 				// @todo error message
 				state.nLink--;
 				state.tokenize = state.stack.pop();
+				if ( invisible ) {
+					state.nInvisible--;
+				}
 				return;
-			}
-			if ( stream.match( /^[^|\]&~{}]+/ ) ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+			} else if ( stream.match( /^[^|\]{&~<[}]+/ ) ) { // 2. plain text
 				return makeFunc( 'mw-link-tosection', state );
-			}
-			if ( stream.eat( '|' ) ) {
+			} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
 				state.tokenize = eatLinkText;
+				state.nInvisible--;
 				if ( state.nLink === 1 ) {
 					state.parentApos = state.apos;
 					state.aposStack.push( state.apos );
 					state.apos = {};
 				}
 				return makeLocalStyle( 'mw-link-delimiter', state );
-			}
-			if ( stream.match( ']]' ) ) {
+			} else if ( stream.match( ']]' ) ) { // 3. unique syntax: ]]
 				state.tokenize = state.stack.pop();
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			} else if ( stream.match( /^(?:&|{{|<!--)/, false ) ) { // 4. limited common wikitext
+				return eatWikiTextOther( makeFunc, 'mw-link-tosection', 'mw-link-tosection' )( stream, state );
 			}
-			return eatWikiText( 'mw-link-tosection' )( stream, state );
+			var mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
+			if ( mt ) { // 3. invalid syntax or characters: tags, ~~~, {, }, [, ]
+				var fullname = mt[ 0 ],
+					name = ( mt[ 2 ] || '' ).toLowerCase();
+				if ( fullname[ 0 ] === '~' || name in mwConfig.tags || name in permittedHtmlTags ) {
+					state.nLink--;
+					state.tokenize = state.stack.pop();
+					if ( invisible ) {
+						state.nInvisible--;
+					}
+					if ( fullname[ 0 ] === '~' ) {
+						return makeFunc( 'error', state );
+					}
+					stream.backUp( fullname.length );
+				} else if ( !name ) {
+					return makeFunc( 'error', state );
+				}
+			} else {
+				stream.next();
+			}
+			// 5. fallback
+			return makeFunc( 'mw-link-tosection', state );
 		};
 	}
 
@@ -1132,7 +1161,7 @@
 						return eatComment( stream, state );
 					}
 					var isCloseTag = Boolean( stream.eat( '/' ) );
-					name = stream.match( /^[\da-zA-Z]+/, false ); // HTML5 standard
+					name = stream.match( /^[A-Za-z\d]+/, false ); // HTML5 standard
 					if ( name ) {
 						var tagname = name[ 0 ].toLowerCase();
 						if ( tagname in mwConfig.tags ) { // extension tag
