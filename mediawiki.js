@@ -1,7 +1,7 @@
 ( function ( CodeMirror ) {
 	'use strict';
 
-	var permittedHtmlTags = {
+	const permittedHtmlTags = {
 			b: true, bdi: true, del: true, i: true, ins: true, img: true,
 			u: true, font: true, big: true, small: true, sub: true, sup: true,
 			h1: true, h2: true, h3: true, h4: true, h5: true, h6: true, cite: true,
@@ -15,11 +15,11 @@
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		span = document.createElement( 'span' ), // used for isEntity()
-		nsFileRegex = getFileRegex(),
-		mwConfig, urlProtocols;
+		nsFileRegex = getFileRegex();
+	var mwConfig, urlProtocols;
 
 	function getFileRegex() {
-		var nsIds = mw.config.get( 'wgNamespaceIds' ),
+		const nsIds = mw.config.get( 'wgNamespaceIds' ),
 			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 				return nsIds[ ns ] === 6;
 			} ).join( '|' );
@@ -96,7 +96,7 @@
 		if ( style === undefined ) {
 			return;
 		}
-		var tags = state.InHtmlTag.join(),
+		const tags = state.InHtmlTag.join(),
 			strong = state.apos.bold || state.nInvisible === 0 && /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
 			em = state.apos.italic || state.nInvisible === 0 && /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
 			strikethrough = state.nInvisible === 0 && /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
@@ -110,7 +110,7 @@
 		if ( style === undefined ) {
 			return;
 		}
-		var orState = $.extend( {}, state, { apos: {
+		const orState = $.extend( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic
 		} } );
@@ -134,9 +134,9 @@
 		}
 
 		// no dangerous character should appear in results
-		var entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
+		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
 		if ( entity ) {
-			var semi = stream.eat( ';' );
+			const semi = stream.eat( ';' );
 			if ( semi && isEntity( '&' + entity[ 0 ] + ';' ) ) {
 				return style + ' mw-mnemonic';
 			}
@@ -167,7 +167,7 @@
 	/**
 	 * eat comment
 	 */
-	var eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
+	const eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
 
 	/**
 	 * simply eat until the end of line
@@ -389,7 +389,7 @@
 					return eatWikiTextSol( 'mw-parserfunction' )( stream, state );
 				}
 			}
-			var mt = stream.match( /^[^|}&<[{~_']+/ );
+			const mt = stream.match( /^[^|}&<[{~_']+/ );
 			if ( mt ) { // 2. plain text
 				if ( !haveEaten && /[^\s\xa0]/.test( mt[ 0 ] ) ) {
 					state.tokenize = inParserFunctionArguments( true );
@@ -423,7 +423,7 @@
 				return makeFunc( 'error', state );
 			} else if ( stream.match( /^(?:[&~]|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
 				option.haveEaten = true;
-				var defaultStyle = style + ' mw-pagename',
+				const defaultStyle = style + ' mw-pagename',
 					ampStyle = option.ampStyle === undefined ? defaultStyle : option.ampStyle;
 				return eatWikiTextOther( makeFunc, defaultStyle, 'error', ampStyle )( stream, state );
 			}
@@ -457,7 +457,7 @@
 				return;
 			}
 			// 2. plain text; 4. common wikitext; 5. fallback
-			var style = eatPageName( /^[^\s\xa0|}&#<~>[\]{]+/, makeLocalStyle, 'mw-template-name', option )( stream, state );
+			const style = eatPageName( /^[^\s\xa0|}&#<~>[\]{]+/, makeLocalStyle, 'mw-template-name', option )( stream, state );
 			if ( option.haveEaten ) {
 				state.tokenize = eatTemplatePageName( option );
 			}
@@ -491,7 +491,7 @@
 					return eatWikiTextSol( 'mw-template' )( stream, state );
 				}
 			}
-			var ch = stream.peek();
+			const ch = stream.peek();
 			if ( /[^|}&<[{~_']/.test( ch ) ) { // 2. plain text
 				if ( !haveEaten && /[^\s\xa0]/.test( ch ) ) {
 					state.tokenize = eatTemplateArgument( expectArgName, true );
@@ -511,7 +511,7 @@
 	 */
 	function eatExternalLinkProtocol( chars ) {
 		return function ( stream, state ) {
-			var style = eatChars( chars, 'mw-extlink-protocol', makeLocalStyle );
+			const style = eatChars( chars, 'mw-extlink-protocol', makeLocalStyle );
 			if ( stream.eol() ) {
 				state.nLink--;
 				// @todo error message
@@ -671,7 +671,7 @@
 	 * Unique syntax: |, ]], #
 	 */
 	function inLink( invisible ) {
-		var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
+		const makeFunc = invisible ? makeLocalStyle : makeOrStyle;
 		return function ( stream, state ) {
 			if ( stream.sol() ) { // 1. stream.sol()
 				state.nLink--;
@@ -715,7 +715,7 @@
 	 * Invalid characters: { } [ ]
 	 */
 	function inLinkToSection( invisible ) {
-		var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
+		const makeFunc = invisible ? makeLocalStyle : makeOrStyle;
 		return function ( stream, state ) {
 			if ( stream.sol() ) { // 1. stream.sol()
 				// @todo error message
@@ -743,9 +743,9 @@
 			} else if ( stream.match( /^(?:&|{{|<!--)/, false ) ) { // 4. limited common wikitext
 				return eatWikiTextOther( makeFunc, 'mw-link-tosection', 'mw-link-tosection' )( stream, state );
 			}
-			var mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
+			const mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
 			if ( mt ) { // 4. invalid syntax or characters: tags, ~~~, {, }, [, ]
-				var fullname = mt[ 0 ],
+				const fullname = mt[ 0 ],
 					name = ( mt[ 2 ] || '' ).toLowerCase();
 				if ( fullname[ 0 ] === '~' || name in mwConfig.tags || name in permittedHtmlTags ) {
 					state.nLink--;
@@ -782,7 +782,7 @@
 		if ( stream.match( /^(?:[^\][~{&'<]+|\[(?!\[))/ ) ) { // 2. plain text
 			return makeOrStyle( 'mw-link-text', state );
 		}
-		var mt = stream.match( /^(?:]]|\[\[|~{3,4}(?!~))/ );
+		const mt = stream.match( /^(?:]]|\[\[|~{3,4}(?!~))/ );
 		if ( mt ) { // 3. unique syntax: ]], [[, ~~~~
 			state.tokenize = state.stack.pop();
 			if ( state.nLink === 1 ) {
@@ -807,7 +807,7 @@
 	 * simply eat tag attributes if the tag name is not followed by whitespace
 	 */
 	function eatInvalidTagAttribute( stream, state ) {
-		var style = eatBlock( 'error', '>', makeLocalStyle )( stream, state );
+		const style = eatBlock( 'error', '>', makeLocalStyle )( stream, state );
 		stream.backUp( 1 );
 		return style;
 	}
@@ -820,7 +820,7 @@
 	function eatTagName( name, isCloseTag, isHtmlTag ) {
 		return function ( stream, state ) {
 			state.nInvisible++;
-			var style = eatChars( name.length, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', makeLocalStyle )( stream, state );
+			const style = eatChars( name.length, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', makeLocalStyle )( stream, state );
 			if ( !eatSpace( stream ) && !stream.eol() && !stream.match( /^\/?>/, false ) ) { // invalid tag syntax
 				state.tokenize = eatInvalidTagAttribute;
 				state.stack.push( isHtmlTag ? eatHtmlTagAttribute( name, isCloseTag ) : eatExtTagAttribute( name ) );
@@ -843,7 +843,7 @@
 	 * @param {boolean} isCloseTag - truly closing
 	 */
 	function eatHtmlTagAttribute( name, isCloseTag ) {
-		var style = 'mw-htmltag-attribute' + ( isCloseTag ? ' error' : '' );
+		const style = 'mw-htmltag-attribute' + ( isCloseTag ? ' error' : '' );
 		return function ( stream, state ) {
 			// 1. nothings happens at stream.sol()
 			if ( stream.match( /^[^>/<{&~]+/ ) ) { // 2. plain text
@@ -911,7 +911,7 @@
 	 */
 	function eatExtTagArea( name ) {
 		return function ( stream, state ) {
-			var origString = stream.string,
+			const origString = stream.string,
 				from = stream.pos,
 				pattern = new RegExp( '</' + name + '[\\s\\xa0]*>', 'i' ),
 				m = pattern.exec( stream.string.slice( from ) );
@@ -939,7 +939,7 @@
 	 */
 	function eatExtCloseTag( chars ) {
 		return function ( stream, state ) {
-			var style = eatChars( 2, 'mw-exttag-bracket', makeLocalStyle )( stream, state );
+			const style = eatChars( 2, 'mw-exttag-bracket', makeLocalStyle )( stream, state );
 			state.tokenize = eatExtCloseTagName( chars );
 			state.nInvisible++;
 			return style;
@@ -947,7 +947,7 @@
 	}
 	function eatExtCloseTagName( chars ) {
 		return function ( stream, state ) {
-			var style = eatChars( chars, 'mw-exttag-name', makeLocalStyle )( stream, state );
+			const style = eatChars( chars, 'mw-exttag-name', makeLocalStyle )( stream, state );
 			state.nInvisible--;
 			state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
 			return style;
@@ -978,7 +978,7 @@
 	 * eat already known tabel start
 	 */
 	function eatStartTable( stream, state ) {
-		var style = eatChars( 2, 'mw-table-bracket', makeLocalStyle );
+		const style = eatChars( 2, 'mw-table-bracket', makeLocalStyle );
 		eatSpace( stream );
 		state.tokenize = inTableDefinition;
 		state.nInvisible++;
@@ -1094,7 +1094,7 @@
 	 * @param {string} restriction - escaped special characters
 	 */
 	function eatFreeExternalLinkProtocol( style, restriction ) {
-		var regex = new RegExp( "^[^\\w{&'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' );
+		const regex = new RegExp( "^[^\\w{&'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' );
 		return function ( stream, state ) {
 			// highlight free external links, bug T108448; cannot be multiline
 			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
@@ -1122,7 +1122,7 @@
 	 * Invalid characters: ! ) \ : ; , . ?
 	 */
 	function eatFreeExternalLink( restriction ) {
-		var regex = new RegExp( '[' + restriction + ']' ),
+		const regex = new RegExp( '[' + restriction + ']' ),
 			plainRegex = new RegExp( '^[^\\s\\xa0[\\]<>"{&\'~!)\\\\:;,.?' + restriction + ']+' );
 		return function ( stream, state ) {
 			if ( stream.eol() ) { // 1. stream.eol() instead of stream.sol()
@@ -1154,16 +1154,15 @@
 	 */
 	function eatWikiTextSol( style ) {
 		return function ( stream, state ) {
-			var ch = stream.next(),
-				mt;
+			const ch = stream.next();
 			switch ( ch ) {
 				case '-':
 					if ( stream.match( /^-{3,}/ ) ) {
 						return 'mw-hr'; // has own background
 					}
 					break;
-				case '=':
-					var tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+				case '=': {
+					const tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
 					if ( tmp ) {
 						stream.backUp( tmp[ 2 ].length );
 						state.stack.push( state.tokenize );
@@ -1174,27 +1173,30 @@
 						);
 					}
 					break;
+				}
 				case '*':
 				case '#':
-				case ';':
-					mt = stream.match( /^[*#;:]*/ );
+				case ';': {
+					const mt = stream.match( /^[*#;:]*/ );
 					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
 						state.apos.bold = true;
 					}
 					return makeLocalStyle( 'mw-list', state );
-				case ':':
+				}
+				case ':': {
 					if ( stream.match( /^:*[\s\xa0]*(?={\|)/ ) ) { // Highlight indented tables :{|, bug T108454
 						state.stack.push( state.tokenize );
 						state.tokenize = eatStartTable;
 						return makeLocalStyle( 'mw-list', state );
 					}
-					mt = stream.match( /^[*#;:]*/ );
+					const mt = stream.match( /^[*#;:]*/ );
 					if ( /;/.test( mt[ 0 ] ) ) {
 						state.apos.bold = true;
 					}
 					return makeLocalStyle( 'mw-list', state );
-				case ' ':
-					mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ );
+				}
+				case ' ': {
+					const mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ );
 					if ( mt ) { // Leading spaces is the correct syntax for a table, bug T108454
 						if ( mt[ 1 ] ) {
 							state.stack.push( state.tokenize );
@@ -1206,6 +1208,7 @@
 						return 'mw-skipformatting'; // has own background
 					}
 					// fall through
+				}
 				case '{':
 					if ( stream.eat( '|' ) ) {
 						eatSpace( stream );
@@ -1229,20 +1232,19 @@
 	 */
 	function eatWikiTextOther( makeFunc, style, errorStyle, ampStyle ) {
 		return function ( stream, state ) {
-			var ch = stream.next(),
-				name, mt;
+			const ch = stream.next();
 			switch ( ch ) {
 				case '&':
 					return makeFunc( eatMnemonic( stream, style, ampStyle ), state );
 				case "'":
 					return eatApos( style, makeFunc )( stream, state );
-				case '[':
+				case '[': {
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						eatSpace( stream );
 						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // ignore invalid link
 							state.nLink++;
 							state.stack.push( state.tokenize );
-							mt = stream.match( nsFileRegex, false );
+							const mt = stream.match( nsFileRegex, false );
 							if ( mt ) {
 								state.tokenize = inFileLinkNamespace( mt[ 0 ].length );
 								state.nInvisible++;
@@ -1255,7 +1257,7 @@
 							return makeLocalStyle( 'mw-link-bracket', state );
 						}
 					} else {
-						mt = stream.match( urlProtocols, false );
+						const mt = stream.match( urlProtocols, false );
 						if ( mt ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
@@ -1264,7 +1266,8 @@
 						}
 					}
 					break;
-				case '{':
+				}
+				case '{': {
 					// Template parameter (skip parameters inside a template transclusion, Bug: T108450)
 					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
 						eatSpace( stream );
@@ -1281,7 +1284,7 @@
 							return makeLocalStyle( 'mw-parserfunction-bracket', state );
 						}
 						// Check for parser function without '#'
-						name = stream.match( /^([^\s\xa0}{:]+)(:|[\s\xa0]*)(}}?)?(.)?/, false );
+						const name = stream.match( /^([^\s\xa0}{:]+)(:|[\s\xa0]*)(}}?)?(.)?/, false );
 						if ( name ) {
 							if ( ( name[ 2 ] === ':' || name[ 3 ] === '}}' || name[ 3 ] === '}' && name[ 4 ] === undefined )
 								&& ( name[ 1 ].toLowerCase() in mwConfig.functionSynonyms[ 0 ] || name[ 1 ] in mwConfig.functionSynonyms[ 1 ] )
@@ -1299,12 +1302,13 @@
 						return makeLocalStyle( 'mw-template-bracket', state );
 					}
 					break;
-				case '<':
+				}
+				case '<': {
 					if ( stream.match( '!--' ) ) { // comment
 						return eatComment( stream, state );
 					}
-					var isCloseTag = Boolean( stream.eat( '/' ) );
-					name = stream.match( /^[A-Za-z\d]+/, false ); // HTML5 standard
+					const isCloseTag = Boolean( stream.eat( '/' ) ),
+						name = stream.match( /^[A-Za-z\d]+/, false ); // HTML5 standard
 					if ( name ) {
 						var tagname = name[ 0 ].toLowerCase();
 						if ( tagname in mwConfig.tags ) { // extension tag
@@ -1329,12 +1333,13 @@
 						}
 					}
 					break;
+				}
 				case '~':
 					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
 					return makeFunc( style, state );
-				case '_':
+				case '_': {
 					var tmp = 1;
 					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
 						tmp++;
@@ -1345,9 +1350,9 @@
 							stream.backUp( 2 );
 						}
 					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
-						name = stream.match( /^[^\s\xa0{}&'~[\]<>|:]+?__/ );
+						const name = stream.match( /^[^\s\xa0{}&'~[\]<>|:]+?__/ );
 						if ( name ) {
-							var varname = '__' + name[ 0 ];
+							const varname = '__' + name[ 0 ];
 							if ( varname.toLowerCase() in mwConfig.doubleUnderscore[ 0 ] || varname in mwConfig.doubleUnderscore[ 1 ] ) {
 								return 'mw-doubleUnderscore'; // has own background
 							} else if ( !stream.eol() ) {
@@ -1357,6 +1362,7 @@
 						}
 					}
 					return makeFunc( style, state );
+				}
 			}
 			return makeFunc( errorStyle, state );
 		};
