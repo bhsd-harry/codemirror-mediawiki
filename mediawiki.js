@@ -341,9 +341,8 @@
 		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
 			return eatWikiTextOther( makeLocalStyle, '', 'error' )( stream, state );
 		}
-		// 5. fallback
 		stream.next();
-		return makeLocalStyle( 'error', state );
+		return makeLocalStyle( 'error', state ); // 5. fallback
 	}
 
 	/**
@@ -743,28 +742,44 @@
 			} else {
 				stream.next();
 			}
-			// 5. fallback
-			return makeFunc( 'mw-link-tosection', state );
+			return makeFunc( 'mw-link-tosection', state ); // 5. fallback
 		};
 	}
 
+	/**
+	 * internal link text
+	 * Can be multiline
+	 * Unique syntax: ]]
+	 * Invalid wikitext syntax: [, [[, ~~~~, =, SPACE, #, *, ;, :
+	 */
 	function eatLinkText( stream, state ) {
-		if ( stream.match( ']]' ) ) {
+		if ( stream.sol() ) { // 1. stream.sol()
+			if ( stream.match( /^(?:-{4}|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
+				return eatWikiTextSol( 'mw-link-text' )( stream, state );
+			}
+		}
+		if ( stream.match( /^(?:[^\][~{&'<]+|\[(?!\[))/ ) ) { // 2. plain text
+			return makeOrStyle( 'mw-link-text', state );
+		}
+		var mt = stream.match( /^(?:]]|\[\[|~{3,4})/ );
+		if ( mt ) { // 3. unique syntax: ]], [[, ~~~~
 			state.tokenize = state.stack.pop();
 			if ( state.nLink === 1 ) {
 				state.apos = state.aposStack.pop();
 				state.parentApos = {};
 			}
-			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			if ( mt[ 0 ] === ']]' ) {
+				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			}
+			state.nLink--;
+			if ( mt[ 0 ] === '[[' ) {
+				stream.backUp( 2 );
+				return;
+			}
+			return makeLocalStyle( 'error', state );
 		}
-		if ( stream.eat( "'" ) ) {
-			return eatApos( 'mw-link-text', makeStyle )( stream, state );
-		}
-		var regex = /^[^'\]{&~<]+/;
-		if ( stream.match( regex ) ) {
-			return makeOrStyle( 'mw-link-text', state );
-		}
-		return eatWikiText( 'mw-link-text' )( stream, state );
+		// 4. limited common wikitext: {{, {{{, &, '', <, ~~~~~
+		return eatWikiTextOther( makeOrStyle, 'mw-link-text', 'mw-link-text' )( stream, state );
 	}
 
 	function eatTagName( chars, isCloseTag, isHtmlTag ) {
