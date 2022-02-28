@@ -196,25 +196,6 @@
 	}
 
 	/**
-	 * eat apostrophes and modify apostrophe-related states
-	 */
-	function eatApos( style, makeFunc ) {
-		return function ( stream, state ) {
-			// skip the irrelevant apostrophes ( >5 or =4 )
-			if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'{3}(?!')/, false ) ) {
-				return makeFunc( style, state );
-			} else if ( stream.match( "''" ) ) { // bold
-				state.apos.bold = !state.apos.bold;
-				return makeLocalStyle( 'mw-apostrophes', state );
-			} else if ( stream.eat( "'" ) ) { // italic
-				state.apos.italic = !state.apos.italic;
-				return makeLocalStyle( 'mw-apostrophes', state );
-			}
-			return makeFunc( style, state );
-		};
-	}
-
-	/**
 	 * reset apostrophe states
 	 */
 	function clearApos( state ) {
@@ -1237,7 +1218,17 @@
 				case '&':
 					return makeFunc( eatMnemonic( stream, style, ampStyle ), state );
 				case "'":
-					return eatApos( style, makeFunc )( stream, state );
+					// skip the irrelevant apostrophes ( >5 or =4 )
+					if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'{3}(?!')/, false ) ) {
+						return makeFunc( style, state );
+					} else if ( stream.match( "''" ) ) { // bold
+						state.apos.bold = !state.apos.bold;
+						return makeLocalStyle( 'mw-apostrophes', state );
+					} else if ( stream.eat( "'" ) ) { // italic
+						state.apos.italic = !state.apos.italic;
+						return makeLocalStyle( 'mw-apostrophes', state );
+					}
+					return makeFunc( style, state );
 				case '[': {
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						eatSpace( stream );
