@@ -933,23 +933,23 @@
 		};
 	}
 
+	/**
+	 * extension tag token
+	 */
 	function eatExtTokens( origString ) {
 		return function ( stream, state ) {
-			var ret;
+			var ret = 'mw-exttag';
 			if ( state.extMode === false ) {
-				ret = 'mw-exttag';
 				stream.skipToEnd();
 			} else {
-				ret = 'mw-tag-' + state.extName;
-				ret += ' ' + state.extMode.token( stream, state.extState, origString === false );
+				ret = 'mw-tag-' + state.extName + ' ';
+				ret += state.extMode.token( stream, state.extState );
 			}
 			if ( stream.eol() ) {
-				if ( origString !== false ) {
-					stream.string = origString;
-				}
+				stream.string = origString;
 				state.tokenize = state.stack.pop();
 			}
-			return makeLocalStyle( ret, state );
+			return ( state.extState.makeFunc || makeStyle )( ret, state );
 		};
 	}
 
