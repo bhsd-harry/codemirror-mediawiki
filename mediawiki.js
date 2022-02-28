@@ -75,9 +75,9 @@
 			return;
 		}
 		var tags = state.InHtmlTag.join(),
-			strong = state.apos.bold || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
-			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
-			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
+			strong = state.apos.bold || state.nInvisible === 0 && /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+			em = state.apos.italic || state.nInvisible === 0 && /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
+			strikethrough = state.nInvisible === 0 && /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
 		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
 	}
 
@@ -275,9 +275,11 @@
 			return makeLocalStyle( 'mw-templatevariable-name', state );
 		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
 			state.tokenize = inVariableDefault( 'mw-templatevariable' );
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-templatevariable-delimiter', state );
 		} else if ( stream.match( '}}}' ) ) { // 3. unique syntax: }}}
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-templatevariable-bracket', state );
 		}
 		// 4. limited common wikitext: {{, {{{; without fallback
@@ -321,17 +323,20 @@
 	function inParserFunctionName( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol(), exit
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			state.nExt--;
 			return;
 		} else if ( stream.match( /^[^:}{]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-parserfunction-name', state );
 		} else if ( stream.match( '}}' ) ) { // 3. unique syntax: }}
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
 		} else if ( stream.eat( ':' ) ) { // 3. unique syntax: :
 			state.aposStack.push( state.apos );
 			state.apos = {};
 			state.tokenize = inParserFunctionArguments( false );
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
 			return eatWikiTextOther( makeLocalStyle, '', 'error' )( stream, state );
@@ -416,14 +421,17 @@
 				state.aposStack.push( state.apos );
 				state.apos = {};
 				state.tokenize = eatTemplateArgument( true, false );
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-template-delimiter', state );
 			} else if ( stream.match( /^[\s\xa0]*}}/ ) ) { // 3. unique syntax: }}
 				state.tokenize = state.stack.pop();
+				state.nInvisible--;
 				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
 			} else if ( stream.sol() ) { // 1. stream.sol()
 				// @todo error message
 				state.nTemplate--;
 				state.tokenize = state.stack.pop();
+				state.nInvisible--;
 				return;
 			}
 			// 2. plain text; 4. common wikitext; 5. fallback
@@ -488,6 +496,7 @@
 				state.tokenize = state.stack.pop();
 			} else {
 				state.tokenize = inExternalLink;
+				state.nInvisible++;
 			}
 			return style;
 		};
@@ -504,23 +513,29 @@
 			state.nLink--;
 			// @todo error message
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 		} else if ( stream.match( /^[^\s\xa0\]'~[<{&]+/ ) ) { // 2. plain text
 			return makeLocalStyle( 'mw-extlink', state );
 		} else if ( stream.match( /^[\s\xa0]*]/ ) ) { // 3. unique syntax: ]
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' );
 		} else if ( eatSpace( stream ) ) { // 3. unique syntax: SPACE
 			state.tokenize = inExternalLinkText;
+			state.nInvisible--;
 			return makeLocalStyle( '', state );
 		} else if ( stream.match( /^~{3,5}/ ) ) { // 3. unique syntax: ~~~
 			state.nLink--;
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return makeStyle( 'error', state );
 		} else if ( stream.match( '[[', false ) ) { // 3. unique syntax: [[
 			state.nLink--;
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 		} else if ( stream.match( /^(?:[[<>]|'')/, false ) ) { // 3. unique syntax: [, <, >, ''
 			state.tokenize = inExternalLinkText;
+			state.nInvisible--;
 		} else { // 4. limited common wikitext: &, {{, {{{; without fallback
 			return eatWikiTextOther( makeLocalStyle, 'mw-extlink', 'mw-extlink' )( stream, state );
 		}
@@ -573,6 +588,7 @@
 			state.nLink--;
 			// @todo error message
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return;
 		} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 			if ( state.nLink === 1 ) {
@@ -581,9 +597,11 @@
 				state.apos = {};
 			}
 			state.tokenize = eatFileLinkText;
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-link-delimiter', state );
 		} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
 			state.tokenize = state.stack.pop();
+			state.nInvisible--;
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 		}
 		// 2. plain text; 4. common wikitext; 5. fallback
@@ -630,31 +648,40 @@
 	 * Cannot be multiline
 	 * Unique syntax: |, ]], #
 	 */
-	function inLink( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			state.nLink--;
-			// @todo error message
-			state.tokenize = state.stack.pop();
-			return;
-		}
-		var makeFunc = stream.match( /^[^\]]*\|/, false ) ? makeLocalStyle : makeOrStyle;
-		if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
-			state.tokenize = inLinkToSection( makeFunc );
-			return makeFunc( 'mw-link', state );
-		} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
-			state.tokenize = eatLinkText;
-			if ( state.nLink === 1 ) {
-				state.parentApos = state.apos;
-				state.aposStack.push( state.apos );
-				state.apos = {};
+	function inLink( invisible ) {
+		return function ( stream, state ) {
+			if ( stream.sol() ) { // 1. stream.sol()
+				state.nLink--;
+				// @todo error message
+				state.tokenize = state.stack.pop();
+				if ( invisible ) {
+					state.nInvisible--;
+				}
+				return;
 			}
-			return makeLocalStyle( 'mw-link-delimiter', state );
-		} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-		}
-		// 2. plain text; 4. common wikitext; 5. fallback
-		return eatPageName( /^[^\s\xa0|\]#&<>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
+			var makeFunc = invisible ? makeLocalStyle : makeOrStyle;
+			if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
+				state.tokenize = inLinkToSection( makeFunc );
+				return makeFunc( 'mw-link', state );
+			} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+				state.tokenize = eatLinkText;
+				state.nInvisible--;
+				if ( state.nLink === 1 ) {
+					state.parentApos = state.apos;
+					state.aposStack.push( state.apos );
+					state.apos = {};
+				}
+				return makeLocalStyle( 'mw-link-delimiter', state );
+			} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
+				state.tokenize = state.stack.pop();
+				if ( invisible ) {
+					state.nInvisible--;
+				}
+				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			}
+			// 2. plain text; 4. common wikitext; 5. fallback
+			return eatPageName( /^[^\s\xa0|\]#&<>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
+		};
 	}
 
 	/**
@@ -664,7 +691,7 @@
 	 */
 	function inLinkToSection( makeFunc ) {
 		return function ( stream, state ) {
-			if ( stream.sol() ) {
+			if ( stream.sol() ) { // 1. stream.sol()
 				// @todo error message
 				state.nLink--;
 				state.tokenize = state.stack.pop();
@@ -1038,11 +1065,19 @@
 				case '[':
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						eatSpace( stream );
-						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // invalid link
+						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // ignore invalid link
 							state.nLink++;
 							state.stack.push( state.tokenize );
 							mt = stream.match( nsFileRegex, false );
-							state.tokenize = mt ? inFileLinkNamespace( mt[ 0 ].length ) : inLink;
+							if ( mt ) {
+								state.tokenize = inFileLinkNamespace( mt[ 0 ].length );
+								state.nInvisible++;
+							} else if ( stream.match( /^[^\]]*\|/, false ) ) {
+								state.tokenize = inLink( true );
+								state.nInvisible++;
+							} else {
+								state.tokenize = inLink( false );
+							}
 							return makeLocalStyle( 'mw-link-bracket', state );
 						}
 					} else {
@@ -1060,9 +1095,11 @@
 					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
 						eatSpace( stream );
 						state.stack.push( state.tokenize );
+						state.nInvisible++;
 						state.tokenize = inVariable;
 						return makeLocalStyle( 'mw-templatevariable-bracket', state );
 					} else if ( stream.match( /^{[\s\xa0]*/ ) ) {
+						state.nInvisible++;
 						if ( stream.peek() === '#' ) { // Parser function
 							state.nExt++;
 							state.stack.push( state.tokenize );
@@ -1237,7 +1274,7 @@
 					stack: [], InHtmlTag: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
-					nTemplate: 0, nLink: 0, nExt: 0
+					nTemplate: 0, nLink: 0, nExt: 0, nInvisible: 0
 				};
 			},
 			copyState: function ( state ) {
@@ -1253,7 +1290,8 @@
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
 					nTemplate: state.nTemplate,
 					nLink: state.nLink,
-					nExt: state.nExt
+					nExt: state.nExt,
+					nInvisible: state.nInvisible
 				};
 			},
 			token: function ( stream, state ) {
