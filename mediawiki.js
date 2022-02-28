@@ -884,41 +884,52 @@
 		};
 	}
 
+	/**
+	 * extension tag area
+	 * Can be multiline
+	 */
 	function eatExtTagArea( name ) {
 		return function ( stream, state ) {
-			var origString = false,
+			var origString = stream.string,
 				from = stream.pos,
-				to,
 				pattern = new RegExp( '</' + name + '[\\s\\xa0]*>', 'i' ),
-				m = pattern.exec( from ? stream.string.slice( from ) : stream.string );
+				m = pattern.exec( stream.string.slice( from ) );
 
 			if ( m ) {
 				if ( m.index === 0 ) {
-					state.tokenize = eatExtCloseTag( name );
+					state.tokenize = eatExtCloseTag( m[ 0 ].length - 3 );
 					state.extName = false;
 					if ( state.extMode !== false ) {
 						state.extMode = false;
 						state.extState = false;
 					}
-					return state.tokenize( stream, state );
+					return;
 				}
-				to = m.index + from;
-				origString = stream.string;
-				stream.string = origString.slice( 0, to );
+				stream.string = origString.slice( 0, m.index + from ); // inside tag only
 			}
 
 			state.stack.push( state.tokenize );
 			state.tokenize = eatExtTokens( origString );
-			return state.tokenize( stream, state );
 		};
 	}
 
-	function eatExtCloseTag( name ) {
+	/**
+	 * simply eat already known closing extension tag
+	 */
+	function eatExtCloseTag( chars ) {
 		return function ( stream, state ) {
-			stream.next(); // eat <
-			stream.next(); // eat /
-			state.tokenize = eatTagName( name, true, false );
-			return makeLocalStyle( 'mw-exttag-bracket', state );
+			var style = eatChars( 2, 'mw-exttag-bracket', makeLocalStyle )( stream, state );
+			state.tokenize = eatExtCloseTagName( chars );
+			state.nInvisible++;
+			return style;
+		};
+	}
+	function eatExtCloseTagName( chars ) {
+		return function ( stream, state ) {
+			var style = eatChars( chars, 'mw-exttag-name', makeLocalStyle )( stream, state );
+			state.nInvisible--;
+			state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
+			return style;
 		};
 	}
 
