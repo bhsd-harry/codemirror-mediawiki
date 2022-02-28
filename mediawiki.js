@@ -469,12 +469,12 @@
 					return eatWikiTextSol( 'mw-template' )( stream, state );
 				}
 			}
-			var mt = stream.match( /^[^|}&<[{~_']+/ );
-			if ( mt ) { // 2. plain text
-				if ( !haveEaten && /[^\s\xa0]/.test( mt[ 0 ] ) ) {
+			var ch = stream.peek();
+			if ( /[^|}&<[{~_']/.test( ch ) ) { // 2. plain text
+				if ( !haveEaten && /[^\s\xa0]/.test( ch ) ) {
 					state.tokenize = eatTemplateArgument( expectArgName, true );
 				}
-				return makeStyle( 'mw-template', state );
+				return eatFreeExternalLinkProtocol( 'mw-template', '}|' )( stream, state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
 				state.tokenize = eatTemplateArgument( expectArgName, true );
 			}
@@ -1067,33 +1067,61 @@
 	}
 
 	/**
+	 * free external link protocol
+	 * Only called after eatWikiTextSol() at stream.sol()
+	 * @param {string} restriction - escaped special characters
+	 */
+	function eatFreeExternalLinkProtocol( style, restriction ) {
+		var regex = new RegExp( "^[^\\w{&'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' );
+		return function ( stream, state ) {
+			// highlight free external links, bug T108448; cannot be multiline
+			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
+				if ( !stream.eol() ) {
+					state.stack.push( state.tokenize );
+					state.tokenize = eatFreeExternalLink( restriction );
+				}
+				return makeStyle( 'mw-free-extlink-protocol', state );
+			}
+			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
+				stream.match( /^[A-Za-z\d\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
+			} else { // ascii except /[\w{}&'~[\]<>|:=#/!]/ and \xa0
+				stream.match( regex );
+			}
+			return makeStyle( style || '', state );
+		};
+	}
+
+	/**
 	 * free external link after protocol
 	 * Cannot be multiline
 	 * Unique syntax: [, ], <, >, "
 	 * Invalid wikitext syntax: ~~~, ''
-	 * Valid wikitext syntax: __, {{, {{{, &
+	 * Valid wikitext syntax: {{, {{{, &
 	 * Invalid characters: ! ) \ : ; , . ?
 	 */
-	function eatFreeExternalLink( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			// @todo error message
-			clearApos( state );
-			state.tokenize = state.stack.pop();
-			return;
-		} else if ( stream.match( /^[^\s\xa0[\]<>"{&'~_!)\\:;,.?]+/ ) ) { // 2. plain text
-			return makeStyle( 'mw-free-extlink', state );
-		} else if ( stream.match( /^(?:[[\]<>"]|~{3}|'')/, false ) ) {
-			// 3. unique syntax: [, ], <, >, "; 4. invalid common wikitext: ~~~, ''
-			state.tokenize = state.stack.pop();
-			return;
-		} else if ( /[_{&]/.test( stream.peek() ) ) { // 4. limited common wikitext: __, {{, {{{, &
-			return eatWikiTextOther( makeStyle, 'mw-free-extlink', 'mw-free-extlink' );
-		} else if ( stream.match( /[!)\\:;,.?]*(?=[\s\xa0]|$)/, false ) ) { // 3. invalid characters
-			state.tokenize = state.stack.pop();
-			return;
-		}
-		stream.next();
-		return makeStyle( 'mw-free-extlink', state ); // 5. fallback
+	function eatFreeExternalLink( restriction ) {
+		var regex = new RegExp( '[' + restriction + ']' ),
+			plainRegex = new RegExp( '^[^\\s\\xa0[\\]<>"{&\'~!)\\\\:;,.?' + restriction + ']+' );
+		return function ( stream, state ) {
+			if ( stream.eol() ) { // 1. stream.eol() instead of stream.sol()
+				// @todo error message
+				state.tokenize = state.stack.pop();
+				return;
+			} else if ( regex.test( stream.peek() ) || stream.match( /^(?:[[\]<>"]|~{3}|'')/, false ) ) {
+				// 3. unique syntax: [, ], <, >, "; 4. invalid common wikitext: ~~~, ''
+				state.tokenize = state.stack.pop();
+				return;
+			} else if ( stream.match( plainRegex ) ) { // 2. plain text
+				return makeStyle( 'mw-free-extlink', state );
+			} else if ( /[{&]/.test( stream.peek() ) ) { // 4. limited common wikitext: {{, {{{, &
+				return eatWikiTextOther( makeStyle, 'mw-free-extlink', 'mw-free-extlink' )( stream, state );
+			} else if ( stream.match( /[!)\\:;,.?]*(?=[\s\xa0]|$)/, false ) ) { // 3. invalid characters
+				state.tokenize = state.stack.pop();
+				return;
+			}
+			stream.next();
+			return makeStyle( 'mw-free-extlink', state ); // 5. fallback
+		};
 	}
 
 	/**
@@ -1338,20 +1366,7 @@
 			}
 			stream.backUp( 1 );
 
-			// highlight free external links, bug T108448; cannot be multiline
-			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
-				if ( !stream.eol() ) {
-					state.stack.push( state.tokenize );
-					state.tokenize = eatFreeExternalLink;
-				}
-				return makeLocalStyle( 'mw-free-extlink-protocol', state );
-			}
-			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
-				stream.match( /^[A-Za-z\d\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
-			} else { // ascii except /[\w>}[\]<{'|&:~]/ and \xa0
-				stream.match( /^[^\w{&'~_[<|:\x80-\x9f\u00a1-\uffff]+/ );
-			}
-			return makeStyle( style || '', state );
+			return eatFreeExternalLinkProtocol( style, '' )( stream, state );
 		};
 	}
 
