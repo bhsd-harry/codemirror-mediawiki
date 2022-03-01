@@ -118,6 +118,17 @@
 	}
 
 	/**
+	 * recursively call a token, which includes a 'state.tokenize = state.stack.pop();' statement
+	 */
+	function chain( parser ) {
+		return function ( stream, state ) {
+			state.stack.push( state.tokenize );
+			state.tokenize = parser;
+			return parser( stream, state );
+		};
+	}
+
+	/**
 	 * simply eat white spaces without returned styles
 	 */
 	function eatSpace( stream ) {
@@ -163,7 +174,7 @@
 	/**
 	 * eat comment
 	 */
-	const eatComment = eatBlock( 'mw-comment', '-->', makeLocalStyle );
+	const eatComment = chain( eatBlock( 'mw-comment', '-->', makeLocalStyle ) );
 
 	/**
 	 * simply eat until the end of line
