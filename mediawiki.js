@@ -149,7 +149,7 @@
 	 * simply eat until a block ends with specified terminator
 	 */
 	function eatBlock( style, terminator, makeFunc ) {
-		function parser( stream, state ) {
+		return function ( stream, state ) {
 			if ( !stream.skipTo( terminator ) ) {
 				stream.skipToEnd();
 			} else {
@@ -157,10 +157,6 @@
 				state.tokenize = state.stack.pop();
 			}
 			return makeFunc( style, state );
-		}
-		return function ( stream, state ) {
-			state.stack.push( state.tokenize );
-			state.tokenize = parser;
 		};
 	}
 
@@ -785,15 +781,6 @@
 	}
 
 	/**
-	 * simply eat tag attributes if the tag name is not followed by whitespace
-	 */
-	function eatInvalidTagAttribute( stream, state ) {
-		const style = eatBlock( 'error', '>', makeLocalStyle )( stream, state );
-		stream.backUp( 1 );
-		return style;
-	}
-
-	/**
 	 * eat already known tag name
 	 * @param {string} name - tag name in lower case
 	 * @param {boolean} isCloseTag - truly closing tag
@@ -802,10 +789,7 @@
 		return function ( stream, state ) {
 			state.nInvisible++;
 			const style = eatChars( name.length, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', makeLocalStyle )( stream, state );
-			if ( !eatSpace( stream ) && !stream.eol() && !stream.match( /^\/?>/, false ) ) { // invalid tag syntax
-				state.tokenize = eatInvalidTagAttribute;
-				state.stack.push( isHtmlTag ? eatHtmlTagAttribute( name, isCloseTag ) : eatExtTagAttribute( name ) );
-			} else if ( isHtmlTag ) {
+			if ( isHtmlTag ) {
 				state.tokenize = eatHtmlTagAttribute( name, isCloseTag );
 			} else if ( isCloseTag ) { // extension tag
 				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
@@ -1299,7 +1283,7 @@
 						return eatComment( stream, state );
 					}
 					const isCloseTag = Boolean( stream.eat( '/' ) ),
-						name = stream.match( /^[A-Za-z\d]+/, false ); // HTML5 standard
+						name = stream.match( /^[A-Za-z\d]+(?=[\s\xa0>]|\/>|$)/, false ); // HTML5 standard
 					if ( name ) {
 						var tagname = name[ 0 ].toLowerCase();
 						if ( tagname in mwConfig.tags ) { // extension tag
