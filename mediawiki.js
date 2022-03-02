@@ -108,11 +108,19 @@
 		} else if ( state.nInvisible ) {
 			return makeLocalStyle( style, state, endGround );
 		}
-		const tags = state.InHtmlTag.join(),
-			strong = state.apos.bold || state.apos.dt || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
-			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
-			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
-		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
+		const strong = state.apos.bold || state.apos.dt ? ' strong' : '',
+			em = state.apos.italic ? ' em' : '';
+		/* eslint-disable no-tabs */
+		/**
+		 * @todo styles inside particular HTML tags
+		 * @example
+		 * const tags = state.InHtmlTag.join(),
+		 *	strong = state.apos.bold || state.apos.dt || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+		 *	em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
+		 *	strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
+		 */
+		/* eslint-enable no-tabs */
+		return makeLocalStyle( style + strong + em, state, endGround );
 	}
 
 	/**
@@ -1307,9 +1315,9 @@
 				}
 				case '[': {
 					errorStyle = details.lbrack === undefined ? style : details.lbrack;
-					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
+					if ( stream.eat( '[' ) ) { // valid wikitext: [[
 						eatSpace( stream );
-						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // ignore invalid link
+						if ( /[^\]|[<>}]/.test( stream.peek() ) ) { // ignore invalid link
 							state.nLink++;
 							state.stack.push( state.tokenize );
 							const mt = stream.match( nsFileRegex, false );
