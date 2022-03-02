@@ -45,7 +45,7 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-mnemonic { color: #84a0a0; }
 
 /* backgrounds */
-.cm-mw-tag-pre, .cm-mw-tag-nowiki { background-color: rgba( 0, 0, 0, 0.04 ); }
+.cm-mw-tag-pre, .CodeMirror pre.cm-mw-tag-pre, .cm-mw-tag-nowiki, .CodeMirror pre.cm-mw-tag-nowiki, .CodeMirror pre.cm-mw-exttag { background-color: rgba( 0, 0, 0, 0.04 ); }
 .cm-mw-template-ground { background-color: rgba( 170, 17, 17, 0.04 ); }
 .cm-mw-template2-ground { background-color: rgba( 170, 17, 17, 0.08 ); }
 .cm-mw-template3-ground { background-color: rgba( 170, 17, 17, 0.12 ); }

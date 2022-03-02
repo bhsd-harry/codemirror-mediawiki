@@ -1075,7 +1075,7 @@
 			} else { // ascii except /[\w{}&'~[\]<>|:=#/!]/ and \xa0
 				stream.match( regex );
 			}
-			return makeStyle( style || '', state );
+			return makeStyle( style, state );
 		};
 	}
 
@@ -1421,7 +1421,7 @@
 		return {
 			startState: function () {
 				return {
-					tokenize: eatWikiText(),
+					tokenize: eatWikiText( '' ),
 					stack: [], InHtmlTag: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
