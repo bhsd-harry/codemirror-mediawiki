@@ -170,7 +170,7 @@
 	}
 
 	/**
-	 * simply a specific number of characters
+	 * eat a specific number of characters
 	 * @param {number} chars - number of characters to eat
 	 */
 	function eatChars( chars, makeFunc, style ) {
@@ -198,27 +198,28 @@
 	 * line start : - = # * : ; SPACE {
 	 * other      : { & ' ~ _ [ <
 	 * details    :
-	 * '----'   : <hr> (line start)
-	 * '='      : <h1> ~ <h6> (line start)
-	 * #        : <ol> (line start)
-	 * *        : <ul> (line start)
-	 * ;        : <dt> (line start)
-	 * :        : <dd> (line start)
-	 * ' '      : <pre> (line start)
-	 * '{|'     : <table> (line start)
-	 * '{{'     : parser functions and templates
-	 * '{{{'    : variables
-	 * '&'      : HTML entities
-	 * "''"     : <i> <b>
-	 * '~~~'    : signature
-	 * '__'     : behavior switch
-	 * '['      : <a>
-	 * '<'      : tags
+	 * ----       : <hr> (line start)
+	 * =          : <h1> ~ <h6> (line start)
+	 * #          : <ol> (line start)
+	 * *          : <ul> (line start)
+	 * ;          : <dt> (line start)
+	 * :          : <dd> (line start)
+	 * SPACE      : <pre> (line start)
+	 * {|         : <table> (line start)
+	 * {{         : parser functions and templates
+	 * {{{        : variables
+	 * &          : HTML entities
+	 * ''         : <i> <b>
+	 * ~~~        : signature
+	 * __         : behavior switch
+	 * [          : external link
+	 * [[         : internal link
+	 * <          : tags
 	 */
 
 	/**
 	 * illegal characters in page name
-	 * # < > [ ] _ { | }
+	 * # < > [ ] { } |
 	 */
 
 	/**
@@ -227,11 +228,11 @@
 	 */
 
 	/**
-	 * function template
-	 * 1. stream.sol()
+	 * token template (order not restricted)
+	 * 1. SOL/EOL
 	 * 2. plain text
 	 * 3. unique syntax
-	 * 4. common wikitext
+	 * 4. valid wikitext
 	 * 5. fallback
 	 */
 
