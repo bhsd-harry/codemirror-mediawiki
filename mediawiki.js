@@ -911,7 +911,7 @@
 
 	function eatExtCloseTagName( chars ) {
 		return function ( stream, state ) {
-			state.tokenize = eatChars( chars, makeLocalStyle, 'mw-exttag-name' )( stream, state );
+			state.tokenize = eatChars( chars, makeLocalStyle, 'mw-exttag-name' );
 			state.stack.push( eatChars( 1, makeLocalStyle, 'mw-exttag-bracket' ) );
 			state.nInvisible--;
 		};
@@ -1456,7 +1456,10 @@
 	CodeMirror.defineMode( 'mw-tag-pre', function ( /* config, parserConfig */ ) {
 		return {
 			startState: function () {
-				return {};
+				return { nowiki: false };
+			},
+			copyState: function ( state ) {
+				return { nowiki: state.nowiki };
 			},
 			token: eatPre
 		};
