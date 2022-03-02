@@ -242,22 +242,27 @@
 	const eatComment = chain( eatBlock( makeLocalStyle, 'mw-comment', '-->' ) );
 
 	/**
-	 * simply eat HTML entities
+	 * eat HTML entities
+	 * @param {?string} style - default style
+	 * @param {?string} errorStyle - style if not HTML entity
 	 */
 	function eatMnemonic( stream, style, errorStyle ) {
+		/**
+		 * @param {string} str - string after '&'
+		 * @return {boolean}
+		 */
 		function isEntity( str ) {
-			span.innerHTML = str;
+			span.innerHTML = '&' + str;
 			return span.textContent.length === 1;
 		}
 
 		// no dangerous character should appear in results
-		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
+		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
 		if ( entity ) {
-			const semi = stream.eat( ';' );
-			if ( semi && isEntity( '&' + entity[ 0 ] + ';' ) ) {
-				return style + ' mw-mnemonic';
+			if ( isEntity( entity[ 0 ] ) ) {
+				return ( style || '' ) + ' mw-mnemonic';
 			}
-			stream.backUp( entity[ 0 ].length + ( semi ? 1 : 0 ) );
+			stream.backUp( entity[ 0 ].length );
 		}
 		return errorStyle === undefined ? style : errorStyle;
 	}
@@ -1352,7 +1357,7 @@
 		return function ( stream, state ) {
 			var result;
 
-			if ( stream.sol() ) {
+			if ( stream.sol() ) { // 1. SOL
 				clearApos( state );
 				result = eatWikiTextSol( makeStyle )( stream, state );
 				if ( result !== undefined ) {
