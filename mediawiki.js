@@ -1374,32 +1374,39 @@
 	/**
 	 * eat <pre>
 	 * Unique syntax: <nowiki>
-	 * Valid wikitext syntax: &
+	 * Valid wikitext: &
 	 */
 	function eatPre( stream, state ) {
 		if ( stream.match( /^[^&<]+/ ) ) { // 2. plain text
 			return '';
-		} else if ( stream.eat( '<' ) ) { // 3. unique syntax: <nowiki> and </nowiki>
-			if ( !state.nowiki && stream.match( 'nowiki>' ) || state.nowiki && stream.match( '/nowiki>' ) ) {
-				state.nowiki = !state.nowiki;
-				return 'mw-comment';
-			}
-			return '';
 		}
-		stream.next(); // 4. common wikitext: &; no fallback
-		return eatMnemonic( stream, '' );
+		var ch = stream.next();
+		switch ( ch ) {
+			case '&': // 4. valid wikitext: &
+				return eatMnemonic( stream, '' );
+			case '<': // 3. unique syntax: <nowiki>
+				if ( !state.nowiki && stream.match( 'nowiki>' ) || state.nowiki && stream.match( '/nowiki>' ) ) {
+					state.nowiki = !state.nowiki;
+					return 'mw-comment';
+				}
+				// fallthrough
+			default: // 5. fallback
+				return '';
+		}
 	}
 
 	/**
 	 * eat <nowiki>
-	 * Valid wikitext syntax: &
+	 * Valid wikitext: &
 	 */
 	function eatNowiki( stream ) {
-		if ( stream.match( /^[^&]+/ ) ) { // 2. plain text
-			return '';
+		var ch = stream.next();
+		if ( ch === '&' ) { // 4. valid wikitext: &
+			return eatMnemonic( stream, '' );
+		} else if ( !stream.skipTo( '&' ) ) { // 2. plain text
+			stream.skipToEnd();
 		}
-		stream.next(); // 4. common wikitext: &; no fallback
-		return eatMnemonic( stream, '' );
+		return '';
 	}
 
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
