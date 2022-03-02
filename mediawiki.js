@@ -98,7 +98,8 @@
 	}
 
 	/**
-	 * show bold and/or italic font in addition to makeLocalStyle()
+	 * show bold/italic/strikethrough font in addition to background
+	 * @return {?string} style
 	 */
 	function makeStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -112,7 +113,8 @@
 	}
 
 	/**
-	 * show bold and/or italic font based on both local and parent apostrophe states
+	 * show bold/italic font based on both local and parent apostrophe states
+	 * @return {?string} style
 	 */
 	function makeOrStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -126,7 +128,11 @@
 	}
 
 	/**
-	 * recursively call a token, which includes a 'state.tokenize = state.stack.pop();' statement
+	 * recursively call a token, which must includes an exit statement
+	 * @example
+	 * state.tokenize = state.stack.pop();
+	 * @param {function} parser - token
+	 * @return {function} same token
 	 */
 	function chain( parser ) {
 		return function ( stream, state ) {
@@ -137,72 +143,39 @@
 	}
 
 	/**
-	 * simply eat white spaces without returned styles
+	 * greedy eat white spaces without returned styles
+	 * @return {(Array.<string>|false)} result of RegExp match or false
 	 */
 	function eatSpace( stream ) {
 		return stream.match( /^[\s\xa0]+/ );
 	}
 
 	/**
-	 * simply eat HTML entities
+	 * eat until a specified terminator or EOL
+	 * @param {?string} terminator - terminator string
 	 */
-	function eatMnemonic( stream, style, errorStyle ) {
-		function isEntity( str ) {
-			span.innerHTML = str;
-			return span.textContent.length === 1;
-		}
-
-		// no dangerous character should appear in results
-		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
-		if ( entity ) {
-			const semi = stream.eat( ';' );
-			if ( semi && isEntity( '&' + entity[ 0 ] + ';' ) ) {
-				return style + ' mw-mnemonic';
-			}
-			stream.backUp( entity[ 0 ].length + ( semi ? 1 : 0 ) );
-		}
-		return errorStyle === undefined ? style : errorStyle;
-	}
-
-	/**
-	 * simply eat until a block ends with specified terminator
-	 */
-	function eatBlock( style, terminator, makeFunc ) {
+	function eatBlock( makeFunc, style, terminator ) {
 		return function ( stream, state ) {
-			if ( !stream.skipTo( terminator ) ) {
+			if ( !terminator ) {
 				stream.skipToEnd();
-			} else {
+				state.tokenize = state.stack.pop();
+			} else if ( stream.skipTo( terminator ) ) {
 				stream.match( terminator );
 				state.tokenize = state.stack.pop();
+			} else {
+				stream.skipToEnd();
 			}
 			return makeFunc( style, state );
 		};
 	}
 
 	/**
-	 * eat comment
+	 * simply a specific number of characters
+	 * @param {number} chars - number of characters to eat
 	 */
-	const eatComment = chain( eatBlock( 'mw-comment', '-->', makeLocalStyle ) );
-
-	/**
-	 * simply eat until the end of line
-	 */
-	function eatEnd( style, makeFunc ) {
+	function eatChars( chars, makeFunc, style ) {
 		return function ( stream, state ) {
-			stream.skipToEnd();
 			state.tokenize = state.stack.pop();
-			return makeFunc( style, state );
-		};
-	}
-
-	/**
-	 * simply eat characters
-	 */
-	function eatChars( chars, style, makeFunc, pop ) {
-		return function ( stream, state ) {
-			if ( pop ) {
-				state.tokenize = state.stack.pop();
-			}
 			for ( var i = 0; i < chars; i++ ) {
 				stream.next();
 			}
@@ -263,6 +236,32 @@
 	 */
 
 	/**
+	 * eat comment
+	 */
+	const eatComment = chain( eatBlock( makeLocalStyle, 'mw-comment', '-->' ) );
+
+	/**
+	 * simply eat HTML entities
+	 */
+	function eatMnemonic( stream, style, errorStyle ) {
+		function isEntity( str ) {
+			span.innerHTML = str;
+			return span.textContent.length === 1;
+		}
+
+		// no dangerous character should appear in results
+		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+)/i );
+		if ( entity ) {
+			const semi = stream.eat( ';' );
+			if ( semi && isEntity( '&' + entity[ 0 ] + ';' ) ) {
+				return style + ' mw-mnemonic';
+			}
+			stream.backUp( entity[ 0 ].length + ( semi ? 1 : 0 ) );
+		}
+		return errorStyle === undefined ? style : errorStyle;
+	}
+
+	/**
 	 * eat section header when the number of ending characters is already known
 	 */
 	function eatSectionHeader( count ) {
@@ -271,7 +270,7 @@
 			if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) {
 					stream.backUp( count );
-					state.tokenize = eatEnd( 'mw-section-header', makeLocalStyle );
+					state.tokenize = eatBlock( makeLocalStyle, 'mw-section-header' );
 				}
 				return makeStyle( '', state );
 			}
@@ -502,25 +501,6 @@
 	}
 
 	/**
-	 * eat already known external link protocol
-	 * Cannot be multiline
-	 */
-	function eatExternalLinkProtocol( chars ) {
-		return function ( stream, state ) {
-			const style = eatChars( chars, 'mw-extlink-protocol', makeLocalStyle );
-			if ( stream.eol() ) {
-				state.nLink--;
-				// @todo error message
-				state.tokenize = state.stack.pop();
-			} else {
-				state.tokenize = inExternalLink;
-				state.nInvisible++;
-			}
-			return style;
-		};
-	}
-
-	/**
 	 * external link url without protocol
 	 * Cannot be multiline
 	 * Unique syntax: SPACE, ], '', [, [[, ~~~, <, >
@@ -591,8 +571,8 @@
 	 */
 	function inFileLinkNamespace( chars ) {
 		return function ( stream, state ) {
-			state.tokenize = inFileLink;
-			return eatChars( chars, 'mw-link-pagename mw-pagename', makeLocalStyle )( stream, state );
+			state.stack.push( inFileLink );
+			state.tokenize = eatChars( chars, makeLocalStyle, 'mw-link-pagename mw-pagename' );
 		};
 	}
 
@@ -807,15 +787,14 @@
 	function eatTagName( name, isCloseTag, isHtmlTag ) {
 		return function ( stream, state ) {
 			state.nInvisible++;
-			const style = eatChars( name.length, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name', makeLocalStyle )( stream, state );
+			state.tokenize = eatChars( name.length, makeLocalStyle, isHtmlTag ? 'mw-htmltag-name' : 'mw-exttag-name' );
 			if ( isHtmlTag ) {
-				state.tokenize = eatHtmlTagAttribute( name, isCloseTag );
+				state.stack.push( eatHtmlTagAttribute( name, isCloseTag ) );
 			} else if ( isCloseTag ) { // extension tag
-				state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
+				state.stack.push( eatChars( 1, makeLocalStyle, 'mw-exttag-bracket' ) );
 			} else {
-				state.tokenize = eatExtTagAttribute( name );
+				state.stack.push( eatExtTagAttribute( name ) );
 			}
-			return style;
 		};
 	}
 
@@ -923,18 +902,17 @@
 	 */
 	function eatExtCloseTag( chars ) {
 		return function ( stream, state ) {
-			const style = eatChars( 2, 'mw-exttag-bracket', makeLocalStyle )( stream, state );
-			state.tokenize = eatExtCloseTagName( chars );
+			state.tokenize = eatChars( 2, makeLocalStyle, 'mw-exttag-bracket' );
+			state.stack.push( eatExtCloseTagName( chars ) );
 			state.nInvisible++;
-			return style;
 		};
 	}
+
 	function eatExtCloseTagName( chars ) {
 		return function ( stream, state ) {
-			const style = eatChars( chars, 'mw-exttag-name', makeLocalStyle )( stream, state );
+			state.tokenize = eatChars( chars, makeLocalStyle, 'mw-exttag-name' )( stream, state );
+			state.stack.push( eatChars( 1, makeLocalStyle, 'mw-exttag-bracket' ) );
 			state.nInvisible--;
-			state.tokenize = eatChars( 1, 'mw-exttag-bracket', makeLocalStyle, true );
-			return style;
 		};
 	}
 
@@ -962,11 +940,9 @@
 	 * eat already known tabel start
 	 */
 	function eatStartTable( stream, state ) {
-		const style = eatChars( 2, 'mw-table-bracket', makeLocalStyle );
-		eatSpace( stream );
-		state.tokenize = inTableDefinition;
+		state.tokenize = eatChars( 2, makeLocalStyle, 'mw-table-bracket' );
+		state.stack.push( inTableDefinition );
 		state.nInvisible++;
-		return style;
 	}
 
 	/**
@@ -1255,7 +1231,9 @@
 						if ( mt ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
-							state.tokenize = eatExternalLinkProtocol( mt[ 0 ].length );
+							state.stack.push( inExternalLink );
+							state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' );
+							state.nInvisible++;
 							return makeLocalStyle( 'mw-extlink-bracket', state );
 						}
 					}
