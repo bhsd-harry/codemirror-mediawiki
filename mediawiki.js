@@ -948,6 +948,10 @@
 	 * eat two characters of tabel start
 	 */
 	function eatStartTable( streamObj, stateObj ) {
+		stateObj.stack.push( inTableDefinition );
+		stateObj.nInvisible++;
+		return eatChars( 2, makeLocalStyle, 'mw-table-bracket' )( streamObj, stateObj );
+
 		/**
 		 * definition of table and table row, not used for table caption or table cell
 		 * Cannot be multiline
@@ -955,7 +959,7 @@
 		 */
 		function inTableDefinition( stream, state ) {
 			if ( stream.sol() ) { // 1. SOL
-				state.tokenize = inTable;
+				state.tokenize = inTable();
 				state.nInvisible--;
 				return;
 			} else if ( stream.match( /^[^{&~<]+/ ) ) { // 2. plain text
@@ -974,11 +978,15 @@
 		 * tbody
 		 * Usually at stream.sol(); rarely outside table
 		 * Unique syntax: |, |-, |+, |}, !
+		 * @param {?string} haveEaten - '|' which has been eaten
 		 */
-		function inTable( stream, state ) {
-			if ( stream.sol() ) { // 1. SOL
-				eatSpace( stream );
-				if ( stream.eat( '|' ) ) {
+		function inTable( haveEaten ) {
+			return function ( stream, state ) {
+				if ( haveEaten === '|' ) {
+					if ( stream.eol() ) { // 3. unique syntax: |
+						state.tokenize = eatTableRow( true, false );
+						return;
+					}
 					const ch = stream.next();
 					switch ( ch ) {
 						case '-': // 3. unique syntax: |-
@@ -991,17 +999,23 @@
 						case '}': // 3. unique syntax: |}
 							state.tokenize = state.stack.pop();
 							return makeLocalStyle( 'mw-table-bracket', state );
-						default:
-							stream.backUp( stream.eol() ? 0 : 1 );
+						default: // 3. unique syntax: |
+							stream.backUp( 1 );
 							state.tokenize = eatTableRow( true, false ); // 3. unique syntax: |
-							return makeLocalStyle( 'mw-table-delimiter', state );
+							return;
 					}
-				} else if ( stream.eat( '!' ) ) {
-					state.tokenize = eatTableRow( true, true );
-					return makeLocalStyle( 'mw-table-delimiter', state ); // 3. unique syntax: !
+				} else if ( stream.sol() ) { // 1. SOL
+					eatSpace( stream );
+					if ( stream.eat( '|' ) ) {
+						state.tokenize = inTable( '|' );
+						return makeLocalStyle( 'mw-table-delimiter', state );
+					} else if ( stream.eat( '!' ) ) { // 3. unique syntax: !
+						state.tokenize = eatTableRow( true, true );
+						return makeLocalStyle( 'mw-table-delimiter', state );
+					}
 				}
-			}
-			return eatWikiText( 'error' )( stream, state ); // 4. all common wikitext
+				return eatWikiText( 'error' )( stream, state ); // 4. all common wikitext
+			};
 		}
 
 		/**
@@ -1014,9 +1028,10 @@
 			return function ( stream, state ) {
 				if ( stream.sol() ) { // 1. SOL
 					clearApos( state );
-					if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) { // 3. unique syntax: |, !
-						state.tokenize = inTable;
-						return;
+					const mt = stream.match( /^[\s\xa0]*[|!]/ );
+					if ( mt ) { // 3. unique syntax: |, !
+						state.tokenize = mt[ 0 ].endsWith( '|' ) ? inTable( '|' ) : eatTableRow( true, true );
+						return makeLocalStyle( 'mw-table-delimiter', state );
 					} else if ( expectAttr ) {
 						state.tokenize = inTableCaption( false );
 						return;
@@ -1054,8 +1069,9 @@
 			return function ( stream, state ) {
 				if ( stream.sol() ) { // 1. SOL
 					clearApos( state );
-					if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) { // 3. unique syntax: |, !
-						state.tokenize = inTable;
+					const mt = stream.match( /^[\s\xa0]*[|!]/ );
+					if ( mt ) { // 3. unique syntax: |, !
+						state.tokenize = mt[ 0 ].endsWith( '|' ) ? inTable( '|' ) : eatTableRow( true, true );
 						return;
 					}
 					state.apos.dt = isHead;
@@ -1100,10 +1116,6 @@
 				return eatWikiTextOther( makeStyle, '', '' )( stream, state );
 			};
 		}
-
-		stateObj.stack.push( inTableDefinition );
-		stateObj.nInvisible++;
-		return eatChars( 2, makeLocalStyle, 'mw-table-bracket' )( streamObj, stateObj );
 	}
 
 	/**
