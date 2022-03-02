@@ -31,6 +31,7 @@
 	 * @type {object}
 	 * @property {boolean} bold
 	 * @property {boolean} italic
+	 * @property {boolean} dt
 	 */
 
 	/**
@@ -106,7 +107,7 @@
 			return;
 		}
 		const tags = state.InHtmlTag.join(),
-			strong = state.apos.bold || state.nInvisible === 0 && /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+			strong = state.apos.bold || state.apos.dt || state.nInvisible === 0 && /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
 			em = state.apos.italic || state.nInvisible === 0 && /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
 			strikethrough = state.nInvisible === 0 && /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
 		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
@@ -269,19 +270,18 @@
 
 	/**
 	 * eat section header when the number of ending characters is already known
+	 * @param {number} count - number of ending characters
 	 */
 	function eatSectionHeader( count ) {
 		return function ( stream, state ) {
-			// 1. impossible to be stream.sol()
 			if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
-				if ( stream.eol() ) {
+				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
 					state.tokenize = eatBlock( makeLocalStyle, 'mw-section-header' );
 				}
 				return makeStyle( '', state );
 			}
-			// 3. no unique syntax
-			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext, without fallback
+			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext, including fallback
 		};
 	}
 
@@ -1113,21 +1113,21 @@
 	}
 
 	/**
-	 * common wikitext syntax at start of line
-	 * Eat at least one character
-	 * @param {(string|undefined)} style - Default style
-	 * @returns {(string|undefined)}
+	 * common wikitext syntax at SOL
+	 * Always advances
+	 * @param {?string} style - fallback style
+	 * @returns {?string}
 	 */
 	function eatWikiTextSol( makeFunc, style ) {
 		return function ( stream, state ) {
 			const ch = stream.next();
 			switch ( ch ) {
-				case '-':
+				case '-': // 3. valid wikitext: ----
 					if ( stream.match( /^-{3,}/ ) ) {
 						return 'mw-hr'; // has own background
 					}
 					break;
-				case '=': {
+				case '=': { // 3. valid wikitext: =
 					const tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
 					if ( tmp ) {
 						stream.backUp( tmp[ 2 ].length );
@@ -1145,7 +1145,7 @@
 				case ';': {
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
-						state.apos.bold = true;
+						state.apos.dt = true;
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
@@ -1157,7 +1157,7 @@
 					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( /;/.test( mt[ 0 ] ) ) {
-						state.apos.bold = true;
+						state.apos.dt = true;
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
@@ -1188,8 +1188,8 @@
 	}
 
 	/**
-	 * common wikitext syntax not at start of line
-	 * Eat at least one character
+	 * other common wikitext syntax
+	 * Always advances
 	 * @param {function} makeFunc
 	 * @param {(string|undefined)} style - Default style, only for &, ', ~, _
 	 * @param {(string|undefined)} errorStyle - Error style, only for [, {, <
@@ -1352,6 +1352,7 @@
 	 * 2. eatWikiTextOther()
 	 * 3. eat free external link
 	 * 4. eat plain text which does not interfere with free external links
+	 * @param {string} style - fallback style
 	 */
 	function eatWikiText( style ) {
 		return function ( stream, state ) {
@@ -1372,7 +1373,7 @@
 			}
 			stream.backUp( 1 );
 
-			return eatFreeExternalLinkProtocol( style, '' )( stream, state );
+			return eatFreeExternalLinkProtocol( style, '' )( stream, state ); // 5. including fallback
 		};
 	}
 
@@ -1385,7 +1386,7 @@
 		if ( stream.match( /^[^&<]+/ ) ) { // 2. plain text
 			return '';
 		}
-		var ch = stream.next();
+		const ch = stream.next();
 		switch ( ch ) {
 			case '&': // 4. valid wikitext: &
 				return eatMnemonic( stream, '' );
@@ -1405,7 +1406,7 @@
 	 * Valid wikitext: &
 	 */
 	function eatNowiki( stream ) {
-		var ch = stream.next();
+		const ch = stream.next();
 		if ( ch === '&' ) { // 4. valid wikitext: &
 			return eatMnemonic( stream, '' );
 		} else if ( !stream.skipTo( '&' ) ) { // 2. plain text
