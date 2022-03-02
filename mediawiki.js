@@ -50,6 +50,8 @@
 
 	/**
 	 * add background
+	 * @param {?string} endGround - key for decrement
+	 * @return {?string} style
 	 */
 	function makeLocalStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -80,8 +82,14 @@
 			default:
 				ground += '-ext3';
 		}
-		if ( state.nLink > 0 ) {
-			ground += '-link';
+		switch ( state.nLink ) {
+			case 0:
+				break;
+			case 1:
+				ground += '-link';
+				break;
+			default:
+				ground += '-link2';
 		}
 		if ( endGround ) {
 			state[ endGround ]--;
@@ -306,7 +314,7 @@
 			if ( stream.sol() ) {
 				state.apos = {}; // do not change state.aposStack
 				if ( /[-=#*:; ]/.test( stream.peek() ) ) {
-					return eatWikiTextSol( style )( stream, state );
+					return eatWikiTextSol( makeStyle, style )( stream, state );
 				}
 			}
 			if ( stream.match( /^[^|}{&'~_[<]+/ ) ) { // 2. plain text
@@ -374,7 +382,7 @@
 			} else if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
 				if ( ( haveEaten ? /[-=#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
-					return eatWikiTextSol( 'mw-parserfunction' )( stream, state );
+					return eatWikiTextSol( makeStyle, 'mw-parserfunction' )( stream, state );
 				}
 			}
 			const mt = stream.match( /^[^|}&<[{~_']+/ );
@@ -476,7 +484,7 @@
 			} else if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
 				if ( ( haveEaten ? /[-#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
-					return eatWikiTextSol( 'mw-template' )( stream, state );
+					return eatWikiTextSol( makeStyle, 'mw-template' )( stream, state );
 				}
 			}
 			const ch = stream.peek();
@@ -631,7 +639,7 @@
 	function eatFileLinkText( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol()
 			if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
-				return eatWikiTextSol( 'mw-link-text' )( stream, state );
+				return eatWikiTextSol( makeStyle, 'mw-link-text' )( stream, state );
 			}
 		}
 		if ( stream.match( /^[^\]|{&'~[<]+/ ) ) { // 2. plain text
@@ -764,7 +772,7 @@
 	function eatLinkText( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol()
 			if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
-				return eatWikiTextSol( 'mw-link-text' )( stream, state );
+				return eatWikiTextSol( makeOrStyle, 'mw-link-text' )( stream, state );
 			}
 		}
 		if ( stream.match( /^(?:[^\][~{&'<]+|\[(?!\[))/ ) ) { // 2. plain text
@@ -1128,7 +1136,7 @@
 	 * @param {(string|undefined)} style - Default style
 	 * @returns {(string|undefined)}
 	 */
-	function eatWikiTextSol( style ) {
+	function eatWikiTextSol( makeFunc, style ) {
 		return function ( stream, state ) {
 			const ch = stream.next();
 			switch ( ch ) {
@@ -1193,7 +1201,7 @@
 						return makeLocalStyle( 'mw-table-bracket', state );
 					}
 			}
-			return makeLocalStyle( style, state );
+			return makeFunc( style, state );
 		};
 	}
 
@@ -1367,7 +1375,7 @@
 
 			if ( stream.sol() ) {
 				clearApos( state );
-				result = eatWikiTextSol()( stream, state );
+				result = eatWikiTextSol( makeStyle )( stream, state );
 				if ( result !== undefined ) {
 					return result;
 				}
