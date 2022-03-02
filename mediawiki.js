@@ -283,7 +283,7 @@
 				}
 				return makeStyle( '', state );
 			}
-			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext
+			return eatWikiTextOther( makeStyle, '' )( stream, state ); // 4. common wikitext
 		};
 	}
 
@@ -307,7 +307,7 @@
 			return makeLocalStyle( 'mw-templatevariable-bracket', state );
 		}
 		// 4. limited common wikitext: {{, {{{; without fallback
-		return eatWikiTextOther( makeLocalStyle, '', 'mw-templatevariable-name' )( stream, state );
+		return eatWikiTextOther( makeLocalStyle, 'mw-templatevariable-name' )( stream, state );
 	}
 
 	/**
@@ -334,7 +334,7 @@
 				return makeLocalStyle( 'mw-templatevariable-bracket', state );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( makeStyle, style, style )( stream, state );
+			return eatWikiTextOther( makeStyle, style )( stream, state );
 		};
 	}
 
@@ -363,7 +363,7 @@
 			state.nInvisible--;
 			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
 		} else if ( stream.match( '{{', false ) ) { // 4. limited common wikitext: {{, {{{
-			return eatWikiTextOther( makeLocalStyle, '', 'error' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, 'error' )( stream, state );
 		}
 		stream.next();
 		return makeLocalStyle( 'error', state ); // 5. fallback
@@ -402,7 +402,7 @@
 				state.tokenize = inParserFunctionArguments( true );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( makeStyle, 'mw-parserfunction', 'mw-parserfunction' )( stream, state );
+			return eatWikiTextOther( makeStyle, 'mw-parserfunction' )( stream, state );
 		};
 	}
 
@@ -428,7 +428,11 @@
 				option.haveEaten = true;
 				const defaultStyle = style + ' mw-pagename',
 					ampStyle = option.ampStyle === undefined ? defaultStyle : option.ampStyle;
-				return eatWikiTextOther( makeFunc, defaultStyle, 'error', ampStyle )( stream, state );
+				return eatWikiTextOther( makeFunc, '', {
+					tilde: defaultStyle,
+					lbrace: 'error',
+					amp: ampStyle
+				} )( stream, state );
 			}
 			stream.next(); // 5. fallback
 			return makeFunc( 'error', state );
@@ -504,7 +508,7 @@
 				state.tokenize = eatTemplateArgument( expectArgName, true );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( makeStyle, 'mw-template', 'mw-template' )( stream, state );
+			return eatWikiTextOther( makeStyle, 'mw-template' )( stream, state );
 		};
 	}
 
@@ -543,7 +547,7 @@
 			state.tokenize = inExternalLinkText;
 			state.nInvisible--;
 		} else { // 4. limited common wikitext: &, {{, {{{; without fallback
-			return eatWikiTextOther( makeLocalStyle, 'mw-extlink', 'mw-extlink' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, 'mw-extlink' )( stream, state );
 		}
 	}
 
@@ -571,7 +575,7 @@
 			return makeStyle( 'mw-extlink-text', state );
 		}
 		// 4. common wikitext without fallback
-		return eatWikiTextOther( makeStyle, 'mw-extlink-text', 'mw-extlink-text' )( stream, state );
+		return eatWikiTextOther( makeStyle, 'mw-extlink-text' )( stream, state );
 	}
 
 	/**
@@ -646,7 +650,7 @@
 			return makeLocalStyle( 'mw-link-delimiter', state );
 		}
 		// 4. common wiki text without fallback
-		return eatWikiTextOther( makeStyle, 'mw-link-text', 'mw-link-text' )( stream, state );
+		return eatWikiTextOther( makeStyle, 'mw-link-text' )( stream, state );
 	}
 
 	/**
@@ -725,7 +729,7 @@
 				state.nInvisible--;
 				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			} else if ( stream.match( /^(?:&|{{|<!--)/, false ) ) { // 4. limited common wikitext
-				return eatWikiTextOther( makeFunc, 'mw-link-tosection', 'mw-link-tosection' )( stream, state );
+				return eatWikiTextOther( makeFunc, 'mw-link-tosection' )( stream, state );
 			}
 			const mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
 			if ( mt ) { // 4. invalid syntax or characters: tags, ~~~, {, }, [, ]
@@ -784,7 +788,7 @@
 			return makeLocalStyle( 'error', state );
 		}
 		// 4. limited common wikitext: {{, {{{, &, '', <, ~~~~~
-		return eatWikiTextOther( makeOrStyle, 'mw-link-text', 'mw-link-text' )( stream, state );
+		return eatWikiTextOther( makeOrStyle, 'mw-link-text' )( stream, state );
 	}
 
 	/**
@@ -842,7 +846,7 @@
 				return;
 			}
 			// 4. limited common wikitext: {{, {{{, &, ~~~; without fallback
-			return eatWikiTextOther( makeLocalStyle, style, style )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, style )( stream, state );
 		};
 	}
 
@@ -872,7 +876,7 @@
 				return makeLocalStyle( 'mw-exttag-bracket', state );
 			}
 			// 4. limited common wikitext: {{, {{{, &; without fallback
-			return eatWikiTextOther( makeLocalStyle, 'mw-exttag-attribute', 'mw-exttag-attribute' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, 'mw-exttag-attribute' )( stream, state );
 		};
 	}
 
@@ -971,7 +975,7 @@
 				return makeLocalStyle( 'mw-table-definition', state ); // 5. fallback
 			}
 			// 4. valid wikitext: {, &, ~
-			return eatWikiTextOther( makeLocalStyle, 'mw-table-definition', 'mw-table-definition' )( stream, state );
+			return eatWikiTextOther( makeLocalStyle, 'mw-table-definition' )( stream, state );
 		}
 
 		/**
@@ -1113,7 +1117,7 @@
 						}
 				}
 				stream.backUp( 1 );
-				return eatWikiTextOther( makeStyle, '', '' )( stream, state );
+				return eatWikiTextOther( makeStyle, '' )( stream, state );
 			};
 		}
 	}
@@ -1166,7 +1170,7 @@
 			} else if ( stream.match( plainRegex ) ) { // 2. plain text
 				return makeStyle( 'mw-free-extlink', state );
 			} else if ( /[{&]/.test( stream.peek() ) ) { // 4. limited common wikitext: {{, {{{, &
-				return eatWikiTextOther( makeStyle, 'mw-free-extlink', 'mw-free-extlink' )( stream, state );
+				return eatWikiTextOther( makeStyle, 'mw-free-extlink' )( stream, state );
 			} else if ( stream.match( /[!)\\:;,.?]*(?=[\s\xa0]|$)/, false ) ) { // 3. invalid characters
 				state.tokenize = state.stack.pop();
 				return;
@@ -1248,31 +1252,61 @@
 	/**
 	 * other common wikitext syntax
 	 * Always advances
-	 * @param {function} makeFunc
-	 * @param {(string|undefined)} style - Default style, only for &, ', ~, _
-	 * @param {(string|undefined)} errorStyle - Error style, only for [, {, <
-	 * @param {(string|undefined)} ampStyle - Special style for &, default as style
-	 * @returns {(string|undefined)}
+	 * @param {?string} style - default style
+	 * @param {?Object.<string, string>} details - individual default styles for different syntax
+	 * @returns {?string}
 	 */
-	function eatWikiTextOther( makeFunc, style, errorStyle, ampStyle ) {
+	function eatWikiTextOther( makeFunc, style, details ) {
 		return function ( stream, state ) {
 			const ch = stream.next();
+			details = details || {}; // eslint-disable-line no-param-reassign
+			var errorStyle;
 			switch ( ch ) {
-				case '&':
-					return makeFunc( eatMnemonic( stream, style, ampStyle ), state );
+				case '&': // valid wikitext: &
+					return makeFunc( eatMnemonic( stream, style, details.amp ), state );
 				case "'":
-					// skip the irrelevant apostrophes ( >5 or =4 )
 					if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'{3}(?!')/, false ) ) {
-						return makeFunc( style, state );
-					} else if ( stream.match( "''" ) ) { // bold
+						// skip the irrelevant apostrophes ( >5 or =4 )
+					} else if ( stream.match( "''" ) ) { // valid wikitext: ''', bold
 						state.apos.bold = !state.apos.bold;
 						return makeLocalStyle( 'mw-apostrophes', state );
-					} else if ( stream.eat( "'" ) ) { // italic
+					} else if ( stream.eat( "'" ) ) { // valid wikitext: '', italic
 						state.apos.italic = !state.apos.italic;
 						return makeLocalStyle( 'mw-apostrophes', state );
 					}
-					return makeFunc( style, state );
+					return makeFunc( details.apos === undefined ? style : details.apos, state );
+				case '~':
+					if ( stream.match( /^~{2,4}/ ) ) { // valid wikitext: ~~~
+						return 'mw-signature'; // has own background
+					}
+					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
+				case '_': {
+					var tmp = 1;
+					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
+						tmp++;
+					}
+					if ( stream.eol() ) {
+						// fallback
+					} else if ( tmp > 2 ) { // Many underscore symbols
+						// Leave last two underscore symbols for processing again in next iteration
+						stream.backUp( 2 );
+					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
+						const name = stream.match( /^.+?__/ );
+						if ( name ) {
+							const varname = '__' + name[ 0 ],
+								underscore = mwConfig.doubleUnderscore;
+							if ( varname.toLowerCase() in underscore[ 0 ] || varname in underscore[ 1 ] ) {
+								return 'mw-doubleUnderscore'; // has own background
+							} else if ( !stream.eol() ) {
+								// Leave last two underscore symbols for processing again in next iteration
+								stream.backUp( 2 );
+							}
+						}
+					}
+					return makeFunc( details.lowbar === undefined ? style : details.lowbar, state );
+				}
 				case '[': {
+					errorStyle = details.lbrack === undefined ? style : details.lbrack;
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						eatSpace( stream );
 						if ( /[^\]|[<>{}]/.test( stream.peek() ) ) { // ignore invalid link
@@ -1282,11 +1316,8 @@
 							if ( mt ) {
 								state.tokenize = inFileLinkNamespace( mt[ 0 ].length );
 								state.nInvisible++;
-							} else if ( stream.match( /^[^\]]*\|/, false ) ) {
-								state.tokenize = inLink( true );
-								state.nInvisible++;
 							} else {
-								state.tokenize = inLink( false );
+								state.tokenize = inLink;
 							}
 							return makeLocalStyle( 'mw-link-bracket', state );
 						}
@@ -1304,6 +1335,7 @@
 					break;
 				}
 				case '{': {
+					errorStyle = details.lbrace === undefined ? style : details.lbrace;
 					// Template parameter (skip parameters inside a template transclusion, Bug: T108450)
 					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
 						eatSpace( stream );
@@ -1340,6 +1372,7 @@
 					break;
 				}
 				case '<': {
+					errorStyle = details.lt === undefined ? style : details.lt;
 					if ( stream.match( '!--' ) ) { // comment
 						return eatComment( stream, state );
 					}
@@ -1369,35 +1402,6 @@
 						}
 					}
 					break;
-				}
-				case '~':
-					if ( stream.match( /^~{2,4}/ ) ) {
-						return 'mw-signature'; // has own background
-					}
-					return makeFunc( style, state );
-				case '_': {
-					var tmp = 1;
-					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
-						tmp++;
-					}
-					if ( tmp > 2 ) { // Many underscore symbols
-						if ( !stream.eol() ) {
-							// Leave last two underscore symbols for processing again in next iteration
-							stream.backUp( 2 );
-						}
-					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
-						const name = stream.match( /^[^\s\xa0{}&'~[\]<>|:]+?__/ );
-						if ( name ) {
-							const varname = '__' + name[ 0 ];
-							if ( varname.toLowerCase() in mwConfig.doubleUnderscore[ 0 ] || varname in mwConfig.doubleUnderscore[ 1 ] ) {
-								return 'mw-doubleUnderscore'; // has own background
-							} else if ( !stream.eol() ) {
-								// Leave last two underscore symbols for processing again in next iteration
-								stream.backUp( 2 );
-							}
-						}
-					}
-					return makeFunc( style, state );
 				}
 			}
 			return makeFunc( errorStyle, state );
