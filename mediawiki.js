@@ -52,7 +52,7 @@
 	/**
 	 * add background
 	 * @param {?string} endGround - key for decrement
-	 * @return {?string} style
+	 * @returns {?string} style
 	 */
 	function makeLocalStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -100,22 +100,24 @@
 
 	/**
 	 * show bold/italic/strikethrough font in addition to background
-	 * @return {?string} style
+	 * @returns {?string} style
 	 */
 	function makeStyle( style, state, endGround ) {
 		if ( style === undefined ) {
 			return;
+		} else if ( state.nInvisible ) {
+			return makeLocalStyle( style, state, endGround );
 		}
 		const tags = state.InHtmlTag.join(),
-			strong = state.apos.bold || state.apos.dt || state.nInvisible === 0 && /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
-			em = state.apos.italic || state.nInvisible === 0 && /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
-			strikethrough = state.nInvisible === 0 && /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
+			strong = state.apos.bold || state.apos.dt || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
+			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
 		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
 	}
 
 	/**
 	 * show bold/italic font based on both local and parent apostrophe states
-	 * @return {?string} style
+	 * @returns {?string} style
 	 */
 	function makeOrStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -133,7 +135,7 @@
 	 * @example
 	 * state.tokenize = state.stack.pop();
 	 * @param {function} parser - token
-	 * @return {function} same token
+	 * @returns {function} same token
 	 */
 	function chain( parser ) {
 		return function ( stream, state ) {
@@ -145,7 +147,7 @@
 
 	/**
 	 * greedy eat white spaces without returned styles
-	 * @return {(Array.<string>|false)} result of RegExp match or false
+	 * @returns {(Array.<string>|false)} result of RegExp match or false
 	 */
 	function eatSpace( stream ) {
 		return stream.match( /^[\s\xa0]+/ );
@@ -250,7 +252,7 @@
 	function eatMnemonic( stream, style, errorStyle ) {
 		/**
 		 * @param {string} str - string after '&'
-		 * @return {boolean}
+		 * @returns {boolean}
 		 */
 		function isEntity( str ) {
 			span.innerHTML = '&' + str;
@@ -281,7 +283,7 @@
 				}
 				return makeStyle( '', state );
 			}
-			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext, including fallback
+			return eatWikiTextOther( makeStyle, '', '' )( stream, state ); // 4. common wikitext
 		};
 	}
 
@@ -408,7 +410,7 @@
 	 * eat general page name without syntax details
 	 * @param {RegExp} regex - regex for plain text; must exclude [&#<~>[\]{}|]
 	 * @param {Object.<'haveEaten', boolean>} option
-	 * @return {(string|undefined)}
+	 * @returns {(string|undefined)}
 	 */
 	function eatPageName( regex, makeFunc, style, option ) {
 		return function ( stream, state ) {
@@ -943,115 +945,165 @@
 	}
 
 	/**
-	 * eat already known tabel start
+	 * eat two characters of tabel start
 	 */
-	function eatStartTable( stream, state ) {
-		state.tokenize = eatChars( 2, makeLocalStyle, 'mw-table-bracket' );
-		state.stack.push( inTableDefinition );
-		state.nInvisible++;
-	}
-
-	/**
-	 * table definition
-	 * Cannot be multiline
-	 * Valid wikitext syntax: {{, {{{, &, ~~~, <!--
-	 */
-	function inTableDefinition( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			state.tokenize = inTable;
-			state.nInvisible--;
-			return;
-		} else if ( stream.match( /^[^{&~<]+/ ) ) { // 2. plain text
-			return makeLocalStyle( 'mw-table-definition', state );
-		} else if ( stream.match( /^(?:{{|&|~{3}|<!--)/, false ) ) { // 4. limited common wikitext
+	function eatStartTable( streamObj, stateObj ) {
+		/**
+		 * definition of table and table row, not used for table caption or table cell
+		 * Cannot be multiline
+		 * Valid wikitext: {, &, ~, <!--
+		 */
+		function inTableDefinition( stream, state ) {
+			if ( stream.sol() ) { // 1. SOL
+				state.tokenize = inTable;
+				state.nInvisible--;
+				return;
+			} else if ( stream.match( /^[^{&~<]+/ ) ) { // 2. plain text
+				return makeLocalStyle( 'mw-table-definition', state );
+			} else if ( stream.eat( '<' ) ) {
+				if ( stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+					return eatComment( stream, state );
+				}
+				return makeLocalStyle( 'mw-table-definition', state ); // 5. fallback
+			}
+			// 4. valid wikitext: {, &, ~
 			return eatWikiTextOther( makeLocalStyle, 'mw-table-definition', 'mw-table-definition' )( stream, state );
 		}
-		stream.next();
-		return makeLocalStyle( 'mw-table-definition', state ); // fallback
-	}
 
-	/**
-	 * table caption
-	 * Can be multiline
-	 * Unique syntax: |, ! (not correctly handled now)
-	 */
-	function inTableCaption( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			clearApos( state );
-			if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) {
-				state.tokenize = inTable;
-				return;
-			}
-		}
-		return eatWikiText( 'mw-table-caption' )( stream, state ); // 4. all common wikitext, without fallback
-	}
-
-	/**
-	 * general table
-	 * Usually at stream.sol(); rarely outside table
-	 * Unique syntax: |, |-, |+, |}, !
-	 */
-	function inTable( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			eatSpace( stream );
-			if ( stream.eat( '|' ) ) {
-				if ( stream.eat( '-' ) ) { // 3. unique syntax: |-
-					eatSpace( stream );
-					state.tokenize = inTableDefinition;
-					return makeLocalStyle( 'mw-table-delimiter', state );
-				}
-				if ( stream.eat( '+' ) ) { // 3. unique syntax: |+
-					stream.eatSpace();
-					state.tokenize = inTableCaption;
-					return makeLocalStyle( 'mw-table-delimiter', state );
-				}
-				if ( stream.eat( '}' ) ) { // 3. unique syntax: |}
-					state.tokenize = state.stack.pop();
-					return makeLocalStyle( 'mw-table-bracket', state );
-				}
-				stream.eatSpace();
-				state.tokenize = eatTableRow( true, false ); // 3. unique syntax: |
-				return makeLocalStyle( 'mw-table-delimiter', state );
-			} else if ( stream.eat( '!' ) ) {
+		/**
+		 * tbody
+		 * Usually at stream.sol(); rarely outside table
+		 * Unique syntax: |, |-, |+, |}, !
+		 */
+		function inTable( stream, state ) {
+			if ( stream.sol() ) { // 1. SOL
 				eatSpace( stream );
-				state.tokenize = eatTableRow( true, true );
-				return makeLocalStyle( 'mw-table-delimiter', state ); // 3. unique syntax: !
-			}
-		}
-		return eatWikiText( '' )( stream, state ); // 4. all common wikitext, without fallback
-	}
-
-	/**
-	 * table row
-	 * Can be multiline
-	 * Unique syntax: ||, !!, |
-	 */
-	function eatTableRow( expectAttr, isHead ) {
-		var style = isHead ? 'strong' : '';
-		return function ( stream, state ) {
-			if ( expectAttr && !stream.match( /^[^|]*(?=\|\||!!|$)/, false ) ) {
-				state.nInvisible++;
-				style += ' mw-table-definition';
-			}
-			if ( stream.sol() ) { // 1. stream.sol()
-				clearApos( state );
-				if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) {
-					state.tokenize = inTable;
-					return;
+				if ( stream.eat( '|' ) ) {
+					const ch = stream.next();
+					switch ( ch ) {
+						case '-': // 3. unique syntax: |-
+							state.tokenize = inTableDefinition;
+							state.nInvisible++;
+							return makeLocalStyle( 'mw-table-delimiter', state );
+						case '+': // 3. unique syntax: |+
+							state.tokenize = inTableCaption( true );
+							return makeLocalStyle( 'mw-table-delimiter', state );
+						case '}': // 3. unique syntax: |}
+							state.tokenize = state.stack.pop();
+							return makeLocalStyle( 'mw-table-bracket', state );
+						default:
+							stream.backUp( stream.eol() ? 0 : 1 );
+							state.tokenize = eatTableRow( true, false ); // 3. unique syntax: |
+							return makeLocalStyle( 'mw-table-delimiter', state );
+					}
+				} else if ( stream.eat( '!' ) ) {
+					state.tokenize = eatTableRow( true, true );
+					return makeLocalStyle( 'mw-table-delimiter', state ); // 3. unique syntax: !
 				}
-			} else if ( stream.match( /^[^'|!{&'~[<_]+/ ) ) { // 2. plain text
-				return makeStyle( style, state );
-			} else if ( stream.match( '||' ) || isHead && stream.match( '!!' ) ) { // 3. unique syntax: ||, !!
-				state.apos = {};
-				state.tokenize = eatTableRow( true, isHead );
-				return makeLocalStyle( 'mw-table-delimiter', state );
-			} else if ( expectAttr && stream.eat( '|' ) ) { // 3. unique syntax: |
-				state.tokenize = eatTableRow( false, isHead );
-				state.nInvisible--;
-				return makeLocalStyle( 'mw-table-delimiter2', state );
 			}
-			return eatWikiText( style )( stream, state ); // 4. all common wikitext, without fallback
-		};
+			return eatWikiText( 'error' )( stream, state ); // 4. all common wikitext
+		}
+
+		/**
+		 * table caption
+		 * Can be multiline
+		 * Unique syntax: |, ! (not correctly handled yet)
+		 * @param {boolean} expectAttr
+		 */
+		function inTableCaption( expectAttr ) {
+			return function ( stream, state ) {
+				if ( stream.sol() ) { // 1. SOL
+					clearApos( state );
+					if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) { // 3. unique syntax: |, !
+						state.tokenize = inTable;
+						return;
+					} else if ( expectAttr ) {
+						state.tokenize = inTableCaption( false );
+						return;
+					}
+				} else if ( expectAttr ) {
+					const ch = stream.next();
+					switch ( ch ) {
+						case '|': // 3. unique syntax: |
+							state.tokenize = inTableCaption( false );
+							return makeLocalStyle( 'mw-table-delimiter2', state );
+						case '~':
+							if ( stream.match( /^~{2,3}(?!~)/, false ) ) { // ~~~ breaks definition
+								state.tokenize = inTableCaption( false );
+							}
+							break;
+						case '[':
+							if ( expectAttr && stream.peek() === '[' ) { // internal link breaks definition
+								state.tokenize = inTableCaption( false );
+							}
+					}
+					stream.backUp( 1 );
+				}
+				return eatWikiText( 'mw-table-caption' )( stream, state ); // 4. all common wikitext
+			};
+		}
+
+		/**
+		 * table row
+		 * Can be multiline
+		 * Unique syntax: ||, !!, |, !
+		 * @param {boolean} expectAttr
+		 * @param {boolean} isHead - is table header; only depend on '!' at SOL
+		 */
+		function eatTableRow( expectAttr, isHead ) {
+			return function ( stream, state ) {
+				if ( stream.sol() ) { // 1. SOL
+					clearApos( state );
+					if ( stream.match( /^[\s\xa0]*[|!]/, false ) ) { // 3. unique syntax: |, !
+						state.tokenize = inTable;
+						return;
+					}
+					state.apos.dt = isHead;
+					const style = eatWikiTextSol( makeStyle )( stream, state ); // 4. all common wikitext
+					if ( style !== undefined ) {
+						return style;
+					}
+				}
+				state.apos.dt = isHead;
+				if ( stream.match( /^[^|!{&'~[<_]+/ ) ) { // 2. plain text
+					return makeStyle( '', state );
+				}
+				const ch = stream.next();
+				switch ( ch ) {
+					case '|': {
+						const delimiter = stream.eat( '|' );
+						if ( delimiter || expectAttr ) { // 3. unique syntax: ||, |
+							state.apos = {};
+							state.tokenize = eatTableRow( delimiter, isHead );
+							return makeLocalStyle( 'mw-table-delimiter' + ( delimiter ? '' : '2' ), state );
+						}
+						break;
+					}
+					case '!':
+						if ( isHead && stream.eat( '!' ) ) { // 3. unique syntax: !!
+							state.apos = {};
+							state.tokenize = eatTableRow( true, true );
+							return makeLocalStyle( 'mw-table-delimiter', state );
+						}
+						break;
+					case '~':
+						if ( expectAttr && stream.match( /^~{2,3}(?!~)/, false ) ) { // ~~~ breaks definition
+							state.tokenize = eatTableRow( false, isHead );
+						}
+						break;
+					case '[':
+						if ( expectAttr && stream.peek() === '[' ) { // internal link breaks definition
+							state.tokenize = eatTableRow( false, isHead );
+						}
+				}
+				stream.backUp( 1 );
+				return eatWikiTextOther( makeStyle, '', '' )( stream, state );
+			};
+		}
+
+		stateObj.stack.push( inTableDefinition );
+		stateObj.nInvisible++;
+		return eatChars( 2, makeLocalStyle, 'mw-table-bracket' )( streamObj, stateObj );
 	}
 
 	/**
@@ -1140,7 +1192,7 @@
 					}
 					break;
 				}
-				case '*':
+				case '*': // 3. valid wikitext: *, #, ;
 				case '#':
 				case ';': {
 					const mt = stream.match( /^[*#;:]*/ );
@@ -1149,41 +1201,35 @@
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
-				case ':': {
-					if ( stream.match( /^:*[\s\xa0]*(?={\|)/ ) ) { // Highlight indented tables :{|, bug T108454
+				case ':':
+					if ( stream.match( /^:*[\s\xa0]*(?={\|)/ ) ) { // 3. valid wikitext: :{|, bug T108454
 						state.stack.push( state.tokenize );
 						state.tokenize = eatStartTable;
-						return makeLocalStyle( 'mw-list', state );
-					}
-					const mt = stream.match( /^[*#;:]*/ );
-					if ( /;/.test( mt[ 0 ] ) ) {
-						state.apos.dt = true;
+					} else { // 3. valid wikitext: :
+						const mt = stream.match( /^[*#;:]*/ );
+						if ( /;/.test( mt[ 0 ] ) ) {
+							state.apos.dt = true;
+						}
 					}
 					return makeLocalStyle( 'mw-list', state );
-				}
 				case ' ': {
-					const mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ );
-					if ( mt ) { // Leading spaces is the correct syntax for a table, bug T108454
-						if ( mt[ 1 ] ) {
-							state.stack.push( state.tokenize );
-							state.tokenize = eatStartTable;
-							return makeLocalStyle( 'mw-list', state );
-						}
-						stream.eat( '{' );
-					} else {
-						return 'mw-skipformatting'; // has own background
+					const mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ ); // 3. valid wikitext: :{|
+					if ( mt ) { // 3. valid wikitext: {|, bug T108454
+						state.stack.push( state.tokenize );
+						state.tokenize = eatStartTable;
+						return makeLocalStyle( mt[ 1 ] ? 'mw-list' : '', state );
 					}
-					// fall through
+					// 3. valid wikitext: SPACE
+					return 'mw-skipformatting'; // has own background
 				}
 				case '{':
-					if ( stream.eat( '|' ) ) {
-						eatSpace( stream );
+					if ( stream.peek() === '|' ) { // 3. valid wikitext: {|
+						stream.backUp( 1 );
 						state.stack.push( state.tokenize );
-						state.tokenize = inTableDefinition;
-						return makeLocalStyle( 'mw-table-bracket', state );
+						return eatStartTable( stream, state );
 					}
 			}
-			return makeFunc( style, state );
+			return makeFunc( style, state ); // 5. fallback
 		};
 	}
 
@@ -1395,7 +1441,7 @@
 					state.nowiki = !state.nowiki;
 					return 'mw-comment';
 				}
-				// fallthrough
+				// fall through
 			default: // 5. fallback
 				return '';
 		}
