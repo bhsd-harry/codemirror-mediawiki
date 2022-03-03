@@ -1412,10 +1412,9 @@
 
 	/**
 	 * eat general wikitext
-	 * 1. eatWikiTextSol() if necessary
+	 * 1. eatWikiTextSol() at SOL
 	 * 2. eatWikiTextOther()
 	 * 3. eat free external link
-	 * 4. eat plain text which does not interfere with free external links
 	 * @param {string} style - fallback style
 	 */
 	function eatWikiText( style ) {
