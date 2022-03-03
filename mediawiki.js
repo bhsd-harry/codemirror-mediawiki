@@ -144,6 +144,7 @@
 
 	/**
 	 * show bold/italic font based on both local and parent apostrophe states
+	 * For internal link text, including file link caption
 	 * @returns {?string} style
 	 */
 	function makeOrStyle( style, state, endGround ) {
@@ -154,7 +155,20 @@
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic
 		} } );
-		return makeStyle( style, orState, endGround );
+		return makeFullStyle( style, orState, endGround );
+	}
+
+	/**
+	 * execute token once and exit
+	 * @param {function} parser - token
+	 * @returns {undefined}
+	 */
+	function once( parser, stateObj ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			state.tokenize = state.stack.pop();
+			return parser( stream, state );
+		};
 	}
 
 	/**
@@ -173,30 +187,17 @@
 	}
 
 	/**
+	 * naming convection
+	 * function eatXXX() - not mutate state.tokenize and state.stack
+	 * function inXXX() - mutate state.tokenize and/or state.stack
+	 */
+
+	/**
 	 * greedy eat white spaces without returned styles
 	 * @returns {(Array.<string>|false)} result of RegExp match or false
 	 */
 	function eatSpace( stream ) {
 		return stream.match( /^[\s\xa0]+/ );
-	}
-
-	/**
-	 * eat until a specified terminator or EOL
-	 * @param {?string} terminator - terminator string
-	 */
-	function eatBlock( makeFunc, style, terminator ) {
-		return function ( stream, state ) {
-			if ( !terminator ) {
-				stream.skipToEnd();
-				state.tokenize = state.stack.pop();
-			} else if ( stream.skipTo( terminator ) ) {
-				stream.match( terminator );
-				state.tokenize = state.stack.pop();
-			} else {
-				stream.skipToEnd();
-			}
-			return makeFunc( style, state );
-		};
 	}
 
 	/**
@@ -214,7 +215,34 @@
 	}
 
 	/**
-	 * reset apostrophe states
+	 * eat until EOL
+	 */
+	function eatEnd( makeFunc, style ) {
+		return function ( stream, state ) {
+			stream.skipToEnd();
+			return makeFunc( style, state );
+		};
+	}
+
+	/**
+	 * eat until a specified terminator or EOL
+	 * Exit only at terminator
+	 * @param {string} terminator - terminator string
+	 */
+	function inBlock( makeFunc, style, terminator ) {
+		return function ( stream, state ) {
+			if ( stream.skipTo( terminator ) ) {
+				stream.match( terminator );
+				state.tokenize = state.stack.pop();
+			} else {
+				stream.skipToEnd();
+			}
+			return makeFunc( style, state );
+		};
+	}
+
+	/**
+	 * reset all apostrophe states
 	 */
 	function clearApos( state ) {
 		state.aposStack = state.aposStack.map( function () {
@@ -269,11 +297,11 @@
 	/**
 	 * eat comment
 	 */
-	const eatComment = chain( eatBlock( makeLocalStyle, 'mw-comment', '-->' ) );
+	const eatComment = chain( inBlock( makeLocalStyle, 'mw-comment', '-->' ) );
 
 	/**
 	 * eat HTML entities
-	 * @param {?string} style - default style
+	 * @param {string} style - base style
 	 * @param {?string} errorStyle - style if not HTML entity
 	 */
 	function eatMnemonic( stream, style, errorStyle ) {
@@ -295,6 +323,28 @@
 			stream.backUp( entity[ 0 ].length );
 		}
 		return errorStyle === undefined ? style : errorStyle;
+	}
+
+	/**
+	 * behavior switch
+	 */
+	function eatDoubleUnderscore( makeFunc, style ) {
+		return function ( stream, state ) {
+			const name = stream.match( /^__\w+?__/ );
+			if ( name ) {
+				const doubleUnderscore = mwConfig.doubleUnderscore;
+				if ( name[ 0 ].toLowerCase() in doubleUnderscore[ 0 ] || name[ 0 ] in doubleUnderscore[ 1 ] ) {
+					return 'mw-doubleUnderscore'; // has own background
+				} else if ( !stream.eol() ) {
+					// Leave last two underscore symbols for processing again in next iteration
+					stream.backUp( 2 );
+				}
+			} else {
+				stream.next();
+				stream.next();
+			}
+			return makeFunc( style, state );
+		};
 	}
 
 	/**
@@ -339,7 +389,7 @@
 			if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
-					state.tokenize = eatBlock( makeLocalStyle, 'mw-section-header' );
+					state.tokenize = eatEnd( makeLocalStyle, 'mw-section-header' );
 				}
 				return makeStyle( '', state );
 			}
@@ -530,7 +580,7 @@
 				if ( !haveEaten && /[^\s\xa0]/.test( ch ) ) {
 					state.tokenize = eatTemplateArgument( expectArgName, true );
 				}
-				return eatFreeExternalLinkProtocol( 'mw-template', '}|' )( stream, state );
+				return eatFreeExternalLinkProtocol( makeStyle, 'mw-template', '}|' )( stream, state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
 				state.tokenize = eatTemplateArgument( expectArgName, true );
 			}
@@ -1141,10 +1191,10 @@
 
 	/**
 	 * free external link protocol
-	 * Only called after eatWikiTextSol() at stream.sol()
-	 * @param {string} restriction - escaped special characters
+	 * Always used as fallback
+	 * @param {string} restriction - escaped special characters for syntax
 	 */
-	function eatFreeExternalLinkProtocol( style, restriction ) {
+	function eatFreeExternalLinkProtocol( makeFunc, style, restriction ) {
 		const regex = new RegExp( "^[^\\w{&'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' );
 		return function ( stream, state ) {
 			// highlight free external links, bug T108448; cannot be multiline
@@ -1153,14 +1203,14 @@
 					state.stack.push( state.tokenize );
 					state.tokenize = eatFreeExternalLink( restriction );
 				}
-				return makeStyle( 'mw-free-extlink-protocol', state );
+				return makeFunc( 'mw-free-extlink-protocol', state );
 			}
 			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
 				stream.match( /^[A-Za-z\d\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
 			} else { // ascii except /[\w{}&'~[\]<>|:=#/!]/ and \xa0
 				stream.match( regex );
 			}
-			return makeStyle( style, state );
+			return makeFunc( style, state );
 		};
 	}
 
@@ -1269,58 +1319,60 @@
 	/**
 	 * other common wikitext syntax
 	 * Always advances
-	 * @param {?string} style - default style
-	 * @param {?Object.<string, string>} details - individual default styles for different syntax
+	 * @param {?string} style - default fallback style
+	 * @param {?Object.<string, string>} details - individual fallback styles for different characters
+	 * @property amp - '&'
+	 * @property tilde - '~'
+	 * @property apos - "'"
+	 * @property lowbar - '_'
+	 * @property lbrack - '['
+	 * @property lbrace - '{'
+	 * @property lt - '<'
 	 * @returns {?string}
 	 */
 	function eatWikiTextOther( makeFunc, style, details ) {
 		return function ( stream, state ) {
-			const ch = stream.next();
 			details = details || {}; // eslint-disable-line no-param-reassign
+			const ch = stream.next();
 			var errorStyle;
 			switch ( ch ) {
 				case '&': // valid wikitext: &
 					return makeFunc( eatMnemonic( stream, style, details.amp ), state );
-				case "'":
-					if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'{3}(?!')/, false ) ) {
-						// skip the irrelevant apostrophes ( >5 or =4 )
-					} else if ( stream.match( "''" ) ) { // valid wikitext: ''', bold
-						state.apos.bold = !state.apos.bold;
-						return makeLocalStyle( 'mw-apostrophes', state );
-					} else if ( stream.eat( "'" ) ) { // valid wikitext: '', italic
-						state.apos.italic = !state.apos.italic;
-						return makeLocalStyle( 'mw-apostrophes', state );
+				case "'": {
+					const mt = stream.match( /^'*/ ),
+						chars = mt[ 0 ].length;
+					switch ( chars ) {
+						case 0:
+							break;
+						case 3: // total apostrophes =4
+							stream.backUp( 3 );
+							break;
+						case 2: // valid wikitext: ''', bold
+							state.apos.bold = !state.apos.bold;
+							return makeLocalStyle( 'mw-apostrophes', state );
+						case 1: // valid wikitext: '', italic
+							state.apos.italic = !state.apos.italic;
+							return makeLocalStyle( 'mw-apostrophes', state );
+						default: // total apostrophes >5
+							stream.backUp( 5 );
 					}
 					return makeFunc( details.apos === undefined ? style : details.apos, state );
+				}
 				case '~':
 					if ( stream.match( /^~{2,4}/ ) ) { // valid wikitext: ~~~
 						return 'mw-signature'; // has own background
 					}
 					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
 				case '_': {
-					var tmp = 1;
-					while ( stream.eat( '_' ) ) { // Optimize processing of many underscore symbols
-						tmp++;
-					}
-					if ( stream.eol() ) {
+					const mt = stream.match( /^_+/ );
+					errorStyle = details.lowbar === undefined ? style : details.lowbar;
+					if ( !mt || stream.eol() ) {
 						// fallback
-					} else if ( tmp > 2 ) { // Many underscore symbols
-						// Leave last two underscore symbols for processing again in next iteration
+					} else {
 						stream.backUp( 2 );
-					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
-						const name = stream.match( /^.+?__/ );
-						if ( name ) {
-							const varname = '__' + name[ 0 ],
-								underscore = mwConfig.doubleUnderscore;
-							if ( varname.toLowerCase() in underscore[ 0 ] || varname in underscore[ 1 ] ) {
-								return 'mw-doubleUnderscore'; // has own background
-							} else if ( !stream.eol() ) {
-								// Leave last two underscore symbols for processing again in next iteration
-								stream.backUp( 2 );
-							}
-						}
+						once( eatDoubleUnderscore( makeFunc, errorStyle ), state ); // valid wikitext: __
 					}
-					return makeFunc( details.lowbar === undefined ? style : details.lowbar, state );
+					return makeFunc( errorStyle, state );
 				}
 				case '[': {
 					errorStyle = details.lbrack === undefined ? style : details.lbrack;
@@ -1449,13 +1501,13 @@
 				stream.backUp( 1 );
 			}
 
-			result = eatWikiTextOther( makeStyle )( stream, state );
+			result = eatWikiTextOther( makeStyle )( stream, state ); // 4. common wikitext
 			if ( result !== undefined ) {
 				return result;
 			}
 			stream.backUp( 1 );
 
-			return eatFreeExternalLinkProtocol( style, '' )( stream, state ); // 5. including fallback
+			return eatFreeExternalLinkProtocol( makeFullStyle, style, '' )( stream, state ); // 5. fallback
 		};
 	}
 
