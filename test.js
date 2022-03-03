@@ -160,19 +160,23 @@
 	}
 
 	/**
-	 * recursively call a token, which must includes an exit statement
-	 * @example
-	 * state.tokenize = state.stack.pop();
+	 * execute token once and exit
 	 * @param {function} parser - token
-	 * @returns {function} input token
+	 * @returns {undefined}
 	 */
-	function chain( parser ) {
-		return function ( stream, state ) {
-			state.stack.push( state.tokenize );
-			state.tokenize = parser;
+	function once( parser, stateObj ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			state.tokenize = state.stack.pop();
 			return parser( stream, state );
 		};
 	}
+
+	/**
+	 * naming convection
+	 * function eatXXX() - not mutate state.tokenize and state.stack
+	 * function inXXX() - mutate state.tokenize and/or state.stack
+	 */
 
 	/**
 	 * greedy eat white spaces without returned styles
@@ -183,34 +187,40 @@
 	}
 
 	/**
-	 * eat until a specified terminator or EOL
-	 * Not chained by default; exit only at terminator
-	 * @param {?string} terminator - terminator string
+	 * eat a specific number of characters
+	 * @param {number} chars - number of characters to eat
 	 */
-	function eatBlock( makeFunc, style, terminator ) {
+	function eatChars( chars, makeFunc, style ) {
 		return function ( stream, state ) {
-			if ( !terminator ) {
-				stream.skipToEnd();
-				state.tokenize = state.stack.pop();
-			} else if ( stream.skipTo( terminator ) ) {
-				stream.match( terminator );
-				state.tokenize = state.stack.pop();
-			} else {
-				stream.skipToEnd();
+			for ( var i = 0; i < chars; i++ ) {
+				stream.next();
 			}
 			return makeFunc( style, state );
 		};
 	}
 
 	/**
-	 * eat a specific number of characters
-	 * @param {number} chars - number of characters to eat
+	 * eat until EOL
 	 */
-	function eatChars( chars, makeFunc, style ) {
+	function eatEnd( makeFunc, style ) {
 		return function ( stream, state ) {
-			state.tokenize = state.stack.pop();
-			for ( var i = 0; i < chars; i++ ) {
-				stream.next();
+			stream.skipToEnd();
+			return makeFunc( style, state );
+		};
+	}
+
+	/**
+	 * eat until a specified terminator or EOL
+	 * Exit only at terminator
+	 * @param {string} terminator - terminator string
+	 */
+	function inBlock( makeFunc, style, terminator ) {
+		return function ( stream, state ) {
+			if ( stream.skipTo( terminator ) ) {
+				stream.match( terminator );
+				state.tokenize = state.stack.pop();
+			} else {
+				stream.skipToEnd();
 			}
 			return makeFunc( style, state );
 		};
@@ -268,6 +278,54 @@
 	 * 4. valid wikitext
 	 * 5. fallback
 	 */
+
+	/**
+	 * eat HTML entities
+	 * @param {string} style - base style
+	 * @param {?string} errorStyle - style if not HTML entity
+	 */
+	function eatMnemonic( stream, style, errorStyle ) {
+		/**
+		 * @param {string} str - string after '&'
+		 * @returns {boolean}
+		 */
+		function isEntity( str ) {
+			span.innerHTML = '&' + str;
+			return span.textContent.length === 1;
+		}
+
+		// no dangerous character should appear in results
+		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
+		if ( entity ) {
+			if ( isEntity( entity[ 0 ] ) ) {
+				return ( style || '' ) + ' mw-mnemonic';
+			}
+			stream.backUp( entity[ 0 ].length );
+		}
+		return errorStyle === undefined ? style : errorStyle;
+	}
+
+	/**
+	 * behavior switch
+	 */
+	function eatDoubleUnderscore( makeFunc, style ) {
+		return function ( stream, state ) {
+			const name = stream.match( /^__\w+?__/ );
+			if ( name ) {
+				const doubleUnderscore = mwConfig.doubleUnderscore;
+				if ( name[ 0 ].toLowerCase() in doubleUnderscore[ 0 ] || name[ 0 ] in doubleUnderscore[ 1 ] ) {
+					return 'mw-doubleUnderscore'; // has own background
+				} else if ( !stream.eol() ) {
+					// Leave last two underscore symbols for processing again in next iteration
+					stream.backUp( 2 );
+				}
+			} else {
+				stream.next();
+				stream.next();
+			}
+			return makeFunc( style, state );
+		};
+	}
 
 	/**
 	 * free external link protocol
@@ -336,8 +394,49 @@
 	 */
 	function eatWikiTextOther( makeFunc, style, details ) {
 		return function ( stream, state ) {
-			const errorStyle = details === undefined ? style : details;
-			stream.next();
+			details = details || {}; // eslint-disable-line no-param-reassign
+			const ch = stream.next();
+			var errorStyle;
+			switch ( ch ) {
+				case '&': // valid wikitext: &
+					return makeFunc( eatMnemonic( stream, style, details.amp ), state );
+				case "'": {
+					const mt = stream.match( /^'*/ ),
+						chars = mt[ 0 ].length;
+					switch ( chars ) {
+						case 0:
+							break;
+						case 3: // total apostrophes =4
+							stream.backUp( 3 );
+							break;
+						case 2: // valid wikitext: ''', bold
+							state.apos.bold = !state.apos.bold;
+							return makeLocalStyle( 'mw-apostrophes', state );
+						case 1: // valid wikitext: '', italic
+							state.apos.italic = !state.apos.italic;
+							return makeLocalStyle( 'mw-apostrophes', state );
+						default: // total apostrophes >5
+							stream.backUp( 5 );
+					}
+					return makeFunc( details.apos === undefined ? style : details.apos, state );
+				}
+				case '~':
+					if ( stream.match( /^~{2,4}/ ) ) { // valid wikitext: ~~~
+						return 'mw-signature'; // has own background
+					}
+					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
+				case '_': {
+					const mt = stream.match( /^_+/ );
+					errorStyle = details.lowbar === undefined ? style : details.lowbar;
+					if ( !mt || stream.eol() ) {
+						// fallback
+					} else {
+						stream.backUp( 2 );
+						once( eatDoubleUnderscore( makeFunc, errorStyle ), state ); // valid wikitext: __
+					}
+					return makeFunc( errorStyle, state );
+				}
+			}
 			return makeFunc( errorStyle, state );
 		};
 	}
