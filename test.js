@@ -140,7 +140,7 @@
 			strong = state.apos.bold || state.apos.dt || state.apos.th || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
 			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
 			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
-		return makeLocalStyle( style + strong + em, state, endGround );
+		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
 	}
 
 	/**

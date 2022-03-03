@@ -29,15 +29,16 @@
 	/**
 	 * @typedef Apos
 	 * @type {object}
-	 * @property {boolean} bold
-	 * @property {boolean} italic
-	 * @property {boolean} dt
+	 * @property {boolean} bold - apostrophe '''
+	 * @property {boolean} italic - apostrophe ''
+	 * @property {boolean} dt - list containing ';'
+	 * @property {boolean} th - table cell starting with '!' at SOL
 	 */
 
 	/**
 	 * @typedef state
 	 * @type {object}
-	 * @property {function} tokenize - current token
+	 * @property {function} tokenize - next token
 	 * @property {Array.<function>} stack - ancestor tokens
 	 * @property {Array.<string>} InHtmlTag - ancestor HTML tags
 	 * @property {Apos} apos - apostrophe states
@@ -47,10 +48,19 @@
 	 * @property {number} nLink - ancestor links
 	 * @property {number} nExt - ancestor parser functions
 	 * @property {number} nInvisible - ancestor invisible syntax
+	 * - parser function name
+	 * - template pagename
+	 * - template variable name
+	 * - internal link pagename if there is link text
+	 * - external link
+	 * - tag
+	 * - table definition
 	 */
 
 	/**
 	 * add background
+	 * For invisible content
+	 * @param {string} style - base style
 	 * @param {?string} endGround - key for decrement
 	 * @returns {?string} style
 	 */
@@ -99,7 +109,8 @@
 	}
 
 	/**
-	 * show bold/italic/strikethrough font in addition to background
+	 * show apostrophe-related styles in addition to background
+	 * For parser function and template arguments (half-invisible)
 	 * @returns {?string} style
 	 */
 	function makeStyle( style, state, endGround ) {
@@ -108,19 +119,27 @@
 		} else if ( state.nInvisible ) {
 			return makeLocalStyle( style, state, endGround );
 		}
-		const strong = state.apos.bold || state.apos.dt ? ' strong' : '',
+		const strong = state.apos.bold ? ' strong' : '',
 			em = state.apos.italic ? ' em' : '';
-		/* eslint-disable no-tabs */
-		/**
-		 * @todo styles inside particular HTML tags
-		 * @example
-		 * const tags = state.InHtmlTag.join(),
-		 *	strong = state.apos.bold || state.apos.dt || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
-		 *	em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
-		 *	strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
-		 */
-		/* eslint-enable no-tabs */
 		return makeLocalStyle( style + strong + em, state, endGround );
+	}
+
+	/**
+	 * show HTML-related styles in addition to apostrophes
+	 * For usual content
+	 * @returns {?string} style
+	 */
+	function makeFullStyle( style, state, endGround ) {
+		if ( style === undefined ) {
+			return;
+		} else if ( state.nInvisible ) {
+			return makeLocalStyle( style, state, endGround );
+		}
+		const tags = state.InHtmlTag.join(),
+			strong = state.apos.bold || state.apos.dt || state.apos.th || /\b(?:b|strong)\b/.test( tags ) ? ' strong' : '',
+			em = state.apos.italic || /\b(?:i|em)\b/.test( tags ) ? ' em' : '',
+			strikethrough = /\b(?:strike|s|del)\b/.test( tags ) ? ' strikethrough' : '';
+		return makeLocalStyle( style + strong + em + strikethrough, state, endGround );
 	}
 
 	/**
