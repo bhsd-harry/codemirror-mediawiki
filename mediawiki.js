@@ -389,7 +389,7 @@
 	 */
 	function inSectionHeader( count, makeFunc ) {
 		return function ( stream, state ) {
-			if ( stream.eol() ) { // 1. EOL
+			if ( stream.sol() ) { // 1. SOL
 				return true;
 			} else if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
@@ -1204,57 +1204,88 @@
 	 * Always used as fallback
 	 * @param {string} restriction - escaped special characters for syntax
 	 */
-	function eatFreeExternalLinkProtocol( makeFunc, style, restriction ) {
-		const regex = new RegExp( "^[^\\w{&'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' );
+	function eatFreeExternalLink( makeFunc, style, restriction ) {
+		const plainRegex = new RegExp( "^[^\\w{&_'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' ),
+			breakRegex = new RegExp( '[' + restriction + ']' ),
+			urlRegex = new RegExp( '^[^\\s\\xa0[\\]<>"{&_\'~!)\\\\:;,.?' + restriction + ']+' );
 		return function ( stream, state ) {
 			// highlight free external links, bug T108448; cannot be multiline
-			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) {
+			if ( stream.peek() !== '/' && stream.match( urlProtocols ) ) {
 				if ( !stream.eol() ) {
-					state.stack.push( state.tokenize );
-					state.tokenize = eatFreeExternalLink( restriction );
+					chain( inFreeExternalLink, state );
 				}
 				return makeFunc( 'mw-free-extlink-protocol', state );
-			}
-			if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
+			} else if ( /[\w\x80-\x9f\u00a1-\uffff]/.test( stream.next() ) ) { // \w and non-ascii unicode except \xa0
 				stream.match( /^[A-Za-z\d\x80-\x9f\u00a1-\uffff]+/ ); // except '_'
-			} else { // ascii except /[\w{}&'~[\]<>|:=#/!]/ and \xa0
-				stream.match( regex );
+			} else {
+				stream.match( plainRegex ); // ascii except /[\w{}&'~[\]<>|:=#/!]/ and \xa0
 			}
 			return makeFunc( style, state );
 		};
-	}
 
-	/**
-	 * free external link after protocol
-	 * Cannot be multiline
-	 * Unique syntax: [, ], <, >, "
-	 * Invalid wikitext syntax: ~~~, ''
-	 * Valid wikitext syntax: {{, {{{, &
-	 * Invalid characters: ! ) \ : ; , . ?
-	 */
-	function eatFreeExternalLink( restriction ) {
-		const regex = new RegExp( '[' + restriction + ']' ),
-			plainRegex = new RegExp( '^[^\\s\\xa0[\\]<>"{&\'~!)\\\\:;,.?' + restriction + ']+' );
-		return function ( stream, state ) {
-			if ( stream.eol() ) { // 1. stream.eol() instead of stream.sol()
+		/**
+		 * free external link after protocol
+		 * Cannot be multiline
+		 * Unique syntax that breaks link: [, ], <, >, "
+		 * Unique syntax that may break link: ! ) \ : ; , . ?
+		 * Invalid wikitext syntax that breaks link: ~~~, ''
+		 * Valid wikitext syntax: {{, {{{, &, __
+		 */
+		function inFreeExternalLink( stream, state ) {
+			if ( stream.eol() ) { // 1. EOL
 				// @todo error message
-				state.tokenize = state.stack.pop();
-				return;
-			} else if ( regex.test( stream.peek() ) || stream.match( /^(?:[[\]<>"]|~{3}|'')/, false ) ) {
-				// 3. unique syntax: [, ], <, >, "; 4. invalid common wikitext: ~~~, ''
-				state.tokenize = state.stack.pop();
-				return;
-			} else if ( stream.match( plainRegex ) ) { // 2. plain text
-				return makeStyle( 'mw-free-extlink', state );
-			} else if ( /[{&]/.test( stream.peek() ) ) { // 4. limited common wikitext: {{, {{{, &
-				return eatWikiTextOther( makeStyle, 'mw-free-extlink' )( stream, state );
-			} else if ( stream.match( /[!)\\:;,.?]*(?=[\s\xa0]|$)/, false ) ) { // 3. invalid characters
-				state.tokenize = state.stack.pop();
-				return;
+				return true;
 			}
-			stream.next();
-			return makeStyle( 'mw-free-extlink', state ); // 5. fallback
-		};
+			const ch = stream.next();
+			switch ( ch ) {
+				case '[': // 3. unique syntax that breaks link: [, ], <, >, "
+				case ']':
+				case '<':
+				case '>':
+				case '"':
+					stream.backUp( 1 );
+					return true;
+				case '{': // 4. valid wikitext: {{, {{{, &, __
+				case '&':
+				case '_':
+					stream.backUp( 1 );
+					return eatWikiTextOther( makeFunc, 'mw-free-extlink' )( stream, state );
+				case '~':
+					if ( stream.match( /^~~/, false ) ) { // 4. invalid wikitext: ~~~
+						stream.backUp( 1 );
+						return true;
+					}
+					break;
+				case "'":
+					if ( stream.peek() === "'" ) { // 4. invalid wikitext: ''
+						stream.backUp( 1 );
+						return true;
+					}
+					break;
+				case '!': // 3. unique syntax that may break link: ! ) \ : ; , . ?
+				case ')':
+				case '\\':
+				case ':':
+				case ';':
+				case ',':
+				case '.':
+				case '?':
+					if ( stream.match( /[!)\\:;,.?]*(?:[\s\xa0]|$)/, false ) ) {
+						stream.backUp( 1 );
+						return true;
+					}
+					break;
+				default:
+					if ( breakRegex.test( ch ) ) {
+						stream.backUp( 1 );
+						return true;
+					} else if ( eatSpace( stream ) ) {
+						return true;
+					}
+			}
+			stream.match( urlRegex ); // 2. plain text
+			return makeFunc( 'mw-free-extlink', state );
+		}
 	}
 
 	/**
@@ -1516,7 +1547,7 @@
 			}
 			stream.backUp( 1 );
 
-			return eatFreeExternalLinkProtocol( makeFullStyle, style, '' )( stream, state ); // 5. fallback
+			return eatFreeExternalLink( makeFullStyle, style, '' )( stream, state ); // 5. fallback
 		};
 	}
 
