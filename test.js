@@ -398,12 +398,12 @@
 					}
 					break;
 				case '=': { // 3. valid wikitext: =
-					const tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
-					if ( tmp ) {
-						stream.backUp( tmp[ 2 ].length );
-						chain( inSectionHeader( tmp[ 3 ].length, makeFunc ), state );
+					const mt = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+					if ( mt ) {
+						stream.backUp( mt[ 2 ].length );
+						chain( inSectionHeader( mt[ 3 ].length, makeFunc ), state );
 						return makeLocalStyle(
-							'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 ),
+							'mw-section-header line-cm-mw-section-' + ( mt[ 1 ].length + 1 ),
 							state
 						);
 					}
@@ -533,7 +533,7 @@
 		return {
 			startState: function () {
 				return {
-					tokenize: eatWikiText( 'test' ),
+					tokenize: eatWikiText( '' ),
 					stack: [], InHtmlTag: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,

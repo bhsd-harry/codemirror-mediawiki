@@ -159,8 +159,17 @@
 	}
 
 	/**
+	 * @typedef {function} eatFunc - not mutate state.tokenize and state.stack
+	 * @returns {string} style
+	 */
+	/**
+	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
+	 * @returns {(string|true)} style or exit
+	 */
+
+	/**
 	 * execute token once and exit
-	 * @param {function} parser - token
+	 * @param {eatFunc} parser - token
 	 * @returns {undefined}
 	 */
 	function once( parser, stateObj ) {
@@ -172,25 +181,21 @@
 	}
 
 	/**
-	 * recursively call a token, which must includes an exit statement
-	 * @example
-	 * state.tokenize = state.stack.pop();
-	 * @param {function} parser - token
-	 * @returns {function} same token
+	 * execute token until exit
+	 * @param {inFunc} parser - token
+	 * @returns {undefined}
 	 */
-	function chain( parser ) {
-		return function ( stream, state ) {
-			state.stack.push( state.tokenize );
-			state.tokenize = parser;
-			return parser( stream, state );
+	function chain( parser, stateObj ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			const style = parser( stream, state );
+			if ( style === true ) {
+				state.tokenize = state.stack.pop();
+			} else {
+				return style;
+			}
 		};
 	}
-
-	/**
-	 * naming convection
-	 * function eatXXX() - not mutate state.tokenize and state.stack
-	 * function inXXX() - mutate state.tokenize and/or state.stack
-	 */
 
 	/**
 	 * greedy eat white spaces without returned styles
@@ -206,7 +211,6 @@
 	 */
 	function eatChars( chars, makeFunc, style ) {
 		return function ( stream, state ) {
-			state.tokenize = state.stack.pop();
 			for ( var i = 0; i < chars; i++ ) {
 				stream.next();
 			}
@@ -225,19 +229,23 @@
 	}
 
 	/**
-	 * eat until a specified terminator or EOL
-	 * Exit only at terminator
+	 * eat until a specified terminator
+	 * Can be multiline
 	 * @param {string} terminator - terminator string
 	 */
-	function inBlock( makeFunc, style, terminator ) {
-		return function ( stream, state ) {
-			if ( stream.skipTo( terminator ) ) {
-				stream.match( terminator );
-				state.tokenize = state.stack.pop();
-			} else {
-				stream.skipToEnd();
-			}
-			return makeFunc( style, state );
+	function eatBlock( makeFunc, style, terminator ) {
+		return function ( streamObj, stateObj ) {
+			stateObj.stack.push( stateObj.tokenize );
+			stateObj.tokenize = function ( stream, state ) {
+				if ( stream.skipTo( terminator ) ) {
+					stream.match( terminator );
+					state.tokenize = state.stack.pop();
+				} else {
+					stream.skipToEnd();
+				}
+				return makeFunc( style, state );
+			};
+			return stateObj.tokenize( streamObj, stateObj );
 		};
 	}
 
@@ -295,37 +303,6 @@
 	 */
 
 	/**
-	 * eat comment
-	 */
-	const eatComment = chain( inBlock( makeLocalStyle, 'mw-comment', '-->' ) );
-
-	/**
-	 * eat HTML entities
-	 * @param {string} style - base style
-	 * @param {?string} errorStyle - style if not HTML entity
-	 */
-	function eatMnemonic( stream, style, errorStyle ) {
-		/**
-		 * @param {string} str - string after '&'
-		 * @returns {boolean}
-		 */
-		function isEntity( str ) {
-			span.innerHTML = '&' + str;
-			return span.textContent.length === 1;
-		}
-
-		// no dangerous character should appear in results
-		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
-		if ( entity ) {
-			if ( isEntity( entity[ 0 ] ) ) {
-				return ( style || '' ) + ' mw-mnemonic';
-			}
-			stream.backUp( entity[ 0 ].length );
-		}
-		return errorStyle === undefined ? style : errorStyle;
-	}
-
-	/**
 	 * eat general page name without syntax details
 	 * @param {RegExp} regex - regex for plain text; must exclude [&#<~>[\]{}|]
 	 * @param {Object.<'haveEaten', boolean>} option
@@ -359,6 +336,32 @@
 	}
 
 	/**
+	 * eat HTML entities
+	 * @param {string} style - base style
+	 * @param {?string} errorStyle - style if not HTML entity
+	 */
+	function eatMnemonic( stream, style, errorStyle ) {
+		/**
+		 * @param {string} str - string after '&'
+		 * @returns {boolean}
+		 */
+		function isEntity( str ) {
+			span.innerHTML = '&' + str;
+			return span.textContent.length === 1;
+		}
+
+		// no dangerous character should appear in results
+		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
+		if ( entity ) {
+			if ( isEntity( entity[ 0 ] ) ) {
+				return ( style || '' ) + ' mw-mnemonic';
+			}
+			stream.backUp( entity[ 0 ].length );
+		}
+		return errorStyle === undefined ? style : errorStyle;
+	}
+
+	/**
 	 * behavior switch
 	 */
 	function eatDoubleUnderscore( makeFunc, style ) {
@@ -384,18 +387,25 @@
 	 * eat section header when the number of ending characters is already known
 	 * @param {number} count - number of ending characters
 	 */
-	function eatSectionHeader( count ) {
+	function inSectionHeader( count, makeFunc ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
+			if ( stream.eol() ) { // 1. EOL
+				return true;
+			} else if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
-					state.tokenize = eatEnd( makeLocalStyle, 'mw-section-header' );
+					once( eatEnd( makeLocalStyle, 'mw-section-header' ), state );
 				}
-				return makeStyle( '', state );
+				return makeFunc( '', state );
 			}
-			return eatWikiTextOther( makeStyle, '' )( stream, state ); // 4. common wikitext
+			return eatWikiTextOther( makeFunc, '' )( stream, state ); // 4. common wikitext
 		};
 	}
+
+	/**
+	 * eat comment
+	 */
+	const eatComment = eatBlock( makeLocalStyle, 'mw-comment', '-->' );
 
 	/**
 	 * template variable name
@@ -1263,13 +1273,12 @@
 					}
 					break;
 				case '=': { // 3. valid wikitext: =
-					const tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
-					if ( tmp ) {
-						stream.backUp( tmp[ 2 ].length );
-						state.stack.push( state.tokenize );
-						state.tokenize = eatSectionHeader( tmp[ 3 ].length );
+					const mt = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+					if ( mt ) {
+						stream.backUp( mt[ 2 ].length );
+						chain( inSectionHeader( mt[ 3 ].length, makeFunc ), state );
 						return makeLocalStyle(
-							'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 ),
+							'mw-section-header line-cm-mw-section-' + ( mt[ 1 ].length + 1 ),
 							state
 						);
 					}
