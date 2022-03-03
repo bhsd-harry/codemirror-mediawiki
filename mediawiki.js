@@ -326,28 +326,6 @@
 	}
 
 	/**
-	 * behavior switch
-	 */
-	function eatDoubleUnderscore( makeFunc, style ) {
-		return function ( stream, state ) {
-			const name = stream.match( /^__\w+?__/ );
-			if ( name ) {
-				const doubleUnderscore = mwConfig.doubleUnderscore;
-				if ( name[ 0 ].toLowerCase() in doubleUnderscore[ 0 ] || name[ 0 ] in doubleUnderscore[ 1 ] ) {
-					return 'mw-doubleUnderscore'; // has own background
-				} else if ( !stream.eol() ) {
-					// Leave last two underscore symbols for processing again in next iteration
-					stream.backUp( 2 );
-				}
-			} else {
-				stream.next();
-				stream.next();
-			}
-			return makeFunc( style, state );
-		};
-	}
-
-	/**
 	 * eat general page name without syntax details
 	 * @param {RegExp} regex - regex for plain text; must exclude [&#<~>[\]{}|]
 	 * @param {Object.<'haveEaten', boolean>} option
@@ -377,6 +355,28 @@
 			}
 			stream.next(); // 5. fallback
 			return makeFunc( 'error', state );
+		};
+	}
+
+	/**
+	 * behavior switch
+	 */
+	function eatDoubleUnderscore( makeFunc, style ) {
+		return function ( stream, state ) {
+			const name = stream.match( /^__\w+?__/ );
+			if ( name ) {
+				const doubleUnderscore = mwConfig.doubleUnderscore;
+				if ( name[ 0 ].toLowerCase() in doubleUnderscore[ 0 ] || name[ 0 ] in doubleUnderscore[ 1 ] ) {
+					return 'mw-doubleUnderscore'; // has own background
+				} else if ( !stream.eol() ) {
+					// Leave last two underscore symbols for processing again in next iteration
+					stream.backUp( 2 );
+				}
+			} else {
+				stream.next();
+				stream.next();
+			}
+			return makeFunc( style, state );
 		};
 	}
 
@@ -499,7 +499,7 @@
 			} else if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
 				if ( ( haveEaten ? /[-=#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
-					return eatWikiTextSol( makeStyle, 'mw-parserfunction' )( stream, state );
+					return eatWikiTextSol( makeStyle, '' )( stream, state );
 				}
 			}
 			const mt = stream.match( /^[^|}&<[{~_']+/ );
@@ -507,12 +507,12 @@
 				if ( !haveEaten && /[^\s\xa0]/.test( mt[ 0 ] ) ) {
 					state.tokenize = inParserFunctionArguments( true );
 				}
-				return makeStyle( 'mw-parserfunction', state );
+				return makeStyle( '', state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
 				state.tokenize = inParserFunctionArguments( true );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( makeStyle, 'mw-parserfunction' )( stream, state );
+			return eatWikiTextOther( makeStyle, '' )( stream, state );
 		};
 	}
 
@@ -572,7 +572,7 @@
 			} else if ( stream.sol() ) { // 1. stream.sol()
 				clearApos( state ); // may be wrong if no non-whitespace characters eaten, but who knows?
 				if ( ( haveEaten ? /[-#*:; ]/ : /[#*:;]/ ).test( stream.peek() ) ) {
-					return eatWikiTextSol( makeStyle, 'mw-template' )( stream, state );
+					return eatWikiTextSol( makeStyle, '' )( stream, state );
 				}
 			}
 			const ch = stream.peek();
@@ -580,12 +580,12 @@
 				if ( !haveEaten && /[^\s\xa0]/.test( ch ) ) {
 					state.tokenize = eatTemplateArgument( expectArgName, true );
 				}
-				return eatFreeExternalLinkProtocol( makeStyle, 'mw-template', '}|' )( stream, state );
+				return eatFreeExternalLinkProtocol( makeStyle, '', '}|' )( stream, state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
 				state.tokenize = eatTemplateArgument( expectArgName, true );
 			}
 			// 4. common wikitext without fallback
-			return eatWikiTextOther( makeStyle, 'mw-template' )( stream, state );
+			return eatWikiTextOther( makeStyle, '' )( stream, state );
 		};
 	}
 
@@ -1358,19 +1358,19 @@
 					}
 					return makeFunc( details.apos === undefined ? style : details.apos, state );
 				}
-				case '~':
-					if ( stream.match( /^~{2,4}/ ) ) { // valid wikitext: ~~~
+				case '~': // valid wikitext: ~~~
+					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
 					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
-				case '_': {
+				case '_': { // valid wikitext: __
 					const mt = stream.match( /^_+/ );
 					errorStyle = details.lowbar === undefined ? style : details.lowbar;
 					if ( !mt || stream.eol() ) {
 						// fallback
 					} else {
 						stream.backUp( 2 );
-						once( eatDoubleUnderscore( makeFunc, errorStyle ), state ); // valid wikitext: __
+						once( eatDoubleUnderscore( makeFunc, errorStyle ), state );
 					}
 					return makeFunc( errorStyle, state );
 				}

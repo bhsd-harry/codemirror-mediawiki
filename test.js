@@ -160,8 +160,17 @@
 	}
 
 	/**
+	 * @typedef {function} eatFunc - not mutate state.tokenize and state.stack
+	 * @returns {string} style
+	 */
+	/**
+	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
+	 * @returns {(string|true)} style or exit
+	 */
+
+	/**
 	 * execute token once and exit
-	 * @param {function} parser - token
+	 * @param {eatFunc} parser - token
 	 * @returns {undefined}
 	 */
 	function once( parser, stateObj ) {
@@ -173,10 +182,21 @@
 	}
 
 	/**
-	 * naming convection
-	 * function eatXXX() - not mutate state.tokenize and state.stack
-	 * function inXXX() - mutate state.tokenize and/or state.stack
+	 * execute token until exit
+	 * @param {inFunc} parser - token
+	 * @returns {undefined}
 	 */
+	function chain( parser, stateObj ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			const style = parser( stream, state );
+			if ( style === true ) {
+				state.tokenize = state.stack.pop();
+			} else {
+				return style;
+			}
+		};
+	}
 
 	/**
 	 * greedy eat white spaces without returned styles
@@ -210,19 +230,23 @@
 	}
 
 	/**
-	 * eat until a specified terminator or EOL
-	 * Exit only at terminator
+	 * eat until a specified terminator
+	 * Can be multiline
 	 * @param {string} terminator - terminator string
 	 */
-	function inBlock( makeFunc, style, terminator ) {
-		return function ( stream, state ) {
-			if ( stream.skipTo( terminator ) ) {
-				stream.match( terminator );
-				state.tokenize = state.stack.pop();
-			} else {
-				stream.skipToEnd();
-			}
-			return makeFunc( style, state );
+	function eatBlock( makeFunc, style, terminator ) {
+		return function ( streamObj, stateObj ) {
+			stateObj.stack.push( stateObj.tokenize );
+			stateObj.tokenize = function ( stream, state ) {
+				if ( stream.skipTo( terminator ) ) {
+					stream.match( terminator );
+					state.tokenize = state.stack.pop();
+				} else {
+					stream.skipToEnd();
+				}
+				return makeFunc( style, state );
+			};
+			return stateObj.tokenize( streamObj, stateObj );
 		};
 	}
 
@@ -328,6 +352,25 @@
 	}
 
 	/**
+	 * eat section header when the number of ending characters is already known
+	 * @param {number} count - number of ending characters
+	 */
+	function inSectionHeader( count, makeFunc ) {
+		return function ( stream, state ) {
+			if ( stream.eol() ) { // 1. EOL
+				return true;
+			} else if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
+				if ( stream.eol() ) { // 1. EOL
+					stream.backUp( count );
+					once( eatEnd( makeLocalStyle, 'mw-section-header' ), state );
+				}
+				return makeFunc( '', state );
+			}
+			return eatWikiTextOther( makeFunc, '' )( stream, state ); // 4. common wikitext
+		};
+	}
+
+	/**
 	 * free external link protocol
 	 * Always used as fallback
 	 * @param {string} restriction - escaped special characters for syntax
@@ -354,6 +397,18 @@
 						return 'mw-hr'; // has own background
 					}
 					break;
+				case '=': { // 3. valid wikitext: =
+					const tmp = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
+					if ( tmp ) {
+						stream.backUp( tmp[ 2 ].length );
+						chain( inSectionHeader( tmp[ 3 ].length, makeFunc ), state );
+						return makeLocalStyle(
+							'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 ),
+							state
+						);
+					}
+					break;
+				}
 				case '*': // 3. valid wikitext: *, #, ;
 				case '#':
 				case ';': {
@@ -420,19 +475,19 @@
 					}
 					return makeFunc( details.apos === undefined ? style : details.apos, state );
 				}
-				case '~':
-					if ( stream.match( /^~{2,4}/ ) ) { // valid wikitext: ~~~
+				case '~': // valid wikitext: ~~~
+					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
 					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
-				case '_': {
+				case '_': { // valid wikitext: __
 					const mt = stream.match( /^_+/ );
 					errorStyle = details.lowbar === undefined ? style : details.lowbar;
 					if ( !mt || stream.eol() ) {
 						// fallback
 					} else {
 						stream.backUp( 2 );
-						once( eatDoubleUnderscore( makeFunc, errorStyle ), state ); // valid wikitext: __
+						once( eatDoubleUnderscore( makeFunc, errorStyle ), state );
 					}
 					return makeFunc( errorStyle, state );
 				}
@@ -478,7 +533,7 @@
 		return {
 			startState: function () {
 				return {
-					tokenize: eatWikiText( '' ),
+					tokenize: eatWikiText( 'test' ),
 					stack: [], InHtmlTag: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
