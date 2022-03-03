@@ -1,2 +1,5 @@
-<b>''_a__&lt;__toc_____TOC_____''</b>
+<b>''_,ftp://a__&lt;"__toc_____TOC_____''</b>
+
 ==<b>''a''</b>{{b|c=d}}[[f]][ftp://g]ftp://h=
+
+ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&lt;d
