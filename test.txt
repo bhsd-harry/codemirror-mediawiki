@@ -3,3 +3,5 @@
 ==<b>''a''</b>{{b|c=d}}[[f]][ftp://g]ftp://h=
 
 ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
+
+#redirect:[[<!---->
