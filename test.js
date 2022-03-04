@@ -1,5 +1,5 @@
 ( function ( CodeMirror ) {
-	/* eslint-disable no-unused-vars */
+	/* eslint-disable no-unused-vars, camelcase */
 	'use strict';
 
 	const permittedHtmlTags = {
@@ -15,17 +15,24 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-		span = document.createElement( 'span' ), // used for isEntity()
-		nsFileRegex = getFileRegex(),
-		escapeRegExp = mw.util.escapeRegExp || mw.RegExp.escape;
-	var mwConfig, urlProtocols, redirectRegex;
+		nsFileRegex = getFileRegex();
+	var span, mwConfig, urlProtocols, redirectRegex;
+	if ( typeof document === 'object' ) {
+		span = document.createElement( 'span' ); // used for isEntity()
+	}
 
 	function getFileRegex() {
-		const nsIds = mw.config.get( 'wgNamespaceIds' ),
+		const nsIds = typeof mw === 'object'
+				? mw.config.get( 'wgNamespaceIds' )
+				: { file: 6, image: 6, 图像: 6, 圖像: 6, 档案: 6, 檔案: 6, 文件: 6 },
 			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 				return nsIds[ ns ] === 6;
 			} ).join( '|' );
 		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*', 'i' );
+	}
+
+	function escapeRegExp( str ) {
+		return str.replace( /([\\{}()|.?*+\-^$[\]])/g, '\\$1' );
 	}
 
 	/**
@@ -153,7 +160,7 @@
 		if ( style === undefined ) {
 			return;
 		}
-		const orState = $.extend( {}, state, { apos: {
+		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic
 		} } );
@@ -169,7 +176,7 @@
 		if ( style === undefined ) {
 			return;
 		}
-		const orState = $.extend( {}, state, { apos: {
+		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic
 		} } );
@@ -182,37 +189,108 @@
 	 */
 	/**
 	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
-	 * @returns {(string|true)} style or exit
+	 * @returns {(string|true|Array)} style or exit
 	 */
+
+	/**
+	 * mutate state object
+	 * @param {?Array.<string>} ground - properties to mutate
+	 * @param {?number} [value=1] - value of increment
+	 * @returns {undefined}
+	 */
+	function increment( state, ground, value ) {
+		if ( ground ) {
+			ground.forEach( function ( key ) {
+				state[ key ] += value || 1;
+			} );
+		}
+	}
+
+	/**
+	 * handle exit condition for inFunc
+	 * WARNING: This function mutates state.stack and other properties
+	 * @param {(string|true|Array)} result - return of an inFunc
+	 * @returns {string} style
+	 * @throws {string} style
+	 */
+	function handleExit( result, state, ground ) {
+		var style, exit;
+		if ( Array.isArray( result ) ) {
+			style = result[ 0 ];
+			exit = result[ 1 ];
+		} else {
+			style = result;
+			exit = result;
+		}
+		if ( exit === true ) {
+			state.tokenize = state.stack.pop();
+			increment( state, ground, -1 );
+			throw style === true ? undefined : style;
+		}
+		return style;
+	}
 
 	/**
 	 * execute token once and exit
 	 * @param {eatFunc} parser - token
+	 * @param {?Array.<string>} ground - properties of stateObj to mutate
 	 * @returns {undefined}
 	 */
-	function once( parser, stateObj ) {
+	function once( parser, stateObj, ground ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			state.tokenize = state.stack.pop();
-			return parser( stream, state );
+			increment( state, ground );
+			const style = parser( stream, state );
+			increment( state, ground, -1 );
+			return style;
 		};
 	}
 
 	/**
 	 * execute token until exit
 	 * @param {inFunc} parser - token
+	 * @param {?Array.<string>} ground - properties of stateObj to mutate
 	 * @returns {undefined}
 	 */
-	function chain( parser, stateObj ) {
+	function chain( parser, stateObj, ground ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
-			const style = parser( stream, state );
-			if ( style === true ) {
-				state.tokenize = state.stack.pop();
-			} else {
-				return style;
-			}
+			increment( state, ground );
+			state.tokenize = token;
 		};
+		function token( stream, state ) {
+			try {
+				return handleExit( parser( stream, state ), state, ground );
+			} catch ( e ) {
+				return e;
+			}
+		}
+	}
+
+	/**
+	 * chain token with a mutable option object
+	 * @param {function} parser - token generator, takes an object as argument and returns an inFunc
+	 * @param {?Object.<string, *>} option - a mutable object
+	 * @param {?Array.<string>} ground - properties of stateObj to mutate
+	 * @returns {undefined}
+	 */
+	function update( parser, stateObj, initOption, ground ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			increment( state, ground );
+			state.tokenize = token( initOption );
+		};
+		function token( option ) {
+			return function ( stream, state ) {
+				try {
+					return handleExit( parser( option )( stream, state ), state, ground );
+				} catch ( e ) {
+					state.tokenize = token( option );
+					return e;
+				}
+			};
+		}
 	}
 
 	/**
@@ -319,40 +397,43 @@
 	 * eat general page name
 	 * invalid characters: # < > [ ] { } |
 	 * valid wikitext syntax: {{, {{{, &, <!--
-	 * @param {Object.<'haveEaten', boolean>} option - determine whether to trim whitespace; mutable
+	 * @param {Object.<string, boolean>} option - a mutable object
+	 * @property {boolean} haveEaten
+	 * @property {boolean} noComment
 	 * @returns {?string}
 	 */
-	// function eatPageName( makeFunc, style, option ) {
-	// 	return function ( stream, state ) {
-	// 		const ch = stream.next();
-	// 		switch ( ch ) {
-	// 			case '#':
-	// 			case '<':
-	// 			case '>'
-	// 		}
-	// 		if ( eatSpace( stream ) ) { // 2. plain text
-	// 			return makeFunc( style + ( option.haveEaten && !stream.eol() ? ' mw-pagename' : '' ), state );
-	// 		} else if ( stream.match( /^[^#<>[\]{}|&\s\xa0]+/ ) ) { // 2. plain text
-	// 			option.haveEaten = true;
-	// 			return makeFunc( style + ' mw-pagename', state );
-	// 		} else if ( stream.match( '<!--' ) ) { // 4. common wikitext: <!--
-	// 			return eatComment( stream, state );
-	// 		} else if ( stream.match( /^~{3,5}/ ) ) { // 4. common wikitext: ~~~
-	// 			return makeFunc( 'error', state );
-	// 		} else if ( stream.match( /^(?:[&~]|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
-	// 			option.haveEaten = true;
-	// 			const defaultStyle = style + ' mw-pagename',
-	// 				ampStyle = option.ampStyle === undefined ? defaultStyle : option.ampStyle;
-	// 			return eatWikiTextOther( makeFunc, '', {
-	// 				tilde: defaultStyle,
-	// 				lbrace: 'error',
-	// 				amp: ampStyle
-	// 			} )( stream, state );
-	// 		}
-	// 		stream.next(); // 5. fallback
-	// 		return makeFunc( 'error', state );
-	// 	};
-	// }
+	function eatPageName( makeFunc, style, option ) {
+		return function ( stream, state ) {
+			const pageStyle = style + ' mw-pagename';
+			if ( eatSpace( stream ) ) {
+				return makeFunc( option.haveEaten && !stream.eol() ? pageStyle : style, state );
+			}
+			const ch = stream.next();
+			switch ( ch ) {
+				case '#': // 3. unique syntax: # > [ ] } |
+				case '>':
+				case '[':
+				case ']':
+				case '}':
+				case '|':
+					return makeFunc( 'error', state );
+				case '<':
+					if ( !option.noComment && stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+						return eatComment( stream, state );
+					}
+					return makeFunc( 'error', state ); // 3. unique syntax: <
+				case '{': // 4. valid wikitext: {{, {{{, &
+				case '&':
+					if ( ch !== '{' || state.peek() === '{' ) {
+						option.haveEaten = true;
+					}
+					return eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
+			}
+			stream.match( /^[^#<>[\]{}|&\s\xa0]+/ ); // 2. plain text
+			option.haveEaten = true;
+			return makeFunc( pageStyle, state );
+		};
+	}
 
 	/**
 	 * eat HTML entities
@@ -365,6 +446,9 @@
 		 * @returns {boolean}
 		 */
 		function isEntity( str ) {
+			if ( !span ) {
+				return true;
+			}
 			span.innerHTML = '&' + str;
 			return span.textContent.length === 1;
 		}
@@ -432,42 +516,45 @@
 	 * normal internal link
 	 * Cannot be multiline
 	 * Unique syntax: |, ]], #
+	 * @param {Object.<string, boolean>} option
+	 * @property {boolean} invisible - whether there is link text
+	 * @property {boolean} noComment - whether it is redirect
 	 */
-	// function inLink( invisible ) {
-	// 	const makeFunc = invisible ? makeLocalStyle : makeOrStyle;
-	// 	return function ( stream, state ) {
-	// 		if ( stream.sol() ) { // 1. stream.sol()
-	// 			state.nLink--;
-	// 			// @todo error message
-	// 			state.tokenize = state.stack.pop();
-	// 			if ( invisible ) {
-	// 				state.nInvisible--;
-	// 			}
-	// 			return;
-	// 		}
-	// 		if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
-	// 			state.tokenize = inLinkToSection( invisible );
-	// 			return makeFunc( 'mw-link', state );
-	// 		} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
-	// 			state.tokenize = eatLinkText;
-	// 			state.nInvisible--;
-	// 			if ( state.nLink === 1 ) {
-	// 				state.parentApos = state.apos;
-	// 				state.aposStack.push( state.apos );
-	// 				state.apos = {};
-	// 			}
-	// 			return makeLocalStyle( 'mw-link-delimiter', state );
-	// 		} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
-	// 			state.tokenize = state.stack.pop();
-	// 			if ( invisible ) {
-	// 				state.nInvisible--;
-	// 			}
-	// 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-	// 		}
-	// 		// 2. plain text; 4. common wikitext; 5. fallback
-	// 		return eatPageName( /^[^\s\xa0|\]#&<~>[{}]+/, makeFunc, 'mw-link-pagename', {} )( stream, state );
-	// 	};
+	function inLink( option ) {
+		return function ( stream, state ) {
+			var makeFunc;
+			if ( option.invisible ) {
+				makeFunc = makeLocalStyle;
+			} else if ( state.nExt || state.nTemplate ) {
+				makeFunc = makeOrStyle;
+			} else {
+				makeFunc = makeOrFullStyle;
+			}
+			if ( stream.sol() ) { // 1. SOL
+				return true;
+			}
+			/* eslint-disable */
+			// if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
+			// 	state.tokenize = inLinkToSection( invisible );
+			// 	return makeFunc( 'mw-link', state );
+			// } else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+			// 	state.tokenize = eatLinkText;
+			// 	state.nInvisible--;
+			// 	if ( state.nLink === 1 ) {
+			// 		state.parentApos = state.apos;
+			// 		state.aposStack.push( state.apos );
+			// 		state.apos = {};
+			// 	}
+			// 	return makeLocalStyle( 'mw-link-delimiter', state );
+			// }
+			/* eslint-enable */
+			if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
+				return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
+			}
+			return eatPageName( makeFunc, 'mw-link-pagename', option )( stream, state );
+		};
 
+		/* eslint-disable */
 		/**
 		 * internal link hash
 		 * Cannot be multiline
@@ -564,10 +651,12 @@
 	// 		// 4. limited common wikitext: {{, {{{, &, '', <, ~~~~~
 	// 		return eatWikiTextOther( makeOrStyle, 'mw-link-text' )( stream, state );
 	// 	}
-	// }
+	/* eslint-enable */
+	}
 
 	/**
 	 * free external link protocol
+	 * Cannot be multiline
 	 * Always used as fallback
 	 * @param {string} restriction - escaped special characters for syntax
 	 */
@@ -599,8 +688,7 @@
 		 * Valid wikitext syntax: {{, {{{, &, __
 		 */
 		function inFreeExternalLink( stream, state ) {
-			if ( stream.eol() ) { // 1. EOL
-				// @todo error message
+			if ( stream.sol() ) { // 1. SOL
 				return true;
 			}
 			const ch = stream.next();
@@ -664,11 +752,13 @@
 	function eatWikiTextSol( makeFunc, style ) {
 		return function ( stream, state ) {
 			const ch = stream.next();
+			var fallbackStyle = style;
 			switch ( ch ) {
 				case '-': // 3. valid wikitext: ----
 					if ( stream.match( /^-{3,}/ ) ) {
 						return 'mw-hr'; // has own background
 					}
+					fallbackStyle = style || '';
 					break;
 				case '=': { // 3. valid wikitext: =
 					const mt = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
@@ -680,11 +770,14 @@
 							state
 						);
 					}
+					fallbackStyle = style || '';
 					break;
 				}
 				case '#':
 					stream.backUp( 1 );
 					if ( stream.match( redirectRegex ) ) {
+						update( inLink, state, { noComment: true, invisible: true } );
+						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state );
 						return makeLocalStyle( 'mw-parserfunction-name', state );
 					}
 					stream.next();
@@ -711,7 +804,7 @@
 					return 'mw-skipformatting'; // has own background
 				}
 			}
-			return makeFunc( style, state ); // 5. fallback
+			return makeFunc( fallbackStyle, state ); // 5. fallback
 		};
 	}
 
@@ -736,7 +829,7 @@
 			var errorStyle;
 			switch ( ch ) {
 				case '&': // valid wikitext: &
-					return makeFunc( eatMnemonic( stream, style, details.amp ), state );
+					return makeFunc( eatMnemonic( stream, style || '', details.amp ), state );
 				case "'": {
 					const mt = stream.match( /^'*/ ),
 						chars = mt[ 0 ].length;
@@ -755,16 +848,16 @@
 						default: // total apostrophes >5
 							stream.backUp( 5 );
 					}
-					return makeFunc( details.apos === undefined ? style : details.apos, state );
+					return makeFunc( details.apos === undefined ? style || '' : details.apos, state );
 				}
 				case '~': // valid wikitext: ~~~
 					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
-					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
+					return makeFunc( details.tilde === undefined ? style || '' : details.tilde, state );
 				case '_': { // valid wikitext: __
 					const mt = stream.match( /^_+/ );
-					errorStyle = details.lowbar === undefined ? style : details.lowbar;
+					errorStyle = details.lowbar === undefined ? style || '' : details.lowbar;
 					if ( !mt || stream.eol() ) {
 						// fallback
 					} else {
@@ -774,16 +867,16 @@
 					return makeFunc( errorStyle, state );
 				}
 				case '[':
-					errorStyle = details.lbrack === undefined ? style : details.lbrack;
+					errorStyle = details.lbrack === undefined ? style || '' : details.lbrack;
 					break;
 				case '{':
-					errorStyle = details.lbrace === undefined ? style : details.lbrace;
+					errorStyle = details.lbrace === undefined ? style || '' : details.lbrace;
 					break;
 				case '<':
 					if ( stream.match( '!--' ) ) {
 						return eatComment( stream, state );
 					}
-					errorStyle = details.lt === undefined ? style : details.lt;
+					errorStyle = details.lt === undefined ? style || '' : details.lt;
 			}
 			return makeFunc( errorStyle, state );
 		};
@@ -873,4 +966,4 @@
 	} );
 
 	CodeMirror.defineMIME( 'text/mediawiki', 'mediawiki' );
-}( CodeMirror ) );
+}( typeof global === 'object' ? global.CodeMirror : CodeMirror ) );
