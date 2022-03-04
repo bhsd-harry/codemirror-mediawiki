@@ -405,7 +405,9 @@
 	/**
 	 * eat comment
 	 */
-	const eatComment = eatBlock( makeLocalStyle, 'mw-comment', '-->' );
+	function eatComment( stream, state ) {
+		return eatBlock( makeLocalStyle, 'mw-comment', '-->' )( stream, state );
+	}
 
 	/**
 	 * template variable name
@@ -692,7 +694,7 @@
 			return makeLocalStyle( 'mw-link-bracket', stateObj, 'nLink' );
 		}
 		// 2. plain text; 4. common wikitext; 5. fallback
-		return eatPageName( /^[^\s\xa0|}&#<~>[\]{/:]+/, makeLocalStyle, 'mw-link-pagename', {
+		return eatPageName( /^[^\s\xa0|}&#<~>[\]{]+/, makeLocalStyle, 'mw-link-pagename', {
 			haveEaten: true,
 			ampStyle: 'error'
 		} )( streamObj, stateObj );
