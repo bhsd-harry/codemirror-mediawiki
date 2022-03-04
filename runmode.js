@@ -18,13 +18,31 @@ const callback = {
 			console.log( output );
 			output = '';
 		} else if ( string.length ) {
-			style = ( style || '' ).trim().replace( /\bmw-/g, '' );
-			if ( lastStyle === style ) {
-				output = output.slice( 0, -style.length - 11 );
+			try {
+				const printStyle = ( style || '' ).trim()
+					.replace( /(?:\bmw-| [\w-]+-ground\b)/g, '' )
+					.replace( /\berror\b/, '\x1b[1;31merror\x1b[0m' );
+				var color = 32; // green
+				if ( /-(?:template|ext)\d?-link\d?-(?:invisible-)?ground\b/.test( style ) ) {
+					color = 35; // magenta
+				} else if ( /-(?:template|ext)\d?-(?:invisible-)?ground\b/.test( style ) ) {
+					color = 33; // yellow
+				} else if ( /-link\d?-(?:invisible-)?ground\b/.test( style ) ) {
+					color = 34; // blue
+				}
+				if ( /-invisible-/.test( style ) ) {
+					color = color + 60 + ';7';
+				}
+				if ( lastStyle === style ) {
+					output = output.slice( 0, -printStyle.length - 2 );
+				}
+				output += '\x1b[1;' + color + 'm' + string + '\x1b[0m{' + printStyle + '}';
+				lastStyle = style;
+			} catch ( e ) {
+				console.log( { string: string, style: style } );
 			}
-			output += string + '\x1b[32m{' + style + '}\x1b[0m';
-			lastStyle = style;
 		}
 	}
 };
 CodeMirror.runMode( text, 'text/mediawiki', callback[ process.argv[ 2 ] || 'error' ] );
+console.log( '\n' );

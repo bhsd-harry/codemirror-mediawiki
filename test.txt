@@ -1,7 +1,8 @@
+
 <b>''_,ftp://a__&apos;"__toc_____TOC_____''</b>
 
 ==<b>''a''</b>{{b|c=d}}[[f]][ftp://g]=
 
 ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 
-#redirect:[[ <!-- --> 
+#redirect:[[ <!-- --> # a<!---->&apos;</ref><br/>]]b
