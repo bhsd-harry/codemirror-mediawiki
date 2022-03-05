@@ -17,10 +17,11 @@
 		nsFileRegex = getFileRegex(),
 		errorMsgs = {
 			'invalid-char-pagename': '页面名称出现无效字符"$1"。',
-			'invalid-char-section': '章节链接出现无效字符"$1"。',
-			'link-inside-link': '$1部链接中不应包含内部链接。',
-			'sign-inside-link': '$1部链接中不应包含签名。',
-			'tag-inside-section': '章节链接中不应包含$1标签。',
+			'invalid-char-link-section': '章节链接出现无效字符"$1"。',
+			'link-in-link': '$1部链接中不应包含内部链接。',
+			'sign-in-link': '$1部链接中不应包含签名。',
+			'sign-pagename': '页面名称不应包含签名。',
+			'tag-in-link-section': '章节链接中不应包含$1标签。',
 			'link-text-redirect': '重定向不应包含链接文字。'
 		};
 	var span, mwConfig, urlProtocols, redirectRegex;
@@ -49,8 +50,10 @@
 	 * @returns {undefined}
 	 */
 	function newError( state, key, arg ) {
-		const msg = errorMsgs[ key ];
-		state.errors.push( arg === undefined ? msg : msg.replace( '$1', arg ) );
+		if ( typeof global === 'object' ) {
+			const msg = errorMsgs[ key ];
+			state.errors.push( arg === undefined ? msg : msg.replace( '$1', arg ) );
+		}
 	}
 
 	/**
@@ -487,8 +490,13 @@
 					}
 					return result;
 				}
+				case '~':
+					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
+						newError( 'sign-pagename' );
+						return makeFunc( 'error', state );
+					}
 			}
-			stream.match( /^[^#<>[\]{}|&\s\xa0]+/ ); // 2. plain text
+			stream.match( /^[^#<>[\]{}|&~\s\xa0]+/ ); // 2. plain text
 			option.haveEaten = true;
 			return makeFunc( pageStyle, state );
 		};
@@ -554,7 +562,7 @@
 		function sectionHeader( stream, state ) {
 			if ( stream.sol() ) { // 1. SOL
 				return true;
-			} else if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
+			} else if ( stream.match( /^[^{&'~[<_]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
 					once( eatEnd( makeLocalStyle, 'mw-section-header' ), state );
@@ -808,7 +816,7 @@
 				case '[': // 3. unique syntax: [
 					changeToText();
 					if ( stream.eat( '[' ) ) {
-						newError( state, 'link-inside-link', '外' );
+						newError( state, 'link-in-link', '外' );
 						return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -822,7 +830,7 @@
 				case '~':
 					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
 						changeToText();
-						newError( state, 'sign-inside-link', '外' );
+						newError( state, 'sign-in-link', '外' );
 						return makeFunc( 'error', state );
 					}
 					break;
@@ -863,7 +871,7 @@
 			switch ( ch ) {
 				case '[': // 4. invalid wikitext: [
 					if ( stream.eat( '[' ) ) {
-						newError( state, 'link-inside-link', '外' );
+						newError( state, 'link-in-link', '外' );
 						return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -871,10 +879,10 @@
 					const mt = stream.match( /^~{0,4}/ );
 					switch ( mt[ 0 ].length ) {
 						case 4:
-							return makeFunc( 'mw-signature', state );
+							return 'mw-signature'; // has own background
 						case 2:
 						case 3:
-							newError( state, 'sign-inside-link', '外' );
+							newError( state, 'sign-in-link', '外' );
 							return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -1008,7 +1016,7 @@
 		 * Unique syntax: |, ]]
 		 * Invalid characters: { } [ ]
 		 * Valid wikitext syntax: &, {{, {{{, <!--
-		 * Invalid wikitext syntax: HTML tags, closed extension tags
+		 * Invalid wikitext syntax: ~~~, HTML tags, closed extension tags
 		 * @param {Object.<string, boolean>} options - immutable here
 		 * @property {boolean} invisible - whether there may be link text
 		 * @property {boolean} redirect - whether it is redirect; this is a superset of option.invisible
@@ -1032,7 +1040,7 @@
 				switch ( ch ) {
 					case ']':
 						if ( stream.peek() !== ']' ) { // 3. invalid character: ]
-							newError( state, 'invalid-char-section', ']' );
+							newError( state, 'invalid-char-link-section', ']' );
 							return makeFunc( 'error', state );
 						}
 						// fall through
@@ -1047,7 +1055,7 @@
 						// fall through
 					case '}': // 3. invalid characters: {, }, [
 					case '[':
-						newError( state, 'invalid-char-section', ch );
+						newError( state, 'invalid-char-link-section', ch );
 						return makeFunc( 'error', state );
 					case '&': // 4. valid wikitext: &
 						return makeFunc( eatMnemonic( stream, 'mw-link-tosection' ), state );
@@ -1057,19 +1065,26 @@
 							break;
 						} else if ( mt[ 0 ] === '!--' ) { // 4. valid wikitext: <!--
 							return eatComment( stream, state );
-						} else {
-							const name = mt[ 2 ].toLowerCase();
-							// 4. invalid wikitext: HTML tag or closed extension tag (only opening tag is found here)
-							if ( name in permittedHtmlTags ) {
-								newError( state, 'tag-inside-section', 'HTML' );
-								return makeFunc( 'error', state );
-							} else if ( name in mwConfig.tags && !mt[ 1 ] ) {
-								newError( state, 'tag-inside-section', '扩展' );
-								return makeFunc( 'error', state );
-							}
 						}
+						const name = mt[ 2 ].toLowerCase();
+						// 4. invalid wikitext: HTML tag or closed extension tag (only opening tag is found here)
+						if ( name in permittedHtmlTags ) {
+							newError( state, 'tag-in-link-section', 'HTML' );
+							return makeFunc( 'error', state );
+						} else if ( name in mwConfig.tags && !mt[ 1 ] ) {
+							newError( state, 'tag-in-link-section', '扩展' );
+							return makeFunc( 'error', state );
+						}
+						break;
 					}
+					case '~':
+						if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
+							newError( 'sign-in-link', '内' );
+							return makeFunc( 'error', state );
+						}
+						break;
 				}
+				stream.match( /^[^[\]|{}&<~]+/ ); // 2. plain text
 				return makeFunc( 'mw-link-tosection', state );
 			}
 		}
@@ -1134,19 +1149,20 @@
 						break;
 					case '[':
 						if ( stream.eat( '[' ) ) { // 4. invalid wikitext: [[
-							newError( state, 'link-inside-link', '内' );
+							newError( state, 'link-in-link', '内' );
 							return makeFunc( 'error', state );
 						}
 						break;
 					case '~':
 						if ( stream.match( /^~{2,3}/ ) ) {
 							if ( stream.eat( '~' ) ) { // 4. valid wikitext: ~~~~~
-								return 'mw-signature';
+								return 'mw-signature'; // has own background
 							}
-							newError( state, 'sign-inside-link', '内' );
+							newError( state, 'sign-in-link', '内' );
 							return makeFunc( 'error', state ); // 4. invalid wikitext: ~~~~
 						}
 				}
+				stream.match( /^[^{&'<[\]~]+/ ); // 2. plain text
 				if ( redirect ) {
 					newError( state, 'link-text-redirect' );
 				}
@@ -1695,6 +1711,9 @@
 							case 3: // total apostrophes =4
 								stream.backUp( 3 );
 								break;
+							case 4:
+								stream.backUp( 2 );
+								// fall through
 							case 2: // valid wikitext: ''', bold
 								state.apos.bold = !state.apos.bold;
 								return makeLocalStyle( 'mw-apostrophes', state );
