@@ -14,12 +14,24 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-		nsFileRegex = getFileRegex();
+		nsFileRegex = getFileRegex(),
+		errorMsgs = {
+			'invalid-char-pagename': '页面名称出现无效字符"$1"。',
+			'invalid-char-section': '章节链接出现无效字符"$1"。',
+			'link-inside-link': '$1部链接中不应包含内部链接。',
+			'sign-inside-link': '$1部链接中不应包含签名。',
+			'tag-inside-section': '章节链接中不应包含$1标签。',
+			'link-text-redirect': '重定向不应包含链接文字。'
+		};
 	var span, mwConfig, urlProtocols, redirectRegex;
 	if ( typeof document === 'object' ) {
 		span = document.createElement( 'span' ); // used for isEntity()
 	}
 
+	/**
+	 * create RegExp for file links
+	 * @returns {RegExp}
+	 */
 	function getFileRegex() {
 		const nsIds = typeof mw === 'object'
 				? mw.config.get( 'wgNamespaceIds' )
@@ -30,6 +42,22 @@
 		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*', 'i' );
 	}
 
+	/**
+	 * update state.errors by adding new error message
+	 * @param {string} key - error message key
+	 * @param {?string} arg - additional argument to replace $1 in message templates
+	 * @returns {undefined}
+	 */
+	function newError( state, key, arg ) {
+		const msg = errorMsgs[ key ];
+		state.errors.push( arg === undefined ? msg : msg.replace( '$1', arg ) );
+	}
+
+	/**
+	 * escape string before creating RegExp
+	 * @param {string} str
+	 * @returns {string}
+	 */
 	function escapeRegExp( str ) {
 		return str.replace( /([\\{}()|.?*+\-^$[\]])/g, '\\$1' );
 	}

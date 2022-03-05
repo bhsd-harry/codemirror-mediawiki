@@ -29,6 +29,10 @@
 		span = document.createElement( 'span' ); // used for isEntity()
 	}
 
+	/**
+	 * create RegExp for file links
+	 * @returns {RegExp}
+	 */
 	function getFileRegex() {
 		const nsIds = typeof mw === 'object'
 				? mw.config.get( 'wgNamespaceIds' )
@@ -39,11 +43,22 @@
 		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*', 'i' );
 	}
 
+	/**
+	 * update state.errors by adding new error message
+	 * @param {string} key - error message key
+	 * @param {?string} arg - additional argument to replace $1 in message templates
+	 * @returns {undefined}
+	 */
 	function newError( state, key, arg ) {
 		const msg = errorMsgs[ key ];
 		state.errors.push( arg === undefined ? msg : msg.replace( '$1', arg ) );
 	}
 
+	/**
+	 * escape string before creating RegExp
+	 * @param {string} str
+	 * @returns {string}
+	 */
 	function escapeRegExp( str ) {
 		return str.replace( /([\\{}()|.?*+\-^$[\]])/g, '\\$1' );
 	}
