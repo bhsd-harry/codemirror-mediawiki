@@ -1466,11 +1466,13 @@
 	function eatWikiTextSol( makeFunc, style ) {
 		return function ( stream, state ) {
 			const ch = stream.next();
+			var fallbackStyle = style;
 			switch ( ch ) {
 				case '-': // 3. valid wikitext: ----
-					if ( stream.match( /^-{3,}/ ) ) {
+					if ( state.nInvisible === 0 && stream.match( /^-{3,}/ ) ) {
 						return 'mw-hr'; // has own background
 					}
+					fallbackStyle = style || '';
 					break;
 				case '=': { // 3. valid wikitext: =
 					const mt = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
@@ -1482,11 +1484,28 @@
 							state
 						);
 					}
+					fallbackStyle = style || '';
 					break;
 				}
-				case '*': // 3. valid wikitext: *, #, ;
 				case '#':
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
+					stream.backUp( 1 );
+					if ( stream.match( redirectRegex ) ) {
+						update( inLink, state, { redirect: true }, [ 'nInvisible' ], [ 'nInvisible' ] );
+						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state, [ 'nLink' ] );
+						return makeLocalStyle( 'mw-parserfunction-name', state );
+					}
+					stream.next();
+					// fall through
+				case '*': // 3. valid wikitext: *, ;
 				case ';': {
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
 						state.apos.dt = true;
@@ -1494,6 +1513,10 @@
 					return makeLocalStyle( 'mw-list', state );
 				}
 				case ':':
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
 					if ( stream.match( /^:*[\s\xa0]*(?={\|)/ ) ) { // 3. valid wikitext: :{|, bug T108454
 						state.stack.push( state.tokenize );
 						state.tokenize = eatStartTable;
@@ -1505,6 +1528,12 @@
 					}
 					return makeLocalStyle( 'mw-list', state );
 				case ' ': {
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					} else if ( stream.match( redirectRegex ) ) {
+						return makeLocalStyle( 'mw-parserfunction-name', state );
+					}
 					const mt = stream.match( /^[\s\xa0]*(:*)[\s\xa0]*(?={\|)/ ); // 3. valid wikitext: :{|
 					if ( mt ) { // 3. valid wikitext: {|, bug T108454
 						state.stack.push( state.tokenize );
@@ -1521,7 +1550,7 @@
 						return eatStartTable( stream, state );
 					}
 			}
-			return makeFunc( style, state ); // 5. fallback
+			return makeFunc( fallbackStyle, state ); // 5. fallback
 		};
 	}
 
