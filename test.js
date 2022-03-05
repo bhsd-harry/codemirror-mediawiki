@@ -59,10 +59,13 @@
 	 * @property {number} nInvisible - ancestor invisible syntax
 	 * - parser function name
 	 * - template pagename
+	 * - template argument name
 	 * - template variable name
 	 * - internal link pagename if there is link text
+	 * - file link pagename
+	 * - file link keyword
 	 * - external link
-	 * - tag
+	 * - tag attribute
 	 * - table definition
 	 */
 
@@ -110,6 +113,9 @@
 				break;
 			default:
 				ground += '-link2';
+		}
+		if ( typeof global === 'object' && state.nInvisible ) {
+			ground += '-invisible';
 		}
 		if ( endGround ) {
 			state[ endGround ]--;
@@ -208,12 +214,12 @@
 
 	/**
 	 * handle exit condition for inFunc
-	 * WARNING: This function mutates state.stack and other properties
+	 * WARNING: This function mutates state.stack
 	 * @param {(string|true|Array)} result - return of an inFunc
 	 * @returns {string} style
 	 * @throws {string} style
 	 */
-	function handleExit( result, state, ground ) {
+	function handleExit( result, state, endGround ) {
 		var style, exit;
 		if ( Array.isArray( result ) ) {
 			style = result[ 0 ];
@@ -224,7 +230,7 @@
 		}
 		if ( exit === true ) {
 			state.tokenize = state.stack.pop();
-			increment( state, ground, -1 );
+			increment( state, endGround, -1 );
 			throw style === true ? undefined : style;
 		}
 		return style;
@@ -233,27 +239,30 @@
 	/**
 	 * execute token once and exit
 	 * @param {eatFunc} parser - token
-	 * @param {?Array.<string>} ground - properties of stateObj to mutate
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
 	 * @returns {undefined}
 	 */
-	function once( parser, stateObj, ground ) {
+	function once( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			state.tokenize = state.stack.pop();
 			increment( state, ground );
 			const style = parser( stream, state );
-			increment( state, ground, -1 );
+			increment( state, endGround, -1 );
 			return style;
 		};
 	}
 
 	/**
 	 * execute token until exit
+	 * WARNING: This function may only increments state object properties but not decrement
 	 * @param {inFunc} parser - token
-	 * @param {?Array.<string>} ground - properties of stateObj to mutate
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
 	 * @returns {undefined}
 	 */
-	function chain( parser, stateObj, ground ) {
+	function chain( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			increment( state, ground );
@@ -261,7 +270,7 @@
 		};
 		function token( stream, state ) {
 			try {
-				return handleExit( parser( stream, state ), state, ground );
+				return handleExit( parser( stream, state ), state, endGround );
 			} catch ( e ) {
 				return e;
 			}
@@ -270,26 +279,34 @@
 
 	/**
 	 * chain token with a mutable option object
+	 * WARNING: This function may only increments state object properties but not decrement
 	 * @param {function} parser - token generator, takes an object as argument and returns an inFunc
 	 * @param {?Object.<string, *>} option - a mutable object
-	 * @param {?Array.<string>} ground - properties of stateObj to mutate
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
 	 * @returns {undefined}
 	 */
-	function update( parser, stateObj, initOption, ground ) {
+	function update( parser, stateObj, initOption, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			increment( state, ground );
 			state.tokenize = token( initOption );
 		};
 		function token( option ) {
-			return function ( stream, state ) {
+			const name = 'update_' + parser.name;
+			Object.defineProperty( updateToken, 'name', { value: name } );
+			return updateToken;
+			function updateToken( stream, state ) {
 				try {
-					return handleExit( parser( option )( stream, state ), state, ground );
+					const style = handleExit( parser( option )( stream, state ), state, endGround );
+					if ( state.tokenize.name === name ) { // do not update if another token is nested
+						state.tokenize = token( option );
+					}
+					return style;
 				} catch ( e ) {
-					state.tokenize = token( option );
 					return e;
 				}
-			};
+			}
 		}
 	}
 
@@ -399,7 +416,7 @@
 	 * valid wikitext syntax: {{, {{{, &, <!--
 	 * @param {Object.<string, boolean>} option - a mutable object
 	 * @property {boolean} haveEaten
-	 * @property {boolean} noComment
+	 * @property {boolean} redirect
 	 * @returns {?string}
 	 */
 	function eatPageName( makeFunc, style, option ) {
@@ -418,7 +435,7 @@
 				case '|':
 					return makeFunc( 'error', state );
 				case '<':
-					if ( !option.noComment && stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+					if ( !option.redirect && stream.match( '!--' ) ) { // 4. valid wikitext: <!--
 						return eatComment( stream, state );
 					}
 					return makeFunc( 'error', state ); // 3. unique syntax: <
@@ -491,7 +508,8 @@
 	 * @param {number} count - number of ending characters
 	 */
 	function inSectionHeader( count, makeFunc ) {
-		return function ( stream, state ) {
+		return sectionHeader;
+		function sectionHeader( stream, state ) {
 			if ( stream.sol() ) { // 1. SOL
 				return true;
 			} else if ( stream.match( /^[^{&'~[<]+/ ) ) { // 2. plain text
@@ -502,7 +520,7 @@
 				return makeFunc( '', state );
 			}
 			return eatWikiTextOther( makeFunc, '' )( stream, state ); // 4. common wikitext
-		};
+		}
 	}
 
 	/**
@@ -517,13 +535,14 @@
 	 * Cannot be multiline
 	 * Unique syntax: |, ]], #
 	 * @param {Object.<string, boolean>} option
-	 * @property {boolean} invisible - whether there is link text
-	 * @property {boolean} noComment - whether it is redirect
+	 * @property {boolean} invisible - whether there may be link text
+	 * @property {boolean} redirect - whether it is redirect; this is a superset of option.invisible
 	 */
 	function inLink( option ) {
-		return function ( stream, state ) {
+		return link;
+		function link( stream, state ) {
 			var makeFunc;
-			if ( option.invisible ) {
+			if ( option.redirect || option.invisible ) {
 				makeFunc = makeLocalStyle;
 			} else if ( state.nExt || state.nTemplate ) {
 				makeFunc = makeOrStyle;
@@ -532,12 +551,20 @@
 			}
 			if ( stream.sol() ) { // 1. SOL
 				return true;
+			} else if ( stream.match( /^[\s\xa0]*(?=#|]])/ ) ) { // 3. unique syntax: #, ]]
+				const ch = stream.next();
+				switch ( ch ) {
+					case '#':
+						chain( inLinkToSection( option ), state );
+						return makeFunc( 'mw-link', state );
+					case ']':
+						stream.next();
+						return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
+				}
 			}
+			return eatPageName( makeFunc, 'mw-link-pagename', option )( stream, state );
 			/* eslint-disable */
-			// if ( stream.match( /^[\s\xa0]*#[\s\xa0]*/ ) ) { // 3. unique syntax: #
-			// 	state.tokenize = inLinkToSection( invisible );
-			// 	return makeFunc( 'mw-link', state );
-			// } else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
+			// if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 			// 	state.tokenize = eatLinkText;
 			// 	state.nInvisible--;
 			// 	if ( state.nLink === 1 ) {
@@ -548,74 +575,87 @@
 			// 	return makeLocalStyle( 'mw-link-delimiter', state );
 			// }
 			/* eslint-enable */
-			if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
-				return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
-			}
-			return eatPageName( makeFunc, 'mw-link-pagename', option )( stream, state );
-		};
+		}
 
-		/* eslint-disable */
 		/**
 		 * internal link hash
 		 * Cannot be multiline
 		 * Unique syntax: |, ]]
-		 * Valid wikitext syntax: &, {{, {{{, <!--
-		 * Invalid wikitext syntax: ~~~, HTML tags, complete extension tags
 		 * Invalid characters: { } [ ]
+		 * Valid wikitext syntax: &, {{, {{{, <!--
+		 * Invalid wikitext syntax: HTML tags, closed extension tags
+		 * @param {Object.<string, boolean>} options - immutable here
+		 * @property {boolean} invisible - whether there may be link text
+		 * @property {boolean} redirect - whether it is redirect; this is a superset of option.invisible
 		 */
-		// function inLinkToSection( invisible ) {
-		// 	const makeFunc = invisible ? makeLocalStyle : makeOrStyle;
-		// 	return function ( stream, state ) {
-		// 		if ( stream.sol() ) { // 1. stream.sol()
-		// 		// @todo error message
-		// 			state.nLink--;
-		// 			state.tokenize = state.stack.pop();
-		// 			if ( invisible ) {
-		// 				state.nInvisible--;
-		// 			}
-		// 			return;
-		// 		} else if ( stream.match( /^[^|\]{&~<[}]+/ ) ) { // 2. plain text
-		// 			return makeFunc( 'mw-link-tosection', state );
-		// 		} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
-		// 			state.tokenize = eatLinkText;
-		// 			state.nInvisible--;
-		// 			if ( state.nLink === 1 ) {
-		// 				state.parentApos = state.apos;
-		// 				state.aposStack.push( state.apos );
-		// 				state.apos = {};
-		// 			}
-		// 			return makeLocalStyle( 'mw-link-delimiter', state );
-		// 		} else if ( stream.match( ']]' ) ) { // 3. unique syntax: ]]
-		// 			state.tokenize = state.stack.pop();
-		// 			state.nInvisible--;
-		// 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-		// 		} else if ( stream.match( /^(?:&|{{|<!--)/, false ) ) { // 4. limited common wikitext
-		// 			return eatWikiTextOther( makeFunc, 'mw-link-tosection' )( stream, state );
-		// 		}
-		// 		const mt = stream.match( /^(<\/?([A-Za-z\d]+)|~{3,5}|[{}[\]])/ );
-		// 		if ( mt ) { // 4. invalid syntax or characters: tags, ~~~, {, }, [, ]
-		// 			const fullname = mt[ 0 ],
-		// 				name = ( mt[ 2 ] || '' ).toLowerCase();
-		// 			if ( fullname[ 0 ] === '~' || name in mwConfig.tags || name in permittedHtmlTags ) {
-		// 				state.nLink--;
-		// 				state.tokenize = state.stack.pop();
-		// 				if ( invisible ) {
-		// 					state.nInvisible--;
-		// 				}
-		// 				if ( fullname[ 0 ] === '~' ) {
-		// 					return makeFunc( 'error', state );
-		// 				}
-		// 				stream.backUp( fullname.length );
-		// 			} else if ( !name ) {
-		// 				return makeFunc( 'error', state );
-		// 			}
-		// 		} else {
-		// 			stream.next();
-		// 		}
-		// 		return makeFunc( 'mw-link-tosection', state ); // 5. fallback
-		// 	};
-		// }
+		function inLinkToSection( options ) {
+			return linkToSection;
+			function linkToSection( stream, state ) {
+				var makeFunc;
+				if ( options.redirect || options.invisible ) {
+					makeFunc = makeLocalStyle;
+				} else if ( state.nExt || state.nTemplate ) {
+					makeFunc = makeOrStyle;
+				} else {
+					makeFunc = makeOrFullStyle;
+				}
+				if ( stream.sol() ) { // 1. SOL
+					// @todo error message
+					return true;
+				}
+				const ch = stream.next();
+				switch ( ch ) {
+					case ']':
+						if ( stream.peek() !== ']' ) { // 3. invalid character: ]
+							return makeFunc( 'error', state );
+						}
+						// fall through
+					case '|': // 3. unique syntax: ]], |
+						stream.backUp( 1 );
+						return true;
+					case '{':
+						if ( stream.peek() === '{' ) { // 4. valid wikitext: {{, {{{
+							stream.backUp( 1 );
+							return eatWikiTextOther( makeFunc, 'mw-link-tosection' )( stream, state );
+						}
+						// fall through
+					case '}': // 3. invalid characters: {, }, [
+					case '[':
+						return makeFunc( 'error', state );
+					case '&': // 4. valid wikitext: &
+						return makeFunc( eatMnemonic( stream, 'mw-link-tosection' ), state );
+					case '<': {
+						const mt = stream.match( /^(?:!--|(\/?)([A-Za-z\d]+)(?=[\s\xa0>]|\/>|$))/ );
+						if ( !mt ) {
+							break;
+						} else if ( mt[ 0 ] === '!--' ) { // 4. valid wikitext: <!--
+							return eatComment( stream, state );
+						} else {
+							const name = mt[ 2 ].toLowerCase();
+							// 4. invalid wikitext: HTML tag or closed extension tag (only opening tag is found here)
+							if ( name in permittedHtmlTags || name in mwConfig.tags && !mt[ 1 ] ) {
+								return makeFunc( 'error', state );
+							}
+						}
+					}
+				}
+				return makeFunc( 'mw-link-tosection', state );
+				/* eslint-disable */
+				// if ( stream.eat( '|' ) ) { // 3. unique syntax: |
+				// 	state.tokenize = eatLinkText;
+				// 	state.nInvisible--;
+				// 	if ( state.nLink === 1 ) {
+				// 		state.parentApos = state.apos;
+				// 		state.aposStack.push( state.apos );
+				// 		state.apos = {};
+				// 	}
+				// 	return makeLocalStyle( 'mw-link-delimiter', state );
+				// }
+				/* eslint-enable */
+			}
+		}
 
+		/* eslint-disable */
 		/**
 		 * internal link text
 		 * Can be multiline
@@ -755,7 +795,7 @@
 			var fallbackStyle = style;
 			switch ( ch ) {
 				case '-': // 3. valid wikitext: ----
-					if ( stream.match( /^-{3,}/ ) ) {
+					if ( state.nInvisible === 0 && stream.match( /^-{3,}/ ) ) {
 						return 'mw-hr'; // has own background
 					}
 					fallbackStyle = style || '';
@@ -774,16 +814,24 @@
 					break;
 				}
 				case '#':
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
 					stream.backUp( 1 );
 					if ( stream.match( redirectRegex ) ) {
-						update( inLink, state, { noComment: true, invisible: true } );
-						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state );
+						update( inLink, state, { redirect: true }, [ 'nInvisible' ], [ 'nInvisible' ] );
+						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state, [ 'nLink' ] );
 						return makeLocalStyle( 'mw-parserfunction-name', state );
 					}
 					stream.next();
 					// fall through
 				case '*': // 3. valid wikitext: *, ;
 				case ';': {
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
 						state.apos.dt = true;
@@ -791,6 +839,10 @@
 					return makeLocalStyle( 'mw-list', state );
 				}
 				case ':': {
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( /;/.test( mt[ 0 ] ) ) {
 						state.apos.dt = true;
@@ -798,7 +850,10 @@
 					return makeLocalStyle( 'mw-list', state );
 				}
 				case ' ': {
-					if ( stream.match( redirectRegex ) ) {
+					if ( state.nInvisible ) {
+						fallbackStyle = style || '';
+						break;
+					} else if ( stream.match( redirectRegex ) ) {
 						return makeLocalStyle( 'mw-parserfunction-name', state );
 					}
 					return 'mw-skipformatting'; // has own background
@@ -830,26 +885,27 @@
 			switch ( ch ) {
 				case '&': // valid wikitext: &
 					return makeFunc( eatMnemonic( stream, style || '', details.amp ), state );
-				case "'": {
-					const mt = stream.match( /^'*/ ),
-						chars = mt[ 0 ].length;
-					switch ( chars ) {
-						case 0:
-							break;
-						case 3: // total apostrophes =4
-							stream.backUp( 3 );
-							break;
-						case 2: // valid wikitext: ''', bold
-							state.apos.bold = !state.apos.bold;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						case 1: // valid wikitext: '', italic
-							state.apos.italic = !state.apos.italic;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						default: // total apostrophes >5
-							stream.backUp( 5 );
+				case "'":
+					if ( state.nInvisible === 0 ) {
+						const mt = stream.match( /^'*/ ),
+							chars = mt[ 0 ].length;
+						switch ( chars ) {
+							case 0:
+								break;
+							case 3: // total apostrophes =4
+								stream.backUp( 3 );
+								break;
+							case 2: // valid wikitext: ''', bold
+								state.apos.bold = !state.apos.bold;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							case 1: // valid wikitext: '', italic
+								state.apos.italic = !state.apos.italic;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							default: // total apostrophes >5
+								stream.backUp( 5 );
+						}
 					}
 					return makeFunc( details.apos === undefined ? style || '' : details.apos, state );
-				}
 				case '~': // valid wikitext: ~~~
 					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
@@ -890,7 +946,8 @@
 	 * @param {string} style - fallback style
 	 */
 	function eatWikiText( style ) {
-		return function ( stream, state ) {
+		return wikiText;
+		function wikiText( stream, state ) {
 			var result;
 
 			if ( stream.sol() ) { // 1. SOL
