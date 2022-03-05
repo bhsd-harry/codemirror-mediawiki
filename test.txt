@@ -5,4 +5,9 @@
 
 ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 
-#redirect:[[ <!-- --> # a<!---->&apos;</ref><br/>]]b
+#redirect:[[ <!-- --> # <!-- -->&apos;</ref><br/> | b[[]]
+
+;''[[ <!--
+-->&apos;{{a |b=c}}{{{d|e}}}[ftp://f] # <!--
+-->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]</ref><br/> | <!--
+-->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]<br/>'']]g''h
