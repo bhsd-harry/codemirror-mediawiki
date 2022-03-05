@@ -197,7 +197,9 @@
 		}
 		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
-			italic: state.apos.italic || state.parentApos.italic
+			italic: state.apos.italic || state.parentApos.italic,
+			dt: state.apos.dt || state.parentApos.dt,
+			th: state.apos.th || state.parentApos.th
 		} } );
 		return makeFullStyle( style, orState, endGround );
 	}
@@ -620,6 +622,7 @@
 					break;
 				case '&': // 4. valid wikitext: &, {{, {{{
 				case '{':
+					stream.backUp( 1 );
 					return eatWikiTextOther( makeLocalStyle, 'mw-extlink' )( stream, state );
 				case '<':
 					if ( stream.match( '!--' ) ) { // 4. valid wikitext: <!--
@@ -647,7 +650,7 @@
 		 */
 		function inExternalLinkText( stream, state ) {
 			const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle;
-			if ( stream.sol() || stream.eat( ']' ) ) { // 1. SOL; 3. unique syntax: ]
+			if ( stream.sol() || stream.peek() === ']' ) { // 1. SOL; 3. unique syntax: ]
 				return true;
 			}
 			const ch = stream.next();

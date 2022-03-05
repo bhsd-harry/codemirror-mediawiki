@@ -8,7 +8,7 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 #redirect:[[ <!-- --> # <!--
 -->&apos;</ref><br/> | b[[]]
 
-;''[[ <!--
+;a''[[ <!--
 -->&apos;{{a |b=c}}{{{d|e}}}[ftp://f] # <!--
 -->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]</ref><br/> | <!--
 -->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]<br/>'']]g''h
