@@ -1041,6 +1041,10 @@
 				return true;
 			}
 			const ch = stream.next();
+			if ( breakRegex.test( ch ) ) { // high priority
+				stream.backUp( 1 );
+				return true;
+			}
 			switch ( ch ) {
 				case '{': // 4. valid wikitext: {{, {{{, &, __
 				case '&':
@@ -1048,9 +1052,8 @@
 					stream.backUp( 1 );
 					return eatWikiTextOther( makeFunc, 'mw-free-extlink' )( stream, state );
 				case '~':
-					if ( stream.match( '~~', false ) ) { // 4. invalid wikitext: ~~~
-						stream.backUp( 1 );
-						return true;
+					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
+						return [ 'mw-signature', true ];
 					}
 					break;
 				case "'":
@@ -1068,12 +1071,6 @@
 				case '.':
 				case '?':
 					if ( stream.match( /[!)\\:;,.?]*(?:[\s\xa0]|$)/, false ) ) {
-						stream.backUp( 1 );
-						return true;
-					}
-					break;
-				default:
-					if ( breakRegex.test( ch ) ) {
 						stream.backUp( 1 );
 						return true;
 					}
