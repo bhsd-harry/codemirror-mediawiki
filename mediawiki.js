@@ -14,16 +14,24 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-		span = document.createElement( 'span' ), // used for isEntity()
 		nsFileRegex = getFileRegex();
-	var mwConfig, urlProtocols;
+	var span, mwConfig, urlProtocols, redirectRegex;
+	if ( typeof document === 'object' ) {
+		span = document.createElement( 'span' ); // used for isEntity()
+	}
 
 	function getFileRegex() {
-		const nsIds = mw.config.get( 'wgNamespaceIds' ),
+		const nsIds = typeof mw === 'object'
+				? mw.config.get( 'wgNamespaceIds' )
+				: { file: 6, image: 6, 图像: 6, 圖像: 6, 档案: 6, 檔案: 6, 文件: 6 },
 			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 				return nsIds[ ns ] === 6;
 			} ).join( '|' );
 		return new RegExp( '^(?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*', 'i' );
+	}
+
+	function escapeRegExp( str ) {
+		return str.replace( /([\\{}()|.?*+\-^$[\]])/g, '\\$1' );
 	}
 
 	/**
@@ -50,10 +58,13 @@
 	 * @property {number} nInvisible - ancestor invisible syntax
 	 * - parser function name
 	 * - template pagename
+	 * - template argument name
 	 * - template variable name
 	 * - internal link pagename if there is link text
+	 * - file link pagename
+	 * - file link keyword
 	 * - external link
-	 * - tag
+	 * - tag attribute
 	 * - table definition
 	 */
 
@@ -102,6 +113,9 @@
 			default:
 				ground += '-link2';
 		}
+		if ( typeof global === 'object' && state.nInvisible ) {
+			ground += '-invisible';
+		}
 		if ( endGround ) {
 			state[ endGround ]--;
 		}
@@ -144,14 +158,30 @@
 
 	/**
 	 * show bold/italic font based on both local and parent apostrophe states
-	 * For internal link text, including file link caption
+	 * For internal link text inside parser function or template arguments, including file link caption
 	 * @returns {?string} style
 	 */
 	function makeOrStyle( style, state, endGround ) {
 		if ( style === undefined ) {
 			return;
 		}
-		const orState = $.extend( {}, state, { apos: {
+		const orState = Object.assign( {}, state, { apos: {
+			bold: state.apos.bold || state.parentApos.bold,
+			italic: state.apos.italic || state.parentApos.italic
+		} } );
+		return makeStyle( style, orState, endGround );
+	}
+
+	/**
+	 * show bold/italic font based on both local and parent apostrophe states, and show HTML-related styles
+	 * For usual internal link text, including file link caption
+	 * @returns {?string} style
+	 */
+	function makeOrFullStyle( style, state, endGround ) {
+		if ( style === undefined ) {
+			return;
+		}
+		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic
 		} } );
@@ -164,37 +194,119 @@
 	 */
 	/**
 	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
-	 * @returns {(string|true)} style or exit
+	 * @returns {(string|true|Array)} style or exit
 	 */
+
+	/**
+	 * mutate state object
+	 * @param {?Array.<string>} ground - properties to mutate
+	 * @param {?number} [value=1] - value of increment
+	 * @returns {undefined}
+	 */
+	function increment( state, ground, value ) {
+		if ( ground ) {
+			ground.forEach( function ( key ) {
+				state[ key ] += value || 1;
+			} );
+		}
+	}
+
+	/**
+	 * handle exit condition for inFunc
+	 * WARNING: This function mutates state.stack
+	 * @param {(string|true|Array)} result - return of an inFunc
+	 * @returns {string} style
+	 * @throws {string} style
+	 */
+	function handleExit( result, state, endGround ) {
+		var style, exit;
+		if ( Array.isArray( result ) ) {
+			style = result[ 0 ];
+			exit = result[ 1 ];
+		} else {
+			style = result;
+			exit = result;
+		}
+		if ( exit === true ) {
+			state.tokenize = state.stack.pop();
+			increment( state, endGround, -1 );
+			throw style === true ? undefined : style;
+		}
+		return style;
+	}
 
 	/**
 	 * execute token once and exit
 	 * @param {eatFunc} parser - token
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
 	 * @returns {undefined}
 	 */
-	function once( parser, stateObj ) {
+	function once( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			state.tokenize = state.stack.pop();
-			return parser( stream, state );
+			increment( state, ground );
+			const style = parser( stream, state );
+			increment( state, endGround, -1 );
+			return style;
 		};
 	}
 
 	/**
 	 * execute token until exit
+	 * WARNING: This function may only increments state object properties but not decrement
 	 * @param {inFunc} parser - token
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
 	 * @returns {undefined}
 	 */
-	function chain( parser, stateObj ) {
+	function chain( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
-			const style = parser( stream, state );
-			if ( style === true ) {
-				state.tokenize = state.stack.pop();
-			} else {
-				return style;
-			}
+			increment( state, ground );
+			state.tokenize = token;
 		};
+		function token( stream, state ) {
+			try {
+				return handleExit( parser( stream, state ), state, endGround );
+			} catch ( e ) {
+				return e;
+			}
+		}
+	}
+
+	/**
+	 * chain token with a mutable option object
+	 * WARNING: This function may only increments state object properties but not decrement
+	 * @param {function} parser - token generator, takes an object as argument and returns an inFunc
+	 * @param {?Object.<string, *>} option - a mutable object
+	 * @param {?Array.<string>} ground - properties of stateObj to increment
+	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
+	 * @returns {undefined}
+	 */
+	function update( parser, stateObj, initOption, ground, endGround ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			increment( state, ground );
+			state.tokenize = token( initOption );
+		};
+		function token( option ) {
+			const name = 'update_' + parser.name;
+			Object.defineProperty( updateToken, 'name', { value: name } );
+			return updateToken;
+			function updateToken( stream, state ) {
+				try {
+					const style = handleExit( parser( option )( stream, state ), state, endGround );
+					if ( state.tokenize.name === name ) { // do not update if another token is nested
+						state.tokenize = token( option );
+					}
+					return style;
+				} catch ( e ) {
+					return e;
+				}
+			}
+		}
 	}
 
 	/**
@@ -289,11 +401,6 @@
 	 */
 
 	/**
-	 * additional illegal characters in file name
-	 * / : &
-	 */
-
-	/**
 	 * token template (order not restricted)
 	 * 1. SOL/EOL
 	 * 2. plain text
@@ -303,35 +410,47 @@
 	 */
 
 	/**
-	 * eat general page name without syntax details
-	 * @param {RegExp} regex - regex for plain text; must exclude [&#<~>[\]{}|]
-	 * @param {Object.<'haveEaten', boolean>} option
-	 * @returns {(string|undefined)}
+	 * eat general page name
+	 * invalid characters: # < > [ ] { } |
+	 * valid wikitext syntax: {{, {{{, &, <!--
+	 * @param {Object.<string, boolean>} option - a mutable object
+	 * @property {boolean} haveEaten
+	 * @property {boolean} redirect
+	 * @returns {?string}
 	 */
-	function eatPageName( regex, makeFunc, style, option ) {
+	function eatPageName( makeFunc, style, option ) {
 		return function ( stream, state ) {
-			// 1. not handling stream.sol() here
-			if ( eatSpace( stream ) ) { // 2. plain text
-				return makeFunc( style + ( option.haveEaten && !stream.eol() ? ' mw-pagename' : '' ), state );
-			} else if ( stream.match( regex ) ) { // 2. plain text
-				option.haveEaten = true;
-				return makeFunc( style + ' mw-pagename', state );
-			} else if ( stream.match( '<!--' ) ) { // 4. common wikitext: <!--
-				return eatComment( stream, state );
-			} else if ( stream.match( /^~{3,5}/ ) ) { // 4. common wikitext: ~~~
-				return makeFunc( 'error', state );
-			} else if ( stream.match( /^(?:[&~]|{{)/, false ) ) { // 4. common wikitext: &, {{, {{{
-				option.haveEaten = true;
-				const defaultStyle = style + ' mw-pagename',
-					ampStyle = option.ampStyle === undefined ? defaultStyle : option.ampStyle;
-				return eatWikiTextOther( makeFunc, '', {
-					tilde: defaultStyle,
-					lbrace: 'error',
-					amp: ampStyle
-				} )( stream, state );
+			const pageStyle = style + ' mw-pagename';
+			if ( eatSpace( stream ) ) {
+				return makeFunc( option.haveEaten && !stream.eol() ? pageStyle : style, state );
 			}
-			stream.next(); // 5. fallback
-			return makeFunc( 'error', state );
+			const ch = stream.next();
+			switch ( ch ) {
+				case '#': // 3. unique syntax: # > [ ] } |
+				case '>':
+				case '[':
+				case ']':
+				case '}':
+				case '|':
+					return makeFunc( 'error', state );
+				case '<':
+					if ( !option.redirect && stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+						return eatComment( stream, state );
+					}
+					return makeFunc( 'error', state ); // 3. unique syntax: <
+				case '{':
+				case '&':
+					if ( ch === '{' && stream.peek() !== '{' ) { // 3. unique syntax: {
+						return makeFunc( 'error', state );
+					}
+					// 4. valid wikitext: {{, {{{, &
+					option.haveEaten = true;
+					stream.backUp( 1 );
+					return eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
+			}
+			stream.match( /^[^#<>[\]{}|&\s\xa0]+/ ); // 2. plain text
+			option.haveEaten = true;
+			return makeFunc( pageStyle, state );
 		};
 	}
 
