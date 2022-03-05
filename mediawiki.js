@@ -211,7 +211,9 @@
 		}
 		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
-			italic: state.apos.italic || state.parentApos.italic
+			italic: state.apos.italic || state.parentApos.italic,
+			dt: state.apos.dt || state.parentApos.dt,
+			th: state.apos.th || state.parentApos.th
 		} } );
 		return makeFullStyle( style, orState, endGround );
 	}
@@ -232,10 +234,12 @@
 	 * @returns {undefined}
 	 */
 	function increment( state, ground, value ) {
-		if ( ground ) {
+		if ( Array.isArray( ground ) ) {
 			ground.forEach( function ( key ) {
 				state[ key ] += value || 1;
 			} );
+		} else if ( typeof ground === 'string' ) {
+			state[ ground ] += value || 1;
 		}
 	}
 
@@ -460,21 +464,29 @@
 				case ']':
 				case '}':
 				case '|':
+					newError( state, 'invalid-char-pagename', ch );
 					return makeFunc( 'error', state );
 				case '<':
 					if ( !option.redirect && stream.match( '!--' ) ) { // 4. valid wikitext: <!--
 						return eatComment( stream, state );
 					}
+					newError( state, 'invalid-char-pagename', '<' );
 					return makeFunc( 'error', state ); // 3. unique syntax: <
 				case '{':
-				case '&':
+				case '&': {
 					if ( ch === '{' && stream.peek() !== '{' ) { // 3. unique syntax: {
+						newError( state, 'invalid-char-pagename', '{' );
 						return makeFunc( 'error', state );
 					}
 					// 4. valid wikitext: {{, {{{, &
 					option.haveEaten = true;
 					stream.backUp( 1 );
-					return eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
+					const result = eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
+					if ( /\berror\b/.test( result ) ) {
+						newError( state, 'invalid-char-pagename', '{' );
+					}
+					return result;
+				}
 			}
 			stream.match( /^[^#<>[\]{}|&\s\xa0]+/ ); // 2. plain text
 			option.haveEaten = true;
@@ -792,10 +804,12 @@
 	}
 
 	/**
-	 * external link text
+	 * external link url without protocol
 	 * Cannot be multiline
-	 * Unique syntax: ], ~~~, [[
-	 * Invalid wikitext syntax: [
+	 * Unique syntax: SPACE, ], '', [, [[, ~~~, <, >
+	 * Valid wikitext syntax: &, {{, {{{
+	 * @param {Object} option
+	 * @property {boolean} invisible - whether there is link text
 	 */
 	function inExternalLinkText( stream, state ) {
 		if ( stream.sol() ) { // 1. stream.sol()
