@@ -715,7 +715,7 @@
 				if ( !haveEaten && /[^\s\xa0]/.test( ch ) ) {
 					state.tokenize = eatTemplateArgument( expectArgName, true );
 				}
-				return eatFreeExternalLinkProtocol( makeStyle, '', '}|' )( stream, state );
+				return eatFreeExternalLink( makeStyle, '', '}|' )( stream, state );
 			} else if ( !haveEaten && !stream.match( '<!--', false ) ) {
 				state.tokenize = eatTemplateArgument( expectArgName, true );
 			}
@@ -1572,14 +1572,14 @@
 		return function ( stream, state ) {
 			details = details || {}; // eslint-disable-line no-param-reassign
 			const ch = stream.next();
-			var errorStyle;
+			var errorStyle, mt;
 			switch ( ch ) {
 				case '&': // valid wikitext: &
 					return makeFunc( eatMnemonic( stream, style || '', details.amp ), state );
 				case "'":
 					if ( state.nInvisible === 0 ) {
-						const mt = stream.match( /^'*/ ),
-							chars = mt[ 0 ].length;
+						mt = stream.match( /^'*/ );
+						const chars = mt[ 0 ].length;
 						switch ( chars ) {
 							case 0:
 								break;
@@ -1603,7 +1603,7 @@
 					}
 					return makeFunc( details.tilde === undefined ? style || '' : details.tilde, state );
 				case '_': { // valid wikitext: __
-					const mt = stream.match( /^_+/ );
+					mt = stream.match( /^_+/ );
 					errorStyle = details.lowbar === undefined ? style || '' : details.lowbar;
 					if ( !mt || stream.eol() ) {
 						// fallback
@@ -1615,7 +1615,6 @@
 				}
 				case '[': {
 					errorStyle = details.lbrack === undefined ? style || '' : details.lbrack;
-					var mt;
 					if ( stream.eat( '[' ) ) { // valid wikitext: [[
 						eatSpace( stream );
 						state.nLink++;
