@@ -1370,6 +1370,7 @@
 
 	/**
 	 * free external link protocol
+	 * Cannot be multiline
 	 * Always used as fallback
 	 * @param {string} restriction - escaped special characters for syntax
 	 */
@@ -1401,8 +1402,7 @@
 		 * Valid wikitext syntax: {{, {{{, &, __
 		 */
 		function inFreeExternalLink( stream, state ) {
-			if ( stream.eol() ) { // 1. EOL
-				// @todo error message
+			if ( stream.sol() ) { // 1. SOL
 				return true;
 			}
 			const ch = stream.next();
@@ -1420,7 +1420,7 @@
 					stream.backUp( 1 );
 					return eatWikiTextOther( makeFunc, 'mw-free-extlink' )( stream, state );
 				case '~':
-					if ( stream.match( /^~~/, false ) ) { // 4. invalid wikitext: ~~~
+					if ( stream.match( '~~', false ) ) { // 4. invalid wikitext: ~~~
 						stream.backUp( 1 );
 						return true;
 					}
