@@ -8,12 +8,12 @@ CodeMirror.defaults.mwConfig = require( './config.json' );
 var output = '',
 	lastStyle;
 const callback = {
-	error: function ( string, style, line, ch ) {
+	error: function ( string, style, line, ch, state ) {
 		if ( /\berror\b/.test( style ) ) {
-			console.log( { string: string, line: line, ch: ch } );
+			console.log( { string: string, line: line, ch: ch, error: state.errors.shift() } );
 		}
 	},
-	print: function ( string, style, line, ch, state ) {
+	print: function ( string, style ) {
 		if ( string === '\n' ) {
 			console.log( output );
 			output = '';
@@ -21,7 +21,7 @@ const callback = {
 			try {
 				const printStyle = ( style || '' ).trim()
 					.replace( /(?:\bmw-| [\w-]+-ground\b)/g, '' )
-					.replace( /\berror\b/, '\x1b[1;31merror\x1b[0m' );
+					.replace( /\berror\b/, '\x1b[1;31merror\x1b[0m' ); // red
 				var color = 32; // green
 				if ( /-(?:template|ext)\d?-link\d?-(?:invisible-)?ground\b/.test( style ) ) {
 					color = 35; // magenta
@@ -38,11 +38,6 @@ const callback = {
 				}
 				output += '\x1b[1;' + color + 'm' + string + '\x1b[0m{' + printStyle + '}';
 				lastStyle = style;
-				if ( style === undefined ) {
-					console.log();
-					console.log( { string: string, token: state.tokenize.name } );
-					console.log();
-				}
 			} catch ( e ) {
 				console.log();
 				console.log( { string: string, style: style } );
