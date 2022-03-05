@@ -813,17 +813,16 @@
 			}
 			const mt = stream.match( /^[\s\xa0]*([#|]|]]|{{[\s\xa0]*![\s\xa0]*}})/ );
 			if ( mt ) {
-				switch ( mt[ 1 ][ 0 ] ) {
+				switch ( mt[ 1 ] ) {
 					case '#': // 3. unique syntax: #
 						chain( inLinkToSection( option ), state );
 						return makeFunc( 'mw-link', state );
-					case ']': // 3. unique syntax: ]]
+					case ']]': // 3. unique syntax: ]]
 						if ( option.invisible ) {
 							state.nInvisible--;
 						}
 						return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
-					case '{':
-					case '|': // 3. unique syntax: |
+					default: // 3. unique syntax: |
 						if ( option.invisible ) {
 							state.nInvisible--;
 							option.invisible = false;
