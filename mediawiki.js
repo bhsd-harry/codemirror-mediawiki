@@ -1575,35 +1575,36 @@
 			var errorStyle;
 			switch ( ch ) {
 				case '&': // valid wikitext: &
-					return makeFunc( eatMnemonic( stream, style, details.amp ), state );
-				case "'": {
-					const mt = stream.match( /^'*/ ),
-						chars = mt[ 0 ].length;
-					switch ( chars ) {
-						case 0:
-							break;
-						case 3: // total apostrophes =4
-							stream.backUp( 3 );
-							break;
-						case 2: // valid wikitext: ''', bold
-							state.apos.bold = !state.apos.bold;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						case 1: // valid wikitext: '', italic
-							state.apos.italic = !state.apos.italic;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						default: // total apostrophes >5
-							stream.backUp( 5 );
+					return makeFunc( eatMnemonic( stream, style || '', details.amp ), state );
+				case "'":
+					if ( state.nInvisible === 0 ) {
+						const mt = stream.match( /^'*/ ),
+							chars = mt[ 0 ].length;
+						switch ( chars ) {
+							case 0:
+								break;
+							case 3: // total apostrophes =4
+								stream.backUp( 3 );
+								break;
+							case 2: // valid wikitext: ''', bold
+								state.apos.bold = !state.apos.bold;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							case 1: // valid wikitext: '', italic
+								state.apos.italic = !state.apos.italic;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							default: // total apostrophes >5
+								stream.backUp( 5 );
+						}
 					}
-					return makeFunc( details.apos === undefined ? style : details.apos, state );
-				}
+					return makeFunc( details.apos === undefined ? style || '' : details.apos, state );
 				case '~': // valid wikitext: ~~~
 					if ( stream.match( /^~{2,4}/ ) ) {
 						return 'mw-signature'; // has own background
 					}
-					return makeFunc( details.tilde === undefined ? style : details.tilde, state );
+					return makeFunc( details.tilde === undefined ? style || '' : details.tilde, state );
 				case '_': { // valid wikitext: __
 					const mt = stream.match( /^_+/ );
-					errorStyle = details.lowbar === undefined ? style : details.lowbar;
+					errorStyle = details.lowbar === undefined ? style || '' : details.lowbar;
 					if ( !mt || stream.eol() ) {
 						// fallback
 					} else {
@@ -1613,40 +1614,38 @@
 					return makeFunc( errorStyle, state );
 				}
 				case '[': {
-					errorStyle = details.lbrack === undefined ? style : details.lbrack;
+					errorStyle = details.lbrack === undefined ? style || '' : details.lbrack;
+					var mt;
 					if ( stream.eat( '[' ) ) { // valid wikitext: [[
 						eatSpace( stream );
-						if ( /[^\]|[<>}]/.test( stream.peek() ) ) { // ignore invalid link
-							state.nLink++;
-							state.stack.push( state.tokenize );
-							const mt = stream.match( nsFileRegex, false );
-							if ( mt ) {
-								state.stack.push( inFileLink );
-								state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-link-pagename mw-pagename' );
-								state.nInvisible++;
-							} else if ( stream.match( /^[^\]]*\|/, false ) ) {
-								state.tokenize = inLink( true );
-								state.nInvisible++;
-							} else {
-								state.tokenize = inLink( false );
-							}
-							return makeLocalStyle( 'mw-link-bracket', state );
-						}
-					} else {
-						const mt = stream.match( urlProtocols, false );
+						state.nLink++;
+						state.stack.push( state.tokenize );
+						mt = stream.match( nsFileRegex, false );
 						if ( mt ) {
-							state.nLink++;
-							state.stack.push( state.tokenize );
-							state.stack.push( inExternalLink );
-							state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' );
+							state.stack.push( inFileLink );
+							state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-link-pagename mw-pagename' );
 							state.nInvisible++;
-							return makeLocalStyle( 'mw-extlink-bracket', state );
+						} else if ( stream.match( /^[^\]]*\|/, false ) ) {
+							state.tokenize = inLink( true );
+							state.nInvisible++;
+						} else {
+							state.tokenize = inLink( false );
 						}
+						return makeLocalStyle( 'mw-link-bracket', state );
+					}
+					mt = stream.match( urlProtocols, false );
+					if ( mt ) {
+						state.nLink++;
+						state.stack.push( state.tokenize );
+						state.stack.push( inExternalLink );
+						state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' );
+						state.nInvisible++;
+						return makeLocalStyle( 'mw-extlink-bracket', state );
 					}
 					break;
 				}
 				case '{': {
-					errorStyle = details.lbrace === undefined ? style : details.lbrace;
+					errorStyle = details.lbrace === undefined ? style || '' : details.lbrace;
 					// Template parameter (skip parameters inside a template transclusion, Bug: T108450)
 					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
 						eatSpace( stream );
@@ -1683,10 +1682,10 @@
 					break;
 				}
 				case '<': {
-					errorStyle = details.lt === undefined ? style : details.lt;
-					if ( stream.match( '!--' ) ) { // comment
+					if ( stream.match( '!--' ) ) { // valid wikitext: <!--
 						return eatComment( stream, state );
 					}
+					errorStyle = details.lt === undefined ? style || '' : details.lt;
 					const isCloseTag = Boolean( stream.eat( '/' ) ),
 						name = stream.match( /^[A-Za-z\d]+(?=[\s\xa0>]|\/>|$)/, false ); // HTML5 standard
 					if ( name ) {
@@ -1727,7 +1726,8 @@
 	 * @param {string} style - fallback style
 	 */
 	function eatWikiText( style ) {
-		return function ( stream, state ) {
+		return wikiText;
+		function wikiText( stream, state ) {
 			var result;
 
 			if ( stream.sol() ) { // 1. SOL
@@ -1746,7 +1746,7 @@
 			stream.backUp( 1 );
 
 			return eatFreeExternalLink( makeFullStyle, style, '' )( stream, state ); // 5. fallback
-		};
+		}
 	}
 
 	/**
@@ -1789,7 +1789,11 @@
 
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
+		mwConfig.redirect = mwConfig.redirect || [ '#REDIRECT' ];
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
+		redirectRegex = new RegExp( '^[\\s\\xa0]*(?:' + mwConfig.redirect.map( function ( word ) {
+			return escapeRegExp( word );
+		} ).join( '|' ) + ')[\\s\\xa0]*:?[\\s\\xa0]*(?=\\[\\[|\\[?$)', 'i' );
 
 		return {
 			startState: function () {
@@ -1853,4 +1857,4 @@
 	CodeMirror.defineMode( 'mw-tag-nowiki', function ( /* config, parserConfig */ ) {
 		return { token: eatNowiki };
 	} );
-}( CodeMirror ) );
+}( typeof global === 'object' ? global.CodeMirror : CodeMirror ) );

@@ -956,7 +956,7 @@
 					errorStyle = details.lbrace === undefined ? style || '' : details.lbrace;
 					break;
 				case '<':
-					if ( stream.match( '!--' ) ) {
+					if ( stream.match( '!--' ) ) { // valid wikitext: <!--
 						return eatComment( stream, state );
 					}
 					errorStyle = details.lt === undefined ? style || '' : details.lt;
