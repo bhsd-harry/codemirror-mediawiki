@@ -769,67 +769,126 @@
 	 * Cannot be multiline
 	 * Unique syntax: SPACE, ], '', [, [[, ~~~, <, >
 	 * Valid wikitext syntax: &, {{, {{{
-	 */
-	function inExternalLink( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			state.nLink--;
-			// @todo error message
-			state.tokenize = state.stack.pop();
-			state.nInvisible--;
-		} else if ( stream.match( /^[^\s\xa0\]'~[<{&]+/ ) ) { // 2. plain text
-			return makeLocalStyle( 'mw-extlink', state );
-		} else if ( stream.match( /^[\s\xa0]*]/ ) ) { // 3. unique syntax: ]
-			state.tokenize = state.stack.pop();
-			state.nInvisible--;
-			return makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' );
-		} else if ( eatSpace( stream ) ) { // 3. unique syntax: SPACE
-			state.tokenize = inExternalLinkText;
-			state.nInvisible--;
-			return makeLocalStyle( '', state );
-		} else if ( stream.match( /^~{3,5}/ ) ) { // 3. unique syntax: ~~~
-			state.nLink--;
-			state.tokenize = state.stack.pop();
-			state.nInvisible--;
-			return makeStyle( 'error', state );
-		} else if ( stream.match( '[[', false ) ) { // 3. unique syntax: [[
-			state.nLink--;
-			state.tokenize = state.stack.pop();
-			state.nInvisible--;
-		} else if ( stream.match( /^(?:[[<>]|'')/, false ) ) { // 3. unique syntax: [, <, >, ''
-			state.tokenize = inExternalLinkText;
-			state.nInvisible--;
-		} else { // 4. limited common wikitext: &, {{, {{{; without fallback
-			return eatWikiTextOther( makeLocalStyle, 'mw-extlink' )( stream, state );
-		}
-	}
-
-	/**
-	 * external link url without protocol
-	 * Cannot be multiline
-	 * Unique syntax: SPACE, ], '', [, [[, ~~~, <, >
-	 * Valid wikitext syntax: &, {{, {{{
 	 * @param {Object} option
 	 * @property {boolean} invisible - whether there is link text
 	 */
-	function inExternalLinkText( stream, state ) {
-		if ( stream.sol() ) { // 1. stream.sol()
-			state.nLink--;
-			// @todo error message
-			state.tokenize = state.stack.pop();
-			return;
-		} else if ( stream.match( /^[^\]~[{&'<]+/ ) ) { // 2. plain text
-			return makeStyle( 'mw-extlink-text', state );
-		} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' );
-		} else if ( stream.match( /^(?:~{3,4}(?!~)|\[\[)/, false ) ) { // 3. unique syntax: ~~~, [[
-			state.nLink--;
-			state.tokenize = state.stack.pop();
-		} else if ( stream.eat( '[' ) ) { // 4. invalid wikitext: [
+	function inExternalLink( option ) {
+		return externalLink;
+		function externalLink( stream, state ) {
+			/**
+			 * prepare state for inExternalLinkText()
+			 */
+			function changeToText() {
+				state.nInvisible--;
+				option.invisible = false;
+			}
+
+			const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle;
+			if ( !option.invisible ) { // must be returned from inExternalLinkText()
+				if ( stream.sol() ) {
+					// @todo error message
+					state.nLink--;
+					return true;
+				} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
+					return [ makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' ), true ];
+				}
+				chain( inExternalLinkText, state );
+				return;
+			} else if ( stream.sol() ) { // 1. SOL
+				// @todo error message
+				state.nLink--;
+				state.nInvisible--;
+				return true;
+			}
+			const ch = stream.next();
+			switch ( ch ) {
+				case ']': // 3. unique syntax: ]
+					state.nInvisible--;
+					return [ makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' ), true ];
+				case '[': // 3. unique syntax: [
+					changeToText();
+					if ( stream.eat( '[' ) ) {
+						newError( state, 'link-inside-link', '外' );
+						return makeFunc( 'error', state );
+					}
+					return makeFunc( 'mw-extlink-text', state );
+				case "'":
+					if ( stream.peek() === "'" ) { // 4. invalid wikitext: ''
+						changeToText();
+						stream.backUp( 1 );
+						return;
+					}
+					break;
+				case '~':
+					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
+						changeToText();
+						newError( state, 'sign-inside-link', '外' );
+						return makeFunc( 'error', state );
+					}
+					break;
+				case '&': // 4. valid wikitext: &, {{, {{{
+				case '{':
+					stream.backUp( 1 );
+					return eatWikiTextOther( makeLocalStyle, 'mw-extlink' )( stream, state );
+				case '<':
+					if ( stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+						return eatComment( stream, state );
+					}
+					changeToText(); // 3. unique syntax: <
+					stream.backUp( 1 );
+					return;
+				default:
+					if ( /[\s\xa0>]/.test( ch ) ) { // 3. unique syntax: SPACE, >
+						state.nInvisible--;
+						option.invisible = false;
+						return makeFunc( 'mw-extlink-text', state );
+					}
+			}
+			stream.match( /^[^[\]'~&{<>\s\xa0]+/ ); // 2. plain text
+			return makeLocalStyle( 'mw-extlink', state );
+		}
+
+		/**
+		 * external link text
+		 * Cannot be multiline
+		 * Unique syntax: ], ~~~, [[
+		 * Invalid wikitext syntax: [
+		 */
+		function inExternalLinkText( stream, state ) {
+			const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle;
+			if ( stream.sol() || stream.peek() === ']' ) { // 1. SOL; 3. unique syntax: ]
+				return true;
+			}
+			const ch = stream.next();
+			switch ( ch ) {
+				case '[': // 4. invalid wikitext: [
+					if ( stream.eat( '[' ) ) {
+						newError( state, 'link-inside-link', '外' );
+						return makeFunc( 'error', state );
+					}
+					return makeFunc( 'mw-extlink-text', state );
+				case '~': { // 4. valid wikitext: ~~~~~; invalid wikitext: ~~~~
+					const mt = stream.match( /^~{0,4}/ );
+					switch ( mt[ 0 ].length ) {
+						case 4:
+							return makeFunc( 'mw-signature', state );
+						case 2:
+						case 3:
+							newError( state, 'sign-inside-link', '外' );
+							return makeFunc( 'error', state );
+					}
+					return makeFunc( 'mw-extlink-text', state );
+				}
+				case '{': // 4. valid wikitext: {{, {{{, &, '', <
+				case '&':
+				case "'":
+				case '<':
+					stream.backUp( 1 );
+					return eatWikiTextOther( makeFunc, 'mw-extlink-text' )( stream, state );
+			}
+			stream.match( /^[^[\]~{&'<]+/ ); // 2. plain text
 			return makeStyle( 'mw-extlink-text', state );
 		}
-		// 4. common wikitext without fallback
-		return eatWikiTextOther( makeStyle, 'mw-extlink-text' )( stream, state );
 	}
 
 	/**
