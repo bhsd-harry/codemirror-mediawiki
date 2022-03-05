@@ -1032,6 +1032,7 @@
 				switch ( ch ) {
 					case ']':
 						if ( stream.peek() !== ']' ) { // 3. invalid character: ]
+							newError( state, 'invalid-char-section', ']' );
 							return makeFunc( 'error', state );
 						}
 						// fall through
@@ -1046,6 +1047,7 @@
 						// fall through
 					case '}': // 3. invalid characters: {, }, [
 					case '[':
+						newError( state, 'invalid-char-section', ch );
 						return makeFunc( 'error', state );
 					case '&': // 4. valid wikitext: &
 						return makeFunc( eatMnemonic( stream, 'mw-link-tosection' ), state );
@@ -1058,7 +1060,11 @@
 						} else {
 							const name = mt[ 2 ].toLowerCase();
 							// 4. invalid wikitext: HTML tag or closed extension tag (only opening tag is found here)
-							if ( name in permittedHtmlTags || name in mwConfig.tags && !mt[ 1 ] ) {
+							if ( name in permittedHtmlTags ) {
+								newError( state, 'tag-inside-section', 'HTML' );
+								return makeFunc( 'error', state );
+							} else if ( name in mwConfig.tags && !mt[ 1 ] ) {
+								newError( state, 'tag-inside-section', '扩展' );
 								return makeFunc( 'error', state );
 							}
 						}
@@ -1099,6 +1105,9 @@
 							// fall through
 						case '-': // 4. valid wikitext: ----, =, {|
 						case '=':
+							if ( redirect ) {
+								newError( state, 'link-text-redirect' );
+							}
 							return eatWikiTextSol( makeFunc, style )( stream, state );
 					}
 				}
@@ -1109,6 +1118,9 @@
 					case "'":
 					case '<':
 						stream.backUp( 1 );
+						if ( redirect ) {
+							newError( state, 'link-text-redirect' );
+						}
 						return eatWikiTextOther( makeFunc, style )( stream, state );
 					case ']':
 						if ( stream.peek() === ']' ) { // 3. unique syntax: ]]
@@ -1122,6 +1134,7 @@
 						break;
 					case '[':
 						if ( stream.eat( '[' ) ) { // 4. invalid wikitext: [[
+							newError( state, 'link-inside-link', '内' );
 							return makeFunc( 'error', state );
 						}
 						break;
@@ -1130,8 +1143,12 @@
 							if ( stream.eat( '~' ) ) { // 4. valid wikitext: ~~~~~
 								return 'mw-signature';
 							}
+							newError( state, 'sign-inside-link', '内' );
 							return makeFunc( 'error', state ); // 4. invalid wikitext: ~~~~
 						}
+				}
+				if ( redirect ) {
+					newError( state, 'link-text-redirect' );
 				}
 				return makeFunc( style, state );
 			}
@@ -1477,7 +1494,7 @@
 	 */
 	function eatFreeExternalLink( makeFunc, style, restriction ) {
 		const plainRegex = new RegExp( "^[^\\w{&_'~[\\]<>\\x80-\\x9f\\u00a1-\\uffff" + restriction + ']+' ),
-			breakRegex = new RegExp( '[' + restriction + ']' ),
+			breakRegex = new RegExp( '[\\s\\xa0[\\]<>"' + restriction + ']' ),
 			urlRegex = new RegExp( '^[^\\s\\xa0[\\]<>"{&_\'~!)\\\\:;,.?' + restriction + ']+' );
 		return function ( stream, state ) {
 			// highlight free external links, bug T108448; cannot be multiline
@@ -1508,13 +1525,6 @@
 			}
 			const ch = stream.next();
 			switch ( ch ) {
-				case '[': // 3. unique syntax that breaks link: [, ], <, >, "
-				case ']':
-				case '<':
-				case '>':
-				case '"':
-					stream.backUp( 1 );
-					return true;
 				case '{': // 4. valid wikitext: {{, {{{, &, __
 				case '&':
 				case '_':
@@ -1548,8 +1558,6 @@
 				default:
 					if ( breakRegex.test( ch ) ) {
 						stream.backUp( 1 );
-						return true;
-					} else if ( eatSpace( stream ) ) {
 						return true;
 					}
 			}
@@ -1595,8 +1603,8 @@
 					}
 					stream.backUp( 1 );
 					if ( stream.match( redirectRegex ) ) {
-						update( inLink, state, { redirect: true }, [ 'nInvisible' ], [ 'nInvisible' ] );
-						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state, [ 'nLink' ] );
+						update( inLink, state, { redirect: true }, 'nInvisible', 'nInvisible' );
+						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state, 'nLink' );
 						return makeLocalStyle( 'mw-parserfunction-name', state );
 					}
 					stream.next();
@@ -1734,12 +1742,10 @@
 						return makeLocalStyle( 'mw-link-bracket', state );
 					}
 					mt = stream.match( urlProtocols, false );
-					if ( mt ) {
+					if ( mt ) { // valid wikitext: [
 						state.nLink++;
-						state.stack.push( state.tokenize );
-						state.stack.push( inExternalLink );
-						state.tokenize = eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' );
-						state.nInvisible++;
+						update( inExternalLink, state, { invisible: true } );
+						once( eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' ), state, 'nInvisible' );
 						return makeLocalStyle( 'mw-extlink-bracket', state );
 					}
 					break;
@@ -1832,14 +1838,14 @@
 
 			if ( stream.sol() ) { // 1. SOL
 				clearApos( state );
-				result = eatWikiTextSol( makeStyle )( stream, state );
+				result = eatWikiTextSol( makeFullStyle )( stream, state );
 				if ( result !== undefined ) {
 					return result;
 				}
 				stream.backUp( 1 );
 			}
 
-			result = eatWikiTextOther( makeStyle )( stream, state ); // 4. common wikitext
+			result = eatWikiTextOther( makeFullStyle )( stream, state ); // 4. common wikitext
 			if ( result !== undefined ) {
 				return result;
 			}
@@ -1899,7 +1905,7 @@
 			startState: function () {
 				return {
 					tokenize: eatWikiText( '' ),
-					stack: [], InHtmlTag: [],
+					stack: [], InHtmlTag: [], errors: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
 					nTemplate: 0, nLink: 0, nExt: 0, nInvisible: 0
@@ -1910,6 +1916,7 @@
 					tokenize: state.tokenize,
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
+					errors: state.errors.concat( [] ),
 					apos: state.apos,
 					parentApos: state.parentApos,
 					aposStack: state.aposStack.concat( [] ),
