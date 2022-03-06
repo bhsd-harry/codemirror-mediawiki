@@ -15,16 +15,7 @@
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
-		nsFileRegex = getFileRegex(),
-		errorMsgs = {
-			'invalid-char-pagename': '页面名称出现无效字符"$1"。',
-			'invalid-char-link-section': '章节链接出现无效字符"$1"。',
-			'link-in-link': '$1部链接中不应包含内部链接。',
-			'sign-in-link': '$1部链接中不应包含签名。',
-			'sign-pagename': '页面名称不应包含签名。',
-			'tag-in-link-section': '章节链接中不应包含$1标签。',
-			'link-text-redirect': '重定向不应包含链接文字。'
-		};
+		nsFileRegex = getFileRegex();
 	var span, mwConfig, urlProtocols, redirectRegex, imgKeyword;
 	if ( typeof document === 'object' ) {
 		span = document.createElement( 'span' ); // used for isEntity()
@@ -51,10 +42,7 @@
 	 * @returns {undefined}
 	 */
 	function newError( state, key, arg ) {
-		if ( typeof global === 'object' ) {
-			const msg = errorMsgs[ key ];
-			state.errors.push( arg === undefined ? msg : msg.replace( '$1', arg ) );
-		}
+		return typeof global === 'object' && global.newError( state, key, arg );
 	}
 
 	/**
@@ -607,19 +595,19 @@
 			const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle;
 			if ( !option.invisible ) { // must be returned from inExternalLinkText()
 				if ( stream.sol() ) {
-					// @todo error message
+					newError( state, 'open-link', '外部' );
 					state.nLink--;
-					return true;
+					return [ 'error', true ];
 				} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
 					return [ makeLocalStyle( 'mw-extlink-bracket', state, 'nLink' ), true ];
 				}
 				chain( inExternalLinkText, state );
 				return;
 			} else if ( stream.sol() ) { // 1. SOL
-				// @todo error message
+				newError( state, 'open-link', '外部' );
 				state.nLink--;
 				state.nInvisible--;
-				return true;
+				return [ 'error', true ];
 			}
 			const ch = stream.next();
 			switch ( ch ) {
@@ -723,11 +711,11 @@
 		 */
 		function fileLink( stream, state ) {
 			if ( stream.sol() ) { // 1. SOL
+				newError( state, 'open-link', '文件' );
 				state.nLink--;
-				// @todo error message
 				state.tokenize = state.stack.pop();
 				state.nInvisible--;
-				return;
+				return [ 'error', true ];
 			} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
 				if ( state.nLink === 1 ) {
 					state.parentApos = state.apos;
@@ -757,7 +745,7 @@
 		 * Invalid wikitext syntax: *, #, :, ;, SPACE
 		 */
 		function inFileLinkText( stream, state ) {
-			if ( stream.sol() ) { // 1. stream.sol()
+			if ( stream.sol() ) { // 1. SOL
 				if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
 					return eatWikiTextSol( makeStyle, 'mw-link-text' )( stream, state );
 				}
@@ -805,23 +793,29 @@
 				makeFunc = makeOrFullStyle;
 			}
 			if ( stream.sol() ) { // 1. SOL
+				newError( state, 'open-link', '内部' );
 				if ( option.invisible ) {
 					state.nInvisible--;
 				}
 				state.nLink--;
-				return true;
+				return [ 'error', true ];
 			}
-			const mt = stream.match( /^[\s\xa0]*([#|]|]]|{{[\s\xa0]*![\s\xa0]*}})/ );
+			const mt = stream.match( /^[\s\xa0]*([#|\]]|{{[\s\xa0]*![\s\xa0]*}})/ );
 			if ( mt ) {
 				switch ( mt[ 1 ] ) {
 					case '#': // 3. unique syntax: #
 						chain( inLinkToSection( option ), state );
 						return makeFunc( 'mw-link', state );
-					case ']]': // 3. unique syntax: ]]
-						if ( option.invisible ) {
-							state.nInvisible--;
+					case ']':
+						if ( stream.eat( ']' ) ) { // 3. unique syntax: ]]
+							if ( option.invisible ) {
+								state.nInvisible--;
+							}
+							return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
 						}
-						return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
+						// 3. invalid character: ]
+						newError( state, 'fail-close-link', '内部' );
+						return makeFunc( 'error', state );
 					default: // 3. unique syntax: |
 						if ( option.invisible ) {
 							state.nInvisible--;
@@ -862,14 +856,13 @@
 					makeFunc = makeOrFullStyle;
 				}
 				if ( stream.sol() ) { // 1. SOL
-					// @todo error message
 					return true;
 				}
 				const ch = stream.next();
 				switch ( ch ) {
 					case ']':
 						if ( stream.peek() !== ']' ) { // 3. invalid character: ]
-							newError( state, 'invalid-char-link-section', ']' );
+							newError( state, 'fail-close-link', '内部' );
 							return makeFunc( 'error', state );
 						}
 						// fall through
