@@ -8,7 +8,7 @@
 	"link-text-redirect": "重定向不应包含链接文字。",
 	"open-link": "上一行的$1链接未闭合。",
 	"fail-close-link": "未能闭合$1链接",
-	"negative-invisible": "状态常数 nInvisible 为负值。",
+	"negative-invisible": "状态常数 nInvisible 为负值，请将此错误反馈给高亮工具作者。",
 	"file-section": "文件链接不应包含章节",
 	"external": "外部",
 	"file": "文件",
