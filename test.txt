@@ -19,6 +19,15 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 
 [[a#b
 
+[[ file : a
+
+[[ file : a # b
+
+''[[file:a#b {{ ! }} 1px {{ ! }} <!--
+-->thumb|
+----c'''''~~~[[d{{!}}]][//e]ftp://f|link= g
+]]h
+
 [ftp://a[[b[[]
 
 [https://a<i>b</i>~~~]

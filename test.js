@@ -41,7 +41,7 @@
 	 */
 	function newError( state, key, arg ) {
 		const msg = CodeMirror.errorMsgs[ key ];
-		state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', arg ) );
+		state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] ) );
 	}
 
 	/**
@@ -97,6 +97,9 @@
 	function makeLocalStyle( style, state, endGround ) {
 		if ( style === undefined ) {
 			return;
+		} else if ( !/\berror\b/.test( style ) && state.nInvisible < 0 ) {
+			newError( 'negative-invisible' );
+			return style + ' error';
 		}
 		var ground = '';
 		switch ( state.nTemplate ) {
@@ -302,6 +305,7 @@
 	/**
 	 * chain token with a mutable option object
 	 * WARNING: This function may only increments state object properties but not decrement
+	 * WARNING: This function should not be nested.
 	 * @param {function} parser - token generator, takes an object as argument and returns an inFunc
 	 * @param {?Object.<string, *>} option - a mutable object
 	 * @param {?Array.<string>} ground - properties of stateObj to increment
@@ -594,7 +598,7 @@
 			const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle;
 			if ( !option.invisible ) { // must be returned from inExternalLinkText()
 				if ( stream.sol() ) {
-					newError( state, 'open-link', '外部' );
+					newError( state, 'open-link', 'external' );
 					state.nLink--;
 					return [ 'error', true ];
 				} else if ( stream.eat( ']' ) ) { // 3. unique syntax: ]
@@ -603,7 +607,7 @@
 				chain( inExternalLinkText, state );
 				return;
 			} else if ( stream.sol() ) { // 1. SOL
-				newError( state, 'open-link', '外部' );
+				newError( state, 'open-link', 'external' );
 				state.nLink--;
 				state.nInvisible--;
 				return [ 'error', true ];
@@ -616,7 +620,7 @@
 				case '[': // 3. unique syntax: [
 					changeToText();
 					if ( stream.eat( '[' ) ) {
-						newError( state, 'link-in-link', '外' );
+						newError( state, 'link-in-link', 'external' );
 						return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -630,7 +634,7 @@
 				case '~':
 					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
 						changeToText();
-						newError( state, 'sign-in-link', '外' );
+						newError( state, 'sign-in-link', 'external' );
 						return makeFunc( 'error', state );
 					}
 					break;
@@ -670,7 +674,7 @@
 			switch ( ch ) {
 				case '[': // 4. invalid wikitext: [
 					if ( stream.eat( '[' ) ) {
-						newError( state, 'link-in-link', '外' );
+						newError( state, 'link-in-link', 'external' );
 						return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -681,7 +685,7 @@
 							return 'mw-signature'; // has own background
 						case 2:
 						case 3:
-							newError( state, 'sign-in-link', '外' );
+							newError( state, 'sign-in-link', 'external' );
 							return makeFunc( 'error', state );
 					}
 					return makeFunc( 'mw-extlink-text', state );
@@ -700,8 +704,12 @@
 
 	/**
 	 * file link
+	 * @param {Object.<string, boolean>} option
+	 * @property {boolean} invisible - whether it is link text
+	 * @property {boolean} section - whether it is an invalid section link
+	 * @property {boolean} haveEaten - only meaningful for link text
 	 */
-	function inFileLink() {
+	function inFileLink( option ) {
 		return fileLink;
 
 		/**
@@ -709,63 +717,123 @@
 		 * Unique syntax: |, ]]
 		 */
 		function fileLink( stream, state ) {
-			if ( stream.sol() ) { // 1. SOL
-				newError( state, 'open-link', '文件' );
+			if ( !option.invisible ) { // link text
+				return eatFileLinkText( option )( stream, state );
+			} else if ( stream.sol() ) { // 1. SOL
+				newError( state, 'open-link', 'file' );
 				state.nLink--;
-				state.tokenize = state.stack.pop();
 				state.nInvisible--;
 				return [ 'error', true ];
-			} else if ( stream.match( /^[\s\xa0]*\|[\s\xa0]*/ ) ) { // 3. unique syntax: |
-				if ( state.nLink === 1 ) {
-					state.parentApos = state.apos;
-					state.aposStack.push( state.apos );
-					state.apos = {};
-				}
-				state.tokenize = inFileLinkText;
-				state.nInvisible--;
-				return makeLocalStyle( 'mw-link-delimiter', state );
-			} else if ( stream.match( /^[\s\xa0]*]]/ ) ) { // 3. unique syntax: ]]
-				state.tokenize = state.stack.pop();
-				state.nInvisible--;
-				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 			}
-			// 2. plain text; 4. common wikitext; 5. fallback
-			return eatPageName( /^[^\s\xa0|}&#<~>[\]{]+/, makeLocalStyle, 'mw-link-pagename', {
-				haveEaten: true,
-				ampStyle: 'error'
-			} )( stream, state );
+			const mt = stream.match( /^[\s\xa0]*([|\]]|{{[\s\xa0]*![\s\xa0]*}})/ );
+			if ( mt ) {
+				switch ( mt[ 1 ] ) {
+					case ']':
+						if ( stream.eat( ']' ) ) { // 3. unique syntax: ]]
+							state.nInvisible--;
+							return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
+						}
+						// 3. invalid character: ]
+						newError( state, 'fail-close-link', 'file' );
+						return makeLocalStyle( 'error', state );
+					default: // 3. unique syntax: |
+						state.nInvisible--;
+						option.invisible = false;
+						if ( state.nLink === 1 ) { // cannot mutate parent apostrophe states
+							state.parentApos = state.apos;
+							state.aposStack.push( state.apos );
+							state.apos = {};
+						}
+						return makeLocalStyle( 'mw-link-delimiter', state );
+				}
+			} else if ( option.section || stream.eat( '#' ) ) { // 3. unique syntax: invalid section link
+				stream.match( /^[^|{\]]+/ );
+				newError( state, 'file-section' );
+				return makeLocalStyle( 'error', state );
+			}
+			return eatPageName( makeLocalStyle, 'mw-link-pagename', { haveEaten: true } )( stream, state );
 		}
 
 		/**
 		 * file link text
 		 * Can be multiline
-		 * Not differentiating parameters, so can be wrong
-		 * Unique syntax: |, ]], =
+		 * Trying to identify image link keywords
+		 * Unique syntax: |, ]]
 		 * Invalid wikitext syntax: *, #, :, ;, SPACE
+		 * @param {Object.<'haveEaten', boolean>} options - only used for keyword identification
 		 */
-		function inFileLinkText( stream, state ) {
-			if ( stream.sol() ) { // 1. SOL
-				if ( stream.match( /^(?:-{4}|=|[\s\xa0]*:*[\s\xa0]*{\|)/, false ) ) {
-					return eatWikiTextSol( makeStyle, 'mw-link-text' )( stream, state );
+		function eatFileLinkText( options ) {
+			return fileLinkText;
+			function fileLinkText( stream, state ) {
+				const makeFunc = state.nExt || state.nTemplate ? makeOrStyle : makeOrFullStyle;
+				if ( !options.haveEaten && stream.match( imgKeyword ) ) {
+					options.haveEaten = true;
+					return makeLocalStyle( 'mw-link-attribute', state );
 				}
+				const ch = stream.peek();
+				if ( stream.sol() ) { // 1. SOL
+					switch ( ch ) {
+						case ' ':
+						case ':':
+						case '{':
+							if ( !stream.match( /^[\s\xa0]*:*[\s\xa0]*{(?:\||{{[\s\xa0]*![\s\xa0]*}})/, false ) ) {
+								break;
+							}
+							// fall through
+						case '-': // 4. valid wikitext: ----, =, {|
+						case '=':
+							option.haveEaten = true;
+							return eatWikiTextSol( makeFunc, 'mw-link-text' )( stream, state );
+					}
+				}
+				stream.next();
+				switch ( ch ) {
+					case '{':
+						if ( !stream.match( /^{[\s\xa0]*![\s\xa0]*}}/ ) ) { // valid wikitext: {{, {{{
+							stream.backUp( 1 );
+							option.haveEaten = true;
+							return eatWikiTextOther( makeFunc, 'mw-link-text' )( stream, state );
+						}
+						// fall through
+					case '|': // 3. unique syntax: |
+						option.haveEaten = false;
+						if ( state.nLink === 1 ) {
+							state.apos = {};
+						}
+						return makeLocalStyle( 'mw-link-delimiter', state );
+					case '<':
+						if ( stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+							return eatComment( stream, state );
+						}
+						// fall through
+					case '&': // 4. valid wikitext: <, &, '', ~~~, [[, [
+					case "'":
+					case '~':
+					case '[':
+						stream.backUp( 1 );
+						option.haveEaten = true;
+						return eatWikiTextOther( makeFunc, 'mw-link-text' )( stream, state );
+					case ']':
+						if ( stream.eat( ']' ) ) { // 3. unique syntax: ]]
+							if ( state.nLink === 1 ) {
+								state.apos = state.aposStack.pop();
+								state.parentApos = {};
+							}
+							return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
+						}
+						option.haveEaten = true;
+						newError( state, 'fail-close-link', 'file' );
+						return makeFunc( 'error', state );
+					default:
+						if ( /[\s\xa0]/.test( ch ) ) {
+							eatSpace( stream );
+							return makeFunc( 'mw-link-text', state );
+						}
+				}
+				option.haveEaten = true;
+				stream.backUp( 1 );
+				return eatFreeExternalLink( makeFunc, 'mw-link-text', '\\|\\{' )( stream, state );
 			}
-			if ( stream.match( /^[^\]|{&'~[<]+/ ) ) { // 2. plain text
-				return makeStyle( 'mw-link-text', state );
-			} else if ( stream.match( ']]' ) ) { // 3. unique syntax: ]]
-				state.tokenize = state.stack.pop();
-				if ( state.nLink === 1 ) {
-					state.apos = state.aposStack.pop();
-					state.parentApos = {};
-				}
-				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-			} else if ( stream.eat( '|' ) ) { // 3. unique syntax: |
-				if ( state.nLink === 1 ) {
-					state.apos = {};
-				}
-				return makeLocalStyle( 'mw-link-delimiter', state );
-			}
-			// 4. common wiki text without fallback
-			return eatWikiTextOther( makeStyle, 'mw-link-text' )( stream, state );
 		}
 	}
 
@@ -792,7 +860,7 @@
 				makeFunc = makeOrFullStyle;
 			}
 			if ( stream.sol() ) { // 1. SOL
-				newError( state, 'open-link', '内部' );
+				newError( state, 'open-link', 'internal' );
 				if ( option.invisible ) {
 					state.nInvisible--;
 				}
@@ -813,7 +881,7 @@
 							return [ makeLocalStyle( 'mw-link-bracket', state, 'nLink' ), true ];
 						}
 						// 3. invalid character: ]
-						newError( state, 'fail-close-link', '内部' );
+						newError( state, 'fail-close-link', 'internal' );
 						return makeFunc( 'error', state );
 					default: // 3. unique syntax: |
 						if ( option.invisible ) {
@@ -861,7 +929,7 @@
 				switch ( ch ) {
 					case ']':
 						if ( stream.peek() !== ']' ) { // 3. invalid character: ]
-							newError( state, 'fail-close-link', '内部' );
+							newError( state, 'fail-close-link', 'internal' );
 							return makeFunc( 'error', state );
 						}
 						// fall through
@@ -893,17 +961,17 @@
 						const name = mt[ 2 ].toLowerCase();
 						// 4. invalid wikitext: HTML tag or closed extension tag (only opening tag is found here)
 						if ( name in permittedHtmlTags ) {
-							newError( state, 'tag-in-link-section', 'HTML' );
+							newError( state, 'tag-in-link-section', 'html' );
 							return makeFunc( 'error', state );
 						} else if ( name in mwConfig.tags && !mt[ 1 ] ) {
-							newError( state, 'tag-in-link-section', '扩展' );
+							newError( state, 'tag-in-link-section', 'extension' );
 							return makeFunc( 'error', state );
 						}
 						break;
 					}
 					case '~':
 						if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
-							newError( 'sign-in-link', '内' );
+							newError( 'sign-in-link', 'internal' );
 							return makeFunc( 'error', state );
 						}
 						break;
@@ -933,7 +1001,7 @@
 					makeFunc = makeOrFullStyle;
 				}
 				const ch = stream.peek();
-				if ( stream.sol() ) { // SOL
+				if ( stream.sol() ) { // 1. SOL
 					switch ( ch ) {
 						case ' ':
 						case ':':
@@ -970,10 +1038,11 @@
 							}
 							return true;
 						}
-						break;
+						newError( state, 'fail-close-link', 'internal' );
+						return makeFunc( 'error', state );
 					case '[':
 						if ( stream.eat( '[' ) ) { // 4. invalid wikitext: [[
-							newError( state, 'link-in-link', '内' );
+							newError( state, 'link-in-link', 'internal' );
 							return makeFunc( 'error', state );
 						}
 						break;
@@ -982,7 +1051,7 @@
 							if ( stream.eat( '~' ) ) { // 4. valid wikitext: ~~~~~
 								return 'mw-signature'; // has own background
 							}
-							newError( state, 'sign-in-link', '内' );
+							newError( state, 'sign-in-link', 'internal' );
 							return makeFunc( 'error', state ); // 4. invalid wikitext: ~~~~
 						}
 				}
@@ -1222,7 +1291,7 @@
 						state.nLink++;
 						mt = stream.match( nsFileRegex, false );
 						if ( mt ) {
-							chain( inFileLink(), state, 'nInvisible', 'nInvisible' );
+							update( inFileLink, state, { invisible: true }, 'nInvisible' );
 							once( eatChars( mt[ 2 ].length, makeLocalStyle, 'mw-link-pagename mw-pagename' ), state );
 							once( eatChars( mt[ 1 ].length, makeLocalStyle, 'mw-link-pagename' ), state );
 						} else {
@@ -1293,7 +1362,7 @@
 		} ).join( '|' ) + ')[\\s\\xa0]*:?[\\s\\xa0]*(?=\\[\\[|\\[?$)', 'i' );
 		imgKeyword = new RegExp( '^[\\s\\xa0]*(?:' + Object.keys( mwConfig.img ).map( function ( word ) {
 			return escapeRegExp( word ).replace( '\\$1', '[^|\\]]*' );
-		} ).join( '|' ) + ')' );
+		} ).join( '|' ) + ')[\\s\\xa0]*(?=\\||{{[\\s\\xa0]*![\\s\\xa0]*}}|]]|$)' );
 
 		return {
 			startState: function () {
