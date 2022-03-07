@@ -40,8 +40,12 @@
 	 * @returns {undefined}
 	 */
 	function newError( state, key, arg ) {
-		const msg = CodeMirror.errorMsgs[ key ];
-		state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] ) );
+		if ( typeof CodeMirror.errorMsgs === 'object' ) {
+			const msg = CodeMirror.errorMsgs[ key ];
+			state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] ) );
+		} else {
+			state.errors.unshift( key );
+		}
 	}
 
 	/**
