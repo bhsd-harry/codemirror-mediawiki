@@ -16,10 +16,8 @@
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		nsFileRegex = getFileRegex();
-	var span, mwConfig, urlProtocols, redirectRegex, imgKeyword;
-	if ( typeof document === 'object' ) {
-		span = document.createElement( 'span' ); // used for isEntity()
-	}
+	var span = typeof document === 'object' && document.createElement( 'span' ), // used for isEntity()
+		mwConfig, urlProtocols, redirectRegex, imgKeyword;
 
 	/**
 	 * create RegExp for file links
@@ -42,7 +40,8 @@
 	 * @returns {undefined}
 	 */
 	function newError( state, key, arg ) {
-		return typeof global === 'object' && global.newError( state, key, arg );
+		const msg = CodeMirror.errorMsgs[ key ];
+		state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', arg ) );
 	}
 
 	/**
