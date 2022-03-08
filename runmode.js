@@ -74,5 +74,7 @@ if ( mode === 'error' ) {
 	console.log( `　　 \x1b[1;31m${ finalState.nLink }\x1b[0m 个链接` );
 	console.log( `　　 \x1b[1;31m${ finalState.InHtmlTag.length }\x1b[0m 个HTML标签` );
 	console.log( `　　 \x1b[1;31m${ finalState.nInvisible }\x1b[0m 个不可见元素未闭合。` );
+} else {
+	console.log( output );
 }
 console.log();

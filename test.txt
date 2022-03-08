@@ -1,4 +1,3 @@
-
 <b>''_,ftp://a__&apos;"__toc_____TOC_____''</b>
 
 ==<b>''a''</b>{{b|c=d}}[[f]][ftp://g]=
@@ -8,10 +7,7 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 #redirect:[[ <!-- --> # <!--
 -->&apos;</ref><br/> | b[[]]
 
-;a''[[ <!--
--->&apos;{{{d|e}}}[ftp://f] # <!--
--->&apos;{{{d|e}}}[ftp://f]</ref><br/> | <!--
--->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]<br/>'']]g''h
+;a''[[ <!---->&apos;{{{d|e}}}[ftp://f] # <!---->&apos;{{{d|e}}}[ftp://f]</ref><br/> | <!---->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]<br/>'']]g''h
 
 <i>'''[//a&apos;{{b|}}<!---->'''c]d</i>
 
@@ -23,3 +19,12 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 [ftp://a[[b[[]
 
 [https://a<i>b</i>~~~]
+
+{{{{{{
+a|b}}}|[//c]|[[d]]{{{e}}}}}}
+
+{{{|
+----[[file:a|alt=b|''c[[d|e'']]f]]
+{{{!}}
+!g
+{{!}}} }}}
