@@ -9,19 +9,11 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 -->&apos;</ref><br/> | b[[]]
 
 ;a''[[ <!--
--->&apos;[ftp://f] # <!--
--->&apos;[ftp://f]</ref><br/> | <!--
+-->&apos;{{{d|e}}}[ftp://f] # <!--
+-->&apos;{{{d|e}}}[ftp://f]</ref><br/> | <!--
 -->&apos;{{a|b=c}}{{{d|e}}}[ftp://f]<br/>'']]g''h
 
 <i>'''[//a&apos;{{b|}}<!---->'''c]d</i>
-
-[[a
-
-[[a#b
-
-[[ file : a
-
-[[ file : a # b
 
 ''[[file:a#b {{ ! }} 1px {{ ! }} <!--
 -->thumb|
@@ -31,7 +23,3 @@ ftp://a[b ftp://a!b)\ ftp://a''b ftp://a{{b}}c&apos;d
 [ftp://a[[b[[]
 
 [https://a<i>b</i>~~~]
-
-[//a
-
-[//a b
