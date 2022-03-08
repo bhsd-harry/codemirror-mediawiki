@@ -1437,17 +1437,27 @@
 						return makeLocalStyle( 'mw-extlink-bracket', state );
 					}
 					break;
-				case '{':
+				case '{': {
 					errorStyle = details.lbrace === undefined ? style || '' : details.lbrace;
 					// Template parameter (skip parameters inside a template transclusion, Bug: T108450)
 					mt = stream.match( /^{*/, false );
-					if ( mt[ 0 ].length === 2 && !stream.match( /^{{[^{}]+}}(?!})/, false ) || mt[ 0 ].length > 4 ) {
+					const length = mt[ 0 ].length;
+					if ( length === 2 && !stream.match( /^{{2}[^{}]+}}(?!})/, false )
+						|| length === 4 && stream.match( /^{{4}[^{}]+}}(?!})/, false )
+						|| length > 4
+					) {
 						stream.next();
 						stream.next();
 						chain( inVariable(), state, 'nInvisible' );
 						return makeLocalStyle( 'mw-templatevariable-bracket', state );
+					} else if ( length === 1 || length === 4
+						|| length === 3 && !stream.match( /^{{3}[^{}]+}}}/, false )
+					) {
+						stream.next();
+						return makeLocalStyle( 'mw-template-bracket', state );
 					}
 					break;
+				}
 				case '<':
 					if ( stream.match( '!--' ) ) { // valid wikitext: <!--
 						return eatComment( stream, state );
