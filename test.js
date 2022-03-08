@@ -42,7 +42,7 @@
 	function newError( state, key, arg ) {
 		if ( typeof CodeMirror.errorMsgs === 'object' ) {
 			const msg = CodeMirror.errorMsgs[ key ];
-			state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] ) );
+			state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] || arg ) );
 		} else {
 			state.errors.unshift( key );
 		}
@@ -85,7 +85,6 @@
 	 * - template variable name
 	 * - internal link pagename if there is link text
 	 * - file link pagename
-	 * - file link keyword
 	 * - external link
 	 * - tag attribute
 	 * - table definition
@@ -442,8 +441,8 @@
 
 	/**
 	 * eat general page name
-	 * invalid characters: # < > [ ] { } |
-	 * valid wikitext syntax: {{, {{{, &, <!--
+	 * Invalid characters: # < > [ ] { } |
+	 * Valid wikitext syntax: {{, {{{, &, <!--
 	 * @param {Object.<string, boolean>} option - a mutable object
 	 * @property {boolean} haveEaten
 	 * @property {boolean} redirect
@@ -495,6 +494,24 @@
 			stream.match( /^[^#<>[\]{}|&~\s\xa0]+/ ); // 2. plain text
 			option.haveEaten = true;
 			return makeFunc( pageStyle, state );
+		};
+	}
+
+	/**
+	 * eat general attribute
+	 * Unique syntax: ', ", =
+	 * Valid wikitext except extension tags: {{, {{{, <!--
+	 * Valid wikitext in attribute value: &
+	 * Invalid character in HTML tags: <
+	 * Invalid wikitext except extension tags: ~~~
+	 * Invalid wikitext in table: HTML tags (if not quoted), extension tags
+	 * Basic syntax: name ; name = value ; name = "value" ; name = 'value'
+	 * @param {Object} option
+	 * @property {boolean} name - whether it is an attribute name
+	 * @property {?string} quote - only for attribute values
+	 */
+	function eatAttribute( style, isKey ) {
+		return function ( stream, state ) {
 		};
 	}
 
@@ -778,6 +795,7 @@
 				if ( stream.sol() ) { // 1. SOL
 					switch ( ch ) {
 						case ' ':
+						case '\xa0':
 						case ':':
 						case '{':
 							if ( !stream.match( /^[\s\xa0]*:*[\s\xa0]*{(?:\||{{[\s\xa0]*![\s\xa0]*}})/, false ) ) {
@@ -1008,6 +1026,7 @@
 				if ( stream.sol() ) { // 1. SOL
 					switch ( ch ) {
 						case ' ':
+						case '\xa0':
 						case ':':
 						case '{':
 							if ( !stream.match( /^[\s\xa0]*:*[\s\xa0]*{\|/, false ) ) {
@@ -1015,11 +1034,14 @@
 							}
 							// fall through
 						case '-': // 4. valid wikitext: ----, =, {|
-						case '=':
+						case '=': {
+							const result = eatWikiTextSol( makeFunc, style )( stream, state );
 							if ( redirect ) {
 								newError( state, 'link-text-redirect' );
+								return makeFunc( 'error', state );
 							}
-							return eatWikiTextSol( makeFunc, style )( stream, state );
+							return result;
+						}
 					}
 				}
 				stream.next();
@@ -1027,12 +1049,15 @@
 					case '{': // 4. valid wikitext: {{, {{{, &, '', <
 					case '&':
 					case "'":
-					case '<':
+					case '<': {
 						stream.backUp( 1 );
+						const result = eatWikiTextOther( makeFunc, style )( stream, state );
 						if ( redirect ) {
 							newError( state, 'link-text-redirect' );
+							return makeFunc( 'error', state );
 						}
-						return eatWikiTextOther( makeFunc, style )( stream, state );
+						return result;
+					}
 					case ']':
 						if ( stream.peek() === ']' ) { // 3. unique syntax: ]]
 							stream.backUp( 1 );
@@ -1211,7 +1236,8 @@
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
-				case ' ': {
+				case ' ':
+				case 'xa0': {
 					if ( state.nInvisible ) {
 						fallbackStyle = style || '';
 						break;

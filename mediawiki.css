@@ -41,6 +41,9 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-table-definition, .cm-mw-table-delimiter2 { color: #d08; font-weight: normal; font-style: normal; }
 .cm-mw-table-caption { font-weight: bold; }
 
+/* attribute value */
+.cm-mw-attribute-value { color: #7d9029; font-weight: normal; font-style: normal; }
+
 /* mnemonic */
 .cm-mw-mnemonic { color: #72777d; }
 
