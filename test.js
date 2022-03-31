@@ -64,6 +64,9 @@
 	 * @property {boolean} italic - apostrophe ''
 	 * @property {boolean} dt - list containing ';'
 	 * @property {boolean} th - table cell starting with '!' at SOL
+	 * @property {number} strong - inside HTML tags <b> or <strong>
+	 * @property {number} em - inside HTML tags <i> or <em>
+	 * @property {number} del - inside HTML tags <s>, <del> or <strike>
 	 */
 
 	/**
@@ -392,13 +395,33 @@
 	}
 
 	/**
-	 * reset all apostrophe states
+	 * reset apostrophe states and <dt> states
+	 * @param {boolean} recursive - whether to reset ancestor states
+	 * @returns {undefined}
 	 */
-	function clearApos( state ) {
-		state.aposStack = state.aposStack.map( function () {
-			return {};
+	function clearApos( state, recursive ) {
+		function clear( apos ) {
+			Object.assign( apos, { bold: false, italic: false, dt: false } );
+		}
+		clear( state.apos );
+		if ( recursive && state.nLink === 0 ) {
+			state.aposStack.forEach( clear );
+			clear( state.parentApos );
+		}
+	}
+
+	/**
+	 * mutate apostrophe states associated with HTML tags
+	 * @param {string} key - properties to mutate
+	 * @param {?number} [value=1] - value of increment
+	 * @returns {undefined}
+	 */
+	function incrementApos( state, key, value ) {
+		state.apos[ key ] += value || 1;
+		state.parentApos[ key ] += value || 1;
+		state.aposStack.forEach( function ( apos ) {
+			apos[ key ] += value || 1;
 		} );
-		state.apos = {};
 	}
 
 	/**
@@ -1454,6 +1477,7 @@
 						|| length === 3 && !stream.match( /^{{3}[^{}]+}}}/, false )
 					) {
 						stream.next();
+						// @todo parser function and template
 						return makeLocalStyle( 'mw-template-bracket', state );
 					}
 					break;
