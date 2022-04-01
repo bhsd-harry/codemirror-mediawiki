@@ -699,6 +699,7 @@
 					case '_':
 					case '<':
 					case '[':
+					case ':':
 						if ( !option.first ) {
 							break;
 						}
@@ -721,6 +722,23 @@
 				return makeFunc( style, state ); // 2. plain text
 			}
 		}
+	}
+
+	/**
+	 * template
+	 * Unique syntax: |, }}
+	 * @todo full parser
+	 */
+	function inTemplate( stream, state ) {
+		if ( stream.match( '}}' ) ) {
+			state.nInvisible--;
+			return [ makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' ), true ];
+		} else if ( stream.eat( '|' ) ) {
+			return makeLocalStyle( 'mw-template-delimiter', state );
+		} else if ( stream.sol() ) {
+			return eatWikiTextSol( makeLocalStyle, 'mw-template' )( stream, state );
+		}
+		return eatWikiTextOther( makeLocalStyle, 'mw-template' )( stream, state );
 	}
 
 	/**
@@ -1386,6 +1404,7 @@
 	 * @property lbrack - '['
 	 * @property lbrace - '{'
 	 * @property lt - '<'
+	 * @property colon - ':'
 	 * @returns {?string}
 	 */
 	function eatWikiTextOther( makeFunc, style, details ) {
@@ -1476,8 +1495,10 @@
 					} else if ( length === 1 || length === 4
 						|| length === 3 && !stream.match( /^{{3}[^{}]+}}}/, false )
 					) {
+						state.nTemplate++;
 						stream.next();
-						// @todo parser function and template
+						// @todo parser function
+						chain( inTemplate, state, 'nInvisible' );
 						return makeLocalStyle( 'mw-template-bracket', state );
 					}
 					break;
@@ -1487,6 +1508,13 @@
 						return eatComment( stream, state );
 					}
 					errorStyle = details.lt === undefined ? style || '' : details.lt;
+					break;
+				case ':': // likely to be rare
+					if ( state.apos.dt ) {
+						state.apos.dt = false;
+						return makeLocalStyle( 'mw-list', state );
+					}
+					errorStyle = details.colon === undefined ? style || '' : details.colon;
 			}
 			return makeFunc( errorStyle, state );
 		};
