@@ -39,7 +39,7 @@ const callback = {
 					color = 34; // blue
 				}
 				if ( /-invisible-/.test( style ) ) {
-					color = `${color + 60};1;7`;
+					color = `${color === 33 ? color : color + 60};1;7`;
 				} else {
 					if ( /\bstrong\b/.test( style ) ) {
 						color += ';1';
@@ -55,9 +55,11 @@ const callback = {
 					color += ';4';
 				}
 				if ( lastStyle === style ) {
-					output = output.slice( 0, -printStyle.length - 2 );
+					const styleLength = printStyle.length + 22;
+					output = `${output.slice( 0, -styleLength )}${string}${output.slice( -styleLength )}`;
+				} else {
+					output += `\x1b[${color}m${string}\x1b[0;1m(\x1b[0m${printStyle}\x1b[0;1m)\x1b[0m`;
 				}
-				output += `\x1b[${color}m${string}\x1b[0m{${printStyle}}`;
 				lastStyle = style;
 			} catch ( e ) {
 				console.log();
