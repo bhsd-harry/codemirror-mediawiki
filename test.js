@@ -58,11 +58,10 @@
 	}
 
 	/**
-	 * @typedef Apos
-	 * @type {object}
+	 * @typedef {object} Apos
 	 * @property {boolean} bold - apostrophe '''
 	 * @property {boolean} italic - apostrophe ''
-	 * @property {boolean} dt - list containing ';'
+	 * @property {number} dt - list containing ';'
 	 * @property {boolean} th - table cell starting with '!' at SOL
 	 * @property {number} strong - inside HTML tags <b> or <strong>
 	 * @property {number} em - inside HTML tags <i> or <em>
@@ -70,8 +69,7 @@
 	 */
 
 	/**
-	 * @typedef state
-	 * @type {object}
+	 * @typedef {object} state
 	 * @property {function} tokenize - next token
 	 * @property {Array.<function>} stack - ancestor tokens
 	 * @property {Array.<string>} InHtmlTag - ancestor HTML tags
@@ -225,6 +223,10 @@
 	/**
 	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
 	 * @returns {(string|true|Array)} style or exit
+	 */
+
+	/**
+	 * Basic rule: do not use function-scope variables
 	 */
 
 	/**
@@ -1362,7 +1364,7 @@
 					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( ch === ';' || /;/.test( mt[ 0 ] ) ) {
-						state.apos.dt = true;
+						state.apos.dt = Number( ch === ';' ) + mt[ 0 ].split( ';' ).length - 1;
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
@@ -1373,7 +1375,7 @@
 					}
 					const mt = stream.match( /^[*#;:]*/ );
 					if ( /;/.test( mt[ 0 ] ) ) {
-						state.apos.dt = true;
+						state.apos.dt = mt[ 0 ].split( ';' ).length - 1;
 					}
 					return makeLocalStyle( 'mw-list', state );
 				}
@@ -1510,8 +1512,8 @@
 					errorStyle = details.lt === undefined ? style || '' : details.lt;
 					break;
 				case ':': // likely to be rare
-					if ( state.apos.dt ) {
-						state.apos.dt = false;
+					if ( state.apos.dt > 0 ) {
+						state.apos.dt--;
 						return makeLocalStyle( 'mw-list', state );
 					}
 					errorStyle = details.colon === undefined ? style || '' : details.colon;
