@@ -88,11 +88,11 @@
 			"servername": "servername",
 			"scriptpath": "scriptpath",
 			"stylepath": "stylepath",
-			"msg": true,
-			"raw": true,
-			"msgnw": true,
-			"subst": true,
-			"safesubst": true
+			"msg": "msg",
+			"raw": "raw",
+			"msgnw": "msgnw",
+			"subst": "subst",
+			"safesubst": "safesubst"
 		},
 		{
 			"NUMBEROFPAGES": "numberofpages",
