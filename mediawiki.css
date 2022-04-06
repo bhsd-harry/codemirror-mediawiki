@@ -29,7 +29,8 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-exttag-bracket, .cm-mw-exttag-attribute, .cm-mw-htmltag-bracket, .cm-mw-htmltag-attribute { color: #14866d; font-weight: normal; font-style: normal; }
 
 /* link */
-.cm-mw-link-pagename, .cm-mw-free-extlink { color: #000aaa; }
+.cm-mw-link-pagename { color: #000aaa; font-weight: normal; font-style: normal; }
+.cm-mw-free-extlink { color: #000aaa; }
 .cm-mw-link-bracket, .cm-mw-link-delimiter, .cm-mw-extlink { color: #000aaa; font-weight: normal; font-style: normal; }
 .cm-mw-link, .cm-mw-link-tosection { color: #0076dd; }
 .cm-mw-link-attribute { color: #0076dd; font-weight: normal; font-style: normal; }
