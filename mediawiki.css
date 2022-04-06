@@ -4,7 +4,7 @@
 .cm-mw-skipformatting { background-color: #adf; }
 .cm-mw-list { color: #0076dd; font-weight: bold; font-style: normal; }
 .cm-mw-doubleUnderscore, .cm-mw-signature, .cm-mw-hr { color: #0076dd; font-weight: bold; font-style: normal; background-color: #eee; }
-.cm-mw-comment { color: #7d777d; font-weight: normal; font-style: italic; }
+.cm-mw-comment { color: #72777d; font-weight: normal; font-style: italic; }
 .cm-mw-apostrophes { color: #0076dd; font-weight: normal; font-style: normal; }
 
 /* section title */
@@ -19,7 +19,7 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 
 /* template variable */
 .cm-mw-templatevariable { color: #ad9300; }
-.cm-mw-templatevariable-name, .cm-mw-templatevariable-bracket, .cm-mw-templatevariable-delimiter { color: #d33; font-weight: bold; font-style: normal; }
+.cm-mw-templatevariable-name, .cm-mw-templatevariable-delimiter, .cm-mw-templatevariable-bracket { color: #ac6600; font-weight: bold; font-style: normal; }
 
 /* parser function */
 .cm-mw-parserfunction-name, .cm-mw-parserfunction-bracket, .cm-mw-parserfunction-delimiter { color: #d33; font-weight: bold; font-style: normal; }
@@ -29,18 +29,13 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-exttag-bracket, .cm-mw-exttag-attribute, .cm-mw-htmltag-bracket, .cm-mw-htmltag-attribute { color: #14866d; font-weight: normal; font-style: normal; }
 
 /* link */
-.cm-mw-link-pagename { color: #36c; font-weight: normal; }
-.cm-mw-link-tosection { color: #18e; font-weight: normal; }
-.cm-mw-link-bracket { color: #36c; font-weight: normal; }
-/* .cm-mw-link-text { } */
-.cm-mw-link-delimiter { color: #36c; font-weight: normal; }
-.cm-mw-link { color: #36c; font-weight: normal; }
+.cm-mw-link-pagename, .cm-mw-link-bracket, .cm-mw-link-delimiter, .cm-mw-extlink { color: #000aaa; font-weight: normal; font-style: normal; }
+.cm-mw-free-extlink { color: #000aaa; }
+.cm-mw-link, .cm-mw-link-tosection, .cm-mw-link-attribute { color: #0076dd; font-weight: normal; font-style: normal; }
+.cm-mw-extlink-protocol, .cm-mw-extlink-bracket { color: #000aaa; font-weight: bold; font-style: normal; }
+.cm-mw-free-extlink-protocol { color: #000aaa; font-weight: bold; }
 
-.cm-mw-extlink, .cm-mw-free-extlink { color: #36c; font-weight: normal; }
-.cm-mw-extlink-protocol, .cm-mw-free-extlink-protocol { color: #36c; font-weight: bold; }
-/* .cm-mw-extlink-text { } */
-.cm-mw-extlink-bracket { color: #36c; font-weight: bold; }
-
+/* table */
 .cm-mw-table-bracket { color: #e0e; font-weight: bold; }
 .cm-mw-table-delimiter { color: #e0e; font-weight: bold; }
 .cm-mw-table-definition { color: #e0e; font-weight: normal; }
