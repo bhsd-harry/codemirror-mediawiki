@@ -1,0 +1,19 @@
+{
+	"invalid-char-pagename": "页面名称出现无效字符\"$1\"。",
+	"invalid-char-link-section": "章节链接出现无效字符\"$1\"。",
+	"link-in-link": "$1链接中不应包含内部链接。",
+	"sign-in-link": "$1链接中不应包含签名。",
+	"sign-pagename": "页面名称不应包含签名。",
+	"tag-in-link-section": "章节链接中不应包含$1标签。",
+	"link-text-redirect": "重定向不应包含链接文字。",
+	"open-link": "上一行的$1链接未闭合。",
+	"fail-close-link": "未能闭合$1链接。",
+	"negative-invisible": "状态常数 nInvisible 为负值，请将此错误反馈给高亮工具作者。",
+	"file-section": "文件链接不应包含章节。",
+	"variable-default": "模板参数只应有一个预设值。",
+	"external": "外部",
+	"file": "文件",
+	"internal": "内部",
+	"html": "HTML",
+	"extension": "扩展"
+}
