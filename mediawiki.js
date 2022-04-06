@@ -218,7 +218,7 @@
 					}
 					return makeLocalStyle( 'mw-template-name mw-pagename', state );
 				}
-				return eatWikiText( 'mw-template-name mw-pagename', 'mw-template-name-mnemonic mw-pagename' )( stream, state );
+				return eatWikiText( 'mw-template-name mw-pagename', 'mw-mnemonic mw-pagename' )( stream, state );
 			};
 		}
 
@@ -679,7 +679,7 @@
 								state.tokenize = eatStartTable;
 							}
 							if ( stream.match( /^:*[*#]*/ ) ) {
-								return 'mw-indenting';
+								return 'mw-list';
 							}
 							break;
 						case ' ':
@@ -688,7 +688,7 @@
 								if ( stream.match( /^:+/ ) ) { // ::{|
 									state.stack.push( state.tokenize );
 									state.tokenize = eatStartTable;
-									return 'mw-indenting';
+									return 'mw-list';
 								}
 								stream.eat( '{' );
 							} else {
@@ -720,10 +720,10 @@
 								prepareItalicForCorrection( stream );
 							}
 							isBold = !isBold;
-							return makeLocalStyle( 'mw-apostrophes-bold', state );
+							return makeLocalStyle( 'mw-apostrophes', state );
 						} else if ( stream.eat( '\'' ) ) { // italic
 							isItalic = !isItalic;
-							return makeLocalStyle( 'mw-apostrophes-italic', state );
+							return makeLocalStyle( 'mw-apostrophes', state );
 						}
 						break;
 					case '[':
