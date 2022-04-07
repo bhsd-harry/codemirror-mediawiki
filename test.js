@@ -232,9 +232,8 @@
 
 	/**
 	 * mutate state object
-	 * @param {?Array.<string>} ground - properties to mutate
+	 * @param {?string[]} ground - properties to mutate
 	 * @param {?number} [value=1] - value of increment
-	 * @returns {undefined}
 	 */
 	function increment( state, ground, value ) {
 		if ( Array.isArray( ground ) ) {
@@ -273,9 +272,8 @@
 	/**
 	 * execute token once and exit
 	 * @param {eatFunc} parser - token
-	 * @param {?Array.<string>} ground - properties of stateObj to increment
-	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
-	 * @returns {undefined}
+	 * @param {?string[]} ground - properties of stateObj to increment
+	 * @param {?string[]} endGround - properties of stateObj to decrement when exiting
 	 */
 	function once( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
@@ -286,20 +284,20 @@
 			increment( state, endGround, -1 );
 			return style;
 		};
+		stateObj.tokenize.name = parser.name;
 	}
 
 	/**
 	 * execute token until exit
-	 * WARNING: This function may only increments state object properties but not decrement
 	 * @param {inFunc} parser - token
-	 * @param {?Array.<string>} ground - properties of stateObj to increment
-	 * @param {?Array.<string>} endGround - properties of stateObj to decrement when exiting
-	 * @returns {undefined}
+	 * @param {?string[]} ground - properties of stateObj to increment
+	 * @param {?string[]} endGround - properties of stateObj to decrement when exiting
 	 */
 	function chain( parser, stateObj, ground, endGround ) {
 		stateObj.stack.push( stateObj.tokenize );
 		stateObj.tokenize = function ( stream, state ) {
 			increment( state, ground );
+			token.name = parser.name;
 			state.tokenize = token;
 		};
 		function token( stream, state ) {
