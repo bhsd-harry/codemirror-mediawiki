@@ -37,7 +37,6 @@
 	 * update state.errors by adding new error message
 	 * @param {string} key - error message key
 	 * @param {?string} arg - additional argument to replace $1 in message templates
-	 * @returns {undefined}
 	 */
 	function newError( state, key, arg ) {
 		if ( typeof CodeMirror.errorMsgs === 'object' ) {
@@ -70,12 +69,12 @@
 
 	/**
 	 * @typedef {object} state
-	 * @property {function} tokenize - next token
-	 * @property {Array.<function>} stack - ancestor tokens
-	 * @property {Array.<string>} InHtmlTag - ancestor HTML tags
+	 * @property {function(stream, state): string} tokenize - next token
+	 * @property {Array.<function(stream, state): string>} stack - ancestor tokens
+	 * @property {string[]} InHtmlTag - ancestor HTML tags
 	 * @property {Apos} apos - apostrophe states
 	 * @property {Apos} parentApos - parent apostrophe states
-	 * @property {Array.<Apos>} aposStack - ancestor apostrophe states
+	 * @property {Apos[]} aposStack - ancestor apostrophe states
 	 * @property {number} nTemplate - ancestor templates
 	 * @property {number} nLink - ancestor links
 	 * @property {number} nExt - ancestor parser functions
@@ -97,6 +96,7 @@
 	 * @param {string} style - base style
 	 * @param {?string} endGround - key for decrement
 	 * @returns {?string} style
+	 * @todo deprecate endGround
 	 */
 	function makeLocalStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -152,6 +152,7 @@
 	 * show apostrophe-related styles in addition to background
 	 * For parser function and template arguments (half-invisible)
 	 * @returns {?string} style
+	 * @todo deprecate endGround
 	 */
 	function makeStyle( style, state, endGround ) {
 		if ( style === undefined ) {
@@ -222,7 +223,7 @@
 	 */
 	/**
 	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
-	 * @returns {(string|true|Array)} style or exit
+	 * @returns {string|true|[string, true]} style or exit
 	 */
 
 	/**
@@ -248,7 +249,7 @@
 	/**
 	 * handle exit condition for inFunc
 	 * WARNING: This function mutates state.stack
-	 * @param {(string|true|Array)} result - return of an inFunc
+	 * @param {string|true|[string, true]} result - return of an inFunc
 	 * @returns {string} style
 	 * @throws {string} style
 	 */
@@ -346,7 +347,7 @@
 
 	/**
 	 * greedy eat white spaces without returned styles
-	 * @returns {(Array.<string>|false)} result of RegExp match or false
+	 * @returns {string[]|false} result of RegExp match or false
 	 */
 	function eatSpace( stream ) {
 		return stream.match( /^[\s\xa0]+/ );
