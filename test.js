@@ -152,6 +152,85 @@
 	 */
 
 	/**
+	 * mutate state object
+	 * @param {?string[]} ground - properties to mutate
+	 * @param {?number} [value=1] - value of increment
+	 */
+	function increment( state, ground, value ) {
+		if ( Array.isArray( ground ) ) {
+			ground.forEach( function ( key ) {
+				state[ key ] += value || 1;
+			} );
+		} else if ( typeof ground === 'string' ) {
+			state[ ground ] += value || 1;
+		}
+	}
+
+	/**
+	 * handle exit condition for inFunc
+	 * WARNING: This function mutates state.stack
+	 * @param {string|true|[string, true]} result - return of an inFunc
+	 * @returns {string} style
+	 * @throws {string} style
+	 */
+	function handleExit( result, state, endGround ) {
+		var style, exit;
+		if ( Array.isArray( result ) ) {
+			style = result[ 0 ];
+			exit = result[ 1 ];
+		} else {
+			style = result;
+			exit = result;
+		}
+		if ( exit === true ) {
+			state.tokenize = state.stack.pop();
+			increment( state, endGround, -1 );
+			throw style === true ? undefined : style;
+		}
+		return style;
+	}
+
+	/**
+	 * execute token once and exit
+	 * @param {eatFunc} parser - token
+	 * @param {?string[]} ground - properties of stateObj to increment
+	 * @param {?string[]} endGround - properties of stateObj to decrement when exiting
+	 */
+	function once( parser, stateObj, ground, endGround ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			state.tokenize = state.stack.pop();
+			increment( state, ground );
+			const style = parser( stream, state );
+			increment( state, endGround, -1 );
+			return style;
+		};
+		stateObj.tokenize.name = parser.name;
+	}
+
+	/**
+	 * execute token until exit
+	 * @param {inFunc} parser - token
+	 * @param {?string[]} ground - properties of stateObj to increment
+	 * @param {?string[]} endGround - properties of stateObj to decrement when exiting
+	 */
+	function chain( parser, stateObj, ground, endGround ) {
+		stateObj.stack.push( stateObj.tokenize );
+		stateObj.tokenize = function ( stream, state ) {
+			increment( state, ground );
+			token.name = parser.name;
+			state.tokenize = token;
+		};
+		function token( stream, state ) {
+			try {
+				return handleExit( parser( stream, state ), state, endGround );
+			} catch ( e ) {
+				return e;
+			}
+		}
+	}
+
+	/**
 	 * eat HTML entities
 	 * @param {string} style - base style
 	 * @param {?string} errorStyle - style if not HTML entity
