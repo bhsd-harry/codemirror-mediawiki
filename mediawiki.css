@@ -47,11 +47,11 @@ pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section
 .cm-mw-mnemonic { color: #72777d; }
 
 /* backgrounds */
-.cm-mw-tag-pre, .CodeMirror pre.cm-mw-tag-pre, .cm-mw-tag-nowiki, .CodeMirror pre.cm-mw-tag-nowiki, .CodeMirror pre.cm-mw-exttag { background-color: rgba(0, 0, 0, 0.04); }
+.cm-mw-tag-pre, .CodeMirror pre.cm-mw-tag-pre, .cm-mw-tag-nowiki, .CodeMirror pre.cm-mw-tag-nowiki { background-color: rgba(0, 0, 0, 0.04); }
 .cm-mw-template-ground { background-color: rgba(170, 17, 17, 0.04); }
 .cm-mw-template2-ground { background-color: rgba(170, 17, 17, 0.08); }
 .cm-mw-template3-ground { background-color: rgba(170, 17, 17, 0.12); }
-.cm-mw-ext-ground, .cm-mw-template-ext-ground, .cm-mw-exttag { background-color: rgba(119, 0, 170, 0.04); }
+.cm-mw-ext-ground, .cm-mw-template-ext-ground, .cm-mw-exttag, .CodeMirror pre.cm-mw-exttag { background-color: rgba(119, 0, 170, 0.04); }
 .cm-mw-ext2-ground, .cm-mw-template-ext2-ground { background-color: rgba(119, 0, 170, 0.08); }
 .cm-mw-ext3-ground, .cm-mw-template-ext3-ground { background-color: rgba(119, 0, 170, 0.12); }
 .cm-mw-link-ground, .cm-mw-template-link-ground, .cm-mw-ext-link-ground { background-color: rgba(34, 17, 153, 0.04); }
