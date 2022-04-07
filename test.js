@@ -231,6 +231,14 @@
 	}
 
 	/**
+	 * greedy eat white spaces without returned styles
+	 * @returns {string[]|false} result of RegExp match or false
+	 */
+	function eatSpace( stream ) {
+		return stream.match( /^[\s\xa0]+/ );
+	}
+
+	/**
 	 * eat HTML entities
 	 * @param {string} style - base style
 	 * @param {?string} errorStyle - style if not HTML entity
