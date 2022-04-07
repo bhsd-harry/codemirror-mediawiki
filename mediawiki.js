@@ -33,15 +33,6 @@
 	}
 
 	/**
-	 * escape string before creating RegExp
-	 * @param {string} str
-	 * @returns {string}
-	 */
-	function escapeRegExp( str ) {
-		return str.replace( /[\\{}()|.?*+\-^$[\]]/g, '\\$&' );
-	}
-
-	/**
 	 * update state.errors by adding new error message
 	 * @param {string} key - error message key
 	 * @param {?string} arg - additional argument to replace $1 in message templates
@@ -55,7 +46,44 @@
 		}
 	}
 
+	/**
+	 * escape string before creating RegExp
+	 * @param {string} str
+	 * @returns {string}
+	 */
+	function escapeRegExp( str ) {
+		return str.replace( /[\\{}()|.?*+\-^$[\]]/g, '\\$&' );
+	}
+
+	/**
+	 * @typedef {object} Apos
+	 * @property {boolean} bold - apostrophe '''
+	 * @property {boolean} italic - apostrophe ''
+	 */
+
+	/**
+	 * @typedef {object} state
+	 * @property {function(stream, state): string} tokenize - next token
+	 * @property {Array.<function(stream, state): string>} stack - ancestor tokens
+	 * @property {string[]} InHtmlTag - ancestor HTML tags
+	 * @property {Apos} apos - apostrophe states
+	 * @property {number} nTemplate - ancestor templates
+	 * @property {number} nLink - ancestor links
+	 * @property {number} nExt - ancestor parser functions
+	 */
+
+	/**
+	 * add background
+	 * For invisible content
+	 * @param {string} style - base style
+	 * @param {?string} endGround - key for decrement
+	 * @returns {?string} style
+	 * @todo deprecate endGround
+	 */
 	function makeLocalStyle( style, state, endGround ) {
+		if ( style === undefined ) {
+			return;
+		}
 		var ground = '';
 		switch ( state.nTemplate ) {
 			case 0:
@@ -83,27 +111,47 @@
 				ground += '-ext3';
 				break;
 		}
-		if ( state.nLink > 0 ) {
-			ground += '-link';
-		}
-		if ( ground !== '' ) {
-			style = 'mw' + ground + '-ground ' + style;
+		switch ( state.nLink ) {
+			case 0:
+				break;
+			case 1:
+				ground += '-link';
+				break;
+			default:
+				ground += '-link2';
 		}
 		if ( endGround ) {
 			state[ endGround ]--;
 		}
-		return style;
+		return style + ( ground && ' mw' + ground + '-ground ' );
 	}
 
+	/**
+	 * show apostrophe-related styles in addition to background
+	 * @returns {?string} style
+	 * @todo deprecate endGround
+	 */
 	function makeStyle( style, state, endGround ) {
-		if ( state.apos.bold ) {
-			style += ' strong';
+		if ( style === undefined ) {
+			return;
 		}
-		if ( state.apos.italic ) {
-			style += ' em';
-		}
-		return makeLocalStyle( style, state, endGround );
+		const strong = state.apos.bold ? ' strong' : '',
+			em = state.apos.italic ? ' em' : '';
+		return makeLocalStyle( style + strong + em, state, endGround );
 	}
+
+	/**
+	 * @typedef {function} eatFunc - not mutate state.tokenize and state.stack
+	 * @returns {string} style
+	 */
+	/**
+	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
+	 * @returns {string|true|[string, true]} style or exit
+	 */
+
+	/**
+	 * Basic rule: do not use function-scope variables
+	 */
 
 	/**
 	 * eat HTML entities
