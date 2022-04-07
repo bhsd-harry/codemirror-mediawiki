@@ -13,9 +13,33 @@
 			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
-		voidHtmlTags = { br: true, hr: true, wbr: true, img: true };
+		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
+		nsFileRegex = getFileRegex();
 	var span = typeof document === 'object' && document.createElement( 'span' ), // used for isEntity()
-		mwConfig, urlProtocols;
+		mwConfig, urlProtocols, redirectRegex, imgKeyword;
+
+	/**
+	 * create RegExp for file links
+	 * @returns {RegExp}
+	 */
+	function getFileRegex() {
+		const nsIds = typeof mw === 'object'
+				? mw.config.get( 'wgNamespaceIds' )
+				: { file: 6, image: 6, 图像: 6, 圖像: 6, 档案: 6, 檔案: 6, 文件: 6 },
+			nsFile = Object.keys( nsIds ).filter( function ( ns ) {
+				return nsIds[ ns ] === 6;
+			} ).join( '|' );
+		return new RegExp( '^([\\s\\xa0]*)((?:' + nsFile + ')[\\s\\xa0]*:[\\s\\xa0]*)', 'i' );
+	}
+
+	/**
+	 * escape string before creating RegExp
+	 * @param {string} str
+	 * @returns {string}
+	 */
+	function escapeRegExp( str ) {
+		return str.replace( /[\\{}()|.?*+\-^$[\]]/g, '\\$&' );
+	}
 
 	function makeLocalStyle( style, state, endGround ) {
 		var ground = '';
