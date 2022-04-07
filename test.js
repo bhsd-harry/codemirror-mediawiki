@@ -96,7 +96,6 @@
 				break;
 			default:
 				ground += '-template3';
-				break;
 		}
 		switch ( state.nExt ) {
 			case 0:
@@ -109,7 +108,6 @@
 				break;
 			default:
 				ground += '-ext3';
-				break;
 		}
 		switch ( state.nLink ) {
 			case 0:
@@ -123,7 +121,7 @@
 		if ( endGround ) {
 			state[ endGround ]--;
 		}
-		return style + ( ground && ' mw' + ground + '-ground ' );
+		return style + ( ground && ' mw' + ground + '-ground' );
 	}
 
 	/**
