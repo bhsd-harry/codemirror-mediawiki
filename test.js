@@ -57,6 +57,16 @@
 		return style;
 	}
 
+	function makeStyle( style, state, endGround ) {
+		if ( state.apos.bold ) {
+			style += ' strong';
+		}
+		if ( state.apos.italic ) {
+			style += ' em';
+		}
+		return makeLocalStyle( style, state, endGround );
+	}
+
 	/**
 	 * eat HTML entities
 	 * @param {string} style - base style
@@ -79,7 +89,7 @@
 		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
 		if ( entity ) {
 			if ( isEntity( entity[ 0 ] ) ) {
-				return ( style || '' ) + 'mw-mnemonic';
+				return ( style || '' ) + ' mw-mnemonic';
 			}
 			stream.backUp( entity[ 0 ].length );
 		}
@@ -89,19 +99,6 @@
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
-		var isBold, isItalic, firstsingleletterword, firstmultiletterword, firstspace, mBold, mItalic,
-			mTokens = [],
-			mStyle;
-
-		function makeStyle( style, state, endGround ) {
-			if ( isBold ) {
-				style += ' strong';
-			}
-			if ( isItalic ) {
-				style += ' em';
-			}
-			return makeLocalStyle( style, state, endGround );
-		}
 
 		function eatBlock( style, terminator ) {
 			return function ( stream, state ) {
@@ -608,8 +605,8 @@
 						return makeStyle( isHead ? 'strong' : '', state );
 					}
 					if ( stream.match( '||' ) || isHead && stream.match( '!!' ) || isStart && stream.eat( '|' ) ) {
-						isBold = false;
-						isItalic = false;
+						state.apos.bold = false;
+						state.apos.italic = false;
 						if ( isStart ) {
 							state.tokenize = eatTableRow( false, isHead );
 						}
@@ -732,21 +729,29 @@
 				switch ( ch ) {
 					case '&':
 						return makeStyle( eatMnemonic( stream, style || '', mnemonicStyle ), state );
-					case '\'':
-						if ( stream.match( /^'*(?=''''')/ ) || stream.match( /^'''(?!')/, false ) ) { // skip the irrelevant apostrophes ( >5 or =4 )
-							break;
+					case "'": {
+						mt = stream.match( /^'*/ );
+						const chars = mt[ 0 ].length;
+						switch ( chars ) {
+							case 0:
+								break;
+							case 3: // total apostrophes =4
+								stream.backUp( 3 );
+								break;
+							case 4:
+								stream.backUp( 2 );
+								// fall through
+							case 2: // valid wikitext: ''', bold
+								state.apos.bold = !state.apos.bold;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							case 1: // valid wikitext: '', italic
+								state.apos.italic = !state.apos.italic;
+								return makeLocalStyle( 'mw-apostrophes', state );
+							default: // total apostrophes >5
+								stream.backUp( 5 );
 						}
-						if ( stream.match( '\'\'' ) ) { // bold
-							if ( !( firstsingleletterword || stream.match( '\'\'', false ) ) ) {
-								prepareItalicForCorrection( stream );
-							}
-							isBold = !isBold;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						} else if ( stream.eat( '\'' ) ) { // italic
-							isItalic = !isItalic;
-							return makeLocalStyle( 'mw-apostrophes', state );
-						}
-						break;
+						return makeStyle( style, state );
+					}
 					case '[':
 						if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 							stream.eatSpace();
@@ -878,44 +883,6 @@
 			};
 		}
 
-		/**
-		 * Remembers position and status for rollbacking.
-		 * It needed for change bold to italic with apostrophe before it if required
-		 *
-		 * see https://phabricator.wikimedia.org/T108455
-		 *
-		 * @param {Object} stream CodeMirror.StringStream
-		 */
-		function prepareItalicForCorrection( stream ) {
-			/*
-			 * see Parser::doQuotes() in MediaWiki core, it works similar
-			 * firstsingleletterword has maximum priority
-			 * firstmultiletterword has medium priority
-			 * firstspace has low priority
-			 */
-			var end = stream.pos,
-				str = stream.string.substr( 0, end - 3 ),
-				x1 = str.substr( -1, 1 ),
-				x2 = str.substr( -2, 1 );
-
-			// firstsingleletterword olways is undefined here
-			if ( x1 === ' ' ) {
-				if ( firstmultiletterword || firstspace ) {
-					return;
-				}
-				firstspace = end;
-			} else if ( x2 === ' ' ) {
-				firstsingleletterword = end;
-			} else if ( firstmultiletterword ) {
-				return;
-			} else {
-				firstmultiletterword = end;
-			}
-			// remember bold and italic state for restore
-			mBold = isBold;
-			mItalic = isItalic;
-		}
-
 		return {
 			startState: function () {
 				return { tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false, extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
@@ -934,68 +901,10 @@
 				};
 			},
 			token: function ( stream, state ) {
-				var style, p, t, f,
-					readyTokens = [],
-					tmpTokens = [];
-
-				if ( mTokens.length > 0 ) { // just send saved tokens till they exists
-					t = mTokens.shift();
-					stream.pos = t.pos;
-					state = t.state;
-					return t.style;
-				}
-
 				if ( stream.sol() ) { // reset bold and italic status in every new line
-					isBold = false;
-					isItalic = false;
-					firstsingleletterword = undefined;
-					firstmultiletterword = undefined;
-					firstspace = undefined;
+					state.apos = {};
 				}
-
-				do {
-					style = state.tokenize( stream, state ); // get token style
-					f = firstsingleletterword || firstmultiletterword || firstspace;
-					if ( f ) { // rollback point exists
-						if ( f !== p ) { // new rollbak point
-							p = f;
-							if ( tmpTokens.length > 0 ) { // it's not first rollbak point
-								readyTokens = readyTokens.concat( tmpTokens ); // save tokens
-								tmpTokens = [];
-							}
-						}
-						tmpTokens.push( { // save token
-							pos: stream.pos,
-							style: style,
-							state: CodeMirror.copyState( state.extMode ? state.extMode : 'mediawiki', state )
-						} );
-					} else { // rollback point not exists
-						mStyle = style; // remember style before possible rollback point
-						return style; // just return token style
-					}
-				} while ( !stream.eol() );
-
-				if ( isBold && isItalic ) { // needs to rollback
-					isItalic = mItalic; // restore status
-					isBold = mBold;
-					firstsingleletterword = undefined;
-					firstmultiletterword = undefined;
-					firstspace = undefined;
-					if ( readyTokens.length > 0 ) { // it contains tickets before the point of rollback
-						readyTokens[ readyTokens.length - 1 ].pos++; // add one apostrophe, next token will be italic (two apostrophes)
-						mTokens = readyTokens; // for sending tokens till the point of rollback
-					} else { // there are no tikets before the point of rollback
-						stream.pos = tmpTokens[ 0 ].pos - 2; // eat( '\'')
-						return mStyle; // send saved Style
-					}
-				} else { // not needs to rollback
-					mTokens = readyTokens.concat( tmpTokens ); // send all saved tokens
-				}
-				// return first saved token
-				t = mTokens.shift();
-				stream.pos = t.pos;
-				state = t.state;
-				return t.style;
+				return state.tokenize( stream, state );
 			},
 			blankLine: function ( state ) {
 				var ret;
