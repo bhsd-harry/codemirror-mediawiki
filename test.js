@@ -11,7 +11,7 @@
 			rp: true, rt: true, rtc: true, p: true, span: true, abbr: true, dfn: true,
 			kbd: true, samp: true, data: true, time: true, mark: true, br: true,
 			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
-			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
+			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true,
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		nsFileRegex = getFileRegex();
@@ -39,6 +39,20 @@
 	 */
 	function escapeRegExp( str ) {
 		return str.replace( /[\\{}()|.?*+\-^$[\]]/g, '\\$&' );
+	}
+
+	/**
+	 * update state.errors by adding new error message
+	 * @param {string} key - error message key
+	 * @param {?string} arg - additional argument to replace $1 in message templates
+	 */
+	function newError( state, key, arg ) {
+		if ( typeof CodeMirror.errorMsgs === 'object' ) {
+			const msg = CodeMirror.errorMsgs[ key ];
+			state.errors.unshift( arg === undefined ? msg : msg.replace( '$1', CodeMirror.errorMsgs[ arg ] || arg ) );
+		} else {
+			state.errors.unshift( key );
+		}
 	}
 
 	function makeLocalStyle( style, state, endGround ) {
@@ -909,19 +923,27 @@
 
 		return {
 			startState: function () {
-				return { tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false, extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
+				return {
+					tokenize: eatWikiText( '' ),
+					stack: [], InHtmlTag: [], errors: [],
+					apos: {},
+					extName: false, extMode: false, extState: false,
+					nTemplate: 0, nLink: 0, nExt: 0,
+				};
 			},
 			copyState: function ( state ) {
 				return {
 					tokenize: state.tokenize,
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
+					errors: state.errors.concate( [] ),
+					apos: Object.assign( {}, state.apos ),
 					extName: state.extName,
 					extMode: state.extMode,
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
 					nTemplate: state.nTemplate,
 					nLink: state.nLink,
-					nExt: state.nExt
+					nExt: state.nExt,
 				};
 			},
 			token: function ( stream, state ) {
@@ -942,7 +964,7 @@
 					}
 					return 'line-cm-mw-exttag';
 				}
-			}
+			},
 		};
 	} );
 
@@ -970,7 +992,7 @@
 			startState: function () {
 				return {};
 			},
-			token: eatNowiki( 'mw-tag-pre', 'line-cm-mw-tag-pre' )
+			token: eatNowiki( 'mw-tag-pre', 'line-cm-mw-tag-pre' ),
 		};
 	} );
 
@@ -979,7 +1001,7 @@
 			startState: function () {
 				return {};
 			},
-			token: eatNowiki( 'mw-tag-nowiki', 'line-cm-mw-tag-nowiki' )
+			token: eatNowiki( 'mw-tag-nowiki', 'line-cm-mw-tag-nowiki' ),
 		};
 	} );
 }( CodeMirror ) );

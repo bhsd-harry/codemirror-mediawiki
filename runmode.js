@@ -67,7 +67,7 @@ const callback = {
 				console.log();
 			}
 		}
-	}
+	},
 };
 CodeMirror.runMode( text, 'text/mediawiki', callback[ mode ] );
 if ( mode === 'error' ) {
