@@ -12,7 +12,7 @@
 			rp: true, rt: true, rtc: true, p: true, span: true, abbr: true, dfn: true,
 			kbd: true, samp: true, data: true, time: true, mark: true, br: true,
 			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
-			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
+			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true,
 		},
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		nsFileRegex = getFileRegex();
@@ -193,7 +193,7 @@
 		}
 		const orState = Object.assign( {}, state, { apos: {
 			bold: state.apos.bold || state.parentApos.bold,
-			italic: state.apos.italic || state.parentApos.italic
+			italic: state.apos.italic || state.parentApos.italic,
 		} } );
 		return makeStyle( style, orState, endGround );
 	}
@@ -211,7 +211,7 @@
 			bold: state.apos.bold || state.parentApos.bold,
 			italic: state.apos.italic || state.parentApos.italic,
 			dt: state.apos.dt || state.parentApos.dt,
-			th: state.apos.th || state.parentApos.th
+			th: state.apos.th || state.parentApos.th,
 		} } );
 		return makeFullStyle( style, orState, endGround );
 	}
@@ -1337,7 +1337,7 @@
 						chain( inSectionHeader( mt[ 3 ].length, makeFunc ), state );
 						return makeLocalStyle(
 							'mw-section-header line-cm-mw-section-' + ( mt[ 1 ].length + 1 ),
-							state
+							state,
 						);
 					}
 					fallbackStyle = style || '';
@@ -1572,7 +1572,7 @@
 					stack: [], InHtmlTag: [], errors: [],
 					apos: {}, parentApos: {}, aposStack: [],
 					extName: false, extMode: false, extState: false,
-					nTemplate: 0, nLink: 0, nExt: 0, nInvisible: 0
+					nTemplate: 0, nLink: 0, nExt: 0, nInvisible: 0,
 				};
 			},
 			copyState: function ( state ) {
@@ -1590,7 +1590,7 @@
 					nTemplate: state.nTemplate,
 					nLink: state.nLink,
 					nExt: state.nExt,
-					nInvisible: state.nInvisible
+					nInvisible: state.nInvisible,
 				};
 			},
 			token: function ( stream, state ) {
@@ -1607,7 +1607,7 @@
 					}
 					return 'line-cm-mw-exttag';
 				}
-			}
+			},
 		};
 	} );
 
