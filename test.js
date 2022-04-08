@@ -596,7 +596,7 @@
 	 * behavior switch
 	 */
 	function eatDoubleUnderscore( makeFunc, style ) {
-		return function ( stream, state ) {
+		const tokenize = function ( stream, state ) {
 			const name = stream.match( /^__\w+?__/ );
 			if ( name ) {
 				const doubleUnderscore = mwConfig.doubleUnderscore;
@@ -612,6 +612,8 @@
 			}
 			return makeFunc( style, state );
 		};
+		setName( tokenize, 'eatDoubleUnderscore' );
+		return tokenize;
 	}
 
 	/**
@@ -1472,9 +1474,7 @@
 				case '_': // valid wikitext: __
 					mt = stream.match( /^_+/ );
 					errorStyle = details.lowbar === undefined ? style || '' : details.lowbar;
-					if ( !mt || stream.eol() ) {
-						// fallback
-					} else {
+					if ( mt && !stream.eol() ) {
 						stream.backUp( 2 );
 						once( eatDoubleUnderscore( makeFunc, errorStyle ), state );
 					}
