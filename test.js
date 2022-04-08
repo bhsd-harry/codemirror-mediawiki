@@ -506,117 +506,6 @@
 		return block( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
 	}
 
-	function inVariable( stream, state ) {
-		if ( stream.match( /^[^{}|]+/ ) ) {
-			return makeLocalStyle( 'mw-templatevariable-name', state );
-		}
-		if ( stream.eat( '|' ) ) {
-			state.tokenize = inVariableDefault;
-			return makeLocalStyle( 'mw-templatevariable-delimiter', state );
-		}
-		if ( stream.match( '}}}' ) ) {
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-templatevariable-bracket', state );
-		}
-		if ( stream.match( '{{{' ) ) {
-			state.stack.push( state.tokenize );
-			return makeLocalStyle( 'mw-templatevariable-bracket', state );
-		}
-		stream.next();
-		return makeLocalStyle( 'mw-templatevariable-name', state );
-	}
-
-	function inVariableDefault( stream, state ) {
-		if ( stream.match( /^[^{}[<&~]+/ ) ) {
-			return makeLocalStyle( 'mw-templatevariable', state );
-		}
-		if ( stream.match( '}}}' ) ) {
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-templatevariable-bracket', state );
-		}
-		return eatWikiText( 'mw-templatevariable' )( stream, state );
-	}
-
-	function inParserFunctionName( stream, state ) {
-		if ( stream.match( /^#?[^:}{~]+/ ) ) { // FIXME: {{#name}} and {{uc}} are wrong, must have ':'
-			return makeLocalStyle( 'mw-parserfunction-name', state );
-		}
-		if ( stream.eat( ':' ) ) {
-			state.tokenize = inParserFunctionArguments;
-			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-		}
-		if ( stream.match( '}}' ) ) {
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
-		}
-		return eatWikiText( 'mw-parserfunction' )( stream, state );
-	}
-
-	function inParserFunctionArguments( stream, state ) {
-		if ( stream.match( /^[^|}{[<&~]+/ ) ) {
-			return makeLocalStyle( 'mw-parserfunction', state );
-		} else if ( stream.eat( '|' ) ) {
-			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
-		} else if ( stream.match( '}}' ) ) {
-			state.tokenize = state.stack.pop();
-			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
-		}
-		return eatWikiText( 'mw-parserfunction' )( stream, state );
-	}
-
-	function eatTemplatePageName( haveEaten ) {
-		return function ( stream, state ) {
-			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
-				state.tokenize = eatTemplateArgument( true );
-				return makeLocalStyle( 'mw-template-delimiter', state );
-			}
-			if ( stream.match( /^[\s\u00a0]*\}\}/ ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
-			}
-			if ( stream.match( /^[\s\u00a0]*<!--.*?-->/ ) ) {
-				return makeLocalStyle( 'mw-comment', state );
-			}
-			if ( haveEaten && stream.sol() ) {
-				// @todo error message
-				state.nTemplate--;
-				state.tokenize = state.stack.pop();
-				return;
-			}
-			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|}<{&~]+/ ) ) {
-				state.tokenize = eatTemplatePageName( true );
-				return makeLocalStyle( 'mw-template-name mw-pagename', state );
-			} else if ( stream.eatSpace() ) {
-				if ( stream.eol() === true ) {
-					return makeLocalStyle( 'mw-template-name', state );
-				}
-				return makeLocalStyle( 'mw-template-name mw-pagename', state );
-			}
-			return eatWikiText( 'mw-template-name mw-pagename' )( stream, state );
-		};
-	}
-
-	function eatTemplateArgument( expectArgName ) {
-		return function ( stream, state ) {
-			if ( expectArgName && stream.eatWhile( /[^=|}{[<&~]/ ) ) {
-				if ( stream.eat( '=' ) ) {
-					state.tokenize = eatTemplateArgument( false );
-					return makeLocalStyle( 'mw-template-argument-name', state );
-				}
-				return makeLocalStyle( 'mw-template', state );
-			} else if ( stream.eatWhile( /[^|}{[<&~]/ ) ) {
-				return makeLocalStyle( 'mw-template', state );
-			} else if ( stream.eat( '|' ) ) {
-				state.tokenize = eatTemplateArgument( true );
-				return makeLocalStyle( 'mw-template-delimiter', state );
-			} else if ( stream.match( '}}' ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
-			}
-			return eatWikiText( 'mw-template' )( stream, state );
-		};
-	}
-
 	function eatExternalLinkProtocol( count ) {
 		return function ( stream, state ) {
 			while ( count > 0 ) {
@@ -762,6 +651,117 @@
 				return makeStyle( tmpstyle, state );
 			}
 			return eatWikiText( tmpstyle )( stream, state );
+		};
+	}
+
+	function inVariable( stream, state ) {
+		if ( stream.match( /^[^{}|]+/ ) ) {
+			return makeLocalStyle( 'mw-templatevariable-name', state );
+		}
+		if ( stream.eat( '|' ) ) {
+			state.tokenize = inVariableDefault;
+			return makeLocalStyle( 'mw-templatevariable-delimiter', state );
+		}
+		if ( stream.match( '}}}' ) ) {
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( 'mw-templatevariable-bracket', state );
+		}
+		if ( stream.match( '{{{' ) ) {
+			state.stack.push( state.tokenize );
+			return makeLocalStyle( 'mw-templatevariable-bracket', state );
+		}
+		stream.next();
+		return makeLocalStyle( 'mw-templatevariable-name', state );
+	}
+
+	function inVariableDefault( stream, state ) {
+		if ( stream.match( /^[^{}[<&~]+/ ) ) {
+			return makeLocalStyle( 'mw-templatevariable', state );
+		}
+		if ( stream.match( '}}}' ) ) {
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( 'mw-templatevariable-bracket', state );
+		}
+		return eatWikiText( 'mw-templatevariable' )( stream, state );
+	}
+
+	function inParserFunctionName( stream, state ) {
+		if ( stream.match( /^#?[^:}{~]+/ ) ) { // FIXME: {{#name}} and {{uc}} are wrong, must have ':'
+			return makeLocalStyle( 'mw-parserfunction-name', state );
+		}
+		if ( stream.eat( ':' ) ) {
+			state.tokenize = inParserFunctionArguments;
+			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
+		}
+		if ( stream.match( '}}' ) ) {
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+		}
+		return eatWikiText( 'mw-parserfunction' )( stream, state );
+	}
+
+	function inParserFunctionArguments( stream, state ) {
+		if ( stream.match( /^[^|}{[<&~]+/ ) ) {
+			return makeLocalStyle( 'mw-parserfunction', state );
+		} else if ( stream.eat( '|' ) ) {
+			return makeLocalStyle( 'mw-parserfunction-delimiter', state );
+		} else if ( stream.match( '}}' ) ) {
+			state.tokenize = state.stack.pop();
+			return makeLocalStyle( 'mw-parserfunction-bracket', state, 'nExt' );
+		}
+		return eatWikiText( 'mw-parserfunction' )( stream, state );
+	}
+
+	function eatTemplatePageName( haveEaten ) {
+		return function ( stream, state ) {
+			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
+				state.tokenize = eatTemplateArgument( true );
+				return makeLocalStyle( 'mw-template-delimiter', state );
+			}
+			if ( stream.match( /^[\s\u00a0]*\}\}/ ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
+			}
+			if ( stream.match( /^[\s\u00a0]*<!--.*?-->/ ) ) {
+				return makeLocalStyle( 'mw-comment', state );
+			}
+			if ( haveEaten && stream.sol() ) {
+				// @todo error message
+				state.nTemplate--;
+				state.tokenize = state.stack.pop();
+				return;
+			}
+			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|}<{&~]+/ ) ) {
+				state.tokenize = eatTemplatePageName( true );
+				return makeLocalStyle( 'mw-template-name mw-pagename', state );
+			} else if ( stream.eatSpace() ) {
+				if ( stream.eol() === true ) {
+					return makeLocalStyle( 'mw-template-name', state );
+				}
+				return makeLocalStyle( 'mw-template-name mw-pagename', state );
+			}
+			return eatWikiText( 'mw-template-name mw-pagename' )( stream, state );
+		};
+	}
+
+	function eatTemplateArgument( expectArgName ) {
+		return function ( stream, state ) {
+			if ( expectArgName && stream.eatWhile( /[^=|}{[<&~]/ ) ) {
+				if ( stream.eat( '=' ) ) {
+					state.tokenize = eatTemplateArgument( false );
+					return makeLocalStyle( 'mw-template-argument-name', state );
+				}
+				return makeLocalStyle( 'mw-template', state );
+			} else if ( stream.eatWhile( /[^|}{[<&~]/ ) ) {
+				return makeLocalStyle( 'mw-template', state );
+			} else if ( stream.eat( '|' ) ) {
+				state.tokenize = eatTemplateArgument( true );
+				return makeLocalStyle( 'mw-template-delimiter', state );
+			} else if ( stream.match( '}}' ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' );
+			}
+			return eatWikiText( 'mw-template' )( stream, state );
 		};
 	}
 
