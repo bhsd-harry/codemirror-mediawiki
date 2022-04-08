@@ -9,7 +9,8 @@ require( './test.js' );
 CodeMirror.defaults.mwConfig = require( './config.json' );
 CodeMirror.errorMsgs = require( './i18n/zh-hans.json' );
 let output = '',
-	lastStyle, finalState;
+	lastStyle = null,
+	finalState;
 const callback = {
 	error( string, style, line, ch, state ) {
 		if ( /\berror\b/.test( style ) ) {
@@ -23,6 +24,7 @@ const callback = {
 		if ( string === '\n' ) {
 			console.log( output );
 			output = '';
+			lastStyle = null;
 		} else if ( string.length ) {
 			try {
 				const printStyle = ( style || '' )
@@ -76,10 +78,10 @@ const callback = {
 			try {
 				const style = state.tokenize.name;
 				if ( lastStyle === style ) {
-					const styleLength = style.length + 6;
+					const styleLength = style.length + 11;
 					output = `${output.slice( 0, -styleLength )}${string}${output.slice( -styleLength )}`;
 				} else {
-					output += `\x1b[32m${string}\x1b[0m(${style})`;
+					output += `${string}\x1b[32m(${style})\x1b[0m`;
 				}
 				lastStyle = style;
 			} catch ( e ) {
