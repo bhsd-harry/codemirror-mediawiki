@@ -309,7 +309,7 @@
 
 	/**
 	 * special characters that can start wikitext syntax:
-	 * line start : - = @ * : ; SPACE {
+	 * line start : - = # * : ; SPACE {
 	 * other      : { & ' ~ _ [ < :
 	 * details
 	 * ----       : <hr> (line start)
@@ -339,6 +339,65 @@
 	 * 4. valid wikitext
 	 * 5. fallback
 	 */
+
+	/**
+	 * eat general page name
+	 * Invalid characters: # < > [ ] { } |
+	 * Valid wikitext syntax: {{, {{{, &, <!--
+	 * @type {eatFunc}
+	 * @param {object} option - a mutable object
+	 * @property {boolean} haveEaten
+	 * @property {boolean} redirect
+	 * @returns {?string}
+	 */
+	function eatPageName( makeFunc, style, option ) {
+		return function ( stream, state ) {
+			const pageStyle = style + ' mw-pagename';
+			if ( eatSpace( stream ) ) {
+				return makeFunc( option.haveEaten && !stream.eol() ? pageStyle : style, state );
+			}
+			const ch = stream.next();
+			switch ( ch ) {
+				case '#': // 3. unique syntax: # > [ ] } |
+				case '>':
+				case '[':
+				case ']':
+				case '}':
+				case '|':
+					newError( state, 'invalid-char-pagename', ch );
+					return makeFunc( 'error', state );
+				case '<':
+					if ( stream.match( '!--' ) ) { // 4. valid wikitext: <!--
+						return eatComment( stream, state );
+					}
+					newError( state, 'invalid-char-pagename', '<' );
+					return makeFunc( 'error', state ); // 3. unique syntax: <
+				case '{':
+				case '&': {
+					if ( ch === '{' && stream.peek() !== '{' ) { // 3. unique syntax: {
+						newError( state, 'invalid-char-pagename', '{' );
+						return makeFunc( 'error', state );
+					}
+					// 4. valid wikitext: {{, {{{, &
+					option.haveEaten = true;
+					stream.backUp( 1 );
+					const result = eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
+					if ( /\berror\b/.test( result ) ) {
+						newError( state, 'invalid-char-pagename', '{' );
+					}
+					return result;
+				}
+				case '~':
+					if ( stream.match( /^~{2,4}/ ) ) { // 4. invalid wikitext: ~~~
+						newError( 'sign-pagename' );
+						return makeFunc( 'error', state );
+					}
+			}
+			stream.match( /^[^#<>[\]{}|&~\s\xa0]+/ ); // 2. plain text
+			option.haveEaten = true;
+			return makeFunc( pageStyle, state );
+		};
+	}
 
 	/**
 	 * eat HTML entities
@@ -376,6 +435,10 @@
 	 */
 	function eatComment( stream, state ) {
 		return eatBlock( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
+	}
+
+	function eatWikiTextOther() {
+		/** @todo */
 	}
 
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
@@ -463,7 +526,7 @@
 			return eatWikiText( 'mw-parserfunction' )( stream, state );
 		}
 
-		function eatTemplatePageName( haveAte ) {
+		function eatTemplatePageName( haveEaten ) {
 			return function ( stream, state ) {
 				if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
 					state.tokenize = eatTemplateArgument( true );
@@ -476,7 +539,7 @@
 				if ( stream.match( /^[\s\u00a0]*<!--.*?-->/ ) ) {
 					return makeLocalStyle( 'mw-comment', state );
 				}
-				if ( haveAte && stream.sol() ) {
+				if ( haveEaten && stream.sol() ) {
 					// @todo error message
 					state.nTemplate--;
 					state.tokenize = state.stack.pop();
