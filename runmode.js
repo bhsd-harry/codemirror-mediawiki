@@ -68,6 +68,27 @@ const callback = {
 			}
 		}
 	},
+	token( string, _, __, ___, state ) {
+		if ( string === '\n' ) {
+			console.log( output );
+			output = '';
+		} else if ( string.length ) {
+			try {
+				const style = state.tokenize.name;
+				if ( lastStyle === style ) {
+					const styleLength = style.length + 6;
+					output = `${output.slice( 0, -styleLength )}${string}${output.slice( -styleLength )}`;
+				} else {
+					output += `\x1b[32m${string}\x1b[0m(${style})`;
+				}
+				lastStyle = style;
+			} catch ( e ) {
+				console.log();
+				console.log( { string, state } );
+				console.log();
+			}
+		}
+	},
 };
 CodeMirror.runMode( text, 'text/mediawiki', callback[ mode ] );
 if ( mode === 'error' ) {
