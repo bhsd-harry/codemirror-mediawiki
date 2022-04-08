@@ -1447,8 +1447,8 @@
 				case "'":
 					if ( state.nInvisible === 0 ) {
 						mt = stream.match( /^'*/ );
-						const chars = mt[ 0 ].length;
-						switch ( chars ) {
+						const count = mt[ 0 ].length;
+						switch ( count ) {
 							case 0:
 								break;
 							case 3: // total apostrophes =4
