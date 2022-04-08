@@ -262,14 +262,39 @@
 	/**
 	 * eat until EOL
 	 * @type {eatFunc}
+	 * @param {string} name - token name
 	 */
-	function eatEnd( makeFunc, style ) {
+	function eatEnd( makeFunc, style, name ) {
 		const tokenize = function ( stream, state ) {
 			stream.skipToEnd();
 			return makeFunc( style, state );
 		};
-		setName( tokenize, 'eatEnd' );
+		setName( tokenize, name );
 		return tokenize;
+	}
+
+	/**
+	 * eat until a specified terminator
+	 * Can be mutliline
+	 * @type {eatFunc}
+	 * @param {string} terminator - terminator string
+	 * @param {string} name - token name
+	 */
+	function eatBlock( makeFunc, style, terminator, name ) {
+		return function ( streamObj, stateObj ) {
+			stateObj.stack.push( stateObj.tokenize );
+			stateObj.tokenize = function ( stream, state ) {
+				if ( stream.skipTo( terminator ) ) {
+					stream.match( terminator );
+					state.tokenize = state.stack.pop();
+				} else {
+					stream.skipToEnd();
+				}
+				return makeFunc( style, state );
+			};
+			setName( stateObj.tokenize, name );
+			return stateObj.tokenize( streamObj, stateObj );
+		};
 	}
 
 	/**
@@ -302,22 +327,17 @@
 		return errorStyle === undefined ? style : errorStyle;
 	}
 
+	/**
+	 * eat comment
+	 * @type {token}
+	 */
+	function eatComment( stream, state ) {
+		return eatBlock( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
+	}
+
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
-
-		function eatBlock( style, terminator ) {
-			return function ( stream, state ) {
-				while ( !stream.eol() ) {
-					if ( stream.match( terminator ) ) {
-						state.tokenize = state.stack.pop();
-						break;
-					}
-					stream.next();
-				}
-				return makeLocalStyle( style, state );
-			};
-		}
 
 		function eatChar( char, style ) {
 			return function ( stream, state ) {
@@ -334,7 +354,7 @@
 				if ( stream.match( /^[^&<[{~]+/ ) ) {
 					if ( stream.eol() ) {
 						stream.backUp( count );
-						once( eatEnd( makeLocalStyle, 'mw-section-header' ), state );
+						once( eatEnd( makeLocalStyle, 'mw-section-header', 'eatSectionHeaderEnd' ), state );
 					}
 					return null; // style is null
 				}
@@ -853,12 +873,6 @@
 				var ch, tmp, mt, name, isCloseTag, tagname,
 					sol = stream.sol();
 
-				function chain( parser ) {
-					state.stack.push( state.tokenize );
-					state.tokenize = parser;
-					return parser( stream, state );
-				}
-
 				if ( sol ) {
 					if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 						state.stack.push( state.tokenize );
@@ -1005,7 +1019,7 @@
 						isCloseTag = Boolean( stream.eat( '/' ) );
 						tagname = stream.match( /^[^>/\s\u00a0.*,[\]{}$^+?|/\\'`~<=!@#%&()-]+/ );
 						if ( stream.match( '!--' ) ) { // comment
-							return chain( eatBlock( 'mw-comment', '-->' ) );
+							return eatComment( stream, state );
 						}
 						if ( tagname ) {
 							tagname = tagname[ 0 ].toLowerCase();
