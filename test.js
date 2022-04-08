@@ -647,131 +647,6 @@
 	}
 
 	/**
-	 * template variable
-	 */
-	function inVariable() {
-		return variable;
-
-		/*
-		 * template variable name
-		 * Uncommon but possibly multiline
-		 * Unique syntax: |, }}}
-		 * Valid wikitext syntax: {{, {{{
-		 */
-		function variable( stream, state ) {
-			switch ( stream.next() ) {
-				case '|': // 3. unique syntax: |
-					state.nInvisible--;
-					update( inVariableDefault, state, { first: true } );
-					return makeLocalStyle( 'mw-templatevariable-delimiter', state );
-				case '{': // 4. valid wikitext: {{, {{{
-					stream.backUp( 1 );
-					return eatWikiTextOther( makeLocalStyle, 'mw-templatevariable-name' )( stream, state );
-				case '}':
-					if ( stream.match( '}}' ) ) { // 3. unique syntax: }}}
-						state.nInvisible--;
-						return [ makeLocalStyle( 'mw-templatevariable-bracket', state ), true ];
-					}
-			}
-			stream.match( /^[^|}{]+/ ); // 2. plain text
-			return makeLocalStyle( 'mw-templatevariable-name', state );
-		}
-
-		/**
-		 * template variable default
-		 * Can be multiline
-		 * Unique syntax: |, }}}
-		 * Invalid wikitext syntax: {|
-		 * @param {Object.<'first', boolean>} option
-		 * @property {boolean} first - only first default is valid
-		 */
-		function inVariableDefault( option ) {
-			const style = option.first ? 'mw-templatevariable' : 'error';
-			return variableDefault;
-			function variableDefault( stream, state ) {
-				const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle,
-					ch = stream.peek();
-				if ( stream.sol() ) { // 1. SOL
-					state.apos = {}; // do not change state.aposStack
-					if ( option.first ) {
-						switch ( ch ) {
-							case ' ':
-							case '\xa0':
-							case ':':
-								if ( stream.match( /^[\s\xa0]*:*[\s\xa0]*{\|/, false ) ) { // 4. invalid wikitext: {|
-									break;
-								}
-								// fall through
-							case '-': // 4. valid wikitext: SPACE, -, =, #, *, ;, :
-							case '=':
-							case '#':
-							case '*':
-							case ';':
-								return eatWikiTextSol( makeFunc, 'mw-templatevariable' )( stream, state );
-						}
-					}
-				}
-				stream.next();
-				switch ( ch ) {
-					case '|': // 3. unique syntax: |
-						option.first = false;
-						return makeLocalStyle( 'mw-templatevariable-delimiter', state );
-					case '}':
-						if ( stream.match( '}}', false ) ) { // 3. unique syntax: }}}
-							state.nInvisible++;
-							stream.backUp( 1 );
-							return true;
-						}
-						break;
-					case '&':
-					case "'":
-					case '~':
-					case '_':
-					case '<':
-					case '[':
-					case ':':
-						if ( !option.first ) {
-							break;
-						}
-						// fall through
-					case '{': { // 4. valid wikitext
-						stream.backUp( 1 );
-						const result = eatWikiTextOther( makeFunc, style )( stream, state );
-						if ( /\berror\b/.test( result ) ) {
-							newError( state, 'variable-default' );
-						}
-						return result;
-					}
-				}
-				if ( option.first ) {
-					stream.match( /^[^|}{&'~_[<]+/ );
-				} else {
-					stream.match( /^[^|}{]+/ );
-					newError( state, 'variable-default' );
-				}
-				return makeFunc( style, state ); // 2. plain text
-			}
-		}
-	}
-
-	/**
-	 * template
-	 * Unique syntax: |, }}
-	 * @todo full parser
-	 */
-	function inTemplate( stream, state ) {
-		if ( stream.match( '}}' ) ) {
-			state.nInvisible--;
-			return [ makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' ), true ];
-		} else if ( stream.eat( '|' ) ) {
-			return makeLocalStyle( 'mw-template-delimiter', state );
-		} else if ( stream.sol() ) {
-			return eatWikiTextSol( makeLocalStyle, 'mw-template' )( stream, state );
-		}
-		return eatWikiTextOther( makeLocalStyle, 'mw-template' )( stream, state );
-	}
-
-	/**
 	 * external link after protocol
 	 * @param {object} option
 	 * @property {boolean} invisible - whether there is link text
@@ -1262,6 +1137,131 @@
 				return makeFunc( style, state );
 			}
 		}
+	}
+
+	/**
+	 * template variable
+	 */
+	function inVariable() {
+		return variable;
+
+		/*
+		 * template variable name
+		 * Uncommon but possibly multiline
+		 * Unique syntax: |, }}}
+		 * Valid wikitext syntax: {{, {{{
+		 */
+		function variable( stream, state ) {
+			switch ( stream.next() ) {
+				case '|': // 3. unique syntax: |
+					state.nInvisible--;
+					update( inVariableDefault, state, { first: true } );
+					return makeLocalStyle( 'mw-templatevariable-delimiter', state );
+				case '{': // 4. valid wikitext: {{, {{{
+					stream.backUp( 1 );
+					return eatWikiTextOther( makeLocalStyle, 'mw-templatevariable-name' )( stream, state );
+				case '}':
+					if ( stream.match( '}}' ) ) { // 3. unique syntax: }}}
+						state.nInvisible--;
+						return [ makeLocalStyle( 'mw-templatevariable-bracket', state ), true ];
+					}
+			}
+			stream.match( /^[^|}{]+/ ); // 2. plain text
+			return makeLocalStyle( 'mw-templatevariable-name', state );
+		}
+
+		/**
+		 * template variable default
+		 * Can be multiline
+		 * Unique syntax: |, }}}
+		 * Invalid wikitext syntax: {|
+		 * @param {Object.<'first', boolean>} option
+		 * @property {boolean} first - only first default is valid
+		 */
+		function inVariableDefault( option ) {
+			const style = option.first ? 'mw-templatevariable' : 'error';
+			return variableDefault;
+			function variableDefault( stream, state ) {
+				const makeFunc = state.nExt || state.nTemplate ? makeStyle : makeFullStyle,
+					ch = stream.peek();
+				if ( stream.sol() ) { // 1. SOL
+					state.apos = {}; // do not change state.aposStack
+					if ( option.first ) {
+						switch ( ch ) {
+							case ' ':
+							case '\xa0':
+							case ':':
+								if ( stream.match( /^[\s\xa0]*:*[\s\xa0]*{\|/, false ) ) { // 4. invalid wikitext: {|
+									break;
+								}
+								// fall through
+							case '-': // 4. valid wikitext: SPACE, -, =, #, *, ;, :
+							case '=':
+							case '#':
+							case '*':
+							case ';':
+								return eatWikiTextSol( makeFunc, 'mw-templatevariable' )( stream, state );
+						}
+					}
+				}
+				stream.next();
+				switch ( ch ) {
+					case '|': // 3. unique syntax: |
+						option.first = false;
+						return makeLocalStyle( 'mw-templatevariable-delimiter', state );
+					case '}':
+						if ( stream.match( '}}', false ) ) { // 3. unique syntax: }}}
+							state.nInvisible++;
+							stream.backUp( 1 );
+							return true;
+						}
+						break;
+					case '&':
+					case "'":
+					case '~':
+					case '_':
+					case '<':
+					case '[':
+					case ':':
+						if ( !option.first ) {
+							break;
+						}
+						// fall through
+					case '{': { // 4. valid wikitext
+						stream.backUp( 1 );
+						const result = eatWikiTextOther( makeFunc, style )( stream, state );
+						if ( /\berror\b/.test( result ) ) {
+							newError( state, 'variable-default' );
+						}
+						return result;
+					}
+				}
+				if ( option.first ) {
+					stream.match( /^[^|}{&'~_[<]+/ );
+				} else {
+					stream.match( /^[^|}{]+/ );
+					newError( state, 'variable-default' );
+				}
+				return makeFunc( style, state ); // 2. plain text
+			}
+		}
+	}
+
+	/**
+	 * template
+	 * Unique syntax: |, }}
+	 * @todo full parser
+	 */
+	function inTemplate( stream, state ) {
+		if ( stream.match( '}}' ) ) {
+			state.nInvisible--;
+			return [ makeLocalStyle( 'mw-template-bracket', state, 'nTemplate' ), true ];
+		} else if ( stream.eat( '|' ) ) {
+			return makeLocalStyle( 'mw-template-delimiter', state );
+		} else if ( stream.sol() ) {
+			return eatWikiTextSol( makeLocalStyle, 'mw-template' )( stream, state );
+		}
+		return eatWikiTextOther( makeLocalStyle, 'mw-template' )( stream, state );
 	}
 
 	/**
