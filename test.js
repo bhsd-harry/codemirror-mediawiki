@@ -275,7 +275,7 @@
 
 	/**
 	 * eat until a specified terminator
-	 * Can be mutliline
+	 * Can be multiline
 	 * @type {eatFunc}
 	 * @param {string} terminator - terminator string
 	 * @param {string} name - token name
