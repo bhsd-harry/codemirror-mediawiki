@@ -1,3 +1,61 @@
+/**
+ * @typedef {object} Apos
+ * @property {boolean} bold - apostrophe '''
+ * @property {boolean} italic - apostrophe ''
+ * @property {number} dt - list containing ';'
+ * @property {boolean} th - table cell starting with '!' at SOL
+ * @property {number} strong - inside HTML tags <b> or <strong>
+ * @property {number} em - inside HTML tags <i> or <em>
+ * @property {number} del - inside HTML tags <s>, <del> or <strike>
+ */
+
+/**
+ * @typedef {object} state
+ * @property {token} tokenize - next token
+ * @property {token[]} stack - ancestor tokens
+ * @property {string[]} InHtmlTag - ancestor HTML tags
+ * @property {Apos} apos - apostrophe states
+ * @property {Apos} parentApos - parent apostrophe states
+ * @property {Apos[]} aposStack - ancestor apostrophe states
+ * @property {number} nTemplate - ancestor templates
+ * @property {number} nLink - ancestor links
+ * @property {number} nExt - ancestor parser functions
+ * @property {number} nInvisible - ancestor invisible syntax
+ * - parser function name
+ * - template pagename
+ * - template argument name
+ * - template variable name
+ * - internal link pagename if there is link text
+ * - file link pagename
+ * - external link
+ * - tag attribute
+ * - table definition
+ */
+
+/**
+ * @typedef {function} parser
+ * @param {stream} stream
+ * @param {state} state
+ * @returns {string|true|[string, true]} style or exit
+ */
+/**
+ * @typedef {function} token
+ * @extends parser
+ * @property {string} name - token must have a name for debugging
+ * @returns {string} style
+ */
+/**
+ * @typedef {function} eatFunc - not mutate state.tokenize and state.stack, can be a token itself
+ * @returns {string|token} style or token
+ */
+/**
+ * @typedef {function} inFunc - mutate state.tokenize and/or state.stack, can be a parser itself
+ * @returns {string|true|[string, true]|parser} style or exit or parser (including token)
+ */
+
+/**
+ * Basic rule: do not use function-scope variables
+ */
 ( function ( CodeMirror ) {
 	/* eslint-disable no-unused-vars, camelcase */
 	'use strict';
@@ -55,40 +113,6 @@
 	function escapeRegExp( str ) {
 		return str.replace( /[\\{}()|.?*+\-^$[\]]/g, '\\$&' );
 	}
-
-	/**
-	 * @typedef {object} Apos
-	 * @property {boolean} bold - apostrophe '''
-	 * @property {boolean} italic - apostrophe ''
-	 * @property {number} dt - list containing ';'
-	 * @property {boolean} th - table cell starting with '!' at SOL
-	 * @property {number} strong - inside HTML tags <b> or <strong>
-	 * @property {number} em - inside HTML tags <i> or <em>
-	 * @property {number} del - inside HTML tags <s>, <del> or <strike>
-	 */
-
-	/**
-	 * @typedef {object} state
-	 * @property {function(stream, state): string} tokenize - next token
-	 * @property {Array.<function(stream, state): string>} stack - ancestor tokens
-	 * @property {string[]} InHtmlTag - ancestor HTML tags
-	 * @property {Apos} apos - apostrophe states
-	 * @property {Apos} parentApos - parent apostrophe states
-	 * @property {Apos[]} aposStack - ancestor apostrophe states
-	 * @property {number} nTemplate - ancestor templates
-	 * @property {number} nLink - ancestor links
-	 * @property {number} nExt - ancestor parser functions
-	 * @property {number} nInvisible - ancestor invisible syntax
-	 * - parser function name
-	 * - template pagename
-	 * - template argument name
-	 * - template variable name
-	 * - internal link pagename if there is link text
-	 * - file link pagename
-	 * - external link
-	 * - tag attribute
-	 * - table definition
-	 */
 
 	/**
 	 * add background
@@ -216,19 +240,6 @@
 		} } );
 		return makeFullStyle( style, orState, endGround );
 	}
-
-	/**
-	 * @typedef {function} eatFunc - not mutate state.tokenize and state.stack
-	 * @returns {string} style
-	 */
-	/**
-	 * @typedef {function} inFunc - mutate state.tokenize and/or state.stack
-	 * @returns {string|true|[string, true]} style or exit
-	 */
-
-	/**
-	 * Basic rule: do not use function-scope variables
-	 */
 
 	/**
 	 * mutate state object
