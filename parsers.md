@@ -4,3 +4,4 @@
 - eatComment
 
 # inFunc
+- inSectionHeader
