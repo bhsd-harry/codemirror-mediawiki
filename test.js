@@ -594,6 +594,7 @@
 
 	/**
 	 * behavior switch
+	 * @type {eatFunc}
 	 */
 	function eatDoubleUnderscore( makeFunc, style ) {
 		const tokenize = function ( stream, state ) {
