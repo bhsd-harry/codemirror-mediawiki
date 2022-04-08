@@ -1581,14 +1581,12 @@
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		parserConfig = config;
 		mwConfig = config.mwConfig;
-		mwConfig.redirect = mwConfig.redirect || [ '#REDIRECT' ];
-		mwConfig.img = mwConfig.img || {};
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
 		redirectRegex = new RegExp( '^[\\s\\xa0]*(?:' + mwConfig.redirect.map( function ( word ) {
 			return escapeRegExp( word );
 		} ).join( '|' ) + ')[\\s\\xa0]*:?[\\s\\xa0]*(?=\\[\\[|\\[?$)', 'i' );
 		imgKeyword = new RegExp( '^[\\s\\xa0]*(?:' + Object.keys( mwConfig.img ).map( function ( word ) {
-			return escapeRegExp( word ).replace( '\\$1', '[^|\\]]*' );
+			return escapeRegExp( word ).replace( '\\$1', '[^|{\\]]*' );
 		} ).join( '|' ) + ')[\\s\\xa0]*(?=\\||{{[\\s\\xa0]*![\\s\\xa0]*}}|]]|$)' );
 
 		return {
@@ -1638,4 +1636,4 @@
 	} );
 
 	CodeMirror.defineMIME( 'text/mediawiki', 'mediawiki' );
-}( typeof global === 'object' ? global.CodeMirror : CodeMirror ) );
+}( CodeMirror ) );
