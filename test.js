@@ -426,7 +426,6 @@
 	/**
 	 * reset apostrophe states and <dt> states
 	 * @param {boolean} recursive - whether to reset ancestor states
-	 * @returns {undefined}
 	 */
 	function clearApos( state, recursive ) {
 		function clear( apos ) {
@@ -456,14 +455,14 @@
 	/**
 	 * special characters that can start wikitext syntax:
 	 * line start : - = # * : ; SPACE {
-	 * other      : { & ' ~ _ [ <
-	 * details    :
+	 * other      : { & ' ~ _ [ < :
+	 * details
 	 * ----       : <hr> (line start)
 	 * =          : <h1> ~ <h6> (line start)
 	 * #          : <ol> (line start)
 	 * *          : <ul> (line start)
 	 * ;          : <dt> (line start)
-	 * :          : <dd> (line start)
+	 * :          : <dd> (line start or after ';')
 	 * SPACE      : <pre> (line start)
 	 * {|         : <table> (line start)
 	 * {{         : parser functions and templates
@@ -478,7 +477,7 @@
 	 */
 
 	/**
-	 * token template (order not restricted)
+	 * parser template (order not restricted)
 	 * 1. SOL/EOL
 	 * 2. plain text
 	 * 3. unique syntax
@@ -490,7 +489,8 @@
 	 * eat general page name
 	 * Invalid characters: # < > [ ] { } |
 	 * Valid wikitext syntax: {{, {{{, &, <!--
-	 * @param {Object.<string, boolean>} option - a mutable object
+	 * @type {eatFunc}
+	 * @param {object} option - a mutable object
 	 * @property {boolean} haveEaten
 	 * @property {boolean} redirect
 	 * @returns {?string}
@@ -553,7 +553,7 @@
 	 * Invalid wikitext except extension tags: ~~~
 	 * Invalid wikitext in table: HTML tags (if not quoted), extension tags
 	 * Basic syntax: name ; name = value ; name = "value" ; name = 'value'
-	 * @param {Object} option
+	 * @param {object} option
 	 * @property {boolean} name - whether it is an attribute name
 	 * @property {?string} quote - only for attribute values
 	 */
@@ -769,7 +769,7 @@
 
 	/**
 	 * external link after protocol
-	 * @param {Object} option
+	 * @param {object} option
 	 * @property {boolean} invisible - whether there is link text
 	 */
 	function inExternalLink( option ) {
