@@ -45,12 +45,10 @@
  * @returns {string} style
  */
 /**
- * @typedef {function} eatFunc - not mutate state.tokenize and state.stack, can be a token itself
- * @returns {string|token} style or token
+ * @typedef {token} eatFunc - not mutate state.tokenize and state.stack
  */
 /**
- * @typedef {function} inFunc - mutate state.tokenize and/or state.stack, can be a parser itself
- * @returns {string|true|[string, true]|parser} style or exit or parser (including token)
+ * @typedef {parser} inFunc - mutate state.tokenize and/or state.stack
  */
 
 /**
@@ -387,40 +385,41 @@
 
 	/**
 	 * eat until EOL
-	 * @type {eatFunc}
-	 * @param {string} name - token name
+	 * @returns {eatFunc}
 	 */
-	function eatEnd( makeFunc, style, name ) {
-		const tokenize = function ( stream, state ) {
+	function toEnd( makeFunc, style ) {
+		return eatEnd;
+		function eatEnd( stream, state ) {
 			stream.skipToEnd();
 			return makeFunc( style, state );
-		};
-		setName( tokenize, name );
-		return tokenize;
+		}
 	}
 
 	/**
 	 * eat until a specified terminator
 	 * Can be multiline
-	 * @type {eatFunc}
 	 * @param {string} terminator - terminator string
-	 * @param {string} name - token name
+	 * @param {?string} name - token name
+	 * @returns {eatFunc}
 	 */
-	function eatBlock( makeFunc, style, terminator, name ) {
+	function block( makeFunc, style, terminator, name ) {
 		return function ( streamObj, stateObj ) {
 			stateObj.stack.push( stateObj.tokenize );
-			stateObj.tokenize = function ( stream, state ) {
-				if ( stream.skipTo( terminator ) ) {
-					stream.match( terminator );
-					state.tokenize = state.stack.pop();
-				} else {
-					stream.skipToEnd();
-				}
-				return makeFunc( style, state );
-			};
-			setName( stateObj.tokenize, name );
-			return stateObj.tokenize( streamObj, stateObj );
+			stateObj.tokenize = eatBlock;
+			if ( name ) {
+				setName( eatBlock, name );
+			}
+			return eatBlock( streamObj, stateObj );
 		};
+		function eatBlock( stream, state ) {
+			if ( stream.skipTo( terminator ) ) {
+				stream.match( terminator );
+				state.tokenize = state.stack.pop();
+			} else {
+				stream.skipToEnd();
+			}
+			return makeFunc( style, state );
+		}
 	}
 
 	/**
@@ -594,14 +593,15 @@
 
 	/**
 	 * behavior switch
-	 * @type {eatFunc}
+	 * @returns {eatFunc}
 	 */
-	function eatDoubleUnderscore( makeFunc, style ) {
-		const tokenize = function ( stream, state ) {
+	function doubleUnderscore( makeFunc, style ) {
+		return eatDoubleUnderscore;
+		function eatDoubleUnderscore( stream, state ) {
 			const name = stream.match( /^__\w+?__/ );
 			if ( name ) {
-				const doubleUnderscore = mwConfig.doubleUnderscore;
-				if ( name[ 0 ].toLowerCase() in doubleUnderscore[ 0 ] || name[ 0 ] in doubleUnderscore[ 1 ] ) {
+				const config = mwConfig.doubleUnderscore;
+				if ( name[ 0 ].toLowerCase() in config[ 0 ] || name[ 0 ] in config[ 1 ] ) {
 					return 'mw-doubleUnderscore'; // has own background
 				} else if ( !stream.eol() ) {
 					// Leave last two underscore symbols for processing again in next iteration
@@ -612,9 +612,7 @@
 				stream.next();
 			}
 			return makeFunc( style, state );
-		};
-		setName( tokenize, 'eatDoubleUnderscore' );
-		return tokenize;
+		}
 	}
 
 	/**
@@ -629,7 +627,7 @@
 			} else if ( stream.match( /^[^{&'~[<_]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
-					once( eatEnd( makeLocalStyle, 'mw-section-header', 'eatSectionHeaderEnd' ), state );
+					once( toEnd( makeLocalStyle, 'mw-section-header' ), state );
 				}
 				return makeFunc( '', state );
 			}
@@ -639,10 +637,10 @@
 
 	/**
 	 * eat comment
-	 * @type {token}
+	 * @type {eatFunc}
 	 */
 	function eatComment( stream, state ) {
-		return eatBlock( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
+		return block( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
 	}
 
 	/**
@@ -1477,7 +1475,7 @@
 					errorStyle = details.lowbar === undefined ? style || '' : details.lowbar;
 					if ( mt && !stream.eol() ) {
 						stream.backUp( 2 );
-						once( eatDoubleUnderscore( makeFunc, errorStyle ), state );
+						once( doubleUnderscore( makeFunc, errorStyle ), state );
 					}
 					return makeFunc( errorStyle, state );
 				case '[':
