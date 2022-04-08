@@ -75,7 +75,7 @@
 		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
 		nsFileRegex = getFileRegex();
 	var span = typeof document === 'object' && document.createElement( 'span' ), // used for isEntity()
-		mwConfig, urlProtocols, redirectRegex, imgKeyword;
+		parserConfig, mwConfig, urlProtocols, redirectRegex, imgKeyword;
 
 	/**
 	 * create RegExp for file links
@@ -1579,6 +1579,7 @@
 	}
 
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
+		parserConfig = config;
 		mwConfig = config.mwConfig;
 		mwConfig.redirect = mwConfig.redirect || [ '#REDIRECT' ];
 		mwConfig.img = mwConfig.img || {};
