@@ -31,7 +31,7 @@
  * @typedef {token} eatFunc - not mutate state.tokenize and state.stack
  */
 /**
- * @typedef {parser} inFunc - mutate state.tokenize and/or state.stack, can be a parser itself
+ * @typedef {parser} inFunc - mutate state.tokenize and/or state.stack
  */
 
 /**
@@ -268,6 +268,21 @@
 	}
 
 	/**
+	 * eat a specific number of characters
+	 * @param {number} count - number of characters to eat
+	 * @returns {eatFunc}
+	 */
+	function chars( count, makeFunc, style ) {
+		return eatChars;
+		function eatChars( stream, state ) {
+			for ( var i = 0; i < count; i++ ) {
+				stream.next();
+			}
+			return makeFunc( style, state );
+		}
+	}
+
+	/**
 	 * eat until EOL
 	 * @returns {eatFunc}
 	 */
@@ -462,17 +477,25 @@
 		}
 	}
 
-	function eatSectionHeader( count ) {
-		return function ( stream, state ) {
-			if ( stream.match( /^[^&<[{~]+/ ) ) {
-				if ( stream.eol() ) {
+	/**
+	 * eat section header when the number of ending characters is already known
+	 * @param {number} count - number of ending characters
+	 * @returns {inFunc}
+	 */
+	function sectionHeader( count, makeFunc ) {
+		return inSectionHeader;
+		function inSectionHeader( stream, state ) {
+			if ( stream.sol() ) { // 1. SOL
+				return true;
+			} else if ( stream.match( /^[^{&'~[<_]+/ ) ) { // 2. plain text
+				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
 					once( toEnd( makeLocalStyle, 'mw-section-header' ), state );
 				}
-				return null; // style is null
+				return makeFunc( '', state );
 			}
-			return eatWikiText( '' )( stream, state );
-		};
+			return eatWikiText( '' )( stream, state ); // 4. common wikitext
+		}
 	}
 
 	/**
@@ -1011,8 +1034,7 @@
 						tmp = stream.match( /^(={0,5})(.+?(=\1\s*))$/ );
 						if ( tmp ) { // Title
 							stream.backUp( tmp[ 2 ].length );
-							state.stack.push( state.tokenize );
-							state.tokenize = eatSectionHeader( tmp[ 3 ].length );
+							chain( sectionHeader( tmp[ 3 ].length, makeStyle ), state );
 							return 'mw-section-header line-cm-mw-section-' + ( tmp[ 1 ].length + 1 );
 						}
 						break;
