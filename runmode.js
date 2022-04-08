@@ -71,25 +71,21 @@ const callback = {
 		}
 	},
 	token( string, _, __, ___, state ) {
+		const style = state ? state.stack.concat( [ state.tokenize ] ).map( ( { name } ) => name ).join() : undefined;
 		if ( string === '\n' ) {
 			console.log( output );
-			output = '';
-		} else if ( string.length ) {
-			try {
-				const style = state.tokenize.name;
-				if ( lastStyle === style ) {
-					const styleLength = style.length + 11;
-					output = `${output.slice( 0, -styleLength )}${string}${output.slice( -styleLength )}`;
-				} else {
-					output += `${string}\x1b[32m(${style})\x1b[0m`;
-				}
-				lastStyle = style;
-			} catch ( e ) {
-				console.log();
-				console.log( { string, state } );
-				console.log();
-			}
+			output = style === undefined ? '' : `\x1b[32m(${style})\x1b[0m`;
+		} else if ( lastStyle === style ) {
+			const styleLength = style.length + 11;
+			output = `${output.slice( 0, -styleLength )}${string}${output.slice( -styleLength )}`;
+		} else if ( style !== undefined ) {
+			output += `${string}\x1b[32m(${style})\x1b[0m`;
+		} else if ( string ) {
+			console.log();
+			console.log( { string, state } );
+			console.log();
 		}
+		lastStyle = style === undefined ? lastStyle : style;
 	},
 };
 CodeMirror.runMode( text, 'text/mediawiki', callback[ mode ] );
