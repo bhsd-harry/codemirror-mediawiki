@@ -298,6 +298,49 @@
 	}
 
 	/**
+	 * reset apostrophe states
+	 */
+	function clearApos( state ) {
+		function clear( apos ) {
+			Object.assign( apos, { bold: false, italic: false } );
+		}
+		clear( state.apos );
+	}
+
+	/**
+	 * special characters that can start wikitext syntax:
+	 * line start : - = # * : ; SPACE {
+	 * other      : { & ' ~ _ [ < :
+	 * details
+	 * ----       : <hr> (line start)
+	 * =          : <h1> ~ <h6> (line start)
+	 * #          : <ol> (line start)
+	 * *          : <ul> (line start)
+	 * ;          : <dt> (line start)
+	 * :          : <dd> (line start or after ';')
+	 * SPACE      : <pre> (line start)
+	 * {|         : <table> (line start)
+	 * {{         : parser functions and templates
+	 * {{{        : variables
+	 * &          : HTML entities
+	 * ''         : <i> <b>
+	 * ~~~        : signature
+	 * __         : behavior switch
+	 * [          : external link
+	 * [[         : internal link
+	 * <          : tags
+	 */
+
+	/**
+	 * parser template (order not restricted)
+	 * 1. SOL/EOL
+	 * 2. plain text
+	 * 3. unique syntax
+	 * 4. valid wikitext
+	 * 5. fallback
+	 */
+
+	/**
 	 * eat HTML entities
 	 * @type {eatFunc}
 	 * @param {string} style - base style
@@ -1122,7 +1165,7 @@
 			},
 			token: function ( stream, state ) {
 				if ( stream.sol() ) { // reset bold and italic status in every new line
-					state.apos = {};
+					clearApos( state );
 				}
 				return state.tokenize( stream, state );
 			},
