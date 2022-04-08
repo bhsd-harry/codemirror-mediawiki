@@ -388,22 +388,25 @@
 	/**
 	 * eat until EOL
 	 * @type {eatFunc}
+	 * @param {string} name - token name
 	 */
-	function eatEnd( makeFunc, style ) {
+	function eatEnd( makeFunc, style, name ) {
 		const tokenize = function ( stream, state ) {
 			stream.skipToEnd();
 			return makeFunc( style, state );
 		};
-		setName( tokenize, 'eatEnd' );
+		setName( tokenize, name );
 		return tokenize;
 	}
 
 	/**
 	 * eat until a specified terminator
 	 * Can be multiline
+	 * @type {eatFunc}
 	 * @param {string} terminator - terminator string
+	 * @param {string} name - token name
 	 */
-	function eatBlock( makeFunc, style, terminator ) {
+	function eatBlock( makeFunc, style, terminator, name ) {
 		return function ( streamObj, stateObj ) {
 			stateObj.stack.push( stateObj.tokenize );
 			stateObj.tokenize = function ( stream, state ) {
@@ -415,6 +418,7 @@
 				}
 				return makeFunc( style, state );
 			};
+			setName( stateObj.tokenize, name );
 			return stateObj.tokenize( streamObj, stateObj );
 		};
 	}
@@ -560,6 +564,7 @@
 
 	/**
 	 * eat HTML entities
+	 * @type {eatFunc}
 	 * @param {string} style - base style
 	 * @param {?string} errorStyle - style if not HTML entity
 	 */
@@ -621,7 +626,7 @@
 			} else if ( stream.match( /^[^{&'~[<_]+/ ) ) { // 2. plain text
 				if ( stream.eol() ) { // 1. EOL
 					stream.backUp( count );
-					once( eatEnd( makeLocalStyle, 'mw-section-header' ), state );
+					once( eatEnd( makeLocalStyle, 'mw-section-header', 'eatSectionHeaderEnd' ), state );
 				}
 				return makeFunc( '', state );
 			}
@@ -631,9 +636,10 @@
 
 	/**
 	 * eat comment
+	 * @type {token}
 	 */
 	function eatComment( stream, state ) {
-		return eatBlock( makeLocalStyle, 'mw-comment', '-->' )( stream, state );
+		return eatBlock( makeLocalStyle, 'mw-comment', '-->', 'eatComment' )( stream, state );
 	}
 
 	/**
