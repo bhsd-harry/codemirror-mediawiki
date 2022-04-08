@@ -617,10 +617,10 @@
 		};
 	}
 
-	function eatExternalLinkProtocol( chars ) {
+	function eatExternalLinkProtocol( count ) {
 		return function ( stream, state ) {
-			while ( chars > 0 ) {
-				chars--;
+			while ( count > 0 ) {
+				count--;
 				stream.next();
 			}
 			if ( stream.eol() ) {
@@ -765,11 +765,11 @@
 		};
 	}
 
-	function eatTagName( chars, isCloseTag, isHtmlTag ) {
+	function eatTagName( count, isCloseTag, isHtmlTag ) {
 		return function ( stream, state ) {
 			var name = '';
-			while ( chars > 0 ) {
-				chars--;
+			while ( count > 0 ) {
+				count--;
 				name += stream.next();
 			}
 			if ( stream.eol() ) {
@@ -1086,8 +1086,8 @@
 					return makeStyle( eatMnemonic( stream, style || '', mnemonicStyle ), state );
 				case "'": {
 					mt = stream.match( /^'*/ );
-					const chars = mt[ 0 ].length;
-					switch ( chars ) {
+					const count = mt[ 0 ].length;
+					switch ( count ) {
 						case 0:
 							break;
 						case 3: // total apostrophes =4
