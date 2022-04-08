@@ -474,11 +474,6 @@
 	 */
 
 	/**
-	 * illegal characters in page name
-	 * # < > [ ] { } |
-	 */
-
-	/**
 	 * token template (order not restricted)
 	 * 1. SOL/EOL
 	 * 2. plain text
