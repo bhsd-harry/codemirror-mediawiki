@@ -372,15 +372,17 @@
 
 	/**
 	 * eat a specific number of characters
-	 * @param {number} chars - number of characters to eat
+	 * @param {number} count - number of characters to eat
+	 * @returns {eatFunc}
 	 */
-	function eatChars( chars, makeFunc, style ) {
-		return function ( stream, state ) {
-			for ( var i = 0; i < chars; i++ ) {
+	function chars( count, makeFunc, style ) {
+		return eatChars;
+		function eatChars( stream, state ) {
+			for ( var i = 0; i < count; i++ ) {
 				stream.next();
 			}
 			return makeFunc( style, state );
-		};
+		}
 	}
 
 	/**
@@ -618,10 +620,11 @@
 	/**
 	 * eat section header when the number of ending characters is already known
 	 * @param {number} count - number of ending characters
+	 * @returns {inFunc}
 	 */
-	function inSectionHeader( count, makeFunc ) {
-		return sectionHeader;
-		function sectionHeader( stream, state ) {
+	function sectionHeader( count, makeFunc ) {
+		return inSectionHeader;
+		function inSectionHeader( stream, state ) {
 			if ( stream.sol() ) { // 1. SOL
 				return true;
 			} else if ( stream.match( /^[^{&'~[<_]+/ ) ) { // 2. plain text
@@ -1359,7 +1362,7 @@
 					const mt = stream.match( /^(={0,5})(.+?(=\1[\s\xa0]*))$/ );
 					if ( mt ) {
 						stream.backUp( mt[ 2 ].length );
-						chain( inSectionHeader( mt[ 3 ].length, makeFunc ), state );
+						chain( sectionHeader( mt[ 3 ].length, makeFunc ), state );
 						return makeLocalStyle(
 							'mw-section-header line-cm-mw-section-' + ( mt[ 1 ].length + 1 ),
 							state,
@@ -1376,7 +1379,7 @@
 					stream.backUp( 1 );
 					if ( stream.match( redirectRegex ) ) {
 						update( inLink, state, { redirect: true }, 'nInvisible', 'nInvisible' );
-						once( eatChars( 2, makeLocalStyle, 'mw-link-bracket' ), state, 'nLink' );
+						once( chars( 2, makeLocalStyle, 'mw-link-bracket' ), state, 'nLink' );
 						return makeLocalStyle( 'mw-parserfunction-name', state );
 					}
 					stream.next();
@@ -1488,8 +1491,8 @@
 						mt = stream.match( nsFileRegex, false );
 						if ( mt ) {
 							update( inFileLink, state, { invisible: true }, 'nInvisible' );
-							once( eatChars( mt[ 2 ].length, makeLocalStyle, 'mw-link-pagename mw-pagename' ), state );
-							once( eatChars( mt[ 1 ].length, makeLocalStyle, 'mw-link-pagename' ), state );
+							once( chars( mt[ 2 ].length, makeLocalStyle, 'mw-link-pagename mw-pagename' ), state );
+							once( chars( mt[ 1 ].length, makeLocalStyle, 'mw-link-pagename' ), state );
 						} else {
 							const invisible = stream.match( /^[^\]]+[|{]/, false ); // if uncertain, regard it invisible
 							update( inLink, state, { invisible: invisible }, invisible ? 'nInvisible' : null );
@@ -1500,7 +1503,7 @@
 					if ( mt ) { // valid wikitext: [
 						state.nLink++;
 						update( inExternalLink, state, { invisible: true }, 'nInvisible' );
-						once( eatChars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' ), state );
+						once( chars( mt[ 0 ].length, makeLocalStyle, 'mw-extlink-protocol' ), state );
 						return makeLocalStyle( 'mw-extlink-bracket', state );
 					}
 					break;
