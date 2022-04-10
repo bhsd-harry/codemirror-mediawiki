@@ -1,15 +1,10 @@
 /**
- * @typedef {object} Apos
- * @property {boolean} bold - apostrophe '''
- * @property {boolean} italic - apostrophe ''
- */
-
-/**
  * @typedef {object} state
  * @property {token} tokenize - next token
  * @property {token[]} stack - ancestor tokens
  * @property {string[]} InHtmlTag - ancestor HTML tags
- * @property {Apos} apos - apostrophe states
+ * @property {boolean} isBold - apostrophe '''
+ * @property {boolean} isItalic - apostrophe ''
  * @property {number} nTemplate - ancestor templates
  * @property {number} nLink - ancestor links
  * @property {number} nExt - ancestor parser functions
@@ -164,8 +159,8 @@
 		if ( style === undefined ) {
 			return;
 		}
-		const strong = state.apos.bold ? ' strong' : '',
-			em = state.apos.italic ? ' em' : '';
+		const strong = state.isBold ? ' strong' : '',
+			em = state.isItalic ? ' em' : '';
 		return makeLocalStyle( style + strong + em, state, endGround );
 	}
 
@@ -248,15 +243,6 @@
 		}
 	}
 
-	/**
-	 * greedy eat white spaces without returned styles
-	 * This is not an eatFunc, despite its name
-	 * @returns {string[]|false} result of RegExp match or false
-	 */
-	function eatSpace( stream ) {
-		return stream.match( /^[\s\xa0]+/ );
-	}
-
 	function eatChar( char, style ) {
 		return function ( stream, state ) {
 			state.tokenize = state.stack.pop();
@@ -325,10 +311,8 @@
 	 * reset apostrophe states
 	 */
 	function clearApos( state ) {
-		function clear( apos ) {
-			Object.assign( apos, { bold: false, italic: false } );
-		}
-		clear( state.apos );
+		state.isBold = false;
+		state.isItalic = false;
 	}
 
 	/**
@@ -377,7 +361,7 @@
 	function eatPageName( makeFunc, style, option ) {
 		return function ( stream, state ) {
 			const pageStyle = style + ' mw-pagename';
-			if ( eatSpace( stream ) ) {
+			if ( stream.eatSpace() ) {
 				return makeFunc( option.haveEaten && !stream.eol() ? pageStyle : style, state );
 			}
 			const ch = stream.next();
@@ -586,11 +570,6 @@
 		if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-			/*
-			 * if ( !stream.eatSpace() ) {
-			 * state.ImInBlock.push( 'LinkTrail' );
-			 * }
-			 */
 		}
 		if ( stream.match( /^[\s\u00a0]*[^\s\u00a0#|\]&~{]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
 			return makeStyle( 'mw-link-pagename mw-pagename', state );
@@ -615,11 +594,6 @@
 		if ( stream.match( ']]' ) ) {
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-			/*
-			 * if ( !stream.eatSpace() ) {
-			 * state.ImInBlock.push( 'LinkTrail' );
-			 * }
-			 */
 		}
 		return eatWikiText( 'mw-link-tosection' )( stream, state );
 	}
@@ -803,7 +777,7 @@
 
 	function eatHtmlTagAttribute( name ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^(?:"[^"]*"|'[^']*'|[^>/<{&~])+/ ) ) {
+			if ( stream.match( /^(?:"[^"<>]*"|'[^'<>]*'|[^>/<{&~])+/ ) ) {
 				return makeLocalStyle( 'mw-htmltag-attribute', state );
 			}
 			if ( stream.eat( '>' ) ) {
@@ -823,7 +797,7 @@
 
 	function eatExtTagAttribute( name ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^(?:"[^"]*"|'[^']*'|[^>/<{&~])+/ ) ) {
+			if ( stream.match( /^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/ ) ) {
 				return makeLocalStyle( 'mw-exttag-attribute mw-ext-' + name, state );
 			}
 			if ( stream.eat( '>' ) ) {
@@ -967,8 +941,7 @@
 					return makeStyle( isHead ? 'strong' : '', state );
 				}
 				if ( stream.match( '||' ) || isHead && stream.match( '!!' ) || isStart && stream.eat( '|' ) ) {
-					state.apos.bold = false;
-					state.apos.italic = false;
+					clearApos( state );
 					if ( isStart ) {
 						state.tokenize = eatTableRow( false, isHead );
 					}
@@ -1097,10 +1070,10 @@
 							stream.backUp( 2 );
 							// fall through
 						case 2: // valid wikitext: ''', bold
-							state.apos.bold = !state.apos.bold;
+							state.isBold = !state.isBold;
 							return makeLocalStyle( 'mw-apostrophes', state );
 						case 1: // valid wikitext: '', italic
-							state.apos.italic = !state.apos.italic;
+							state.isItalic = !state.isItalic;
 							return makeLocalStyle( 'mw-apostrophes', state );
 						default: // total apostrophes >5
 							stream.backUp( 5 );
@@ -1242,7 +1215,7 @@
 				return {
 					tokenize: eatWikiText( '' ),
 					stack: [], InHtmlTag: [], errors: [],
-					apos: {},
+					isBold: false, isItalic: false,
 					extName: false, extMode: false, extState: false,
 					nTemplate: 0, nLink: 0, nExt: 0,
 				};
@@ -1253,7 +1226,8 @@
 					stack: state.stack.concat( [] ),
 					InHtmlTag: state.InHtmlTag.concat( [] ),
 					errors: state.errors.concat( [] ),
-					apos: Object.assign( {}, state.apos ),
+					isBold: state.isBold,
+					isItalic: state.isItalic,
 					extName: state.extName,
 					extMode: state.extMode,
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
