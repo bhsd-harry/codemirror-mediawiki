@@ -13,7 +13,7 @@ let output = '',
 	finalState;
 const callback = {
 	error( string, style, line, ch, state ) {
-		if ( /\berror\b/.test( style ) ) {
+		if ( /\berror\b/.test( style || '' ) ) {
 			console.log( { string, line: line + 1, ch: ch + 1, error: state.errors.pop() } );
 		}
 		if ( typeof state === 'object' ) {
@@ -24,10 +24,11 @@ const callback = {
 		if ( string === '\n' ) {
 			console.log( output );
 			output = '';
-			lastStyle = null;
+			lastStyle = '';
 		} else if ( string.length ) {
 			try {
-				const printStyle = ( style || '' )
+				style = style || ''; // eslint-disable-line no-param-reassign
+				const printStyle = style
 					.replace( /\s*\b(?:mw-pagename|strong|em|strikethrough)\b\s*/g, ' ' )
 					.replace( /(?:\bmw-|\s*[\w-]+-ground\b)/g, '' )
 					.replace( /\berror\b/, '\x1b[1;31merror\x1b[0m' ) // red

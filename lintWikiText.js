@@ -17,7 +17,7 @@
 		}
 		clearMarks( cm );
 		for ( let i = from; i < to; i++ ) {
-			cm.getLineTokens( i ).filter( token => /\berror\b/.test( token.type ) ).forEach( token => {
+			cm.getLineTokens( i ).filter( token => /\berror\b/.test( token.type || '' ) ).forEach( token => {
 				const mark = cm.markText( Pos( i, token.start ), Pos( i, token.end ), {
 					attributes: { title: token.state.errors[ 0 ] },
 				} );

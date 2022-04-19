@@ -390,7 +390,7 @@
 					option.haveEaten = true;
 					stream.backUp( 1 );
 					const result = eatWikiTextOther( makeFunc, pageStyle, { lbrace: 'error' } )( stream, state );
-					if ( /\berror\b/.test( result ) ) {
+					if ( /\berror\b/.test( result || '' ) ) {
 						newError( state, 'invalid-char-pagename', '{' );
 					}
 					return result;
@@ -1083,7 +1083,7 @@
 				case '[':
 					if ( stream.eat( '[' ) ) { // Link Example: [[ Foo | Bar ]]
 						stream.eatSpace();
-						if ( /[^\]|[]/.test( stream.peek() ) ) {
+						if ( /[^\]|[]/.test( stream.peek() || '' ) ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
 							state.tokenize = inLink;
