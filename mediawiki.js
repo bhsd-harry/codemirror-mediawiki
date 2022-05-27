@@ -2,7 +2,7 @@
 	'use strict';
 
 	var permittedHtmlTags = {
-			b: true, bdi: true, del: true, i: true, ins: true, img: true,
+			b: true, bdi: true, bdo: true, del: true, i: true, ins: true, img: true,
 			u: true, font: true, big: true, small: true, sub: true, sup: true,
 			h1: true, h2: true, h3: true, h4: true, h5: true, h6: true, cite: true,
 			code: true, em: true, s: true, strike: true, strong: true, tt: true,
@@ -456,7 +456,7 @@
 						state.InHtmlTag.push( name );
 					}
 					state.tokenize = state.stack.pop();
-					return makeLocalStyle( name in voidHtmlTags ? style : 'mw-htmltag-bracket error', state );
+					return makeLocalStyle( 'mw-htmltag-bracket' + ( name in voidHtmlTags ? '' : ' error', state );
 				}
 				return eatWikiText( style )( stream, state );
 			};
