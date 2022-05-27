@@ -456,7 +456,7 @@
 						state.InHtmlTag.push( name );
 					}
 					state.tokenize = state.stack.pop();
-					return makeLocalStyle( 'mw-htmltag-bracket' + ( name in voidHtmlTags ? '' : ' error', state );
+					return makeLocalStyle( 'mw-htmltag-bracket' + ( name in voidHtmlTags ? '' : ' error' ), state );
 				}
 				return eatWikiText( style )( stream, state );
 			};
