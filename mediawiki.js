@@ -806,7 +806,7 @@
 						if ( stream.match( '!--' ) ) { // comment
 							state.stack.push( state.tokenize );
 							state.tokenize = eatBlock( 'mw-comment', '-->' );
-							return 'mw-comment';
+							return makeLocalStyle('mw-comment', state);
 						}
 						if ( tagname ) {
 							tagname = tagname[ 0 ].toLowerCase();
