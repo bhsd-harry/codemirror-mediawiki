@@ -8,8 +8,8 @@
 .cm-mw-apostrophes-bold, .cm-mw-apostrophes-italic { color: #08f; }
 
 /* section title */
-.CodeMirror pre.cm-mw-section-1 { font-size: 1.8em; line-height: 1.2em; }
-.CodeMirror pre.cm-mw-section-2 { font-size: 1.5em; line-height: 1.2em; }
+div.CodeMirror pre.cm-mw-section-1 { font-size: 1.8em; line-height: 1.2em; }
+div.CodeMirror pre.cm-mw-section-2 { font-size: 1.5em; line-height: 1.2em; }
 pre.cm-mw-section-3, pre.cm-mw-section-4, pre.cm-mw-section-5, pre.cm-mw-section-6 { font-weight: bold; }
 .cm-mw-section-header { color: #08f; font-weight: normal; }
 
