@@ -383,10 +383,23 @@
 			};
 		}
 
-		function eatLinkText( isFile ) {
+		function eatLinkText( isFile, bracketEaten ) {
 			var linkIsBold, linkIsItalic;
 			return function ( stream, state ) {
+				var tmpstyle = 'mw-link-text',
+					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
+				if ( linkIsBold ) {
+					tmpstyle += ' strong';
+				}
+				if ( linkIsItalic ) {
+					tmpstyle += ' em';
+				}
 				if ( stream.match( ']]' ) ) {
+					if ( !bracketEaten && stream.peek() === ']' ) {
+						stream.backUp( 1 );
+						state.tokenize = eatLinkText( isFile, true );
+						return makeStyle( tmpstyle, state );
+					}
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
 				}
@@ -400,14 +413,6 @@
 				if ( stream.match( '\'\'' ) ) {
 					linkIsItalic = !linkIsItalic;
 					return makeLocalStyle( 'mw-link-text mw-apostrophes-italic', state );
-				}
-				var tmpstyle = 'mw-link-text',
-					regex = isFile ? /^[^'\]{&~<|[]+/ : /^[^'\]{&~<]+/;
-				if ( linkIsBold ) {
-					tmpstyle += ' strong';
-				}
-				if ( linkIsItalic ) {
-					tmpstyle += ' em';
 				}
 				if ( stream.match( regex ) ) {
 					return makeStyle( tmpstyle, state );
