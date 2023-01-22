@@ -13,7 +13,9 @@
 			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
 			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
 		},
-		voidHtmlTags = { br: true, hr: true, wbr: true, img: true },
+		voidHtmlTags = {
+			br: true, hr: true, wbr: true, img: true
+		},
 		span = document.createElement( 'span' ), // used for isEntity()
 		mwConfig, urlProtocols;
 
@@ -305,29 +307,6 @@
 			return eatWikiText( 'mw-extlink-text' )( stream, state );
 		}
 
-		function inFileLink( stream, state ) {
-			if ( stream.sol() ) {
-				state.nLink--;
-				// @todo error message
-				state.tokenize = state.stack.pop();
-				return;
-			}
-			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
-				state.tokenize = eatLinkText( true );
-				return makeLocalStyle( 'mw-link-delimiter', state );
-			}
-			if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
-				state.tokenize = state.stack.pop();
-				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
-			}
-			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|&~#<>[\]{}]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
-				return makeLocalStyle( 'mw-link-pagename mw-pagename', state );
-			} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
-				return makeLocalStyle( 'error', state );
-			}
-			return eatWikiText( 'mw-link-pagename mw-pagename' )( stream, state );
-		}
-
 		function inLink( stream, state ) {
 			if ( stream.sol() ) {
 				state.nLink--;
@@ -376,6 +355,29 @@
 				}
 				return eatWikiText( 'mw-link-tosection' )( stream, state );
 			};
+		}
+
+		function inFileLink( stream, state ) {
+			if ( stream.sol() ) {
+				state.nLink--;
+				// @todo error message
+				state.tokenize = state.stack.pop();
+				return;
+			}
+			if ( stream.match( /^[\s\u00a0]*\|[\s\u00a0]*/ ) ) {
+				state.tokenize = eatLinkText( true );
+				return makeLocalStyle( 'mw-link-delimiter', state );
+			}
+			if ( stream.match( /^[\s\u00a0]*\]\]/ ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-link-bracket', state, 'nLink' );
+			}
+			if ( stream.match( /^[\s\u00a0]*[^\s\u00a0|&~#<>[\]{}]+/ ) || stream.eatSpace() ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+				return makeLocalStyle( 'mw-link-pagename mw-pagename', state );
+			} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
+				return makeLocalStyle( 'error', state );
+			}
+			return eatWikiText( 'mw-link-pagename mw-pagename' )( stream, state );
 		}
 
 		function eatLinkText( isFile, bracketEaten ) {
@@ -868,7 +870,8 @@
 			startState: function () {
 				return {
 					tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
-					extState: false, nTemplate: 0, nLink: 0, nExt: 0 };
+					extState: false, nTemplate: 0, nLink: 0, nExt: 0
+				};
 			},
 			copyState: function ( state ) {
 				return {
