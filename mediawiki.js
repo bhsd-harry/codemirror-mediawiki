@@ -136,10 +136,7 @@
 	function eatMnemonic( stream, style ) {
 		// no dangerous character should appear in results
 		const entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
-		if ( entity && isEntity( `&${ entity[ 0 ] }` ) ) {
-			return `${ style } mw-mnemonic`;
-		}
-		return style;
+		return entity && isEntity( `&${ entity[ 0 ] }` ) ? `${ style } mw-mnemonic` : style;
 	}
 
 	/**
@@ -169,11 +166,13 @@
 	}
 
 	/**
-	 * simply eat one character if it must be there
+	 * simply eat characters if they must be there
 	 */
-	function eatChar( style ) {
+	function eatChars( n, style ) {
 		return function ( stream, state ) {
-			stream.next();
+			for ( let i = 0; i < n; i++ ) {
+				stream.next();
+			}
 			state.tokenize = state.stack.pop();
 			return makeLocalStyle( style, state );
 		};
@@ -211,7 +210,7 @@
 							stream.backUp( tmp[ 2 ].length );
 							state.stack.push( state.tokenize );
 							state.tokenize = eatSectionHeader( tmp[ 3 ].length );
-							return `mw-section-header line-cm-mw-section-${ tmp[ 1 ].length + 1 }`;
+							return makeLocalStyle( `mw-section-header line-cm-mw-section-${ tmp[ 1 ].length + 1 }`, state );
 						}
 						break;
 					case '*':
@@ -220,24 +219,24 @@
 						if ( mt[ 0 ].includes( ';' ) ) {
 							state.isBold = true;
 						}
-						return 'mw-list';
+						return makeLocalStyle( 'mw-list', state );
 					case ';':
 						state.isBold = true;
 						stream.match( /^[*#;:]*/ );
-						return 'mw-list';
+						return makeLocalStyle( 'mw-list', state );
 					case ':':
 						if ( mt = stream.match( /^:*\s*(\{\||\{\{\{\s*!\s*\}\}|\{\{\s*\(!\s*\}\})/u ) ) { // Highlight indented tables :{|, bug T108454
 							const [ , { length } ] = mt;
 							state.stack.push( state.tokenize );
 							state.tokenize = eatStartTable( length );
 							stream.backUp( length );
-							return 'mw-list';
+							return makeLocalStyle( 'mw-list', state );
 						}
 						mt = stream.match( /^[*#;:]*/ );
 						if ( mt[ 0 ].includes( ';' ) ) {
 							state.isBold = true;
 						}
-						return 'mw-list';
+						return makeLocalStyle( 'mw-list', state );
 					case ' ':
 						if ( mt = stream.match( /^\s*(:+\s*)?(\{\||\{\{\{\s*!\s*\}\}|\{\{\s*\(!\s*\}\})/u ) ) { // Leading spaces is the correct syntax for a table, bug T108454
 							if ( mt[ 1 ] ) { // ::{|
@@ -245,18 +244,18 @@
 								state.stack.push( state.tokenize );
 								state.tokenize = eatStartTable( length );
 								stream.backUp( length );
-								return 'mw-list';
+								return makeLocalStyle( 'mw-list', state );
 							}
 							state.stack.push( state.tokenize );
 							state.tokenize = inTableDefinition;
-							return 'mw-table-bracket';
+							return makeLocalStyle( 'mw-table-bracket', state );
 						}
 						return 'mw-skipformatting';
 					case '{':
 						if ( stream.match( /^(?:\||\{\{\s*!\s*\}\}|\{\s*\(!\s*\}\})\s*/u ) ) {
 							state.stack.push( state.tokenize );
 							state.tokenize = inTableDefinition;
-							return 'mw-table-bracket';
+							return makeLocalStyle( 'mw-table-bracket', state );
 						}
 				}
 			}
@@ -339,7 +338,7 @@
 						if ( tagname in mwConfig.tags ) { // Parser function
 							if ( isCloseTag === true ) {
 								// @todo message
-								return 'error';
+								return makeLocalStyle( 'error', state );
 							}
 							state.stack.push( state.tokenize );
 							state.tokenize = eatTagName( tagname.length, isCloseTag, false );
@@ -347,10 +346,10 @@
 						} else if ( permittedHtmlTags.has( tagname ) ) { // Html tag
 							if ( isCloseTag === true && tagname !== state.InHtmlTag.pop() ) {
 								// @todo message
-								return 'error';
+								return makeLocalStyle( 'error', state );
 							} else if ( isCloseTag === true && voidHtmlTags.has( tagname ) ) {
 								// @todo message
-								return 'error';
+								return makeLocalStyle( 'error', state );
 							}
 							state.stack.push( state.tokenize );
 							// || ( voidHtmlTags.has( tagname ) ) because opening void tags should also be treated as the closing tag.
@@ -455,7 +454,7 @@
 					stream.backUp( count );
 					state.tokenize = eatEnd( 'mw-section-header' );
 				}
-				return '';
+				return makeLocalStyle( '', state );
 			}
 			return eatWikiText( '' )( stream, state );
 		};
@@ -467,7 +466,7 @@
 				stream.next();
 			}
 			state.tokenize = inTableDefinition;
-			return 'mw-table-bracket';
+			return makeLocalStyle( 'mw-table-bracket', state );
 		};
 	}
 
@@ -608,10 +607,9 @@
 				state.tokenize = eatTemplatePageName( true );
 				return makeLocalStyle( 'mw-template-name mw-pagename', state );
 			} else if ( stream.eatSpace() ) {
-				if ( stream.eol() === true ) {
-					return makeLocalStyle( 'mw-template-name', state );
-				}
-				return makeLocalStyle( 'mw-template-name mw-pagename', state );
+				return stream.eol()
+					? makeLocalStyle( 'mw-template-name', state )
+					: makeLocalStyle( 'mw-template-name mw-pagename', state );
 			} else if ( !stream.match( '{{', false ) && stream.eat( /[#<>[\]{}]/ ) ) {
 				return makeLocalStyle( 'error', state );
 			}
@@ -798,7 +796,7 @@
 				return makeLocalStyle( 'mw-htmltag-name', state );
 			} // it is the extension tag
 			if ( isCloseTag ) {
-				state.tokenize = eatChar( 'mw-exttag-bracket' );
+				state.tokenize = eatChars( 1, 'mw-exttag-bracket' );
 			} else {
 				state.tokenize = eatExtTagAttribute( name );
 			}
