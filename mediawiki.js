@@ -423,23 +423,18 @@
 				state.tokenize = inTableDefinition;
 				return makeLocalStyle( 'mw-table-delimiter', state );
 			} else if ( stream.match( /^(?:\||\{\{\s*!\s*\}\})/u ) ) {
-				const ch = stream.next();
-				if ( ch === '-' ) {
-					stream.match( /^-*\s*/u );
+				if ( stream.match( /^-+\s*/u ) ) {
 					state.tokenize = inTableDefinition;
 					return makeLocalStyle( 'mw-table-delimiter', state );
-				} else if ( ch === '+' ) {
+				} else if ( stream.eat( '+' ) ) {
 					stream.eatSpace();
 					state.tokenize = inTableCaption;
 					return makeLocalStyle( 'mw-table-delimiter', state );
-				} else if ( ch === '}' ) {
+				} else if ( stream.eat( '}' ) ) {
 					state.tokenize = state.stack.pop();
 					return makeLocalStyle( 'mw-table-bracket', state );
-				} else if ( /\s/u.test( ch ) ) {
-					stream.eatSpace();
-				} else {
-					stream.backUp( 1 );
 				}
+				stream.eatSpace();
 				state.tokenize = eatTableRow( true, false );
 				return makeLocalStyle( 'mw-table-delimiter', state );
 			} else if ( stream.eat( '!' ) ) {
