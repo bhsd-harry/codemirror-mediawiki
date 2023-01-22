@@ -16,7 +16,7 @@
 		voidHtmlTags = {
 			br: true, hr: true, wbr: true, img: true
 		},
-		span = document.createElement( 'span' ); // used for isEntity()
+		span = typeof document === 'object' && document.createElement( 'span' ); // used for isEntity()
 	let mwConfig, urlProtocols;
 
 	/**
@@ -62,6 +62,9 @@
 	}
 
 	function isEntity( str ) {
+		if ( !span ) {
+			return true;
+		}
 		span.innerHTML = str;
 		return span.textContent.length === 1;
 	}
@@ -215,7 +218,7 @@
 						if ( /[^\]|[]/.test( stream.peek() ) ) {
 							state.nLink++;
 							state.stack.push( state.tokenize );
-							const nsIds = mw.config.get( 'wgNamespaceIds' ),
+							const nsIds = typeof mw === 'object' ? mw.config.get( 'wgNamespaceIds' ) : { File: 6 },
 								nsFile = Object.keys( nsIds ).filter( function ( ns ) {
 									return nsIds[ ns ] === 6;
 								} ).join( '|' ),

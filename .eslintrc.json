@@ -1,6 +1,6 @@
 {
 	"env": {
-		"browser": true,
+		"node": true,
 		"es6": true
 	},
 	"plugins": [
@@ -19,6 +19,9 @@
 		"mw": "readonly",
 		"CodeMirror": "readonly"
 	},
+	"ignorePatterns": [
+		"codemirror.js"
+	],
 	"rules": {
 		"array-callback-return": 2,
 		"no-cond-assign": 0,
@@ -410,5 +413,16 @@
 		"es-x": {
 			"aggressive": true
 		}
-	}
+	},
+	"overrides": [
+		{
+			"files": [
+				"mediawiki.js"
+			],
+			"env": {
+				"browser": true,
+				"node": false
+			}
+		}
+	]
 }
