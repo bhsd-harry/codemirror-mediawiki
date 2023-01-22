@@ -1,21 +1,82 @@
 ( function ( CodeMirror ) {
 	'use strict';
 
-	const permittedHtmlTags = {
-			b: true, bdi: true, bdo: true, del: true, i: true, ins: true, img: true,
-			u: true, font: true, big: true, small: true, sub: true, sup: true,
-			h1: true, h2: true, h3: true, h4: true, h5: true, h6: true, cite: true,
-			code: true, em: true, s: true, strike: true, strong: true, tt: true,
-			var: true, div: true, center: true, blockquote: true, q: true, ol: true, ul: true,
-			dl: true, table: true, caption: true, pre: true, ruby: true, rb: true,
-			rp: true, rt: true, rtc: true, p: true, span: true, abbr: true, dfn: true,
-			kbd: true, samp: true, data: true, time: true, mark: true, br: true,
-			wbr: true, hr: true, li: true, dt: true, dd: true, td: true, th: true,
-			tr: true, noinclude: true, includeonly: true, onlyinclude: true, translate: true
-		},
-		voidHtmlTags = {
-			br: true, hr: true, wbr: true, img: true
-		},
+	/**
+	 * CodeMirror, copyright (c) by Marijn Haverbeke and others
+	 * Distributed under an MIT license: https://codemirror.net/5/LICENSE
+	 *
+	 * Utility function that allows modes to be combined. The mode given
+	 * as the base argument takes care of most of the normal mode
+	 * functionality, but a second (typically simple) mode is used, which
+	 * can override the style of text. Both modes get to parse all of the
+	 * text, but when both assign a non-null style to a piece of code, the
+	 * overlay wins, unless the combine argument was true and not overridden,
+	 * or state.overlay.combineTokens was true, in which case the styles are
+	 * combined.
+	 */
+	CodeMirror.overlayMode = function ( base, overlay, combine ) {
+		return {
+			startState() {
+				return {
+					base: CodeMirror.startState( base ),
+					overlay: CodeMirror.startState( overlay ),
+					basePos: 0, baseCur: null,
+					overlayPos: 0, overlayCur: null,
+					streamSeen: null
+				};
+			},
+
+			copyState( state ) {
+				return {
+					base: CodeMirror.copyState( base, state.base ),
+					overlay: CodeMirror.copyState( overlay, state.overlay ),
+					basePos: state.basePos, baseCur: null,
+					overlayPos: state.overlayPos, overlayCur: null
+				};
+			},
+
+			token( stream, state ) {
+				if ( stream !== state.streamSeen || Math.min( state.basePos, state.overlayPos ) < stream.start ) {
+					state.streamSeen = stream;
+					state.basePos = stream.start;
+					state.overlayPos = stream.start;
+				}
+				if ( stream.start === state.basePos ) {
+					state.baseCur = base.token( stream, state.base );
+					state.basePos = stream.pos;
+				}
+				if ( stream.start === state.overlayPos ) {
+					stream.pos = stream.start;
+					state.overlayCur = overlay.token( stream, state.overlay );
+					state.overlayPos = stream.pos;
+				}
+				stream.pos = Math.min( state.basePos, state.overlayPos );
+
+				// state.overlay.combineTokens always takes precedence over combine, unless set to null
+				if ( state.overlayCur === null ) {
+					return state.baseCur;
+				} else if ( state.baseCur !== null && state.overlay.combineTokens
+					|| combine && state.overlay.combineTokens === null
+				) {
+					return `${ state.baseCur } ${ state.overlayCur }`;
+				}
+				return state.overlayCur;
+			},
+
+			innerMode( state ) {
+				return { state: state.base, mode: base };
+			}
+		};
+	};
+
+	const permittedHtmlTags = new Set( [
+			'b', 'bdi', 'bdo', 'del', 'i', 'ins', 'img', 'u', 'font', 'big', 'small', 'sub', 'sup', 'h1', 'h2', 'h3',
+			'h4', 'h5', 'h6', 'cite', 'code', 'em', 's', 'strike', 'strong', 'tt', 'var', 'div', 'center', 'blockquote',
+			'q', 'ol', 'ul', 'dl', 'table', 'caption', 'pre', 'ruby', 'rb', 'rp', 'rt', 'rtc', 'p', 'span', 'abbr',
+			'dfn', 'kbd', 'samp', 'data', 'time', 'mark', 'br', 'wbr', 'hr', 'li', 'dt', 'dd', 'td', 'th', 'tr',
+			'noinclude', 'includeonly', 'onlyinclude', 'translate'
+		] ),
+		voidHtmlTags = new Set( [ 'br', 'hr', 'wbr', 'img' ] ),
 		span = typeof document === 'object' && document.createElement( 'span' ); // used for isEntity()
 	let mwConfig, urlProtocols;
 
@@ -283,17 +344,17 @@
 							state.stack.push( state.tokenize );
 							state.tokenize = eatTagName( tagname.length, isCloseTag, false );
 							return makeLocalStyle( 'mw-exttag-bracket', state );
-						} else if ( tagname in permittedHtmlTags ) { // Html tag
+						} else if ( permittedHtmlTags.has( tagname ) ) { // Html tag
 							if ( isCloseTag === true && tagname !== state.InHtmlTag.pop() ) {
 								// @todo message
 								return 'error';
-							} else if ( isCloseTag === true && tagname in voidHtmlTags ) {
+							} else if ( isCloseTag === true && voidHtmlTags.has( tagname ) ) {
 								// @todo message
 								return 'error';
 							}
 							state.stack.push( state.tokenize );
-							// || ( tagname in voidHtmlTags ) because opening void tags should also be treated as the closing tag.
-							state.tokenize = eatTagName( tagname.length, isCloseTag || tagname in voidHtmlTags, true );
+							// || ( voidHtmlTags.has( tagname ) ) because opening void tags should also be treated as the closing tag.
+							state.tokenize = eatTagName( tagname.length, isCloseTag || voidHtmlTags.has( tagname ), true );
 							return makeLocalStyle( 'mw-htmltag-bracket', state );
 						}
 					}
@@ -733,7 +794,7 @@
 			stream.eatSpace();
 
 			if ( isHtmlTag ) {
-				state.tokenize = eatHtmlTagAttribute( name, isCloseTag && !( name in voidHtmlTags ) );
+				state.tokenize = eatHtmlTagAttribute( name, isCloseTag && !voidHtmlTags.has( name ) );
 				return makeLocalStyle( 'mw-htmltag-name', state );
 			} // it is the extension tag
 			if ( isCloseTag ) {
@@ -751,17 +812,17 @@
 			if ( stream.match( /^[^>/<{&~]+/ ) ) {
 				return makeLocalStyle( style, state );
 			} else if ( stream.eat( '>' ) ) {
-				if ( !( name in voidHtmlTags || isCloseTag ) ) {
+				if ( !( voidHtmlTags.has( name ) || isCloseTag ) ) {
 					state.InHtmlTag.push( name );
 				}
 				state.tokenize = state.stack.pop();
 				return makeLocalStyle( 'mw-htmltag-bracket', state );
 			} else if ( stream.match( '/>' ) ) {
-				if ( !( name in voidHtmlTags || isCloseTag ) ) { // HTML5 standard
+				if ( !( voidHtmlTags.has( name ) || isCloseTag ) ) { // HTML5 standard
 					state.InHtmlTag.push( name );
 				}
 				state.tokenize = state.stack.pop();
-				return makeLocalStyle( `mw-htmltag-bracket${ name in voidHtmlTags ? '' : ' error' }`, state );
+				return makeLocalStyle( `mw-htmltag-bracket${ voidHtmlTags.has( name ) ? '' : ' error' }`, state );
 			}
 			return eatWikiText( style )( stream, state );
 		};
@@ -872,20 +933,6 @@
 			},
 			token( stream, state ) {
 				return state.tokenize( stream, state ); // get token style
-			},
-			blankLine( state ) {
-				let ret;
-				if ( state.extName ) {
-					if ( state.extMode ) {
-						ret = '';
-						if ( state.extMode.blankLine ) {
-							ret = ` ${ state.extMode.blankLine( state.extState ) }`;
-						}
-						return `line-cm-mw-tag-${ state.extName }${ ret }`;
-					}
-					return 'line-cm-mw-exttag';
-				}
-				return '';
 			}
 		};
 	} );
@@ -918,6 +965,9 @@
 		return {
 			startState() {
 				return { nowiki: false };
+			},
+			copyState( state ) {
+				return { nowiki: state.nowiki };
 			},
 			token: eatPre
 		};
