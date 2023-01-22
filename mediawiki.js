@@ -314,9 +314,10 @@
 						}
 						return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 					} else if ( tmp === 2 ) { // Check on double underscore Magic Word
-						name = stream.match( /^([^\s>}[\]<{'|&:~]+?)__/u ); // The same as the end of function except '_' inside and with '__' at the end of string
-						if ( name && name[ 0 ] ) {
-							if ( `__${ name[ 0 ].toLowerCase() }` in mwConfig.doubleUnderscore[ 0 ] || `__${ name[ 0 ] }` in mwConfig.doubleUnderscore[ 1 ] ) {
+						name = stream.match( /^\w+__/ ); // The same as the end of function except '_' inside and with '__' at the end of string
+						if ( name ) {
+							const behavior = `__${ name[ 0 ] }`;
+							if ( behavior.toLowerCase() in mwConfig.doubleUnderscore[ 0 ] || behavior in mwConfig.doubleUnderscore[ 1 ] ) {
 								return 'mw-doubleUnderscore';
 							} else if ( !stream.eol() ) {
 								stream.backUp( 2 ); // Two underscore symbols at the end can be begining of other double undescored Magic Word
