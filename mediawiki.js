@@ -326,10 +326,8 @@
 						}
 					}
 			}
-			if ( /[^\x20-\x2F\x3A-\x40\x5B-\x5E\x60\x7B-\x8F\xA0]/u.test( ch ) ) { // \w and non-ascii unicode
-				stream.match( /^[^\x20-\x2F\x3A-\x40\x5B-\x60\x7B-\x8F\xA0]+/u ); // except '_'
-			} else { // ascii except /[\w>}[\]<{'|&:~]/ and \u00a0
-				stream.match( /^[\x20-\x25\x28-\x2F\x3B\x3F\x40\x5C\x5E\x60\x7F-\x8F\xA0]+/u );
+			if ( /[\p{L}\d_]/u.test( ch ) || !/[a-z]/i.test( stream.peek() ) ) {
+				stream.match( /^.*?(?=[&'[{<~]|__|[^\p{L}\d_][a-z])/iu );
 			}
 			return makeStyle( style, state );
 		};
