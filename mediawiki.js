@@ -120,16 +120,17 @@
 			var ch, tmp, mt, name, isCloseTag, tagname,
 				sol = stream.sol();
 
+			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
+				state.stack.push( state.tokenize );
+				state.tokenize = eatFreeExternalLink;
+				return makeStyle( 'mw-free-extlink-protocol', state );
+			}
+
+			ch = stream.next();
 			if ( sol ) {
-				if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
-					state.stack.push( state.tokenize );
-					state.tokenize = eatFreeExternalLink;
-					return makeLocalStyle( 'mw-free-extlink-protocol', state );
-				}
-				ch = stream.next();
 				switch ( ch ) {
 					case '-':
-						if ( stream.match( /^----*/ ) ) {
+						if ( stream.match( /^-{3,}/ ) ) {
 							return 'mw-hr';
 						}
 						break;
@@ -184,8 +185,6 @@
 							return 'mw-table-bracket';
 						}
 				}
-			} else {
-				ch = stream.next();
 			}
 
 			switch ( ch ) {
@@ -317,14 +316,6 @@
 							return makeStyle( style, state ); // Optimization: skip regex function at the end for EOL and backuped symbols
 						}
 					}
-					break;
-				default:
-					stream.backUp( 1 ); // highlight free external links, bug T108448
-					if ( stream.match( urlProtocols, false ) && !stream.match( '//' ) ) { // highlight free external links, bug T108448
-						state.stack.push( state.tokenize );
-						return eatFreeExternalLinkProtocol( stream, state );
-					}
-					stream.next();
 			}
 			if ( /[^\x20-\x2f\x3a-\x40\x5b-\x5e\x60\x7b-\x8f\u00a0]/.test( ch ) ) { // \w and non-ascii unicode
 				stream.match( /^[^\x20-\x2f\x3a-\x40\x5b-\x60\x7b-\x8f\u00a0]+/ ); // except '_'
@@ -338,24 +329,42 @@
 	function eatFreeExternalLink( stream, state ) {
 		if ( stream.eol() ) {
 			// @todo error message
-		} else if ( stream.match( /^[^\s\u00a0{[\]<>~).,']*/ ) ) {
-			if ( stream.peek() === '~' ) {
-				if ( !stream.match( /^~{3,}/, false ) ) {
-					stream.match( /^~*/ );
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.peek() === '{' ) {
-				if ( !stream.match( /^\{\{/, false ) ) {
-					stream.next();
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.peek() === '\'' ) {
-				if ( !stream.match( '\'\'', false ) ) {
-					stream.next();
-					return makeStyle( 'mw-free-extlink', state );
-				}
-			} else if ( stream.match( /^[).,]+(?=[^\s\u00a0{[\]<>~).,])/ ) ) {
-				return makeStyle( 'mw-free-extlink', state );
+		} else if ( stream.match( /^[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+/u ) ) {
+			return makeStyle( 'mw-free-extlink', state );
+		} else {
+			const ch = stream.peek();
+			switch (ch) {
+				case '~':
+					if ( !stream.match( '~~~', false ) ) {
+						stream.match( /^~+/ );
+						return makeStyle( 'mw-free-extlink', state );
+					}
+					break;
+				case '{':
+					if ( !stream.match( '{{', false ) ) {
+						stream.next();
+						return makeStyle( 'mw-free-extlink', state );
+					}
+					break;
+				case '\'':
+					if ( !stream.match( '\'\'', false ) ) {
+						stream.next();
+						return makeStyle( 'mw-free-extlink', state );
+					}
+					break;
+				case ')':
+				case ',':
+				case ';':
+				case '.':
+				case ':':
+				case '!':
+				case '?':
+					if (stream.match( /^[),;.:!?]+[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+/u )
+						|| stream.match( /^[),;.:!?]+~{1,2}(?!~)/ )
+						|| stream.match( /^[),;.:!?]+\{(?!\{)/ ) || stream.match( /^[),;.:!?]+'(?!')/ )
+					) {
+						return makeStyle( 'mw-free-extlink', state );
+					}
 			}
 		}
 		state.tokenize = state.stack.pop();
@@ -364,7 +373,7 @@
 
 	function eatSectionHeader( count ) {
 		return function ( stream, state ) {
-			if ( stream.match( /^[^&<[{~_]+/ ) ) {
+			if ( stream.match( /^[^&<[{~_']+/ ) ) {
 				if ( stream.eol() ) {
 					stream.backUp( count );
 					state.tokenize = eatEnd( 'mw-section-header' );
@@ -855,12 +864,6 @@
 		};
 	}
 
-	function eatFreeExternalLinkProtocol( stream, state ) {
-		stream.match( urlProtocols );
-		state.tokenize = eatFreeExternalLink;
-		return makeStyle( 'mw-free-extlink-protocol', state );
-	}
-
 	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
 		mwConfig = config.mwConfig;
 		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
@@ -869,7 +872,7 @@
 			startState: function () {
 				return {
 					tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
-					extState: false, nTemplate: 0, nLink: 0, nExt: 0
+					extState: false, nTemplate: 0, nLink: 0, nExt: 0, isBold: false,
 				};
 			},
 			copyState: function ( state ) {
@@ -882,7 +885,8 @@
 					extState: state.extMode !== false && CodeMirror.copyState( state.extMode, state.extState ),
 					nTemplate: state.nTemplate,
 					nLink: state.nLink,
-					nExt: state.nExt
+					nExt: state.nExt,
+					isBold: false
 				};
 			},
 			token: function ( stream, state ) {
@@ -935,7 +939,7 @@
 	CodeMirror.defineMode( 'mw-tag-pre', function ( /* config, parserConfig */ ) {
 		return {
 			startState: function () {
-				return {};
+				return { nowiki: false };
 			},
 			token: eatPre
 		};
