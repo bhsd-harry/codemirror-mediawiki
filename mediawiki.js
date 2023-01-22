@@ -67,8 +67,8 @@
 	 */
 	function eatMnemonic( stream, style ) {
 		// no dangerous character should appear in results
-		var entity = stream.match( /^(?:#x[a-fA-F\d]+|#\d+|[a-zA-Z\d]+)/ );
-		if ( entity && stream.eat( ';' ) && isEntity( '&' + entity[ 0 ] + ';' ) ) {
+		var entity = stream.match( /^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/i );
+		if ( entity && isEntity( '&' + entity[ 0 ] ) ) {
 			return style + ' mw-mnemonic';
 		}
 		return style;
@@ -105,19 +105,14 @@
 	 */
 	function eatChar( char, style ) {
 		return function ( stream, state ) {
-			state.tokenize = state.stack.pop();
 			stream.eat( char );
+			state.tokenize = state.stack.pop();
 			return makeLocalStyle( style, state );
 		};
 	}
 
-	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
-		mwConfig = config.mwConfig;
-		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
-		var isBold;
-
 		function makeStyle( style, state, endGround ) {
-			return makeLocalStyle( style + ( isBold ? ' strong' : ' ' ), state, endGround );
+			return makeLocalStyle( style + ( state.isBold ? ' strong' : '' ), state, endGround );
 		}
 
 		function eatSectionHeader( count ) {
@@ -677,11 +672,11 @@
 						case '#':
 							mt = stream.match( /^[*#;:]*/ );
 							if ( /;/.test( mt[ 0 ] ) ) {
-								isBold = true;
+								state.isBold = true;
 							}
 							return 'mw-list';
 						case ';':
-							isBold = true;
+							state.isBold = true;
 							stream.match( /^[*#;:]*/ );
 							return 'mw-list';
 						case ':':
@@ -691,7 +686,7 @@
 							}
 							mt = stream.match( /^[*#;:]*/ );
 							if ( /;/.test( mt[ 0 ] ) ) {
-								isBold = true;
+								state.isBold = true;
 							}
 							return 'mw-list';
 						case ' ':
@@ -866,6 +861,10 @@
 			};
 		}
 
+	CodeMirror.defineMode( 'mediawiki', function ( config /* , parserConfig */ ) {
+		mwConfig = config.mwConfig;
+		urlProtocols = new RegExp( '^(?:' + mwConfig.urlProtocols + ')', 'i' );
+
 		return {
 			startState: function () {
 				return {
@@ -888,7 +887,7 @@
 			},
 			token: function ( stream, state ) {
 				if ( stream.sol() ) { // reset bold status in every new line
-					isBold = false;
+					state.isBold = false;
 				}
 				return state.tokenize( stream, state ); // get token style
 			},
