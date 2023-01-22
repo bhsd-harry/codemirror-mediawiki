@@ -120,9 +120,12 @@
 			let tmp, mt, name, isCloseTag, tagname;
 			const sol = stream.sol();
 
-			if ( !stream.match( '//', false ) && stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
+			if ( stream.match( '//' ) ) {
+				return makeStyle( style, state );
+			} else if ( stream.match( urlProtocols ) ) { // highlight free external links, bug T108448
 				state.stack.push( state.tokenize );
 				state.tokenize = eatFreeExternalLink;
+				state.lpar = false;
 				return makeStyle( 'mw-free-extlink-protocol', state );
 			}
 
@@ -327,46 +330,55 @@
 	}
 
 	function eatFreeExternalLink( stream, state ) {
+		let mt;
 		if ( stream.eol() ) {
 			// @todo error message
-		} else if ( stream.match( /^[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+/u ) ) {
+		} else if ( mt = stream.match( /^[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+/u ) ) {
+			state.lpar = state.lpar || mt[ 0 ].includes( '(' );
 			return makeStyle( 'mw-free-extlink', state );
 		} else {
-			const ch = stream.peek();
+			const ch = stream.next(),
+				next = stream.peek();
 			switch ( ch ) {
-				case '~':
-					if ( !stream.match( '~~~', false ) ) {
-						stream.match( /^~+/ );
+				case '~': {
+					if ( next !== '~' ) {
 						return makeStyle( 'mw-free-extlink', state );
 					}
+					stream.next();
+					if ( stream.peek() !== '~' ) {
+						return makeStyle( 'mw-free-extlink', state );
+					}
+					stream.backUp( 1 );
 					break;
+				}
 				case '{':
-					if ( !stream.match( '{{', false ) ) {
-						stream.next();
+					if ( next !== '{' ) {
 						return makeStyle( 'mw-free-extlink', state );
 					}
 					break;
 				case '\'':
-					if ( !stream.match( '\'\'', false ) ) {
-						stream.next();
+					if ( next !== '\'' ) {
 						return makeStyle( 'mw-free-extlink', state );
 					}
 					break;
 				case ')':
+					if ( state.lpar ) {
+						return makeStyle( 'mw-free-extlink', state );
+					}
+					// fall through
 				case ',':
 				case ';':
 				case '.':
 				case ':':
 				case '!':
 				case '?':
-					if ( stream.match( /^[),;.:!?]+[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+/u )
-						|| stream.match( /^[),;.:!?]+~{1,2}(?!~)/ )
-						|| stream.match( /^[),;.:!?]+\{(?!\{)/ ) || stream.match( /^[),;.:!?]+'(?!')/ )
-					) {
+					if ( mt = stream.match( /^[),;.:!?]*(?:[^[\]<>"\0-\x1F\x7F\p{Zs}\uFFFD~{'),;.:!?]+|~{1,2}(?!~)|\{(?!\{)|'(?!'))/u ) ) {
+						state.lpar = state.lpar || mt[ 0 ].includes( '(' );
 						return makeStyle( 'mw-free-extlink', state );
 					}
 			}
 		}
+		stream.backUp( 1 );
 		state.tokenize = state.stack.pop();
 		return makeStyle( 'mw-free-extlink', state );
 	}
@@ -871,7 +883,7 @@
 			startState() {
 				return {
 					tokenize: eatWikiText( '' ), stack: [], InHtmlTag: [], extName: false, extMode: false,
-					extState: false, nTemplate: 0, nLink: 0, nExt: 0, isBold: false
+					extState: false, nTemplate: 0, nLink: 0, nExt: 0, isBold: false, lpar: false
 				};
 			},
 			copyState( state ) {
@@ -885,7 +897,8 @@
 					nTemplate: state.nTemplate,
 					nLink: state.nLink,
 					nExt: state.nExt,
-					isBold: false
+					isBold: false,
+					lpar: false
 				};
 			},
 			token( stream, state ) {

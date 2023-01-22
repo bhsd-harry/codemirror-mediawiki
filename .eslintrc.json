@@ -21,10 +21,7 @@
 	},
 	"rules": {
 		"array-callback-return": 2,
-		"no-cond-assign": [
-			2,
-			"always"
-		],
+		"no-cond-assign": 0,
 		"no-constant-binary-expression": 2,
 		"no-control-regex": 0,
 		"no-empty-character-class": 0,
