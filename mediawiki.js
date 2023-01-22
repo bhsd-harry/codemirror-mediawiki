@@ -452,7 +452,7 @@
 	}
 
 	function inTableCaption( stream, state ) {
-		if ( stream.sol() && stream.match( /^\s*[|!]/u, false ) ) {
+		if ( stream.sol() && stream.match( /^\s*(?:[|!]|\{\{\s*![!)-]?\s*\}\})/u, false ) ) {
 			state.tokenize = inTable;
 			return inTable( stream, state );
 		}
@@ -462,16 +462,16 @@
 	function eatTableRow( expectAttr, isHead ) {
 		return function ( stream, state ) {
 			if ( stream.sol() ) {
-				if ( stream.match( /^\s*[|!]/u, false ) ) {
+				if ( stream.match( /^\s*(?:[|!]|\{\{\s*![!)-]?\s*\}\})/u, false ) ) {
 					state.tokenize = inTable;
 					return inTable( stream, state );
 				}
-			} else if ( stream.match( /^[^'|{[<&~!]+/ ) ) {
+			} else if ( stream.match( /^[^'{[<&~!|]+/ ) ) {
 				return makeLocalStyle( isHead ? 'strong' : '', state );
-			} else if ( stream.match( '||' ) || isHead && stream.match( '!!' ) ) {
+			} else if ( stream.match( /^(?:(?:\||\{\{\s*!\s*\}\}){2}|\{\{\s*!!\s*\}\})/u ) || isHead && stream.match( '!!' ) ) {
 				state.tokenize = eatTableRow( true, isHead );
 				return makeLocalStyle( 'mw-table-delimiter', state );
-			} else if ( expectAttr && stream.eat( '|' ) ) {
+			} else if ( expectAttr && stream.match( /^(?:\||\{\{\s*!\s*\}\})/u ) ) {
 				state.tokenize = eatTableRow( false, isHead );
 				return makeLocalStyle( 'mw-table-delimiter2', state );
 			}
