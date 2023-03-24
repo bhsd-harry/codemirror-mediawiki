@@ -416,6 +416,9 @@
 			if ( stream.match( /^\{\{\s*!-\s*\}\}-*\s*/u ) ) {
 				state.tokenize = inTableDefinition;
 				return makeLocalStyle( 'mw-table-delimiter', state );
+			} else if ( stream.match( /^\{\{\s*!\)\s*\}\}/u ) ) {
+				state.tokenize = state.stack.pop();
+				return makeLocalStyle( 'mw-table-bracket', state );
 			} else if ( stream.match( /^(?:\||\{\{\s*!\s*\}\})/u ) ) {
 				if ( stream.match( /^-+\s*/u ) ) {
 					state.tokenize = inTableDefinition;
