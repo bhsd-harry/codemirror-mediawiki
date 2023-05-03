@@ -319,7 +319,7 @@
 					}
 			}
 			if ( /[\p{L}\d_]/u.test( ch ) || !/[a-z]/i.test( stream.peek() ) ) {
-				stream.match( /^.*?(?=[&'[{<~]|__|[^\p{L}\d_][a-z])/iu );
+				stream.match( /^.*?(?=[&'[\]{}<>~"/|=!-]|__|[^\p{L}\d_][a-z])/iu );
 			}
 			return makeStyle( style, state );
 		};
