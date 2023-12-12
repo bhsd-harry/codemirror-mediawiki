@@ -39,10 +39,6 @@ export default class CodeMirrorWikiEditor extends CodeMirror {
 			this.langExtension,
 			bracketMatching(),
 			history(),
-			// See also the default attributes at contentAttributesExtension() in the parent class.
-			EditorView.contentAttributes.of( {
-				spellcheck: 'true'
-			} ),
 			EditorView.domEventHandlers( {
 				blur: () => this.textarea.blur(),
 				focus: () => this.textarea.focus()

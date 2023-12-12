@@ -12,10 +12,10 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
-		"dist/main.js",
+		"dist/main.min.js",
 		"mediawiki.css"
 	],
-	"browser": "dist/main.js",
+	"browser": "dist/main.min.js",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
