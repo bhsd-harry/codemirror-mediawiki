@@ -8,7 +8,7 @@ module.exports = {
 	entry: './src/codemirror.wikieditor.mediawiki.js',
 	output: {
 		path: path.resolve( __dirname, 'dist' ),
-		filename: 'main.js'
+		filename: 'main.min.js'
 	},
 	plugins: [],
 	module: {
