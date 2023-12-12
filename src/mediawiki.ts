@@ -1229,10 +1229,8 @@ class CodeMirrorModeMediaWiki {
 /**
  * Gets a LanguageSupport instance for the MediaWiki mode.
  */
-export const mediaWikiLang = ( config: MwConfig ): LanguageSupport => {
-	const parser = new CodeMirrorModeMediaWiki(
-		config
-	).mediawiki;
+export const mediawiki = ( config: MwConfig ): LanguageSupport => {
+	const parser = new CodeMirrorModeMediaWiki( config ).mediawiki;
 	const lang = StreamLanguage.define( parser );
 	const highlighter = syntaxHighlighting( modeConfig.getHighlightStyle( parser ) as Highlighter );
 	return new LanguageSupport( lang, highlighter );

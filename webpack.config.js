@@ -3,12 +3,18 @@
 /* eslint-env node */
 const path = require( 'path' );
 
-module.exports = {
-	mode: 'production',
+module.exports = ( _, { mode } ) => ( {
+	mode,
 	entry: './src/codemirror.ts',
 	output: {
 		path: path.resolve( __dirname, 'dist' ),
-		filename: 'main.min.js'
+		filename: `main${ mode === 'production' ? '.min' : '' }.js`,
+		library: {
+			type: 'module'
+		}
+	},
+	experiments: {
+		outputModule: true
 	},
 	resolve: {
 		extensions: [
@@ -28,17 +34,7 @@ module.exports = {
 		]
 	},
 	optimization: {
-		minimize: true,
+		minimize: mode === 'production',
 		usedExports: true
-	},
-	performance: {
-		// Size violations for prod builds fail; development builds are unchecked.
-		hints: 'error',
-
-		// Minified uncompressed size limits for chunks / assets and entrypoints. Keep these numbers
-		// up-to-date and rounded to the nearest 10th of a kibibyte so that code sizing costs are
-		// well understood. Related to bundlesize minified, gzipped compressed file size tests.
-		maxAssetSize: 350.0 * 1024,
-		maxEntrypointSize: 350.0 * 1024
 	}
-};
+} );

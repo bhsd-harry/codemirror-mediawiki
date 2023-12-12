@@ -1,5 +1,5 @@
-import { Tag, tags as importedTags } from '@lezer/highlight';
 import { HighlightStyle } from '@codemirror/language';
+import { Tag, tags as importedTags } from '@lezer/highlight';
 import type { StreamParser } from '@codemirror/language';
 
 const tags: Record<string, Tag | ( ( tag: Tag ) => Tag )> = importedTags;

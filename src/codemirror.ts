@@ -1,18 +1,32 @@
-import { EditorState } from '@codemirror/state';
+import { Compartment } from '@codemirror/state';
 import { EditorView, lineNumbers, keymap } from '@codemirror/view';
+import { syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { javascript } from '@codemirror/lang-javascript';
+import { css } from '@codemirror/lang-css';
+import { mediawiki } from './mediawiki';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
-import { mediaWikiLang } from './mediawiki';
-import type { MwConfig } from './mediawiki';
+import type { LanguageSupport } from '@codemirror/language';
+import type { Highlighter } from '@lezer/highlight';
 
-class CodeMirror6 {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const languages: Record<string, ( config?: any ) => LanguageSupport> = {
+	mediawiki,
+	javascript,
+	css
+};
+
+export class CodeMirror6 {
 	declare textarea: HTMLTextAreaElement;
-	declare state: EditorState;
+	declare language: Compartment;
 	declare view: EditorView;
 
-	constructor( textarea: HTMLTextAreaElement, config: MwConfig ) {
+	constructor( textarea: HTMLTextAreaElement, lang: string, config?: unknown ) {
+		this.textarea = textarea;
+		this.language = new Compartment();
 		const extensions = [
-			mediaWikiLang( config ),
+			this.language.of( languages[ lang ]!( config ) ),
+			syntaxHighlighting( defaultHighlightStyle as Highlighter ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
 				dir: textarea.dir,
@@ -27,13 +41,9 @@ class CodeMirror6 {
 				...historyKeymap
 			] )
 		];
-		this.textarea = textarea;
-		this.state = EditorState.create( {
-			doc: textarea.value,
-			extensions
-		} );
 		this.view = new EditorView( {
-			state: this.state,
+			extensions,
+			doc: textarea.value,
 			parent: textarea.parentElement!
 		} );
 		textarea.style.display = 'none';
@@ -43,6 +53,10 @@ class CodeMirror6 {
 			} );
 		}
 	}
-}
 
-Object.assign( self, CodeMirror6 );
+	setLanguage( lang: string, config?: unknown ): void {
+		this.view.dispatch( {
+			effects: this.language.reconfigure( languages[ lang ]!( config ) )
+		} );
+	}
+}
