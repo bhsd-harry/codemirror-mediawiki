@@ -1,6 +1,5 @@
-*~
-*.swp
-.DS_Store
-.vscode/
+/.vscode/
+/dist/
+.eslintcache
 test.txt
 processed.txt
