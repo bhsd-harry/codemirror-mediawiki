@@ -12,7 +12,8 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
-		"dist/main.js"
+		"dist/main.js",
+		"mediawiki.css"
 	],
 	"browser": "dist/main.js",
 	"repository": {
