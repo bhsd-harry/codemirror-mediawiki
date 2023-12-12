@@ -3,7 +3,7 @@ import { EditorSelection } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
-import { bracketMatching, LanguageSupport } from '@codemirror/language';
+import { LanguageSupport } from '@codemirror/language';
 
 /**
  * @class CodeMirrorWikiEditor
@@ -37,7 +37,6 @@ export default class CodeMirrorWikiEditor extends CodeMirror {
 		const extensions = [
 			...this.defaultExtensions,
 			this.langExtension,
-			bracketMatching(),
 			history(),
 			EditorView.domEventHandlers( {
 				blur: () => this.textarea.blur(),
