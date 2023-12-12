@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"build": "webpack",
-		"test": "eslint --cache ."
+		"test": "tsc --noEmit && eslint --cache ."
 	},
 	"engines": {
 		"node": "20.9.0"

@@ -1,0 +1,22 @@
+{
+	"include": [
+		"src/*.js",
+		"src/*.ts"
+	],
+	"compilerOptions": {
+		"target": "ES2018",
+		"module": "CommonJS",
+		"alwaysStrict": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitAny": true,
+		"noImplicitOverride": true,
+		"noImplicitThis": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"noUncheckedIndexedAccess": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"useUnknownInCatchVariables": true,
+		"skipLibCheck": true
+	}
+}

@@ -5,16 +5,21 @@ const path = require( 'path' );
 
 module.exports = {
 	mode: 'production',
-	entry: './src/codemirror.wikieditor.mediawiki.js',
+	entry: './src/codemirror.ts',
 	output: {
 		path: path.resolve( __dirname, 'dist' ),
 		filename: 'main.min.js'
+	},
+	resolve: {
+		extensions: [
+			'.ts'
+		]
 	},
 	plugins: [],
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.ts$/,
 				loader: 'esbuild-loader',
 				options: {
 					target: 'es2018'
