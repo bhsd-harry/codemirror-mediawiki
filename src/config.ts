@@ -1,3 +1,9 @@
+/**
+ * @author MusikAnimal and others
+ * @license GPL-2.0-or-later
+ * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ */
+
 import { HighlightStyle } from '@codemirror/language';
 import { Tag, tags as importedTags } from '@lezer/highlight';
 import type { StreamParser } from '@codemirror/language';

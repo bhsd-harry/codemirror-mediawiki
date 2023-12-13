@@ -1,3 +1,9 @@
+/**
+ * @author pastakhov and others
+ * @license GPL-2.0-or-later
+ * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ */
+
 /* section title */
 .cm-mw-section-1,
 .cm-mw-section-1 ~ * {

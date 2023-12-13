@@ -1,3 +1,9 @@
+/**
+ * @author pastakhov, MusikAnimal and others
+ * @license GPL-2.0-or-later
+ * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ */
+
 import { LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { modeConfig } from './config';
 import * as plugins from './plugins';
