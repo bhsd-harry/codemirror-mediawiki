@@ -4,7 +4,7 @@ import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, StreamLanguag
 import { javascript } from '@codemirror/legacy-modes/mode/javascript';
 import { css } from '@codemirror/legacy-modes/mode/css';
 import { mediawiki, html } from './mediawiki';
-import { defaultKeymap, historyKeymap } from '@codemirror/commands';
+import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
 import type { Extension } from '@codemirror/state';
@@ -45,6 +45,7 @@ export class CodeMirror6 {
 			} ),
 			lineNumbers(),
 			EditorView.lineWrapping,
+			history(),
 			highlightSpecialChars(),
 			highlightActiveLine(),
 			indentOnInput(),
