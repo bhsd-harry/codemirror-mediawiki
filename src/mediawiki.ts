@@ -1,5 +1,6 @@
 import { LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { modeConfig } from './config';
+import * as plugins from './plugins';
 import type { StreamParser, StringStream } from '@codemirror/language';
 import type { Highlighter } from '@lezer/highlight';
 
@@ -1243,6 +1244,17 @@ class CodeMirrorModeMediaWiki {
 			token: this.eatNowiki( modeConfig.tags.nowiki )
 		};
 	}
+}
+
+for ( const [
+	language,
+	parser
+] of Object.entries( plugins ) ) {
+	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
+		get() {
+			return parser;
+		}
+	} );
 }
 
 /**
