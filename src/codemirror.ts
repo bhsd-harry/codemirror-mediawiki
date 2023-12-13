@@ -13,6 +13,7 @@ import { mediawiki, html } from './mediawiki';
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
+import type { ViewPlugin } from '@codemirror/view';
 import type { Extension } from '@codemirror/state';
 import type { LintSource } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
@@ -102,6 +103,18 @@ export class CodeMirror6 {
 				this.lintGutter.reconfigure( lintSource ? lintGutter() : [] )
 			]
 		} );
+	}
+
+	update(): void {
+		const extension = this.linter.get( this.view.state ) as [ unknown, ViewPlugin<{
+			set: boolean;
+			force(): void;
+		}> ] | undefined;
+		if ( extension ) {
+			const plugin = this.view.plugin( extension[ 1 ] )!;
+			plugin.set = true;
+			plugin.force();
+		}
 	}
 
 	save(): void {
