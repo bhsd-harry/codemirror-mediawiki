@@ -75,7 +75,7 @@ class CodeMirrorModeMediaWiki {
 			ok = stream.eatWhile( /[\w.\-:]/ ) && stream.eat( ';' );
 		}
 		if ( ok ) {
-			mnemonicStyle += ' ' + modeConfig.tags.mnemonic;
+			mnemonicStyle += ` ${ modeConfig.tags.mnemonic }`;
 			return mnemonicStyle;
 		}
 		return style;
@@ -83,10 +83,10 @@ class CodeMirrorModeMediaWiki {
 
 	makeStyle( style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' ): string {
 		if ( this.isBold ) {
-			style += ' ' + modeConfig.tags.strong;
+			style += ` ${ modeConfig.tags.strong }`;
 		}
 		if ( this.isItalic ) {
-			style += ' ' + modeConfig.tags.em;
+			style += ` ${ modeConfig.tags.em }`;
 		}
 		return this.makeLocalStyle( style, state, endGround );
 	}
@@ -474,10 +474,10 @@ class CodeMirrorModeMediaWiki {
 			}
 			tmpstyle = modeConfig.tags.linkText;
 			if ( linkIsBold ) {
-				tmpstyle += ' ' + modeConfig.tags.strong;
+				tmpstyle += ` ${ modeConfig.tags.strong }`;
 			}
 			if ( linkIsItalic ) {
-				tmpstyle += ' ' + modeConfig.tags.em;
+				tmpstyle += ` ${ modeConfig.tags.em }`;
 			}
 			if ( stream.match( /^[^'\]{&~<]+/ ) ) {
 				return this.makeStyle( tmpstyle, state );
@@ -511,7 +511,7 @@ class CodeMirrorModeMediaWiki {
 			} else {
 				state.tokenize = this.eatExtTagAttribute( name );
 			}
-			return this.makeLocalStyle( 'mw-exttag-name mw-ext-' + name, state );
+			return this.makeLocalStyle( `mw-exttag-name mw-ext-${ name }`, state );
 		};
 	}
 
@@ -551,13 +551,13 @@ class CodeMirrorModeMediaWiki {
 					// state.extState = CodeMirror.startState( state.extMode );
 				}
 				state.tokenize = this.eatExtTagArea( name );
-				return this.makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+				return this.makeLocalStyle( `mw-exttag-bracket mw-ext-${ name }`, state );
 			}
 			if ( stream.match( '/>' ) ) {
 				state.tokenize = state.stack.pop()!;
-				return this.makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+				return this.makeLocalStyle( `mw-exttag-bracket mw-ext-${ name }`, state );
 			}
-			return this.eatWikiText( 'mw-exttag-attribute mw-ext-' + name, '' )( stream, state );
+			return this.eatWikiText( `mw-exttag-attribute mw-ext-${ name }`, '' )( stream, state );
 		};
 	}
 
@@ -595,7 +595,7 @@ class CodeMirrorModeMediaWiki {
 			stream.next(); // eat <
 			stream.next(); // eat /
 			state.tokenize = this.eatTagName( name.length, true, false );
-			return this.makeLocalStyle( 'mw-exttag-bracket mw-ext-' + name, state );
+			return this.makeLocalStyle( `mw-exttag-bracket mw-ext-${ name }`, state );
 		};
 	}
 
@@ -609,7 +609,7 @@ class CodeMirrorModeMediaWiki {
 				ret = (
 					origString === false && stream.sol() ? 'line-cm-mw-tag-' : 'mw-tag-'
 				) + state.extName;
-				ret += ' ' + state.extMode.token( stream, state.extState as State );
+				ret += ` ${ state.extMode.token( stream, state.extState as State ) }`;
 			}
 			if ( stream.eol() ) {
 				if ( origString !== false ) {
@@ -776,7 +776,7 @@ class CodeMirrorModeMediaWiki {
 							stream.backUp( tmp[ 2 ]!.length );
 							state.stack.push( state.tokenize );
 							state.tokenize = this.eatSectionHeader( tmp[ 3 ]!.length );
-							return modeConfig.tags.sectionHeader + ' '
+							return `${ modeConfig.tags.sectionHeader } ${
 
 								/**
 								 * Tokens used here include:
@@ -787,9 +787,9 @@ class CodeMirrorModeMediaWiki {
 								 * - cm-mw-section-5
 								 * - cm-mw-section-6
 								 */
-								+ ( modeConfig.tags as Record<string, string> )[
+								( modeConfig.tags as Record<string, string> )[
 									`sectionHeader${ tmp[ 1 ]!.length + 1 }`
-								];
+								] }`;
 						}
 						break;
 					case '*':
@@ -943,7 +943,7 @@ class CodeMirrorModeMediaWiki {
 							stream.backUp( tagname.length );
 							state.stack.push( state.tokenize );
 							state.tokenize = this.eatTagName( tagname.length, isCloseTag, false );
-							return this.makeLocalStyle( 'mw-exttag-bracket mw-ext-' + tagname, state );
+							return this.makeLocalStyle( `mw-exttag-bracket mw-ext-${ tagname }`, state );
 						}
 						if ( tagname in modeConfig.permittedHtmlTags ) {
 							// Html tag
@@ -997,8 +997,8 @@ class CodeMirrorModeMediaWiki {
 						name = stream.match( /^([^\s>}[\]<{'|&:~]+?)__/ ) as RegExpMatchArray | false;
 						if ( name && name[ 0 ] ) {
 							if (
-								'__' + name[ 0 ].toLowerCase() in this.config.doubleUnderscore[ 0 ]
-								|| '__' + name[ 0 ] in this.config.doubleUnderscore[ 1 ]
+								`__${ name[ 0 ].toLowerCase() }` in this.config.doubleUnderscore[ 0 ]
+								|| `__${ name[ 0 ] }` in this.config.doubleUnderscore[ 1 ]
 							) {
 								return modeConfig.tags.doubleUnderscore;
 							}
