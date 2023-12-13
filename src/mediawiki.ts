@@ -1266,3 +1266,17 @@ export const mediawiki = ( config: MwConfig ): LanguageSupport => {
 	const highlighter = syntaxHighlighting( modeConfig.getHighlightStyle( parser ) as Highlighter );
 	return new LanguageSupport( lang, highlighter );
 };
+
+export const html = ( config: MwConfig ): LanguageSupport => mediawiki( {
+	...config,
+	tags: {
+		...config.tags,
+		script: true,
+		style: true
+	},
+	tagModes: {
+		...config.tagModes,
+		script: 'javascript',
+		style: 'css'
+	}
+} );

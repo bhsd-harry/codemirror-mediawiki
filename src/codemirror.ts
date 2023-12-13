@@ -3,7 +3,7 @@ import { EditorView, lineNumbers, keymap, highlightSpecialChars, highlightActive
 import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, StreamLanguage } from '@codemirror/language';
 import { javascript } from '@codemirror/legacy-modes/mode/javascript';
 import { css } from '@codemirror/legacy-modes/mode/css';
-import { mediawiki } from './mediawiki';
+import { mediawiki, html } from './mediawiki';
 import { defaultKeymap, historyKeymap } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
@@ -16,7 +16,8 @@ import type { Highlighter } from '@lezer/highlight';
 const languages: Record<string, ( config?: any ) => LanguageSupport | StreamLanguage<unknown>> = {
 	javascript: () => StreamLanguage.define( javascript ),
 	css: () => StreamLanguage.define( css ),
-	mediawiki
+	mediawiki,
+	html
 };
 const linters: Record<string, Extension> = {};
 
