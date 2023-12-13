@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.0.4",
+	"version": "2.0.5",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -23,7 +23,7 @@
 	"scripts": {
 		"start": "webpack --mode development",
 		"build": "rm -rf dist/; webpack --mode production",
-		"lint": "tsc --noEmit &&eslint --cache .",
+		"lint": "tsc --noEmit && eslint --cache .",
 		"test": "http-server -c-1 --cors"
 	},
 	"engines": {
