@@ -1,6 +1,12 @@
 import { Compartment } from '@codemirror/state';
 import { EditorView, lineNumbers, keymap, highlightSpecialChars, highlightActiveLine } from '@codemirror/view';
-import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, StreamLanguage } from '@codemirror/language';
+import {
+	syntaxHighlighting,
+	defaultHighlightStyle,
+	indentOnInput,
+	StreamLanguage,
+	LanguageSupport
+} from '@codemirror/language';
 import { javascript } from '@codemirror/legacy-modes/mode/javascript';
 import { css } from '@codemirror/legacy-modes/mode/css';
 import { mediawiki, html } from './mediawiki';
@@ -8,14 +14,14 @@ import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
 import type { Extension } from '@codemirror/state';
-import type { LanguageSupport } from '@codemirror/language';
 import type { LintSource } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
 
+const highlightExtension = syntaxHighlighting( defaultHighlightStyle as Highlighter );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const languages: Record<string, ( config?: any ) => LanguageSupport | StreamLanguage<unknown>> = {
-	javascript: () => StreamLanguage.define( javascript ),
-	css: () => StreamLanguage.define( css ),
+const languages: Record<string, ( config?: any ) => LanguageSupport> = {
+	javascript: () => new LanguageSupport( StreamLanguage.define( javascript ), highlightExtension ),
+	css: () => new LanguageSupport( StreamLanguage.define( css ), highlightExtension ),
 	mediawiki,
 	html
 };
@@ -37,7 +43,6 @@ export class CodeMirror6 {
 			this.language.of( languages[ lang ]!( config ) ),
 			this.linter.of( [] ),
 			this.lintGutter.of( [] ),
-			syntaxHighlighting( defaultHighlightStyle as Highlighter ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
 				dir: textarea.dir,
