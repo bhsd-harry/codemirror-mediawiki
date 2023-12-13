@@ -193,7 +193,7 @@ class CodeMirrorModeMediaWiki {
 	eatBlock( style: string, terminator: string, consumeLast = true ): Tokenizer {
 		return ( stream, state ) => {
 			if ( stream.skipTo( terminator ) ) {
-				if ( !consumeLast ) {
+				if ( consumeLast ) {
 					stream.match( terminator );
 				}
 				state.tokenize = state.stack.pop()!;
@@ -233,9 +233,9 @@ class CodeMirrorModeMediaWiki {
 					stream.backUp( count );
 					state.tokenize = this.eatBlock( modeConfig.tags.sectionHeader, '<!--', false );
 				}
-				return '';
+				return modeConfig.tags.section;
 			}
-			return this.eatWikiText( '', '' )( stream, state );
+			return this.eatWikiText( modeConfig.tags.section, '' )( stream, state );
 		};
 	}
 

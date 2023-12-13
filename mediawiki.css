@@ -1,3 +1,25 @@
+/* section title */
+.cm-mw-section-1,
+.cm-mw-section-1 ~ * {
+	font-size: 1.8em;
+	line-height: 1.2em;
+}
+.cm-mw-section-2,
+.cm-mw-section-2 ~ * {
+	font-size: 1.5em;
+	line-height: 1.2em;
+}
+.cm-mw-section-3 ~ *,
+.cm-mw-section-4 ~ *,
+.cm-mw-section-5 ~ *,
+.cm-mw-section-6 ~ * {
+	font-weight: bold;
+}
+.cm-mw-section-header {
+	color: #08f;
+	font-weight: normal;
+}
+
 .cm-mw-error {
 	color: #f00;
 }
@@ -29,26 +51,6 @@
 .cm-mw-apostrophes-bold,
 .cm-mw-apostrophes-italic {
 	color: #08f;
-}
-.cm-mw-strong {
-	font-weight: bold;
-}
-.cm-mw-em {
-	font-style: italic;
-}
-
-/* section title */
-.cm-mw-section-1,
-.cm-mw-section-2,
-.cm-mw-section-3,
-.cm-mw-section-4,
-.cm-mw-section-5,
-.cm-mw-section-6 {
-	font-weight: bold;
-}
-.cm-mw-section-header {
-	color: #08f;
-	font-weight: normal;
 }
 
 /* template */
@@ -90,20 +92,6 @@
 	font-weight: bold;
 }
 
-/* tag */
-.cm-mw-exttag-name,
-.cm-mw-htmltag-name {
-	color: #290;
-	font-weight: bold;
-}
-.cm-mw-exttag-bracket,
-.cm-mw-exttag-attribute,
-.cm-mw-htmltag-bracket,
-.cm-mw-htmltag-attribute {
-	color: #290;
-	font-weight: normal;
-}
-
 /* link */
 .cm-mw-link-pagename,
 .cm-mw-link-bracket,
@@ -123,6 +111,27 @@
 .cm-mw-extlink-bracket {
 	color: #36c;
 	font-weight: bold;
+}
+
+.cm-mw-strong {
+	font-weight: bold;
+}
+.cm-mw-em {
+	font-style: italic;
+}
+
+/* tag */
+.cm-mw-exttag-name,
+.cm-mw-htmltag-name {
+	color: #290;
+	font-weight: bold;
+}
+.cm-mw-exttag-bracket,
+.cm-mw-exttag-attribute,
+.cm-mw-htmltag-bracket,
+.cm-mw-htmltag-attribute {
+	color: #290;
+	font-weight: normal;
 }
 
 /* table */

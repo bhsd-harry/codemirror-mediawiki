@@ -157,6 +157,7 @@ class Config {
 			templateVariable: 'atom',
 			templateVariableBracket: 'brace',
 			templateVariableName: 'variableName',
+			section: 'mw-section',
 			em: 'mw-em',
 			error: 'mw-error',
 			extTag: 'mw-exttag',
@@ -193,6 +194,7 @@ class Config {
 	 */
 	get tokenTable(): Record<string, Tag> {
 		return {
+			[ this.tags.section ]: Tag.define(),
 			[ this.tags.em ]: Tag.define(),
 			[ this.tags.error ]: Tag.define(),
 			[ this.tags.extTag ]: Tag.define(),
@@ -413,6 +415,10 @@ class Config {
 			 * Custom tags.
 			 * IMPORTANT: These need to reference the CodeMirrorModeMediaWiki context.
 			 */
+			{
+				tag: context.tokenTable![ this.tags.section ]!,
+				class: 'cm-mw-section'
+			},
 			{
 				tag: context.tokenTable![ this.tags.em ]!,
 				class: 'cm-mw-em'
