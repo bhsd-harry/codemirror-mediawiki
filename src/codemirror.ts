@@ -19,7 +19,8 @@ import type { Highlighter } from '@lezer/highlight';
 
 const highlightExtension = syntaxHighlighting( defaultHighlightStyle as Highlighter );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const languages: Record<string, ( config?: any ) => LanguageSupport> = {
+const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
+	plain: () => [],
 	javascript: () => new LanguageSupport( StreamLanguage.define( javascript ), highlightExtension ),
 	css: () => new LanguageSupport( StreamLanguage.define( css ), highlightExtension ),
 	mediawiki,
@@ -34,7 +35,7 @@ export class CodeMirror6 {
 	declare lintGutter: Compartment;
 	declare view: EditorView;
 
-	constructor( textarea: HTMLTextAreaElement, lang: string, config?: unknown ) {
+	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
 		this.textarea = textarea;
 		this.language = new Compartment();
 		this.linter = new Compartment();
@@ -76,7 +77,7 @@ export class CodeMirror6 {
 		}
 	}
 
-	setLanguage( lang: string, config?: unknown ): void {
+	setLanguage( lang = 'plain', config?: unknown ): void {
 		this.view.dispatch( {
 			effects: [
 				this.language.reconfigure( languages[ lang ]!( config ) ),
@@ -87,12 +88,13 @@ export class CodeMirror6 {
 	}
 
 	lint( lintSource?: LintSource ): void {
-		const lang = ( this.language.get( this.view.state ) as LanguageSupport ).language.name,
+		const lang = ( this.language.get( this.view.state ) as LanguageSupport | { language: undefined } ).language,
+			name = lang ? lang.name : 'plain',
 			linterExtension = lintSource ? linter( lintSource ) : [];
 		if ( lintSource ) {
-			linters[ lang ] = linterExtension;
+			linters[ name ] = linterExtension;
 		} else {
-			delete linters[ lang ];
+			delete linters[ name ];
 		}
 		this.view.dispatch( {
 			effects: [
