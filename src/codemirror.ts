@@ -109,9 +109,9 @@ export class CodeMirror6 {
 		const extension = this.linter.get( this.view.state ) as [ unknown, ViewPlugin<{
 			set: boolean;
 			force(): void;
-		}> ] | undefined;
-		if ( extension ) {
-			const plugin = this.view.plugin( extension[ 1 ] )!;
+		}> ] | [];
+		if ( extension.length > 0 ) {
+			const plugin = this.view.plugin( extension[ 1 ]! )!;
 			plugin.set = true;
 			plugin.force();
 		}
