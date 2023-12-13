@@ -125,6 +125,9 @@ class Config {
 			htmlTagAttribute: 'attributeName',
 			htmlTagBracket: 'angleBracket',
 			htmlTagName: 'tagName',
+			extTagAttribute: 'attributeName',
+			extTagBracket: 'angleBracket',
+			extTagName: 'tagName',
 			indenting: 'operatorKeyword',
 			linkBracket: 'squareBracket',
 			linkDelimiter: 'operator',
@@ -156,6 +159,7 @@ class Config {
 			templateVariableName: 'variableName',
 			em: 'mw-em',
 			error: 'mw-error',
+			extTag: 'mw-exttag',
 			extGround: 'mw-ext-ground',
 			freeExtLink: 'mw-free-extlink',
 			freeExtLinkProtocol: 'mw-free-extlink-protocol',
@@ -174,7 +178,9 @@ class Config {
 			template2ExtGround: 'mw-template2-ext-ground',
 			template2Ground: 'mw-template2-ground',
 			template3ExtGround: 'mw-template3-ext-ground',
-			template3Ground: 'mw-template3-ground'
+			template3Ground: 'mw-template3-ground',
+			pre: 'mw-tag-pre',
+			nowiki: 'mw-tag-nowiki'
 		};
 	}
 
@@ -189,6 +195,7 @@ class Config {
 		return {
 			[ this.tags.em ]: Tag.define(),
 			[ this.tags.error ]: Tag.define(),
+			[ this.tags.extTag ]: Tag.define(),
 			[ this.tags.extGround ]: Tag.define(),
 			[ this.tags.freeExtLink ]: Tag.define(),
 			[ this.tags.freeExtLinkProtocol ]: Tag.define(),
@@ -207,7 +214,9 @@ class Config {
 			[ this.tags.template2ExtGround ]: Tag.define(),
 			[ this.tags.template2Ground ]: Tag.define(),
 			[ this.tags.template3ExtGround ]: Tag.define(),
-			[ this.tags.template3Ground ]: Tag.define()
+			[ this.tags.template3Ground ]: Tag.define(),
+			[ this.tags.pre ]: Tag.define(),
+			[ this.tags.nowiki ]: Tag.define()
 		};
 	}
 
@@ -270,6 +279,18 @@ class Config {
 			{
 				tag: tags[ this.tags.htmlTagName ] as Tag,
 				class: 'cm-mw-htmltag-name'
+			},
+			{
+				tag: tags[ this.tags.extTagAttribute ] as Tag,
+				class: 'cm-mw-exttag-attribute'
+			},
+			{
+				tag: tags[ this.tags.extTagBracket ] as Tag,
+				class: 'cm-mw-exttag-bracket'
+			},
+			{
+				tag: tags[ this.tags.extTagName ] as Tag,
+				class: 'cm-mw-exttag-name'
 			},
 			{
 				tag: tags[ this.tags.indenting ] as Tag,
@@ -401,6 +422,10 @@ class Config {
 				class: 'cm-mw-error'
 			},
 			{
+				tag: context.tokenTable![ this.tags.extTag ]!,
+				class: 'cm-mw-exttag'
+			},
+			{
 				tag: context.tokenTable![ this.tags.extGround ]!,
 				class: 'cm-mw-ext-ground'
 			},
@@ -471,6 +496,14 @@ class Config {
 			{
 				tag: context.tokenTable![ this.tags.template3Ground ]!,
 				class: 'cm-mw-template3-ground'
+			},
+			{
+				tag: context.tokenTable![ this.tags.pre ]!,
+				class: 'cm-mw-tag-pre'
+			},
+			{
+				tag: context.tokenTable![ this.tags.nowiki ]!,
+				class: 'cm-mw-tag-nowiki'
 			}
 		] );
 	}
