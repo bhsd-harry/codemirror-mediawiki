@@ -64,7 +64,7 @@ export class CodeMirror6 {
 		textarea.style.display = 'none';
 		if ( textarea.form ) {
 			textarea.form.addEventListener( 'submit', () => {
-				textarea.value = this.view.state.doc.toString();
+				this.save();
 			} );
 		}
 	}
@@ -93,5 +93,9 @@ export class CodeMirror6 {
 				this.lintGutter.reconfigure( lintSource ? lintGutter() : [] )
 			]
 		} );
+	}
+
+	save(): void {
+		this.textarea.value = this.view.state.doc.toString();
 	}
 }

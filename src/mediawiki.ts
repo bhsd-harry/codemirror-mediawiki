@@ -958,6 +958,7 @@ class CodeMirrorModeMediaWiki {
 						if ( tagname in modeConfig.permittedHtmlTags ) {
 							// Html tag
 							if ( isCloseTag && tagname !== state.inHtmlTag.pop() ) {
+								// Increment position so that the closing '>' gets highlighted red.
 								stream.pos++;
 								return modeConfig.tags.error;
 							}
