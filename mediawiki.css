@@ -1,9 +1,9 @@
-.cm-mw-pagename {
-	text-decoration: underline;
+.cm-mw-error {
+	color: #f00;
 }
 
-.cm-mw-matching {
-	background-color: #ffd700;
+.cm-mw-pagename {
+	text-decoration: underline;
 }
 
 /* miscellaneous */
@@ -15,7 +15,7 @@
 	color: #08f;
 	font-weight: bold;
 }
-.cm-mw-doubleUnderscore,
+.cm-mw-double-underscore,
 .cm-mw-signature,
 .cm-mw-hr {
 	color: #08f;
@@ -29,6 +29,12 @@
 .cm-mw-apostrophes-bold,
 .cm-mw-apostrophes-italic {
 	color: #08f;
+}
+.cm-mw-strong {
+	font-weight: bold;
+}
+.cm-mw-em {
+	font-style: italic;
 }
 
 /* section title */
@@ -46,10 +52,7 @@
 }
 
 /* template */
-.cm-mw-template {
-	color: #80c;
-	font-weight: normal;
-}
+.cm-mw-template,
 .cm-mw-template-name-mnemonic {
 	font-weight: normal;
 }
@@ -60,23 +63,20 @@
 	font-weight: bold;
 }
 .cm-mw-template-argument-name {
-	color: #80c;
-	font-weight: bold;
+	color: #b0c;
+	font-weight: normal;
 }
 
 /* template variable */
 .cm-mw-templatevariable {
-	color: #f50;
+	color: #ff9500;
 	font-weight: normal;
 }
 .cm-mw-templatevariable-name,
+.cm-mw-templatevariable-bracket,
 .cm-mw-templatevariable-delimiter {
 	color: #f50;
 	font-weight: bold;
-}
-.cm-mw-templatevariable-bracket {
-	color: #f50;
-	font-weight: normal;
 }
 
 /* parser function */
@@ -105,7 +105,6 @@
 }
 
 /* link */
-.cm-mw-link,
 .cm-mw-link-pagename,
 .cm-mw-link-bracket,
 .cm-mw-link-delimiter,
@@ -114,6 +113,7 @@
 	color: #36c;
 	font-weight: normal;
 }
+.cm-mw-link,
 .cm-mw-link-tosection {
 	color: #18e;
 	font-weight: normal;
@@ -141,7 +141,7 @@
 
 /* mnemonic */
 .cm-mw-mnemonic {
-	color: #290;
+	color: #84a0a0;
 }
 
 /* backgrounds */
@@ -152,11 +152,14 @@
 .cm-mw-exttag {
 	background-color: rgba( 119, 0, 170, 0.02 );
 }
-.cm-mw-template2-ground {
+.cm-mw-template-ground {
 	background-color: rgba( 170, 17, 17, 0.04 );
 }
-.cm-mw-template3-ground {
+.cm-mw-template2-ground {
 	background-color: rgba( 170, 17, 17, 0.08 );
+}
+.cm-mw-template3-ground {
+	background-color: rgba( 170, 17, 17, 0.12 );
 }
 .cm-mw-template-ext-ground,
 .cm-mw-ext-ground,
@@ -228,10 +231,4 @@
 }
 .cm-mw-template3-ext3-link-ground {
 	background-color: rgba( 122, 9, 116, 0.24 );
-}
-
-.cm-mw-matchingbracket {
-	background-color: #eee;
-	box-shadow: inset 0 0 1px 1px #999;
-	font-weight: bold;
 }

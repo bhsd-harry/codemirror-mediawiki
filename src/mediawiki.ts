@@ -10,7 +10,7 @@ declare interface State {
 	stack: Tokenizer[];
 	inHtmlTag: string[];
 	extName: string | false;
-	extMode: StreamParser<unknown> | false;
+	extMode: StreamParser<State> | false;
 	extState: State | false;
 	nTemplate: number;
 	nLink: number;
@@ -20,12 +20,12 @@ declare interface State {
 declare interface Token {
 	pos: number;
 	style: string;
-	state: State | string;
+	state: State;
 }
 
 export interface MwConfig {
 	urlProtocols: string;
-	tags: Record<string, true>;
+	tags?: Record<string, true>;
 	tagModes: Record<string, string>;
 	functionSynonyms: [Record<string, string>, Record<string, string>];
 	doubleUnderscore: [Record<string, string>, Record<string, string>];
@@ -50,7 +50,7 @@ class CodeMirrorModeMediaWiki {
 
 	constructor( config: MwConfig ) {
 		this.config = config;
-		this.urlProtocols = new RegExp( `^(?:${ this.config.urlProtocols })`, 'i' );
+		this.urlProtocols = new RegExp( `^(?:${ config.urlProtocols })`, 'i' );
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
@@ -170,8 +170,8 @@ class CodeMirrorModeMediaWiki {
 		return style.trim();
 	}
 
-	eatBlock( style: string, terminator: string, consumeLast = true ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatBlock( style: string, terminator: string, consumeLast = true ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.skipTo( terminator ) ) {
 				if ( !consumeLast ) {
 					stream.match( terminator );
@@ -184,16 +184,16 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatEnd( style: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatEnd( style: string ): Tokenizer {
+		return ( stream, state ) => {
 			stream.skipToEnd();
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalStyle( style, state );
 		};
 	}
 
-	eatChar( char: string, style: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatChar( char: string, style: string ): Tokenizer {
+		return ( stream, state ) => {
 			state.tokenize = state.stack.pop()!;
 			if ( stream.eat( char ) ) {
 				return this.makeLocalStyle( style, state );
@@ -202,8 +202,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatSectionHeader( count: number ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatSectionHeader( count: number ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.match( /^[^&<[{~]+/ ) ) {
 				if ( stream.eol() ) {
 					stream.backUp( count );
@@ -278,8 +278,8 @@ class CodeMirrorModeMediaWiki {
 		return this.eatWikiText( modeConfig.tags.parserFunction, '' )( stream, state );
 	}
 
-	eatTemplatePageName( haveAte: boolean ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatTemplatePageName( haveAte: boolean ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.match( /^\s*\|\s*/ ) ) {
 				state.tokenize = this.eatTemplateArgument( true );
 				return this.makeLocalStyle( modeConfig.tags.templateDelimiter, state );
@@ -313,8 +313,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatTemplateArgument( expectArgName: boolean ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatTemplateArgument( expectArgName: boolean ): Tokenizer {
+		return ( stream, state ) => {
 			if ( expectArgName && stream.eatWhile( /[^=|}{[<&~]/ ) ) {
 				if ( stream.eat( '=' ) ) {
 					state.tokenize = this.eatTemplateArgument( false );
@@ -334,8 +334,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatExternalLinkProtocol( chars: number ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatExternalLinkProtocol( chars: number ): Tokenizer {
+		return ( stream, state ) => {
 			while ( chars > 0 ) {
 				chars--;
 				stream.next();
@@ -367,8 +367,8 @@ class CodeMirrorModeMediaWiki {
 			return this.makeStyle( '', state );
 		}
 		if ( stream.match( /^[^\s\]{&~']+/ ) || stream.eatSpace() ) {
-			if ( stream.peek() === '\'' ) {
-				if ( stream.match( '\'\'', false ) ) {
+			if ( stream.peek() === "'" ) {
+				if ( stream.match( "''", false ) ) {
 					state.tokenize = this.inExternalLinkText.bind( this );
 				} else {
 					stream.next();
@@ -444,31 +444,28 @@ class CodeMirrorModeMediaWiki {
 		if ( stream.match( ']]' ) ) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalStyle( modeConfig.tags.linkBracket, state, 'nLink' );
-			// if ( !stream.eatSpace() ) {
-			// state.ImInBlock.push( 'LinkTrail' );
-			// }
 		}
 		return this.eatWikiText( modeConfig.tags.linkToSection, '' )( stream, state );
 	}
 
-	eatLinkText(): ( stream: StringStream, state: State ) => string {
+	eatLinkText(): Tokenizer {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
 
-		return ( stream: StringStream, state: State ): string => {
+		return ( stream, state ) => {
 			let tmpstyle: string;
 			if ( stream.match( ']]' ) ) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle( modeConfig.tags.linkBracket, state, 'nLink' );
 			}
-			if ( stream.match( '\'\'\'' ) ) {
+			if ( stream.match( "'''" ) ) {
 				linkIsBold = !linkIsBold;
 				return this.makeLocalStyle(
 					`${ modeConfig.tags.linkText } ${ modeConfig.tags.apostrophes }`,
 					state
 				);
 			}
-			if ( stream.match( '\'\'' ) ) {
+			if ( stream.match( "''" ) ) {
 				linkIsItalic = !linkIsItalic;
 				return this.makeLocalStyle(
 					`${ modeConfig.tags.linkText } ${ modeConfig.tags.apostrophes }`,
@@ -489,8 +486,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatTagName( chars: number, isCloseTag: boolean, isHtmlTag: boolean ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatTagName( chars: number, isCloseTag: boolean, isHtmlTag: boolean ): Tokenizer {
+		return ( stream, state ) => {
 			let name = '';
 			while ( chars > 0 ) {
 				chars--;
@@ -518,8 +515,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatHtmlTagAttribute( name: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatHtmlTagAttribute( name: string ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.match( /^(?:"[^<">]*"|'[^<'>]*'|[^>/<{&~])+/ ) ) {
 				return this.makeLocalStyle( modeConfig.tags.htmlTagAttribute, state );
 			}
@@ -538,8 +535,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatExtTagAttribute( name: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatExtTagAttribute( name: string ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.match( /^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/ ) ) {
 				return this.makeLocalStyle( `mw-exttag-attribute mw-ext-${ name }`, state );
 			}
@@ -564,19 +561,19 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatExtTagArea( name: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatExtTagArea( name: string ): Tokenizer {
+		return ( stream, state ) => {
 			const from = stream.pos,
 				pattern = new RegExp( `</${ name }\\s*>`, 'i' ),
 				m = pattern.exec( from ? stream.string.slice( from ) : stream.string );
 			let origString: string | false = false,
-				to;
+				to: number;
 
 			if ( m ) {
 				if ( m.index === 0 ) {
 					state.tokenize = this.eatExtCloseTag( name );
 					state.extName = false;
-					if ( state.extMode !== false ) {
+					if ( state.extMode ) {
 						state.extMode = false;
 						state.extState = false;
 					}
@@ -593,8 +590,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatExtCloseTag( name: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatExtCloseTag( name: string ): Tokenizer {
+		return ( stream, state ) => {
 			stream.next(); // eat <
 			stream.next(); // eat /
 			state.tokenize = this.eatTagName( name.length, true, false );
@@ -602,8 +599,8 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatExtTokens( origString: string | false ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatExtTokens( origString: string | false ): Tokenizer {
+		return ( stream, state ) => {
 			let ret: string;
 			if ( state.extMode === false ) {
 				ret = origString === false && stream.sol() ? 'line-cm-mw-exttag' : 'mw-exttag';
@@ -612,7 +609,7 @@ class CodeMirrorModeMediaWiki {
 				ret = (
 					origString === false && stream.sol() ? 'line-cm-mw-tag-' : 'mw-tag-'
 				) + state.extName;
-				ret += ' ' + state.extMode.token( stream, state.extState );
+				ret += ' ' + state.extMode.token( stream, state.extState as State );
 			}
 			if ( stream.eol() ) {
 				if ( origString !== false ) {
@@ -678,8 +675,8 @@ class CodeMirrorModeMediaWiki {
 		return this.eatWikiText( '', '' )( stream, state );
 	}
 
-	eatTableRow( isStart: boolean, isHead: boolean ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatTableRow( isStart: boolean, isHead: boolean ): Tokenizer {
+		return ( stream, state ) => {
 			if ( stream.sol() ) {
 				if ( stream.match( /^\s*[|!]/, false ) ) {
 					state.tokenize = this.inTable.bind( this );
@@ -727,8 +724,8 @@ class CodeMirrorModeMediaWiki {
 					stream.next();
 					return this.makeLocalStyle( modeConfig.tags.freeExtLink, state );
 				}
-			} else if ( stream.peek() === '\'' ) {
-				if ( !stream.match( '\'\'', false ) ) {
+			} else if ( stream.peek() === "'" ) {
+				if ( !stream.match( "''", false ) ) {
 					stream.next();
 					return this.makeLocalStyle( modeConfig.tags.freeExtLink, state );
 				}
@@ -740,14 +737,14 @@ class CodeMirrorModeMediaWiki {
 		return this.makeLocalStyle( modeConfig.tags.freeExtLink, state );
 	}
 
-	eatWikiText( style: string, mnemonicStyle: string ) {
-		return ( stream: StringStream, state: State ): string => {
+	eatWikiText( style: string, mnemonicStyle: string ): Tokenizer {
+		return ( stream, state ) => {
 			let ch: string | void, // eslint-disable-line @typescript-eslint/no-invalid-void-type
-				tmp: RegExpMatchArray | number | null,
-				mt: RegExpMatchArray | null,
-				name: RegExpMatchArray | null,
+				tmp: RegExpMatchArray | number | false,
+				mt: RegExpMatchArray | false,
+				name: RegExpMatchArray | false,
 				isCloseTag = false,
-				tagname: RegExpMatchArray | string | null;
+				tagname: RegExpMatchArray | string | false;
 			const sol = stream.sol();
 
 			const chain = ( parser: Tokenizer ): string => {
@@ -773,7 +770,7 @@ class CodeMirrorModeMediaWiki {
 					case '=':
 						tmp = stream.match(
 							/^(={0,5})(.+?(=\1\s*)(<!--(?!.*-->.*\S).*)?)$/
-						) as RegExpMatchArray | null;
+						) as RegExpMatchArray | false;
 						// Title
 						if ( tmp ) {
 							stream.backUp( tmp[ 2 ]!.length );
@@ -825,7 +822,7 @@ class CodeMirrorModeMediaWiki {
 					// break is not necessary here
 					// falls through
 					case '{':
-						if ( stream.eat( '|' ) ) {
+						if ( stream.match( /^(?:\||\{\{!\}\})/ ) ) {
 							stream.eatSpace();
 							state.stack.push( state.tokenize );
 							state.tokenize = this.inTableDefinition.bind( this );
@@ -845,18 +842,18 @@ class CodeMirrorModeMediaWiki {
 						this.eatMnemonic( stream, style, mnemonicStyle ),
 						state
 					);
-				case '\'':
+				case "'":
 					// skip the irrelevant apostrophes ( >5 or =4 )
 					if ( stream.match( /^'*(?='{5})/ ) || stream.match( /^'''(?!')/, false ) ) {
 						break;
 					}
-					if ( stream.match( '\'\'' ) ) { // bold
-						if ( !( this.firstSingleLetterWord || stream.match( '\'\'', false ) ) ) {
+					if ( stream.match( "''" ) ) { // bold
+						if ( !( this.firstSingleLetterWord || stream.match( "''", false ) ) ) {
 							this.prepareItalicForCorrection( stream );
 						}
 						this.isBold = !this.isBold;
 						return this.makeLocalStyle( modeConfig.tags.apostrophesBold, state );
-					} else if ( stream.eat( '\'' ) ) { // italic
+					} else if ( stream.eat( "'" ) ) { // italic
 						this.isItalic = !this.isItalic;
 						return this.makeLocalStyle( modeConfig.tags.apostrophesItalic, state );
 					}
@@ -871,7 +868,7 @@ class CodeMirrorModeMediaWiki {
 							return this.makeLocalStyle( modeConfig.tags.linkBracket, state );
 						}
 					} else {
-						mt = stream.match( this.urlProtocols ) as RegExpMatchArray | null;
+						mt = stream.match( this.urlProtocols ) as RegExpMatchArray | false;
 						if ( mt ) {
 							state.nLink++;
 							stream.backUp( mt[ 0 ].length );
@@ -882,8 +879,9 @@ class CodeMirrorModeMediaWiki {
 					}
 					break;
 				case '{':
-					// Template parameter (T108450 - skip parameters within template transclusions)
-					if ( !stream.match( '{{{{', false ) && stream.match( '{{' ) ) {
+					// Can't be a variable when it starts with more than 3 brackets (T108450) or
+					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
+					if ( stream.match( /^\{\{(?!\{|[^{}]*\}\}(?!\}))/ ) ) {
 						stream.eatSpace();
 						state.stack.push( state.tokenize );
 						state.tokenize = this.inVariable.bind( this );
@@ -891,8 +889,9 @@ class CodeMirrorModeMediaWiki {
 							modeConfig.tags.templateVariableBracket,
 							state
 						);
-					} else if ( stream.match( /^\{\s*/ ) ) {
-						if ( stream.peek() === '#' ) { // Parser function
+					} else if ( stream.match( /^\{(?!\{(?!\{))\s*/ ) ) {
+						// Parser function
+						if ( stream.peek() === '#' ) {
 							state.nExt++;
 							state.stack.push( state.tokenize );
 							state.tokenize = this.inParserFunctionName.bind( this );
@@ -902,7 +901,7 @@ class CodeMirrorModeMediaWiki {
 							);
 						}
 						// Check for parser function without '#'
-						name = stream.match( /^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/ ) as RegExpMatchArray | null;
+						name = stream.match( /^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/ ) as RegExpMatchArray | false;
 						if ( name ) {
 							stream.backUp( name[ 0 ].length );
 							if (
@@ -930,13 +929,12 @@ class CodeMirrorModeMediaWiki {
 					break;
 				case '<':
 					isCloseTag = Boolean( stream.eat( '/' ) );
-					tagname = stream.match( /^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/ ) as RegExpMatchArray | null;
+					tagname = stream.match( /^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/ ) as RegExpMatchArray | false;
 					if ( stream.match( '!--' ) ) { // comment
 						return chain( this.eatBlock( modeConfig.tags.comment, '-->' ) );
 					}
 					if ( tagname ) {
 						tagname = tagname[ 0 ]!.toLowerCase();
-						// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 						if ( this.config.tags && tagname in this.config.tags ) {
 							// Parser function
 							if ( isCloseTag ) {
@@ -996,7 +994,7 @@ class CodeMirrorModeMediaWiki {
 					// Check on double underscore Magic Word
 					} else if ( tmp === 2 ) {
 						// The same as the end of function except '_' inside and '__' at the end.
-						name = stream.match( /^([^\s>}[\]<{'|&:~]+?)__/ ) as RegExpMatchArray | null;
+						name = stream.match( /^([^\s>}[\]<{'|&:~]+?)__/ ) as RegExpMatchArray | false;
 						if ( name && name[ 0 ] ) {
 							if (
 								'__' + name[ 0 ].toLowerCase() in this.config.doubleUnderscore[ 0 ]
@@ -1044,8 +1042,8 @@ class CodeMirrorModeMediaWiki {
 		// this.firstSpace has low priority
 		const end = stream.pos,
 			str = stream.string.slice( 0, end - 3 ),
-			x1 = str.slice( -1, -1 + 1 ),
-			x2 = str.slice( -2, -2 + 1 );
+			x1 = str.slice( -1 ),
+			x2 = str.slice( -2, -1 );
 
 		// this.firstSingleLetterWord always is undefined here
 		if ( x1 === ' ' ) {
@@ -1068,14 +1066,14 @@ class CodeMirrorModeMediaWiki {
 	/**
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser
 	 */
-	get mediawiki(): StreamParser<unknown> {
+	get mediawiki(): StreamParser<State> {
 		return {
 			name: 'mediawiki',
 
 			/**
 			 * Initial State for the parser.
 			 */
-			startState: (): State => ( {
+			startState: () => ( {
 				tokenize: this.eatWikiText( '', '' ),
 				stack: [],
 				inHtmlTag: [],
@@ -1090,7 +1088,7 @@ class CodeMirrorModeMediaWiki {
 			/**
 			 * Copies the given state.
 			 */
-			copyState: ( state: State ): State => ( {
+			copyState: ( state ) => ( {
 				tokenize: state.tokenize,
 				stack: [
 					...state.stack
@@ -1100,7 +1098,7 @@ class CodeMirrorModeMediaWiki {
 				],
 				extName: state.extName,
 				extMode: state.extMode,
-				extState: state.extMode !== false && ( state.extMode.copyState!( state.extState ) as State ),
+				extState: state.extMode && state.extMode.copyState!( state.extState as State ),
 				nTemplate: state.nTemplate,
 				nLink: state.nLink,
 				nExt: state.nExt
@@ -1110,7 +1108,7 @@ class CodeMirrorModeMediaWiki {
 			 * Reads one token, advancing the stream past it,
 			 * and returning a string indicating the token's style tag.
 			 */
-			token: ( stream: StringStream, state: State ): string => {
+			token: ( stream, state ): string => {
 				let style: string,
 					p: number | null = null,
 					t: Token,
@@ -1154,7 +1152,7 @@ class CodeMirrorModeMediaWiki {
 						tmpTokens.push( {
 							pos: stream.pos,
 							style,
-							state: state.extMode ? ( state.extMode.copyState!( state ) as State ) : 'mediawiki'
+							state: ( state.extMode || this.mediawiki ).copyState!( state )
 						} );
 					} else {
 						// rollback point does not exist
@@ -1181,7 +1179,7 @@ class CodeMirrorModeMediaWiki {
 						this.oldTokens = readyTokens;
 					} else {
 						// there are no tickets before the point of rollback
-						stream.pos = tmpTokens[ 0 ]!.pos - 2; // eat( '\'')
+						stream.pos = tmpTokens[ 0 ]!.pos - 2; // eat( "'" )
 						// send saved Style
 						return this.oldStyle || '';
 					}
@@ -1200,20 +1198,10 @@ class CodeMirrorModeMediaWiki {
 			},
 
 			// FIXME: This is non-functional and still needs to be ported to CM6, see T348684
-			blankLine: ( state: State ): string => {
-				let ret: string;
-				if ( state.extName ) {
-					if ( state.extMode ) {
-						ret = '';
-						if ( state.extMode.blankLine ) {
-							// eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-							ret = ' ' + ( state.extMode.blankLine( state.extState, 0 ) as unknown as string );
-						}
-						return 'line-cm-mw-tag-' + state.extName + ret;
-					}
-					return 'line-cm-mw-exttag';
+			blankLine: ( state ): void => {
+				if ( state.extMode && state.extMode.blankLine ) {
+					state.extMode.blankLine( state.extState as State, 0 );
 				}
-				return '';
 			},
 
 			/**
