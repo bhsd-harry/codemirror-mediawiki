@@ -1,8 +1,8 @@
 import { Compartment } from '@codemirror/state';
 import { EditorView, lineNumbers, keymap, highlightSpecialChars, highlightActiveLine } from '@codemirror/view';
-import { syntaxHighlighting, defaultHighlightStyle, indentOnInput } from '@codemirror/language';
-import { javascript } from '@codemirror/lang-javascript';
-import { css } from '@codemirror/lang-css';
+import { syntaxHighlighting, defaultHighlightStyle, indentOnInput, StreamLanguage } from '@codemirror/language';
+import { javascript } from '@codemirror/legacy-modes/mode/javascript';
+import { css } from '@codemirror/legacy-modes/mode/css';
 import { mediawiki } from './mediawiki';
 import { defaultKeymap, historyKeymap } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
@@ -13,10 +13,10 @@ import type { LintSource } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const languages: Record<string, ( config?: any ) => LanguageSupport> = {
-	mediawiki,
-	javascript,
-	css
+const languages: Record<string, ( config?: any ) => LanguageSupport | StreamLanguage<unknown>> = {
+	javascript: () => StreamLanguage.define( javascript ),
+	css: () => StreamLanguage.define( css ),
+	mediawiki
 };
 const linters: Record<string, Extension> = {};
 

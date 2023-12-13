@@ -31,8 +31,6 @@
 	},
 	"devDependencies": {
 		"@codemirror/commands": "^6.3.2",
-		"@codemirror/lang-javascript": "^6.2.1",
-		"@codemirror/lang-css": "^6.2.1",
 		"@codemirror/language": "^6.9.3",
 		"@codemirror/legacy-modes": "^6.3.3",
 		"@codemirror/lint": "^6.4.2",
