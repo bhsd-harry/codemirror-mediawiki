@@ -6,7 +6,6 @@
 	background-color: #ffd700;
 }
 
-/* miscellaneous */
 .cm-mw-skipformatting {
 	background-color: #adf;
 }
@@ -22,6 +21,9 @@
 	font-weight: bold;
 	background-color: #eee;
 }
+.cm-mw-mnemonic {
+	color: #290;
+}
 .cm-mw-comment {
 	color: #84a0a0;
 	font-weight: normal;
@@ -31,7 +33,6 @@
 	color: #08f;
 }
 
-/* section title */
 pre.CodeMirror-line.cm-mw-section-1,
 pre.CodeMirror-line-like.cm-mw-section-1 {
 	font-size: 1.8em;
@@ -57,7 +58,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: normal;
 }
 
-/* template */
 .cm-mw-template {
 	color: #80c;
 	font-weight: normal;
@@ -76,7 +76,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: bold;
 }
 
-/* template variable */
 .cm-mw-templatevariable {
 	color: #f50;
 	font-weight: normal;
@@ -91,7 +90,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: normal;
 }
 
-/* parser function */
 .cm-mw-parserfunction {
 	font-weight: normal;
 }
@@ -102,7 +100,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: bold;
 }
 
-/* tag */
 .cm-mw-exttag-name,
 .cm-mw-htmltag-name {
 	color: #290;
@@ -116,7 +113,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: normal;
 }
 
-/* link */
 .cm-mw-link,
 .cm-mw-link-pagename,
 .cm-mw-link-bracket,
@@ -137,7 +133,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: bold;
 }
 
-/* table */
 .cm-mw-table-bracket,
 .cm-mw-table-delimiter {
 	color: #e0e;
@@ -151,12 +146,6 @@ pre.CodeMirror-line-like.cm-mw-section-6 {
 	font-weight: bold;
 }
 
-/* mnemonic */
-.cm-mw-mnemonic {
-	color: #290;
-}
-
-/* backgrounds */
 pre.CodeMirror-line.cm-mw-tag-pre,
 pre.CodeMirror-line-like.cm-mw-tag-pre,
 .cm-mw-tag-pre,
