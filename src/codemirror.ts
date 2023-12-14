@@ -38,6 +38,7 @@ export class CodeMirror6 {
 
 	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
 		this.textarea = textarea;
+		const { offsetHeight } = textarea;
 		this.language = new Compartment();
 		this.linter = new Compartment();
 		this.lintGutter = new Compartment();
@@ -68,7 +69,8 @@ export class CodeMirror6 {
 			doc: textarea.value,
 			parent: textarea.parentElement!
 		} );
-		this.view.dom.style.height = `${ textarea.offsetHeight }px`;
+		this.view.dom.style.minHeight = '2em';
+		this.view.dom.style.height = `${ offsetHeight }px`;
 		this.view.requestMeasure();
 		textarea.style.display = 'none';
 		if ( textarea.form ) {
