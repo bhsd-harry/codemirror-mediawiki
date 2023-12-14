@@ -1,11 +1,12 @@
 {
 	"include": [
-		"src/*.js",
 		"src/*.ts"
 	],
 	"compilerOptions": {
 		"target": "ES2018",
 		"module": "CommonJS",
+		"declaration": true,
+		"outDir": "dist",
 		"alwaysStrict": true,
 		"exactOptionalPropertyTypes": true,
 		"noImplicitAny": true,

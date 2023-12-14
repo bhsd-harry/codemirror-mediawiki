@@ -12,17 +12,19 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
-		"dist/main.min.js",
-		"mediawiki.css"
+		"/dist/",
+		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
+	"main": "./dist/main.min.js",
+	"types": "./dist/codemirror.d.ts",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
 		"start": "webpack --mode development",
-		"build": "rm -rf dist/; webpack --mode production",
+		"build": "rm -rf dist/; webpack --mode production; tsc --emitDeclarationOnly",
 		"lint": "tsc --noEmit && eslint --cache .",
 		"test": "http-server -c-1 --cors"
 	},

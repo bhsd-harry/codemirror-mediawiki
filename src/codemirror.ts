@@ -18,6 +18,8 @@ import type { Extension } from '@codemirror/state';
 import type { LintSource } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
 
+export type { MwConfig } from './mediawiki';
+
 const highlightExtension = syntaxHighlighting( defaultHighlightStyle as Highlighter );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
