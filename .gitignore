@@ -1,5 +1,6 @@
 /.vscode/
 /dist/
+/.markdownlint.json
 .eslintcache
 test.txt
 processed.txt
