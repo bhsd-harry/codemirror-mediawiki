@@ -34,7 +34,7 @@ declare interface Token {
 
 export interface MwConfig {
 	urlProtocols: string;
-	tags?: Record<string, true>;
+	tags: Record<string, true>;
 	tagModes: Record<string, string>;
 	functionSynonyms: [Record<string, string>, Record<string, string>];
 	doubleUnderscore: [Record<string, string>, Record<string, string>];
@@ -952,7 +952,7 @@ class CodeMirrorModeMediaWiki {
 					}
 					if ( tagname ) {
 						tagname = tagname[ 0 ]!.toLowerCase();
-						if ( this.config.tags && tagname in this.config.tags ) {
+						if ( tagname in this.config.tags ) {
 							// Parser function
 							if ( isCloseTag ) {
 								return modeConfig.tags.error;

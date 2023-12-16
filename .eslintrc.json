@@ -2,7 +2,7 @@
 	"root": true,
 	"env": {
 		"browser": true,
-		"es2018": true
+		"es2022": true
 	},
 	"plugins": [
 		"es-x",
@@ -12,12 +12,11 @@
 	],
 	"extends": [
 		"eslint:recommended",
-		"plugin:es-x/restrict-to-es2018",
 		"plugin:promise/recommended",
 		"plugin:regexp/recommended"
 	],
 	"parserOptions": {
-		"ecmaVersion": 9
+		"ecmaVersion": 13
 	},
 	"ignorePatterns": [
 		"dist/"
@@ -464,6 +463,14 @@
 		],
 		"promise/no-multiple-resolved": 2,
 		"promise/prefer-await-to-then": 2,
+		"es-x/no-array-string-prototype-at": 2,
+		"es-x/no-global-this": 2,
+		"es-x/no-object-fromentries": 2,
+		"es-x/no-object-hasown": 2,
+		"es-x/no-regexp-lookbehind-assertions": 2,
+		"es-x/no-string-prototype-matchall": 2,
+		"es-x/no-string-prototype-replaceall": 2,
+		"es-x/no-string-prototype-trimstart-trimend": 2,
 		"regexp/no-contradiction-with-assertion": 2,
 		"regexp/no-dupe-disjunctions": [
 			2,

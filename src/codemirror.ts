@@ -7,47 +7,58 @@ import {
 	StreamLanguage,
 	LanguageSupport
 } from '@codemirror/language';
-import { javascript } from '@codemirror/legacy-modes/mode/javascript';
-import { css } from '@codemirror/legacy-modes/mode/css';
-import { mediawiki, html } from './mediawiki';
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
+import { mediawiki, html } from './mediawiki';
+import * as plugins from './plugins';
 import type { ViewPlugin } from '@codemirror/view';
 import type { Extension } from '@codemirror/state';
-import type { LintSource } from '@codemirror/lint';
+import type { Diagnostic } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
 
 export type { MwConfig } from './mediawiki';
 
-const highlightExtension = syntaxHighlighting( defaultHighlightStyle as Highlighter );
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
 	plain: () => [],
-	javascript: () => new LanguageSupport( StreamLanguage.define( javascript ), highlightExtension ),
-	css: () => new LanguageSupport( StreamLanguage.define( css ), highlightExtension ),
 	mediawiki,
 	html
 };
+for ( const [
+	language,
+	parser
+] of Object.entries( plugins ) ) {
+	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
+}
 const linters: Record<string, Extension> = {};
+const lintGutterExtension = lintGutter();
 
 export class CodeMirror6 {
 	declare textarea: HTMLTextAreaElement;
 	declare language: Compartment;
 	declare linter: Compartment;
-	declare lintGutter: Compartment;
+	declare extensions: Compartment;
 	declare view: EditorView;
 
+	/**
+	 * @param textarea 文本框
+	 * @param lang 语言
+	 * @param config 语言设置
+	 */
 	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
 		this.textarea = textarea;
 		const { offsetHeight } = textarea;
 		this.language = new Compartment();
 		this.linter = new Compartment();
-		this.lintGutter = new Compartment();
+		this.extensions = new Compartment();
 		const extensions = [
 			this.language.of( languages[ lang ]!( config ) ),
 			this.linter.of( [] ),
-			this.lintGutter.of( [] ),
+			this.extensions.of( [
+				highlightActiveLine()
+			] ),
+			syntaxHighlighting( defaultHighlightStyle as Highlighter, { fallback: true } ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
 				dir: textarea.dir,
@@ -57,7 +68,6 @@ export class CodeMirror6 {
 			EditorView.lineWrapping,
 			history(),
 			highlightSpecialChars(),
-			highlightActiveLine(),
 			indentOnInput(),
 			keymap.of( [
 				...defaultKeymap,
@@ -82,20 +92,33 @@ export class CodeMirror6 {
 		}
 	}
 
+	/**
+	 * 设置语言
+	 * @param lang 语言
+	 * @param config 语言设置
+	 */
 	setLanguage( lang = 'plain', config?: unknown ): void {
 		this.view.dispatch( {
 			effects: [
 				this.language.reconfigure( languages[ lang ]!( config ) ),
-				this.linter.reconfigure( lang in linters ? linters[ lang ]! : [] ),
-				this.lintGutter.reconfigure( lang in linters ? lintGutter() : [] )
+				this.linter.reconfigure( lang in linters ? linters[ lang ]! : [] )
 			]
 		} );
 	}
 
-	lint( lintSource?: LintSource ): void {
+	/**
+	 * 开始语法检查
+	 * @param lintSource 语法检查函数
+	 */
+	lint( lintSource?: ( str: string ) => Diagnostic[] | Promise<Diagnostic[]> ): void {
 		const lang = ( this.language.get( this.view.state ) as LanguageSupport | { language: undefined } ).language,
 			name = lang ? lang.name : 'plain',
-			linterExtension = lintSource ? linter( lintSource ) : [];
+			linterExtension = lintSource
+				? [
+					linter( ( view: EditorView ) => lintSource( view.state.doc.toString() ) ),
+					lintGutterExtension
+				]
+				: [];
 		if ( lintSource ) {
 			linters[ name ] = linterExtension;
 		} else {
@@ -103,12 +126,12 @@ export class CodeMirror6 {
 		}
 		this.view.dispatch( {
 			effects: [
-				this.linter.reconfigure( linterExtension ),
-				this.lintGutter.reconfigure( lintSource ? lintGutter() : [] )
+				this.linter.reconfigure( linterExtension )
 			]
 		} );
 	}
 
+	/** 立即更新语法检查 */
 	update(): void {
 		const extension = this.linter.get( this.view.state ) as [ unknown, ViewPlugin<{
 			set: boolean;
@@ -121,6 +144,7 @@ export class CodeMirror6 {
 		}
 	}
 
+	/** 保存至文本框 */
 	save(): void {
 		this.textarea.value = this.view.state.doc.toString();
 	}
