@@ -32,6 +32,7 @@
 		"node": "20.9.0"
 	},
 	"devDependencies": {
+		"@codemirror/autocomplete": "^6.11.1",
 		"@codemirror/commands": "^6.3.2",
 		"@codemirror/language": "^6.9.3",
 		"@codemirror/legacy-modes": "^6.3.3",

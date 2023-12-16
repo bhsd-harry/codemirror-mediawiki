@@ -18,6 +18,7 @@ import { // eslint-disable-line @typescript-eslint/consistent-type-imports
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
+import { closeBrackets } from '@codemirror/autocomplete';
 import { mediawiki, html } from './mediawiki';
 // import * as plugins from './plugins';
 import type { ViewPlugin } from '@codemirror/view';
@@ -42,7 +43,8 @@ const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unkn
 	highlightSpecialChars: [ highlightSpecialChars, {} ],
 	highlightActiveLine: [ highlightActiveLine, {} ],
 	highlightTrailingWhitespace: [ highlightTrailingWhitespace, {} ],
-	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ]
+	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ],
+	closeBrackets: [ closeBrackets, {} ]
 };
 
 export class CodeMirror6 {
