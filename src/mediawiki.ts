@@ -6,7 +6,7 @@
 
 import { LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { modeConfig } from './config';
-import * as plugins from './plugins';
+// import * as plugins from './plugins';
 import type { StreamParser, StringStream } from '@codemirror/language';
 import type { Highlighter } from '@lezer/highlight';
 
@@ -42,16 +42,9 @@ export interface MwConfig {
 
 const copyState = ( state: State ): State => {
 	const newState = {} as State;
-	for ( const [
-		key,
-		val
-	] of Object.entries( state ) ) {
+	for ( const [ key, val ] of Object.entries( state ) ) {
 		Object.assign( newState, {
-			[ key ]: Array.isArray( val )
-				? [
-					...val
-				]
-				: val
+			[ key ]: Array.isArray( val ) ? [ ...val ] : val
 		} );
 	}
 	return newState;
@@ -1219,7 +1212,11 @@ class CodeMirrorModeMediaWiki {
 			 *
 			 * @see CodeMirrorConfigChanges.tokenTable
 			 */
-			tokenTable: modeConfig.tokenTable
+			tokenTable: modeConfig.tokenTable,
+
+			languageData: {
+				closeBrackets: { brackets: [ '(', '[', '{', '"' ] }
+			}
 		};
 	}
 
@@ -1252,16 +1249,13 @@ class CodeMirrorModeMediaWiki {
 	}
 }
 
-for ( const [
-	language,
-	parser
-] of Object.entries( plugins ) ) {
-	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
-		get() {
-			return parser;
-		}
-	} );
-}
+// for ( const [ language, parser ] of Object.entries( plugins ) ) {
+// 	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
+// 		get() {
+// 			return parser;
+// 		}
+// 	} );
+// }
 
 /**
  * Gets a LanguageSupport instance for the MediaWiki mode.

@@ -1,17 +1,25 @@
 import { Compartment } from '@codemirror/state';
-import { EditorView, lineNumbers, keymap, highlightSpecialChars, highlightActiveLine } from '@codemirror/view';
 import {
+	EditorView,
+	lineNumbers,
+	keymap,
+	highlightSpecialChars,
+	highlightActiveLine,
+	highlightTrailingWhitespace
+} from '@codemirror/view';
+import { // eslint-disable-line @typescript-eslint/consistent-type-imports
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
-	StreamLanguage,
-	LanguageSupport
+	// StreamLanguage,
+	LanguageSupport,
+	bracketMatching
 } from '@codemirror/language';
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
 import { mediawiki, html } from './mediawiki';
-import * as plugins from './plugins';
+// import * as plugins from './plugins';
 import type { ViewPlugin } from '@codemirror/view';
 import type { Extension } from '@codemirror/state';
 import type { Diagnostic } from '@codemirror/lint';
@@ -25,14 +33,17 @@ const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
 	mediawiki,
 	html
 };
-for ( const [
-	language,
-	parser
-] of Object.entries( plugins ) ) {
-	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
-}
+// for ( const [ language, parser ] of Object.entries( plugins ) ) {
+// 	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
+// }
 const linters: Record<string, Extension> = {};
-const lintGutterExtension = lintGutter();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unknown> ]> = {
+	highlightSpecialChars: [ highlightSpecialChars, {} ],
+	highlightActiveLine: [ highlightActiveLine, {} ],
+	highlightTrailingWhitespace: [ highlightTrailingWhitespace, {} ],
+	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ]
+};
 
 export class CodeMirror6 {
 	declare textarea: HTMLTextAreaElement;
@@ -55,9 +66,7 @@ export class CodeMirror6 {
 		const extensions = [
 			this.language.of( languages[ lang ]!( config ) ),
 			this.linter.of( [] ),
-			this.extensions.of( [
-				highlightActiveLine()
-			] ),
+			this.extensions.of( [] ),
 			syntaxHighlighting( defaultHighlightStyle as Highlighter, { fallback: true } ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
@@ -67,13 +76,11 @@ export class CodeMirror6 {
 			lineNumbers(),
 			EditorView.lineWrapping,
 			history(),
-			highlightSpecialChars(),
 			indentOnInput(),
 			keymap.of( [
 				...defaultKeymap,
 				...historyKeymap,
-				...searchKeymap,
-				...lintKeymap
+				...searchKeymap
 			] )
 		];
 		this.view = new EditorView( {
@@ -101,7 +108,7 @@ export class CodeMirror6 {
 		this.view.dispatch( {
 			effects: [
 				this.language.reconfigure( languages[ lang ]!( config ) ),
-				this.linter.reconfigure( lang in linters ? linters[ lang ]! : [] )
+				this.linter.reconfigure( linters[ lang ] ?? [] )
 			]
 		} );
 	}
@@ -111,12 +118,13 @@ export class CodeMirror6 {
 	 * @param lintSource 语法检查函数
 	 */
 	lint( lintSource?: ( str: string ) => Diagnostic[] | Promise<Diagnostic[]> ): void {
-		const lang = ( this.language.get( this.view.state ) as LanguageSupport | { language: undefined } ).language,
-			name = lang ? lang.name : 'plain',
+		const { language } = this.language.get( this.view.state ) as LanguageSupport | { language: undefined },
+			name = language?.name || 'plain',
 			linterExtension = lintSource
 				? [
 					linter( ( view: EditorView ) => lintSource( view.state.doc.toString() ) ),
-					lintGutterExtension
+					lintGutter(),
+					keymap.of( lintKeymap )
 				]
 				: [];
 		if ( lintSource ) {
@@ -125,9 +133,7 @@ export class CodeMirror6 {
 			delete linters[ name ];
 		}
 		this.view.dispatch( {
-			effects: [
-				this.linter.reconfigure( linterExtension )
-			]
+			effects: [ this.linter.reconfigure( linterExtension ) ]
 		} );
 	}
 
@@ -147,5 +153,19 @@ export class CodeMirror6 {
 	/** 保存至文本框 */
 	save(): void {
 		this.textarea.value = this.view.state.doc.toString();
+	}
+
+	/** 添加扩展 */
+	prefer( names: string[] ): void {
+		const { language } = this.language.get( this.view.state ) as LanguageSupport | { language: undefined },
+			lang = language?.name || 'plain';
+		this.view.dispatch( {
+			effects: [
+				this.extensions.reconfigure( names.map( ( name ) => {
+					const [ extension, configs ] = avail[ name ]!;
+					return extension( configs[ lang ] );
+				} ) )
+			]
+		} );
 	}
 }

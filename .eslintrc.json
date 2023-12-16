@@ -295,10 +295,13 @@
 		"array-bracket-newline": [
 			2,
 			{
-				"minItems": 1
+				"multiline": true
 			}
 		],
-		"array-bracket-spacing": 2,
+		"array-bracket-spacing": [
+			2,
+			"always"
+		],
 		"array-element-newline": [
 			2,
 			"consistent"
