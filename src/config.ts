@@ -6,6 +6,7 @@
 
 import { HighlightStyle } from '@codemirror/language';
 import { Tag, tags as importedTags } from '@lezer/highlight';
+import type { StreamParser } from '@codemirror/language';
 
 const tags: Record<string, Tag | ( ( tag: Tag ) => Tag )> = importedTags;
 
@@ -95,7 +96,7 @@ export const modeConfig = {
 		br: true,
 		hr: true,
 		wbr: true
-	},
+	} as Record<string, true>,
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
@@ -228,7 +229,7 @@ export const modeConfig = {
 	 *
 	 * @see https://codemirror.net/docs/ref/#language.TagStyle
 	 */
-	get highlightStyle(): HighlightStyle {
+	getHighlightStyle( context: StreamParser<unknown> ): HighlightStyle {
 		return HighlightStyle.define( [
 			{
 				tag: tags[ this.tags.apostrophes ] as Tag,
@@ -416,99 +417,99 @@ export const modeConfig = {
 			 * IMPORTANT: These need to reference the CodeMirrorModeMediaWiki context.
 			 */
 			{
-				tag: this.tokenTable[ this.tags.section ]!,
+				tag: context.tokenTable![ this.tags.section ]!,
 				class: 'cm-mw-section'
 			},
 			{
-				tag: this.tokenTable[ this.tags.em ]!,
+				tag: context.tokenTable![ this.tags.em ]!,
 				class: 'cm-mw-em'
 			},
 			{
-				tag: this.tokenTable[ this.tags.error ]!,
+				tag: context.tokenTable![ this.tags.error ]!,
 				class: 'cm-mw-error'
 			},
 			{
-				tag: this.tokenTable[ this.tags.extTag ]!,
+				tag: context.tokenTable![ this.tags.extTag ]!,
 				class: 'cm-mw-exttag'
 			},
 			{
-				tag: this.tokenTable[ this.tags.extGround ]!,
+				tag: context.tokenTable![ this.tags.extGround ]!,
 				class: 'cm-mw-ext-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.freeExtLink ]!,
+				tag: context.tokenTable![ this.tags.freeExtLink ]!,
 				class: 'cm-mw-free-extlink'
 			},
 			{
-				tag: this.tokenTable[ this.tags.freeExtLinkProtocol ]!,
+				tag: context.tokenTable![ this.tags.freeExtLinkProtocol ]!,
 				class: 'cm-mw-free-extlink-protocol'
 			},
 			{
-				tag: this.tokenTable[ this.tags.linkGround ]!,
+				tag: context.tokenTable![ this.tags.linkGround ]!,
 				class: 'cm-mw-link-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.linkPageName ]!,
+				tag: context.tokenTable![ this.tags.linkPageName ]!,
 				class: 'cm-mw-link-pagename'
 			},
 			{
-				tag: this.tokenTable[ this.tags.mnemonic ]!,
+				tag: context.tokenTable![ this.tags.mnemonic ]!,
 				class: 'cm-mw-mnemonic'
 			},
 			{
-				tag: this.tokenTable[ this.tags.pageName ]!,
+				tag: context.tokenTable![ this.tags.pageName ]!,
 				class: 'cm-mw-pagename'
 			},
 			{
-				tag: this.tokenTable[ this.tags.skipFormatting ]!,
+				tag: context.tokenTable![ this.tags.skipFormatting ]!,
 				class: 'cm-mw-skipformatting'
 			},
 			{
-				tag: this.tokenTable[ this.tags.strong ]!,
+				tag: context.tokenTable![ this.tags.strong ]!,
 				class: 'cm-mw-strong'
 			},
 			{
-				tag: this.tokenTable[ this.tags.tableCaption ]!,
+				tag: context.tokenTable![ this.tags.tableCaption ]!,
 				class: 'cm-mw-table-caption'
 			},
 			{
-				tag: this.tokenTable[ this.tags.templateGround ]!,
+				tag: context.tokenTable![ this.tags.templateGround ]!,
 				class: 'cm-mw-template-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.templateExtGround ]!,
+				tag: context.tokenTable![ this.tags.templateExtGround ]!,
 				class: 'cm-mw-template-ext-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.templateLinkGround ]!,
+				tag: context.tokenTable![ this.tags.templateLinkGround ]!,
 				class: 'cm-mw-template-link-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.templateVariableDelimiter ]!,
+				tag: context.tokenTable![ this.tags.templateVariableDelimiter ]!,
 				class: 'cm-mw-templatevariable-delimiter'
 			},
 			{
-				tag: this.tokenTable[ this.tags.template2ExtGround ]!,
+				tag: context.tokenTable![ this.tags.template2ExtGround ]!,
 				class: 'cm-mw-template2-ext-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.template2Ground ]!,
+				tag: context.tokenTable![ this.tags.template2Ground ]!,
 				class: 'cm-mw-template2-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.template3ExtGround ]!,
+				tag: context.tokenTable![ this.tags.template3ExtGround ]!,
 				class: 'cm-mw-template3-ext-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.template3Ground ]!,
+				tag: context.tokenTable![ this.tags.template3Ground ]!,
 				class: 'cm-mw-template3-ground'
 			},
 			{
-				tag: this.tokenTable[ this.tags.pre ]!,
+				tag: context.tokenTable![ this.tags.pre ]!,
 				class: 'cm-mw-tag-pre'
 			},
 			{
-				tag: this.tokenTable[ this.tags.nowiki ]!,
+				tag: context.tokenTable![ this.tags.nowiki ]!,
 				class: 'cm-mw-tag-nowiki'
 			}
 		] );
