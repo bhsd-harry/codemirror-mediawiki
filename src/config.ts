@@ -6,7 +6,6 @@
 
 import { HighlightStyle } from '@codemirror/language';
 import { Tag, tags as importedTags } from '@lezer/highlight';
-import type { StreamParser } from '@codemirror/language';
 
 const tags: Record<string, Tag | ( ( tag: Tag ) => Tag )> = importedTags;
 
@@ -15,7 +14,8 @@ const tags: Record<string, Tag | ( ( tag: Tag ) => Tag )> = importedTags;
  * This is a separate class mainly to keep static configuration out of
  * the logic in CodeMirrorModeMediaWiki.
  */
-class Config {
+export const modeConfig = {
+
 	/**
 	 * All HTML/XML tags permitted in MediaWiki Core.
 	 *
@@ -24,82 +24,78 @@ class Config {
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 */
-	get permittedHtmlTags(): Record<string, true> {
-		return {
-			b: true,
-			bdi: true,
-			del: true,
-			i: true,
-			ins: true,
-			u: true,
-			font: true,
-			big: true,
-			small: true,
-			sub: true,
-			sup: true,
-			h1: true,
-			h2: true,
-			h3: true,
-			h4: true,
-			h5: true,
-			h6: true,
-			cite: true,
-			code: true,
-			em: true,
-			s: true,
-			strike: true,
-			strong: true,
-			tt: true,
-			var: true,
-			div: true,
-			center: true,
-			blockquote: true,
-			q: true,
-			ol: true,
-			ul: true,
-			dl: true,
-			table: true,
-			caption: true,
-			pre: true,
-			ruby: true,
-			rb: true,
-			rp: true,
-			rt: true,
-			rtc: true,
-			p: true,
-			span: true,
-			abbr: true,
-			dfn: true,
-			kbd: true,
-			samp: true,
-			data: true,
-			time: true,
-			mark: true,
-			br: true,
-			wbr: true,
-			hr: true,
-			li: true,
-			dt: true,
-			dd: true,
-			td: true,
-			th: true,
-			tr: true,
-			noinclude: true,
-			includeonly: true,
-			onlyinclude: true
-		};
-	}
+	permittedHtmlTags: {
+		b: true,
+		bdi: true,
+		del: true,
+		i: true,
+		ins: true,
+		u: true,
+		font: true,
+		big: true,
+		small: true,
+		sub: true,
+		sup: true,
+		h1: true,
+		h2: true,
+		h3: true,
+		h4: true,
+		h5: true,
+		h6: true,
+		cite: true,
+		code: true,
+		em: true,
+		s: true,
+		strike: true,
+		strong: true,
+		tt: true,
+		var: true,
+		div: true,
+		center: true,
+		blockquote: true,
+		q: true,
+		ol: true,
+		ul: true,
+		dl: true,
+		table: true,
+		caption: true,
+		pre: true,
+		ruby: true,
+		rb: true,
+		rp: true,
+		rt: true,
+		rtc: true,
+		p: true,
+		span: true,
+		abbr: true,
+		dfn: true,
+		kbd: true,
+		samp: true,
+		data: true,
+		time: true,
+		mark: true,
+		br: true,
+		wbr: true,
+		hr: true,
+		li: true,
+		dt: true,
+		dd: true,
+		td: true,
+		th: true,
+		tr: true,
+		noinclude: true,
+		includeonly: true,
+		onlyinclude: true
+	},
 
 	/**
 	 * HTML tags that are only self-closing.
 	 */
-	get implicitlyClosedHtmlTags(): Record<string, true> {
-		return {
-			br: true,
-			hr: true,
-			wbr: true
-		};
-	}
+	implicitlyClosedHtmlTags: {
+		br: true,
+		hr: true,
+		wbr: true
+	},
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
@@ -116,80 +112,78 @@ class Config {
 	 * @internal
 	 */
 	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-	get tags() {
-		return {
-			apostrophes: 'character',
-			apostrophesBold: 'strong',
-			apostrophesItalic: 'emphasis',
-			comment: 'comment',
-			doubleUnderscore: 'controlKeyword',
-			extLink: 'url',
-			extLinkBracket: 'modifier',
-			extLinkProtocol: 'namespace',
-			extLinkText: 'labelName',
-			hr: 'contentSeparator',
-			htmlTagAttribute: 'attributeName',
-			htmlTagBracket: 'angleBracket',
-			htmlTagName: 'tagName',
-			extTagAttribute: 'attributeName',
-			extTagBracket: 'angleBracket',
-			extTagName: 'tagName',
-			indenting: 'operatorKeyword',
-			linkBracket: 'squareBracket',
-			linkDelimiter: 'operator',
-			linkText: 'string',
-			linkToSection: 'className',
-			list: 'list',
-			parserFunction: 'unit',
-			parserFunctionBracket: 'paren',
-			parserFunctionDelimiter: 'punctuation',
-			parserFunctionName: 'keyword',
-			sectionHeader: 'heading',
-			sectionHeader1: 'heading1',
-			sectionHeader2: 'heading2',
-			sectionHeader3: 'heading3',
-			sectionHeader4: 'heading4',
-			sectionHeader5: 'heading5',
-			sectionHeader6: 'heading6',
-			signature: 'quote',
-			tableBracket: 'null',
-			tableDefinition: 'definitionOperator',
-			tableDelimiter: 'typeOperator',
-			template: 'attributeValue',
-			templateArgumentName: 'definitionKeyword',
-			templateBracket: 'bracket',
-			templateDelimiter: 'separator',
-			templateName: 'moduleKeyword',
-			templateVariable: 'atom',
-			templateVariableBracket: 'brace',
-			templateVariableName: 'variableName',
-			section: 'mw-section',
-			em: 'mw-em',
-			error: 'mw-error',
-			extTag: 'mw-exttag',
-			extGround: 'mw-ext-ground',
-			freeExtLink: 'mw-free-extlink',
-			freeExtLinkProtocol: 'mw-free-extlink-protocol',
-			link: 'mw-link',
-			linkGround: 'mw-link-ground',
-			linkPageName: 'mw-link-pagename',
-			mnemonic: 'mw-mnemonic',
-			pageName: 'mw-pagename',
-			skipFormatting: 'mw-skipformatting',
-			strong: 'mw-strong',
-			tableCaption: 'mw-table-caption',
-			templateGround: 'mw-template-ground',
-			templateExtGround: 'mw-template-ext-ground',
-			templateLinkGround: 'mw-template-link-ground',
-			templateVariableDelimiter: 'mw-templatevariable-delimiter',
-			template2ExtGround: 'mw-template2-ext-ground',
-			template2Ground: 'mw-template2-ground',
-			template3ExtGround: 'mw-template3-ext-ground',
-			template3Ground: 'mw-template3-ground',
-			pre: 'mw-tag-pre',
-			nowiki: 'mw-tag-nowiki'
-		};
-	}
+	tags: {
+		apostrophes: 'character',
+		apostrophesBold: 'strong',
+		apostrophesItalic: 'emphasis',
+		comment: 'comment',
+		doubleUnderscore: 'controlKeyword',
+		extLink: 'url',
+		extLinkBracket: 'modifier',
+		extLinkProtocol: 'namespace',
+		extLinkText: 'labelName',
+		hr: 'contentSeparator',
+		htmlTagAttribute: 'attributeName',
+		htmlTagBracket: 'angleBracket',
+		htmlTagName: 'tagName',
+		extTagAttribute: 'attributeName',
+		extTagBracket: 'angleBracket',
+		extTagName: 'tagName',
+		indenting: 'operatorKeyword',
+		linkBracket: 'squareBracket',
+		linkDelimiter: 'operator',
+		linkText: 'string',
+		linkToSection: 'className',
+		list: 'list',
+		parserFunction: 'unit',
+		parserFunctionBracket: 'paren',
+		parserFunctionDelimiter: 'punctuation',
+		parserFunctionName: 'keyword',
+		sectionHeader: 'heading',
+		sectionHeader1: 'heading1',
+		sectionHeader2: 'heading2',
+		sectionHeader3: 'heading3',
+		sectionHeader4: 'heading4',
+		sectionHeader5: 'heading5',
+		sectionHeader6: 'heading6',
+		signature: 'quote',
+		tableBracket: 'null',
+		tableDefinition: 'definitionOperator',
+		tableDelimiter: 'typeOperator',
+		template: 'attributeValue',
+		templateArgumentName: 'definitionKeyword',
+		templateBracket: 'bracket',
+		templateDelimiter: 'separator',
+		templateName: 'moduleKeyword',
+		templateVariable: 'atom',
+		templateVariableBracket: 'brace',
+		templateVariableName: 'variableName',
+		section: 'mw-section',
+		em: 'mw-em',
+		error: 'mw-error',
+		extTag: 'mw-exttag',
+		extGround: 'mw-ext-ground',
+		freeExtLink: 'mw-free-extlink',
+		freeExtLinkProtocol: 'mw-free-extlink-protocol',
+		link: 'mw-link',
+		linkGround: 'mw-link-ground',
+		linkPageName: 'mw-link-pagename',
+		mnemonic: 'mw-mnemonic',
+		pageName: 'mw-pagename',
+		skipFormatting: 'mw-skipformatting',
+		strong: 'mw-strong',
+		tableCaption: 'mw-table-caption',
+		templateGround: 'mw-template-ground',
+		templateExtGround: 'mw-template-ext-ground',
+		templateLinkGround: 'mw-template-link-ground',
+		templateVariableDelimiter: 'mw-templatevariable-delimiter',
+		template2ExtGround: 'mw-template2-ext-ground',
+		template2Ground: 'mw-template2-ground',
+		template3ExtGround: 'mw-template3-ext-ground',
+		template3Ground: 'mw-template3-ground',
+		pre: 'mw-tag-pre',
+		nowiki: 'mw-tag-nowiki'
+	},
 
 	/**
 	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
@@ -226,7 +220,7 @@ class Config {
 			[ this.tags.pre ]: Tag.define(),
 			[ this.tags.nowiki ]: Tag.define()
 		};
-	}
+	},
 
 	/**
 	 * This defines the actual CSS class assigned to each tag/token.
@@ -234,7 +228,7 @@ class Config {
 	 *
 	 * @see https://codemirror.net/docs/ref/#language.TagStyle
 	 */
-	getHighlightStyle( context: StreamParser<unknown> ): HighlightStyle {
+	get highlightStyle(): HighlightStyle {
 		return HighlightStyle.define( [
 			{
 				tag: tags[ this.tags.apostrophes ] as Tag,
@@ -422,103 +416,101 @@ class Config {
 			 * IMPORTANT: These need to reference the CodeMirrorModeMediaWiki context.
 			 */
 			{
-				tag: context.tokenTable![ this.tags.section ]!,
+				tag: this.tokenTable[ this.tags.section ]!,
 				class: 'cm-mw-section'
 			},
 			{
-				tag: context.tokenTable![ this.tags.em ]!,
+				tag: this.tokenTable[ this.tags.em ]!,
 				class: 'cm-mw-em'
 			},
 			{
-				tag: context.tokenTable![ this.tags.error ]!,
+				tag: this.tokenTable[ this.tags.error ]!,
 				class: 'cm-mw-error'
 			},
 			{
-				tag: context.tokenTable![ this.tags.extTag ]!,
+				tag: this.tokenTable[ this.tags.extTag ]!,
 				class: 'cm-mw-exttag'
 			},
 			{
-				tag: context.tokenTable![ this.tags.extGround ]!,
+				tag: this.tokenTable[ this.tags.extGround ]!,
 				class: 'cm-mw-ext-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.freeExtLink ]!,
+				tag: this.tokenTable[ this.tags.freeExtLink ]!,
 				class: 'cm-mw-free-extlink'
 			},
 			{
-				tag: context.tokenTable![ this.tags.freeExtLinkProtocol ]!,
+				tag: this.tokenTable[ this.tags.freeExtLinkProtocol ]!,
 				class: 'cm-mw-free-extlink-protocol'
 			},
 			{
-				tag: context.tokenTable![ this.tags.linkGround ]!,
+				tag: this.tokenTable[ this.tags.linkGround ]!,
 				class: 'cm-mw-link-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.linkPageName ]!,
+				tag: this.tokenTable[ this.tags.linkPageName ]!,
 				class: 'cm-mw-link-pagename'
 			},
 			{
-				tag: context.tokenTable![ this.tags.mnemonic ]!,
+				tag: this.tokenTable[ this.tags.mnemonic ]!,
 				class: 'cm-mw-mnemonic'
 			},
 			{
-				tag: context.tokenTable![ this.tags.pageName ]!,
+				tag: this.tokenTable[ this.tags.pageName ]!,
 				class: 'cm-mw-pagename'
 			},
 			{
-				tag: context.tokenTable![ this.tags.skipFormatting ]!,
+				tag: this.tokenTable[ this.tags.skipFormatting ]!,
 				class: 'cm-mw-skipformatting'
 			},
 			{
-				tag: context.tokenTable![ this.tags.strong ]!,
+				tag: this.tokenTable[ this.tags.strong ]!,
 				class: 'cm-mw-strong'
 			},
 			{
-				tag: context.tokenTable![ this.tags.tableCaption ]!,
+				tag: this.tokenTable[ this.tags.tableCaption ]!,
 				class: 'cm-mw-table-caption'
 			},
 			{
-				tag: context.tokenTable![ this.tags.templateGround ]!,
+				tag: this.tokenTable[ this.tags.templateGround ]!,
 				class: 'cm-mw-template-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.templateExtGround ]!,
+				tag: this.tokenTable[ this.tags.templateExtGround ]!,
 				class: 'cm-mw-template-ext-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.templateLinkGround ]!,
+				tag: this.tokenTable[ this.tags.templateLinkGround ]!,
 				class: 'cm-mw-template-link-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.templateVariableDelimiter ]!,
+				tag: this.tokenTable[ this.tags.templateVariableDelimiter ]!,
 				class: 'cm-mw-templatevariable-delimiter'
 			},
 			{
-				tag: context.tokenTable![ this.tags.template2ExtGround ]!,
+				tag: this.tokenTable[ this.tags.template2ExtGround ]!,
 				class: 'cm-mw-template2-ext-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.template2Ground ]!,
+				tag: this.tokenTable[ this.tags.template2Ground ]!,
 				class: 'cm-mw-template2-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.template3ExtGround ]!,
+				tag: this.tokenTable[ this.tags.template3ExtGround ]!,
 				class: 'cm-mw-template3-ext-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.template3Ground ]!,
+				tag: this.tokenTable[ this.tags.template3Ground ]!,
 				class: 'cm-mw-template3-ground'
 			},
 			{
-				tag: context.tokenTable![ this.tags.pre ]!,
+				tag: this.tokenTable[ this.tags.pre ]!,
 				class: 'cm-mw-tag-pre'
 			},
 			{
-				tag: context.tokenTable![ this.tags.nowiki ]!,
+				tag: this.tokenTable[ this.tags.nowiki ]!,
 				class: 'cm-mw-tag-nowiki'
 			}
 		] );
 	}
-}
-
-export const modeConfig = new Config();
+};

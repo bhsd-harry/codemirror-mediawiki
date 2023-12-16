@@ -515,7 +515,7 @@ class CodeMirrorModeMediaWiki {
 			stream.eatSpace();
 
 			if ( isHtmlTag ) {
-				if ( isCloseTag && !modeConfig.implicitlyClosedHtmlTags[ name ] ) {
+				if ( isCloseTag && !( modeConfig.implicitlyClosedHtmlTags as Record<string, boolean> )[ name ] ) {
 					state.tokenize = this.eatChar( '>', modeConfig.tags.htmlTagBracket );
 				} else {
 					state.tokenize = this.eatHtmlTagAttribute( name );
@@ -1263,7 +1263,7 @@ class CodeMirrorModeMediaWiki {
 export const mediawiki = ( config: MwConfig ): LanguageSupport => {
 	const parser = new CodeMirrorModeMediaWiki( config ).mediawiki;
 	const lang = StreamLanguage.define( parser );
-	const highlighter = syntaxHighlighting( modeConfig.getHighlightStyle( parser ) as Highlighter );
+	const highlighter = syntaxHighlighting( modeConfig.highlightStyle as Highlighter );
 	return new LanguageSupport( lang, highlighter );
 };
 

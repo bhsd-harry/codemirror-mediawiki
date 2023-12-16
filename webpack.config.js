@@ -17,9 +17,7 @@ module.exports = ( _, { mode } ) => ( {
 		outputModule: true
 	},
 	resolve: {
-		extensions: [
-			'.ts'
-		]
+		extensions: [ '.ts' ]
 	},
 	plugins: [],
 	module: {
