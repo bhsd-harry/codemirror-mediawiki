@@ -11,16 +11,17 @@ import { // eslint-disable-line @typescript-eslint/consistent-type-imports
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
-	// StreamLanguage,
+	StreamLanguage,
 	LanguageSupport,
-	bracketMatching
+	bracketMatching,
+	indentUnit
 } from '@codemirror/language';
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
 import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
 import { closeBrackets } from '@codemirror/autocomplete';
 import { mediawiki, html } from './mediawiki';
-// import * as plugins from './plugins';
+import * as plugins from './plugins';
 import type { ViewPlugin } from '@codemirror/view';
 import type { Extension } from '@codemirror/state';
 import type { Diagnostic } from '@codemirror/lint';
@@ -34,9 +35,9 @@ const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
 	mediawiki,
 	html
 };
-// for ( const [ language, parser ] of Object.entries( plugins ) ) {
-// 	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
-// }
+for ( const [ language, parser ] of Object.entries( plugins ) ) {
+	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
+}
 const linters: Record<string, Extension> = {};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unknown> ]> = {
@@ -52,6 +53,7 @@ export class CodeMirror6 {
 	declare language: Compartment;
 	declare linter: Compartment;
 	declare extensions: Compartment;
+	declare indent: Compartment;
 	declare view: EditorView;
 
 	/**
@@ -65,10 +67,12 @@ export class CodeMirror6 {
 		this.language = new Compartment();
 		this.linter = new Compartment();
 		this.extensions = new Compartment();
+		this.indent = new Compartment();
 		const extensions = [
 			this.language.of( languages[ lang ]!( config ) ),
 			this.linter.of( [] ),
 			this.extensions.of( [] ),
+			this.indent.of( indentUnit.of( '\t' ) ),
 			syntaxHighlighting( defaultHighlightStyle as Highlighter, { fallback: true } ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
@@ -168,6 +172,13 @@ export class CodeMirror6 {
 					return extension( configs[ lang ] );
 				} ) )
 			]
+		} );
+	}
+
+	/** 设置缩进 */
+	setIndent( indent: string ): void {
+		this.view.dispatch( {
+			effects: [ this.indent.reconfigure( indentUnit.of( indent ) ) ]
 		} );
 	}
 }

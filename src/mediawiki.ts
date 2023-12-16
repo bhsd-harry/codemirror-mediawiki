@@ -6,7 +6,7 @@
 
 import { LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { modeConfig } from './config';
-// import * as plugins from './plugins';
+import * as plugins from './plugins';
 import type { StreamParser, StringStream } from '@codemirror/language';
 import type { Highlighter } from '@lezer/highlight';
 
@@ -1200,7 +1200,6 @@ class CodeMirrorModeMediaWiki {
 				return t.style;
 			},
 
-			// FIXME: This is non-functional and still needs to be ported to CM6, see T348684
 			blankLine: ( state ): void => {
 				if ( state.extMode && state.extMode.blankLine ) {
 					state.extMode.blankLine( state.extState as State, 0 );
@@ -1249,13 +1248,13 @@ class CodeMirrorModeMediaWiki {
 	}
 }
 
-// for ( const [ language, parser ] of Object.entries( plugins ) ) {
-// 	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
-// 		get() {
-// 			return parser;
-// 		}
-// 	} );
-// }
+for ( const [ language, parser ] of Object.entries( plugins ) ) {
+	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
+		get() {
+			return parser;
+		}
+	} );
+}
 
 /**
  * Gets a LanguageSupport instance for the MediaWiki mode.
