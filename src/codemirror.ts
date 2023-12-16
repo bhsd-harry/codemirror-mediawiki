@@ -49,12 +49,20 @@ const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unkn
 };
 
 export class CodeMirror6 {
-	declare textarea: HTMLTextAreaElement;
-	declare language: Compartment;
-	declare linter: Compartment;
-	declare extensions: Compartment;
-	declare indent: Compartment;
-	declare view: EditorView;
+	#textarea;
+	#language;
+	#linter;
+	#extensions;
+	#indent;
+	#view;
+
+	get textarea(): HTMLTextAreaElement {
+		return this.#textarea;
+	}
+
+	get view(): EditorView {
+		return this.#view;
+	}
 
 	/**
 	 * @param textarea 文本框
@@ -62,17 +70,17 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
-		this.textarea = textarea;
+		this.#textarea = textarea;
 		const { offsetHeight } = textarea;
-		this.language = new Compartment();
-		this.linter = new Compartment();
-		this.extensions = new Compartment();
-		this.indent = new Compartment();
+		this.#language = new Compartment();
+		this.#linter = new Compartment();
+		this.#extensions = new Compartment();
+		this.#indent = new Compartment();
 		const extensions = [
-			this.language.of( languages[ lang ]!( config ) ),
-			this.linter.of( [] ),
-			this.extensions.of( [] ),
-			this.indent.of( indentUnit.of( '\t' ) ),
+			this.#language.of( languages[ lang ]!( config ) ),
+			this.#linter.of( [] ),
+			this.#extensions.of( [] ),
+			this.#indent.of( indentUnit.of( '\t' ) ),
 			syntaxHighlighting( defaultHighlightStyle as Highlighter, { fallback: true } ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
@@ -89,14 +97,14 @@ export class CodeMirror6 {
 				...searchKeymap
 			] )
 		];
-		this.view = new EditorView( {
+		this.#view = new EditorView( {
 			extensions,
 			doc: textarea.value,
 			parent: textarea.parentElement!
 		} );
-		this.view.dom.style.minHeight = '2em';
-		this.view.dom.style.height = `${ offsetHeight }px`;
-		this.view.requestMeasure();
+		this.#view.dom.style.minHeight = '2em';
+		this.#view.dom.style.height = `${ offsetHeight }px`;
+		this.#view.requestMeasure();
 		textarea.style.display = 'none';
 		if ( textarea.form ) {
 			textarea.form.addEventListener( 'submit', () => {
@@ -111,10 +119,10 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	setLanguage( lang = 'plain', config?: unknown ): void {
-		this.view.dispatch( {
+		this.#view.dispatch( {
 			effects: [
-				this.language.reconfigure( languages[ lang ]!( config ) ),
-				this.linter.reconfigure( linters[ lang ] ?? [] )
+				this.#language.reconfigure( languages[ lang ]!( config ) ),
+				this.#linter.reconfigure( linters[ lang ] ?? [] )
 			]
 		} );
 	}
@@ -124,7 +132,7 @@ export class CodeMirror6 {
 	 * @param lintSource 语法检查函数
 	 */
 	lint( lintSource?: ( str: string ) => Diagnostic[] | Promise<Diagnostic[]> ): void {
-		const { language } = this.language.get( this.view.state ) as LanguageSupport | { language: undefined },
+		const { language } = this.#language.get( this.#view.state ) as LanguageSupport | { language: undefined },
 			name = language?.name || 'plain',
 			linterExtension = lintSource
 				? [
@@ -138,19 +146,19 @@ export class CodeMirror6 {
 		} else {
 			delete linters[ name ];
 		}
-		this.view.dispatch( {
-			effects: [ this.linter.reconfigure( linterExtension ) ]
+		this.#view.dispatch( {
+			effects: [ this.#linter.reconfigure( linterExtension ) ]
 		} );
 	}
 
 	/** 立即更新语法检查 */
 	update(): void {
-		const extension = this.linter.get( this.view.state ) as [ unknown, ViewPlugin<{
+		const extension = this.#linter.get( this.#view.state ) as [ unknown, ViewPlugin<{
 			set: boolean;
 			force(): void;
 		}> ] | [];
 		if ( extension.length > 0 ) {
-			const plugin = this.view.plugin( extension[ 1 ]! )!;
+			const plugin = this.#view.plugin( extension[ 1 ]! )!;
 			plugin.set = true;
 			plugin.force();
 		}
@@ -158,16 +166,16 @@ export class CodeMirror6 {
 
 	/** 保存至文本框 */
 	save(): void {
-		this.textarea.value = this.view.state.doc.toString();
+		this.#textarea.value = this.#view.state.doc.toString();
 	}
 
 	/** 添加扩展 */
 	prefer( names: string[] ): void {
-		const { language } = this.language.get( this.view.state ) as LanguageSupport | { language: undefined },
+		const { language } = this.#language.get( this.#view.state ) as LanguageSupport | { language: undefined },
 			lang = language?.name || 'plain';
-		this.view.dispatch( {
+		this.#view.dispatch( {
 			effects: [
-				this.extensions.reconfigure( names.map( ( name ) => {
+				this.#extensions.reconfigure( names.map( ( name ) => {
 					const [ extension, configs ] = avail[ name ]!;
 					return extension( configs[ lang ] );
 				} ) )
@@ -177,8 +185,8 @@ export class CodeMirror6 {
 
 	/** 设置缩进 */
 	setIndent( indent: string ): void {
-		this.view.dispatch( {
-			effects: [ this.indent.reconfigure( indentUnit.of( indent ) ) ]
+		this.#view.dispatch( {
+			effects: [ this.#indent.reconfigure( indentUnit.of( indent ) ) ]
 		} );
 	}
 }
