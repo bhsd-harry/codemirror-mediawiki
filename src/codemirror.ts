@@ -81,7 +81,7 @@ export class CodeMirror6 {
 			this.#linter.of( [] ),
 			this.#extensions.of( [] ),
 			this.#indent.of( indentUnit.of( '\t' ) ),
-			syntaxHighlighting( defaultHighlightStyle as Highlighter, { fallback: true } ),
+			syntaxHighlighting( defaultHighlightStyle as Highlighter ),
 			EditorView.contentAttributes.of( {
 				accesskey: textarea.accessKey,
 				dir: textarea.dir,
