@@ -860,6 +860,12 @@
 				],
 				"@typescript-eslint/unified-signatures": 2
 			}
+		},
+		{
+			"files": "./gh-page.js",
+			"parserOptions": {
+				"sourceType": "module"
+			}
 		}
 	],
 	"settings": {
