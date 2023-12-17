@@ -37,7 +37,7 @@ h2 {
 }
 .fieldLayout {
 	display: table;
-	padding: .5em 0;
+	padding: .1em 0;
 }
 .field, .header {
 	display: table-cell;
@@ -49,12 +49,17 @@ h2 {
 .field {
 	position: relative;
 }
-input {
-	outline: none;
-	border: 1.5px solid #dedede;
-	border-radius: .2em;
-	box-shadow: none;
-	padding: .4em;
+input[type="text"] {
+	box-shadow: inset 0 0 0 1px transparent;
+	background-color: #fff;
+	margin: 0;
+	border: 1px solid #a2a9b1;
+	border-radius: 2px;
+	padding: 1px 2px;
+	font: inherit;
+	width: 6ch;
+}
+input[type="checkbox"], input[type="radio"] {
 	position: relative;
 	z-index: 1;
 	opacity: 0;
@@ -65,20 +70,46 @@ input + span {
 	top: 50%;
 	transform: translateY(-50%);
 	display: inline-block;
-	width: 1em;
-	height: 1em;
+	width: 1.3em;
+	height: 1.3em;
 	background-color: #fff;
 	border: 1px solid #72777d;
+	box-sizing: border-box;
+}
+input[type="checkbox"] + span {
 	border-radius: 2px;
 }
+input[type="radio"] + span {
+	border-radius: 50%;
+}
 input:checked + span {
-	background-color: #36c;
 	border-color: #36c;
-	background-size: 1em 1em;
+}
+input[type="checkbox"]:checked + span {
+	background-color: #36c;
+	background-size: calc(1.3em - 2px) calc(1.3em - 2px);
 	background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E%3Cg fill=%22%23fff%22%3E%3Ctitle xmlns:default=%22http://www.w3.org/2000/svg%22%3Echeck%3C/title%3E%3Cpath xmlns:default=%22http://www.w3.org/2000/svg%22 d=%22M7 14.17L2.83 10l-1.41 1.41L7 17 19 5l-1.41-1.42L7 14.17z%22/%3E%3C/g%3E%3C/svg%3E");
 }
+input[type="radio"]:checked + span {
+	border-width: 6px;
+}
+input[type="text"]:hover {
+	border-color: #72777d;
+}
+input[type="checkbox"]:hover + span, input[type="radio"]:hover + span {
+	border-color: #447ff5;
+}
+input[type="text"]:focus, input[type="checkbox"]:focus + span {
+	border-color: #36c;
+	box-shadow: inset 0 0 0 1px #36c;
+	outline: none;
+}
+input[type="checkbox"]:active + span, input[type="radio"]:active + span {
+	background-color: #2a4b8d;
+	border-color: #2a4b8d;
+}
 label {
-	padding-left: .7em;
+	padding: 0 .7em;
 }
 textarea {
 	max-height: 100vh;
@@ -87,6 +118,7 @@ textarea {
 .cm-editor {
 	border-radius: .3em;
 	border: 1.5px solid #dedede;
+	margin-top: 0.5em;
 }
 
 @media screen and (max-width: 720px) {

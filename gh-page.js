@@ -1,23 +1,45 @@
 import { CodeMirror6 } from './dist/main.min.js';
 
 ( () => {
-	const textarea = document.querySelector( '#wpTextbox' ),
-		input = document.querySelector( '#mediawiki' ),
-		cm = new CodeMirror6( textarea );
+	const /** @type {HTMLTextAreaElement} */ textarea = document.querySelector( '#wpTextbox' ),
+		/** @type {NodeListOf<HTMLInputElement>} */ languages = document.querySelectorAll( 'input[name="language"]' ),
+		/** @type {NodeListOf<HTMLInputElement>} */ extensions = document.querySelectorAll( 'input[type="checkbox"]' ),
+		/** @type {HTMLInputElement} */ indent = document.querySelector( '#indent' ),
+		/** @type {import('./src/codemirror').CodeMirror6} */ cm = new CodeMirror6( textarea );
+	let config;
 
-	const initMediawiki = async () => {
-		const config = await ( await fetch( 'http://127.0.0.1:8080/config.json' ) ).json();
-		cm.setLanguage( 'mediawiki', config );
+	/** 设置语言 */
+	const init = /** @param {string} lang */ async ( lang ) => {
+		if ( lang === 'mediawiki' ) {
+			// eslint-disable-next-line require-atomic-updates
+			config = config || await ( await fetch( 'config.json' ) ).json();
+		}
+		cm.setLanguage( lang, config );
 	};
 
-	input.addEventListener( 'change', () => {
+	/** 设置扩展 */
+	const prefer = () => {
+		const preferred = [ ...extensions ].filter( ( { checked } ) => checked ).map( ( { id } ) => id );
+		cm.prefer( preferred );
+	};
+
+	/** 设置缩进 */
+	const indentChange = () => {
+		cm.setIndent( indent.value || '\t' );
+	};
+
+	for ( const input of languages ) {
+		input.addEventListener( 'change', () => {
+			init( input.id );
+		} );
 		if ( input.checked ) {
-			initMediawiki();
-		} else {
-			cm.setLanguage( 'plain' );
+			init( input.id );
 		}
-	} );
-	if ( input.checked ) {
-		initMediawiki();
 	}
+	for ( const extension of extensions ) {
+		extension.addEventListener( 'change', prefer );
+	}
+	prefer();
+	indent.addEventListener( 'change', indentChange );
+	indentChange();
 } )();

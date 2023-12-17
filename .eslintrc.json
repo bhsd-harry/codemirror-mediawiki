@@ -865,6 +865,12 @@
 			"files": "./gh-page.js",
 			"parserOptions": {
 				"sourceType": "module"
+			},
+			"extends": [
+				"plugin:es-x/restrict-to-es2018"
+			],
+			"rules": {
+				"logical-assignment-operators": 0
 			}
 		}
 	],

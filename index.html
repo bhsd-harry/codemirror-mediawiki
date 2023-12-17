@@ -5,19 +5,100 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=yes, minimum-scale=0.25, maximum-scale=5.0, width=device-width">
 		<link rel="stylesheet" href="gh-page.css">
 		<link rel="stylesheet" href="mediawiki.css">
-		<script defer="" src="http://127.0.0.1:8080/gh-page.js" type="module"></script>
+		<script defer="" src="gh-page.js" type="module"></script>
 	</head>
 	<body>
 		<main>
 			<article>
-				<h2>Please input wikitext into the text box below.</h2>
+				<h2>Please choose the language and CodeMirror extensions.</h2>
 				<div class="fieldLayout">
 					<span class="field">
-						<input type="checkbox" name="mediawiki" id="mediawiki">
+						<input type="radio" name="language" id="mediawiki">
 						<span></span>
 					</span>
 					<span class="header">
-						<label for="mediawiki">Highlight as wikitext</label>
+						<label for="mediawiki">Wikitext</label>
+					</span>
+					<span class="field">
+						<input type="radio" name="language" id="javascript">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="javascript">JavaScript</label>
+					</span>
+					<span class="field">
+						<input type="radio" name="language" id="css">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="css">CSS</label>
+					</span>
+					<span class="field">
+						<input type="radio" name="language" id="lua">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="lua">Lua</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="highlightSpecialChars" id="highlightSpecialChars">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="highlightSpecialChars">Highlight invisible characters</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="highlightActiveLine" id="highlightActiveLine">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="highlightActiveLine">Highlight the active line</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="highlightWhitespace" id="highlightWhitespace">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="highlightWhitespace">Highlight whitespace</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="highlightTrailingWhitespace" id="highlightTrailingWhitespace">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="highlightTrailingWhitespace">Highlight trailing whitespace</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="bracketMatching" id="bracketMatching">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="bracketMatching">Match brackets</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="field">
+						<input type="checkbox" name="closeBrackets" id="closeBrackets">
+						<span></span>
+					</span>
+					<span class="header">
+						<label for="closeBrackets">Auto-close brackets</label>
+					</span>
+				</div>
+				<div class="fieldLayout">
+					<span class="header" style="cursor:default;padding-right:0.7em">Indent unit string</span>
+					<span class="field">
+						<input type="text" name="indent" id="indent" placeholder="\t">
 					</span>
 				</div>
 				<div>

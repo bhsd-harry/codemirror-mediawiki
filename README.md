@@ -21,7 +21,7 @@
 
 This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
 
-Here is a [demo](https://bhsd-harry.github.io/wikiparser-node/index.html#linter) when the option "with syntax highlighting" is checked.
+Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki).
 
 # Usage
 
