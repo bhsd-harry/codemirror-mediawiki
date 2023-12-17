@@ -12,7 +12,7 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
-		"/dist/",
+		"/dist/*.[jt]s",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
