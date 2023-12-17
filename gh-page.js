@@ -42,4 +42,6 @@ import { CodeMirror6 } from './dist/main.min.js';
 	prefer();
 	indent.addEventListener( 'change', indentChange );
 	indentChange();
+
+	Object.assign( window, { cm } );
 } )();

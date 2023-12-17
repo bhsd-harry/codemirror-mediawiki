@@ -159,12 +159,12 @@ export class CodeMirror6 {
 
 	/** 立即更新语法检查 */
 	update(): void {
-		const extension = this.#linter.get( this.#view.state ) as [ unknown, ViewPlugin<{
+		const extension = this.#linter.get( this.#view.state ) as [[ unknown, ViewPlugin<{
 			set: boolean;
 			force(): void;
-		}> ] | [];
+		}> ]] | [];
 		if ( extension.length > 0 ) {
-			const plugin = this.#view.plugin( extension[ 1 ]! )!;
+			const plugin = this.#view.plugin( extension[ 0 ]![ 1 ] )!;
 			plugin.set = true;
 			plugin.force();
 		}
