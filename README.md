@@ -113,6 +113,7 @@ cm.prefer( [
 	'closeBrackets',
 	'highlightActiveLine',
 	'highlightSpecialChars',
+	'highlightWhitespace',
 	'highlightTrailingWhitespace',
 ] );
 ```
