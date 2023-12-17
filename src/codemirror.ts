@@ -5,6 +5,7 @@ import {
 	keymap,
 	highlightSpecialChars,
 	highlightActiveLine,
+	highlightWhitespace,
 	highlightTrailingWhitespace
 } from '@codemirror/view';
 import { // eslint-disable-line @typescript-eslint/consistent-type-imports
@@ -43,6 +44,7 @@ const linters: Record<string, Extension> = {};
 const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unknown> ]> = {
 	highlightSpecialChars: [ highlightSpecialChars, {} ],
 	highlightActiveLine: [ highlightActiveLine, {} ],
+	highlightWhitespace: [ highlightWhitespace, {} ],
 	highlightTrailingWhitespace: [ highlightTrailingWhitespace, {} ],
 	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ],
 	closeBrackets: [ closeBrackets, {} ]
@@ -76,6 +78,7 @@ export class CodeMirror6 {
 		this.#linter = new Compartment();
 		this.#extensions = new Compartment();
 		this.#indent = new Compartment();
+		let timer: number | undefined;
 		const extensions = [
 			this.#language.of( languages[ lang ]!( config ) ),
 			this.#linter.of( [] ),
@@ -95,22 +98,25 @@ export class CodeMirror6 {
 				...defaultKeymap,
 				...historyKeymap,
 				...searchKeymap
-			] )
+			] ),
+			EditorView.updateListener.of( ( { state: { doc }, docChanged } ) => {
+				if ( docChanged ) {
+					clearTimeout( timer );
+					timer = window.setTimeout( () => {
+						textarea.value = doc.toString();
+					}, 400 );
+				}
+			} )
 		];
 		this.#view = new EditorView( {
 			extensions,
-			doc: textarea.value,
-			parent: textarea.parentElement!
+			doc: textarea.value
 		} );
+		textarea.parentNode!.insertBefore( this.#view.dom, textarea );
 		this.#view.dom.style.minHeight = '2em';
 		this.#view.dom.style.height = `${ offsetHeight }px`;
 		this.#view.requestMeasure();
 		textarea.style.display = 'none';
-		if ( textarea.form ) {
-			textarea.form.addEventListener( 'submit', () => {
-				this.save();
-			} );
-		}
 	}
 
 	/**
@@ -162,11 +168,6 @@ export class CodeMirror6 {
 			plugin.set = true;
 			plugin.force();
 		}
-	}
-
-	/** 保存至文本框 */
-	save(): void {
-		this.#textarea.value = this.#view.state.doc.toString();
 	}
 
 	/** 添加扩展 */

@@ -11,7 +11,6 @@
 	- [view](#view)
 	- [lint](#lint)
 	- [prefer](#prefer)
-	- [save](#save)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
 	- [update](#update)
@@ -116,19 +115,6 @@ cm.prefer( [
 	'highlightSpecialChars',
 	'highlightTrailingWhitespace',
 ] );
-```
-
-</details>
-
-## save
-
-<details>
-	<summary>Expand</summary>
-
-Save the content of CodeMirror to the textarea.
-
-```js
-cm.update();
 ```
 
 </details>
