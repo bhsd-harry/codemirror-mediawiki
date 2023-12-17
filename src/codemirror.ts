@@ -19,7 +19,7 @@ import { // eslint-disable-line @typescript-eslint/consistent-type-imports
 } from '@codemirror/language';
 import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
 import { searchKeymap } from '@codemirror/search';
-import { linter, lintGutter, lintKeymap } from '@codemirror/lint';
+import { linter, lintGutter, openLintPanel, closeLintPanel } from '@codemirror/lint';
 import { closeBrackets } from '@codemirror/autocomplete';
 import { mediawiki, html } from './mediawiki';
 import * as plugins from './plugins';
@@ -131,6 +131,7 @@ export class CodeMirror6 {
 				this.#linter.reconfigure( linters[ lang ] ?? [] )
 			]
 		} );
+		( linters[ lang ] ? openLintPanel : closeLintPanel )( this.#view );
 	}
 
 	/**
@@ -143,8 +144,7 @@ export class CodeMirror6 {
 			linterExtension = lintSource
 				? [
 					linter( ( view: EditorView ) => lintSource( view.state.doc.toString() ) ),
-					lintGutter(),
-					keymap.of( lintKeymap )
+					lintGutter()
 				]
 				: [];
 		if ( lintSource ) {
@@ -155,6 +155,7 @@ export class CodeMirror6 {
 		this.#view.dispatch( {
 			effects: [ this.#linter.reconfigure( linterExtension ) ]
 		} );
+		( lintSource ? openLintPanel : closeLintPanel )( this.#view );
 	}
 
 	/** 立即更新语法检查 */
