@@ -22,8 +22,8 @@ main {
 	max-width: 1200px;
 	margin: 3rem 0;
 	background-color: #fff;
-	box-shadow: 0 0 .5rem rgba(0, 0, 0, .1);
-	border-radius: .5rem;
+	box-shadow: 0 0 0.5rem rgba( 0, 0, 0, 0.1 );
+	border-radius: 0.5rem;
 }
 article {
 	display: block;
@@ -32,12 +32,12 @@ article {
 }
 h2 {
 	font-size: 1.3em;
-	margin: .5rem 0;
+	margin: 0.5rem 0;
 	font-weight: bold;
 }
 .fieldLayout {
 	display: table;
-	padding: .1em 0;
+	padding: 0.1em 0;
 }
 .field, .header {
 	display: table-cell;
@@ -68,7 +68,7 @@ input + span {
 	position: absolute;
 	left: 0;
 	top: 50%;
-	transform: translateY(-50%);
+	transform: translateY( -50% );
 	display: inline-block;
 	width: 1.3em;
 	height: 1.3em;
@@ -87,8 +87,8 @@ input:checked + span {
 }
 input[type="checkbox"]:checked + span {
 	background-color: #36c;
-	background-size: calc(1.3em - 2px) calc(1.3em - 2px);
-	background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E%3Cg fill=%22%23fff%22%3E%3Ctitle xmlns:default=%22http://www.w3.org/2000/svg%22%3Echeck%3C/title%3E%3Cpath xmlns:default=%22http://www.w3.org/2000/svg%22 d=%22M7 14.17L2.83 10l-1.41 1.41L7 17 19 5l-1.41-1.42L7 14.17z%22/%3E%3C/g%3E%3C/svg%3E");
+	background-size: calc( 1.3em - 2px ) calc( 1.3em - 2px );
+	background-image: url( "data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E%3Cg fill=%22%23fff%22%3E%3Ctitle xmlns:default=%22http://www.w3.org/2000/svg%22%3Echeck%3C/title%3E%3Cpath xmlns:default=%22http://www.w3.org/2000/svg%22 d=%22M7 14.17L2.83 10l-1.41 1.41L7 17 19 5l-1.41-1.42L7 14.17z%22/%3E%3C/g%3E%3C/svg%3E" );
 }
 input[type="radio"]:checked + span {
 	border-width: 6px;
@@ -109,14 +109,14 @@ input[type="checkbox"]:active + span, input[type="radio"]:active + span {
 	border-color: #2a4b8d;
 }
 label {
-	padding: 0 .7em;
+	padding: 0 0.7em;
 }
 textarea {
 	max-height: 100vh;
 	direction: ltr;
 }
 .cm-editor {
-	border-radius: .3em;
+	border-radius: 0.3em;
 	border: 1.5px solid #dedede;
 	margin-top: 0.5em;
 }

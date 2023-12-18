@@ -16,7 +16,8 @@
 		"plugin:regexp/recommended"
 	],
 	"parserOptions": {
-		"ecmaVersion": 13
+		"ecmaVersion": 13,
+		"sourceType": "module"
 	},
 	"ignorePatterns": [
 		"dist/"
@@ -863,9 +864,6 @@
 		},
 		{
 			"files": "./gh-page.js",
-			"parserOptions": {
-				"sourceType": "module"
-			},
 			"extends": [
 				"plugin:es-x/restrict-to-es2018"
 			],
