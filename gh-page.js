@@ -2,15 +2,16 @@ import { CodeMirror6 } from './dist/main.min.js';
 
 /** @typedef {import('@codemirror/lint').Diagnostic} Diagnostic */
 /** @typedef {(s: string) => Diagnostic[] | Promise<Diagnostic[]>} LintSource */
+/** @typedef {{parse(s: string): void, SyntaxError: new () => {message: string, index: number}}} luaparse */
 
 ( () => {
-	const /** @type {HTMLTextAreaElement} */ textarea = document.querySelector( '#wpTextbox' ),
+	const textarea = /** @type {HTMLTextAreaElement} */ ( document.querySelector( '#wpTextbox' ) ),
 		/** @type {NodeListOf<HTMLInputElement>} */ languages = document.querySelectorAll( 'input[name="language"]' ),
 		/** @type {NodeListOf<HTMLInputElement>} */ extensions = document.querySelectorAll( 'input[type="checkbox"]' ),
-		/** @type {HTMLInputElement} */ indent = document.querySelector( '#indent' ),
+		indent = /** @type {HTMLInputElement} */ ( document.querySelector( '#indent' ) ),
 		/** @type {import('./src/codemirror').CodeMirror6} */ cm = new CodeMirror6( textarea ),
-		/** @type {Record<string, LintSource} */ linters = {};
-	let config;
+		/** @type {Record<string, LintSource>} */ linters = {};
+	let /** @type {Record<string, any>} */ config;
 
 	/**
 	 * 使用传统方法加载脚本
@@ -45,8 +46,9 @@ import { CodeMirror6 } from './dist/main.min.js';
 					const src = 'combine/npm/wikiparser-node@1.1.3-b/extensions/dist/base.min.js,'
 						+ 'npm/wikiparser-node@1.1.3-b/extensions/dist/lint.min.js';
 					const callback = () => {
-						const /** @type {{codemirror: LintSource}} */ Linter = new window.wikiparse.Linter();
-						return /** @type {LintSource} */ ( s ) => Linter.codemirror( s );
+						// @ts-expect-error global variable
+						const /** @type {{codemirror: LintSource}} */ linter = new window.wikiparse.Linter();
+						return /** @type {LintSource} */ ( s ) => linter.codemirror( s );
 					};
 					loadScript( lang, src, callback );
 					break;
@@ -55,8 +57,9 @@ import { CodeMirror6 } from './dist/main.min.js';
 					const src = 'npm/eslint-linter-browserify';
 					/** @see https://npmjs.com/package/@codemirror/lang-javascript */
 					const callback = () => {
+						// @ts-expect-error global variable
 						const /** @type {import('eslint').Linter} */ linter = new window.eslint.Linter(),
-							conf = {
+							/** @type {{env: any, parserOptions: any, rules: Record<string, 2>}} */ conf = {
 								env: {
 									browser: true,
 									es2018: true
@@ -79,7 +82,7 @@ import { CodeMirror6 } from './dist/main.min.js';
 									message,
 									severity: severity === 1 ? 'warning' : 'error',
 									from,
-									to: endLine === undefined
+									to: endLine === undefined || endColumn === undefined
 										? from + 1
 										: cm.view.state.doc.line( endLine ).from + endColumn - 1
 								};
@@ -140,17 +143,17 @@ import { CodeMirror6 } from './dist/main.min.js';
 					const src = 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js';
 					const /** @type {LintSource} */ lintSource = async ( s ) => {
 						/** @type {{results: import('stylelint').LintResult[]}} */
-						const { results } = await window.stylelint.lint( { code: s, config: conf } ),
-							/** @type {import('stylelint').Warning[]} */
-							messages = results.reduce( ( acc, { warnings } ) => [ ...acc, ...warnings ], [] );
-						return messages.map( ( { text, severity, line, column, endLine, endColumn } ) => ( {
-							message: text,
-							severity,
-							from: cm.view.state.doc.line( line ).from + column - 1,
-							to: endLine === undefined
-								? cm.view.state.doc.line( line ).to
-								: cm.view.state.doc.line( endLine ).from + endColumn - 1
-						} ) );
+						// @ts-expect-error global variable
+						const { results } = await window.stylelint.lint( { code: s, config: conf } );
+						return results.flatMap( ( { warnings } ) => warnings )
+							.map( ( { text, severity, line, column, endLine, endColumn } ) => ( {
+								message: text,
+								severity,
+								from: cm.view.state.doc.line( line ).from + column - 1,
+								to: endLine === undefined || endColumn === undefined
+									? cm.view.state.doc.line( line ).to
+									: cm.view.state.doc.line( endLine ).from + endColumn - 1
+							} ) );
 					};
 					loadScript( lang, src, () => lintSource );
 					break;
@@ -159,8 +162,8 @@ import { CodeMirror6 } from './dist/main.min.js';
 					const src = 'npm/luaparse';
 					/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
 					const /** @type {LintSource} */ lintSource = ( s ) => {
-						/** @type {{parse(s: string): void, SyntaxError: new () => {message: string, index: number}}} */
-						const luaparse = window.luaparse; // eslint-disable-line prefer-destructuring
+						// @ts-expect-error global variable
+						const /** @type {{luaparse: luaparse}} */ { luaparse } = window;
 						try {
 							luaparse.parse( s );
 						} catch ( e ) {
