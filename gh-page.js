@@ -20,7 +20,7 @@ import { CodeMirror6 } from './dist/main.min.js';
 	 */
 	const loadScript = ( lang, src, callback ) => {
 		const script = document.createElement( 'script' );
-		script.src = src;
+		script.src = `https://testingcf.jsdelivr.net/${ src }`;
 		script.onload = () => {
 			const lintSource = callback();
 			linters[ lang ] = lintSource;
@@ -42,8 +42,7 @@ import { CodeMirror6 } from './dist/main.min.js';
 		if ( !( lang in linters ) ) {
 			switch ( lang ) {
 				case 'mediawiki': {
-					const src = 'https://testingcf.jsdelivr.net/combine/'
-						+ 'npm/wikiparser-node@1.1.3-b/extensions/dist/base.min.js,'
+					const src = 'combine/npm/wikiparser-node@1.1.3-b/extensions/dist/base.min.js,'
 						+ 'npm/wikiparser-node@1.1.3-b/extensions/dist/lint.min.js';
 					const callback = () => {
 						const /** @type {{codemirror: LintSource}} */ Linter = new window.wikiparse.Linter();
@@ -53,7 +52,8 @@ import { CodeMirror6 } from './dist/main.min.js';
 					break;
 				}
 				case 'javascript': {
-					const src = 'https://testingcf.jsdelivr.net/npm/eslint-linter-browserify';
+					const src = 'npm/eslint-linter-browserify';
+					/** @see https://npmjs.com/package/@codemirror/lang-javascript */
 					const callback = () => {
 						const /** @type {import('eslint').Linter} */ linter = new window.eslint.Linter(),
 							conf = {
@@ -137,8 +137,7 @@ import { CodeMirror6 } from './dist/main.min.js';
 							'unit-no-unknown': true
 						}
 					};
-					const src
-						= 'https://testingcf.jsdelivr.net/gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js';
+					const src = 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js';
 					const /** @type {LintSource} */ lintSource = async ( s ) => {
 						/** @type {{results: import('stylelint').LintResult[]}} */
 						const { results } = await window.stylelint.lint( { code: s, config: conf } ),
@@ -152,6 +151,31 @@ import { CodeMirror6 } from './dist/main.min.js';
 								? cm.view.state.doc.line( line ).to
 								: cm.view.state.doc.line( endLine ).from + endColumn - 1
 						} ) );
+					};
+					loadScript( lang, src, () => lintSource );
+					break;
+				}
+				case 'lua': {
+					const src = 'npm/luaparse';
+					/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
+					const /** @type {LintSource} */ lintSource = ( s ) => {
+						/** @type {{parse(s: string): void, SyntaxError: new () => {message: string, index: number}}} */
+						const luaparse = window.luaparse; // eslint-disable-line prefer-destructuring
+						try {
+							luaparse.parse( s );
+						} catch ( e ) {
+							if ( e instanceof luaparse.SyntaxError ) {
+								return [
+									{
+										message: e.message,
+										severity: 'error',
+										from: e.index,
+										to: e.index
+									}
+								];
+							}
+						}
+						return [];
 					};
 					loadScript( lang, src, () => lintSource );
 				}
