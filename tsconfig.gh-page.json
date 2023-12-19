@@ -1,0 +1,15 @@
+{
+	"include": [
+		"src/temp.ts"
+	],
+	"exclude": [
+		"dist/main.min.js"
+	],
+	"compilerOptions": {
+		"target": "ES2018",
+		"module": "ES6",
+		"outDir": "./",
+		"removeComments": true,
+		"skipLibCheck": true
+	}
+}

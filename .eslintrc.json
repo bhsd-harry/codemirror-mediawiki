@@ -20,7 +20,8 @@
 		"sourceType": "module"
 	},
 	"ignorePatterns": [
-		"dist/"
+		"dist/",
+		"gh-page.js"
 	],
 	"rules": {
 		"array-callback-return": 2,
@@ -247,7 +248,12 @@
 		"no-useless-constructor": 2,
 		"no-useless-return": 2,
 		"no-var": 2,
-		"no-void": 2,
+		"no-void": [
+			2,
+			{
+				"allowAsStatement": true
+			}
+		],
 		"object-shorthand": 2,
 		"one-var-declaration-per-line": 2,
 		"operator-assignment": 2,
@@ -860,16 +866,6 @@
 					}
 				],
 				"@typescript-eslint/unified-signatures": 2
-			}
-		},
-		{
-			"files": "./gh-page.js",
-			"extends": [
-				"plugin:es-x/restrict-to-es2018"
-			],
-			"rules": {
-				"logical-assignment-operators": 0,
-				"es-x/no-array-prototype-flat": 0
 			}
 		}
 	],
