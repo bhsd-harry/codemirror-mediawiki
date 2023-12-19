@@ -359,6 +359,12 @@
 				"exceptAfterSingleLine": true
 			}
 		],
+		"max-len": [
+			2,
+			{
+				"code": 120
+			}
+		],
 		"multiline-ternary": [
 			2,
 			"always-multiline"
@@ -548,7 +554,7 @@
 		"unicorn/no-array-for-each": 2,
 		"unicorn/no-array-method-this-argument": 2,
 		"unicorn/no-array-push-push": 2,
-		"unicorn/no-array-reduce": 2,
+		"unicorn/no-array-reduce": 0,
 		"unicorn/no-instanceof-array": 2,
 		"unicorn/no-invalid-remove-event-listener": 2,
 		"unicorn/no-lonely-if": 2,
@@ -617,12 +623,6 @@
 				"plugin:@typescript-eslint/recommended-requiring-type-checking"
 			],
 			"rules": {
-				"max-len": [
-					2,
-					{
-						"code": 120
-					}
-				],
 				"brace-style": 0,
 				"@typescript-eslint/brace-style": 2,
 				"comma-dangle": 0,
