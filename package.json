@@ -23,7 +23,9 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"build": "bash build.sh",
+		"build:core": "webpack --mode production",
+		"build:gh-page": "bash build.sh",
+		"build": "npm run build:core && npm run build:gh-page",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",

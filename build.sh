@@ -1,5 +1,3 @@
-rm -rf dist/
-webpack --mode production
 tsc --emitDeclarationOnly
 rm dist/gh-page.d.ts
 cp src/gh-page.ts src/temp.ts

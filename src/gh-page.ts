@@ -42,8 +42,8 @@ declare interface luaparse {
 		if ( !( lang in linters ) ) {
 			switch ( lang ) {
 				case 'mediawiki': {
-					const src = 'combine/npm/wikiparser-node@1.1.3-b/extensions/dist/base.min.js,'
-						+ 'npm/wikiparser-node@1.1.3-b/extensions/dist/lint.min.js';
+					const src = 'combine/npm/wikiparser-node@1.1.5-b/extensions/dist/base.min.js,'
+						+ 'npm/wikiparser-node@1.1.5-b/extensions/dist/lint.min.js';
 					const callback = (): LintSource => {
 						// @ts-expect-error global variable
 						const linter: { codemirror: LintSource } = new window.wikiparse.Linter();
