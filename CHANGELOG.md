@@ -4,8 +4,8 @@
 
 **Added**
 
-- New property: [`lang`](./README#lang)
-- New method: [`getLinter`](./README#getlinter)
+- New property: [`lang`](./README.md#lang)
+- New method: [`getLinter`](./README.md#getlinter)
 - First integration with [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/)
 
 **Fixed**
@@ -14,7 +14,7 @@
 
 **Changed**
 
-- The argument type of [`lint`](./README#lint) method
+- The argument type of [`lint`](./README.md#lint) method
 
 ## v2.0.12
 
@@ -46,7 +46,7 @@
 
 - Language support for Lua
 - New extension options: [highlightTrailingWhitespace](https://codemirror.net/docs/ref/#view.highlightTrailingWhitespace), [bracketMatching](https://codemirror.net/docs/ref/#language.bracketMatching) and [closeBrackets](https://codemirror.net/docs/ref/#autocomplete.closeBrackets)
-- New methods: [`prefer`](./README#prefer) and [`setIndent`](./README#setindent)
+- New methods: [`prefer`](./README.md#prefer) and [`setIndent`](./README.md#setindent)
 
 **Fixed**
 
