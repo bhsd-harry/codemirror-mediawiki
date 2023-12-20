@@ -31,7 +31,9 @@
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
-		"test": "gsed -i 's|\\./dist|http://127.0.0.1:8080/dist|' gh-page.js; gsed -i \"s|'config\\.json|'http://127.0.0.1:8080/config.json|\" gh-page.js; gsed -i 's|\"gh-page\\.js|\"http://127.0.0.1:8080/gh-page.js|' index.html; http-server -c-1 --cors"
+		"server": "http-server -c-1 --cors &",
+		"test": "npm run server; open http://127.0.0.1:8080/index.html",
+		"test:end": "pkill -x http-server"
 	},
 	"engines": {
 		"node": "20.9.0"
