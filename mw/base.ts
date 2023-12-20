@@ -196,16 +196,10 @@ import type { MwConfig } from '../src/mediawiki';
 	const linters: Record<string, LintSource> = {};
 
 	class CodeMirror extends CodeMirror6 {
-		constructor( textarea: HTMLTextAreaElement, lang?: string ) {
+		constructor( textarea: HTMLTextAreaElement, lang?: string, config?: unknown ) {
 			const { selectionStart, selectionEnd, scrollTop } = textarea,
 				hasFocus = document.activeElement === textarea;
-			super( textarea, lang === 'mediawiki' ? undefined : lang );
-			if ( lang === 'mediawiki' ) {
-				( async () => {
-					const config = await getMwConfig();
-					this.setLanguage( 'mediawiki', config );
-				} )();
-			}
+			super( textarea, lang, config );
 			this.view.dispatch( {
 				selection: { anchor: selectionStart, head: selectionEnd }
 			} );
@@ -227,24 +221,33 @@ import type { MwConfig } from '../src/mediawiki';
 			const { lang } = this;
 			if ( !( lang in linters ) ) {
 				linters[ lang ] = await this.getLinter();
-			}
-			if ( this.lang === 'mediawiki' ) {
-				const mwConfig = await getMwConfig(),
-					config = await wikiparse.getConfig();
-				config.ext = Object.keys( mwConfig.tags );
-				config.namespaces = mw.config.get( 'wgFormattedNamespaces' );
-				config.nsid = mw.config.get( 'wgNamespaceIds' );
-				config.parserFunction[ 0 ] = mwConfig.functionSynonyms[ 0 ] as Record<string, string>;
-				config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
-				config.doubleUnderscore = mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ];
-				config.variants = mwConfig.variants!;
-				config.img = mwConfig.img!;
-				for ( const key of Object.keys( config.img ) ) {
-					config.img[ key ] = config.img[ key ]!.slice( 4 );
+				if ( this.lang === 'mediawiki' ) {
+					const mwConfig = await getMwConfig(),
+						config = await wikiparse.getConfig();
+					config.ext = Object.keys( mwConfig.tags );
+					config.namespaces = mw.config.get( 'wgFormattedNamespaces' );
+					config.nsid = mw.config.get( 'wgNamespaceIds' );
+					config.parserFunction[ 0 ] = mwConfig.functionSynonyms[ 0 ] as Record<string, string>;
+					config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
+					config.doubleUnderscore = mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ];
+					config.variants = mwConfig.variants!;
+					config.img = mwConfig.img!;
+					for ( const key of Object.keys( config.img ) ) {
+						config.img[ key ] = config.img[ key ]!.slice( 4 );
+					}
+					wikiparse.setConfig( config );
 				}
-				wikiparse.setConfig( config );
 			}
 			super.lint( linters[ lang ] );
+		}
+
+		static async fromTextArea( textarea: HTMLTextAreaElement, lang?: string ): Promise<CodeMirror> {
+			const cm = new CodeMirror( textarea, lang === 'mediawiki' ? undefined : lang );
+			if ( lang === 'mediawiki' ) {
+				const config = await getMwConfig();
+				cm.setLanguage( 'mediawiki', config );
+			}
+			return cm;
 		}
 	}
 
@@ -253,7 +256,7 @@ import type { MwConfig } from '../src/mediawiki';
 			e.preventDefault();
 			await mw.loader.using( 'oojs-ui-windows' );
 			const lang = await OO.ui.prompt( 'Language:' ) || undefined,
-				cm = new CodeMirror( e.target, lang );
+				cm = await CodeMirror.fromTextArea( e.target, lang );
 			void cm.defaultLint( true );
 		}
 	} );
