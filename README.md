@@ -71,6 +71,8 @@ The textarea element replaced by CodeMirror.
 <details>
 	<summary>Expand</summary>
 
+*version added: 2.0.13*
+
 **type**: `string`  
 The current language mode.
 
@@ -90,6 +92,8 @@ The CodeMirror EditorView instance.
 
 <details>
 	<summary>Expand</summary>
+
+*version added: 2.0.13*
 
 **returns**: `Promise<(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>>`  
 Get the default linting function, which can be used as the argument of [`lint`](#lint).
@@ -126,6 +130,8 @@ cm.lint( ( doc ) => [
 <details>
 	<summary>Expand</summary>
 
+*version added: 2.0.9*
+
 **param**: `string` the preferred [CodeMirror extensions](https://codemirror.net/docs/extensions/)  
 Set the preferred CodeMirror extensions.
 
@@ -146,6 +152,8 @@ cm.prefer( [
 
 <details>
 	<summary>Expand</summary>
+
+*version added: 2.0.8*
 
 **param**: `string` the indentation string, default as tab  
 Set the indentation string.
