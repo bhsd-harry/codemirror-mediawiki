@@ -1,9 +1,13 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import { CodeMirror6 } from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js';
+import { CodeMirror6 } from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.0.13/dist/main.min.js';
+import type { LintSource } from '../src/codemirror';
 import type { MwConfig } from '../src/mediawiki';
 
 ( () => {
-	mw.loader.load( 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mediawiki.min.css', 'text/css' );
+	mw.loader.load(
+		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.0.13/mediawiki.min.css',
+		'text/css'
+	);
 
 	const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
@@ -189,6 +193,8 @@ import type { MwConfig } from '../src/mediawiki';
 		return config!;
 	};
 
+	const linters: Record<string, LintSource> = {};
+
 	class CodeMirror extends CodeMirror6 {
 		constructor( textarea: HTMLTextAreaElement, lang?: string ) {
 			const { selectionStart, selectionEnd, scrollTop } = textarea,
@@ -212,14 +218,43 @@ import type { MwConfig } from '../src/mediawiki';
 				$( textarea ).data( 'jquery.textSelection', textSelection );
 			}
 		}
+
+		async defaultLint( on: boolean ): Promise<void> {
+			if ( !on ) {
+				super.lint();
+				return;
+			}
+			const { lang } = this;
+			if ( !( lang in linters ) ) {
+				linters[ lang ] = await this.getLinter();
+			}
+			if ( this.lang === 'mediawiki' ) {
+				const mwConfig = await getMwConfig(),
+					config = await wikiparse.getConfig();
+				config.ext = Object.keys( mwConfig.tags );
+				config.namespaces = mw.config.get( 'wgFormattedNamespaces' );
+				config.nsid = mw.config.get( 'wgNamespaceIds' );
+				config.parserFunction[ 0 ] = mwConfig.functionSynonyms[ 0 ] as Record<string, string>;
+				config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
+				config.doubleUnderscore = mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ];
+				config.variants = mwConfig.variants!;
+				config.img = mwConfig.img!;
+				for ( const key of Object.keys( config.img ) ) {
+					config.img[ key ] = config.img[ key ]!.slice( 4 );
+				}
+				wikiparse.setConfig( config );
+			}
+			super.lint( linters[ lang ] );
+		}
 	}
 
 	$( document.body ).click( async ( e ) => {
 		if ( e.target instanceof HTMLTextAreaElement && ( e.ctrlKey || e.metaKey ) && !instances.has( e.target ) ) {
 			e.preventDefault();
 			await mw.loader.using( 'oojs-ui-windows' );
-			const lang = await OO.ui.prompt( 'Language:' ) || undefined;
-			new CodeMirror( e.target, lang ); // eslint-disable-line no-new
+			const lang = await OO.ui.prompt( 'Language:' ) || undefined,
+				cm = new CodeMirror( e.target, lang );
+			void cm.defaultLint( true );
 		}
 	} );
 

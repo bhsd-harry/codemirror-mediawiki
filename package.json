@@ -13,7 +13,8 @@
 	"license": "GPL-2.0",
 	"files":[
 		"/dist/*.[jt]s",
-		"/mediawiki.css"
+		"/mediawiki.css",
+		"/mw/dist/*.js"
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/main.min.js",
@@ -26,7 +27,7 @@
 		"build:core": "webpack --mode production; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
 		"build:mw": "bash build.sh mw/base.ts mw/dist/base.js",
 		"build:gh-page": "bash build.sh src/gh-page.ts gh-page.js",
-		"build": "npm run build:core && npm run build:mw && npm run build:gh-page",
+		"build": "npm run build:core && npm run build:mw",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",

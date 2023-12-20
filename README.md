@@ -8,7 +8,9 @@
 - [Usage](#usage)
 	- [constructor](#constructor)
 	- [textarea](#textarea)
+	- [lang](#lang)
 	- [view](#view)
+	- [getLinter](#getlinter)
 	- [lint](#lint)
 	- [prefer](#prefer)
 	- [setIndent](#setindent)
@@ -64,6 +66,16 @@ The textarea element replaced by CodeMirror.
 
 </details>
 
+## lang
+
+<details>
+	<summary>Expand</summary>
+
+**type**: `string`  
+The current language mode.
+
+</details>
+
 ## view
 
 <details>
@@ -74,23 +86,33 @@ The CodeMirror EditorView instance.
 
 </details>
 
+## getLinter
+
+<details>
+	<summary>Expand</summary>
+
+**returns**: `Promise<(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>>`  
+Get the default linting function, which can be used as the argument of [`lint`](#lint).
+
+</details>
+
 ## lint
 
 <details>
 	<summary>Expand</summary>
 
-**param**: `(str: string) => Diagnostic[] | Promise<Diagnostic[]>` the linting function  
+**param**: `(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>` the linting function  
 Set the linting function.
 
 ```js
-cm.lint( ( str ) => [
+cm.lint( ( doc ) => [
 	/**
 	 * @type {Diagnostic}
 	 * @see https://codemirror.net/docs/ref/#lint.Diagnostic
 	 */
 	{
 		from: 0,
-		to: str.length,
+		to: doc.toString().length,
 		message: 'error message',
 		severity: 'error',
 	},

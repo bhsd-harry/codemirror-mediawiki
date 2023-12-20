@@ -13,6 +13,8 @@ interface luaparse {
 
 declare global {
 	const wikiparse: {
+		getConfig(): Promise<Config>;
+		setConfig( config: Config ): void;
 		Linter: new () => WikiLinter;
 	};
 	const eslint: {

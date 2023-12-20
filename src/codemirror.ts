@@ -24,11 +24,13 @@ import { closeBrackets } from '@codemirror/autocomplete';
 import { mediawiki, html } from './mediawiki';
 import * as plugins from './plugins';
 import type { ViewPlugin } from '@codemirror/view';
-import type { Extension } from '@codemirror/state';
+import type { Extension, Text } from '@codemirror/state';
 import type { Diagnostic } from '@codemirror/lint';
 import type { Highlighter } from '@lezer/highlight';
+import type { Linter } from 'eslint';
 
 export type { MwConfig } from './mediawiki';
+export type LintSource = ( doc: Text ) => Diagnostic[] | Promise<Diagnostic[]>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
@@ -49,6 +51,20 @@ const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unkn
 	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ],
 	closeBrackets: [ closeBrackets, {} ]
 };
+
+/** 使用传统方法加载脚本 */
+const loadScript = ( src: string, target: string ): Promise<void> => new Promise( ( resolve ) => {
+	if ( target in window ) {
+		resolve();
+		return;
+	}
+	const script = document.createElement( 'script' );
+	script.src = `https://testingcf.jsdelivr.net/${ src }`;
+	script.onload = (): void => {
+		resolve();
+	};
+	document.head.append( script );
+} );
 
 export class CodeMirror6 {
 	#textarea;
@@ -141,11 +157,11 @@ export class CodeMirror6 {
 	 * 开始语法检查
 	 * @param lintSource 语法检查函数
 	 */
-	lint( lintSource?: ( str: string ) => Diagnostic[] | Promise<Diagnostic[]> ): void {
+	lint( lintSource?: LintSource ): void {
 		const { lang } = this,
 			linterExtension = lintSource
 				? [
-					linter( ( view: EditorView ) => lintSource( view.state.doc.toString() ) ),
+					linter( ( view ) => lintSource( view.state.doc ) ),
 					lintGutter()
 				]
 				: [];
@@ -191,5 +207,132 @@ export class CodeMirror6 {
 		this.#view.dispatch( {
 			effects: [ this.#indent.reconfigure( indentUnit.of( indent ) ) ]
 		} );
+	}
+
+	/** 获取默认linter */
+	async getLinter(): Promise<LintSource> {
+		switch ( this.lang ) {
+			case 'mediawiki': {
+				const src = 'combine/npm/wikiparser-node@1.1.5-b/extensions/dist/base.min.js,'
+					+ 'npm/wikiparser-node@1.1.5-b/extensions/dist/lint.min.js';
+				await loadScript( src, 'wikiparse' );
+				const wikiLinter = new wikiparse.Linter();
+				return ( doc ) => wikiLinter.codemirror( doc.toString() );
+			}
+			case 'javascript': {
+				await loadScript( 'npm/eslint-linter-browserify', 'eslint' );
+				/** @see https://npmjs.com/package/@codemirror/lang-javascript */
+				const esLinter = new eslint.Linter(),
+					conf: Linter.Config = {
+						env: {
+							browser: true,
+							es2018: true
+						},
+						parserOptions: {
+							ecmaVersion: 9,
+							sourceType: 'module'
+						},
+						rules: {}
+					};
+				for ( const [ name, { meta } ] of esLinter.getRules() ) {
+					if ( meta?.docs!.recommended ) {
+						conf.rules![ name ] = 2;
+					}
+				}
+				return ( doc ) => esLinter.verify( doc.toString(), conf )
+					.map( ( { message, severity, line, column, endLine, endColumn } ) => {
+						const from = doc.line( line ).from + column - 1;
+						return {
+							message,
+							severity: severity === 1 ? 'warning' : 'error',
+							from,
+							to: endLine === undefined ? from + 1 : doc.line( endLine ).from + endColumn! - 1
+						};
+					} );
+			}
+			case 'css': {
+				await loadScript( 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint' );
+				/** @see https://npmjs.com/package/stylelint-config-recommended */
+				const conf = {
+					rules: {
+						'annotation-no-unknown': true,
+						'at-rule-no-unknown': true,
+						'block-no-empty': true,
+						'color-no-invalid-hex': true,
+						'comment-no-empty': true,
+						'custom-property-no-missing-var-function': true,
+						'declaration-block-no-duplicate-custom-properties': true,
+						'declaration-block-no-duplicate-properties': [
+							true,
+							{
+								ignore: [ 'consecutive-duplicates-with-different-syntaxes' ]
+							}
+						],
+						'declaration-block-no-shorthand-property-overrides': true,
+						'font-family-no-duplicate-names': true,
+						'font-family-no-missing-generic-family-keyword': true,
+						'function-calc-no-unspaced-operator': true,
+						'function-linear-gradient-no-nonstandard-direction': true,
+						'function-no-unknown': true,
+						'keyframe-block-no-duplicate-selectors': true,
+						'keyframe-declaration-no-important': true,
+						'media-feature-name-no-unknown': true,
+						'media-query-no-invalid': true,
+						'named-grid-areas-no-invalid': true,
+						'no-descending-specificity': true,
+						'no-duplicate-at-import-rules': true,
+						'no-duplicate-selectors': true,
+						'no-empty-source': true,
+						'no-invalid-double-slash-comments': true,
+						'no-invalid-position-at-import-rule': true,
+						'no-irregular-whitespace': true,
+						'property-no-unknown': true,
+						'selector-anb-no-unmatchable': true,
+						'selector-pseudo-class-no-unknown': true,
+						'selector-pseudo-element-no-unknown': true,
+						'selector-type-no-unknown': [
+							true,
+							{
+								ignore: [ 'custom-elements' ]
+							}
+						],
+						'string-no-newline': true,
+						'unit-no-unknown': true
+					}
+				};
+				return async ( doc ) => {
+					const { results } = await stylelint.lint( { code: doc.toString(), config: conf } );
+					return results.flatMap( ( { warnings } ) => warnings )
+						.map( ( { text, severity, line, column, endLine, endColumn } ) => ( {
+							message: text,
+							severity,
+							from: doc.line( line ).from + column - 1,
+							to: endLine === undefined ? doc.line( line ).to : doc.line( endLine ).from + endColumn! - 1
+						} ) );
+				};
+			}
+			case 'lua':
+				await loadScript( 'npm/luaparse', 'luaparse' );
+				/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
+				return ( doc ) => {
+					try {
+						luaparse.parse( doc.toString() );
+					} catch ( e ) {
+						if ( e instanceof luaparse.SyntaxError ) {
+							return [
+								{
+									message: e.message,
+									severity: 'error',
+									from: e.index,
+									to: e.index
+								}
+							];
+						}
+					}
+					return [];
+				};
+			default:
+				return () => [];
+		}
 	}
 }
