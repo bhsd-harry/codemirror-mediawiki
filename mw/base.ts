@@ -197,16 +197,7 @@ import type { MwConfig } from '../src/mediawiki';
 
 	class CodeMirror extends CodeMirror6 {
 		constructor( textarea: HTMLTextAreaElement, lang?: string, config?: unknown ) {
-			const { selectionStart, selectionEnd, scrollTop } = textarea,
-				hasFocus = document.activeElement === textarea;
 			super( textarea, lang, config );
-			this.view.dispatch( {
-				selection: { anchor: selectionStart, head: selectionEnd }
-			} );
-			this.view.scrollDOM.scrollTop = scrollTop;
-			if ( hasFocus ) {
-				this.view.focus();
-			}
 			instances.set( textarea, this );
 			if ( mw.loader.getState( 'jquery.textSelection' ) === 'ready' ) {
 				$( textarea ).data( 'jquery.textSelection', textSelection );

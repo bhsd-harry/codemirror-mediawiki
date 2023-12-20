@@ -8,6 +8,10 @@
 - New method: [`getLinter`](./README#getlinter)
 - First integration with [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/)
 
+**Fixed**
+
+- Initial scrollTop of the editor
+
 **Changed**
 
 - The argument type of [`lint`](./README#lint) method

@@ -91,7 +91,6 @@ export class CodeMirror6 {
 	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
 		this.#textarea = textarea;
 		this.lang = lang;
-		const { offsetHeight } = textarea;
 		this.#language = new Compartment();
 		this.#linter = new Compartment();
 		this.#extensions = new Compartment();
@@ -130,11 +129,25 @@ export class CodeMirror6 {
 			extensions,
 			doc: textarea.value
 		} );
+		const { offsetHeight, selectionStart, selectionEnd, scrollTop } = textarea,
+			{ fontSize, lineHeight } = getComputedStyle( textarea ),
+			hasFocus = document.activeElement === textarea;
 		textarea.parentNode!.insertBefore( this.#view.dom, textarea );
 		this.#view.dom.style.minHeight = '2em';
 		this.#view.dom.style.height = `${ offsetHeight }px`;
+		this.#view.dom.style.fontSize = fontSize;
+		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.#view.requestMeasure();
+		this.#view.dispatch( {
+			selection: { anchor: selectionStart, head: selectionEnd }
+		} );
 		textarea.style.display = 'none';
+		if ( hasFocus ) {
+			this.#view.focus();
+		}
+		window.requestAnimationFrame( () => {
+			this.#view.scrollDOM.scrollTop = scrollTop;
+		} );
 	}
 
 	/**
