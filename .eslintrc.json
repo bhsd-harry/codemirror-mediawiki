@@ -123,7 +123,13 @@
 			2,
 			"never"
 		],
-		"func-style": 2,
+		"func-style": [
+			2,
+			"declaration",
+			{
+				"allowArrowFunctions": true
+			}
+		],
 		"grouped-accessor-pairs": [
 			2,
 			"getBeforeSet"
@@ -866,6 +872,19 @@
 					}
 				],
 				"@typescript-eslint/unified-signatures": 2
+			}
+		},
+		{
+			"files": "mw/*.ts",
+			"env": {
+				"jquery": true
+			},
+			"globals": {
+				"mw": "readonly",
+				"OO": "readonly"
+			},
+			"parserOptions": {
+				"project": "./mw/tsconfig.json"
 			}
 		}
 	],

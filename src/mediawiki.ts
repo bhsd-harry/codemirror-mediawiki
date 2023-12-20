@@ -36,8 +36,11 @@ export interface MwConfig {
 	urlProtocols: string;
 	tags: Record<string, true>;
 	tagModes: Record<string, string>;
-	functionSynonyms: [Record<string, string>, Record<string, string>];
-	doubleUnderscore: [Record<string, string>, Record<string, string>];
+	functionSynonyms: [Record<string, string | true>, Record<string, string | true>];
+	doubleUnderscore: [Record<string, string | true>, Record<string, string | true>];
+	variants?: string[];
+	redirect?: string[];
+	img?: Record<string, string>;
 }
 
 const copyState = ( state: State ): State => {
