@@ -1,7 +1,7 @@
 {
 	"include": [
 		"src/*.ts"
-, "src/gh-page.ts"	],
+	],
 	"compilerOptions": {
 		"target": "ES2018",
 		"module": "CommonJS",
