@@ -23,7 +23,7 @@ import { CodeMirror6 } from './dist/main.min.js';
                     const src = 'combine/npm/wikiparser-node@1.1.5-b/extensions/dist/base.min.js,'
                         + 'npm/wikiparser-node@1.1.5-b/extensions/dist/lint.min.js';
                     const callback = () => {
-                        const linter = new window.wikiparse.Linter();
+                        const linter = new wikiparse.Linter();
                         return (s) => linter.codemirror(s);
                     };
                     loadScript(lang, src, callback);
@@ -32,7 +32,7 @@ import { CodeMirror6 } from './dist/main.min.js';
                 case 'javascript': {
                     const src = 'npm/eslint-linter-browserify';
                     const callback = () => {
-                        const linter = new window.eslint.Linter(), conf = {
+                        const linter = new eslint.Linter(), conf = {
                             env: {
                                 browser: true,
                                 es2018: true
@@ -114,7 +114,7 @@ import { CodeMirror6 } from './dist/main.min.js';
                     };
                     const src = 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js';
                     const lintSource = async (s) => {
-                        const { results } = await window.stylelint.lint({ code: s, config: conf });
+                        const { results } = await stylelint.lint({ code: s, config: conf });
                         return results.flatMap(({ warnings }) => warnings)
                             .map(({ text, severity, line, column, endLine, endColumn }) => ({
                             message: text,
@@ -131,7 +131,6 @@ import { CodeMirror6 } from './dist/main.min.js';
                 case 'lua': {
                     const src = 'npm/luaparse';
                     const lintSource = (s) => {
-                        const { luaparse } = window;
                         try {
                             luaparse.parse(s);
                         }

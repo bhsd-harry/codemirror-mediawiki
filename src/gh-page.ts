@@ -1,15 +1,10 @@
 // @ts-expect-error no type declaration
 import { CodeMirror6 } from './dist/main.min.js';
 import type { Linter } from 'eslint';
-import type { LintResult } from 'stylelint';
 import type { Diagnostic } from '@codemirror/lint';
 import type { CodeMirror6 as CodeMirror, MwConfig } from './codemirror';
 
 declare type LintSource = ( s: string ) => Diagnostic[] | Promise<Diagnostic[]>;
-declare interface luaparse {
-	parse( s: string ): void;
-	SyntaxError: new () => { message: string, index: number };
-}
 
 ( () => {
 	const textarea = document.querySelector<HTMLTextAreaElement>( '#wpTextbox' )!,
@@ -45,8 +40,7 @@ declare interface luaparse {
 					const src = 'combine/npm/wikiparser-node@1.1.5-b/extensions/dist/base.min.js,'
 						+ 'npm/wikiparser-node@1.1.5-b/extensions/dist/lint.min.js';
 					const callback = (): LintSource => {
-						// @ts-expect-error global variable
-						const linter: { codemirror: LintSource } = new window.wikiparse.Linter();
+						const linter = new wikiparse.Linter();
 						return ( s ) => linter.codemirror( s );
 					};
 					loadScript( lang, src, callback );
@@ -56,8 +50,7 @@ declare interface luaparse {
 					const src = 'npm/eslint-linter-browserify';
 					/** @see https://npmjs.com/package/@codemirror/lang-javascript */
 					const callback = (): LintSource => {
-						// @ts-expect-error global variable
-						const linter: Linter = new window.eslint.Linter(),
+						const linter = new eslint.Linter(),
 							conf: Linter.Config = {
 								env: {
 									browser: true,
@@ -141,9 +134,7 @@ declare interface luaparse {
 					};
 					const src = 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js';
 					const lintSource: LintSource = async ( s ) => {
-						const { results }: { results: LintResult[] }
-							// @ts-expect-error global variable
-							= await window.stylelint.lint( { code: s, config: conf } );
+						const { results } = await stylelint.lint( { code: s, config: conf } );
 						return results.flatMap( ( { warnings } ) => warnings )
 							.map( ( { text, severity, line, column, endLine, endColumn } ) => ( {
 								message: text,
@@ -161,8 +152,6 @@ declare interface luaparse {
 					const src = 'npm/luaparse';
 					/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
 					const lintSource: LintSource = ( s ) => {
-						// @ts-expect-error global variable
-						const { luaparse }: { luaparse: luaparse } = window;
 						try {
 							luaparse.parse( s );
 						} catch ( e ) {
