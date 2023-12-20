@@ -57,6 +57,7 @@ export class CodeMirror6 {
 	#extensions;
 	#indent;
 	#view;
+	lang;
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
@@ -73,6 +74,7 @@ export class CodeMirror6 {
 	 */
 	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
 		this.#textarea = textarea;
+		this.lang = lang;
 		const { offsetHeight } = textarea;
 		this.#language = new Compartment();
 		this.#linter = new Compartment();
@@ -131,6 +133,7 @@ export class CodeMirror6 {
 				this.#linter.reconfigure( linters[ lang ] ?? [] )
 			]
 		} );
+		this.lang = lang;
 		( linters[ lang ] ? openLintPanel : closeLintPanel )( this.#view );
 	}
 
@@ -139,8 +142,7 @@ export class CodeMirror6 {
 	 * @param lintSource 语法检查函数
 	 */
 	lint( lintSource?: ( str: string ) => Diagnostic[] | Promise<Diagnostic[]> ): void {
-		const { language } = this.#language.get( this.#view.state ) as LanguageSupport | { language: undefined },
-			name = language?.name || 'plain',
+		const { lang } = this,
 			linterExtension = lintSource
 				? [
 					linter( ( view: EditorView ) => lintSource( view.state.doc.toString() ) ),
@@ -148,9 +150,9 @@ export class CodeMirror6 {
 				]
 				: [];
 		if ( lintSource ) {
-			linters[ name ] = linterExtension;
+			linters[ lang ] = linterExtension;
 		} else {
-			delete linters[ name ];
+			delete linters[ lang ];
 		}
 		this.#view.dispatch( {
 			effects: [ this.#linter.reconfigure( linterExtension ) ]
@@ -173,8 +175,7 @@ export class CodeMirror6 {
 
 	/** 添加扩展 */
 	prefer( names: string[] ): void {
-		const { language } = this.#language.get( this.#view.state ) as LanguageSupport | { language: undefined },
-			lang = language?.name || 'plain';
+		const { lang } = this;
 		this.#view.dispatch( {
 			effects: [
 				this.#extensions.reconfigure( names.map( ( name ) => {
