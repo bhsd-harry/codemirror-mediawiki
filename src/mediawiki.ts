@@ -36,8 +36,8 @@ export interface MwConfig {
 	urlProtocols: string;
 	tags: Record<string, true>;
 	tagModes: Record<string, string>;
-	functionSynonyms: [Record<string, string | true>, Record<string, string | true>];
-	doubleUnderscore: [Record<string, string | true>, Record<string, string | true>];
+	functionSynonyms: [Record<string, string>, Record<string, unknown>];
+	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
 	variants?: string[];
 	redirect?: string[];
 	img?: Record<string, string>;

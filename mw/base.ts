@@ -113,7 +113,7 @@ import type { MwConfig } from '../src/mediawiki';
 			( { config } = SITE_SETTINGS );
 			mw.config.set( 'extCodeMirrorConfig', config );
 		}
-		const isIPE = config && Object.values( config.functionSynonyms[ 0 ] ).includes( true );
+		const isIPE = config && Object.values( config.functionSynonyms[ 0 ] ).includes( true as unknown as string );
 		// 情形1：config已更新，可能来自localStorage
 		if ( config && config.redirect && config.img && config.variants && !isIPE ) {
 			return config;
@@ -135,8 +135,12 @@ import type { MwConfig } from '../src/mediawiki';
 			};
 		} = await new mw.Api().get( {
 			meta: 'siteinfo',
-			siprop: `general|magicwords${ config && !isIPE ? '' : '|extensiontags|functionhooks|variables' }`,
-			formatversion: 2
+			siprop: [
+				'general',
+				'magicwords',
+				...config && !isIPE ? [] : [ 'extensiontags', 'functionhooks', 'variables' ]
+			],
+			formatversion: '2'
 		} ) as { query: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
 		const otherMagicwords = new Set( [ 'msg', 'raw', 'msgnw', 'subst', 'safesubst' ] );
 
@@ -157,7 +161,7 @@ import type { MwConfig } from '../src/mediawiki';
 					ref: 'text/mediawiki'
 				},
 				tags: {},
-				urlProtocols: mw.config.get( 'wgUrlProtocols' ) as string
+				urlProtocols: mw.config.get( 'wgUrlProtocols' )
 			};
 			for ( const tag of extensiontags ) {
 				config!.tags[ tag.slice( 1, -1 ) ] = true;
@@ -218,7 +222,7 @@ import type { MwConfig } from '../src/mediawiki';
 					config.ext = Object.keys( mwConfig.tags );
 					config.namespaces = mw.config.get( 'wgFormattedNamespaces' );
 					config.nsid = mw.config.get( 'wgNamespaceIds' );
-					config.parserFunction[ 0 ] = mwConfig.functionSynonyms[ 0 ] as Record<string, string>;
+					[ config.parserFunction[ 0 ] ] = mwConfig.functionSynonyms;
 					config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
 					config.doubleUnderscore = mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ];
 					config.variants = mwConfig.variants!;
@@ -247,7 +251,7 @@ import type { MwConfig } from '../src/mediawiki';
 			e.preventDefault();
 			await mw.loader.using( 'oojs-ui-windows' );
 			const lang = await OO.ui.prompt( 'Language:' ) || undefined,
-				cm = await CodeMirror.fromTextArea( e.target, lang );
+				cm = await CodeMirror.fromTextArea( e.target, lang?.toLowerCase() );
 			void cm.defaultLint( true );
 		}
 	} );
