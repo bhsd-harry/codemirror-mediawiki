@@ -9,6 +9,9 @@ import { CodeMirror6 } from './dist/main.min.js';
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {
             linters[lang] = await cm.getLinter();
+            if (lang === 'mediawiki') {
+                wikiparse.setConfig(await (await fetch('/wikiparser-node/config/default.json')).json());
+            }
             cm.lint(linters[lang]);
         }
     };
