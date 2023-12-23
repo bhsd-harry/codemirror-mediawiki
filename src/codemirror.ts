@@ -8,7 +8,7 @@ import {
 	highlightWhitespace,
 	highlightTrailingWhitespace
 } from '@codemirror/view';
-import { // eslint-disable-line @typescript-eslint/consistent-type-imports
+import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
@@ -32,7 +32,6 @@ import type { Linter } from 'eslint';
 export type { MwConfig } from './mediawiki';
 export type LintSource = ( doc: Text ) => Diagnostic[] | Promise<Diagnostic[]>;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
 	plain: () => [],
 	mediawiki,
@@ -42,7 +41,6 @@ for ( const [ language, parser ] of Object.entries( plugins ) ) {
 	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
 }
 const linters: Record<string, Extension> = {};
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unknown> ]> = {
 	highlightSpecialChars: [ highlightSpecialChars, {} ],
 	highlightActiveLine: [ highlightActiveLine, {} ],

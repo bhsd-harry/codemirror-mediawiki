@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { CodeMirror6 } from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.0.14/dist/main.min.js';
+import type { Config } from 'wikilint';
 import type { LintSource } from '../src/codemirror';
 import type { MwConfig } from '../src/mediawiki';
 
@@ -141,7 +142,7 @@ import type { MwConfig } from '../src/mediawiki';
 				...config && !isIPE ? [] : [ 'extensiontags', 'functionhooks', 'variables' ]
 			],
 			formatversion: '2'
-		} ) as { query: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+		} ) as any;
 		const otherMagicwords = new Set( [ 'msg', 'raw', 'msgnw', 'subst', 'safesubst' ] );
 
 		if ( config && !isIPE ) { // 情形2或3
@@ -218,17 +219,19 @@ import type { MwConfig } from '../src/mediawiki';
 				linters[ lang ] = await this.getLinter();
 				if ( this.lang === 'mediawiki' ) {
 					const mwConfig = await getMwConfig(),
-						config = await wikiparse.getConfig();
-					config.ext = Object.keys( mwConfig.tags );
-					config.namespaces = mw.config.get( 'wgFormattedNamespaces' );
-					config.nsid = mw.config.get( 'wgNamespaceIds' );
+						config: Config = {
+							...await wikiparse.getConfig(),
+							ext: Object.keys( mwConfig.tags ),
+							namespaces: mw.config.get( 'wgFormattedNamespaces' ),
+							nsid: mw.config.get( 'wgNamespaceIds' ),
+							doubleUnderscore: mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ],
+							variants: mwConfig.variants!,
+							protocol: mwConfig.urlProtocols
+						};
 					[ config.parserFunction[ 0 ] ] = mwConfig.functionSynonyms;
 					config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
-					config.doubleUnderscore = mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ];
-					config.variants = mwConfig.variants!;
-					config.img = mwConfig.img!;
-					for ( const key of Object.keys( config.img ) ) {
-						config.img[ key ] = config.img[ key ]!.slice( 4 );
+					for ( const key of Object.keys( mwConfig.img! ) ) {
+						config.img[ key ] = mwConfig.img![ key ]!.slice( 4 );
 					}
 					wikiparse.setConfig( config );
 				}

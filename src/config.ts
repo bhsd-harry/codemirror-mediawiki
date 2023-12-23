@@ -110,7 +110,6 @@ export const modeConfig = {
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
 	 * @internal
 	 */
-	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 	tags: {
 		apostrophes: 'mw-apostrophes',
 		apostrophesBold: 'mw-apostrophes-bold',

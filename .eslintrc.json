@@ -798,12 +798,7 @@
 				"@typescript-eslint/no-confusing-non-null-assertion": 2,
 				"@typescript-eslint/no-confusing-void-expression": 2,
 				"@typescript-eslint/no-duplicate-type-constituents": 2,
-				"@typescript-eslint/no-explicit-any": [
-					2,
-					{
-						"ignoreRestArgs": true
-					}
-				],
+				"@typescript-eslint/no-explicit-any": 0,
 				"@typescript-eslint/no-floating-promises": [
 					2,
 					{
