@@ -1,6 +1,9 @@
 // @ts-expect-error no type declaration
+import { getMwConfig } from '/wikiparser-node/extensions/dist/gh-page.js';
+// @ts-expect-error no type declaration
 import { CodeMirror6 } from './dist/main.min.js';
-import type { CodeMirror6 as CodeMirror, MwConfig, LintSource } from './codemirror.js';
+import type { Config } from 'wikilint';
+import type { CodeMirror6 as CodeMirror, MwConfig, LintSource } from './codemirror';
 
 ( () => {
 	const textarea = document.querySelector<HTMLTextAreaElement>( '#wpTextbox' )!,
@@ -9,19 +12,21 @@ import type { CodeMirror6 as CodeMirror, MwConfig, LintSource } from './codemirr
 		indent = document.querySelector<HTMLInputElement>( '#indent' )!,
 		cm: CodeMirror = new CodeMirror6( textarea ),
 		linters: Record<string, LintSource> = {};
-	let config: MwConfig | undefined;
+	let config: MwConfig | undefined,
+		parserConfig: Config | undefined;
 
 	/** 设置语言 */
 	const init = async ( lang: string ): Promise<void> => {
 		if ( lang === 'mediawiki' ) {
 			// eslint-disable-next-line require-atomic-updates
-			config ??= await ( await fetch( 'config.json' ) ).json();
+			parserConfig ??= await ( await fetch( '/wikiparser-node/config/default.json' ) ).json();
+			config ??= getMwConfig( parserConfig! );
 		}
 		cm.setLanguage( lang, config );
 		if ( !( lang in linters ) ) {
 			linters[ lang ] = await cm.getLinter();
 			if ( lang === 'mediawiki' ) {
-				wikiparse.setConfig( await ( await fetch( '/wikiparser-node/config/default.json' ) ).json() );
+				wikiparse.setConfig( parserConfig );
 			}
 			cm.lint( linters[ lang ] );
 		}

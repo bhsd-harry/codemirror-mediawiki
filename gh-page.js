@@ -1,16 +1,18 @@
+import { getMwConfig } from '/wikiparser-node/extensions/dist/gh-page.js';
 import { CodeMirror6 } from './dist/main.min.js';
 (() => {
     const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = document.querySelectorAll('input[type="checkbox"]'), indent = document.querySelector('#indent'), cm = new CodeMirror6(textarea), linters = {};
-    let config;
+    let config, parserConfig;
     const init = async (lang) => {
         if (lang === 'mediawiki') {
-            config !== null && config !== void 0 ? config : (config = await (await fetch('config.json')).json());
+            parserConfig !== null && parserConfig !== void 0 ? parserConfig : (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
+            config !== null && config !== void 0 ? config : (config = getMwConfig(parserConfig));
         }
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {
             linters[lang] = await cm.getLinter();
             if (lang === 'mediawiki') {
-                wikiparse.setConfig(await (await fetch('/wikiparser-node/config/default.json')).json());
+                wikiparse.setConfig(parserConfig);
             }
             cm.lint(linters[lang]);
         }
