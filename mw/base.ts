@@ -116,7 +116,7 @@ import type { MwConfig } from '../src/mediawiki';
 		}
 		const isIPE = config && Object.values( config.functionSynonyms[ 0 ] ).includes( true as unknown as string );
 		// 情形1：config已更新，可能来自localStorage
-		if ( config && config.redirect && config.img && config.variants && !isIPE ) {
+		if ( config && config.img && config.variants && !isIPE ) {
 			return config;
 		}
 
@@ -187,7 +187,6 @@ import type { MwConfig } from '../src/mediawiki';
 				getConfig( sensitive.filter( ( { alias } ) => !/^__.+__|^#$/u.test( alias ) ) )
 			];
 		}
-		config!.redirect = magicwords.find( ( { name } ) => name === 'redirect' )!.aliases;
 		config!.img = getConfig(
 			getAliases( magicwords.filter( ( { name } ) => name.startsWith( 'img_' ) ) )
 		);
@@ -224,7 +223,9 @@ import type { MwConfig } from '../src/mediawiki';
 							ext: Object.keys( mwConfig.tags ),
 							namespaces: mw.config.get( 'wgFormattedNamespaces' ),
 							nsid: mw.config.get( 'wgNamespaceIds' ),
-							doubleUnderscore: mwConfig.doubleUnderscore.map( Object.keys ) as [ string[], string[] ],
+							doubleUnderscore: mwConfig.doubleUnderscore.map(
+								( obj ) => Object.keys( obj ).map( ( s ) => s.slice( 2, -2 ) )
+							) as [ string[], string[] ],
 							variants: mwConfig.variants!,
 							protocol: mwConfig.urlProtocols
 						};

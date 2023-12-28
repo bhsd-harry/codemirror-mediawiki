@@ -39,7 +39,6 @@ export interface MwConfig {
 	functionSynonyms: [Record<string, string>, Record<string, unknown>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
 	variants?: string[];
-	redirect?: string[];
 	img?: Record<string, string>;
 }
 
