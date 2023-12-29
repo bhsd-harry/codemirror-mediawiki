@@ -65,12 +65,12 @@ const loadScript = ( src: string, target: string ): Promise<void> => new Promise
 } );
 
 export class CodeMirror6 {
-	#textarea;
-	#language;
-	#linter;
-	#extensions;
-	#indent;
-	#view;
+	readonly #textarea;
+	readonly #language;
+	readonly #linter;
+	readonly #extensions;
+	readonly #indent;
+	readonly #view;
 	lang;
 
 	get textarea(): HTMLTextAreaElement {
@@ -201,7 +201,7 @@ export class CodeMirror6 {
 	}
 
 	/** 添加扩展 */
-	prefer( names: string[] ): void {
+	prefer( names: readonly string[] ): void {
 		const { lang } = this;
 		this.#view.dispatch( {
 			effects: [

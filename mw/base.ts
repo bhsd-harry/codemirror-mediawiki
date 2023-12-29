@@ -91,11 +91,11 @@ import type { MwConfig } from '../src/mediawiki';
 		EXPIRED = !( SITE_SETTINGS && SITE_SETTINGS.time > Date.now() - 86_400 * 1000 * 30 );
 
 	/** 展开别名列表 */
-	const getAliases = ( words: { aliases: string[], name: string }[] ): { alias: string, name: string }[] =>
+	const getAliases = ( words: readonly { aliases: string[], name: string }[] ): { alias: string, name: string }[] =>
 		words.flatMap( ( { aliases, name } ) => aliases.map( ( alias ) => ( { alias, name } ) ) );
 
 	/** 将别名信息转换为CodeMirror接受的设置 */
-	const getConfig = ( aliases: { alias: string, name: string }[] ): Record<string, string> => {
+	const getConfig = ( aliases: readonly { alias: string, name: string }[] ): Record<string, string> => {
 		const config: Record<string, string> = {};
 		for ( const { alias, name } of aliases ) {
 			config[ alias.replace( /:$/, '' ) ] = name;

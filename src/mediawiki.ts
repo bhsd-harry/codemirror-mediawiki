@@ -16,8 +16,8 @@ declare type Tokenizer = ( stream: StringStream, state: State ) => string;
 
 declare interface State {
 	tokenize: Tokenizer;
-	stack: Tokenizer[];
-	inHtmlTag: string[];
+	readonly stack: Tokenizer[];
+	readonly inHtmlTag: string[];
 	extName: string | false;
 	extMode: StreamParser<State> | false;
 	extState: State | false;
@@ -28,14 +28,14 @@ declare interface State {
 
 declare interface Token {
 	pos: number;
-	style: string;
-	state: State;
+	readonly style: string;
+	readonly state: State;
 }
 
 export interface MwConfig {
-	urlProtocols: string;
-	tags: Record<string, true>;
-	tagModes: Record<string, string>;
+	readonly urlProtocols: string;
+	readonly tags: Record<string, true>;
+	readonly tagModes: Record<string, string>;
 	functionSynonyms: [Record<string, string>, Record<string, unknown>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
 	variants?: string[];
@@ -56,8 +56,8 @@ const copyState = ( state: State ): State => {
  * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
  */
 class CodeMirrorModeMediaWiki {
-	declare config: MwConfig;
-	declare urlProtocols: RegExp;
+	declare readonly config: MwConfig;
+	declare readonly urlProtocols: RegExp;
 	declare isBold: boolean;
 	declare wasBold: boolean;
 	declare isItalic: boolean;
