@@ -224,8 +224,8 @@ export class CodeMirror6 {
 	async getLinter(): Promise<LintSource> {
 		switch ( this.lang ) {
 			case 'mediawiki': {
-				const src = 'combine/npm/wikiparser-node@1.1.5-b/extensions/dist/base.min.js,'
-					+ 'npm/wikiparser-node@1.1.5-b/extensions/dist/lint.min.js';
+				const src = 'combine/npm/wikiparser-node@1.1.6-b/extensions/dist/base.min.js,'
+					+ 'npm/wikiparser-node@1.1.6-b/extensions/dist/lint.min.js';
 				await loadScript( src, 'wikiparse' );
 				const wikiLinter = new wikiparse.Linter();
 				return ( doc ) => wikiLinter.codemirror( doc.toString() );
