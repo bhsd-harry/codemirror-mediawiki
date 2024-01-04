@@ -60,6 +60,6 @@
 		"stylelint": "^15.11.0",
 		"stylelint-config-recommended": "^13.0.0",
 		"types-mediawiki": "^1.4.0",
-		"wikilint": "^2.1.6"
+		"wikilint": "^2.2.0"
 	}
 }
