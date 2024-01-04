@@ -24,7 +24,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"build:core": "webpack --mode production; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
+		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --outfile=dist/main.min.js; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
 		"build:mw": "bash build.sh mw/base.ts mw/dist/base.js",
 		"build:gh-page": "bash build.sh src/gh-page.ts gh-page.js",
 		"build": "npm run build:core && npm run build:mw",
@@ -50,7 +50,7 @@
 		"@lezer/highlight": "^1.2.0",
 		"@types/jquery": "^3.5.29",
 		"@types/oojs-ui": "^0.47.6",
-		"esbuild-loader": "^4.0.2",
+		"esbuild": "^0.19.7",
 		"eslint": "^8.56.0",
 		"eslint-plugin-es-x": "^7.3.0",
 		"eslint-plugin-promise": "^6.1.1",
@@ -60,8 +60,6 @@
 		"stylelint": "^15.11.0",
 		"stylelint-config-recommended": "^13.0.0",
 		"types-mediawiki": "^1.4.0",
-		"webpack": "^5.89.0",
-		"webpack-cli": "^5.1.4",
 		"wikilint": "^2.1.6"
 	}
 }
