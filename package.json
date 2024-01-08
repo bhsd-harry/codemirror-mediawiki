@@ -48,6 +48,8 @@
 		"@codemirror/state": "^6.3.3",
 		"@codemirror/view": "^6.22.2",
 		"@lezer/highlight": "^1.2.0",
+		"@stylistic/eslint-plugin": "^1.5.3",
+		"@stylistic/stylelint-plugin": "^2.0.0",
 		"@types/jquery": "^3.5.29",
 		"@types/oojs-ui": "^0.47.6",
 		"esbuild": "^0.19.7",
@@ -57,8 +59,8 @@
 		"eslint-plugin-regexp": "^2.1.2",
 		"eslint-plugin-unicorn": "^50.0.1",
 		"http-server": "^14.1.0",
-		"stylelint": "^15.11.0",
-		"stylelint-config-recommended": "^13.0.0",
+		"stylelint": "^16.1.0",
+		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.4.0",
 		"wikilint": "^2.2.0"
 	}

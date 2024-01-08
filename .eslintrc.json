@@ -5,6 +5,7 @@
 		"es2022": true
 	},
 	"plugins": [
+		"@stylistic",
 		"es-x",
 		"promise",
 		"regexp",
@@ -305,137 +306,141 @@
 		"symbol-description": 2,
 		"vars-on-top": 2,
 		"yoda": 2,
-		"array-bracket-newline": [
+		"@stylistic/array-bracket-newline": [
 			2,
 			{
 				"multiline": true
 			}
 		],
-		"array-bracket-spacing": [
+		"@stylistic/array-bracket-spacing": [
 			2,
 			"always"
 		],
-		"array-element-newline": [
+		"@stylistic/array-element-newline": [
 			2,
 			"consistent"
 		],
-		"arrow-parens": [
+		"@stylistic/arrow-parens": [
 			2,
 			"always"
 		],
-		"arrow-spacing": 2,
-		"brace-style": 2,
-		"block-spacing": 2,
-		"comma-dangle": 2,
-		"comma-spacing": 2,
-		"comma-style": 2,
-		"computed-property-spacing": [
+		"@stylistic/arrow-spacing": 2,
+		"@stylistic/block-spacing": 2,
+		"@stylistic/brace-style": 2,
+		"@stylistic/comma-dangle": 2,
+		"@stylistic/comma-spacing": 2,
+		"@stylistic/comma-style": 2,
+		"@stylistic/computed-property-spacing": [
 			2,
 			"always"
 		],
-		"dot-location": [
+		"@stylistic/dot-location": [
 			2,
 			"property"
 		],
-		"eol-last": 2,
-		"func-call-spacing": 2,
-		"function-call-argument-newline": [
+		"@stylistic/eol-last": 2,
+		"@stylistic/func-call-spacing": 2,
+		"@stylistic/function-call-argument-newline": [
 			2,
 			"consistent"
 		],
-		"function-paren-newline": [
+		"@stylistic/function-paren-newline": [
 			2,
 			"multiline-arguments"
 		],
-		"indent": [
+		"@stylistic/indent": [
 			2,
 			"tab",
 			{
 				"SwitchCase": 1
 			}
 		],
-		"key-spacing": 2,
-		"keyword-spacing": 2,
-		"linebreak-style": 2,
-		"lines-around-comment": [
+		"@stylistic/indent-binary-ops": [
+			2,
+			"tab"
+		],
+		"@stylistic/key-spacing": 2,
+		"@stylistic/keyword-spacing": 2,
+		"@stylistic/linebreak-style": 2,
+		"@stylistic/lines-around-comment": [
 			2,
 			{
 				"allowBlockStart": true,
 				"ignorePattern": "^\\* @"
 			}
 		],
-		"lines-between-class-members": [
+		"@stylistic/lines-between-class-members": [
 			2,
 			"always",
 			{
 				"exceptAfterSingleLine": true
 			}
 		],
-		"max-len": [
+		"@stylistic/max-len": [
 			2,
 			{
 				"code": 120
 			}
 		],
-		"multiline-ternary": [
+		"@stylistic/multiline-ternary": [
 			2,
 			"always-multiline"
 		],
-		"new-parens": 2,
-		"newline-per-chained-call": [
+		"@stylistic/new-parens": 2,
+		"@stylistic/newline-per-chained-call": [
 			2,
 			{
 				"ignoreChainWithDepth": 4
 			}
 		],
-		"no-extra-parens": [
+		"@stylistic/no-extra-parens": [
 			2,
 			"all",
 			{
 				"allowParensAfterCommentPattern": "@type"
 			}
 		],
-		"no-multi-spaces": [
+		"@stylistic/no-multi-spaces": [
 			2,
 			{
 				"exceptions": {}
 			}
 		],
-		"no-multiple-empty-lines": [
+		"@stylistic/no-multiple-empty-lines": [
 			2,
 			{
 				"max": 1,
 				"maxBOF": 0
 			}
 		],
-		"no-trailing-spaces": 2,
-		"no-whitespace-before-property": 2,
-		"object-curly-newline": [
+		"@stylistic/no-trailing-spaces": 2,
+		"@stylistic/no-whitespace-before-property": 2,
+		"@stylistic/object-curly-newline": [
 			2,
 			{
 				"multiline": true,
 				"consistent": true
 			}
 		],
-		"object-curly-spacing": [
+		"@stylistic/object-curly-spacing": [
 			2,
 			"always"
 		],
-		"object-property-newline": [
+		"@stylistic/object-property-newline": [
 			2,
 			{
 				"allowAllPropertiesOnSameLine": true
 			}
 		],
-		"operator-linebreak": [
+		"@stylistic/operator-linebreak": [
 			2,
 			"before"
 		],
-		"padded-blocks": [
+		"@stylistic/padded-blocks": [
 			2,
 			"never"
 		],
-		"quotes": [
+		"@stylistic/quotes": [
 			2,
 			"single",
 			{
@@ -443,12 +448,12 @@
 				"avoidEscape": true
 			}
 		],
-		"rest-spread-spacing": 2,
-		"semi": 2,
-		"semi-spacing": 2,
-		"semi-style": 2,
-		"space-before-blocks": 2,
-		"space-before-function-paren": [
+		"@stylistic/rest-spread-spacing": 2,
+		"@stylistic/semi": 2,
+		"@stylistic/semi-spacing": 2,
+		"@stylistic/semi-style": 2,
+		"@stylistic/space-before-blocks": 2,
+		"@stylistic/space-before-function-paren": [
 			2,
 			{
 				"anonymous": "never",
@@ -456,18 +461,18 @@
 				"asyncArrow": "always"
 			}
 		],
-		"space-in-parens": [
+		"@stylistic/space-in-parens": [
 			2,
 			"always"
 		],
-		"space-infix-ops": 2,
-		"space-unary-ops": 2,
-		"switch-colon-spacing": 2,
-		"template-curly-spacing": [
+		"@stylistic/space-infix-ops": 2,
+		"@stylistic/space-unary-ops": 2,
+		"@stylistic/switch-colon-spacing": 2,
+		"@stylistic/template-curly-spacing": [
 			2,
 			"always"
 		],
-		"wrap-iife": [
+		"@stylistic/wrap-iife": [
 			2,
 			"inside"
 		],
@@ -635,12 +640,6 @@
 				"plugin:@typescript-eslint/recommended-requiring-type-checking"
 			],
 			"rules": {
-				"brace-style": 0,
-				"@typescript-eslint/brace-style": 2,
-				"comma-dangle": 0,
-				"@typescript-eslint/comma-dangle": 2,
-				"comma-spacing": 0,
-				"@typescript-eslint/comma-spacing": 2,
 				"default-param-last": 0,
 				"@typescript-eslint/default-param-last": 2,
 				"dot-notation": 0,
@@ -648,28 +647,6 @@
 					2,
 					{
 						"allowIndexSignaturePropertyAccess": true
-					}
-				],
-				"func-call-spacing": 0,
-				"@typescript-eslint/func-call-spacing": 2,
-				"key-spacing": 0,
-				"@typescript-eslint/key-spacing": 2,
-				"keyword-spacing": 0,
-				"@typescript-eslint/keyword-spacing": 2,
-				"lines-around-comment": 0,
-				"@typescript-eslint/lines-around-comment": [
-					2,
-					{
-						"allowBlockStart": true,
-						"ignorePattern": "^\\* @"
-					}
-				],
-				"lines-between-class-members": 0,
-				"@typescript-eslint/lines-between-class-members": [
-					2,
-					"always",
-					{
-						"exceptAfterSingleLine": true
 					}
 				],
 				"no-dupe-class-members": 0,
@@ -683,8 +660,6 @@
 						]
 					}
 				],
-				"no-extra-parens": 0,
-				"@typescript-eslint/no-extra-parens": 2,
 				"no-invalid-this": 0,
 				"@typescript-eslint/no-invalid-this": [
 					2,
@@ -727,37 +702,8 @@
 				],
 				"no-useless-constructor": 0,
 				"@typescript-eslint/no-useless-constructor": 2,
-				"object-curly-spacing": 0,
-				"@typescript-eslint/object-curly-spacing": [
-					2,
-					"always"
-				],
-				"quotes": 0,
-				"@typescript-eslint/quotes": [
-					2,
-					"single",
-					{
-						"allowTemplateLiterals": true,
-						"avoidEscape": true
-					}
-				],
 				"require-await": 0,
 				"@typescript-eslint/require-await": 2,
-				"semi": 0,
-				"@typescript-eslint/semi": 2,
-				"space-before-blocks": 0,
-				"@typescript-eslint/space-before-blocks": 2,
-				"space-before-function-paren": 0,
-				"@typescript-eslint/space-before-function-paren": [
-					2,
-					{
-						"anonymous": "never",
-						"named": "never",
-						"asyncArrow": "always"
-					}
-				],
-				"space-infix-ops": 0,
-				"@typescript-eslint/space-infix-ops": 2,
 				"@typescript-eslint/ban-types": [
 					2,
 					{
@@ -855,7 +801,8 @@
 						}
 					}
 				],
-				"@typescript-eslint/unified-signatures": 2
+				"@typescript-eslint/unified-signatures": 2,
+				"@stylistic/type-generic-spacing": 2
 			}
 		},
 		{

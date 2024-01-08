@@ -970,8 +970,7 @@ class CodeMirrorModeMediaWiki {
 							state.tokenize = this.eatTagName(
 								tagname.length,
 								// Opening void tags should also be treated as the closing tag.
-								isCloseTag
-									|| tagname in modeConfig.implicitlyClosedHtmlTags,
+								isCloseTag || tagname in modeConfig.implicitlyClosedHtmlTags,
 								true
 							);
 							return this.makeLocalStyle( modeConfig.tags.htmlTagBracket, state );
