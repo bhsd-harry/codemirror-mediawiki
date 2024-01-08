@@ -52,9 +52,12 @@
 		"@stylistic/stylelint-plugin": "^2.0.0",
 		"@types/jquery": "^3.5.29",
 		"@types/oojs-ui": "^0.47.6",
+		"@typescript-eslint/eslint-plugin": "^6.12.0",
+		"@typescript-eslint/parser": "^6.12.0",
 		"esbuild": "^0.19.7",
 		"eslint": "^8.56.0",
 		"eslint-plugin-es-x": "^7.3.0",
+		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-promise": "^6.1.1",
 		"eslint-plugin-regexp": "^2.1.2",
 		"eslint-plugin-unicorn": "^50.0.1",
@@ -62,6 +65,7 @@
 		"stylelint": "^16.1.0",
 		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.4.0",
+		"typescript": "^5.1.6",
 		"wikilint": "^2.2.0"
 	}
 }

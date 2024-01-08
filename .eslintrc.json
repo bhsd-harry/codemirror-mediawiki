@@ -14,7 +14,8 @@
 	"extends": [
 		"eslint:recommended",
 		"plugin:promise/recommended",
-		"plugin:regexp/recommended"
+		"plugin:regexp/recommended",
+		"plugin:eslint-comments/recommended"
 	],
 	"parserOptions": {
 		"ecmaVersion": 13,
@@ -622,7 +623,13 @@
 			"avoid"
 		],
 		"unicorn/text-encoding-identifier-case": 2,
-		"unicorn/throw-new-error": 2
+		"unicorn/throw-new-error": 2,
+		"eslint-comments/disable-enable-pair": [
+			2,
+			{
+				"allowWholeFile": true
+			}
+		]
 	},
 	"overrides": [
 		{
