@@ -157,8 +157,6 @@ import type { MwConfig } from '../src/mediawiki';
 			// @ts-expect-error incomplete properties
 			config = {
 				tagModes: {
-					pre: 'mw-tag-pre',
-					nowiki: 'mw-tag-nowiki',
 					ref: 'text/mediawiki'
 				},
 				tags: {},

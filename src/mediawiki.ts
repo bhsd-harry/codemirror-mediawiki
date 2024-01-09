@@ -10,7 +10,7 @@ import * as plugins from './plugins';
 import type { StreamParser, StringStream } from '@codemirror/language';
 import type { Highlighter } from '@lezer/highlight';
 
-declare type MimeTypes = 'mediawiki' | 'text/mediawiki' | 'mw-tag-pre' | 'mw-tag-nowiki';
+declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
 
 declare type Tokenizer = ( stream: StringStream, state: State ) => string;
 
@@ -19,8 +19,8 @@ declare interface State {
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
 	extName: string | false;
-	extMode: StreamParser<State> | false;
-	extState: State | false;
+	extMode: StreamParser<object> | false;
+	extState: object | false;
 	nTemplate: number;
 	nLink: number;
 	nExt: number;
@@ -29,7 +29,7 @@ declare interface State {
 declare interface Token {
 	pos: number;
 	readonly style: string;
-	readonly state: State;
+	readonly state: object;
 }
 
 export interface MwConfig {
@@ -450,7 +450,8 @@ class CodeMirrorModeMediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return '';
 		}
-		if ( stream.match( /^[^|\]&~{}]+/ ) ) { // FIXME '{{' brokes Link, sample [[z{{page]]
+		// FIXME '{{' brokes Link, sample [[z{{page]]
+		if ( stream.match( /^[^|\]&~{}]+/ ) ) {
 			return this.makeLocalStyle( modeConfig.tags.linkToSection, state );
 		}
 		if ( stream.eat( '|' ) ) {
@@ -518,7 +519,8 @@ class CodeMirrorModeMediaWiki {
 					state.tokenize = this.eatHtmlTagAttribute( name );
 				}
 				return this.makeLocalStyle( modeConfig.tags.htmlTagName, state );
-			} // it is the extension tag
+			}
+			// it is the extension tag
 			if ( isCloseTag ) {
 				state.tokenize = this.eatChar( '>', modeConfig.tags.extTagBracket );
 			} else {
@@ -548,6 +550,17 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
+	eatNowiki( style: string ): Tokenizer {
+		return ( stream ) => {
+			if ( stream.match( /^[^&]+/ ) ) {
+				return style;
+			}
+			// eat &
+			stream.next();
+			return this.eatHtmlEntity( stream, style );
+		};
+	}
+
 	eatExtTagAttribute( name: string ): Tokenizer {
 		return ( stream, state ) => {
 			if ( stream.match( /^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/ ) ) {
@@ -555,10 +568,20 @@ class CodeMirrorModeMediaWiki {
 			}
 			if ( stream.eat( '>' ) ) {
 				state.extName = name;
-				if ( name in this.config.tagModes ) {
+				// leverage the tagModes system for <nowiki> and <pre>
+				if ( name === 'nowiki' || name === 'pre' ) {
+					// There's no actual processing within these tags (apart from HTML entities),
+					// so startState and copyState can be no-ops.
+					state.extMode = {
+						startState: () => ( {} ),
+						token: this.eatNowiki( modeConfig.tags[ name ] )
+					};
+					state.extState = {};
+				} else if ( name in this.config.tagModes ) {
 					state.extMode = this[ this.config.tagModes[ name ] as MimeTypes ];
 					state.extState = state.extMode.startState!( 0 );
 				}
+
 				state.tokenize = this.eatExtTagArea( name );
 				return this.makeLocalStyle( modeConfig.tags.extTagBracket, state );
 			}
@@ -1217,30 +1240,6 @@ class CodeMirrorModeMediaWiki {
 
 	get 'text/mediawiki'(): StreamParser<State> {
 		return this.mediawiki;
-	}
-
-	eatNowiki( style: string ): Tokenizer {
-		return ( stream ) => {
-			if ( stream.match( /^[^&]+/ ) ) {
-				return style;
-			}
-			stream.next();
-			return this.eatHtmlEntity( stream, style );
-		};
-	}
-
-	get 'mw-tag-pre'(): StreamParser<State> {
-		return {
-			startState: () => ( {} as State ),
-			token: this.eatNowiki( modeConfig.tags.pre )
-		};
-	}
-
-	get 'mw-tag-nowiki'(): StreamParser<State> {
-		return {
-			startState: () => ( {} as State ),
-			token: this.eatNowiki( modeConfig.tags.nowiki )
-		};
 	}
 }
 
