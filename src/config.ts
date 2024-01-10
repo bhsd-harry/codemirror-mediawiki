@@ -5,8 +5,6 @@
  */
 
 import { Tag } from '@lezer/highlight';
-import type { TagStyle } from '@codemirror/language';
-import type { StreamParser } from '@codemirror/language';
 
 /**
  * Configuration for the MediaWiki highlighting mode for CodeMirror.
@@ -196,23 +194,5 @@ export const modeConfig = {
 			table[ className ] = Tag.define();
 		}
 		return table;
-	},
-
-	/**
-	 * This defines the actual CSS class assigned to each tag/token.
-	 * Keep this in sync and in the same order as tags().
-	 *
-	 * @see https://codemirror.net/docs/ref/#language.TagStyle
-	 */
-	getTagStyles( context: StreamParser<unknown> ): TagStyle[] {
-		return Object.values( this.tags ).map( ( className ) => ( {
-
-			/**
-			 * Custom tags.
-			 * IMPORTANT: These need to reference the CodeMirrorModeMediaWiki context.
-			 */
-			tag: context.tokenTable![ className ]!,
-			class: `cm-${ className }${ className === 'templateName' ? ' cm-mw-pagename' : '' }`
-		} ) );
 	}
 };

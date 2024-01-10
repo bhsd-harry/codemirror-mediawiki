@@ -75,7 +75,6 @@ class MediaWiki {
 	declare tokens: Token[];
 	declare oldTokens: Token[];
 	declare tokenTable: Record<string, Tag>;
-	declare extHighlightStyles: TagStyle[];
 
 	constructor( config: MwConfig ) {
 		this.config = config;
@@ -91,7 +90,6 @@ class MediaWiki {
 		this.tokens = [];
 		this.oldTokens = [];
 		this.tokenTable = { ...modeConfig.tokenTable };
-		this.extHighlightStyles = [];
 
 		// Dynamically register any tags that aren't already in CodeMirrorModeMediaWikiConfig
 		for ( const tag of Object.keys( config.tags ) ) {
@@ -113,10 +111,18 @@ class MediaWiki {
 			return;
 		}
 		this.tokenTable[ `mw-tag-${ tag }` ] = Tag.define( parent );
-		this.extHighlightStyles.push( {
-			tag: this.tokenTable[ `mw-tag-${ tag }` ]!,
-			class: `cm-mw-tag-${ tag }`
-		} );
+	}
+
+	/**
+	 * This defines the actual CSS class assigned to each tag/token.
+	 *
+	 * @see https://codemirror.net/docs/ref/#language.TagStyle
+	 */
+	getTagStyles(): TagStyle[] {
+		return Object.keys( this.tokenTable ).map( ( className ) => ( {
+			tag: this.tokenTable[ className ]!,
+			class: `cm-${ className }${ className === 'templateName' ? ' cm-mw-pagename' : '' }`
+		} ) );
 	}
 
 	eatHtmlEntity( stream: StringStream, style: string ): string {
@@ -1293,12 +1299,7 @@ export const mediawiki = ( config: MwConfig ): LanguageSupport => {
 	const mode = new MediaWiki( config );
 	const parser = mode.mediawiki;
 	const lang = StreamLanguage.define( parser );
-	const highlighter = syntaxHighlighting(
-		HighlightStyle.define( [
-			...modeConfig.getTagStyles( parser ),
-			...mode.extHighlightStyles
-		] ) as Highlighter
-	);
+	const highlighter = syntaxHighlighting( HighlightStyle.define( mode.getTagStyles() ) as Highlighter );
 	return new LanguageSupport( lang, highlighter );
 };
 

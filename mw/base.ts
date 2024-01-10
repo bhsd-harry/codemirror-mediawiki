@@ -165,7 +165,11 @@ import type { MwConfig } from '../src/mediawiki';
 			for ( const tag of extensiontags ) {
 				config!.tags[ tag.slice( 1, -1 ) ] = true;
 			}
-			const realMagicwords = new Set( [ ...functionhooks, ...variables, ...otherMagicwords ] ),
+			const realMagicwords = new Set( [
+					...functionhooks,
+					...variables,
+					...otherMagicwords
+				] ),
 				allMagicwords = magicwords.filter(
 					( { name, aliases } ) =>
 						aliases.some( ( alias ) => /^__.+__$/.test( alias ) ) || realMagicwords.has( name )
@@ -228,7 +232,10 @@ import type { MwConfig } from '../src/mediawiki';
 							protocol: mwConfig.urlProtocols
 						};
 					[ config.parserFunction[ 0 ] ] = mwConfig.functionSynonyms;
-					config.parserFunction[ 1 ] = [ ...Object.keys( mwConfig.functionSynonyms[ 1 ] ), '=' ];
+					config.parserFunction[ 1 ] = [
+						...Object.keys( mwConfig.functionSynonyms[ 1 ] ),
+						'='
+					];
 					for ( const key of Object.keys( mwConfig.img! ) ) {
 						config.img[ key ] = mwConfig.img![ key ]!.slice( 4 );
 					}
