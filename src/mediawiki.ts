@@ -4,10 +4,16 @@
  * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import { LanguageSupport, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
+import {
+	HighlightStyle,
+	LanguageSupport,
+	StreamLanguage,
+	syntaxHighlighting
+} from '@codemirror/language';
+import { Tag } from '@lezer/highlight';
 import { modeConfig } from './config';
 import * as plugins from './plugins';
-import type { StreamParser, StringStream } from '@codemirror/language';
+import type { StreamParser, StringStream, TagStyle } from '@codemirror/language';
 import type { Highlighter } from '@lezer/highlight';
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
@@ -55,7 +61,7 @@ const copyState = ( state: State ): State => {
 /**
  * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
  */
-class CodeMirrorModeMediaWiki {
+class MediaWiki {
 	declare readonly config: MwConfig;
 	declare readonly urlProtocols: RegExp;
 	declare isBold: boolean;
@@ -68,6 +74,8 @@ class CodeMirrorModeMediaWiki {
 	declare oldStyle: string | null;
 	declare tokens: Token[];
 	declare oldTokens: Token[];
+	declare tokenTable: Record<string, Tag>;
+	declare extHighlightStyles: TagStyle[];
 
 	constructor( config: MwConfig ) {
 		this.config = config;
@@ -82,6 +90,33 @@ class CodeMirrorModeMediaWiki {
 		this.oldStyle = null;
 		this.tokens = [];
 		this.oldTokens = [];
+		this.tokenTable = { ...modeConfig.tokenTable };
+		this.extHighlightStyles = [];
+
+		// Dynamically register any tags that aren't already in CodeMirrorModeMediaWikiConfig
+		for ( const tag of Object.keys( config.tags ) ) {
+			this.addTag( tag );
+		}
+	}
+
+	/**
+	 * Register a tag in CodeMirror. The generated CSS class will be of the form 'cm-mw-tag-tagname'
+	 * This is for internal use to dynamically register tags from other MediaWiki extensions.
+	 *
+	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
+	 * @param tag
+	 * @param parent
+	 * @internal
+	 */
+	addTag( tag: string, parent?: Tag ): void {
+		if ( this.tokenTable[ `mw-tag-${ tag }` ] ) {
+			return;
+		}
+		this.tokenTable[ `mw-tag-${ tag }` ] = Tag.define( parent );
+		this.extHighlightStyles.push( {
+			tag: this.tokenTable[ `mw-tag-${ tag }` ]!,
+			class: `cm-mw-tag-${ tag }`
+		} );
 	}
 
 	eatHtmlEntity( stream: StringStream, style: string ): string {
@@ -149,8 +184,8 @@ class CodeMirrorModeMediaWiki {
 		 * - mw-template3-ground
 		 * - mw-template3-link-ground
 		 *
-		 * NOTE: these should be defined in CodeMirrorModeMediaWikiConfig.tokenTable()
-		 *   and CodeMirrorModeMediaWikiConfig.highlightStyle()
+		 * NOTE: these should be defined in modeConfig.tokenTable()
+		 *   and modeConfig.highlightStyle()
 		 */
 		switch ( state.nTemplate ) {
 			case 0:
@@ -450,7 +485,7 @@ class CodeMirrorModeMediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return '';
 		}
-		// FIXME '{{' brokes Link, sample [[z{{page]]
+		// FIXME '{{' breaks links, example: [[z{{page]]
 		if ( stream.match( /^[^|\]&~{}]+/ ) ) {
 			return this.makeLocalStyle( modeConfig.tags.linkToSection, state );
 		}
@@ -511,6 +546,7 @@ class CodeMirrorModeMediaWiki {
 				name += stream.next();
 			}
 			stream.eatSpace();
+			name = name.toLowerCase();
 
 			if ( isHtmlTag ) {
 				if ( isCloseTag && !modeConfig.implicitlyClosedHtmlTags[ name ] ) {
@@ -550,14 +586,14 @@ class CodeMirrorModeMediaWiki {
 		};
 	}
 
-	eatNowiki( style: string ): Tokenizer {
+	eatNowiki(): Tokenizer {
 		return ( stream ) => {
 			if ( stream.match( /^[^&]+/ ) ) {
-				return style;
+				return '';
 			}
 			// eat &
 			stream.next();
-			return this.eatHtmlEntity( stream, style );
+			return this.eatHtmlEntity( stream, '' );
 		};
 	}
 
@@ -574,7 +610,7 @@ class CodeMirrorModeMediaWiki {
 					// so startState and copyState can be no-ops.
 					state.extMode = {
 						startState: () => ( {} ),
-						token: this.eatNowiki( modeConfig.tags[ name ] )
+						token: this.eatNowiki()
 					};
 					state.extState = {};
 				} else if ( name in this.config.tagModes ) {
@@ -638,8 +674,7 @@ class CodeMirrorModeMediaWiki {
 				ret = modeConfig.tags.extTag;
 				stream.skipToEnd();
 			} else {
-				ret = ( modeConfig.tags as Record<string, string> )[ state.extName as string ]!;
-				ret += ` ${ state.extMode.token( stream, state.extState as State ) }`;
+				ret = `mw-tag-${ state.extName } ${ state.extMode.token( stream, state.extState as State ) }`;
 			}
 			if ( stream.eol() ) {
 				if ( origString !== false ) {
@@ -1228,9 +1263,9 @@ class CodeMirrorModeMediaWiki {
 			/**
 			 * Extra tokens to use in this parser.
 			 *
-			 * @see CodeMirrorConfigChanges.tokenTable
+			 * @see modeConfig.tokenTable
 			 */
-			tokenTable: modeConfig.tokenTable,
+			tokenTable: this.tokenTable,
 
 			languageData: {
 				closeBrackets: { brackets: [ '(', '[', '{', '"' ] }
@@ -1244,7 +1279,7 @@ class CodeMirrorModeMediaWiki {
 }
 
 for ( const [ language, parser ] of Object.entries( plugins ) ) {
-	Object.defineProperty( CodeMirrorModeMediaWiki.prototype, language, {
+	Object.defineProperty( MediaWiki.prototype, language, {
 		get() {
 			return parser;
 		}
@@ -1255,9 +1290,15 @@ for ( const [ language, parser ] of Object.entries( plugins ) ) {
  * Gets a LanguageSupport instance for the MediaWiki mode.
  */
 export const mediawiki = ( config: MwConfig ): LanguageSupport => {
-	const parser = new CodeMirrorModeMediaWiki( config ).mediawiki;
+	const mode = new MediaWiki( config );
+	const parser = mode.mediawiki;
 	const lang = StreamLanguage.define( parser );
-	const highlighter = syntaxHighlighting( modeConfig.getHighlightStyle( parser ) as Highlighter );
+	const highlighter = syntaxHighlighting(
+		HighlightStyle.define( [
+			...modeConfig.getTagStyles( parser ),
+			...mode.extHighlightStyles
+		] ) as Highlighter
+	);
 	return new LanguageSupport( lang, highlighter );
 };
 

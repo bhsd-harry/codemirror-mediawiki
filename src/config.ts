@@ -4,8 +4,8 @@
  * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import { HighlightStyle } from '@codemirror/language';
 import { Tag } from '@lezer/highlight';
+import type { TagStyle } from '@codemirror/language';
 import type { StreamParser } from '@codemirror/language';
 
 /**
@@ -167,9 +167,7 @@ export const modeConfig = {
 		link: 'mw-link',
 		linkGround: 'mw-link-ground',
 		linkPageName: 'mw-link-pagename',
-		nowiki: 'mw-tag-nowiki',
 		pageName: 'mw-pagename',
-		pre: 'mw-tag-pre',
 		skipFormatting: 'mw-skipformatting',
 		strong: 'mw-strong',
 		tableCaption: 'mw-table-caption',
@@ -186,6 +184,8 @@ export const modeConfig = {
 	/**
 	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
 	 * Make sure these are also defined in tags() above.
+	 *
+	 * TODO: pass parent Tags in Tag.define() where appropriate for better theming.
 	 *
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
@@ -204,8 +204,8 @@ export const modeConfig = {
 	 *
 	 * @see https://codemirror.net/docs/ref/#language.TagStyle
 	 */
-	getHighlightStyle( context: StreamParser<unknown> ): HighlightStyle {
-		const specs = Object.values( this.tags ).map( ( className ) => ( {
+	getTagStyles( context: StreamParser<unknown> ): TagStyle[] {
+		return Object.values( this.tags ).map( ( className ) => ( {
 
 			/**
 			 * Custom tags.
@@ -214,6 +214,5 @@ export const modeConfig = {
 			tag: context.tokenTable![ className ]!,
 			class: `cm-${ className }${ className === 'templateName' ? ' cm-mw-pagename' : '' }`
 		} ) );
-		return HighlightStyle.define( specs );
 	}
 };
