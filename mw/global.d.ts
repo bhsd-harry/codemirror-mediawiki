@@ -1,4 +1,4 @@
-import { CodeMirror6 as CodeMirror } from '../src/codemirror';
+import {CodeMirror6 as CodeMirror} from '../src/codemirror';
 import 'types-mediawiki';
 
 declare global {

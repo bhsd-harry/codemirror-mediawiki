@@ -4,7 +4,7 @@
  * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import { Tag } from '@lezer/highlight';
+import {Tag} from '@lezer/highlight';
 
 /**
  * Configuration for the MediaWiki highlighting mode for CodeMirror.
@@ -82,7 +82,8 @@ export const modeConfig = {
 		tr: true,
 		noinclude: true,
 		includeonly: true,
-		onlyinclude: true
+		onlyinclude: true,
+		img: true,
 	},
 
 	/**
@@ -91,7 +92,7 @@ export const modeConfig = {
 	implicitlyClosedHtmlTags: {
 		br: true,
 		hr: true,
-		wbr: true
+		wbr: true,
 	} as Record<string, true>,
 
 	/**
@@ -176,7 +177,7 @@ export const modeConfig = {
 		template2ExtGround: 'mw-template2-ext-ground',
 		template2Ground: 'mw-template2-ground',
 		template3ExtGround: 'mw-template3-ext-ground',
-		template3Ground: 'mw-template3-ground'
+		template3Ground: 'mw-template3-ground',
 	},
 
 	/**
@@ -190,9 +191,9 @@ export const modeConfig = {
 	 */
 	get tokenTable(): Record<string, Tag> {
 		const table: Record<string, Tag> = {};
-		for ( const className of Object.values( this.tags ) ) {
-			table[ className ] = Tag.define();
+		for (const className of Object.values(this.tags)) {
+			table[className] = Tag.define();
 		}
 		return table;
-	}
+	},
 };

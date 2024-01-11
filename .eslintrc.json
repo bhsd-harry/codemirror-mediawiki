@@ -107,7 +107,7 @@
 		"arrow-body-style": 2,
 		"block-scoped-var": 2,
 		"camelcase": 2,
-		"class-methods-use-this": 0,
+		"class-methods-use-this": 2,
 		"consistent-return": 2,
 		"curly": 2,
 		"default-case": 2,
@@ -204,7 +204,7 @@
 		"no-new-object": 2,
 		"no-new-wrappers": 2,
 		"no-octal-escape": 2,
-		"no-param-reassign": 0,
+		"no-param-reassign": 2,
 		"no-return-assign": [
 			2,
 			"always"
@@ -301,7 +301,7 @@
 			"as-needed"
 		],
 		"require-await": 2,
-		"require-unicode-regexp": 0,
+		"require-unicode-regexp": 2,
 		"spaced-comment": 2,
 		"strict": 2,
 		"symbol-description": 2,
@@ -313,28 +313,28 @@
 				"multiline": true
 			}
 		],
-		"@stylistic/array-bracket-spacing": [
-			2,
-			"always"
-		],
+		"@stylistic/array-bracket-spacing": 2,
 		"@stylistic/array-element-newline": [
 			2,
 			"consistent"
 		],
 		"@stylistic/arrow-parens": [
 			2,
-			"always"
+			"as-needed"
 		],
 		"@stylistic/arrow-spacing": 2,
-		"@stylistic/block-spacing": 2,
+		"@stylistic/block-spacing": [
+			2,
+			"never"
+		],
 		"@stylistic/brace-style": 2,
-		"@stylistic/comma-dangle": 2,
+		"@stylistic/comma-dangle": [
+			2,
+			"always-multiline"
+		],
 		"@stylistic/comma-spacing": 2,
 		"@stylistic/comma-style": 2,
-		"@stylistic/computed-property-spacing": [
-			2,
-			"always"
-		],
+		"@stylistic/computed-property-spacing": 2,
 		"@stylistic/dot-location": [
 			2,
 			"property"
@@ -423,10 +423,7 @@
 				"consistent": true
 			}
 		],
-		"@stylistic/object-curly-spacing": [
-			2,
-			"always"
-		],
+		"@stylistic/object-curly-spacing": 2,
 		"@stylistic/object-property-newline": [
 			2,
 			{
@@ -462,17 +459,11 @@
 				"asyncArrow": "always"
 			}
 		],
-		"@stylistic/space-in-parens": [
-			2,
-			"always"
-		],
+		"@stylistic/space-in-parens": 2,
 		"@stylistic/space-infix-ops": 2,
 		"@stylistic/space-unary-ops": 2,
 		"@stylistic/switch-colon-spacing": 2,
-		"@stylistic/template-curly-spacing": [
-			2,
-			"always"
-		],
+		"@stylistic/template-curly-spacing": 2,
 		"@stylistic/wrap-iife": [
 			2,
 			"inside"
@@ -618,6 +609,7 @@
 		"unicorn/prefer-string-replace-all": 0,
 		"unicorn/prefer-string-starts-ends-with": 2,
 		"unicorn/prefer-switch": 2,
+		"unicorn/prefer-ternary": 2,
 		"unicorn/switch-case-braces": [
 			2,
 			"avoid"
@@ -751,7 +743,12 @@
 				"@typescript-eslint/no-confusing-non-null-assertion": 2,
 				"@typescript-eslint/no-confusing-void-expression": 2,
 				"@typescript-eslint/no-duplicate-type-constituents": 2,
-				"@typescript-eslint/no-explicit-any": 0,
+				"@typescript-eslint/no-explicit-any": [
+					2,
+					{
+						"ignoreRestArgs": true
+					}
+				],
 				"@typescript-eslint/no-floating-promises": [
 					2,
 					{
@@ -782,10 +779,8 @@
 					}
 				],
 				"@typescript-eslint/no-unnecessary-qualifier": 2,
-				"@typescript-eslint/no-unsafe-argument": 0,
 				"@typescript-eslint/no-unsafe-assignment": 0,
 				"@typescript-eslint/no-unsafe-call": 0,
-				"@typescript-eslint/no-unsafe-member-access": 0,
 				"@typescript-eslint/no-unsafe-return": 0,
 				"@typescript-eslint/no-useless-empty-export": 2,
 				"@typescript-eslint/no-var-requires": 0,

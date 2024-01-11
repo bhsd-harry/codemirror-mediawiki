@@ -1,36 +1,36 @@
 /* eslint-env node */
-const path = require( 'path' );
+const path = require('path');
 
-module.exports = ( _, { mode } ) => ( {
+module.exports = (_, {mode}) => ({
 	mode,
 	entry: './src/codemirror.ts',
 	output: {
-		path: path.resolve( __dirname, 'dist' ),
-		filename: `main${ mode === 'production' ? '.min' : '' }.js`,
+		path: path.resolve(__dirname, 'dist'),
+		filename: `main${mode === 'production' ? '.min' : ''}.js`,
 		library: {
-			type: 'module'
-		}
+			type: 'module',
+		},
 	},
 	experiments: {
-		outputModule: true
+		outputModule: true,
 	},
 	resolve: {
-		extensions: [ '.ts' ]
+		extensions: ['.ts'],
 	},
 	plugins: [],
 	module: {
 		rules: [
 			{
-				test: /\.ts$/,
+				test: /\.ts$/u,
 				loader: 'esbuild-loader',
 				options: {
-					target: 'es2018'
-				}
-			}
-		]
+					target: 'es2018',
+				},
+			},
+		],
 	},
 	optimization: {
 		minimize: mode === 'production',
-		usedExports: true
-	}
-} );
+		usedExports: true,
+	},
+});

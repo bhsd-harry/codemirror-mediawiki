@@ -1,4 +1,4 @@
-import { Compartment } from '@codemirror/state';
+import {Compartment} from '@codemirror/state';
 import {
 	EditorView,
 	lineNumbers,
@@ -6,7 +6,7 @@ import {
 	highlightSpecialChars,
 	highlightActiveLine,
 	highlightWhitespace,
-	highlightTrailingWhitespace
+	highlightTrailingWhitespace,
 } from '@codemirror/view';
 import {
 	syntaxHighlighting,
@@ -15,54 +15,56 @@ import {
 	StreamLanguage,
 	LanguageSupport,
 	bracketMatching,
-	indentUnit
+	indentUnit,
 } from '@codemirror/language';
-import { defaultKeymap, historyKeymap, history } from '@codemirror/commands';
-import { searchKeymap } from '@codemirror/search';
-import { linter, lintGutter, openLintPanel, closeLintPanel } from '@codemirror/lint';
-import { closeBrackets } from '@codemirror/autocomplete';
-import { mediawiki, html } from './mediawiki';
+import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
+import {searchKeymap} from '@codemirror/search';
+import {linter, lintGutter, openLintPanel, closeLintPanel} from '@codemirror/lint';
+import {closeBrackets} from '@codemirror/autocomplete';
+import {mediawiki, html} from './mediawiki';
 import * as plugins from './plugins';
-import type { ViewPlugin } from '@codemirror/view';
-import type { Extension, Text } from '@codemirror/state';
-import type { Diagnostic } from '@codemirror/lint';
-import type { Highlighter } from '@lezer/highlight';
-import type { Linter } from 'eslint';
+import type {ViewPlugin} from '@codemirror/view';
+import type {Extension, Text} from '@codemirror/state';
+import type {Diagnostic} from '@codemirror/lint';
+import type {Highlighter} from '@lezer/highlight';
+import type {Linter} from 'eslint';
 
-export type { MwConfig } from './mediawiki';
-export type LintSource = ( doc: Text ) => Diagnostic[] | Promise<Diagnostic[]>;
+export type {MwConfig} from './mediawiki';
+export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
-const languages: Record<string, ( config?: any ) => LanguageSupport | []> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const languages: Record<string, (config?: any) => LanguageSupport | []> = {
 	plain: () => [],
 	mediawiki,
-	html
+	html,
 };
-for ( const [ language, parser ] of Object.entries( plugins ) ) {
-	languages[ language ] = (): LanguageSupport => new LanguageSupport( StreamLanguage.define( parser ) );
+for (const [language, parser] of Object.entries(plugins)) {
+	languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
 }
 const linters: Record<string, Extension> = {};
-const avail: Record<string, [ ( config?: any ) => Extension, Record<string, unknown> ]> = {
-	highlightSpecialChars: [ highlightSpecialChars, {} ],
-	highlightActiveLine: [ highlightActiveLine, {} ],
-	highlightWhitespace: [ highlightWhitespace, {} ],
-	highlightTrailingWhitespace: [ highlightTrailingWhitespace, {} ],
-	bracketMatching: [ bracketMatching, { mediawiki: { brackets: '[]{}' } } ],
-	closeBrackets: [ closeBrackets, {} ]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const avail: Record<string, [ (config?: any) => Extension, Record<string, unknown> ]> = {
+	highlightSpecialChars: [highlightSpecialChars, {}],
+	highlightActiveLine: [highlightActiveLine, {}],
+	highlightWhitespace: [highlightWhitespace, {}],
+	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
+	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
+	closeBrackets: [closeBrackets, {}],
 };
 
 /** 使用传统方法加载脚本 */
-const loadScript = ( src: string, target: string ): Promise<void> => new Promise( ( resolve ) => {
-	if ( target in window ) {
+const loadScript = (src: string, target: string): Promise<void> => new Promise(resolve => {
+	if (target in window) {
 		resolve();
 		return;
 	}
-	const script = document.createElement( 'script' );
-	script.src = `https://testingcf.jsdelivr.net/${ src }`;
+	const script = document.createElement('script');
+	script.src = `https://testingcf.jsdelivr.net/${src}`;
 	script.onload = (): void => {
 		resolve();
 	};
-	document.head.append( script );
-} );
+	document.head.append(script);
+});
 
 export class CodeMirror6 {
 	readonly #textarea;
@@ -86,7 +88,7 @@ export class CodeMirror6 {
 	 * @param lang 语言
 	 * @param config 语言设置
 	 */
-	constructor( textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown ) {
+	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown) {
 		this.#textarea = textarea;
 		this.lang = lang;
 		this.#language = new Compartment();
@@ -95,57 +97,57 @@ export class CodeMirror6 {
 		this.#indent = new Compartment();
 		let timer: number | undefined;
 		const extensions = [
-			this.#language.of( languages[ lang ]!( config ) ),
-			this.#linter.of( [] ),
-			this.#extensions.of( [] ),
-			this.#indent.of( indentUnit.of( '\t' ) ),
-			syntaxHighlighting( defaultHighlightStyle as Highlighter ),
-			EditorView.contentAttributes.of( {
+			this.#language.of(languages[lang]!(config)),
+			this.#linter.of([]),
+			this.#extensions.of([]),
+			this.#indent.of(indentUnit.of('\t')),
+			syntaxHighlighting(defaultHighlightStyle as Highlighter),
+			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
 				dir: textarea.dir,
-				lang: textarea.lang
-			} ),
+				lang: textarea.lang,
+			}),
 			lineNumbers(),
 			EditorView.lineWrapping,
 			history(),
 			indentOnInput(),
-			keymap.of( [
+			keymap.of([
 				...defaultKeymap,
 				...historyKeymap,
-				...searchKeymap
-			] ),
-			EditorView.updateListener.of( ( { state: { doc }, docChanged } ) => {
-				if ( docChanged ) {
-					clearTimeout( timer );
-					timer = window.setTimeout( () => {
+				...searchKeymap,
+			]),
+			EditorView.updateListener.of(({state: {doc}, docChanged}) => {
+				if (docChanged) {
+					clearTimeout(timer);
+					timer = window.setTimeout(() => {
 						textarea.value = doc.toString();
-					}, 400 );
+					}, 400);
 				}
-			} )
+			}),
 		];
-		this.#view = new EditorView( {
+		this.#view = new EditorView({
 			extensions,
-			doc: textarea.value
-		} );
-		const { offsetHeight, selectionStart, selectionEnd, scrollTop } = textarea,
-			{ fontSize, lineHeight } = getComputedStyle( textarea ),
+			doc: textarea.value,
+		});
+		const {offsetHeight, selectionStart, selectionEnd, scrollTop} = textarea,
+			{fontSize, lineHeight} = getComputedStyle(textarea),
 			hasFocus = document.activeElement === textarea;
-		textarea.parentNode!.insertBefore( this.#view.dom, textarea );
+		textarea.parentNode!.insertBefore(this.#view.dom, textarea);
 		this.#view.dom.style.minHeight = '2em';
-		this.#view.dom.style.height = `${ offsetHeight }px`;
+		this.#view.dom.style.height = `${offsetHeight}px`;
 		this.#view.dom.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.#view.requestMeasure();
-		this.#view.dispatch( {
-			selection: { anchor: selectionStart, head: selectionEnd }
-		} );
+		this.#view.dispatch({
+			selection: {anchor: selectionStart, head: selectionEnd},
+		});
 		textarea.style.display = 'none';
-		if ( hasFocus ) {
+		if (hasFocus) {
 			this.#view.focus();
 		}
-		window.requestAnimationFrame( () => {
+		window.requestAnimationFrame(() => {
 			this.#view.scrollDOM.scrollTop = scrollTop;
-		} );
+		});
 	}
 
 	/**
@@ -153,116 +155,116 @@ export class CodeMirror6 {
 	 * @param lang 语言
 	 * @param config 语言设置
 	 */
-	setLanguage( lang = 'plain', config?: unknown ): void {
-		this.#view.dispatch( {
+	setLanguage(lang = 'plain', config?: unknown): void {
+		this.#view.dispatch({
 			effects: [
-				this.#language.reconfigure( languages[ lang ]!( config ) ),
-				this.#linter.reconfigure( linters[ lang ] ?? [] )
-			]
-		} );
+				this.#language.reconfigure(languages[lang]!(config)),
+				this.#linter.reconfigure(linters[lang] ?? []),
+			],
+		});
 		this.lang = lang;
-		( linters[ lang ] ? openLintPanel : closeLintPanel )( this.#view );
+		(linters[lang] ? openLintPanel : closeLintPanel)(this.#view);
 	}
 
 	/**
 	 * 开始语法检查
 	 * @param lintSource 语法检查函数
 	 */
-	lint( lintSource?: LintSource ): void {
-		const { lang } = this,
+	lint(lintSource?: LintSource): void {
+		const {lang} = this,
 			linterExtension = lintSource
 				? [
-					linter( ( view ) => lintSource( view.state.doc ) ),
-					lintGutter()
+					linter(view => lintSource(view.state.doc)),
+					lintGutter(),
 				]
 				: [];
-		if ( lintSource ) {
-			linters[ lang ] = linterExtension;
+		if (lintSource) {
+			linters[lang] = linterExtension;
 		} else {
-			delete linters[ lang ];
+			delete linters[lang];
 		}
-		this.#view.dispatch( {
-			effects: [ this.#linter.reconfigure( linterExtension ) ]
-		} );
-		( lintSource ? openLintPanel : closeLintPanel )( this.#view );
+		this.#view.dispatch({
+			effects: [this.#linter.reconfigure(linterExtension)],
+		});
+		(lintSource ? openLintPanel : closeLintPanel)(this.#view);
 	}
 
 	/** 立即更新语法检查 */
 	update(): void {
-		const extension = this.#linter.get( this.#view.state ) as [[ unknown, ViewPlugin<{
+		const extension = this.#linter.get(this.#view.state) as [[ unknown, ViewPlugin<{
 			set: boolean;
 			force(): void;
 		}> ]] | [];
-		if ( extension.length > 0 ) {
-			const plugin = this.#view.plugin( extension[ 0 ]![ 1 ] )!;
+		if (extension.length > 0) {
+			const plugin = this.#view.plugin(extension[0]![1])!;
 			plugin.set = true;
 			plugin.force();
 		}
 	}
 
 	/** 添加扩展 */
-	prefer( names: readonly string[] ): void {
-		const { lang } = this;
-		this.#view.dispatch( {
+	prefer(names: readonly string[]): void {
+		const {lang} = this;
+		this.#view.dispatch({
 			effects: [
-				this.#extensions.reconfigure( names.map( ( name ) => {
-					const [ extension, configs ] = avail[ name ]!;
-					return extension( configs[ lang ] );
-				} ) )
-			]
-		} );
+				this.#extensions.reconfigure(names.map(name => {
+					const [extension, configs] = avail[name]!;
+					return extension(configs[lang]);
+				})),
+			],
+		});
 	}
 
 	/** 设置缩进 */
-	setIndent( indent: string ): void {
-		this.#view.dispatch( {
-			effects: [ this.#indent.reconfigure( indentUnit.of( indent ) ) ]
-		} );
+	setIndent(indent: string): void {
+		this.#view.dispatch({
+			effects: [this.#indent.reconfigure(indentUnit.of(indent))],
+		});
 	}
 
 	/** 获取默认linter */
 	async getLinter(): Promise<LintSource> {
-		switch ( this.lang ) {
+		switch (this.lang) {
 			case 'mediawiki': {
 				const src = 'combine/npm/wikiparser-node@1.2.0-b/extensions/dist/base.min.js,'
 					+ 'npm/wikiparser-node@1.2.0-b/extensions/dist/lint.min.js';
-				await loadScript( src, 'wikiparse' );
+				await loadScript(src, 'wikiparse');
 				const wikiLinter = new wikiparse.Linter();
-				return ( doc ) => wikiLinter.codemirror( doc.toString() );
+				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {
-				await loadScript( 'npm/eslint-linter-browserify', 'eslint' );
+				await loadScript('npm/eslint-linter-browserify', 'eslint');
 				/** @see https://npmjs.com/package/@codemirror/lang-javascript */
 				const esLinter = new eslint.Linter(),
 					conf: Linter.Config = {
 						env: {
 							browser: true,
-							es2018: true
+							es2018: true,
 						},
 						parserOptions: {
 							ecmaVersion: 9,
-							sourceType: 'module'
+							sourceType: 'module',
 						},
-						rules: {}
+						rules: {},
 					};
-				for ( const [ name, { meta } ] of esLinter.getRules() ) {
-					if ( meta?.docs!.recommended ) {
-						conf.rules![ name ] = 2;
+				for (const [name, {meta}] of esLinter.getRules()) {
+					if (meta?.docs!.recommended) {
+						conf.rules![name] = 2;
 					}
 				}
-				return ( doc ) => esLinter.verify( doc.toString(), conf )
-					.map( ( { message, severity, line, column, endLine, endColumn } ) => {
-						const from = doc.line( line ).from + column - 1;
+				return doc => esLinter.verify(doc.toString(), conf)
+					.map(({message, severity, line, column, endLine, endColumn}) => {
+						const from = doc.line(line).from + column - 1;
 						return {
 							message,
 							severity: severity === 1 ? 'warning' : 'error',
 							from,
-							to: endLine === undefined ? from + 1 : doc.line( endLine ).from + endColumn! - 1
+							to: endLine === undefined ? from + 1 : doc.line(endLine).from + endColumn! - 1,
 						};
-					} );
+					});
 			}
 			case 'css': {
-				await loadScript( 'gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint' );
+				await loadScript('gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint');
 				/** @see https://npmjs.com/package/stylelint-config-recommended */
 				const conf = {
 					rules: {
@@ -276,8 +278,8 @@ export class CodeMirror6 {
 						'declaration-block-no-duplicate-properties': [
 							true,
 							{
-								ignore: [ 'consecutive-duplicates-with-different-syntaxes' ]
-							}
+								ignore: ['consecutive-duplicates-with-different-syntaxes'],
+							},
 						],
 						'declaration-block-no-shorthand-property-overrides': true,
 						'font-family-no-duplicate-names': true,
@@ -304,39 +306,39 @@ export class CodeMirror6 {
 						'selector-type-no-unknown': [
 							true,
 							{
-								ignore: [ 'custom-elements' ]
-							}
+								ignore: ['custom-elements'],
+							},
 						],
 						'string-no-newline': true,
-						'unit-no-unknown': true
-					}
+						'unit-no-unknown': true,
+					},
 				};
-				return async ( doc ) => {
-					const { results } = await stylelint.lint( { code: doc.toString(), config: conf } );
-					return results.flatMap( ( { warnings } ) => warnings )
-						.map( ( { text, severity, line, column, endLine, endColumn } ) => ( {
+				return async doc => {
+					const {results} = await stylelint.lint({code: doc.toString(), config: conf});
+					return results.flatMap(({warnings}) => warnings)
+						.map(({text, severity, line, column, endLine, endColumn}) => ({
 							message: text,
 							severity,
-							from: doc.line( line ).from + column - 1,
-							to: endLine === undefined ? doc.line( line ).to : doc.line( endLine ).from + endColumn! - 1
-						} ) );
+							from: doc.line(line).from + column - 1,
+							to: endLine === undefined ? doc.line(line).to : doc.line(endLine).from + endColumn! - 1,
+						}));
 				};
 			}
 			case 'lua':
-				await loadScript( 'npm/luaparse', 'luaparse' );
+				await loadScript('npm/luaparse', 'luaparse');
 				/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
-				return ( doc ) => {
+				return doc => {
 					try {
-						luaparse.parse( doc.toString() );
-					} catch ( e ) {
-						if ( e instanceof luaparse.SyntaxError ) {
+						luaparse.parse(doc.toString());
+					} catch (e) {
+						if (e instanceof luaparse.SyntaxError) {
 							return [
 								{
 									message: e.message,
 									severity: 'error',
 									from: e.index,
-									to: e.index
-								}
+									to: e.index,
+								},
 							];
 						}
 					}
