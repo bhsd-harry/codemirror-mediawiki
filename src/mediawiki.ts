@@ -952,12 +952,7 @@ class MediaWiki {
 							}
 							stream.backUp(tagname.length);
 							state.stack.push(state.tokenize);
-							state.tokenize = this.eatTagName(
-								tagname.length,
-								// Opening void tags should also be treated as the closing tag.
-								isCloseTag || modeConfig.implicitlyClosedHtmlTags.has(tagname),
-								true,
-							);
+							state.tokenize = this.eatTagName(tagname.length, isCloseTag, true);
 							return this.makeLocalStyle(modeConfig.tags.htmlTagBracket, state);
 						}
 						stream.backUp(tagname.length);
