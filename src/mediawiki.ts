@@ -596,7 +596,7 @@ class MediaWiki {
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
 			const from = stream.pos,
-				pattern = new RegExp(`</${name}(?:[\\s>]|$)`, 'iu'),
+				pattern = new RegExp(`</${name}\\s*(?:>|$)`, 'iu'),
 				m = pattern.exec(from ? stream.string.slice(from) : stream.string);
 			let origString: string | false = false;
 
