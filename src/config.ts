@@ -125,7 +125,6 @@ export const modeConfig = {
 		htmlTagAttribute: 'mw-htmltag-attribute',
 		htmlTagBracket: 'mw-htmltag-bracket',
 		htmlTagName: 'mw-htmltag-name',
-		indenting: 'mw-indenting',
 		linkBracket: 'mw-link-bracket',
 		linkDelimiter: 'mw-link-delimiter',
 		linkText: 'mw-link-text',

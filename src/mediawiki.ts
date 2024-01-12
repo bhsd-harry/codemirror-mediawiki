@@ -815,8 +815,9 @@ class MediaWiki {
 						break;
 					case '*':
 					case '#':
+					case ';':
 						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^[*#]*:*/u);
+						stream.match(/^[*#;:]*/u);
 						return this.makeLocalStyle(modeConfig.tags.list, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
@@ -825,22 +826,21 @@ class MediaWiki {
 							state.tokenize = this.eatStartTable.bind(this);
 						}
 						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^:*[*#]*/u);
-						return this.makeLocalStyle(modeConfig.tags.indenting, state);
+						stream.match(/^[*#;:]*/u);
+						return this.makeLocalStyle(modeConfig.tags.list, state);
 					case ' ':
 						// Leading spaces is valid syntax for tables, bug T108454
-						if (stream.match(/^\s*:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
+						if (stream.match(/^\s*(?::+\s*)?(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
 							stream.eatSpace();
 							if (stream.match(/^:+/u)) { // ::{|
 								state.stack.push(state.tokenize);
 								state.tokenize = this.eatStartTable.bind(this);
-								return this.makeLocalStyle(modeConfig.tags.indenting, state);
+								return this.makeLocalStyle(modeConfig.tags.list, state);
 							}
 							stream.eat('{');
 						} else {
 							return modeConfig.tags.skipFormatting;
 						}
-					// break is not necessary here
 					// falls through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
@@ -885,10 +885,9 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.linkBracket, state);
 						}
 					} else {
-						mt = stream.match(this.urlProtocols) as RegExpMatchArray | false;
+						mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 						if (mt) {
 							state.nLink++;
-							stream.backUp(mt[0].length);
 							state.stack.push(state.tokenize);
 							state.tokenize = this.eatExternalLinkProtocol(mt[0].length);
 							return this.makeLocalStyle(modeConfig.tags.extLinkBracket, state);
