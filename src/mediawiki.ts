@@ -525,7 +525,7 @@ class MediaWiki {
 			name = name.toLowerCase();
 
 			if (isHtmlTag) {
-				state.tokenize = isCloseTag && !modeConfig.implicitlyClosedHtmlTags.has(name)
+				state.tokenize = isCloseTag
 					? this.inChar('>', modeConfig.tags.htmlTagBracket)
 					: this.inHtmlTagAttribute(name);
 				return this.makeLocalStyle(modeConfig.tags.htmlTagName, state);
@@ -540,15 +540,12 @@ class MediaWiki {
 
 	inHtmlTagAttribute(name: string): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'|[^>/<{&~])+/u)) {
+			if (stream.match(/^[^>/<{]+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.htmlTagAttribute, state);
-			} else if (stream.eat('>')) {
+			} else if (stream.match(/^\/?>/u)) {
 				if (!modeConfig.implicitlyClosedHtmlTags.has(name)) {
 					state.inHtmlTag.push(name);
 				}
-				state.tokenize = state.stack.pop()!;
-				return this.makeLocalStyle(modeConfig.tags.htmlTagBracket, state);
-			} else if (stream.match('/>')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle(modeConfig.tags.htmlTagBracket, state);
 			}
@@ -569,7 +566,7 @@ class MediaWiki {
 
 	inExtTagAttribute(name: string): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^(?:"[^">]*"|'[^'>]*'|[^>/<{&~])+/u)) {
+			if (stream.match(/^[^>/]+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.extTagAttribute, state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
@@ -776,12 +773,6 @@ class MediaWiki {
 				tagname: RegExpMatchArray | string | false;
 			const sol = stream.sol();
 
-			const chain = (parser: Tokenizer): string => {
-				state.stack.push(state.tokenize);
-				state.tokenize = parser;
-				return parser(stream, state);
-			};
-
 			if (sol) {
 				// highlight free external links, see T108448
 				if (!stream.match('//', false) && stream.match(this.urlProtocols)) {
@@ -946,7 +937,9 @@ class MediaWiki {
 					isCloseTag = Boolean(stream.eat('/'));
 					tagname = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
 					if (stream.match('!--')) { // comment
-						return chain(this.inBlock(modeConfig.tags.comment, '-->'));
+						state.stack.push(state.tokenize);
+						state.tokenize = this.inBlock(modeConfig.tags.comment, '-->');
+						return this.makeLocalStyle(modeConfig.tags.comment, state);
 					} else if (tagname) {
 						tagname = tagname[0]!.toLowerCase();
 						if (tagname in this.config.tags) {
