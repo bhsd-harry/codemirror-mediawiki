@@ -784,7 +784,7 @@ class MediaWiki {
 						break;
 					case '=': {
 						const tmp = stream
-							.match(/^(={0,5})(.+?(=\1\s*)(<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
+							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
@@ -937,6 +937,7 @@ class MediaWiki {
 						if (tagname in this.config.tags) {
 							// Parser function
 							if (isCloseTag) {
+								state.tokenize = this.inChar('>', modeConfig.tags.error);
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
@@ -946,8 +947,7 @@ class MediaWiki {
 						} else if (modeConfig.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
-								// Increment position so that the closing '>' gets highlighted red.
-								stream.pos++;
+								state.tokenize = this.inChar('>', modeConfig.tags.error);
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							} else if (isCloseTag && modeConfig.implicitlyClosedHtmlTags.has(tagname)) {
 								return this.makeLocalStyle(modeConfig.tags.error, state);
@@ -989,8 +989,8 @@ class MediaWiki {
 					// Check on double underscore Magic Word
 					} else if (tmp === 2) {
 						// The same as the end of function except '_' inside and '__' at the end.
-						const name = stream.match(/^([^\s>}[\]<{'|&:~]+?)__/u) as RegExpMatchArray | false;
-						if (name && name[0]) {
+						const name = stream.match(/^\w+?__/u) as RegExpMatchArray | false;
+						if (name) {
 							if (
 								`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
 								|| `__${name[0]}` in this.config.doubleUnderscore[1]
