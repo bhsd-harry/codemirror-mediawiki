@@ -219,7 +219,7 @@ class MediaWiki {
 		if (endGround) {
 			state[endGround]--;
 		}
-		return ground ? `mw${ground}-ground ${style}` : style;
+		return (ground && `mw${ground}-ground `) + style;
 	}
 
 	eatBlock(style: string, terminator: string, consumeLast = true): Tokenizer {
@@ -510,7 +510,7 @@ class MediaWiki {
 			name = name.toLowerCase();
 
 			if (isHtmlTag) {
-				state.tokenize = isCloseTag && !modeConfig.implicitlyClosedHtmlTags[name]
+				state.tokenize = isCloseTag && !modeConfig.implicitlyClosedHtmlTags.has(name)
 					? this.eatChar('>', modeConfig.tags.htmlTagBracket)
 					: this.eatHtmlTagAttribute(name);
 				return this.makeLocalStyle(modeConfig.tags.htmlTagName, state);
@@ -528,7 +528,7 @@ class MediaWiki {
 			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'|[^>/<{&~])+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.htmlTagAttribute, state);
 			} else if (stream.eat('>')) {
-				if (!(name in modeConfig.implicitlyClosedHtmlTags)) {
+				if (!modeConfig.implicitlyClosedHtmlTags.has(name)) {
 					state.inHtmlTag.push(name);
 				}
 				state.tokenize = state.stack.pop()!;
@@ -937,13 +937,13 @@ class MediaWiki {
 							state.stack.push(state.tokenize);
 							state.tokenize = this.eatTagName(tagname.length, isCloseTag, false);
 							return this.makeLocalStyle(modeConfig.tags.extTagBracket, state);
-						} else if (tagname in modeConfig.permittedHtmlTags) {
+						} else if (modeConfig.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
 								// Increment position so that the closing '>' gets highlighted red.
 								stream.pos++;
 								return modeConfig.tags.error;
-							} else if (isCloseTag && tagname in modeConfig.implicitlyClosedHtmlTags) {
+							} else if (isCloseTag && modeConfig.implicitlyClosedHtmlTags.has(tagname)) {
 								return modeConfig.tags.error;
 							}
 							stream.backUp(tagname.length);
@@ -951,7 +951,7 @@ class MediaWiki {
 							state.tokenize = this.eatTagName(
 								tagname.length,
 								// Opening void tags should also be treated as the closing tag.
-								isCloseTag || tagname in modeConfig.implicitlyClosedHtmlTags,
+								isCloseTag || modeConfig.implicitlyClosedHtmlTags.has(tagname),
 								true,
 							);
 							return this.makeLocalStyle(modeConfig.tags.htmlTagBracket, state);
