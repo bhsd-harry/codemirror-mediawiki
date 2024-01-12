@@ -598,8 +598,7 @@ class MediaWiki {
 			const from = stream.pos,
 				pattern = new RegExp(`</${name}(?:[\\s>]|$)`, 'iu'),
 				m = pattern.exec(from ? stream.string.slice(from) : stream.string);
-			let origString: string | false = false,
-				to: number;
+			let origString: string | false = false;
 
 			if (m) {
 				if (m.index === 0) {
@@ -611,7 +610,7 @@ class MediaWiki {
 					}
 					return state.tokenize(stream, state);
 				}
-				to = m.index + from;
+				const to = m.index + from;
 				origString = stream.string;
 				stream.string = origString.slice(0, to);
 			}
@@ -764,11 +763,7 @@ class MediaWiki {
 
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
-			let ch: string | void, // eslint-disable-line @typescript-eslint/no-invalid-void-type
-				tmp: RegExpMatchArray | number | false,
-				mt: RegExpMatchArray | false,
-				name: RegExpMatchArray | false,
-				tagname: RegExpMatchArray | string | false;
+			let ch: string | void; // eslint-disable-line @typescript-eslint/no-invalid-void-type
 			const sol = stream.sol();
 
 			if (sol) {
@@ -787,8 +782,8 @@ class MediaWiki {
 							return modeConfig.tags.hr;
 						}
 						break;
-					case '=':
-						tmp = stream
+					case '=': {
+						const tmp = stream
 							.match(/^(={0,5})(.+?(=\1\s*)(<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
 						// Title
 						if (tmp) {
@@ -810,6 +805,7 @@ class MediaWiki {
 							}`, state);
 						}
 						break;
+					}
 					case '*':
 					case '#':
 					case ';':
@@ -882,7 +878,7 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.linkBracket, state);
 						}
 					} else {
-						mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 						if (mt) {
 							state.nLink++;
 							state.stack.push(state.tokenize);
@@ -908,7 +904,7 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.parserFunctionBracket, state);
 						}
 						// Check for parser function without '#'
-						name = stream
+						const name = stream
 							.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
 						if (name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
 							&& (
@@ -934,10 +930,10 @@ class MediaWiki {
 						state.tokenize = this.inBlock(modeConfig.tags.comment, '-->');
 						return this.makeLocalStyle(modeConfig.tags.comment, state);
 					}
-					const isCloseTag = Boolean(stream.eat('/'));
-					tagname = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
-					if (tagname) {
-						tagname = tagname[0]!.toLowerCase();
+					const isCloseTag = Boolean(stream.eat('/')),
+						mt = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
+					if (mt) {
+						const tagname = mt[0]!.toLowerCase();
 						if (tagname in this.config.tags) {
 							// Parser function
 							if (isCloseTag) {
@@ -976,8 +972,8 @@ class MediaWiki {
 					}
 					break;
 				// Maybe double underscored Magic Word such as __TOC__
-				case '_':
-					tmp = 1;
+				case '_': {
+					let tmp = 1;
 					// Optimize processing of many underscore symbols
 					while (stream.eat('_')) {
 						tmp++;
@@ -993,7 +989,7 @@ class MediaWiki {
 					// Check on double underscore Magic Word
 					} else if (tmp === 2) {
 						// The same as the end of function except '_' inside and '__' at the end.
-						name = stream.match(/^([^\s>}[\]<{'|&:~]+?)__/u) as RegExpMatchArray | false;
+						const name = stream.match(/^([^\s>}[\]<{'|&:~]+?)__/u) as RegExpMatchArray | false;
 						if (name && name[0]) {
 							if (
 								`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
@@ -1010,6 +1006,7 @@ class MediaWiki {
 						}
 					}
 					break;
+				}
 				default:
 					if (/\s/u.test(ch || '')) {
 						stream.eatSpace();
