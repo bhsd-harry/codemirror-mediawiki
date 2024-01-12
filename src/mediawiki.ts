@@ -246,8 +246,13 @@ class MediaWiki {
 
 	eatChar(char: string, style: string): Tokenizer {
 		return (stream, state) => {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalStyle(stream.eat(char) ? style : modeConfig.tags.error, state);
+			if (stream.eat(char)) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalStyle(style, state);
+			} else if (!stream.skipTo(char)) {
+				stream.skipToEnd();
+			}
+			return this.makeLocalStyle(modeConfig.tags.error, state);
 		};
 	}
 
@@ -585,7 +590,7 @@ class MediaWiki {
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
 			const from = stream.pos,
-				pattern = new RegExp(`</${name}\\s*>`, 'iu'),
+				pattern = new RegExp(`</${name}(?:[\\s>]|$)`, 'iu'),
 				m = pattern.exec(from ? stream.string.slice(from) : stream.string);
 			let origString: string | false = false,
 				to: number;
