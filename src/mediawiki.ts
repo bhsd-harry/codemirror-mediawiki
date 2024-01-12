@@ -25,6 +25,7 @@ declare interface State {
 	nTemplate: number;
 	nLink: number;
 	nExt: number;
+	lpar: boolean;
 }
 
 declare interface Token {
@@ -133,7 +134,7 @@ class MediaWiki {
 	}
 
 	eatHtmlEntity(stream: StringStream, style: string): string { // eslint-disable-line class-methods-use-this
-		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as false | RegExpMatchArray;
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
 		return entity && isHtmlEntity(`&${entity[0]}`) ? modeConfig.tags.htmlEntity : style;
 	}
 
@@ -726,10 +727,12 @@ class MediaWiki {
 	eatFreeExternalLink(stream: StringStream, state: State): string {
 		if (stream.eol()) {
 			// @todo error message
-		} else if (stream.match(/^[^\s{[\]<>~).,']*/u)) {
+		} else {
+			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray;
+			state.lpar ||= mt[0].includes('(');
 			if (stream.peek() === '~') {
 				if (!stream.match(/^~{3,}/u, false)) {
-					stream.match(/^~*/u);
+					stream.match(/^~+/u);
 					return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (stream.peek() === '{') {
@@ -742,10 +745,14 @@ class MediaWiki {
 					stream.next();
 					return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
 				}
-			} else if (stream.match(/^[).,]+(?=[^\s{[\]<>~).,])/u)) {
+			} else if (state.lpar && stream.peek() === ')') {
+				stream.next();
+				return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+			} else if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
 				return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
 			}
 		}
+		state.lpar = false;
 		state.tokenize = state.stack.pop()!;
 		return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
 	}
@@ -1075,6 +1082,7 @@ class MediaWiki {
 				nTemplate: 0,
 				nLink: 0,
 				nExt: 0,
+				lpar: false,
 			}),
 
 			/**
