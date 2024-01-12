@@ -93,6 +93,7 @@ export const modeConfig = {
 		br: true,
 		hr: true,
 		wbr: true,
+		img: true,
 	} as Record<string, true>,
 
 	/**

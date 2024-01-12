@@ -51,6 +51,13 @@ const copyState = (state: State): State => {
 	return newState;
 };
 
+const span = document.createElement('span'); // used for isHtmlEntity()
+
+const isHtmlEntity = (str: string): boolean => {
+	span.innerHTML = str;
+	return [...span.textContent!].length === 1;
+};
+
 /**
  * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
  */
@@ -116,10 +123,8 @@ class MediaWiki {
 	}
 
 	eatHtmlEntity(stream: StringStream, style: string): string { // eslint-disable-line class-methods-use-this
-		const ok = stream.eat('#')
-			? stream.eatWhile(stream.eat('x') ? /[a-f\d]/iu : /\d/u)
-			: stream.eatWhile(/[\w.\-:]/u);
-		return ok && stream.eat(';') ? modeConfig.tags.htmlEntity : style;
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as false | RegExpMatchArray;
+		return entity && isHtmlEntity(`&${entity[0]}`) ? modeConfig.tags.htmlEntity : style;
 	}
 
 	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
