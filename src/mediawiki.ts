@@ -26,6 +26,7 @@ declare interface State {
 	nLink: number;
 	nExt: number;
 	lpar: boolean;
+	lbrack: boolean;
 }
 
 declare interface Token {
@@ -484,8 +485,15 @@ class MediaWiki {
 			linkIsItalic: boolean;
 
 		return (stream, state) => {
-			let tmpstyle: string;
+			const tmpstyle = `${modeConfig.tags.linkText} ${linkIsBold ? modeConfig.tags.strong : ''} ${
+				linkIsItalic ? modeConfig.tags.em : ''
+			}`;
 			if (stream.match(']]')) {
+				if (state.lbrack && stream.peek() === ']') {
+					stream.backUp(1);
+					state.lbrack = false;
+					return this.makeStyle(tmpstyle, state);
+				}
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle(modeConfig.tags.linkBracket, state, 'nLink');
 			} else if (file && stream.eat('|')) {
@@ -497,16 +505,13 @@ class MediaWiki {
 				linkIsItalic = !linkIsItalic;
 				return this.makeLocalStyle(`${modeConfig.tags.linkText} ${modeConfig.tags.apostrophes}`, state);
 			}
-			tmpstyle = modeConfig.tags.linkText;
-			if (linkIsBold) {
-				tmpstyle += ` ${modeConfig.tags.strong}`;
+			const mt = stream.match(
+				file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u,
+			) as RegExpMatchArray | false;
+			if (mt && mt[0].includes('[')) {
+				state.lbrack = true;
 			}
-			if (linkIsItalic) {
-				tmpstyle += ` ${modeConfig.tags.em}`;
-			}
-			return stream.match(file ? /^[^'\]{&~<|]+/u : /^[^'\]{&~<]+/u)
-				? this.makeStyle(tmpstyle, state)
-				: this.eatWikiText(tmpstyle)(stream, state);
+			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
 		};
 	}
 
@@ -882,6 +887,7 @@ class MediaWiki {
 						if (/[^\]|[]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.stack.push(state.tokenize);
+							state.lbrack = false;
 							state.tokenize = this.inLink(Boolean(stream.match(this.fileRegex, false)));
 							return this.makeLocalStyle(modeConfig.tags.linkBracket, state);
 						}
@@ -1086,6 +1092,7 @@ class MediaWiki {
 				nLink: 0,
 				nExt: 0,
 				lpar: false,
+				lbrack: false,
 			}),
 
 			/**
