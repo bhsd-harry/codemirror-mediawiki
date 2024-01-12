@@ -303,7 +303,7 @@ class MediaWiki {
 
 	inParserFunctionName(stream: StringStream, state: State): string {
 		// FIXME: {{#name}} and {{uc}} are wrong, must have ':'
-		if (stream.match(/^[^:}{~]+/u)) {
+		if (stream.match(/^[^:}{~|<>[\]]+/u)) {
 			return this.makeLocalStyle(modeConfig.tags.parserFunctionName, state);
 		} else if (stream.eat(':')) {
 			state.tokenize = this.inParserFunctionArguments.bind(this);
@@ -312,7 +312,7 @@ class MediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalStyle(modeConfig.tags.parserFunctionBracket, state, 'nExt');
 		}
-		return this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
+		return this.eatWikiText(modeConfig.tags.error)(stream, state);
 	}
 
 	inParserFunctionArguments(stream: StringStream, state: State): string {
