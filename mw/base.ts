@@ -117,7 +117,10 @@ import type {MwConfig} from '../src/mediawiki';
 		const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string);
 		// 情形1：config已更新，可能来自localStorage
 		if (config && config.img && config.variants && !isIPE) {
-			return config;
+			return {
+				...config,
+				nsid: mw.config.get('wgNamespaceIds'),
+			};
 		}
 
 		// 以下情形均需要发送API请求
@@ -193,6 +196,7 @@ import type {MwConfig} from '../src/mediawiki';
 			getAliases(magicwords.filter(({name}) => name.startsWith('img_'))),
 		);
 		config!.variants = variants ? variants.map(({code}) => code) : [];
+		config!.nsid = mw.config.get('wgNamespaceIds');
 		mw.config.set('extCodeMirrorConfig', config);
 		ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 		localStorage.setItem('InPageEditMwConfig', JSON.stringify(ALL_SETTINGS_CACHE));
