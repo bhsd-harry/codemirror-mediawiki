@@ -1,3 +1,25 @@
+## v2.1.0
+
+*2024-01-13*
+
+**Added**
+
+- Accurate HTML entity recognition
+- File link with multiple parameters and links in the caption
+- `{{!}}` in table syntax
+- Warning for illegal characters in link or template page names
+- `<dt>` using `;`
+
+**Fixed**
+
+- Multiline closing extension tags
+- Punctuations in free external links
+- Multiple table captions
+- Syntax like `[[a|[b]]]`
+- HTML5 standard for invalid auto-closing tags
+- Missing ground styles in some conditions
+- Mistakenly recognized `<!--` (e.g., `<b!--`)
+
 ## v2.0.15
 
 *2024-01-11*
