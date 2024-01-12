@@ -735,18 +735,15 @@ class MediaWiki {
 			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray;
 			state.lpar ||= mt[0].includes('(');
 			if (stream.peek() === '~') {
-				if (!stream.match(/^~{3,}/u, false)) {
-					stream.match(/^~+/u);
+				if (stream.match(/^~{1,2}(?!~)/u)) {
 					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (stream.peek() === '{') {
-				if (!stream.match('{{', false)) {
-					stream.next();
+				if (stream.match(/^\{(?!\{)/u)) {
 					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (stream.peek() === "'") {
-				if (!stream.match("''", false)) {
-					stream.next();
+				if (stream.match(/^'(?!')/u)) {
 					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (state.lpar && stream.peek() === ')') {
@@ -821,11 +818,11 @@ class MediaWiki {
 						// Just consume all nested list and indention syntax when there is more
 						stream.match(/^[*#;:]*/u);
 						return this.makeLocalStyle(modeConfig.tags.list, state);
-					case ' ':
+					case ' ': {
 						// Leading spaces is valid syntax for tables, bug T108454
-						if (stream.match(/^\s*(?::+\s*)?(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
-							stream.eatSpace();
-							if (stream.match(/^:+/u)) { // ::{|
+						const mt = stream.match(/^\s*(:+\s*)?(?=\{\||\{{3}\s*!\s*\}\})/u) as RegExpMatchArray | false;
+						if (mt) {
+							if (mt[1]) { // ::{|
 								state.stack.push(state.tokenize);
 								state.tokenize = this.eatStartTable.bind(this);
 								return this.makeLocalStyle(modeConfig.tags.list, state);
@@ -834,6 +831,7 @@ class MediaWiki {
 						} else {
 							return modeConfig.tags.skipFormatting;
 						}
+					}
 					// falls through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
