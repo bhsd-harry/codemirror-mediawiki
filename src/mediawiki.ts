@@ -279,7 +279,7 @@ class MediaWiki {
 		if (stream.match(/^[^{}|]+/u)) {
 			return this.makeLocalStyle(modeConfig.tags.templateVariableName, state);
 		} else if (stream.eat('|')) {
-			state.tokenize = this.inVariableDefault.bind(this);
+			state.tokenize = this.inVariableDefault(true);
 			return this.makeLocalStyle(modeConfig.tags.templateVariableDelimiter, state);
 		} else if (stream.match('}}}')) {
 			state.tokenize = state.stack.pop()!;
@@ -292,14 +292,20 @@ class MediaWiki {
 		return this.makeLocalStyle(modeConfig.tags.templateVariableName, state);
 	}
 
-	inVariableDefault(stream: StringStream, state: State): string {
-		if (stream.match(/^[^{}[<&~]+/u)) {
-			return this.makeStyle(modeConfig.tags.templateVariable, state);
-		} else if (stream.match('}}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalStyle(modeConfig.tags.templateVariableBracket, state);
-		}
-		return this.eatWikiText(modeConfig.tags.templateVariable)(stream, state);
+	inVariableDefault(isFirst: boolean): Tokenizer {
+		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
+		return (stream, state) => {
+			if (stream.match(/^[^{}[<&~|]+/u)) {
+				return this.makeStyle(style, state);
+			} else if (stream.match('}}}')) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalStyle(modeConfig.tags.templateVariableBracket, state);
+			} else if (stream.eat('|')) {
+				state.tokenize = this.inVariableDefault(false);
+				return this.makeLocalStyle(modeConfig.tags.templateVariableDelimiter, state);
+			}
+			return this.eatWikiText(style)(stream, state);
+		};
 	}
 
 	inParserFunctionName(stream: StringStream, state: State): string {
