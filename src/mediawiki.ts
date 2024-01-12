@@ -505,9 +505,8 @@ class MediaWiki {
 				linkIsItalic = !linkIsItalic;
 				return this.makeLocalStyle(`${modeConfig.tags.linkText} ${modeConfig.tags.apostrophes}`, state);
 			}
-			const mt = stream.match(
-				file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u,
-			) as RegExpMatchArray | false;
+			const mt = stream
+				.match(file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u) as RegExpMatchArray | false;
 			if (mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
@@ -769,7 +768,6 @@ class MediaWiki {
 				tmp: RegExpMatchArray | number | false,
 				mt: RegExpMatchArray | false,
 				name: RegExpMatchArray | false,
-				isCloseTag = false,
 				tagname: RegExpMatchArray | string | false;
 			const sol = stream.sol();
 
@@ -790,9 +788,8 @@ class MediaWiki {
 						}
 						break;
 					case '=':
-						tmp = stream.match(
-							/^(={0,5})(.+?(=\1\s*)(<!--(?!.*-->.*\S).*)?)$/u,
-						) as RegExpMatchArray | false;
+						tmp = stream
+							.match(/^(={0,5})(.+?(=\1\s*)(<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
@@ -911,21 +908,18 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.parserFunctionBracket, state);
 						}
 						// Check for parser function without '#'
-						name = stream.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u) as RegExpMatchArray | false;
-						if (name) {
-							stream.backUp(name[0].length);
-							if (
-								(name[2] === ':' || name[4] === undefined || name[3] === '}}')
-								&& (
-									name[1]!.toLowerCase() in this.config.functionSynonyms[0]
-									|| name[1]! in this.config.functionSynonyms[1]
-								)
-							) {
-								state.nExt++;
-								state.stack.push(state.tokenize);
-								state.tokenize = this.inParserFunctionName.bind(this);
-								return this.makeLocalStyle(modeConfig.tags.parserFunctionBracket, state);
-							}
+						name = stream
+							.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
+						if (name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
+							&& (
+								name[1]!.toLowerCase() in this.config.functionSynonyms[0]
+								|| name[1]! in this.config.functionSynonyms[1]
+							)
+						) {
+							state.nExt++;
+							state.stack.push(state.tokenize);
+							state.tokenize = this.inParserFunctionName.bind(this);
+							return this.makeLocalStyle(modeConfig.tags.parserFunctionBracket, state);
 						}
 						// Template
 						state.nTemplate++;
@@ -934,14 +928,15 @@ class MediaWiki {
 						return this.makeLocalStyle(modeConfig.tags.templateBracket, state);
 					}
 					break;
-				case '<':
-					isCloseTag = Boolean(stream.eat('/'));
-					tagname = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
+				case '<': {
 					if (stream.match('!--')) { // comment
 						state.stack.push(state.tokenize);
 						state.tokenize = this.inBlock(modeConfig.tags.comment, '-->');
 						return this.makeLocalStyle(modeConfig.tags.comment, state);
-					} else if (tagname) {
+					}
+					const isCloseTag = Boolean(stream.eat('/'));
+					tagname = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
+					if (tagname) {
 						tagname = tagname[0]!.toLowerCase();
 						if (tagname in this.config.tags) {
 							// Parser function
@@ -974,6 +969,7 @@ class MediaWiki {
 						stream.backUp(tagname.length);
 					}
 					break;
+				}
 				case '~':
 					if (stream.match(/^~{2,4}/u)) {
 						return modeConfig.tags.signature;
