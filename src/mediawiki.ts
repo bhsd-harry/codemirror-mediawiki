@@ -259,7 +259,7 @@ class MediaWiki {
 
 	eatSectionHeader(count: number): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^[^&<[{~]+/u)) {
+			if (stream.match(/^[^&<[{~']+/u)) {
 				if (stream.eol()) {
 					stream.backUp(count);
 					state.tokenize = this.eatEnd(modeConfig.tags.sectionHeader);
@@ -646,8 +646,7 @@ class MediaWiki {
 	}
 
 	eatStartTable(stream: StringStream, state: State): string {
-		stream.match('{|');
-		stream.eatSpace();
+		stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
 		state.tokenize = this.inTableDefinition.bind(this);
 		return modeConfig.tags.tableBracket;
 	}
@@ -661,7 +660,7 @@ class MediaWiki {
 	}
 
 	inTableCaption(stream: StringStream, state: State): string {
-		if (stream.sol() && stream.match(/^\s*[|!]/u, false)) {
+		if (stream.sol() && stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
 			state.tokenize = this.inTable.bind(this);
 			return this.inTable(stream, state);
 		}
@@ -671,9 +670,8 @@ class MediaWiki {
 	inTable(stream: StringStream, state: State): string {
 		if (stream.sol()) {
 			stream.eatSpace();
-			if (stream.eat('|')) {
-				if (stream.eat('-')) {
-					stream.eatSpace();
+			if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
+				if (stream.match(/^-+\s*/u)) {
 					state.tokenize = this.inTableDefinition.bind(this);
 					return this.makeLocalStyle(modeConfig.tags.tableDelimiter, state);
 				} else if (stream.eat('+')) {
@@ -699,13 +697,16 @@ class MediaWiki {
 	eatTableRow(isStart: boolean, isHead: boolean): Tokenizer {
 		return (stream, state) => {
 			if (stream.sol()) {
-				if (stream.match(/^\s*[|!]/u, false)) {
+				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
 					state.tokenize = this.inTable.bind(this);
 					return this.inTable(stream, state);
 				}
 			} else if (stream.match(/^[^'|{[<&~!]+/u)) {
 				return this.makeStyle(isHead ? modeConfig.tags.strong : '', state);
-			} else if (stream.match('||') || isHead && stream.match('!!') || isStart && stream.eat('|')) {
+			} else if (
+				stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || isHead && stream.match('!!')
+				|| isStart && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)
+			) {
 				this.isBold = false;
 				this.isItalic = false;
 				if (isStart) {
@@ -713,8 +714,7 @@ class MediaWiki {
 				}
 				return this.makeLocalStyle(modeConfig.tags.tableDelimiter, state);
 			}
-			const tag = isHead ? modeConfig.tags.strong : '';
-			return this.eatWikiText(tag)(stream, state);
+			return this.eatWikiText(isHead ? modeConfig.tags.strong : '')(stream, state);
 		};
 	}
 
@@ -818,7 +818,7 @@ class MediaWiki {
 						return modeConfig.tags.list;
 					case ':':
 						// Highlight indented tables :{|, bug T108454
-						if (stream.match(/^:*\{\|/u, false)) {
+						if (stream.match(/^:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
 							state.stack.push(state.tokenize);
 							state.tokenize = this.eatStartTable.bind(this);
 						}
@@ -827,7 +827,7 @@ class MediaWiki {
 						return modeConfig.tags.indenting;
 					case ' ':
 						// Leading spaces is valid syntax for tables, bug T108454
-						if (stream.match(/^\s*:*\{\|/u, false)) {
+						if (stream.match(/^\s*:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
 							stream.eatSpace();
 							if (stream.match(/^:+/u)) { // ::{|
 								state.stack.push(state.tokenize);
@@ -841,8 +841,7 @@ class MediaWiki {
 					// break is not necessary here
 					// falls through
 					case '{':
-						if (stream.match(/^(?:\||\{\{!\}\})/u)) {
-							stream.eatSpace();
+						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 							state.stack.push(state.tokenize);
 							state.tokenize = this.inTableDefinition.bind(this);
 							return modeConfig.tags.tableBracket;
