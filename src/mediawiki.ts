@@ -667,6 +667,9 @@ class MediaWiki {
 		if (stream.sol() && stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
 			state.tokenize = this.inTable.bind(this);
 			return this.inTable(stream, state);
+		} else if (stream.match(/^\s*(?:\||\{\{\s*!\s*\}\}){2}/u, false)) {
+			state.tokenize = this.inTableRow(false, false);
+			return '';
 		}
 		return this.eatWikiText(modeConfig.tags.tableCaption)(stream, state);
 	}
