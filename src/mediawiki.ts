@@ -342,9 +342,11 @@ class MediaWiki {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.match(/^\s*[^\s|}<{&~]+/u)) {
+			} else if (stream.match(/^\s*[^\s|&~{}<>[\]]+/u)) {
 				state.tokenize = this.inTemplatePageName(true);
 				return this.makeLocalStyle(modeConfig.tags.templateName, state);
+			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
+				return this.makeLocalStyle(modeConfig.tags.error, state);
 			}
 			return stream.eatSpace()
 				? this.makeLocalStyle(modeConfig.tags.templateName, state)
@@ -401,7 +403,7 @@ class MediaWiki {
 		} else if (stream.eatSpace()) {
 			state.tokenize = this.inExternalLinkText.bind(this);
 			return this.makeStyle('', state);
-		} else if (stream.match(/^[^\s\]{&~']+/u) || stream.eatSpace()) {
+		} else if (stream.match(/^[^\s\]{&~']+/u)) {
 			if (stream.peek() === "'") {
 				if (stream.match("''", false)) {
 					state.tokenize = this.inExternalLinkText.bind(this);
@@ -445,9 +447,11 @@ class MediaWiki {
 			} else if (stream.match(/^\s*\]\]/u)) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle(modeConfig.tags.linkBracket, state, 'nLink');
+			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
+				return this.makeLocalStyle(modeConfig.tags.error, state);
 			}
 			const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
-			return stream.match(/^\s*[^\s#|\]&~{]+/u) || stream.eatSpace()
+			return stream.match(/^[^#|[\]&~{}<>]+/u)
 				? this.makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
