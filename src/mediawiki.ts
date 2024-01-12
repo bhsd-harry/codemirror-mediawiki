@@ -293,7 +293,7 @@ class MediaWiki {
 
 	inVariableDefault(stream: StringStream, state: State): string {
 		if (stream.match(/^[^{}[<&~]+/u)) {
-			return this.makeLocalStyle(modeConfig.tags.templateVariable, state);
+			return this.makeStyle(modeConfig.tags.templateVariable, state);
 		} else if (stream.match('}}}')) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalStyle(modeConfig.tags.templateVariableBracket, state);
@@ -402,7 +402,7 @@ class MediaWiki {
 			return this.makeLocalStyle(modeConfig.tags.extLinkBracket, state, 'nLink');
 		} else if (stream.eatSpace()) {
 			state.tokenize = this.inExternalLinkText.bind(this);
-			return this.makeStyle('', state);
+			return this.makeLocalStyle('', state);
 		} else if (stream.match(/^[^\s\]{&~']+/u)) {
 			if (stream.peek() === "'") {
 				if (stream.match("''", false)) {
@@ -411,7 +411,7 @@ class MediaWiki {
 					stream.next();
 				}
 			}
-			return this.makeStyle(modeConfig.tags.extLink, state);
+			return this.makeLocalStyle(modeConfig.tags.extLink, state);
 		}
 		return this.eatWikiText(modeConfig.tags.extLink)(stream, state);
 	}
@@ -440,7 +440,7 @@ class MediaWiki {
 				return '';
 			} else if (stream.match(/^\s*#\s*/u)) {
 				state.tokenize = this.inLinkToSection(file);
-				return this.makeLocalStyle(modeConfig.tags.link, state);
+				return this.makeStyle(modeConfig.tags.link, state);
 			} else if (stream.match(/^\s*\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalStyle(modeConfig.tags.linkDelimiter, state);
@@ -448,7 +448,7 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle(modeConfig.tags.linkBracket, state, 'nLink');
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
-				return this.makeLocalStyle(modeConfig.tags.error, state);
+				return this.makeStyle(modeConfig.tags.error, state);
 			}
 			const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
 			return stream.match(/^[^#|[\]&~{}<>]+/u)
@@ -467,7 +467,7 @@ class MediaWiki {
 			}
 			// FIXME '{{' breaks links, example: [[z{{page]]
 			if (stream.match(/^[^|\]&~{}]+/u)) {
-				return this.makeLocalStyle(modeConfig.tags.linkToSection, state);
+				return this.makeStyle(modeConfig.tags.linkToSection, state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalStyle(modeConfig.tags.linkDelimiter, state);
@@ -725,7 +725,7 @@ class MediaWiki {
 	eatFreeExternalLinkProtocol(stream: StringStream, state: State): string {
 		stream.match(this.urlProtocols);
 		state.tokenize = this.inFreeExternalLink.bind(this);
-		return this.makeLocalStyle(modeConfig.tags.freeExtLinkProtocol, state);
+		return this.makeStyle(modeConfig.tags.freeExtLinkProtocol, state);
 	}
 
 	inFreeExternalLink(stream: StringStream, state: State): string {
@@ -737,28 +737,28 @@ class MediaWiki {
 			if (stream.peek() === '~') {
 				if (!stream.match(/^~{3,}/u, false)) {
 					stream.match(/^~+/u);
-					return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (stream.peek() === '{') {
 				if (!stream.match('{{', false)) {
 					stream.next();
-					return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (stream.peek() === "'") {
 				if (!stream.match("''", false)) {
 					stream.next();
-					return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+					return this.makeStyle(modeConfig.tags.freeExtLink, state);
 				}
 			} else if (state.lpar && stream.peek() === ')') {
 				stream.next();
-				return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+				return this.makeStyle(modeConfig.tags.freeExtLink, state);
 			} else if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
-				return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+				return this.makeStyle(modeConfig.tags.freeExtLink, state);
 			}
 		}
 		state.lpar = false;
 		state.tokenize = state.stack.pop()!;
-		return this.makeLocalStyle(modeConfig.tags.freeExtLink, state);
+		return this.makeStyle(modeConfig.tags.freeExtLink, state);
 	}
 
 	eatWikiText(style: string): Tokenizer {
@@ -782,7 +782,7 @@ class MediaWiki {
 				if (!stream.match('//', false) && stream.match(this.urlProtocols)) {
 					state.stack.push(state.tokenize);
 					state.tokenize = this.inFreeExternalLink.bind(this);
-					return this.makeLocalStyle(modeConfig.tags.freeExtLinkProtocol, state);
+					return this.makeStyle(modeConfig.tags.freeExtLinkProtocol, state);
 				}
 				ch = stream.next();
 				switch (ch) {

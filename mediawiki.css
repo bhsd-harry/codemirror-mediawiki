@@ -105,12 +105,6 @@
 .cm-mw-extlink,
 .cm-mw-free-extlink {
 	color: #36c;
-}
-.cm-mw-link-pagename:not(.cm-mw-strong),
-.cm-mw-link-bracket,
-.cm-mw-link-delimiter,
-.cm-mw-extlink:not(.cm-mw-strong),
-.cm-mw-free-extlink:not(.cm-mw-strong) {
 	font-weight: normal;
 }
 .cm-mw-link,
