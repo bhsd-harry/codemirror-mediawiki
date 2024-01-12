@@ -269,7 +269,7 @@ class MediaWiki {
 					stream.backUp(count);
 					state.tokenize = this.inBlock(modeConfig.tags.sectionHeader, '<!--', false);
 				}
-				return modeConfig.tags.section;
+				return this.makeLocalStyle(modeConfig.tags.section, state);
 			}
 			return this.eatWikiText(modeConfig.tags.section)(stream, state);
 		};
@@ -632,7 +632,7 @@ class MediaWiki {
 		};
 	}
 
-	inExtTokens(origString: string | false): Tokenizer {
+	inExtTokens(origString: string | false): Tokenizer { // eslint-disable-line class-methods-use-this
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
@@ -647,14 +647,14 @@ class MediaWiki {
 				}
 				state.tokenize = state.stack.pop()!;
 			}
-			return this.makeLocalStyle(ret, state);
+			return ret;
 		};
 	}
 
 	eatStartTable(stream: StringStream, state: State): string {
 		stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
 		state.tokenize = this.inTableDefinition.bind(this);
-		return modeConfig.tags.tableBracket;
+		return this.makeLocalStyle(modeConfig.tags.tableBracket, state);
 	}
 
 	inTableDefinition(stream: StringStream, state: State): string {
@@ -774,8 +774,10 @@ class MediaWiki {
 			const sol = stream.sol();
 
 			if (sol) {
+				if (stream.match('//')) {
+					return this.makeStyle(style, state);
 				// highlight free external links, see T108448
-				if (!stream.match('//', false) && stream.match(this.urlProtocols)) {
+				} else if (stream.match(this.urlProtocols)) {
 					state.stack.push(state.tokenize);
 					state.tokenize = this.inFreeExternalLink.bind(this);
 					return this.makeStyle(modeConfig.tags.freeExtLinkProtocol, state);
@@ -796,7 +798,7 @@ class MediaWiki {
 							stream.backUp(tmp[2]!.length);
 							state.stack.push(state.tokenize);
 							state.tokenize = this.inSectionHeader(tmp[3]!.length);
-							return `${modeConfig.tags.sectionHeader} ${
+							return this.makeLocalStyle(`${modeConfig.tags.sectionHeader} ${
 
 								/**
 								 * Tokens used here include:
@@ -808,14 +810,14 @@ class MediaWiki {
 								 * - cm-mw-section-6
 								 */
 								(modeConfig.tags as Record<string, string>)[`sectionHeader${tmp[1]!.length + 1}`]
-							}`;
+							}`, state);
 						}
 						break;
 					case '*':
 					case '#':
 						// Just consume all nested list and indention syntax when there is more
 						stream.match(/^[*#]*:*/u);
-						return modeConfig.tags.list;
+						return this.makeLocalStyle(modeConfig.tags.list, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
 						if (stream.match(/^:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
@@ -824,7 +826,7 @@ class MediaWiki {
 						}
 						// Just consume all nested list and indention syntax when there is more
 						stream.match(/^:*[*#]*/u);
-						return modeConfig.tags.indenting;
+						return this.makeLocalStyle(modeConfig.tags.indenting, state);
 					case ' ':
 						// Leading spaces is valid syntax for tables, bug T108454
 						if (stream.match(/^\s*:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
@@ -832,7 +834,7 @@ class MediaWiki {
 							if (stream.match(/^:+/u)) { // ::{|
 								state.stack.push(state.tokenize);
 								state.tokenize = this.eatStartTable.bind(this);
-								return modeConfig.tags.indenting;
+								return this.makeLocalStyle(modeConfig.tags.indenting, state);
 							}
 							stream.eat('{');
 						} else {
@@ -844,7 +846,7 @@ class MediaWiki {
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 							state.stack.push(state.tokenize);
 							state.tokenize = this.inTableDefinition.bind(this);
-							return modeConfig.tags.tableBracket;
+							return this.makeLocalStyle(modeConfig.tags.tableBracket, state);
 						}
 						break;
 					default:
@@ -945,7 +947,7 @@ class MediaWiki {
 						if (tagname in this.config.tags) {
 							// Parser function
 							if (isCloseTag) {
-								return modeConfig.tags.error;
+								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
 							state.stack.push(state.tokenize);
@@ -956,9 +958,9 @@ class MediaWiki {
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
 								// Increment position so that the closing '>' gets highlighted red.
 								stream.pos++;
-								return modeConfig.tags.error;
+								return this.makeLocalStyle(modeConfig.tags.error, state);
 							} else if (isCloseTag && modeConfig.implicitlyClosedHtmlTags.has(tagname)) {
-								return modeConfig.tags.error;
+								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
 							state.stack.push(state.tokenize);
