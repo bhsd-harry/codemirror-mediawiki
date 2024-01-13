@@ -203,7 +203,7 @@ import type {MwConfig} from '../src/mediawiki';
 		return config!;
 	};
 
-	const linters: Record<string, LintSource> = {};
+	const linters: Record<string, LintSource | undefined> = {};
 
 	class CodeMirror extends CodeMirror6 {
 		visible = true;
@@ -214,6 +214,7 @@ import type {MwConfig} from '../src/mediawiki';
 			if (mw.loader.getState('jquery.textSelection') === 'ready') {
 				$(textarea).data('jquery.textSelection', textSelection);
 			}
+			mw.hook('wiki-codemirror6').fire(this);
 		}
 
 		toggle(show = !this.visible): void {
@@ -260,7 +261,9 @@ import type {MwConfig} from '../src/mediawiki';
 					wikiparse.setConfig(config);
 				}
 			}
-			this.lint(linters[lang]);
+			if (linters[lang]) {
+				this.lint(linters[lang]);
+			}
 		}
 
 		static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror> {
@@ -290,8 +293,10 @@ import type {MwConfig} from '../src/mediawiki';
 							lang = 'css';
 							break;
 						case 'javascript':
-						case 'json':
 							lang = 'javascript';
+							break;
+						case 'json':
+							lang = 'json';
 							break;
 						case 'Scribunto':
 							lang = 'lua';

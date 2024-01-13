@@ -224,7 +224,7 @@ export class CodeMirror6 {
 	}
 
 	/** 获取默认linter */
-	async getLinter(): Promise<LintSource> {
+	async getLinter(): Promise<LintSource | undefined> {
 		switch (this.lang) {
 			case 'html':
 			case 'mediawiki': {
@@ -347,7 +347,7 @@ export class CodeMirror6 {
 					return [];
 				};
 			default:
-				return () => [];
+				return undefined;
 		}
 	}
 }

@@ -11,7 +11,7 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 		extensions = document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
 		cm: CodeMirror = new CodeMirror6(textarea),
-		linters: Record<string, LintSource> = {};
+		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
 		parserConfig: Config | undefined;
 
@@ -28,7 +28,9 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 			if (lang === 'mediawiki') {
 				wikiparse.setConfig(parserConfig);
 			}
-			cm.lint(linters[lang]);
+			if (linters[lang]) {
+				cm.lint(linters[lang]);
+			}
 		}
 	};
 
