@@ -1,4 +1,4 @@
-import {Compartment} from '@codemirror/state';
+import {Compartment, EditorState} from '@codemirror/state';
 import {
 	EditorView,
 	lineNumbers,
@@ -107,6 +107,7 @@ export class CodeMirror6 {
 				dir: textarea.dir,
 				lang: textarea.lang,
 			}),
+			EditorState.readOnly.of(textarea.readOnly),
 			lineNumbers(),
 			EditorView.lineWrapping,
 			history(),
