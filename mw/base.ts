@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.0/dist/main.min.js';
+import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.1/dist/main.min.js';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 import type {MwConfig} from '../src/mediawiki';
 
 (() => {
 	mw.loader.load(
-		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.0/mediawiki.min.css',
+		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.1/mediawiki.min.css',
 		'text/css',
 	);
 
