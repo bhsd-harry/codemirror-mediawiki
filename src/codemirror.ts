@@ -52,7 +52,11 @@ const avail: Record<string, [ (config?: any) => Extension, Record<string, unknow
 	closeBrackets: [closeBrackets, {}],
 };
 
-/** 使用传统方法加载脚本 */
+/**
+ * 使用传统方法加载脚本
+ * @param src 脚本地址
+ * @param target 脚本全局变量名
+ */
 const loadScript = (src: string, target: string): Promise<void> => new Promise(resolve => {
 	if (target in window) {
 		resolve();
@@ -74,6 +78,7 @@ export class CodeMirror6 {
 	readonly #indent;
 	readonly #view;
 	lang;
+	visible = true;
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
@@ -146,7 +151,7 @@ export class CodeMirror6 {
 		if (hasFocus) {
 			this.#view.focus();
 		}
-		window.requestAnimationFrame(() => {
+		requestAnimationFrame(() => {
 			this.#view.scrollDOM.scrollTop = scrollTop;
 		});
 	}
@@ -349,5 +354,16 @@ export class CodeMirror6 {
 			default:
 				return undefined;
 		}
+	}
+
+	toggle(show = !this.visible): void {
+		if (show && !this.visible) {
+			this.view.dispatch({
+				changes: {from: 0, to: this.view.state.doc.length, insert: this.textarea.value},
+			});
+		}
+		this.visible = show;
+		this.view.dom.style.setProperty('display', show ? '' : 'none', 'important');
+		this.textarea.style.display = show ? 'none' : '';
 	}
 }

@@ -8,16 +8,11 @@ import {Tag} from '@lezer/highlight';
 
 /**
  * Configuration for the MediaWiki highlighting mode for CodeMirror.
- * This is a separate class mainly to keep static configuration out of
- * the logic in CodeMirrorModeMediaWiki.
  */
 export const modeConfig = {
 
 	/**
 	 * All HTML/XML tags permitted in MediaWiki Core.
-	 *
-	 * Extensions should use the CodeMirrorTagModes extension attribute to register tags
-	 * instead of adding them here.
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 */
@@ -99,14 +94,9 @@ export const modeConfig = {
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
-	 * Values are one of the default highlighting tags. The idea is to use as many default tags as
-	 * possible so that theming (such as dark mode) can be applied with minimal effort. The
-	 * semantic meaning of the tag may not really match how it is used, but as per CodeMirror docs,
-	 * this is fine. It's still better to make use of the standard tags in some way.
+	 * Values are one of the default highlighting tags.
 	 *
 	 * Once we allow use of other themes, we may want to tweak these values for aesthetic reasons.
-	 * The values here can freely be changed. The actual CSS class used is defined further down
-	 * in highlightStyle().
 	 *
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
 	 * @internal
@@ -205,7 +195,6 @@ export const modeConfig = {
 
 	/**
 	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
-	 * Make sure these are also defined in tags() above.
 	 *
 	 * TODO: pass parent Tags in Tag.define() where appropriate for better theming.
 	 *

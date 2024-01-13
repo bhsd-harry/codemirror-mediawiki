@@ -1,3 +1,12 @@
+## v2.1.3
+
+*2024-01-13*
+
+**Added**
+
+- New property: [`visible`](./README.md#visible)
+- New method: [`toggle`](./README.md#toggle)
+
 ## v2.1.2
 
 *2024-01-13*

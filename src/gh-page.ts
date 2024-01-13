@@ -15,7 +15,10 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 	let config: MwConfig | undefined,
 		parserConfig: Config | undefined;
 
-	/** 设置语言 */
+	/**
+	 * 设置语言
+	 * @param lang 语言
+	 */
 	const init = async (lang: string): Promise<void> => {
 		if (lang === 'mediawiki') {
 			// eslint-disable-next-line require-atomic-updates

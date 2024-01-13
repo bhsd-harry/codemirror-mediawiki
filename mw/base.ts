@@ -12,6 +12,9 @@ import type {MwConfig} from '../src/mediawiki';
 
 	const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
+	/**
+	 * jQuery.val overrides for CodeMirror.
+	 */
 	$.valHooks['textarea'] = {
 		get(elem: HTMLTextAreaElement): string {
 			const cm = instances.get(elem);
@@ -206,8 +209,11 @@ import type {MwConfig} from '../src/mediawiki';
 	const linters: Record<string, LintSource | undefined> = {};
 
 	class CodeMirror extends CodeMirror6 {
-		visible = true;
-
+		/**
+		 * @param textarea 文本框
+		 * @param lang 语言
+		 * @param config 语言设置
+		 */
 		constructor(textarea: HTMLTextAreaElement, lang?: string, config?: unknown) {
 			super(textarea, lang, config);
 			instances.set(textarea, this);
@@ -217,18 +223,15 @@ import type {MwConfig} from '../src/mediawiki';
 			mw.hook('wiki-codemirror6').fire(this);
 		}
 
-		toggle(show = !this.visible): void {
-			if (show && !this.visible) {
-				this.view.dispatch({
-					changes: {from: 0, to: this.view.state.doc.length, insert: this.textarea.value},
-				});
-			}
-			this.visible = show;
-			this.view.dom.style.setProperty('display', show ? '' : 'none', 'important');
-			this.textarea.style.display = show ? 'none' : '';
+		override toggle(show = !this.visible): void {
+			super.toggle(show);
 			$(this.textarea).data('jquery.textSelection', show && textSelection);
 		}
 
+		/**
+		 * 添加或移除默认 linter
+		 * @param on 是否添加
+		 */
 		async defaultLint(on: boolean): Promise<void> {
 			if (!on) {
 				this.lint();
@@ -266,6 +269,11 @@ import type {MwConfig} from '../src/mediawiki';
 			}
 		}
 
+		/**
+		 * 将 textarea 替换为 CodeMirror
+		 * @param textarea textarea 元素
+		 * @param lang 语言
+		 */
 		static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror> {
 			const isWiki = lang === 'mediawiki' || lang === 'html',
 				cm = new CodeMirror(textarea, isWiki ? undefined : lang);

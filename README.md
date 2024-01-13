@@ -10,11 +10,13 @@
 	- [textarea](#textarea)
 	- [lang](#lang)
 	- [view](#view)
+	- [visible](#visible)
 	- [getLinter](#getlinter)
 	- [lint](#lint)
 	- [prefer](#prefer)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
+	- [toggle](#toggle)
 	- [update](#update)
 
 </details>
@@ -85,6 +87,18 @@ The current language mode.
 
 **type**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView)  
 The CodeMirror EditorView instance.
+
+</details>
+
+## visible
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.1.3*
+
+**type**: `boolean`  
+Whether the editor is visible.
 
 </details>
 
@@ -175,6 +189,22 @@ Set the language mode.
 
 ```js
 cm.setLanguage( 'css' );
+```
+
+</details>
+
+## toggle
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.1.3*
+
+**param**: `boolean` whether to show the editor, optional  
+Switch between the CodeMirror editor and the native textarea.
+
+```js
+cm.toggle();
 ```
 
 </details>

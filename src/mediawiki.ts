@@ -1068,9 +1068,6 @@ class MediaWiki {
 		return {
 			name: 'mediawiki',
 
-			/**
-			 * Initial State for the parser.
-			 */
 			startState: () => ({
 				tokenize: this.eatWikiText(''),
 				stack: [],
@@ -1085,9 +1082,6 @@ class MediaWiki {
 				lbrack: false,
 			}),
 
-			/**
-			 * Copies the given state.
-			 */
 			copyState: (state): State => {
 				const newState = copyState(state);
 				if (state.extMode && state.extMode.copyState) {
@@ -1096,10 +1090,6 @@ class MediaWiki {
 				return newState;
 			},
 
-			/**
-			 * Reads one token, advancing the stream past it,
-			 * and returning a string indicating the token's style tag.
-			 */
 			token: (stream, state): string => {
 				let style: string,
 					p: number | null = null,
@@ -1193,11 +1183,6 @@ class MediaWiki {
 				}
 			},
 
-			/**
-			 * Extra tokens to use in this parser.
-			 *
-			 * @see modeConfig.tokenTable
-			 */
 			tokenTable: this.tokenTable,
 
 			languageData: {closeBrackets: {brackets: ['(', '[', '{', '"']}},
@@ -1219,6 +1204,7 @@ for (const [language, parser] of Object.entries(plugins)) {
 
 /**
  * Gets a LanguageSupport instance for the MediaWiki mode.
+ * @param config Configuration for the MediaWiki mode
  */
 export const mediawiki = (config: MwConfig): LanguageSupport => {
 	const mode = new MediaWiki(config);
@@ -1228,6 +1214,10 @@ export const mediawiki = (config: MwConfig): LanguageSupport => {
 	return new LanguageSupport(lang, highlighter);
 };
 
+/**
+ * Gets a LanguageSupport instance for the mixed MediaWiki-HTML mode.
+ * @param config Configuration for the MediaWiki mode
+ */
 export const html = (config: MwConfig): LanguageSupport => mediawiki({
 	...config,
 	tags: {
