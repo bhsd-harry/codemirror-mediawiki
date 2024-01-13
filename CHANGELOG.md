@@ -19,6 +19,8 @@
 - HTML5 standard for invalid auto-closing tags
 - Missing ground styles in some conditions
 - Mistakenly recognized `<!--` (e.g., `<b!--`)
+- Multiple template variable default values
+- Removing the `u` flag from `MediaWiki.urlProtocols`
 
 ## v2.0.15
 
