@@ -77,8 +77,8 @@ export class CodeMirror6 {
 	readonly #extensions;
 	readonly #indent;
 	readonly #view;
-	lang;
-	visible = true;
+	#lang;
+	#visible = true;
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
@@ -88,6 +88,14 @@ export class CodeMirror6 {
 		return this.#view;
 	}
 
+	get lang(): string {
+		return this.#lang;
+	}
+
+	get visible(): boolean {
+		return this.#visible;
+	}
+
 	/**
 	 * @param textarea 文本框
 	 * @param lang 语言
@@ -95,7 +103,7 @@ export class CodeMirror6 {
 	 */
 	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown) {
 		this.#textarea = textarea;
-		this.lang = lang;
+		this.#lang = lang;
 		this.#language = new Compartment();
 		this.#linter = new Compartment();
 		this.#extensions = new Compartment();
@@ -168,7 +176,7 @@ export class CodeMirror6 {
 				this.#linter.reconfigure(linters[lang] ?? []),
 			],
 		});
-		this.lang = lang;
+		this.#lang = lang;
 		(linters[lang] ? openLintPanel : closeLintPanel)(this.#view);
 	}
 
@@ -177,17 +185,16 @@ export class CodeMirror6 {
 	 * @param lintSource 语法检查函数
 	 */
 	lint(lintSource?: LintSource): void {
-		const {lang} = this,
-			linterExtension = lintSource
-				? [
-					linter(view => lintSource(view.state.doc)),
-					lintGutter(),
-				]
-				: [];
+		const linterExtension = lintSource
+			? [
+				linter(view => lintSource(view.state.doc)),
+				lintGutter(),
+			]
+			: [];
 		if (lintSource) {
-			linters[lang] = linterExtension;
+			linters[this.#lang] = linterExtension;
 		} else {
-			delete linters[lang];
+			delete linters[this.#lang];
 		}
 		this.#view.dispatch({
 			effects: [this.#linter.reconfigure(linterExtension)],
@@ -208,20 +215,25 @@ export class CodeMirror6 {
 		}
 	}
 
-	/** 添加扩展 */
+	/**
+	 * 添加扩展
+	 * @param names 扩展名
+	 */
 	prefer(names: readonly string[]): void {
-		const {lang} = this;
 		this.#view.dispatch({
 			effects: [
 				this.#extensions.reconfigure(names.map(name => {
 					const [extension, configs] = avail[name]!;
-					return extension(configs[lang]);
+					return extension(configs[this.#lang]);
 				})),
 			],
 		});
 	}
 
-	/** 设置缩进 */
+	/**
+	 * 设置缩进
+	 * @param indent 缩进字符串
+	 */
 	setIndent(indent: string): void {
 		this.#view.dispatch({
 			effects: [this.#indent.reconfigure(indentUnit.of(indent))],
@@ -230,7 +242,7 @@ export class CodeMirror6 {
 
 	/** 获取默认linter */
 	async getLinter(): Promise<LintSource | undefined> {
-		switch (this.lang) {
+		switch (this.#lang) {
 			case 'html':
 			case 'mediawiki': {
 				const src = 'combine/npm/wikiparser-node@1.3.0-b/extensions/dist/base.min.js,'
@@ -356,14 +368,18 @@ export class CodeMirror6 {
 		}
 	}
 
-	toggle(show = !this.visible): void {
-		if (show && !this.visible) {
-			this.view.dispatch({
-				changes: {from: 0, to: this.view.state.doc.length, insert: this.textarea.value},
+	/**
+	 * 在编辑器和文本框之间切换
+	 * @param show 是否显示编辑器
+	 */
+	toggle(show = !this.#visible): void {
+		if (show && !this.#visible) {
+			this.#view.dispatch({
+				changes: {from: 0, to: this.#view.state.doc.length, insert: this.#textarea.value},
 			});
 		}
-		this.visible = show;
-		this.view.dom.style.setProperty('display', show ? '' : 'none', 'important');
-		this.textarea.style.display = show ? 'none' : '';
+		this.#visible = show;
+		this.#view.dom.style.setProperty('display', show ? '' : 'none', 'important');
+		this.#textarea.style.display = show ? 'none' : '';
 	}
 }

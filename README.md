@@ -64,7 +64,7 @@ const cm = new CodeMirror6( textarea, 'css' );
 	<summary>Expand</summary>
 
 **type**: `HTMLTextAreaElement`  
-The textarea element replaced by CodeMirror.
+The textarea element replaced by CodeMirror, read-only.
 
 </details>
 
@@ -76,7 +76,7 @@ The textarea element replaced by CodeMirror.
 *version added: 2.0.13*
 
 **type**: `string`  
-The current language mode.
+The current language mode, read-only.
 
 </details>
 
@@ -86,7 +86,7 @@ The current language mode.
 	<summary>Expand</summary>
 
 **type**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView)  
-The CodeMirror EditorView instance.
+The CodeMirror EditorView instance, read-only.
 
 </details>
 
@@ -98,7 +98,7 @@ The CodeMirror EditorView instance.
 *version added: 2.1.3*
 
 **type**: `boolean`  
-Whether the editor is visible.
+Whether the editor is visible, read-only.
 
 </details>
 
