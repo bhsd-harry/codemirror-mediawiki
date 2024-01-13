@@ -1,3 +1,12 @@
+## v2.1.2
+
+*2024-01-13*
+
+**Added**
+
+- Language support for JSON
+- Read-only mode
+
 ## v2.1.0
 
 *2024-01-13*

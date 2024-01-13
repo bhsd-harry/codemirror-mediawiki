@@ -14,7 +14,9 @@ import { CodeMirror6 } from './dist/main.min.js';
             if (lang === 'mediawiki') {
                 wikiparse.setConfig(parserConfig);
             }
-            cm.lint(linters[lang]);
+            if (linters[lang]) {
+                cm.lint(linters[lang]);
+            }
         }
     };
     const prefer = () => {
