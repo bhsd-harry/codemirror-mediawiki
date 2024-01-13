@@ -225,6 +225,7 @@ export class CodeMirror6 {
 	/** 获取默认linter */
 	async getLinter(): Promise<LintSource> {
 		switch (this.lang) {
+			case 'html':
 			case 'mediawiki': {
 				const src = 'combine/npm/wikiparser-node@1.3.0-b/extensions/dist/base.min.js,'
 					+ 'npm/wikiparser-node@1.3.0-b/extensions/dist/lint.min.js';

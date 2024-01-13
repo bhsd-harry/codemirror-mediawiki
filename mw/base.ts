@@ -15,11 +15,11 @@ import type {MwConfig} from '../src/mediawiki';
 	$.valHooks['textarea'] = {
 		get(elem: HTMLTextAreaElement): string {
 			const cm = instances.get(elem);
-			return cm ? cm.view.state.doc.toString() : elem.value;
+			return cm?.visible ? cm.view.state.doc.toString() : elem.value;
 		},
 		set(elem: HTMLTextAreaElement, value): void {
 			const cm = instances.get(elem);
-			if (cm) {
+			if (cm?.visible) {
 				cm.view.dispatch({
 					changes: {from: 0, to: cm.view.state.doc.length, insert: value},
 				});
@@ -206,6 +206,8 @@ import type {MwConfig} from '../src/mediawiki';
 	const linters: Record<string, LintSource> = {};
 
 	class CodeMirror extends CodeMirror6 {
+		visible = true;
+
 		constructor(textarea: HTMLTextAreaElement, lang?: string, config?: unknown) {
 			super(textarea, lang, config);
 			instances.set(textarea, this);
@@ -214,15 +216,27 @@ import type {MwConfig} from '../src/mediawiki';
 			}
 		}
 
+		toggle(show = !this.visible): void {
+			if (show && !this.visible) {
+				this.view.dispatch({
+					changes: {from: 0, to: this.view.state.doc.length, insert: this.textarea.value},
+				});
+			}
+			this.visible = show;
+			this.view.dom.style.setProperty('display', show ? '' : 'none', 'important');
+			this.textarea.style.display = show ? 'none' : '';
+			$(this.textarea).data('jquery.textSelection', show && textSelection);
+		}
+
 		async defaultLint(on: boolean): Promise<void> {
 			if (!on) {
-				super.lint();
+				this.lint();
 				return;
 			}
 			const {lang} = this;
 			if (!(lang in linters)) {
 				linters[lang] = await this.getLinter();
-				if (this.lang === 'mediawiki') {
+				if (this.lang === 'mediawiki' || this.lang === 'html') {
 					const mwConfig = await getMwConfig(),
 						config: Config = {
 							...await wikiparse.getConfig(),
@@ -233,7 +247,7 @@ import type {MwConfig} from '../src/mediawiki';
 								obj => Object.keys(obj).map(s => s.slice(2, -2)),
 							) as [ string[], string[] ],
 							variants: mwConfig.variants!,
-							protocol: mwConfig.urlProtocols,
+							protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
 						};
 					[config.parserFunction[0]] = mwConfig.functionSynonyms;
 					config.parserFunction[1] = [
@@ -246,26 +260,51 @@ import type {MwConfig} from '../src/mediawiki';
 					wikiparse.setConfig(config);
 				}
 			}
-			super.lint(linters[lang]);
+			this.lint(linters[lang]);
 		}
 
 		static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror> {
-			const cm = new CodeMirror(textarea, lang === 'mediawiki' ? undefined : lang);
-			if (lang === 'mediawiki') {
+			const isWiki = lang === 'mediawiki' || lang === 'html',
+				cm = new CodeMirror(textarea, isWiki ? undefined : lang);
+			if (isWiki) {
 				const config = await getMwConfig();
-				cm.setLanguage('mediawiki', config);
+				cm.setLanguage(lang, config);
 			}
 			return cm;
 		}
 	}
 
-	$(document.body).click(async e => {
+	document.body.addEventListener('click', e => {
 		if (e.target instanceof HTMLTextAreaElement && (e.ctrlKey || e.metaKey) && !instances.has(e.target)) {
 			e.preventDefault();
-			await mw.loader.using('oojs-ui-windows');
-			const lang = await OO.ui.prompt('Language:') || undefined,
-				cm = await CodeMirror.fromTextArea(e.target, lang?.toLowerCase());
-			void cm.defaultLint(true);
+			(async () => {
+				const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
+				let lang: string | undefined;
+				if (wgAction !== 'edit' && wgAction !== 'submit') {
+					await mw.loader.using('oojs-ui-windows');
+					lang = (await OO.ui.prompt('Language:') || undefined)?.toLowerCase();
+				} else {
+					switch (wgPageContentModel) {
+						case 'css':
+						case 'sanitized-css':
+							lang = 'css';
+							break;
+						case 'javascript':
+						case 'json':
+							lang = 'javascript';
+							break;
+						case 'Scribunto':
+							lang = 'lua';
+							break;
+						case 'wikitext':
+							lang = wgNamespaceNumber === 274 ? 'html' : 'mediawiki';
+							break;
+						// no default
+					}
+				}
+				const cm = await CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
+				void cm.defaultLint(true);
+			})();
 		}
 	});
 
