@@ -29,7 +29,7 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 		if (!(lang in linters)) {
 			linters[lang] = await cm.getLinter();
 			if (lang === 'mediawiki') {
-				wikiparse.setConfig(parserConfig);
+				wikiparse.setConfig(parserConfig!);
 			}
 			if (linters[lang]) {
 				cm.lint(linters[lang]);

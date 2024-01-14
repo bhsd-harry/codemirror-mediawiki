@@ -255,6 +255,13 @@ import type {MwConfig} from '../src/mediawiki';
 							protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
 						};
 					[config.parserFunction[0]] = mwConfig.functionSynonyms;
+					if (!USING_LOCAL) {
+						for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
+							if (!key.startsWith('#')) {
+								config.parserFunction[0][`#${key}`] = val;
+							}
+						}
+					}
 					config.parserFunction[1] = [
 						...Object.keys(mwConfig.functionSynonyms[1]),
 						'=',
