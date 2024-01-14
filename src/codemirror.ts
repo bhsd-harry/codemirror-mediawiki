@@ -244,8 +244,8 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const src = 'combine/npm/wikiparser-node@1.3.0-b/extensions/dist/base.min.js,'
-					+ 'npm/wikiparser-node@1.3.0-b/extensions/dist/lint.min.js';
+				const src = 'combine/npm/wikiparser-node@1.3.1-b/extensions/dist/base.min.js,'
+					+ 'npm/wikiparser-node@1.3.1-b/extensions/dist/lint.min.js';
 				await loadScript(src, 'wikiparse');
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean);
 				return doc => wikiLinter.codemirror(doc.toString());
