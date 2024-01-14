@@ -115,7 +115,7 @@ Whether the editor is visible, read-only.
 
 *version added: 2.1.3*
 
-**param**: `Record<string, any>` the optional linter configuration
+**param**: `Record<string, any>` the optional linter configuration  
 **returns**: `Promise<(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>>`  
 Get the default linting function, which can be used as the argument of [`lint`](#lint).
 
