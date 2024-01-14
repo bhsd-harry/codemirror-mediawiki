@@ -15,7 +15,7 @@ declare global {
 	const wikiparse: {
 		getConfig(): Promise<Config>;
 		setConfig(config: Config): void;
-		Linter: new () => WikiLinter;
+		Linter: new (include?: boolean) => WikiLinter;
 	};
 	const eslint: {
 		Linter: new () => Linter;

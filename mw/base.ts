@@ -231,15 +231,16 @@ import type {MwConfig} from '../src/mediawiki';
 		/**
 		 * 添加或移除默认 linter
 		 * @param on 是否添加
+		 * @param opt linter选项
 		 */
-		async defaultLint(on: boolean): Promise<void> {
+		async defaultLint(on: boolean, opt?: Record<string, unknown>): Promise<void> {
 			if (!on) {
 				this.lint();
 				return;
 			}
 			const {lang} = this;
 			if (!(lang in linters)) {
-				linters[lang] = await this.getLinter();
+				linters[lang] = await this.getLinter(opt);
 				if (this.lang === 'mediawiki' || this.lang === 'html') {
 					const mwConfig = await getMwConfig(),
 						config: Config = {
@@ -286,7 +287,7 @@ import type {MwConfig} from '../src/mediawiki';
 	}
 
 	document.body.addEventListener('click', e => {
-		if (e.target instanceof HTMLTextAreaElement && (e.ctrlKey || e.metaKey) && !instances.has(e.target)) {
+		if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
 			e.preventDefault();
 			(async () => {
 				const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
@@ -316,7 +317,16 @@ import type {MwConfig} from '../src/mediawiki';
 					}
 				}
 				const cm = await CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
-				void cm.defaultLint(true);
+				let opt: Record<string, unknown> | undefined;
+				if (lang === 'mediawiki' && wgNamespaceNumber === 10) {
+					opt = {include: true};
+				} else if (lang === 'javascript' && (wgNamespaceNumber === 8 || wgNamespaceNumber === 2300)) {
+					opt = {
+						env: {browser: true, es6: true},
+						parserOptions: {ecmaVersion: 6},
+					};
+				}
+				await cm.defaultLint(true, opt);
 			})();
 		}
 	});

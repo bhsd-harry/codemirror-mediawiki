@@ -1,11 +1,12 @@
 ## v2.1.3
 
-*2024-01-13*
+*2024-01-14*
 
 **Added**
 
 - New property: [`visible`](./README.md#visible)
 - New method: [`toggle`](./README.md#toggle)
+- [`getLinter`](./README.md#getlinter) now takes an optional configuration argument
 
 ## v2.1.2
 

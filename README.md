@@ -33,14 +33,14 @@ You can download the code via CDN, for example:
 
 ```js
 // static import
-import { CodeMirror6 } from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.0.8/dist/main.min.js';
+import {CodeMirror6} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js';
 ```
 
 or
 
 ```js
 // dynamic import
-const { CodeMirror6 } = await import( 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.0.8/dist/main.min.js' );
+const {CodeMirror6} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js');
 ```
 
 ## constructor
@@ -53,7 +53,13 @@ const { CodeMirror6 } = await import( 'https://cdn.jsdelivr.net/npm/@bhsd/codemi
 **param**: `unknown` the optional language configuration  
 
 ```js
-const cm = new CodeMirror6( textarea, 'css' );
+const cm = new CodeMirror6(textarea); // plain text
+const cm = new CodeMirror6(textarea, 'mediawiki', mwConfig);
+const cm = new CodeMirror6(textarea, 'html', mwConfig); // mixed MediaWiki-HTML
+const cm = new CodeMirror6(textarea, 'css');
+const cm = new CodeMirror6(textarea, 'javascript');
+const cm = new CodeMirror6(textarea, 'json');
+const cm = new CodeMirror6(textarea, 'lua');
 ```
 
 </details>
@@ -107,10 +113,18 @@ Whether the editor is visible, read-only.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.0.13*
+*version added: 2.1.3*
 
+**param**: `Record<string, any>` the optional linter configuration
 **returns**: `Promise<(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>>`  
 Get the default linting function, which can be used as the argument of [`lint`](#lint).
+
+```js
+const linter = await cm.getLinter(); // default linter configuration
+const linterMediawiki = await cm.getLinter({include}); // wikilint configuration
+const linterJavaScript = await cm.getLinter({env, parserOptions, rules}); // ESLint configuration
+const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
+```
 
 </details>
 
@@ -123,7 +137,7 @@ Get the default linting function, which can be used as the argument of [`lint`](
 Set the linting function.
 
 ```js
-cm.lint( ( doc ) => [
+cm.lint(doc => [
 	/**
 	 * @type {Diagnostic}
 	 * @see https://codemirror.net/docs/ref/#lint.Diagnostic
@@ -134,7 +148,7 @@ cm.lint( ( doc ) => [
 		message: 'error message',
 		severity: 'error',
 	},
-] );
+]);
 ```
 
 </details>
@@ -150,14 +164,14 @@ cm.lint( ( doc ) => [
 Set the preferred CodeMirror extensions.
 
 ```js
-cm.prefer( [
+cm.prefer([
 	'bracketMatching',
 	'closeBrackets',
 	'highlightActiveLine',
 	'highlightSpecialChars',
 	'highlightWhitespace',
 	'highlightTrailingWhitespace',
-] );
+]);
 ```
 
 </details>
@@ -173,7 +187,8 @@ cm.prefer( [
 Set the indentation string.
 
 ```js
-cm.setIndent( ' '.repeat( 2 ) );
+cm.setIndent(' '.repeat(2));
+cm.setIndent('\t');
 ```
 
 </details>
@@ -188,7 +203,12 @@ cm.setIndent( ' '.repeat( 2 ) );
 Set the language mode.
 
 ```js
-cm.setLanguage( 'css' );
+cm.setLanguage('mediawiki', mwConfig);
+cm.setLanguage('html', mwConfig); // mixed MediaWiki-HTML
+cm.setLanguage('css');
+cm.setLanguage('javascript');
+cm.setLanguage('json');
+cm.setLanguage('lua');
 ```
 
 </details>
@@ -205,6 +225,8 @@ Switch between the CodeMirror editor and the native textarea.
 
 ```js
 cm.toggle();
+cm.toggle(true); // show CodeMirror
+cm.toggle(false); // hide CodeMirror
 ```
 
 </details>
@@ -215,9 +237,5 @@ cm.toggle();
 	<summary>Expand</summary>
 
 Refresh linting immediately.
-
-```js
-cm.update();
-```
 
 </details>

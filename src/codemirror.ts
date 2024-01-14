@@ -241,14 +241,13 @@ export class CodeMirror6 {
 	}
 
 	/** 获取默认linter */
-	async getLinter(): Promise<LintSource | undefined> {
+	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
-			case 'html':
 			case 'mediawiki': {
 				const src = 'combine/npm/wikiparser-node@1.3.0-b/extensions/dist/base.min.js,'
 					+ 'npm/wikiparser-node@1.3.0-b/extensions/dist/lint.min.js';
 				await loadScript(src, 'wikiparse');
-				const wikiLinter = new wikiparse.Linter();
+				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean);
 				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {
@@ -265,10 +264,11 @@ export class CodeMirror6 {
 							sourceType: 'module',
 						},
 						rules: {},
+						...opt,
 					};
 				for (const [name, {meta}] of esLinter.getRules()) {
 					if (meta?.docs!.recommended) {
-						conf.rules![name] = 2;
+						conf.rules![name] ??= 2;
 					}
 				}
 				return doc => esLinter.verify(doc.toString(), conf)
@@ -330,6 +330,7 @@ export class CodeMirror6 {
 						],
 						'string-no-newline': true,
 						'unit-no-unknown': true,
+						...opt?.['rules'] as Record<string, unknown>,
 					},
 				};
 				return async doc => {
