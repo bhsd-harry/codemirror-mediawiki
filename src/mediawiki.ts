@@ -44,6 +44,8 @@ export interface MwConfig {
 	variants?: string[];
 	img?: Record<string, string>;
 	nsid: Record<string, number>;
+	permittedHtmlTags?: string[];
+	implicitlyClosedHtmlTags?: string[];
 }
 
 const copyState = (state: State): State => {
@@ -65,19 +67,20 @@ const isHtmlEntity = (str: string): boolean => {
  * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
  */
 class MediaWiki {
-	declare readonly config: MwConfig;
-	declare readonly urlProtocols: RegExp;
-	declare isBold: boolean;
-	declare wasBold: boolean;
-	declare isItalic: boolean;
-	declare wasItalic: boolean;
+	declare readonly config;
+	declare readonly urlProtocols;
+	declare isBold;
+	declare wasBold;
+	declare isItalic;
+	declare wasItalic;
 	declare firstSingleLetterWord: number | null;
 	declare firstMultiLetterWord: number | null;
 	declare firstSpace: number | null;
 	declare oldStyle: string | null;
-	declare tokens: Token[];
 	declare oldTokens: Token[];
-	declare tokenTable: Record<string, Tag>;
+	declare readonly tokenTable;
+	declare readonly permittedHtmlTags;
+	declare readonly implicitlyClosedHtmlTags;
 
 	constructor(config: MwConfig) {
 		this.config = config;
@@ -91,9 +94,16 @@ class MediaWiki {
 		this.firstMultiLetterWord = null;
 		this.firstSpace = null;
 		this.oldStyle = null;
-		this.tokens = [];
 		this.oldTokens = [];
 		this.tokenTable = {...modeConfig.tokenTable};
+		this.permittedHtmlTags = new Set([
+			...modeConfig.permittedHtmlTags,
+			...config.permittedHtmlTags || [],
+		]);
+		this.implicitlyClosedHtmlTags = new Set([
+			...modeConfig.implicitlyClosedHtmlTags,
+			...config.implicitlyClosedHtmlTags || [],
+		]);
 
 		// Dynamically register any tags that aren't already in CodeMirrorModeMediaWikiConfig
 		for (const tag of Object.keys(config.tags)) {
@@ -549,7 +559,7 @@ class MediaWiki {
 			if (stream.match(/^[^>/<{]+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.htmlTagAttribute, state);
 			} else if (stream.match(/^\/?>/u)) {
-				if (!modeConfig.implicitlyClosedHtmlTags.has(name)) {
+				if (!this.implicitlyClosedHtmlTags.has(name)) {
 					state.inHtmlTag.push(name);
 				}
 				state.tokenize = state.stack.pop()!;
@@ -952,12 +962,12 @@ class MediaWiki {
 							state.stack.push(state.tokenize);
 							state.tokenize = this.eatTagName(tagname.length, isCloseTag, false);
 							return this.makeLocalStyle(modeConfig.tags.extTagBracket, state);
-						} else if (modeConfig.permittedHtmlTags.has(tagname)) {
+						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
 								state.tokenize = this.inChar('>', modeConfig.tags.error);
 								return this.makeLocalStyle(modeConfig.tags.error, state);
-							} else if (isCloseTag && modeConfig.implicitlyClosedHtmlTags.has(tagname)) {
+							} else if (isCloseTag && this.implicitlyClosedHtmlTags.has(tagname)) {
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
@@ -1230,4 +1240,62 @@ export const html = (config: MwConfig): LanguageSupport => mediawiki({
 		script: 'javascript',
 		style: 'css',
 	},
+	permittedHtmlTags: [
+		'html',
+		'base',
+		'title',
+		'menu',
+		'a',
+		'area',
+		'audio',
+		'map',
+		'track',
+		'video',
+		'embed',
+		'iframe',
+		'object',
+		'picture',
+		'source',
+		'canvas',
+		'col',
+		'colgroup',
+		'tbody',
+		'tfoot',
+		'thead',
+		'button',
+		'datalist',
+		'fieldset',
+		'form',
+		'input',
+		'label',
+		'legend',
+		'meter',
+		'optgroup',
+		'option',
+		'output',
+		'progress',
+		'select',
+		'textarea',
+		'details',
+		'dialog',
+		'slot',
+		'template',
+		'dir',
+		'frame',
+		'frameset',
+		'marquee',
+		'param',
+		'xmp',
+	],
+	implicitlyClosedHtmlTags: [
+		'area',
+		'base',
+		'col',
+		'embed',
+		'frame',
+		'input',
+		'param',
+		'source',
+		'track',
+	],
 });

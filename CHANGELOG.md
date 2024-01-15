@@ -1,3 +1,11 @@
+## v2.1.5
+
+*2024-01-15*
+
+**Added**
+
+- More permitted HTML tags in the mixed MediaWiki-HTML mode
+
 ## v2.1.3
 
 *2024-01-14*

@@ -338,5 +338,5 @@ import type {MwConfig} from '../src/mediawiki';
 		}
 	});
 
-	Object.assign(window, {CodeMirror});
+	Object.assign(window, {CodeMirror6: CodeMirror});
 })();

@@ -173,7 +173,7 @@ export class CodeMirror6 {
 		this.#view.dispatch({
 			effects: [
 				this.#language.reconfigure(languages[lang]!(config)),
-				this.#linter.reconfigure(linters[lang] ?? []),
+				this.#linter.reconfigure(linters[lang] || []),
 			],
 		});
 		this.#lang = lang;

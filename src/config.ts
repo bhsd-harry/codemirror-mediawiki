@@ -16,7 +16,7 @@ export const modeConfig = {
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 */
-	permittedHtmlTags: new Set([
+	permittedHtmlTags: [
 		'b',
 		'bdi',
 		'bdo',
@@ -80,17 +80,21 @@ export const modeConfig = {
 		'includeonly',
 		'onlyinclude',
 		'img',
-	]),
+		'meta',
+		'link',
+	],
 
 	/**
 	 * HTML tags that are only self-closing.
 	 */
-	implicitlyClosedHtmlTags: new Set([
+	implicitlyClosedHtmlTags: [
 		'br',
 		'hr',
 		'wbr',
 		'img',
-	]),
+		'meta',
+		'link',
+	],
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.

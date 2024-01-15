@@ -22,8 +22,8 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 	const init = async (lang: string): Promise<void> => {
 		if (lang === 'mediawiki') {
 			// eslint-disable-next-line require-atomic-updates
-			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ??= getMwConfig(parserConfig!);
+			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();
+			config ||= getMwConfig(parserConfig!);
 		}
 		cm.setLanguage(lang, config);
 		if (!(lang in linters)) {
