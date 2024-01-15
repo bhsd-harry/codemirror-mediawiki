@@ -14,7 +14,7 @@
 	"files":[
 		"/dist/*.[jt]s",
 		"/mediawiki.css",
-		"/mw/dist/*.js"
+		"/mw/dist/"
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/main.min.js",
@@ -24,7 +24,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --outfile=dist/main.min.js; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
+		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
 		"build:mw": "bash build.sh mw/base.ts mw/dist/base.js",
 		"build:gh-page": "bash build.sh src/gh-page.ts gh-page.js",
 		"build": "npm run build:core && npm run build:mw",

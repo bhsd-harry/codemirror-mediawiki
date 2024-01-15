@@ -4,9 +4,9 @@ import { CodeMirror6 } from './dist/main.min.js';
     const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = document.querySelectorAll('input[type="checkbox"]'), indent = document.querySelector('#indent'), cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
-        if (lang === 'mediawiki') {
-            parserConfig !== null && parserConfig !== void 0 ? parserConfig : (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
-            config !== null && config !== void 0 ? config : (config = getMwConfig(parserConfig));
+        if (lang === 'mediawiki' || lang === 'html') {
+            parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
+            config || (config = getMwConfig(parserConfig));
         }
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {

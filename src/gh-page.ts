@@ -20,7 +20,7 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 	 * @param lang 语言
 	 */
 	const init = async (lang: string): Promise<void> => {
-		if (lang === 'mediawiki') {
+		if (lang === 'mediawiki' || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();
 			config ||= getMwConfig(parserConfig!);
