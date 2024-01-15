@@ -241,7 +241,7 @@ import type {MwConfig} from '../src/mediawiki';
 			const {lang} = this;
 			if (!(lang in linters)) {
 				linters[lang] = await this.getLinter(opt);
-				if (this.lang === 'mediawiki' || this.lang === 'html') {
+				if (this.lang === 'mediawiki') {
 					const mwConfig = await getMwConfig(),
 						config: Config = {
 							...await wikiparse.getConfig(),
