@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.1.5",
+	"version": "2.1.7",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -70,6 +70,6 @@
 		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.4.0",
 		"typescript": "^5.1.6",
-		"wikilint": "^2.3.0"
+		"wikilint": "^2.3.2"
 	}
 }
