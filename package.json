@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.1.4",
+	"version": "2.1.5",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -12,7 +12,11 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
-		"/dist/*.[jt]s",
+		"/src/",
+		"!/src/gh-page.ts",
+		"!/src/plugins.ts",
+		"!/src/*.d.ts",
+		"/dist/",
 		"/mediawiki.css",
 		"/mw/dist/"
 	],
