@@ -143,12 +143,12 @@ export class CodeMirror6 {
 			extensions,
 			doc: textarea.value,
 		});
-		const {offsetHeight, selectionStart, selectionEnd, scrollTop} = textarea,
+		const {selectionStart, selectionEnd, scrollTop} = textarea,
 			{fontSize, lineHeight} = getComputedStyle(textarea),
 			hasFocus = document.activeElement === textarea;
 		textarea.parentNode!.insertBefore(this.#view.dom, textarea);
 		this.#view.dom.style.minHeight = '2em';
-		this.#view.dom.style.height = `${offsetHeight}px`;
+		this.#refresh();
 		this.#view.dom.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.#view.requestMeasure();
@@ -162,6 +162,11 @@ export class CodeMirror6 {
 		requestAnimationFrame(() => {
 			this.#view.scrollDOM.scrollTop = scrollTop;
 		});
+	}
+
+	#refresh(): void {
+		const {offsetHeight} = this.#textarea;
+		this.#view.dom.style.height = offsetHeight ? `${offsetHeight}px` : this.#textarea.style.height;
 	}
 
 	/**
@@ -193,8 +198,10 @@ export class CodeMirror6 {
 			: [];
 		if (lintSource) {
 			linters[this.#lang] = linterExtension;
+			this.#view.dom.style.minHeight = 'calc(100px + 2em)';
 		} else {
 			delete linters[this.#lang];
+			this.#view.dom.style.minHeight = '2em';
 		}
 		this.#view.dispatch({
 			effects: [this.#linter.reconfigure(linterExtension)],
@@ -244,8 +251,8 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const src = 'combine/npm/wikiparser-node@1.3.2-b/extensions/dist/base.min.js,'
-					+ 'npm/wikiparser-node@1.3.2-b/extensions/dist/lint.min.js';
+				const src = 'combine/npm/wikiparser-node@1.3.4-b/extensions/dist/base.min.js,'
+					+ 'npm/wikiparser-node@1.3.4-b/extensions/dist/lint.min.js';
 				await loadScript(src, 'wikiparse');
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean);
 				return doc => wikiLinter.codemirror(doc.toString());
@@ -267,7 +274,7 @@ export class CodeMirror6 {
 						...opt,
 					};
 				for (const [name, {meta}] of esLinter.getRules()) {
-					if (meta?.docs!.recommended) {
+					if (meta?.docs?.recommended) {
 						conf.rules![name] ??= 2;
 					}
 				}
@@ -378,6 +385,7 @@ export class CodeMirror6 {
 			this.#view.dispatch({
 				changes: {from: 0, to: this.#view.state.doc.length, insert: this.#textarea.value},
 			});
+			this.#refresh();
 		}
 		this.#visible = show;
 		this.#view.dom.style.setProperty('display', show ? '' : 'none', 'important');

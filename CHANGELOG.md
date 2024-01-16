@@ -1,3 +1,11 @@
+## v2.1.8
+
+*2024-01-17*
+
+**Changed**
+
+- Reseting the editor size in [`toggle`](./README.md#toggle) method
+
 ## v2.1.5
 
 *2024-01-15*
