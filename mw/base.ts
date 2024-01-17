@@ -4,6 +4,12 @@ import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 import type {MwConfig} from '../src/mediawiki';
 
+declare interface MagicWord {
+	name: string;
+	aliases: string[];
+	'case-sensitive': boolean;
+}
+
 (() => {
 	mw.loader.load(
 		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.7/mediawiki.min.css',
@@ -11,6 +17,7 @@ import type {MwConfig} from '../src/mediawiki';
 	);
 
 	const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
+	const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
 
 	/**
 	 * jQuery.val overrides for CodeMirror.
@@ -36,7 +43,7 @@ import type {MwConfig} from '../src/mediawiki';
 		this: JQuery<HTMLTextAreaElement>,
 		option?: {startAndEnd?: boolean},
 	): [number, number] | number {
-		const {view: {state: {selection: {main}}}} = instances.get(this[0]!)!;
+		const {view: {state: {selection: {main}}}} = getInstance(this);
 		return option?.startAndEnd ? [main.from, main.to] : main.head;
 	}
 
@@ -46,21 +53,21 @@ import type {MwConfig} from '../src/mediawiki';
 	 */
 	const textSelection = {
 		getContents(this: JQuery<HTMLTextAreaElement>): string {
-			return instances.get(this[0]!)!.view.state.doc.toString();
+			return getInstance(this).view.state.doc.toString();
 		},
 		setContents(this: JQuery<HTMLTextAreaElement>, content: string): JQuery<HTMLTextAreaElement> {
-			instances.get(this[0]!)!.setContent(content);
+			getInstance(this).setContent(content);
 			return this;
 		},
 		getSelection(this: JQuery<HTMLTextAreaElement>): string {
-			const {view: {state}} = instances.get(this[0]!)!;
+			const {view: {state}} = getInstance(this);
 			return state.sliceDoc(state.selection.main.from, state.selection.main.to);
 		},
 		setSelection(
 			this: JQuery<HTMLTextAreaElement>,
 			{start, end}: {start: number, end?: number},
 		): JQuery<HTMLTextAreaElement> {
-			const {view} = instances.get(this[0]!)!;
+			const {view} = getInstance(this);
 			view.dispatch({
 				selection: {anchor: start, head: end ?? start},
 			});
@@ -68,13 +75,13 @@ import type {MwConfig} from '../src/mediawiki';
 			return this;
 		},
 		replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
-			const {view} = instances.get(this[0]!)!;
+			const {view} = getInstance(this);
 			view.dispatch(view.state.replaceSelection(value));
 			return this;
 		},
 		getCaretPosition,
 		scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement> {
-			instances.get(this[0]!)!.view.dispatch({scrollIntoView: true});
+			getInstance(this).view.dispatch({scrollIntoView: true});
 			return this;
 		},
 	};
@@ -86,35 +93,57 @@ import type {MwConfig} from '../src/mediawiki';
 			= JSON.parse(localStorage.getItem('InPageEditMwConfig')!) ?? {},
 		SITE_ID = `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`,
 		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
-		EXPIRED = !(SITE_SETTINGS && SITE_SETTINGS.time > Date.now() - 86_400 * 1000 * 30);
+		// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+		VALID = SITE_SETTINGS?.time! > Date.now() - 86_400 * 1000 * 30;
 
-	/** 展开别名列表 */
-	const getAliases = (words: readonly {aliases: string[], name: string}[]): {alias: string, name: string}[] =>
-		words.flatMap(({aliases, name}) => aliases.map(alias => ({alias, name})));
-
-	/** 将别名信息转换为CodeMirror接受的设置 */
-	const getConfig = (aliases: readonly {alias: string, name: string}[]): Record<string, string> => {
-		const config: Record<string, string> = {};
-		for (const {alias, name} of aliases) {
-			config[alias.replace(/:$/u, '')] = name;
+	/**
+	 * 将魔术字信息转换为CodeMirror接受的设置
+	 * @param magicWords 完整魔术字列表
+	 * @param rule 过滤函数
+	 * @param flip 是否反向筛选对大小写敏感的魔术字
+	 */
+	const getConfig = (
+		magicWords: MagicWord[],
+		rule: (word: MagicWord) => boolean,
+		flip?: boolean,
+	): Record<string, string> => {
+		const words = magicWords.filter(rule).filter(({'case-sensitive': i}) => i !== flip)
+				.flatMap(({aliases, name, 'case-sensitive': i}) => aliases.map(alias => ({
+					alias: (i ? alias : alias.toLowerCase()).replace(/:$/u, ''),
+					name,
+				}))),
+			obj: Record<string, string> = {};
+		for (const {alias, name} of words) {
+			obj[alias] = name;
 		}
-		return config;
+		return obj;
+	};
+
+	const getConfigPair = (
+		magicWords: MagicWord[],
+		rule: (word: MagicWord) => boolean,
+	): [Record<string, string>, Record<string, string>] => [true, false]
+		.map(bool => getConfig(magicWords, rule, bool)) as [Record<string, string>, Record<string, string>];
+
+	/** 将设置保存到mw.config */
+	const setConfig = (config: MwConfig): void => {
+		mw.config.set('extCodeMirrorConfig', config);
 	};
 
 	/** 加载CodeMirror的mediawiki模块需要的设置 */
 	const getMwConfig = async (): Promise<MwConfig> => {
-		if (USING_LOCAL && EXPIRED) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
+		if (USING_LOCAL && !VALID) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
 			await mw.loader.using(DATA_MODULE);
 		}
 
 		let config = mw.config.get('extCodeMirrorConfig') as MwConfig | null;
-		if (!config && !EXPIRED) {
-			({config} = SITE_SETTINGS);
-			mw.config.set('extCodeMirrorConfig', config);
+		if (!config && VALID) {
+			({config} = SITE_SETTINGS!);
+			setConfig(config);
 		}
 		const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string);
 		// 情形1：config已更新，可能来自localStorage
-		if (config && config.img && config.variants && !isIPE) {
+		if (config?.img && config.variants && !isIPE) {
 			return {
 				...config,
 				nsid: mw.config.get('wgNamespaceIds'),
@@ -130,7 +159,7 @@ import type {MwConfig} from '../src/mediawiki';
 		}: {
 			query: {
 				general: {variants?: {code: string}[]};
-				magicwords: {name: string, aliases: string[], 'case-sensitive': boolean}[];
+				magicwords: MagicWord[];
 				extensiontags: string[];
 				functionhooks: string[];
 				variables: string[];
@@ -144,21 +173,27 @@ import type {MwConfig} from '../src/mediawiki';
 			],
 			formatversion: '2',
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-		const otherMagicwords = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
+		const others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
 
+		// 先处理魔术字和状态开关
 		if (config && !isIPE) { // 情形2或3
 			const {functionSynonyms: [insensitive]} = config;
 			if (!('subst' in insensitive)) {
-				const aliases = getAliases(magicwords.filter(({name}) => otherMagicwords.has(name)));
-				for (const {alias, name} of aliases) {
-					insensitive[alias.replace(/:$/u, '')] = name;
-				}
+				Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));
 			}
 		} else { // 情形4：`config === null`
 			// @ts-expect-error incomplete properties
 			config = {
 				tagModes: {
+					tab: 'text/mediawiki',
+					indicator: 'text/mediawiki',
+					poem: 'text/mediawiki',
 					ref: 'text/mediawiki',
+					option: 'text/mediawiki',
+					combooption: 'text/mediawiki',
+					tabs: 'text/mediawiki',
+					poll: 'text/mediawiki',
+					gallery: 'text/mediawiki',
 				},
 				tags: {},
 				urlProtocols: mw.config.get('wgUrlProtocols'),
@@ -166,36 +201,21 @@ import type {MwConfig} from '../src/mediawiki';
 			for (const tag of extensiontags) {
 				config!.tags[tag.slice(1, -1)] = true;
 			}
-			const realMagicwords = new Set([
-					...functionhooks,
-					...variables,
-					...otherMagicwords,
-				]),
-				allMagicwords = magicwords.filter(
-					({name, aliases}) =>
-						aliases.some(alias => /^__.+__$/u.test(alias)) || realMagicwords.has(name),
-				),
-				sensitive = getAliases(
-					allMagicwords.filter(word => word['case-sensitive']),
-				),
-				insensitive = getAliases(
-					allMagicwords.filter(word => !word['case-sensitive']),
-				).map(({alias, name}) => ({alias: alias.toLowerCase(), name}));
-			config!.doubleUnderscore = [
-				getConfig(insensitive.filter(({alias}) => /^__.+__$/u.test(alias))),
-				getConfig(sensitive.filter(({alias}) => /^__.+__$/u.test(alias))),
-			];
-			config!.functionSynonyms = [
-				getConfig(insensitive.filter(({alias}) => !/^__.+__|^#$/u.test(alias))),
-				getConfig(sensitive.filter(({alias}) => !/^__.+__|^#$/u.test(alias))),
-			];
+			const functions = new Set([
+				...functionhooks,
+				...variables,
+				...others,
+			]);
+			config!.functionSynonyms = getConfigPair(magicwords, ({name}) => functions.has(name));
+			config!.doubleUnderscore = getConfigPair(
+				magicwords,
+				({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
+			);
 		}
-		config!.img = getConfig(
-			getAliases(magicwords.filter(({name}) => name.startsWith('img_'))),
-		);
+		config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 		config!.variants = variants ? variants.map(({code}) => code) : [];
 		config!.nsid = mw.config.get('wgNamespaceIds');
-		mw.config.set('extCodeMirrorConfig', config);
+		setConfig(config!);
 		ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 		localStorage.setItem('InPageEditMwConfig', JSON.stringify(ALL_SETTINGS_CACHE));
 		return config!;
@@ -248,7 +268,7 @@ import type {MwConfig} from '../src/mediawiki';
 							...await wikiparse.getConfig(),
 							ext: Object.keys(mwConfig.tags),
 							namespaces: mw.config.get('wgFormattedNamespaces'),
-							nsid: mw.config.get('wgNamespaceIds'),
+							nsid: mwConfig.nsid,
 							doubleUnderscore: mwConfig.doubleUnderscore.map(
 								obj => Object.keys(obj).map(s => s.slice(2, -2)),
 							) as [ string[], string[] ],
