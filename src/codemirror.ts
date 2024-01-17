@@ -70,6 +70,14 @@ const loadScript = (src: string, target: string): Promise<void> => new Promise(r
 	document.head.append(script);
 });
 
+/**
+ * 获取指定行列的位置
+ * @param doc 文档
+ * @param line 行号
+ * @param column 列号
+ */
+const pos = (doc: Text, line: number, column: number): number => doc.line(line).from + column - 1;
+
 export class CodeMirror6 {
 	readonly #textarea;
 	readonly #language;
@@ -147,7 +155,7 @@ export class CodeMirror6 {
 			{fontSize, lineHeight} = getComputedStyle(textarea),
 			hasFocus = document.activeElement === textarea;
 		textarea.parentNode!.insertBefore(this.#view.dom, textarea);
-		this.#view.dom.style.minHeight = '2em';
+		this.#minHeight();
 		this.#refresh();
 		this.#view.dom.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
@@ -164,9 +172,18 @@ export class CodeMirror6 {
 		});
 	}
 
+	/** 刷新编辑器高度 */
 	#refresh(): void {
 		const {offsetHeight} = this.#textarea;
 		this.#view.dom.style.height = offsetHeight ? `${offsetHeight}px` : this.#textarea.style.height;
+	}
+
+	/**
+	 * 设置编辑器最小高度
+	 * @param linting 是否启用语法检查
+	 */
+	#minHeight(linting?: boolean): void {
+		this.#view.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
 	}
 
 	/**
@@ -198,10 +215,10 @@ export class CodeMirror6 {
 			: [];
 		if (lintSource) {
 			linters[this.#lang] = linterExtension;
-			this.#view.dom.style.minHeight = 'calc(100px + 2em)';
+			this.#minHeight(true);
 		} else {
 			delete linters[this.#lang];
-			this.#view.dom.style.minHeight = '2em';
+			this.#minHeight();
 		}
 		this.#view.dispatch({
 			effects: [this.#linter.reconfigure(linterExtension)],
@@ -251,8 +268,8 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const src = 'combine/npm/wikiparser-node@1.3.4-b/extensions/dist/base.min.js,'
-					+ 'npm/wikiparser-node@1.3.4-b/extensions/dist/lint.min.js';
+				const CDN = 'npm/wikiparser-node@1.3.4-b/extensions/dist',
+					src = `combine/${CDN}/base.min.js,${CDN}/lint.min.js`;
 				await loadScript(src, 'wikiparse');
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean);
 				return doc => wikiLinter.codemirror(doc.toString());
@@ -280,12 +297,12 @@ export class CodeMirror6 {
 				}
 				return doc => esLinter.verify(doc.toString(), conf)
 					.map(({message, severity, line, column, endLine, endColumn}) => {
-						const from = doc.line(line).from + column - 1;
+						const from = pos(doc, line, column);
 						return {
 							message,
 							severity: severity === 1 ? 'warning' : 'error',
 							from,
-							to: endLine === undefined ? from + 1 : doc.line(endLine).from + endColumn! - 1,
+							to: endLine === undefined ? from + 1 : pos(doc, endLine, endColumn!),
 						};
 					});
 			}
@@ -346,8 +363,8 @@ export class CodeMirror6 {
 						.map(({text, severity, line, column, endLine, endColumn}) => ({
 							message: text,
 							severity,
-							from: doc.line(line).from + column - 1,
-							to: endLine === undefined ? doc.line(line).to : doc.line(endLine).from + endColumn! - 1,
+							from: pos(doc, line, column),
+							to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
 						}));
 				};
 			}
