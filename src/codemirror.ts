@@ -281,10 +281,10 @@ export class CodeMirror6 {
 					conf: Linter.Config = {
 						env: {
 							browser: true,
-							es2018: true,
+							es2024: true,
 						},
 						parserOptions: {
-							ecmaVersion: 9,
+							ecmaVersion: 15,
 							sourceType: 'module',
 						},
 						rules: {},
