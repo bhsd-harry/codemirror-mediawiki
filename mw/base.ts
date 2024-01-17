@@ -228,6 +228,12 @@ import type {MwConfig} from '../src/mediawiki';
 			$(this.textarea).data('jquery.textSelection', show && textSelection);
 		}
 
+		override async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
+			const linter = await super.getLinter(opt);
+			linters[this.lang] = linter;
+			return linter;
+		}
+
 		/**
 		 * 添加或移除默认 linter
 		 * @param on 是否添加
@@ -240,8 +246,8 @@ import type {MwConfig} from '../src/mediawiki';
 			}
 			const {lang} = this;
 			if (!(lang in linters)) {
-				linters[lang] = await this.getLinter(opt);
-				if (this.lang === 'mediawiki') {
+				await this.getLinter(opt);
+				if (lang === 'mediawiki') {
 					const mwConfig = await getMwConfig(),
 						config: Config = {
 							...await wikiparse.getConfig(),
@@ -271,6 +277,8 @@ import type {MwConfig} from '../src/mediawiki';
 					}
 					wikiparse.setConfig(config);
 				}
+			} else if (opt) {
+				await this.getLinter(opt);
 			}
 			if (linters[lang]) {
 				this.lint(linters[lang]);
