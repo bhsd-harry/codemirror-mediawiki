@@ -20,12 +20,10 @@ import type {MwConfig} from '../src/mediawiki';
 			const cm = instances.get(elem);
 			return cm?.visible ? cm.view.state.doc.toString() : elem.value;
 		},
-		set(elem: HTMLTextAreaElement, value): void {
+		set(elem: HTMLTextAreaElement, value: string): void {
 			const cm = instances.get(elem);
 			if (cm?.visible) {
-				cm.view.dispatch({
-					changes: {from: 0, to: cm.view.state.doc.length, insert: value},
-				});
+				cm.setContent(value);
 			} else {
 				elem.value = value;
 			}
@@ -51,10 +49,7 @@ import type {MwConfig} from '../src/mediawiki';
 			return instances.get(this[0]!)!.view.state.doc.toString();
 		},
 		setContents(this: JQuery<HTMLTextAreaElement>, content: string): JQuery<HTMLTextAreaElement> {
-			const {view} = instances.get(this[0]!)!;
-			view.dispatch({
-				changes: {from: 0, to: view.state.doc.length, insert: content},
-			});
+			instances.get(this[0]!)!.setContent(content);
 			return this;
 		},
 		getSelection(this: JQuery<HTMLTextAreaElement>): string {

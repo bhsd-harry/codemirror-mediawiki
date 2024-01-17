@@ -14,6 +14,7 @@
 	- [getLinter](#getlinter)
 	- [lint](#lint)
 	- [prefer](#prefer)
+	- [setContent](#setcontent)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
 	- [toggle](#toggle)
@@ -172,6 +173,22 @@ cm.prefer([
 	'highlightWhitespace',
 	'highlightTrailingWhitespace',
 ]);
+```
+
+</details>
+
+## setContent
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.1.8*
+
+**param**: `string` new content  
+Reset the content of the editor.
+
+```js
+cm.setContent('');
 ```
 
 </details>

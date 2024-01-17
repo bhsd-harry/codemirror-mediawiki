@@ -394,14 +394,22 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 重设编辑器内容
+	 * @param content 新内容
+	 */
+	setContent(content: string): void {
+		this.#view.dispatch({
+			changes: {from: 0, to: this.#view.state.doc.length, insert: content},
+		});
+	}
+
+	/**
 	 * 在编辑器和文本框之间切换
 	 * @param show 是否显示编辑器
 	 */
 	toggle(show = !this.#visible): void {
 		if (show && !this.#visible) {
-			this.#view.dispatch({
-				changes: {from: 0, to: this.#view.state.doc.length, insert: this.#textarea.value},
-			});
+			this.setContent(this.#textarea.value);
 			this.#refresh();
 		}
 		this.#visible = show;

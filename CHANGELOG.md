@@ -2,6 +2,10 @@
 
 *2024-01-17*
 
+**Added**
+
+- New method: [`setContent`](./README.md#setcontent)
+
 **Changed**
 
 - Reseting the editor size in [`toggle`](./README.md#toggle) method
