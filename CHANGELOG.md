@@ -1,3 +1,11 @@
+## v2.1.10
+
+*2024-01-19*
+
+**Fixed**
+
+- A valid external link requires at least one legal character after the protocol
+
 ## v2.1.9
 
 *2024-01-18*

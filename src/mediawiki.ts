@@ -85,7 +85,7 @@ class MediaWiki {
 	constructor(config: MwConfig) {
 		this.config = config;
 		// eslint-disable-next-line require-unicode-regexp
-		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})`, 'i');
+		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'i');
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
