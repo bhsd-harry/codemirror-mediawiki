@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/dot-notation */
-import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.8/dist/main.min.js';
+import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.9/dist/main.min.js';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 import type {MwConfig} from '../src/mediawiki';
@@ -12,7 +12,7 @@ declare interface MagicWord {
 
 (() => {
 	mw.loader.load(
-		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.8/mediawiki.min.css',
+		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.9/mediawiki.min.css',
 		'text/css',
 	);
 	mw.loader.addStyleTag('.wikiEditor-ui-toolbar{z-index:7}');
