@@ -556,7 +556,7 @@ class MediaWiki {
 
 	inHtmlTagAttribute(name: string): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^[^>/<{]+/u)) {
+			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'[^>/<{])+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.htmlTagAttribute, state);
 			} else if (stream.match(/^\/?>/u)) {
 				if (!this.implicitlyClosedHtmlTags.has(name)) {
@@ -582,7 +582,7 @@ class MediaWiki {
 
 	inExtTagAttribute(name: string): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^[^>/]+/u)) {
+			if (stream.match(/^(?:"[^">]*"|'[^'>]*'|[^>/])+/u)) {
 				return this.makeLocalStyle(modeConfig.tags.extTagAttribute, state);
 			} else if (stream.eat('>')) {
 				state.extName = name;

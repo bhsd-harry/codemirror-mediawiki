@@ -9,6 +9,7 @@
 **Fixed**
 
 - No more auto-focusing on the lint panel
+- `'/'` in HTML and extension tag attributes, since [v2.1.0](#v210)
 
 ## v2.1.8
 
