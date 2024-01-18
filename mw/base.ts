@@ -15,6 +15,7 @@ declare interface MagicWord {
 		'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.8/mediawiki.min.css',
 		'text/css',
 	);
+	mw.loader.addStyleTag('.wikiEditor-ui-toolbar{z-index:7}');
 
 	const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 	const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
