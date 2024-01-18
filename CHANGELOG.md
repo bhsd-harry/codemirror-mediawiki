@@ -2,6 +2,10 @@
 
 *2024-01-18*
 
+**Added**
+
+- [lintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
+
 **Fixed**
 
 - No more auto-focusing on the lint panel

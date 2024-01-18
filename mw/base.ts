@@ -37,7 +37,7 @@ declare interface MagicWord {
 		},
 	};
 
-	function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option: {startAndEnd: true}): [ number, number ];
+	function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option: {startAndEnd: true}): [number, number];
 	function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: false}): number;
 	function getCaretPosition(
 		this: JQuery<HTMLTextAreaElement>,
@@ -271,7 +271,7 @@ declare interface MagicWord {
 							nsid: mwConfig.nsid,
 							doubleUnderscore: mwConfig.doubleUnderscore.map(
 								obj => Object.keys(obj).map(s => s.slice(2, -2)),
-							) as [ string[], string[] ],
+							) as [string[], string[]],
 							variants: mwConfig.variants!,
 							protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
 						};

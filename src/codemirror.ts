@@ -19,7 +19,7 @@ import {
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
-import {linter, lintGutter, openLintPanel, closeLintPanel} from '@codemirror/lint';
+import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import * as plugins from './plugins';
@@ -32,6 +32,8 @@ import type {Linter} from 'eslint';
 export type {MwConfig} from './mediawiki';
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
+declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, (config?: any) => LanguageSupport | []> = {
 	plain: () => [],
@@ -43,7 +45,7 @@ for (const [language, parser] of Object.entries(plugins)) {
 }
 const linters: Record<string, Extension> = {};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const avail: Record<string, [ (config?: any) => Extension, Record<string, unknown> ]> = {
+const avail: Record<string, [(config?: any) => Extension, Record<string, unknown>]> = {
 	highlightSpecialChars: [highlightSpecialChars, {}],
 	highlightActiveLine: [highlightActiveLine, {}],
 	highlightWhitespace: [highlightWhitespace, {}],
@@ -137,6 +139,7 @@ export class CodeMirror6 {
 				...defaultKeymap,
 				...historyKeymap,
 				...searchKeymap,
+				...lintKeymap,
 			]),
 			EditorView.updateListener.of(({state: {doc}, docChanged}) => {
 				if (docChanged) {
@@ -196,6 +199,11 @@ export class CodeMirror6 {
 		this.#minHeight(show);
 	}
 
+	/** 获取语法检查扩展 */
+	#getLintExtension(): LintExtension | undefined {
+		return (this.#linter.get(this.#view.state) as LintExtension[])[0];
+	}
+
 	/**
 	 * 设置语言
 	 * @param lang 语言
@@ -236,12 +244,9 @@ export class CodeMirror6 {
 
 	/** 立即更新语法检查 */
 	update(): void {
-		const extension = this.#linter.get(this.#view.state) as [[ unknown, ViewPlugin<{
-			set: boolean;
-			force(): void;
-		}> ]] | [];
-		if (extension.length > 0) {
-			const plugin = this.#view.plugin(extension[0]![1])!;
+		const extension = this.#getLintExtension();
+		if (extension) {
+			const plugin = this.#view.plugin(extension[1])!;
 			plugin.set = true;
 			plugin.force();
 		}
