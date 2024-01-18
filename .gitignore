@@ -1,6 +1,6 @@
 /.vscode/
 dist/
-!/dist/main.min.*
+!/dist/main.min.js
 /.markdownlint.json
 .eslintcache
 test.txt

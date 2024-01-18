@@ -28,14 +28,14 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js; tsc --emitDeclarationOnly; rm dist/gh-page.d.ts",
+		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly && rm dist/gh-page.d.ts",
 		"build:mw": "bash build.sh mw/base.ts mw/dist/base.js",
 		"build:gh-page": "bash build.sh src/gh-page.ts gh-page.js",
 		"build": "npm run build:core && npm run build:mw",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
-		"test": "http-server .. -c-1 --cors &",
+		"test": "npm run build:core && npm run build:gh-page && http-server .. -c-1 --cors &",
 		"test:end": "pkill -x http-server"
 	},
 	"engines": {

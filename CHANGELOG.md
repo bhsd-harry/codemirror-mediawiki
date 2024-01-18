@@ -5,6 +5,7 @@
 **Fixed**
 
 - A valid external link requires at least one legal character after the protocol
+- Attribute delimiter of table captions and table cells
 
 ## v2.1.9
 
