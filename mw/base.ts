@@ -253,13 +253,29 @@ declare interface MagicWord {
 		 * 添加或移除默认 linter
 		 * @param on 是否添加
 		 * @param opt linter选项
+		 * @param ns 命名空间
 		 */
-		async defaultLint(on: boolean, opt?: Record<string, unknown>): Promise<void> {
+		defaultLint(on: boolean, opt?: Record<string, unknown>): Promise<void>;
+		defaultLint(on: boolean, ns: number): Promise<void>;
+		async defaultLint(on: boolean, optOrNs?: Record<string, unknown> | number): Promise<void> {
 			if (!on) {
 				this.lint();
 				return;
 			}
 			const {lang} = this;
+			let opt: Record<string, unknown> | undefined;
+			if (typeof optOrNs === 'number') {
+				if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828)) {
+					opt = {include: true};
+				} else if (lang === 'javascript' && (optOrNs === 8 || optOrNs === 2300)) {
+					opt = {
+						env: {browser: true, es6: true},
+						parserOptions: {ecmaVersion: 6},
+					};
+				}
+			} else {
+				opt = optOrNs;
+			}
 			if (!(lang in linters)) {
 				await this.getLinter(opt);
 				if (lang === 'mediawiki') {
@@ -347,16 +363,7 @@ declare interface MagicWord {
 					}
 				}
 				const cm = await CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
-				let opt: Record<string, unknown> | undefined;
-				if (lang === 'mediawiki' && wgNamespaceNumber === 10) {
-					opt = {include: true};
-				} else if (lang === 'javascript' && (wgNamespaceNumber === 8 || wgNamespaceNumber === 2300)) {
-					opt = {
-						env: {browser: true, es6: true},
-						parserOptions: {ecmaVersion: 6},
-					};
-				}
-				await cm.defaultLint(true, opt);
+				void cm.defaultLint(true, wgNamespaceNumber);
 			})();
 		}
 	});

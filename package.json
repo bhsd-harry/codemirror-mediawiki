@@ -35,8 +35,7 @@
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
-		"server": "http-server .. -c-1 --cors &",
-		"test": "npm run server; open http://127.0.0.1:8080/codemirror-mediawiki/index.html",
+		"test": "http-server .. -c-1 --cors &",
 		"test:end": "pkill -x http-server"
 	},
 	"engines": {
