@@ -187,6 +187,16 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 开关语法检查面板
+	 * @param show 是否显示
+	 */
+	#toggleLintPanel(show: boolean): void {
+		(show ? openLintPanel : closeLintPanel)(this.#view);
+		document.querySelector<HTMLUListElement>('.cm-panel-lint ul')?.blur();
+		this.#minHeight(show);
+	}
+
+	/**
 	 * 设置语言
 	 * @param lang 语言
 	 * @param config 语言设置
@@ -199,7 +209,7 @@ export class CodeMirror6 {
 			],
 		});
 		this.#lang = lang;
-		(linters[lang] ? openLintPanel : closeLintPanel)(this.#view);
+		this.#toggleLintPanel(Boolean(linters[lang]));
 	}
 
 	/**
@@ -215,15 +225,13 @@ export class CodeMirror6 {
 			: [];
 		if (lintSource) {
 			linters[this.#lang] = linterExtension;
-			this.#minHeight(true);
 		} else {
 			delete linters[this.#lang];
-			this.#minHeight();
 		}
 		this.#view.dispatch({
 			effects: [this.#linter.reconfigure(linterExtension)],
 		});
-		(lintSource ? openLintPanel : closeLintPanel)(this.#view);
+		this.#toggleLintPanel(Boolean(lintSource));
 	}
 
 	/** 立即更新语法检查 */

@@ -1,6 +1,14 @@
-## v2.1.8
+## v2.1.9
 
 *2024-01-18*
+
+**Fixed**
+
+- No more auto-focusing on the lint panel
+
+## v2.1.8
+
+*2024-01-17*
 
 **Added**
 
