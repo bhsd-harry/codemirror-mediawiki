@@ -596,7 +596,6 @@
 		"unicorn/prefer-array-some": 2,
 		"unicorn/prefer-code-point": 2,
 		"unicorn/prefer-default-parameters": 2,
-		"unicorn/prefer-dom-node-text-content": 2,
 		"unicorn/prefer-includes": 2,
 		"unicorn/prefer-keyboard-event-key": 2,
 		"unicorn/prefer-logical-operator-over-ternary": 2,
@@ -638,6 +637,13 @@
 				"plugin:@typescript-eslint/recommended-requiring-type-checking"
 			],
 			"rules": {
+				"class-methods-use-this": 0,
+				"@typescript-eslint/class-methods-use-this": [
+					2,
+					{
+						"ignoreOverrideMethods": true
+					}
+				],
 				"default-param-last": 0,
 				"@typescript-eslint/default-param-last": 2,
 				"dot-notation": 0,
@@ -700,6 +706,20 @@
 				],
 				"no-useless-constructor": 0,
 				"@typescript-eslint/no-useless-constructor": 2,
+				"prefer-destructuring": 0,
+				"@typescript-eslint/prefer-destructuring": [
+					2,
+					{
+						"VariableDeclarator": {
+							"array": true,
+							"object": true
+						},
+						"AssignmentExpression": {
+							"array": true,
+							"object": true
+						}
+					}
+				],
 				"require-await": 0,
 				"@typescript-eslint/require-await": 2,
 				"@typescript-eslint/ban-types": [

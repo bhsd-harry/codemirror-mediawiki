@@ -619,8 +619,7 @@ class MediaWiki {
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
 			const from = stream.pos,
-				pattern = new RegExp(`</${name}\\s*(?:>|$)`, 'iu'),
-				m = pattern.exec(from ? stream.string.slice(from) : stream.string);
+				m = new RegExp(`</${name}\\s*(?:>|$)`, 'iu').exec(from ? stream.string.slice(from) : stream.string);
 			let origString: string | false = false;
 
 			if (m) {
@@ -633,9 +632,8 @@ class MediaWiki {
 					}
 					return state.tokenize(stream, state);
 				}
-				const to = m.index + from;
 				origString = stream.string;
-				stream.string = origString.slice(0, to);
+				stream.string = origString.slice(0, m.index + from);
 			}
 
 			state.stack.push(state.tokenize);
@@ -779,10 +777,11 @@ class MediaWiki {
 
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
-			let ch: string | void; // eslint-disable-line @typescript-eslint/no-invalid-void-type
-			const sol = stream.sol();
+			let ch: string;
 
-			if (sol) {
+			if (stream.eol()) {
+				return '';
+			} else if (stream.sol()) {
 				if (stream.match('//')) {
 					return this.makeStyle(style, state);
 				// highlight free external links, see T108448
@@ -791,7 +790,7 @@ class MediaWiki {
 					state.tokenize = this.inFreeExternalLink.bind(this);
 					return this.makeStyle(modeConfig.tags.freeExtLinkProtocol, state);
 				}
-				ch = stream.next();
+				ch = stream.next()!;
 				switch (ch) {
 					case '-':
 						if (stream.match(/^-{3,}/u)) {
@@ -863,7 +862,7 @@ class MediaWiki {
 						// pass
 				}
 			} else {
-				ch = stream.next();
+				ch = stream.next()!;
 			}
 
 			switch (ch) {
@@ -1101,12 +1100,7 @@ class MediaWiki {
 			},
 
 			token: (stream, state): string => {
-				let style: string,
-					p: number | null = null,
-					t: Token,
-					f: number | null,
-					tmpTokens: Token[] = [];
-				const readyTokens: Token[] = [];
+				let t: Token;
 
 				if (this.oldTokens.length > 0) {
 					// just send saved tokens till they exists
@@ -1122,6 +1116,11 @@ class MediaWiki {
 					this.firstSpace = null;
 				}
 
+				let style: string,
+					p: number | null = null,
+					f: number | null;
+				const tmpTokens: Token[] = [],
+					readyTokens: Token[] = [];
 				do {
 					// get token style
 					style = state.tokenize(stream, state);
@@ -1135,7 +1134,7 @@ class MediaWiki {
 							if (tmpTokens.length > 0) {
 								// save tokens
 								readyTokens.push(...tmpTokens);
-								tmpTokens = [];
+								tmpTokens.length = 0;
 							}
 						}
 						// save token
@@ -1217,10 +1216,9 @@ for (const [language, parser] of Object.entries(plugins)) {
  * @param config Configuration for the MediaWiki mode
  */
 export const mediawiki = (config: MwConfig): LanguageSupport => {
-	const mode = new MediaWiki(config);
-	const parser = mode.mediawiki;
-	const lang = StreamLanguage.define(parser);
-	const highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) as Highlighter);
+	const mode = new MediaWiki(config),
+		lang = StreamLanguage.define(mode.mediawiki),
+		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) as Highlighter);
 	return new LanguageSupport(lang, highlighter);
 };
 

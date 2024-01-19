@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.10/dist/main.min.js';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
@@ -94,8 +93,7 @@ declare interface MagicWord {
 			= JSON.parse(localStorage.getItem('InPageEditMwConfig')!) ?? {},
 		SITE_ID = `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`,
 		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
-		// eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
-		VALID = SITE_SETTINGS?.time! > Date.now() - 86_400 * 1000 * 30;
+		VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
 
 	/**
 	 * 将魔术字信息转换为CodeMirror接受的设置
@@ -266,7 +264,7 @@ declare interface MagicWord {
 			const {lang} = this;
 			let opt: Record<string, unknown> | undefined;
 			if (typeof optOrNs === 'number') {
-				if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828)) {
+				if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828 || optOrNs === 2)) {
 					opt = {include: true};
 				} else if (lang === 'javascript' && (optOrNs === 8 || optOrNs === 2300)) {
 					opt = {
