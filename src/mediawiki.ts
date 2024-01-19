@@ -953,17 +953,18 @@ class MediaWiki {
 						const tagname = mt[0]!.toLowerCase();
 						if (tagname in this.config.tags) {
 							// Parser function
+							state.stack.push(state.tokenize);
 							if (isCloseTag) {
 								state.tokenize = this.inChar('>', modeConfig.tags.error);
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
-							state.stack.push(state.tokenize);
 							state.tokenize = this.eatTagName(tagname.length, isCloseTag);
 							return this.makeLocalStyle(modeConfig.tags.extTagBracket, state);
 						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
+								state.stack.push(state.tokenize);
 								state.tokenize = this.inChar('>', modeConfig.tags.error);
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							} else if (isCloseTag && this.implicitlyClosedHtmlTags.has(tagname)) {
