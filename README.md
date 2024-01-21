@@ -172,6 +172,7 @@ cm.prefer([
 	'highlightSpecialChars',
 	'highlightWhitespace',
 	'highlightTrailingWhitespace',
+	'allowMultipleSelections',
 ]);
 ```
 

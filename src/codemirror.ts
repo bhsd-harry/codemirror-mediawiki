@@ -7,6 +7,7 @@ import {
 	highlightActiveLine,
 	highlightWhitespace,
 	highlightTrailingWhitespace,
+	drawSelection,
 } from '@codemirror/view';
 import {
 	syntaxHighlighting,
@@ -52,6 +53,13 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
+	allowMultipleSelections: [
+		(): Extension => [
+			EditorState.allowMultipleSelections.of(true),
+			drawSelection(),
+		],
+		{},
+	],
 };
 
 /**

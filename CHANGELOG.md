@@ -1,3 +1,11 @@
+## v2.1.11
+
+*2024-01-22*
+
+**Added**
+
+- New extension option: [allowMultipleSelections](https://codemirror.net/docs/ref/#state.EditorState^allowMultipleSelections)
+
 ## v2.1.10
 
 *2024-01-19*
