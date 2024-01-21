@@ -268,8 +268,12 @@ export class CodeMirror6 {
 		this.#view.dispatch({
 			effects: [
 				this.#extensions.reconfigure(names.map(name => {
-					const [extension, configs] = avail[name]!;
-					return extension(configs[this.#lang]);
+					const option = avail[name];
+					if (option) {
+						const [extension, configs] = option;
+						return extension(configs[this.#lang]);
+					}
+					return [];
 				})),
 			],
 		});
