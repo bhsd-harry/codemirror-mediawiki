@@ -151,7 +151,8 @@ class MediaWiki {
 		}));
 	}
 
-	eatHtmlEntity(stream: StringStream, style: string): string { // eslint-disable-line class-methods-use-this
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	eatHtmlEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
 		return entity && isHtmlEntity(`&${entity[0]}`) ? modeConfig.tags.htmlEntity : style;
 	}
@@ -164,7 +165,7 @@ class MediaWiki {
 		);
 	}
 
-	// eslint-disable-next-line class-methods-use-this
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
 		let ground = '';
 
@@ -651,7 +652,8 @@ class MediaWiki {
 		};
 	}
 
-	inExtTokens(origString: string | false): Tokenizer { // eslint-disable-line class-methods-use-this
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	inExtTokens(origString: string | false): Tokenizer {
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
