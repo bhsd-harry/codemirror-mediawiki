@@ -61,6 +61,7 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 		{},
 	],
 };
+const CDN = 'https://testingcf.jsdelivr.net';
 
 /**
  * 使用传统方法加载脚本
@@ -73,7 +74,7 @@ const loadScript = (src: string, target: string): Promise<void> => new Promise(r
 		return;
 	}
 	const script = document.createElement('script');
-	script.src = `https://testingcf.jsdelivr.net/${src}`;
+	script.src = `${CDN}/${src}`;
 	script.onload = (): void => {
 		resolve();
 	};
@@ -293,10 +294,19 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const CDN = 'npm/wikiparser-node@1.3.9-b/extensions/dist',
-					src = `combine/${CDN}/base.min.js,${CDN}/lint.min.js`;
+				const REPO = 'npm/wikiparser-node@1.3.9-b',
+					DIR = `${REPO}/extensions/dist`,
+					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
+					lang = opt?.['i18n'];
 				await loadScript(src, 'wikiparse');
-				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean);
+				if (typeof lang === 'string') {
+					try {
+						const i18n: Record<string, string>
+							= await (await fetch(`${CDN}/${REPO}/i18n/${lang.toLowerCase()}.json`)).json();
+						wikiparse.setI18N(i18n);
+					} catch {}
+				}
+				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
 				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {

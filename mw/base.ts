@@ -276,6 +276,14 @@ declare interface MagicWord {
 				opt = optOrNs;
 			}
 			if (!(lang in linters)) {
+				if (lang === 'mediawiki') {
+					const i18n = mw.config.get('wgUserLanguage');
+					if (['zh', 'zh-hans', 'zh-cn', 'zh-sg', 'zh-my'].includes(i18n)) {
+						opt = {...opt, i18n: 'zh-hans'};
+					} else if (['zh-hant', 'zh-tw', 'zh-hk', 'zh-mo'].includes(i18n)) {
+						opt = {...opt, i18n: 'zh-hant'};
+					}
+				}
 				await this.getLinter(opt);
 				if (lang === 'mediawiki') {
 					const mwConfig = await getMwConfig(),

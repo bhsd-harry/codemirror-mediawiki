@@ -122,7 +122,7 @@ Get the default linting function, which can be used as the argument of [`lint`](
 
 ```js
 const linter = await cm.getLinter(); // default linter configuration
-const linterMediawiki = await cm.getLinter({include}); // wikilint configuration
+const linterMediawiki = await cm.getLinter({include: true, i18n: 'zh-hans'}); // wikilint configuration
 const linterJavaScript = await cm.getLinter({env, parserOptions, rules}); // ESLint configuration
 const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
 ```
