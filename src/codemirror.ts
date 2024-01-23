@@ -97,7 +97,7 @@ export class CodeMirror6 {
 	readonly #indent;
 	readonly #view;
 	#lang;
-	#visible = true;
+	#visible = false;
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
@@ -163,25 +163,12 @@ export class CodeMirror6 {
 			extensions,
 			doc: textarea.value,
 		});
-		const {selectionStart, selectionEnd, scrollTop} = textarea,
-			{fontSize, lineHeight} = getComputedStyle(textarea),
-			hasFocus = document.activeElement === textarea;
+		const {fontSize, lineHeight} = getComputedStyle(textarea);
 		textarea.parentNode!.insertBefore(this.#view.dom, textarea);
 		this.#minHeight();
-		this.#refresh();
 		this.#view.dom.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
-		this.#view.requestMeasure();
-		this.#view.dispatch({
-			selection: {anchor: selectionStart, head: selectionEnd},
-		});
-		textarea.style.display = 'none';
-		if (hasFocus) {
-			this.#view.focus();
-		}
-		requestAnimationFrame(() => {
-			this.#view.scrollDOM.scrollTop = scrollTop;
-		});
+		this.toggle(true);
 	}
 
 	/** 刷新编辑器高度 */
@@ -444,11 +431,39 @@ export class CodeMirror6 {
 	 */
 	toggle(show = !this.#visible): void {
 		if (show && !this.#visible) {
-			this.setContent(this.#textarea.value);
+			const {value, selectionStart, selectionEnd, scrollTop} = this.#textarea,
+				hasFocus = document.activeElement === this.#textarea;
+			this.setContent(value);
 			this.#refresh();
+			this.#view.dom.style.setProperty('display', '');
+			this.#textarea.style.display = 'none';
+			this.#view.requestMeasure();
+			this.#view.dispatch({
+				selection: {anchor: selectionStart, head: selectionEnd},
+			});
+			if (hasFocus) {
+				this.#view.focus();
+			}
+			requestAnimationFrame(() => {
+				this.#view.scrollDOM.scrollTop = scrollTop;
+			});
+		} else if (!show && this.#visible) {
+			const {state: {selection: {main: {from, to}}}, hasFocus} = this.#view,
+				{scrollDOM: {scrollTop}} = this.#view;
+			this.#view.dom.style.setProperty('display', 'none', 'important');
+			this.#textarea.style.display = '';
+			this.#textarea.setSelectionRange(
+				Math.min(from, to),
+				Math.max(from, to),
+				from > to ? 'backward' : 'forward',
+			);
+			if (hasFocus) {
+				this.#textarea.focus();
+			}
+			requestAnimationFrame(() => {
+				this.#textarea.scrollTop = scrollTop;
+			});
 		}
 		this.#visible = show;
-		this.#view.dom.style.setProperty('display', show ? '' : 'none', 'important');
-		this.#textarea.style.display = show ? 'none' : '';
 	}
 }
