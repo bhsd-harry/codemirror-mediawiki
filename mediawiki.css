@@ -161,85 +161,85 @@
 /* backgrounds */
 .cm-mw-tag-pre,
 .cm-mw-tag-nowiki {
-	background-color: rgba( 0, 0, 0, 0.04 );
+	background-color: rgba(0, 0, 0, .04);
 }
 .cm-mw-template-ground {
-	background-color: rgba( 170, 17, 17, 0.04 );
+	background-color: rgba(170, 17, 17, .04);
 }
 .cm-mw-template2-ground {
-	background-color: rgba( 170, 17, 17, 0.08 );
+	background-color: rgba(170, 17, 17, .08);
 }
 .cm-mw-template3-ground {
-	background-color: rgba( 170, 17, 17, 0.12 );
+	background-color: rgba(170, 17, 17, .12);
 }
 .cm-mw-template-ext-ground,
 .cm-mw-ext-ground,
 .cm-mw-exttag {
-	background-color: rgba( 119, 0, 170, 0.04 );
+	background-color: rgba(119, 0, 170, .04);
 }
 .cm-mw-template-ext2-ground,
 .cm-mw-ext2-ground {
-	background-color: rgba( 119, 0, 170, 0.08 );
+	background-color: rgba(119, 0, 170, .08);
 }
 .cm-mw-template-ext3-ground,
 .cm-mw-ext3-ground {
-	background-color: rgba( 119, 0, 170, 0.12 );
+	background-color: rgba(119, 0, 170, .12);
 }
 .cm-mw-template-link-ground,
 .cm-mw-ext-link-ground,
 .cm-mw-link-ground {
-	background-color: rgba( 34, 17, 153, 0.04 );
+	background-color: rgba(34, 17, 153, .04);
 }
 .cm-mw-template-ext-link-ground,
 .cm-mw-ext2-link-ground {
-	background-color: rgba( 77, 9, 162, 0.08 );
+	background-color: rgba(77, 9, 162, .08);
 }
 .cm-mw-template-ext2-link-ground,
 .cm-mw-ext3-link-ground {
-	background-color: rgba( 91, 6, 164, 0.12 );
+	background-color: rgba(91, 6, 164, .12);
 }
 .cm-mw-template-ext3-link-ground {
-	background-color: rgba( 98, 4, 166, 0.16 );
+	background-color: rgba(98, 4, 166, .16);
 }
 .cm-mw-template2-ext-ground {
-	background-color: rgba( 145, 9, 94, 0.08 );
+	background-color: rgba(145, 9, 94, .08);
 }
 .cm-mw-template2-ext2-ground {
-	background-color: rgba( 136, 6, 119, 0.12 );
+	background-color: rgba(136, 6, 119, .12);
 }
 .cm-mw-template2-ext3-ground {
-	background-color: rgba( 132, 4, 132, 0.16 );
+	background-color: rgba(132, 4, 132, .16);
 }
 .cm-mw-template2-link-ground {
-	background-color: rgba( 102, 17, 85, 0.08 );
+	background-color: rgba(102, 17, 85, .08);
 }
 .cm-mw-template2-ext-link-ground {
-	background-color: rgba( 108, 11, 113, 0.12 );
+	background-color: rgba(108, 11, 113, .12);
 }
 .cm-mw-template2-ext2-link-ground {
-	background-color: rgba( 111, 9, 128, 0.16 );
+	background-color: rgba(111, 9, 128, .16);
 }
 .cm-mw-template2-ext3-link-ground {
-	background-color: rgba( 112, 7, 136, 0.2 );
+	background-color: rgba(112, 7, 136, .2);
 }
 .cm-mw-template3-ext-ground {
-	background-color: rgba( 153, 11, 68, 0.12 );
+	background-color: rgba(153, 11, 68, .12);
 }
 .cm-mw-template3-ext2-ground {
-	background-color: rgba( 145, 9, 94, 0.16 );
+	background-color: rgba(145, 9, 94, .16);
 }
 .cm-mw-template3-ext3-ground {
-	background-color: rgba( 139, 7, 109, 0.2 );
+	background-color: rgba(139, 7, 109, .2);
 }
 .cm-mw-template3-link-ground {
-	background-color: rgba( 125, 17, 62, 0.12 );
+	background-color: rgba(125, 17, 62, .12);
 }
 .cm-mw-template3-ext-link-ground {
-	background-color: rgba( 123, 13, 89, 0.16 );
+	background-color: rgba(123, 13, 89, .16);
 }
 .cm-mw-template3-ext2-link-ground {
-	background-color: rgba( 122, 10, 105, 0.2 );
+	background-color: rgba(122, 10, 105, .2);
 }
 .cm-mw-template3-ext3-link-ground {
-	background-color: rgba( 122, 9, 116, 0.24 );
+	background-color: rgba(122, 9, 116, .24);
 }

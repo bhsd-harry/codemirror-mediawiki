@@ -1,3 +1,11 @@
+## v2.1.12
+
+*2024-01-23*
+
+**Fixed**
+
+- Now the editor and the textarea element are synced in selection, focus and scroll position when toggling
+
 ## v2.1.11
 
 *2024-01-22*
