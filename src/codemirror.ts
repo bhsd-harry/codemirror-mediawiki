@@ -281,7 +281,7 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.4.0-b',
+				const REPO = 'npm/wikiparser-node@1.4.1-b',
 					DIR = `${REPO}/extensions/dist`,
 					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
 					lang = opt?.['i18n'];
@@ -294,7 +294,8 @@ export class CodeMirror6 {
 					} catch {}
 				}
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
-				return doc => wikiLinter.codemirror(doc.toString());
+				return async doc =>
+					(await wikiLinter.codemirror(doc.toString())).filter(({severity}) => severity === 'error');
 			}
 			case 'javascript': {
 				await loadScript('npm/eslint-linter-browserify', 'eslint');

@@ -1,10 +1,14 @@
 ## v2.1.12
 
-*2024-01-23*
+*2024-01-27*
 
 **Fixed**
 
 - Now the editor and the textarea element are synced in selection, focus and scroll position when toggling
+
+**Changed**
+
+- [`getLinter`](./README.md#getlinter) temporarily disabling the warning of low-severity lint errors for Wikitext until the next minor version
 
 ## v2.1.11
 
