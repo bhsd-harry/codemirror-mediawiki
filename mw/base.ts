@@ -13,7 +13,6 @@ mw.loader.load(
 	'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.12/mediawiki.min.css',
 	'text/css',
 );
-mw.loader.addStyleTag('.wikiEditor-ui-toolbar{z-index:7}');
 
 const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
@@ -152,6 +151,7 @@ const getMwConfig = async (): Promise<MwConfig> => {
 	// 情形2：localStorage未过期但不包含新设置
 	// 情形3：新加载的 ext.CodeMirror.data
 	// 情形4：`config === null`
+	await mw.loader.using('mediawiki.api');
 	const {
 		query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
 	}: {
@@ -220,6 +220,44 @@ const getMwConfig = async (): Promise<MwConfig> => {
 };
 
 const linters: Record<string, LintSource | undefined> = {};
+
+const {vendor, userAgent, maxTouchPoints, platform} = navigator,
+	modKey = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
+	|| platform.includes('Mac')
+		? 'metaKey'
+		: 'ctrlKey',
+	pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename';
+
+/** 点击时在新页面打开链接、模板等 */
+function openLinks(this: HTMLElement, e: JQuery.ClickEvent): void {
+	if (!e[modKey]) {
+		return;
+	}
+	e.preventDefault();
+	let page = this.textContent!,
+		{previousSibling, nextSibling} = this;
+	while (
+		previousSibling
+		&& (previousSibling.nodeType === Node.TEXT_NODE || (previousSibling as Element).matches(pageSelector))
+	) {
+		page = previousSibling.textContent! + page;
+		({previousSibling} = previousSibling);
+	}
+	while (
+		nextSibling
+		&& (nextSibling.nodeType === Node.TEXT_NODE || (nextSibling as Element).matches(pageSelector))
+	) {
+		page += nextSibling.textContent!;
+		({nextSibling} = nextSibling);
+	}
+	page = page.trim();
+	if (page.startsWith('/')) {
+		page = `:${mw.config.get('wgPageName')}${page}`;
+	}
+	open(new mw.Title(page, this.classList.contains('cm-mw-template-name') ? 10 : 0).getUrl(undefined), '_blank');
+}
+
+mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
 class CodeMirror extends CodeMirror6 {
 	/**
@@ -319,6 +357,17 @@ class CodeMirror extends CodeMirror6 {
 		}
 		if (linters[lang]) {
 			this.lint(linters[lang]);
+		}
+	}
+
+	/** @override */
+	override prefer(extensions: string[]): void {
+		super.prefer(extensions);
+		if (extensions.includes('openLinks')) {
+			mw.loader.load('mediawiki.Title');
+			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
+		} else {
+			$(this.view.contentDOM).off('click', pageSelector, openLinks).css('--codemirror-cursor', '');
 		}
 	}
 
