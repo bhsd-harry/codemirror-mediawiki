@@ -1,3 +1,11 @@
+## v2.1.13
+
+*2024-01-28*
+
+**Changed**
+
+- [`prefer`](./README.md#prefer) now takes either an array of strings or an object as the argument
+
 ## v2.1.12
 
 *2024-01-27*

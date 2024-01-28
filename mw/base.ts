@@ -229,7 +229,7 @@ const {vendor, userAgent, maxTouchPoints, platform} = navigator,
 	pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename';
 
 /** 点击时在新页面打开链接、模板等 */
-function openLinks(this: HTMLElement, e: JQuery.ClickEvent): void {
+const openLinks = function(this: HTMLElement, e: JQuery.ClickEvent): void {
 	if (!e[modKey]) {
 		return;
 	}
@@ -255,7 +255,7 @@ function openLinks(this: HTMLElement, e: JQuery.ClickEvent): void {
 		page = `:${mw.config.get('wgPageName')}${page}`;
 	}
 	open(new mw.Title(page, this.classList.contains('cm-mw-template-name') ? 10 : 0).getUrl(undefined), '_blank');
-}
+};
 
 mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 

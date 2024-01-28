@@ -161,19 +161,28 @@ cm.lint(doc => [
 
 *version added: 2.0.9*
 
-**param**: `string` the preferred [CodeMirror extensions](https://codemirror.net/docs/extensions/)  
+**param**: `string[] | Record<string, boolean>` the preferred [CodeMirror extensions](https://codemirror.net/docs/extensions/)  
 Set the preferred CodeMirror extensions.
 
 ```js
 cm.prefer([
+	'allowMultipleSelections',
 	'bracketMatching',
 	'closeBrackets',
 	'highlightActiveLine',
 	'highlightSpecialChars',
 	'highlightWhitespace',
 	'highlightTrailingWhitespace',
-	'allowMultipleSelections',
 ]);
+cm.prefer({
+	allowMultipleSelections: false,
+	bracketMatching: false,
+	closeBrackets: false,
+	highlightActiveLine: false,
+	highlightSpecialChars: false,
+	highlightWhitespace: false,
+	highlightTrailingWhitespace: false,
+});
 ```
 
 </details>

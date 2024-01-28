@@ -66,10 +66,10 @@ const CDN = 'https://testingcf.jsdelivr.net';
 /**
  * 使用传统方法加载脚本
  * @param src 脚本地址
- * @param target 脚本全局变量名
+ * @param globalConst 脚本全局变量名
  */
-const loadScript = (src: string, target: string): Promise<void> => new Promise(resolve => {
-	if (target in window) {
+const loadScript = (src: string, globalConst: string): Promise<void> => new Promise(resolve => {
+	if (globalConst in window) {
 		resolve();
 		return;
 	}
@@ -91,13 +91,14 @@ const pos = (doc: Text, line: number, column: number): number => doc.line(line).
 
 export class CodeMirror6 {
 	readonly #textarea;
-	readonly #language;
-	readonly #linter;
-	readonly #extensions;
-	readonly #indent;
 	readonly #view;
+	readonly #language = new Compartment();
+	readonly #linter = new Compartment();
+	readonly #extensions = new Compartment();
+	readonly #indent = new Compartment();
 	#lang;
 	#visible = false;
+	#preferred = new Set<string>();
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
@@ -123,10 +124,6 @@ export class CodeMirror6 {
 	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown) {
 		this.#textarea = textarea;
 		this.#lang = lang;
-		this.#language = new Compartment();
-		this.#linter = new Compartment();
-		this.#extensions = new Compartment();
-		this.#indent = new Compartment();
 		let timer: number | undefined;
 		const extensions = [
 			this.#language.of(languages[lang]!(config)),
@@ -252,16 +249,23 @@ export class CodeMirror6 {
 	 * 添加扩展
 	 * @param names 扩展名
 	 */
-	prefer(names: readonly string[]): void {
+	prefer(names: string[] | Record<string, boolean>): void {
+		if (Array.isArray(names)) {
+			this.#preferred = new Set(names.filter(name => avail[name]));
+		} else {
+			for (const [name, enable] of Object.entries(names)) {
+				if (enable && avail[name]) {
+					this.#preferred.add(name);
+				} else {
+					this.#preferred.delete(name);
+				}
+			}
+		}
 		this.#view.dispatch({
 			effects: [
-				this.#extensions.reconfigure(names.map(name => {
-					const option = avail[name];
-					if (option) {
-						const [extension, configs] = option;
-						return extension(configs[this.#lang]);
-					}
-					return [];
+				this.#extensions.reconfigure([...this.#preferred].map(name => {
+					const [extension, configs] = avail[name]!;
+					return extension(configs[this.#lang]);
 				})),
 			],
 		});

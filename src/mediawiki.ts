@@ -951,7 +951,7 @@ class MediaWiki {
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
 					if (mt) {
-						const tagname = mt[0]!.toLowerCase();
+						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
 							// Parser function
 							state.stack.push(state.tokenize);

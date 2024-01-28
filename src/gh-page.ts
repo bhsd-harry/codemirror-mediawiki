@@ -7,7 +7,7 @@ import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror
 
 const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!,
 	languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
-	extensions = document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'),
+	extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 	indent = document.querySelector<HTMLInputElement>('#indent')!,
 	cm: CodeMirror = new CodeMirror6(textarea),
 	linters: Record<string, LintSource | undefined> = {};
@@ -37,9 +37,8 @@ const init = async (lang: string): Promise<void> => {
 };
 
 /** 设置扩展 */
-const prefer = (): void => {
-	const preferred = [...extensions].filter(({checked}) => checked).map(({id}) => id);
-	cm.prefer(preferred);
+const prefer = function(this: HTMLInputElement): void {
+	cm.prefer({[this.id]: this.checked});
 };
 
 /** 设置缩进 */
@@ -58,7 +57,7 @@ for (const input of languages) {
 for (const extension of extensions) {
 	extension.addEventListener('change', prefer);
 }
-prefer();
+cm.prefer(extensions.filter(({checked}) => checked).map(({id}) => id));
 indent.addEventListener('change', indentChange);
 indentChange();
 
