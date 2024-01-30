@@ -134,9 +134,9 @@ export class CodeMirror6 extends CodeMirror {
 	}
 
 	/** @override */
-	override prefer(extensions: string[]): void {
+	override prefer(extensions: string[] | Record<string, boolean>): void {
 		super.prefer(extensions);
-		if (extensions.includes('openLinks')) {
+		if (Array.isArray(extensions) ? extensions.includes('openLinks') : extensions['openLinks']) {
 			mw.loader.load('mediawiki.Title');
 			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
 		} else {
