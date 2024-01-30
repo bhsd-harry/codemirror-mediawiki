@@ -1,4 +1,4 @@
-import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.13/dist/main.min.js';
+import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.15/dist/main.min.js';
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -6,7 +6,7 @@ import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
 mw.loader.load(
-	'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.14/mediawiki.min.css',
+	'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.15/mediawiki.min.css',
 	'text/css',
 );
 
