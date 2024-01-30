@@ -16,9 +16,10 @@
 		"!/src/gh-page.ts",
 		"!/src/plugins.ts",
 		"!/src/*.d.ts",
+		"/mw/*.ts",
+		"!/mw/*.d.ts",
 		"/dist/",
-		"/mediawiki.css",
-		"/mw/dist/"
+		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/main.min.js",
@@ -29,7 +30,7 @@
 	},
 	"scripts": {
 		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly && rm dist/gh-page.d.ts",
-		"build:mw": "bash build.sh mw/base.ts mw/dist/base.js",
+		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
 		"build:gh-page": "bash build.sh src/gh-page.ts gh-page.js",
 		"build": "npm run build:core && npm run build:mw",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
