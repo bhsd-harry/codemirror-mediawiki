@@ -1,8 +1,8 @@
-import type {CodeMirror6} from './base';
+import type {CodeMirror} from './base';
 
-export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror6>();
+export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
-const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror6 => instances.get($ele[0]!)!;
+const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
 
 function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option: {startAndEnd: true}): [number, number];
 function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: false}): number;
