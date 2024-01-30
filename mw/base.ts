@@ -1,4 +1,4 @@
-import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.13/dist/main.min.js';
+import {CodeMirror} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.13/dist/main.min.js';
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -32,7 +32,7 @@ const linters: Record<string, LintSource | undefined> = {};
 
 mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
-export class CodeMirror extends CodeMirror6 {
+export class CodeMirror6 extends CodeMirror {
 	/**
 	 * @param textarea 文本框
 	 * @param lang 语言
@@ -149,9 +149,9 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param textarea textarea 元素
 	 * @param lang 语言
 	 */
-	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror> {
+	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror6> {
 		const isWiki = lang === 'mediawiki' || lang === 'html',
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang);
+			cm = new CodeMirror6(textarea, isWiki ? undefined : lang);
 		if (isWiki) {
 			const config = await getMwConfig();
 			cm.setLanguage(lang, config);
@@ -190,10 +190,9 @@ document.body.addEventListener('click', e => {
 					// no default
 				}
 			}
-			const cm = await CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
-			void cm.defaultLint(true, wgNamespaceNumber);
+			void CodeMirror6.fromTextArea(e.target as HTMLTextAreaElement, lang);
 		})();
 	}
 });
 
-Object.assign(window, {CodeMirror6: CodeMirror});
+Object.assign(window, {CodeMirror6});
