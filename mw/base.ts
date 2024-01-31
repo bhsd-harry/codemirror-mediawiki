@@ -3,7 +3,7 @@ import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
-import {msg} from './msg';
+import {msg, setI18N} from './msg';
 import {keymap} from './escape';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
@@ -221,7 +221,10 @@ document.body.addEventListener('click', e => {
 		minerva: 'page-actions-overflow',
 		moeskin: 'ca-more-actions',
 	};
-	await mw.loader.using('mediawiki.util');
+	await Promise.all([
+		mw.loader.using('mediawiki.util'),
+		setI18N(),
+	]);
 	mw.util.addPortletLink(
 		portletContainer[mw.config.get('skin')] || 'p-cactions',
 		'#',
