@@ -141,7 +141,6 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	/** @override */
 	override prefer(extensions: string[] | Record<string, boolean>): void {
 		super.prefer(extensions);
 		const hasExtension = Array.isArray(extensions)
@@ -159,9 +158,16 @@ export class CodeMirror extends CodeMirror6 {
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
 		}
-		if (hasEscape) {
+		if (hasEscape && (this.lang === 'mediawiki' || this.lang === 'html')) {
 			this.extraKeys(keymap);
 		} else if (hasEscape === false) {
+			this.extraKeys([]);
+		}
+	}
+
+	override setLanguage(lang?: string, config?: unknown): void {
+		super.setLanguage(lang, config);
+		if (lang !== 'mediawiki' && lang !== 'html') {
 			this.extraKeys([]);
 		}
 	}
