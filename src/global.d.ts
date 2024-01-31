@@ -1,3 +1,4 @@
+import {CodeMirror6} from './codemirror';
 import type {Linter} from 'eslint';
 import type {LinterOptions, LinterResult} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';
@@ -12,6 +13,10 @@ interface luaparse {
 }
 
 declare global {
+	module '*' {
+		export {CodeMirror6};
+	}
+
 	const wikiparse: {
 		getConfig(): Promise<Config>;
 		setConfig(config: Config): void;
