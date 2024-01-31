@@ -12,12 +12,9 @@ then
 	npm publish --tag ${3-latest}
 else 
 	npm run lint && npm run build:gh-page
-	if [[ $? -eq 0 ]]
-	then
-		git add -A
-		git commit -m "chore: bump version to $1"
-		git push
-		git tag $1
-		git push origin $1
-	fi
+	git add -A
+	git commit -m "chore: bump version to $1"
+	git push
+	git tag $1
+	git push origin $1
 fi
