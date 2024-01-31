@@ -1,6 +1,6 @@
 {
 	"include": [
-		"src/gh-page.ts"
+		"src/temp.ts"
 	],
 	"exclude": [],
 	"compilerOptions": {

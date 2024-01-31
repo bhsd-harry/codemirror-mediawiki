@@ -31,13 +31,13 @@
 	"scripts": {
 		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly && rm dist/gh-page.d.ts",
 		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
-		"build:gh-page": "tsc --project tsconfig.gh-page.json &>/dev/null",
+		"build:gh-page": "bash build.sh",
 		"build": "npm run build:core && npm run build:mw",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",
-		"test": "npm run build:core && npm run build:gh-page; npm run server",
+		"test": "npm run build:core && npm run build:gh-page && npm run server",
 		"test:end": "pkill -x http-server"
 	},
 	"engines": {
