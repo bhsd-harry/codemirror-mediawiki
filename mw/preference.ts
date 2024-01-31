@@ -14,6 +14,7 @@ const options = [
 	'highlightTrailingWhitespace',
 	'lint',
 	'openLinks',
+	'escape',
 ];
 
 // OOUI组件

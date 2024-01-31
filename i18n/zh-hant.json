@@ -15,5 +15,6 @@
 	"addon-highlightWhitespace": "顯示空白字符",
 	"addon-highlightTrailingWhitespace": "顯示尾隨空格",
 	"addon-lint": "維基語法檢查",
-	"addon-openLinks": "CTRL/CMD+點擊可打開內部連結或模板頁面"
+	"addon-openLinks": "CTRL/CMD+點擊可打開內部連結或模板頁面",
+	"addon-escape": "<span title=\"Ctrl/Cmd + / : HTML編碼\nCtrl/Cmd + \\ : URL解碼或編碼\">添加HTML和URL編碼快速鍵</span>"
 }

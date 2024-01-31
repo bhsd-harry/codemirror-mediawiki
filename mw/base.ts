@@ -4,6 +4,7 @@ import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
 import {msg} from './msg';
+import {keymap} from './escape';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -144,15 +145,25 @@ export class CodeMirror extends CodeMirror6 {
 	override prefer(extensions: string[] | Record<string, boolean>): void {
 		super.prefer(extensions);
 		const hasExtension = Array.isArray(extensions)
-			? (ext: string): boolean => extensions.includes(ext)
-			: (ext: string): boolean => Boolean(extensions[ext]);
-		if (hasExtension('openLinks')) {
+				? (ext: string): boolean => extensions.includes(ext)
+				: (ext: string): boolean | undefined => extensions[ext],
+			hasOpenLinks = hasExtension('openLinks'),
+			hasLint = hasExtension('lint'),
+			hasEscape = hasExtension('escape');
+		if (hasOpenLinks) {
 			mw.loader.load('mediawiki.Title');
 			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
-		} else {
+		} else if (hasOpenLinks === false) {
 			$(this.view.contentDOM).off('click', pageSelector, openLinks).css('--codemirror-cursor', '');
 		}
-		void this.defaultLint(hasExtension('lint'));
+		if (hasLint !== undefined) {
+			void this.defaultLint(hasLint);
+		}
+		if (hasEscape) {
+			this.extraKeys(keymap);
+		} else if (hasEscape === false) {
+			this.extraKeys([]);
+		}
 	}
 
 	/**

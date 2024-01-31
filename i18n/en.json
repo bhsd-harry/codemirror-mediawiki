@@ -15,5 +15,6 @@
 	"addon-highlightWhitespace": "Show whitespace characters",
 	"addon-highlightTrailingWhitespace": "Show trailing spaces",
 	"addon-lint": "Wikitext linter",
-	"addon-openLinks": "Open the wikilink or template page with CTRL/CMD-click"
+	"addon-openLinks": "Open the wikilink or template page with CTRL/CMD-click",
+	"addon-escape": "<span title=\"Ctrl/Cmd + / : HTML encoding\nCtrl/Cmd + \\ : URL decoding or encoding\">Keyboard shortcuts for HTML/URL encoding</span>"
 }

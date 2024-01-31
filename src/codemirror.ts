@@ -24,8 +24,8 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import * as plugins from './plugins';
-import type {ViewPlugin} from '@codemirror/view';
-import type {Extension, Text} from '@codemirror/state';
+import type {ViewPlugin, KeyBinding} from '@codemirror/view';
+import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
@@ -97,6 +97,7 @@ export class CodeMirror6 {
 	readonly #linter = new Compartment();
 	readonly #extensions = new Compartment();
 	readonly #indent = new Compartment();
+	readonly #extraKeys = new Compartment();
 	#lang;
 	#visible = false;
 	#preferred = new Set<string>();
@@ -131,6 +132,7 @@ export class CodeMirror6 {
 			this.#linter.of([]),
 			this.#extensions.of([]),
 			this.#indent.of(indentUnit.of('\t')),
+			this.#extraKeys.of([]),
 			syntaxHighlighting(defaultHighlightStyle as Highlighter),
 			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
@@ -169,6 +171,14 @@ export class CodeMirror6 {
 		this.toggle(true);
 	}
 
+	/**
+	 * 修改扩展
+	 * @param effects 扩展变动
+	 */
+	#effects(effects: StateEffect<unknown> | StateEffect<unknown>[]): void {
+		this.#view.dispatch({effects});
+	}
+
 	/** 刷新编辑器高度 */
 	#refresh(): void {
 		const {offsetHeight} = this.#textarea;
@@ -204,12 +214,10 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	setLanguage(lang = 'plain', config?: unknown): void {
-		this.#view.dispatch({
-			effects: [
-				this.#language.reconfigure(languages[lang]!(config)),
-				this.#linter.reconfigure(linters[lang] || []),
-			],
-		});
+		this.#effects([
+			this.#language.reconfigure(languages[lang]!(config)),
+			this.#linter.reconfigure(linters[lang] || []),
+		]);
 		this.#lang = lang;
 		this.#toggleLintPanel(Boolean(linters[lang]));
 	}
@@ -230,9 +238,7 @@ export class CodeMirror6 {
 		} else {
 			delete linters[this.#lang];
 		}
-		this.#view.dispatch({
-			effects: [this.#linter.reconfigure(linterExtension)],
-		});
+		this.#effects(this.#linter.reconfigure(linterExtension));
 		this.#toggleLintPanel(Boolean(lintSource));
 	}
 
@@ -262,14 +268,12 @@ export class CodeMirror6 {
 				}
 			}
 		}
-		this.#view.dispatch({
-			effects: [
-				this.#extensions.reconfigure([...this.#preferred].map(name => {
-					const [extension, configs] = avail[name]!;
-					return extension(configs[this.#lang]);
-				})),
-			],
-		});
+		this.#effects(
+			this.#extensions.reconfigure([...this.#preferred].map(name => {
+				const [extension, configs] = avail[name]!;
+				return extension(configs[this.#lang]);
+			})),
+		);
 	}
 
 	/**
@@ -277,9 +281,7 @@ export class CodeMirror6 {
 	 * @param indent 缩进字符串
 	 */
 	setIndent(indent: string): void {
-		this.#view.dispatch({
-			effects: [this.#indent.reconfigure(indentUnit.of(indent))],
-		});
+		this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
 	}
 
 	/** 获取默认linter */

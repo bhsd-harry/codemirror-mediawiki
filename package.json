@@ -37,7 +37,7 @@
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",
-		"test": "npm run build:core && npm run build:gh-page && npm run server",
+		"test": "npm run build:core && npm run build:gh-page; npm run server",
 		"test:end": "pkill -x http-server"
 	},
 	"engines": {
