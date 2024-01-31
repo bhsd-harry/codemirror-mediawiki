@@ -2,6 +2,7 @@ import {CodeMirror6} from './codemirror';
 import type {Linter} from 'eslint';
 import type {LinterOptions, LinterResult} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';
+import type {MwConfig, LintSource} from './codemirror';
 
 class WikiLinter {
 	codemirror(s: string): Promise<Diagnostic[]>;
@@ -13,7 +14,11 @@ interface luaparse {
 }
 
 declare global {
-	module '*' {
+	module '/*' {
+		export {CodeMirror6};
+		export type {MwConfig, LintSource};
+	}
+	module 'https://*' {
 		export {CodeMirror6};
 	}
 

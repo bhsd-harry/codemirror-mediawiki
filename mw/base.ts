@@ -2,6 +2,7 @@ import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-m
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
+import {openPreference} from './preference';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -28,7 +29,8 @@ $.valHooks['textarea'] = {
 	},
 };
 
-const linters: Record<string, LintSource | undefined> = {};
+const linters: Record<string, LintSource | undefined> = {},
+	prefs = new Set<string>(JSON.parse(mw.storage.get('codemirror-mediawiki-addons') as string) as string[] | null);
 
 mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
@@ -136,12 +138,16 @@ export class CodeMirror extends CodeMirror6 {
 	/** @override */
 	override prefer(extensions: string[] | Record<string, boolean>): void {
 		super.prefer(extensions);
-		if (Array.isArray(extensions) ? extensions.includes('openLinks') : extensions['openLinks']) {
+		const hasExtension = Array.isArray(extensions)
+			? (ext: string): boolean => extensions.includes(ext)
+			: (ext: string): boolean => Boolean(extensions[ext]);
+		if (hasExtension('openLinks')) {
 			mw.loader.load('mediawiki.Title');
 			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
 		} else {
 			$(this.view.contentDOM).off('click', pageSelector, openLinks).css('--codemirror-cursor', '');
 		}
+		void this.defaultLint(hasExtension('lint'));
 	}
 
 	/**
@@ -156,6 +162,7 @@ export class CodeMirror extends CodeMirror6 {
 			const config = await getMwConfig();
 			cm.setLanguage(lang, config);
 		}
+		cm.prefer([...prefs]);
 		return cm;
 	}
 }
@@ -193,6 +200,21 @@ document.body.addEventListener('click', e => {
 			void CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
 		})();
 	}
+});
+
+const portletContainer: Record<string, string> = {
+	minerva: 'page-actions-overflow',
+	moeskin: 'ca-more-actions',
+};
+mw.util.addPortletLink(
+	portletContainer[mw.config.get('skin')] ?? 'p-cactions',
+	'#',
+	mw.msg('portlet'),
+	'wphl-settings',
+).addEventListener('click', e => {
+	e.preventDefault();
+	const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
+	void openPreference(prefs, textareas.map(textarea => instances.get(textarea)));
 });
 
 Object.assign(window, {CodeMirror6: CodeMirror});

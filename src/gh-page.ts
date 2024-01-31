@@ -1,6 +1,6 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
 import type {Config} from 'wikilint';
-import type {CodeMirror6 as CodeMirror, MwConfig, LintSource} from './codemirror';
+import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 
 /**
  * Object.fromEntries polyfill
@@ -45,7 +45,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
-		cm: CodeMirror = new CodeMirror6(textarea),
+		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
 		parserConfig: Config | undefined;

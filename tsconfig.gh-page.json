@@ -1,14 +1,12 @@
 {
 	"include": [
-		"src/temp.ts"
+		"src/gh-page.ts"
 	],
-	"exclude": [
-		"dist/main.min.js"
-	],
+	"exclude": [],
 	"compilerOptions": {
 		"target": "ES2018",
 		"module": "ES6",
-		"outDir": "mw/dist/",
+		"outDir": "./",
 		"removeComments": true,
 		"skipLibCheck": true
 	}
