@@ -61,7 +61,8 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 		{},
 	],
 };
-const CDN = 'https://testingcf.jsdelivr.net';
+
+export const CDN = 'https://testingcf.jsdelivr.net';
 
 /**
  * 使用传统方法加载脚本

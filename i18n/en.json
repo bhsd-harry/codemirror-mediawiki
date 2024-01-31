@@ -1,0 +1,18 @@
+{
+	"version": "2.1.15",
+	"lang": "en",
+	"title": "CodeMirror Addons",
+	"label": "Please select the addons you wish to load",
+	"notice": "Changes will apply immediately.",
+	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/codemirror-mediawiki/issues\" target=\"_blank\">GitHub</a> .",
+	"contentmodel": "Please indicate the content model:",
+	"addon-allowMultipleSelections": "Allow multiple selections",
+	"addon-bracketMatching": "Highlight matching/non-matching brackets",
+	"addon-closeBrackets": "Auto-close brackets and quotes",
+	"addon-highlightActiveLine": "Show the active line",
+	"addon-highlightSpecialChars": "Show special characters",
+	"addon-highlightWhitespace": "Show whitespace characters",
+	"addon-highlightTrailingWhitespace": "Show trailing spaces",
+	"addon-lint": "Wikitext linter",
+	"addon-openLinks": "Open the wikilink or template page with CTRL/CMD-click"
+}

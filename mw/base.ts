@@ -1,15 +1,16 @@
-import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.15/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.15/dist/main.min.js';
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey} from './preference';
+import {msg} from './msg';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
-mw.loader.load(
-	'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.15/mediawiki.min.css',
-	'text/css',
-);
+const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.1.15';
+export {CDN, REPO_CDN};
+
+mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
 /**
  * jQuery.val overrides for CodeMirror.
@@ -30,7 +31,7 @@ $.valHooks['textarea'] = {
 };
 
 const linters: Record<string, LintSource | undefined> = {},
-	prefs = new Set<string>(JSON.parse(mw.storage.get(storageKey) as string) as string[] | null);
+	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
 
 mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
@@ -172,6 +173,12 @@ export class CodeMirror extends CodeMirror6 {
 	}
 }
 
+const langMap: Record<string, string> = {
+	'sanitized-css': 'css',
+	js: 'javascript',
+	scribunto: 'lua',
+	wikitext: 'mediawiki',
+};
 document.body.addEventListener('click', e => {
 	if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
 		e.preventDefault();
@@ -181,47 +188,35 @@ document.body.addEventListener('click', e => {
 				ns: number | undefined;
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
-				switch (wgPageContentModel) {
-					case 'css':
-					case 'sanitized-css':
-						lang = 'css';
-						break;
-					case 'javascript':
-						lang = 'javascript';
-						break;
-					case 'json':
-						lang = 'json';
-						break;
-					case 'Scribunto':
-						lang = 'lua';
-						break;
-					case 'wikitext':
-						lang = wgNamespaceNumber === 274 ? 'html' : 'mediawiki';
-						break;
-					// no default
-				}
+				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
 			} else {
 				await mw.loader.using('oojs-ui-windows');
-				lang = (await OO.ui.prompt('Language:') || undefined)?.toLowerCase();
+				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
+			}
+			if (lang && lang in langMap) {
+				lang = langMap[lang];
 			}
 			void CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang, ns);
 		})();
 	}
 });
 
-const portletContainer: Record<string, string> = {
-	minerva: 'page-actions-overflow',
-	moeskin: 'ca-more-actions',
-};
-mw.util.addPortletLink(
-	portletContainer[mw.config.get('skin')] || 'p-cactions',
-	'#',
-	mw.msg('portlet'),
-	'cm-settings',
-).addEventListener('click', e => {
-	e.preventDefault();
-	const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
-	void openPreference(prefs, textareas.map(textarea => instances.get(textarea)));
-});
+(async () => {
+	const portletContainer: Record<string, string> = {
+		minerva: 'page-actions-overflow',
+		moeskin: 'ca-more-actions',
+	};
+	await mw.loader.using('mediawiki.util');
+	mw.util.addPortletLink(
+		portletContainer[mw.config.get('skin')] || 'p-cactions',
+		'#',
+		msg('title'),
+		'cm-settings',
+	).addEventListener('click', e => {
+		e.preventDefault();
+		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
+		void openPreference(prefs, textareas.map(textarea => instances.get(textarea)));
+	});
+})();
 
 Object.assign(window, {CodeMirror6: CodeMirror});

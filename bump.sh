@@ -3,7 +3,10 @@ if [[ $2 == 'npm' ]]
 then
 	sed -i '' -E "s|codemirror-mediawiki@[^/]+/|codemirror-mediawiki@$1/|" mw/base.ts
 	npm run build
-	sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" package.json
+	for x in i18n/* package.json
+	do
+		sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" $x
+	done
 	git add -A
 	git commit -m "chore: publish $1 to npm"
 	npm publish --tag ${3-latest}

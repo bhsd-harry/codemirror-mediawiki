@@ -1,3 +1,4 @@
+import {msg} from './msg';
 import type {CodeMirror} from './base';
 
 const options = [
@@ -29,24 +30,24 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 	if (dialog) {
 		widget.setValue([...addons] as unknown as string);
 	} else {
-		dialog = new OO.ui.MessageDialog({id: 'codemirror-mediawiki-dialog'});
+		dialog = new OO.ui.MessageDialog();
 		const windowManager = new OO.ui.WindowManager();
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: options.map(option => ({data: option, label: mw.msg(`addon-${option.toLowerCase()}`)})),
+			options: options.map(option => ({data: option, label: msg(`addon-${option}`)})),
 			value: [...addons] as unknown as string,
 		});
 		field = new OO.ui.FieldLayout(widget, {
-			label: mw.msg('addon-label'),
-			notices: [mw.msg('addon-notice')],
+			label: msg('label'),
+			notices: [msg('notice')],
 			align: 'top',
 		});
 	}
 
 	const data = await (dialog.open({
-		title: mw.msg('addon-title'),
-		message: field.$element,
+		title: msg('title'),
+		message: field.$element.add($('<p>', {html: msg('feedback')})),
 		actions: [
 			{action: 'reject', label: mw.msg('ooui-dialog-message-reject')},
 			{action: 'accept', label: mw.msg('ooui-dialog-message-accept'), flags: 'progressive'},
@@ -62,6 +63,6 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 		for (const cm of editors) {
 			cm?.prefer(value);
 		}
-		mw.storage.set(storageKey, JSON.stringify(value));
+		localStorage.setItem(storageKey, JSON.stringify(value));
 	}
 };

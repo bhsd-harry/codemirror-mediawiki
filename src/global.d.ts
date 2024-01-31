@@ -19,7 +19,8 @@ declare global {
 		export type {MwConfig, LintSource};
 	}
 	module 'https://*' {
-		export {CodeMirror6};
+		const CDN: string;
+		export {CodeMirror6, CDN};
 	}
 
 	const wikiparse: {
