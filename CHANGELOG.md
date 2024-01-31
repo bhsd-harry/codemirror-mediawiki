@@ -1,3 +1,12 @@
+## v2.2.0
+
+*2024-01-31*
+
+**Added**
+
+- New method: [`extraKeys`](./README.md#extrakeys)
+- New static method: [`replaceSelections`](./README.md#replaceselections)
+
 ## v2.1.15
 
 *2024-01-30*

@@ -6,11 +6,14 @@
 
 - [Description](#description)
 - [Usage](#usage)
-	- [constructor](#constructor)
+- [Constructor](#constructor)
+- [Accessors](#accessors)
 	- [textarea](#textarea)
 	- [lang](#lang)
 	- [view](#view)
 	- [visible](#visible)
+- [Methods](#methods)
+	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
 	- [lint](#lint)
 	- [prefer](#prefer)
@@ -19,6 +22,8 @@
 	- [setLanguage](#setlanguage)
 	- [toggle](#toggle)
 	- [update](#update)
+- [Static methods](#static-methods)
+	- [replaceSelections](#replaceselections)
 
 </details>
 
@@ -44,7 +49,7 @@ or
 const {CodeMirror6} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js');
 ```
 
-## constructor
+# Constructor
 
 <details>
 	<summary>Expand</summary>
@@ -64,6 +69,8 @@ const cm = new CodeMirror6(textarea, 'lua');
 ```
 
 </details>
+
+# Accessors
 
 ## textarea
 
@@ -106,6 +113,26 @@ The CodeMirror EditorView instance, read-only.
 
 **type**: `boolean`  
 Whether the editor is visible, read-only.
+
+</details>
+
+# Methods
+
+## extraKeys
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.2.0*
+
+**param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding) the extra key bindings  
+Add extra key bindings.
+
+```js
+cm.extraKeys([
+	{key: 'Tab', run: () => console.log('Tab'), preventDefault: true},
+]);
+```
 
 </details>
 
@@ -264,5 +291,24 @@ cm.toggle(false); // hide CodeMirror
 	<summary>Expand</summary>
 
 Refresh linting immediately.
+
+</details>
+
+# Static methods
+
+## replaceSelections
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.2.0*
+
+**param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance
+**param**: `(str: string) => string` the replacement function  
+Replace the selected text with the return value of the replacement function.
+
+```js
+CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
+```
 
 </details>

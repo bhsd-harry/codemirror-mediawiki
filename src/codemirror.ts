@@ -1,4 +1,4 @@
-import {Compartment, EditorState} from '@codemirror/state';
+import {Compartment, EditorState, EditorSelection} from '@codemirror/state';
 import {
 	EditorView,
 	lineNumbers,
@@ -471,5 +471,29 @@ export class CodeMirror6 {
 			});
 		}
 		this.#visible = show;
+	}
+
+	/**
+	 * 添加额外快捷键
+	 * @param keys 快捷键
+	 */
+	extraKeys(keys: KeyBinding[]): void {
+		this.#effects(this.#extraKeys.reconfigure(keymap.of(keys)));
+	}
+
+	/**
+	 * 替换选中内容
+	 * @param view EditorView
+	 * @param func 替换函数
+	 */
+	static replaceSelections(view: EditorView, func: (str: string) => string): void {
+		const {state} = view;
+		view.dispatch(state.update(state.changeByRange(({from, to}) => {
+			const insert = func(state.sliceDoc(from, to));
+			return {
+				range: EditorSelection.cursor(from + insert.length),
+				changes: {from, to, insert},
+			};
+		})));
 	}
 }
