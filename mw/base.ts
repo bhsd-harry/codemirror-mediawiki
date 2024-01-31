@@ -2,7 +2,7 @@ import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemir
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference, storageKey} from './preference';
+import {openPreference, storageKey, indentKey} from './preference';
 import {msg} from './msg';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
@@ -163,12 +163,16 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
 		const isWiki = lang === 'mediawiki' || lang === 'html',
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns),
+			indent = localStorage.getItem(indentKey);
 		if (isWiki) {
 			const config = await getMwConfig();
 			cm.setLanguage(lang, config);
 		}
 		cm.prefer([...prefs]);
+		if (indent) {
+			cm.setIndent(indent);
+		}
 		return cm;
 	}
 }
