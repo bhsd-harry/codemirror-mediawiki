@@ -2,7 +2,7 @@ import {CodeMirror6} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-m
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference} from './preference';
+import {openPreference, storageKey} from './preference';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -30,18 +30,22 @@ $.valHooks['textarea'] = {
 };
 
 const linters: Record<string, LintSource | undefined> = {},
-	prefs = new Set<string>(JSON.parse(mw.storage.get('codemirror-mediawiki-addons') as string) as string[] | null);
+	prefs = new Set<string>(JSON.parse(mw.storage.get(storageKey) as string) as string[] | null);
 
 mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
 export class CodeMirror extends CodeMirror6 {
+	ns;
+
 	/**
 	 * @param textarea 文本框
 	 * @param lang 语言
+	 * @param ns 命名空间
 	 * @param config 语言设置
 	 */
-	constructor(textarea: HTMLTextAreaElement, lang?: string, config?: unknown) {
+	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown) {
 		super(textarea, lang, config);
+		this.ns = ns;
 		instances.set(textarea, this);
 		if (mw.loader.getState('jquery.textSelection') === 'ready') {
 			$(textarea).data('jquery.textSelection', textSelection);
@@ -66,9 +70,9 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param opt linter选项
 	 * @param ns 命名空间
 	 */
-	defaultLint(on: boolean, opt?: Record<string, unknown>): Promise<void>;
-	defaultLint(on: boolean, ns: number): Promise<void>;
-	async defaultLint(on: boolean, optOrNs?: Record<string, unknown> | number): Promise<void> {
+	defaultLint(on: boolean, opt: Record<string, unknown>): Promise<void>;
+	defaultLint(on: boolean, ns?: number): Promise<void>;
+	async defaultLint(on: boolean, optOrNs: Record<string, unknown> | number | undefined = this.ns): Promise<void> {
 		if (!on) {
 			this.lint();
 			return;
@@ -154,10 +158,11 @@ export class CodeMirror extends CodeMirror6 {
 	 * 将 textarea 替换为 CodeMirror
 	 * @param textarea textarea 元素
 	 * @param lang 语言
+	 * @param ns 命名空间
 	 */
-	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string): Promise<CodeMirror> {
+	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
 		const isWiki = lang === 'mediawiki' || lang === 'html',
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang);
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
 		if (isWiki) {
 			const config = await getMwConfig();
 			cm.setLanguage(lang, config);
@@ -172,11 +177,10 @@ document.body.addEventListener('click', e => {
 		e.preventDefault();
 		(async () => {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
-			let lang: string | undefined;
-			if (wgAction !== 'edit' && wgAction !== 'submit') {
-				await mw.loader.using('oojs-ui-windows');
-				lang = (await OO.ui.prompt('Language:') || undefined)?.toLowerCase();
-			} else {
+			let lang: string | undefined,
+				ns: number | undefined;
+			if (wgAction === 'edit' || wgAction === 'submit') {
+				ns = wgNamespaceNumber;
 				switch (wgPageContentModel) {
 					case 'css':
 					case 'sanitized-css':
@@ -196,8 +200,11 @@ document.body.addEventListener('click', e => {
 						break;
 					// no default
 				}
+			} else {
+				await mw.loader.using('oojs-ui-windows');
+				lang = (await OO.ui.prompt('Language:') || undefined)?.toLowerCase();
 			}
-			void CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang);
+			void CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang, ns);
 		})();
 	}
 });
@@ -207,10 +214,10 @@ const portletContainer: Record<string, string> = {
 	moeskin: 'ca-more-actions',
 };
 mw.util.addPortletLink(
-	portletContainer[mw.config.get('skin')] ?? 'p-cactions',
+	portletContainer[mw.config.get('skin')] || 'p-cactions',
 	'#',
 	mw.msg('portlet'),
-	'wphl-settings',
+	'cm-settings',
 ).addEventListener('click', e => {
 	e.preventDefault();
 	const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];

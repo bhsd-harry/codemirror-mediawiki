@@ -17,6 +17,8 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	field: OO.ui.FieldLayout;
 
+export const storageKey = 'codemirror-mediawiki-addons';
+
 /**
  * 打开设置对话框
  * @param addons 预设的扩展
@@ -60,6 +62,6 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 		for (const cm of editors) {
 			cm?.prefer(value);
 		}
-		mw.storage.set('codemirror-mediawiki-addons', JSON.stringify(value));
+		mw.storage.set(storageKey, JSON.stringify(value));
 	}
 };
