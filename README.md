@@ -123,7 +123,7 @@ Whether the editor is visible, read-only.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.2.1*
+*version added: 2.2.2*
 
 **param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding) the extra key bindings  
 Add extra key bindings.
@@ -301,7 +301,7 @@ Refresh linting immediately.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.2.1*
+*version added: 2.2.2*
 
 **param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance
 **param**: `(str: string) => string` the replacement function  
