@@ -17,7 +17,7 @@ const storageKey = 'codemirror-mediawiki-i18n',
 /** 加载 I18N */
 export const setI18N = async (): Promise<void> => {
 	const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey)!) || {};
-	if (i18n['lang'] !== lang || i18n['version'] !== REPO_CDN.split('@')[1]!.split('.', 2).join('.')) {
+	if (i18n['lang'] !== lang || i18n['version'] !== REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1)) {
 		try {
 			Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
 			localStorage.setItem(storageKey, JSON.stringify(i18n));
