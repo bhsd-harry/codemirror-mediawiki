@@ -22,7 +22,7 @@ export const setI18N = async (): Promise<void> => {
 			Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
 			localStorage.setItem(storageKey, JSON.stringify(i18n));
 		} catch (e) {
-			void mw.notify(msg('i18n-failed', lang));
+			void mw.notify(msg('i18n-failed', lang), {type: 'error'});
 			console.error(e);
 		}
 	}
