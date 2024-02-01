@@ -26,9 +26,10 @@ export const getMwConfig = (config) => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
     }
-    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), cm = new CodeMirror6(textarea), linters = {};
+    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), escape = document.getElementById('escape').closest('.fieldLayout'), cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
+        escape.style.display = lang === 'mediawiki' ? '' : 'none';
         if (lang === 'mediawiki' || lang === 'html') {
             parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
             config || (config = getMwConfig(parserConfig));

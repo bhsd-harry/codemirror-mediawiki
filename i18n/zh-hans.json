@@ -16,5 +16,5 @@
 	"addon-highlightTrailingWhitespace": "显示尾随空格",
 	"addon-lint": "维基语法检查",
 	"addon-openLinks": "CTRL/CMD+点击可打开内部链接或模板页面",
-	"addon-escape": "<span title=\"Ctrl/Cmd + / : HTML编码\nCtrl/Cmd + \\ : URL解码或编码\">添加HTML和URL编码快捷键</span>"
+	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML编码\nCtrl/Cmd + ] : URL解码或编码\">添加HTML和URL编码快捷键</span>"
 }

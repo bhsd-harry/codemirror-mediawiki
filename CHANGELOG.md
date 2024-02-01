@@ -1,9 +1,10 @@
-## v2.2.0
+## v2.2.1
 
-*2024-01-31*
+*2024-02-01*
 
 **Added**
 
+- New extension option: `escape`
 - New method: [`extraKeys`](./README.md#extrakeys)
 - New static method: [`replaceSelections`](./README.md#replaceselections)
 

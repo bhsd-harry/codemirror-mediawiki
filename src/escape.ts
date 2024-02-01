@@ -1,9 +1,9 @@
-import {CodeMirror} from './base';
+import {CodeMirror6} from './codemirror';
 import type {KeyBinding, Command} from '@codemirror/view';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
 const convert = (func: (str: string) => string): Command => (view): true => {
-		CodeMirror.replaceSelections(view, func);
+		CodeMirror6.replaceSelections(view, func);
 		return true;
 	},
 	escapeHTML = convert(str => [...str].map(c => {
@@ -20,17 +20,9 @@ const convert = (func: (str: string) => string): Command => (view): true => {
 			} catch {}
 		}
 		return encodeURIComponent(str);
-	}),
-	escapeHash = convert(str => {
-		try {
-			return decodeURIComponent(str.replace(/\.(?=[\da-f]{2})/giu, '%'));
-		} catch {
-			return str;
-		}
 	});
 
-export const keymap: KeyBinding[] = [
-	{key: 'Mod-/', run: escapeHTML},
-	{key: 'Mod-\\', run: escapeURI},
-	{key: 'Shift-Mod-\\', run: escapeHash},
+export const keyMap: KeyBinding[] = [
+	{key: 'Mod-[', run: escapeHTML},
+	{key: 'Mod-]', run: escapeURI},
 ];

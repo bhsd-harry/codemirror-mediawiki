@@ -87,7 +87,7 @@ The textarea element replaced by CodeMirror, read-only.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.0.13*
+*version added: 2.0.14*
 
 **type**: `string`  
 The current language mode, read-only.
@@ -123,7 +123,7 @@ Whether the editor is visible, read-only.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.2.0*
+*version added: 2.2.1*
 
 **param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding) the extra key bindings  
 Add extra key bindings.
@@ -235,7 +235,7 @@ cm.setContent('');
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.0.8*
+*version added: 2.0.9*
 
 **param**: `string` the indentation string, default as tab  
 Set the indentation string.
@@ -301,7 +301,7 @@ Refresh linting immediately.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.2.0*
+*version added: 2.2.1*
 
 **param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance
 **param**: `(str: string) => string` the replacement function  

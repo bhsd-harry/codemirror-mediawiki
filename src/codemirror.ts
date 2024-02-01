@@ -23,6 +23,7 @@ import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
+import {keyMap} from './escape';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -59,6 +60,10 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 			drawSelection(),
 		],
 		{},
+	],
+	escape: [
+		(keys: KeyBinding[] = []): Extension => keymap.of(keys),
+		{mediawiki: keyMap},
 	],
 };
 
@@ -220,6 +225,7 @@ export class CodeMirror6 {
 		]);
 		this.#lang = lang;
 		this.#toggleLintPanel(Boolean(linters[lang]));
+		this.prefer({});
 	}
 
 	/**

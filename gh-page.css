@@ -110,6 +110,7 @@ input[type="checkbox"]:active + span, input[type="radio"]:active + span {
 }
 label {
 	padding: 0 .7em;
+	display: inline-block;
 }
 textarea {
 	width: 100%;

@@ -4,7 +4,6 @@ import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
 import {msg, setI18N} from './msg';
-import {keymap} from './escape';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -147,8 +146,7 @@ export class CodeMirror extends CodeMirror6 {
 				? (ext: string): boolean => extensions.includes(ext)
 				: (ext: string): boolean | undefined => extensions[ext],
 			hasOpenLinks = hasExtension('openLinks'),
-			hasLint = hasExtension('lint'),
-			hasEscape = hasExtension('escape');
+			hasLint = hasExtension('lint');
 		if (hasOpenLinks) {
 			mw.loader.load('mediawiki.Title');
 			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
@@ -157,18 +155,6 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
-		}
-		if (hasEscape && (this.lang === 'mediawiki' || this.lang === 'html')) {
-			this.extraKeys(keymap);
-		} else if (hasEscape === false) {
-			this.extraKeys([]);
-		}
-	}
-
-	override setLanguage(lang?: string, config?: unknown): void {
-		super.setLanguage(lang, config);
-		if (lang !== 'mediawiki' && lang !== 'html') {
-			this.extraKeys([]);
 		}
 	}
 
