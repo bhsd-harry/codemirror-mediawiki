@@ -12,6 +12,7 @@
 	},
 	"license": "GPL-2.0",
 	"files":[
+		"/i18n/",
 		"/src/",
 		"!/src/gh-page.ts",
 		"!/src/plugins.ts",

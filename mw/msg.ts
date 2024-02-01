@@ -18,8 +18,13 @@ const storageKey = 'codemirror-mediawiki-i18n',
 export const setI18N = async (): Promise<void> => {
 	const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey)!) || {};
 	if (i18n['lang'] !== lang || i18n['version'] !== REPO_CDN.split('@')[1]!.split('.', 2).join('.')) {
-		Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
-		localStorage.setItem(storageKey, JSON.stringify(i18n));
+		try {
+			Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
+			localStorage.setItem(storageKey, JSON.stringify(i18n));
+		} catch (e) {
+			void mw.notify(msg('i18n-failed', lang));
+			console.error(e);
+		}
 	}
 	for (const [k, v] of Object.entries(i18n)) {
 		mw.messages.set(`cm-mw-${k}`, v);

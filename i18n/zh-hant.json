@@ -1,6 +1,7 @@
 {
 	"version": "2.2.1",
 	"lang": "zh-hant",
+	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
 	"label": "請選擇您希望載入的外掛程式",
 	"notice": "更改將立即生效。",

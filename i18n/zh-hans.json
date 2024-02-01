@@ -1,6 +1,7 @@
 {
 	"version": "2.2.1",
 	"lang": "zh-hans",
+	"i18n-failed": "获取 $1 的语言文件失败。",
 	"title": "CodeMirror插件",
 	"label": "请选择您希望加载的插件",
 	"notice": "更改将立即生效。",
