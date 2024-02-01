@@ -1,4 +1,3 @@
-import {Compartment, EditorState, EditorSelection} from '@codemirror/state';
 import {
 	EditorView,
 	lineNumbers,
@@ -9,6 +8,7 @@ import {
 	highlightTrailingWhitespace,
 	drawSelection,
 } from '@codemirror/view';
+import {Compartment, EditorState, EditorSelection} from '@codemirror/state';
 import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
@@ -17,6 +17,7 @@ import {
 	LanguageSupport,
 	bracketMatching,
 	indentUnit,
+	codeFolding,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -24,6 +25,7 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {keyMap} from './escape';
+import {fold} from './fold';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -54,6 +56,13 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
+	codeFolding: [
+		(): Extension => [
+			codeFolding(),
+			keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
+		],
+		{},
+	],
 	allowMultipleSelections: [
 		(): Extension => [
 			EditorState.allowMultipleSelections.of(true),
