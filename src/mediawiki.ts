@@ -1196,7 +1196,10 @@ class MediaWiki {
 
 			tokenTable: this.tokenTable,
 
-			languageData: {closeBrackets: {brackets: ['(', '[', '{', '"']}},
+			languageData: {
+				commentTokens: {block: {open: '<!--', close: '-->'}},
+				closeBrackets: {brackets: ['(', '[', '{', '"']},
+			},
 		};
 	}
 

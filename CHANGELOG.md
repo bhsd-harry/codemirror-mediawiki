@@ -1,3 +1,11 @@
+## v2.2.3
+
+*2024-02-01*
+
+**Added**
+
+- The MediaWiki mode now has a comment syntax: `<!--` + `-->`
+
 ## v2.2.2
 
 *2024-02-01*
