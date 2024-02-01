@@ -41,7 +41,7 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: options.map(option => ({data: option, label: msg(`addon-${option}`)})),
+			options: options.map(option => ({data: option, label: $($.parseHTML(msg(`addon-${option}`)))})),
 			value: [...addons] as unknown as string,
 		});
 		field = new OO.ui.FieldLayout(widget, {
