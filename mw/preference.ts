@@ -15,6 +15,7 @@ const options = [
 	'lint',
 	'openLinks',
 	'escape',
+	'fold',
 ];
 
 // OOUI组件
