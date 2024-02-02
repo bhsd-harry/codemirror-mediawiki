@@ -53,6 +53,7 @@
 		"@codemirror/search": "^6.5.4",
 		"@codemirror/state": "^6.3.3",
 		"@codemirror/view": "^6.22.2",
+		"@lezer/common": "^1.1.2",
 		"@lezer/highlight": "^1.2.0",
 		"@stylistic/eslint-plugin": "^1.5.4",
 		"@stylistic/stylelint-plugin": "^2.0.0",

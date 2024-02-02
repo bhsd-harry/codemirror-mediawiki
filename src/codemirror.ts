@@ -57,11 +57,13 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
 	codeFolding: [
-		(): Extension => [
-			codeFolding(),
-			keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
-		],
-		{},
+		(flag: boolean): Extension => flag
+			? [
+				codeFolding(),
+				keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
+			]
+			: [],
+		{mediawiki: true},
 	],
 	allowMultipleSelections: [
 		(): Extension => [
@@ -505,12 +507,12 @@ export class CodeMirror6 {
 	 */
 	static replaceSelections(view: EditorView, func: (str: string) => string): void {
 		const {state} = view;
-		view.dispatch(state.update(state.changeByRange(({from, to}) => {
+		view.dispatch(state.changeByRange(({from, to}) => {
 			const insert = func(state.sliceDoc(from, to));
 			return {
-				range: EditorSelection.cursor(from + insert.length),
+				range: EditorSelection.range(from, from + insert.length),
 				changes: {from, to, insert},
 			};
-		})));
+		}));
 	}
 }
