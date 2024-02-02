@@ -18,5 +18,7 @@
 	"addon-highlightTrailingWhitespace": "显示尾随空格",
 	"addon-lint": "维基语法检查",
 	"addon-openLinks": "CTRL/CMD+点击可打开内部链接或模板页面",
-	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML编码\nCtrl/Cmd + ] : URL解码或编码\">添加HTML和URL编码快捷键</span>"
+	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML编码\nCtrl/Cmd + ] : URL解码或编码\">添加HTML和URL编码快捷键</span>",
+	"welcome": "欢迎使用 <b>codemirror-mediawiki</b>！<br>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更改本地设置。",
+	"welcome-addons": "<b>codemirror-mediawiki</b> 已升级到 $1。新版本添加了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。"
 }

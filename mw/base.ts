@@ -3,9 +3,13 @@ import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
-import {msg, setI18N} from './msg';
+import {msg, setI18N, welcome} from './msg';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
+
+// 每次新增插件都需要修改这里
+const baseVersion = '2.3',
+	addons = ['fold'];
 
 const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.2.3';
 export {CDN, REPO_CDN};
@@ -227,6 +231,7 @@ document.body.addEventListener('click', e => {
 		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
 		void openPreference(prefs, textareas.map(textarea => instances.get(textarea)));
 	});
+	void welcome(baseVersion, addons);
 })();
 
 Object.assign(window, {CodeMirror6: CodeMirror});

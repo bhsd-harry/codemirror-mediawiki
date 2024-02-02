@@ -18,5 +18,7 @@
 	"addon-highlightTrailingWhitespace": "Show trailing spaces",
 	"addon-lint": "Wikitext linter",
 	"addon-openLinks": "Open the wikilink or template page with CTRL/CMD-click",
-	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML encoding\nCtrl/Cmd + ] : URL decoding or encoding\">Keyboard shortcuts for HTML/URL encoding</span>"
+	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML encoding\nCtrl/Cmd + ] : URL decoding or encoding\">Keyboard shortcuts for HTML/URL encoding</span>",
+	"welcome": "Welcome to <b>codemirror-mediawiki</b>!<br>You can change your local settings <a id=\"settings\" href=\"#\">here</a>.",
+	"welcome-addons": "<b>codemirror-mediawiki</b> has been upgraded to $1. This version introduces $2 new {{plural:$2|addon|addons}}: <ul>$3</ul>You may update your local settings <a id=\"settings\" href=\"#\">here</a>."
 }
