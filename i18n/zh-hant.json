@@ -4,7 +4,6 @@
 	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
 	"label": "請選擇您希望載入的外掛程式",
-	"notice": "更改將立即生效。",
 	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/codemirror-mediawiki/issues\" target=\"_blank\">GitHub</a> ！",
 	"contentmodel": "請輸入內容模型：",
 	"addon-indent": "縮排",

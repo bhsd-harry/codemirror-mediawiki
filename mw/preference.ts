@@ -50,10 +50,7 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 			align: 'top',
 		});
 		indentWidget = new OO.ui.TextInputWidget({placeholder: '\\t'});
-		indentField = new OO.ui.FieldLayout(indentWidget, {
-			label: msg('addon-indent'),
-			notices: [msg('notice')],
-		});
+		indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
 	}
 
 	const data = await (dialog.open({

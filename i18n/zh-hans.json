@@ -4,7 +4,6 @@
 	"i18n-failed": "获取 $1 的语言文件失败。",
 	"title": "CodeMirror插件",
 	"label": "请选择您希望加载的插件",
-	"notice": "更改将立即生效。",
 	"feedback": "欢迎将错误报告或是改进建议提交到 <a href=\"https://github.com/bhsd-harry/codemirror-mediawiki/issues\" target=\"_blank\">GitHub</a> ！",
 	"contentmodel": "请输入内容模型：",
 	"addon-indent": "缩进",

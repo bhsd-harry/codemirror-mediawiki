@@ -4,7 +4,6 @@
 	"i18n-failed": "Failed to fetch the translation file in $1.",
 	"title": "CodeMirror Addons",
 	"label": "Please select the addons you wish to load",
-	"notice": "Changes will apply immediately.",
 	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/codemirror-mediawiki/issues\" target=\"_blank\">GitHub</a> .",
 	"contentmodel": "Please indicate the content model:",
 	"addon-indent": "Indent",
