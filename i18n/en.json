@@ -11,7 +11,7 @@
 	"addon-allowMultipleSelections": "Allow multiple selections",
 	"addon-bracketMatching": "Highlight matching/non-matching brackets",
 	"addon-closeBrackets": "Auto-close brackets and quotes",
-	"addon-fold": "Fold template parameters",
+	"addon-codeFolding": "Fold template parameters",
 	"addon-highlightActiveLine": "Show the active line",
 	"addon-highlightSpecialChars": "Show special characters",
 	"addon-highlightWhitespace": "Show whitespace characters",

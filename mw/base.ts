@@ -9,7 +9,7 @@ import type {LintSource} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
 const baseVersion = '2.3',
-	addons = ['fold'];
+	addons = ['codeFolding'];
 
 export {CDN};
 

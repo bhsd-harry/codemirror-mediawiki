@@ -1,10 +1,10 @@
-## v2.3.1
+## v2.3.0
 
 *2024-02-02*
 
 **Added**
 
-- New extension option for the MediaWiki mode: `fold`
+- New extension option for the MediaWiki mode: `codeFolding`
 
 ## v2.2.3
 
