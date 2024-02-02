@@ -65,6 +65,7 @@ export const fold = (view: EditorView): boolean => {
 		range = foldable(state);
 	if (range) {
 		view.dispatch({effects: foldEffect.of(range)});
+		view.dom.querySelector('.cm-tooltip-fold')?.remove();
 		return true;
 	}
 	return false;

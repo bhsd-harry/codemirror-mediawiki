@@ -1,3 +1,11 @@
+## v2.3.3
+
+*2024-02-03*
+
+**Fixed**
+
+- The keyboard shortcut for template folding now closes the tooltip.
+
 ## v2.3.0
 
 *2024-02-02*
