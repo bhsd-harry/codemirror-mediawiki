@@ -1,4 +1,6 @@
-import {CDN, REPO_CDN} from './base';
+import {CDN} from './base';
+
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.0';
 
 const storageKey = 'codemirror-mediawiki-i18n',
 	languages: Record<string, string> = {

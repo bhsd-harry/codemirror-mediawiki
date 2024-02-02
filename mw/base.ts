@@ -1,9 +1,9 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.2.3/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.3.0/dist/main.min.js';
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
-import {msg, setI18N, welcome} from './msg';
+import {msg, setI18N, welcome, REPO_CDN} from './msg';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -11,8 +11,7 @@ import type {LintSource} from '../src/codemirror';
 const baseVersion = '2.3',
 	addons = ['fold'];
 
-const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.2.3';
-export {CDN, REPO_CDN};
+export {CDN};
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
