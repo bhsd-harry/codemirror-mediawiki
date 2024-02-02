@@ -25,7 +25,7 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {keyMap} from './escape';
-import {fold} from './fold';
+import {fold, cursorTooltipField, handler, cursorTooltipTheme} from './fold';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -60,6 +60,8 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 		(flag: boolean): Extension => flag
 			? [
 				codeFolding(),
+				cursorTooltipField,
+				cursorTooltipTheme,
 				keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
 			]
 			: [],
@@ -185,6 +187,7 @@ export class CodeMirror6 {
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
+		this.#view.dom.addEventListener('click', handler(this.#view));
 	}
 
 	/**

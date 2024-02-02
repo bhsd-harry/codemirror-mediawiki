@@ -1,5 +1,60 @@
-import {matchBrackets, foldEffect} from '@codemirror/language';
-import type {EditorView} from '@codemirror/view';
+import {EditorView, showTooltip} from '@codemirror/view';
+import {StateField} from '@codemirror/state';
+import {foldEffect, syntaxTree, foldState} from '@codemirror/language';
+import type {Tooltip} from '@codemirror/view';
+import type {EditorState} from '@codemirror/state';
+import type {SyntaxNode} from '@lezer/common';
+
+const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-template-bracket'),
+	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node),
+	isDelimiter = (node: SyntaxNode): boolean => /-template-delimiter/u.test(node.type.name);
+
+const MaxScanDist = 10_000;
+
+const foldable = (state: EditorState): {from: number, to: number} | false => {
+	const {selection: {main: {head}}} = state,
+		tree = syntaxTree(state);
+	let node = tree.resolve(head, -1);
+	if (!isTemplate(node)) {
+		node = tree.resolve(head, 1);
+		if (!isTemplate(node)) {
+			return false;
+		}
+	}
+	let {prevSibling, nextSibling} = node,
+		stack = 1,
+		delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
+	while (nextSibling && nextSibling.to - head < MaxScanDist) {
+		if (isBracket(nextSibling)) {
+			stack += state.sliceDoc(nextSibling.from, nextSibling.from + 1) === '{' ? 1 : -1;
+			if (stack === 0) {
+				break;
+			}
+		} else if (!delimiter && isDelimiter(nextSibling)) {
+			delimiter = nextSibling;
+		}
+		({nextSibling} = nextSibling);
+	}
+	if (!nextSibling) {
+		return false;
+	}
+	stack = -1;
+	while (prevSibling && head - prevSibling.from < MaxScanDist) {
+		if (isBracket(prevSibling)) {
+			stack += state.sliceDoc(prevSibling.from, prevSibling.from + 1) === '{' ? 1 : -1;
+			if (stack === 0) {
+				break;
+			}
+		} else if (isDelimiter(prevSibling)) {
+			delimiter = prevSibling;
+		}
+		({prevSibling} = prevSibling);
+	}
+	if (delimiter) {
+		return {from: delimiter.from, to: nextSibling.from};
+	}
+	return false;
+};
 
 /**
  * 寻找匹配的括号并折叠
@@ -7,19 +62,67 @@ import type {EditorView} from '@codemirror/view';
  */
 export const fold = (view: EditorView): boolean => {
 	const {state} = view,
-		{selection: {main: {head}}} = state,
-		match = matchBrackets(state, head, -1)
-		|| head > 0 && matchBrackets(state, head - 1, 1)
-		|| matchBrackets(state, head, 1)
-		|| head < state.doc.length && matchBrackets(state, head + 1, -1);
-	if (match && match.matched) {
-		const {start: {from, to}, end} = match;
-		view.dispatch({
-			effects: foldEffect.of(
-				to < end!.to ? {from: to, to: end!.from} : {from: end!.to, to: from},
-			),
-		});
+		range = foldable(state);
+	if (range) {
+		view.dispatch({effects: foldEffect.of(range)});
 		return true;
 	}
 	return false;
+};
+
+const create = (state: EditorState): Tooltip | null => {
+	const range = foldable(state);
+	if (range) {
+		const {from, to} = range;
+		let folded = false;
+		state.field(foldState).between(from, to, (i, j) => {
+			if (i === from && j === to) {
+				folded = true;
+			}
+		});
+		return folded // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+			? null
+			: {
+				pos: state.selection.main.head,
+				above: true,
+				create: (): {dom: HTMLElement} => {
+					const dom = document.createElement('div');
+					dom.className = 'cm-tooltip-fold';
+					dom.textContent = '\uff0d';
+					dom.title = 'Fold template parameters';
+					dom.dataset['from'] = String(from);
+					dom.dataset['to'] = String(to);
+					return {dom};
+				},
+			};
+	}
+	return null;
+};
+
+export const cursorTooltipField = StateField.define<Tooltip | null>({
+	create,
+	update(tooltip, {state, docChanged, selection}) {
+		return docChanged || selection ? create(state) : tooltip;
+	},
+	provide(f) {
+		return showTooltip.from(f);
+	},
+});
+
+export const cursorTooltipTheme = EditorView.baseTheme({
+	'.cm-tooltip-fold': {
+		cursor: 'pointer',
+		lineHeight: 1.2,
+		padding: '0 1px',
+	},
+});
+
+export const handler = (view: EditorView) => (e: MouseEvent): void => {
+	const dom = (e.target as Element).closest<HTMLElement>('.cm-tooltip-fold');
+	if (dom) {
+		e.preventDefault();
+		const {dataset: {from, to}} = dom;
+		view.dispatch({effects: foldEffect.of({from: Number(from), to: Number(to)})});
+		dom.remove();
+	}
 };

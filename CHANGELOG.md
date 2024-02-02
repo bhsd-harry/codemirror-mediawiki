@@ -1,3 +1,11 @@
+## v2.3.0
+
+*2024-02-02*
+
+**Added**
+
+- New extension option for the MediaWiki mode: `fold`
+
 ## v2.2.3
 
 *2024-02-01*
@@ -12,7 +20,7 @@
 
 **Added**
 
-- New extension option: `escape`
+- New extension option for the MediaWiki mode: `escape`
 - New method: [`extraKeys`](./README.md#extrakeys)
 - New static method: [`replaceSelections`](./README.md#replaceselections)
 
