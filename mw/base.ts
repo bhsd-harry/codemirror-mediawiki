@@ -3,7 +3,7 @@ import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, storageKey, indentKey} from './preference';
-import {msg, setI18N, welcome, REPO_CDN} from './msg';
+import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
@@ -220,6 +220,7 @@ document.body.addEventListener('click', e => {
 		mw.loader.using('mediawiki.util'),
 		setI18N(),
 	]);
+	mw.hook('wiki-codemirror6').add(localize);
 	mw.util.addPortletLink(
 		portletContainer[mw.config.get('skin')] || 'p-cactions',
 		'#',

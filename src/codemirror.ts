@@ -515,7 +515,7 @@ export class CodeMirror6 {
 	 * 设置翻译信息
 	 * @param messages 翻译信息
 	 */
-	translate(messages: Record<string, string>): void {
+	localize(messages: Record<string, string>): void {
 		Object.assign(phrases, messages);
 		this.#effects(this.#phrases.reconfigure(EditorState.phrases.of(phrases)));
 	}

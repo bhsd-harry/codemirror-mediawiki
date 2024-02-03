@@ -1,10 +1,10 @@
 ## v2.3.3
 
-*2024-02-03*
+*2024-02-04*
 
 **Added**
 
-- New method: [`translate`](./README.md#translate)
+- New method: [`localize`](./README.md#localize)
 
 **Fixed**
 

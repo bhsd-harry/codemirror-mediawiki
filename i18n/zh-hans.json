@@ -19,5 +19,15 @@
 	"addon-openLinks": "CTRL/CMD+点击可打开内部链接或模板页面",
 	"addon-escape": "<span title=\"Ctrl/Cmd + [ : HTML编码\nCtrl/Cmd + ] : URL解码或编码\">添加HTML和URL编码快捷键</span>",
 	"welcome": "欢迎使用 <b>codemirror-mediawiki</b>！<br>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更改本地设置。",
-	"welcome-addons": "<b>codemirror-mediawiki</b> 已升级到 $1。新版本添加了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。"
+	"welcome-addons": "<b>codemirror-mediawiki</b> 已升级到 $1。新版本添加了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。",
+	"phrase-Find": "查找",
+	"phrase-next": "下一个",
+	"phrase-previous": "前一个",
+	"phrase-all": "所有",
+	"phrase-match-case": "区分大小写",
+	"phrase-regexp": "正则表达式",
+	"phrase-by-word": "全字匹配",
+	"phrase-Replace": "替换",
+	"phrase-replace": "替换",
+	"phrase-replace-all": "替换所有"
 }

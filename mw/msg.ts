@@ -1,4 +1,5 @@
 import {CDN} from './base';
+import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.2';
 
@@ -81,4 +82,24 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 		e.preventDefault();
 		document.getElementById('cm-settings')!.dispatchEvent(new MouseEvent('click'));
 	});
+};
+
+export const localize = (cm: CodeMirror): void => {
+	const obj: Record<string, string> = {},
+		messages = [
+			'Find',
+			'next',
+			'previous',
+			'all',
+			'match case',
+			'regexp',
+			'by word',
+			'Replace',
+			'replace',
+			'replace all',
+		];
+	for (const message of messages) {
+		obj[message] = msg(`phrase-${message.replace(/ /gu, '-')}`);
+	}
+	cm.localize(obj);
 };

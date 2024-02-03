@@ -16,12 +16,12 @@
 	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
 	- [lint](#lint)
+	- [localize](#localize)
 	- [prefer](#prefer)
 	- [setContent](#setcontent)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
 	- [toggle](#toggle)
-	- [translate](#translate)
 	- [update](#update)
 - [Static methods](#static-methods)
 	- [replaceSelections](#replaceselections)
@@ -182,6 +182,24 @@ cm.lint(doc => [
 
 </details>
 
+## localize
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.3.3*
+
+**param**: `Record<string, string>` localization table  
+Set the localization table.
+
+```js
+cm.localize({
+	'Find': '查找',
+});
+```
+
+</details>
+
 ## prefer
 
 <details>
@@ -286,24 +304,6 @@ Switch between the CodeMirror editor and the native textarea.
 cm.toggle();
 cm.toggle(true); // show CodeMirror
 cm.toggle(false); // hide CodeMirror
-```
-
-</details>
-
-## translate
-
-<details>
-	<summary>Expand</summary>
-
-*version added: 2.3.3*
-
-**param**: `Record<string, string>` translation table  
-Set the translation table.
-
-```js
-cm.translate({
-	'Find': '查找',
-});
 ```
 
 </details>
