@@ -59,7 +59,7 @@ input[type="text"] {
 	font: inherit;
 	width: 6ch;
 }
-input[type="checkbox"], input[type="radio"] {
+.field > input[type="checkbox"], input[type="radio"] {
 	position: relative;
 	z-index: 1;
 	opacity: 0;
@@ -108,7 +108,7 @@ input[type="checkbox"]:active + span, input[type="radio"]:active + span {
 	background-color: #2a4b8d;
 	border-color: #2a4b8d;
 }
-label {
+.header > label {
 	padding: 0 .7em;
 	display: inline-block;
 }
