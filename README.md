@@ -21,6 +21,7 @@
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
 	- [toggle](#toggle)
+	- [translate](#translate)
 	- [update](#update)
 - [Static methods](#static-methods)
 	- [replaceSelections](#replaceselections)
@@ -285,6 +286,24 @@ Switch between the CodeMirror editor and the native textarea.
 cm.toggle();
 cm.toggle(true); // show CodeMirror
 cm.toggle(false); // hide CodeMirror
+```
+
+</details>
+
+## translate
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.3.3*
+
+**param**: `Record<string, string>` translation table  
+Set the translation table.
+
+```js
+cm.translate({
+	'Find': '查找',
+});
 ```
 
 </details>

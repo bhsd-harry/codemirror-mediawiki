@@ -79,6 +79,7 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 		{mediawiki: keyMap},
 	],
 };
+const phrases: Record<string, string> = {};
 
 export const CDN = 'https://testingcf.jsdelivr.net';
 
@@ -116,6 +117,7 @@ export class CodeMirror6 {
 	readonly #extensions = new Compartment();
 	readonly #indent = new Compartment();
 	readonly #extraKeys = new Compartment();
+	readonly #phrases = new Compartment();
 	#lang;
 	#visible = false;
 	#preferred = new Set<string>();
@@ -151,6 +153,7 @@ export class CodeMirror6 {
 			this.#extensions.of([]),
 			this.#indent.of(indentUnit.of('\t')),
 			this.#extraKeys.of([]),
+			this.#phrases.of([]),
 			syntaxHighlighting(defaultHighlightStyle as Highlighter),
 			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
@@ -506,6 +509,15 @@ export class CodeMirror6 {
 	 */
 	extraKeys(keys: KeyBinding[]): void {
 		this.#effects(this.#extraKeys.reconfigure(keymap.of(keys)));
+	}
+
+	/**
+	 * 设置翻译信息
+	 * @param messages 翻译信息
+	 */
+	translate(messages: Record<string, string>): void {
+		Object.assign(phrases, messages);
+		this.#effects(this.#phrases.reconfigure(EditorState.phrases.of(phrases)));
 	}
 
 	/**

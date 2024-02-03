@@ -2,6 +2,10 @@
 
 *2024-02-03*
 
+**Added**
+
+- New method: [`translate`](./README.md#translate)
+
 **Fixed**
 
 - The keyboard shortcut for template folding now closes the tooltip.
