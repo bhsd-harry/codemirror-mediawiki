@@ -1,7 +1,7 @@
 /**
  * @author pastakhov, MusikAnimal and others
  * @license GPL-2.0-or-later
- * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
 import {HighlightStyle, LanguageSupport, StreamLanguage, syntaxHighlighting} from '@codemirror/language';
@@ -205,7 +205,7 @@ class MediaWiki {
 		 * - mw-template3-link-ground
 		 *
 		 * NOTE: these should be defined in modeConfig.tokenTable()
-		 *   and modeConfig.highlightStyle()
+		 * and modeConfig.highlightStyle()
 		 */
 		switch (state.nTemplate) {
 			case 0:
@@ -1043,6 +1043,7 @@ class MediaWiki {
 	 * It is needed for changing from bold to italic with apostrophes before it, if required.
 	 *
 	 * @see https://phabricator.wikimedia.org/T108455
+	 * @param stream
 	 */
 	prepareItalicForCorrection(stream: StringStream): void {
 		// See Parser::doQuotes() in MediaWiki Core, it works similarly.
@@ -1073,6 +1074,8 @@ class MediaWiki {
 	}
 
 	/**
+	 * main entry
+	 *
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser
 	 */
 	get mediawiki(): StreamParser<State> {

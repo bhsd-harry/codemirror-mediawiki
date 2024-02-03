@@ -50,7 +50,10 @@ const getConfigPair = (
 ): [Record<string, string>, Record<string, string>] => [true, false]
 	.map(bool => getConfig(magicWords, rule, bool)) as [Record<string, string>, Record<string, string>];
 
-/** 将设置保存到mw.config */
+/**
+ * 将设置保存到mw.config
+ * @param config 设置
+ */
 const setConfig = (config: MwConfig): void => {
 	mw.config.set('extCodeMirrorConfig', config);
 };

@@ -1,7 +1,7 @@
 /**
  * @author MusikAnimal and others
  * @license GPL-2.0-or-later
- * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
 import {Tag} from '@lezer/highlight';

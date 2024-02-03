@@ -305,7 +305,10 @@ export class CodeMirror6 {
 		this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
 	}
 
-	/** 获取默认linter */
+	/**
+	 * 获取默认linter
+	 * @param opt 选项
+	 */
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
@@ -422,6 +425,7 @@ export class CodeMirror6 {
 			case 'lua':
 				await loadScript('npm/luaparse', 'luaparse');
 				/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
+
 				return doc => {
 					try {
 						luaparse.parse(doc.toString());

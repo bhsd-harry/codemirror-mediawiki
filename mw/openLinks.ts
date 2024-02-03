@@ -6,7 +6,10 @@ const {vendor, userAgent, maxTouchPoints, platform} = navigator,
 
 export const pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename';
 
-/** 点击时在新页面打开链接、模板等 */
+/**
+ * 点击时在新页面打开链接、模板等
+ * @param e 点击事件
+ */
 export const openLinks = function(this: HTMLElement, e: JQuery.ClickEvent): void {
 	if (!e[modKey]) {
 		return;

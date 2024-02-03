@@ -9,7 +9,8 @@
 		"es-x",
 		"promise",
 		"regexp",
-		"unicorn"
+		"unicorn",
+		"jsdoc"
 	],
 	"extends": [
 		"eslint:recommended",
@@ -598,7 +599,6 @@
 		"unicorn/prefer-optional-catch-binding": 2,
 		"unicorn/prefer-prototype-methods": 2,
 		"unicorn/prefer-spread": 2,
-		"unicorn/prefer-string-replace-all": 0,
 		"unicorn/prefer-string-starts-ends-with": 2,
 		"unicorn/prefer-switch": 2,
 		"unicorn/prefer-ternary": 2,
@@ -608,6 +608,48 @@
 		],
 		"unicorn/text-encoding-identifier-case": 2,
 		"unicorn/throw-new-error": 2,
+		"jsdoc/check-alignment": 1,
+		"jsdoc/check-indentation": [
+			1,
+			{
+				"excludeTags": [
+					"description"
+				]
+			}
+		],
+		"jsdoc/check-tag-names": 1,
+		"jsdoc/check-types": 1,
+		"jsdoc/multiline-blocks": 1,
+		"jsdoc/no-bad-blocks": [
+			1,
+			{
+				"preventAllMultiAsteriskBlocks": true
+			}
+		],
+		"jsdoc/no-multi-asterisks": 1,
+		"jsdoc/require-asterisk-prefix": 1,
+		"jsdoc/require-description": [
+			1,
+			{
+				"exemptedBy": [
+					"type"
+				],
+				"checkConstructors": false,
+				"checkSetters": false
+			}
+		],
+		"jsdoc/require-hyphen-before-param-description": [
+			1,
+			"never"
+		],
+		"jsdoc/require-param-name": 1,
+		"jsdoc/require-param": [
+			1,
+			{
+				"checkConstructors": false
+			}
+		],
+		"jsdoc/require-throws": 1,
 		"eslint-comments/disable-enable-pair": [
 			2,
 			{
@@ -817,7 +859,8 @@
 					}
 				],
 				"@typescript-eslint/unified-signatures": 2,
-				"@stylistic/type-generic-spacing": 2
+				"@stylistic/type-generic-spacing": 2,
+				"jsdoc/check-types": 0
 			}
 		},
 		{
