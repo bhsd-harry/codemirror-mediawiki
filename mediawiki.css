@@ -1,3 +1,15 @@
+.wikiEditor-ui-toolbar {
+	z-index: 7;
+}
+.cm-mw-template-name, .cm-mw-link-pagename {
+	cursor: var(--codemirror-cursor);
+}
+.cm-tooltip-fold {
+	cursor: pointer;
+	line-height: 1.2;
+	padding: 0 1px;
+}
+
 /**
  * @author pastakhov and others
  * @license GPL-2.0-or-later

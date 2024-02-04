@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.3.2",
+	"version": "2.3.3",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -13,13 +13,10 @@
 	"license": "GPL-2.0",
 	"files":[
 		"/i18n/",
-		"/src/",
-		"!/src/gh-page.ts",
-		"!/src/plugins.ts",
-		"!/src/*.d.ts",
 		"/mw/*.ts",
 		"!/mw/*.d.ts",
 		"/dist/",
+		"!/dist/main.min.js.map",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
@@ -30,7 +27,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly && rm dist/gh-page.d.ts",
+		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly && rm dist/config.d.ts dist/[efgp]*.d.ts",
 		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
 		"build:gh-page": "bash build.sh",
 		"build": "npm run build:core && npm run build:mw",

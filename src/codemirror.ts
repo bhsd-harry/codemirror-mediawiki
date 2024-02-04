@@ -25,7 +25,7 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {keyMap} from './escape';
-import {fold, cursorTooltipField, handler, cursorTooltipTheme} from './fold';
+import {fold, cursorTooltipField, handler} from './fold';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -61,7 +61,6 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 			? [
 				codeFolding(),
 				cursorTooltipField,
-				cursorTooltipTheme,
 				keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
 			]
 			: [],

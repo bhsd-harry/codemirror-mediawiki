@@ -1,7 +1,7 @@
 import {CDN} from './base';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.2';
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.3';
 
 const storageKey = 'codemirror-mediawiki-i18n',
 	languages: Record<string, string> = {

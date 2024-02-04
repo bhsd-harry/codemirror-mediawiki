@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.3.2/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.3.3/dist/main.min.js';
 import {getMwConfig, USING_LOCAL} from './config';
 import {openLinks, pageSelector} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -35,8 +35,6 @@ $.valHooks['textarea'] = {
 
 const linters: Record<string, LintSource | undefined> = {},
 	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
-
-mw.loader.addStyleTag(`.wikiEditor-ui-toolbar{z-index:7}${pageSelector}{cursor:var(--codemirror-cursor)}`);
 
 export class CodeMirror extends CodeMirror6 {
 	ns;

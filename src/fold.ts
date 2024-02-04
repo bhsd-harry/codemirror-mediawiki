@@ -1,7 +1,7 @@
-import {EditorView, showTooltip} from '@codemirror/view';
+import {showTooltip} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {foldEffect, syntaxTree, foldState} from '@codemirror/language';
-import type {Tooltip} from '@codemirror/view';
+import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
@@ -107,14 +107,6 @@ export const cursorTooltipField = StateField.define<Tooltip | null>({
 	},
 	provide(f) {
 		return showTooltip.from(f);
-	},
-});
-
-export const cursorTooltipTheme = EditorView.baseTheme({
-	'.cm-tooltip-fold': {
-		cursor: 'pointer',
-		lineHeight: 1.2,
-		padding: '0 1px',
 	},
 });
 
