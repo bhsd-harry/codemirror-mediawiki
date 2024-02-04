@@ -17,6 +17,7 @@ import {
 	LanguageSupport,
 	bracketMatching,
 	indentUnit,
+	codeFolding,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -36,6 +37,7 @@ export type {MwConfig} from './mediawiki';
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
+declare type Addon<T> = [(config?: T) => Extension, Record<string, T>];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, (config?: any) => LanguageSupport | []> = {
@@ -48,7 +50,7 @@ for (const [language, parser] of Object.entries(plugins)) {
 }
 const linters: Record<string, Extension> = {};
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const avail: Record<string, [(config?: any) => Extension, Record<string, unknown>]> = {
+const avail: Record<string, Addon<any>> = {
 	highlightSpecialChars: [highlightSpecialChars, {}],
 	highlightActiveLine: [highlightActiveLine, {}],
 	highlightWhitespace: [highlightWhitespace, {}],
@@ -56,9 +58,9 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
 	codeFolding: [
-		(ext: Extension = []): Extension => ext,
+		(ext: Extension[] = []): Extension => [codeFolding(), ...ext],
 		{mediawiki: foldExtension},
-	],
+	] as Addon<Extension[]>,
 	allowMultipleSelections: [
 		(): Extension => [
 			EditorState.allowMultipleSelections.of(true),

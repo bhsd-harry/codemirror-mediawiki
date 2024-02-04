@@ -4,7 +4,7 @@
 
 **Added**
 
-- Keyboard shortcuts for folding and unfolding all templates
+- Keyboard shortcuts for unfold, fold-all and unfold-all
 
 **Fixed**
 

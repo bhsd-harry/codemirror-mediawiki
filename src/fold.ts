@@ -1,8 +1,8 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, syntaxTree, foldState, codeFolding, unfoldAll} from '@codemirror/language';
+import {foldEffect, syntaxTree, foldState, unfoldAll, unfoldEffect} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
-import type {EditorState, StateEffect} from '@codemirror/state';
+import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
 declare interface DocRange {
@@ -127,19 +127,16 @@ const create = (state: EditorState): Tooltip | null => {
 	return null;
 };
 
-const cursorTooltipField = StateField.define<Tooltip | null>({
-	create,
-	update(tooltip, {state, docChanged, selection}) {
-		return docChanged || selection ? create(state) : tooltip;
-	},
-	provide(f) {
-		return showTooltip.from(f);
-	},
-});
-
-export const foldExtension = [
-	codeFolding(),
-	cursorTooltipField,
+export const foldExtension: Extension[] = [
+	StateField.define<Tooltip | null>({
+		create,
+		update(tooltip, {state, docChanged, selection}) {
+			return docChanged || selection ? create(state) : tooltip;
+		},
+		provide(f) {
+			return showTooltip.from(f);
+		},
+	}),
 	keymap.of([
 		{
 			key: 'Ctrl-Shift-[',
@@ -154,6 +151,26 @@ export const foldExtension = [
 			run(view): boolean {
 				const {state} = view;
 				return fold(view, foldRanges(state, 0, state.doc.length));
+			},
+		},
+		{
+			key: 'Ctrl-Shift-]',
+			mac: 'Cmd-Alt-]',
+			run(view): boolean {
+				const {state} = view,
+					{selection: {ranges}} = state,
+					effects: StateEffect<DocRange>[] = [],
+					folded = state.field(foldState);
+				for (const {from, to} of ranges) {
+					folded.between(from, to, (i, j) => {
+						effects.push(unfoldEffect.of({from: i, to: j}));
+					});
+				}
+				if (effects.length > 0) {
+					view.dispatch({effects});
+					return true;
+				}
+				return false;
 			},
 		},
 		{key: 'Ctrl-Alt-]', run: unfoldAll},
