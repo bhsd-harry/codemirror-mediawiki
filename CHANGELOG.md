@@ -8,7 +8,7 @@
 
 **Fixed**
 
-- Folding a long template
+- Folding a long template or a nested template
 
 ## v2.3.3
 

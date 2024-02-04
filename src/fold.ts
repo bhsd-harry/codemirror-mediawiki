@@ -8,7 +8,10 @@ import type {SyntaxNode} from '@lezer/common';
 const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-template-bracket'),
 	isTemplate = (node: SyntaxNode | null): boolean =>
 		node ? /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node) : false,
-	isDelimiter = (node: SyntaxNode): boolean => /-template-delimiter/u.test(node.type.name);
+	isDelimiter = (node: SyntaxNode): boolean => node.type.name.includes('-template-delimiter'),
+	isTemplateName = (node: SyntaxNode): boolean => node.type.name.includes('-template-name'),
+	stackUpdate = (state: EditorState, node: SyntaxNode): number =>
+		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
 
 /**
  * 寻找可折叠的范围
@@ -29,11 +32,11 @@ const foldable = (state: EditorState, pos = state.selection.main.head): {from: n
 		delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
 	while (nextSibling) {
 		if (isBracket(nextSibling)) {
-			stack += state.sliceDoc(nextSibling.from, nextSibling.from + 1) === '{' ? 1 : -1;
+			stack += stackUpdate(state, nextSibling);
 			if (stack === 0) {
 				break;
 			}
-		} else if (!delimiter && isDelimiter(nextSibling)) {
+		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
 			delimiter = nextSibling;
 		}
 		({nextSibling} = nextSibling);
@@ -44,11 +47,11 @@ const foldable = (state: EditorState, pos = state.selection.main.head): {from: n
 	stack = -1;
 	while (prevSibling) {
 		if (isBracket(prevSibling)) {
-			stack += state.sliceDoc(prevSibling.from, prevSibling.from + 1) === '{' ? 1 : -1;
+			stack += stackUpdate(state, prevSibling);
 			if (stack === 0) {
 				break;
 			}
-		} else if (isDelimiter(prevSibling)) {
+		} else if (stack === -1 && isDelimiter(prevSibling)) {
 			delimiter = prevSibling;
 		}
 		({prevSibling} = prevSibling);
@@ -68,7 +71,7 @@ const foldable = (state: EditorState, pos = state.selection.main.head): {from: n
 const service = (state: EditorState, from: number, to: number): {from: number, to: number} | null => {
 	const tree = syntaxTree(state);
 	let node: SyntaxNode | null = tree.resolve(from, 1);
-	while (node && node.to <= to && !isTemplate(node)) {
+	while (node && node.to <= to && (!isTemplate(node) || isTemplateName(node))) {
 		node = node.nextSibling;
 	}
 	return isTemplate(node) ? foldable(state, node!.to) : null;
