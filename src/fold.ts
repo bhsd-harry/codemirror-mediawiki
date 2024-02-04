@@ -1,26 +1,27 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, syntaxTree, foldState, codeFolding, unfoldCode, unfoldAll} from '@codemirror/language';
+import {foldEffect, syntaxTree, foldState, codeFolding, foldAll, unfoldAll, foldService} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
 const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-template-bracket'),
-	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node),
+	isTemplate = (node: SyntaxNode | null): boolean =>
+		node ? /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node) : false,
 	isDelimiter = (node: SyntaxNode): boolean => /-template-delimiter/u.test(node.type.name);
 
 /**
  * 寻找可折叠的范围
  * @param state EditorState
+ * @param pos 字符位置
  */
-const foldable = (state: EditorState): {from: number, to: number} | false => {
-	const {selection: {main: {head}}} = state,
-		tree = syntaxTree(state);
-	let node = tree.resolve(head, -1);
+const foldable = (state: EditorState, pos = state.selection.main.head): {from: number, to: number} | null => {
+	const tree = syntaxTree(state);
+	let node = tree.resolve(pos, -1);
 	if (!isTemplate(node)) {
-		node = tree.resolve(head, 1);
+		node = tree.resolve(pos, 1);
 		if (!isTemplate(node)) {
-			return false;
+			return null;
 		}
 	}
 	let {prevSibling, nextSibling} = node,
@@ -38,7 +39,7 @@ const foldable = (state: EditorState): {from: number, to: number} | false => {
 		({nextSibling} = nextSibling);
 	}
 	if (!nextSibling) {
-		return false;
+		return null;
 	}
 	stack = -1;
 	while (prevSibling) {
@@ -55,22 +56,22 @@ const foldable = (state: EditorState): {from: number, to: number} | false => {
 	if (delimiter) {
 		return {from: delimiter.from, to: nextSibling.from};
 	}
-	return false;
+	return null;
 };
 
 /**
- * 寻找匹配的括号并折叠
- * @param view EditorView
+ * 获取首个折叠范围
+ * @param state EditorState
+ * @param from 起始位置
+ * @param to 结束位置
  */
-const fold = (view: EditorView): boolean => {
-	const {state} = view,
-		range = foldable(state);
-	if (range) {
-		view.dispatch({effects: foldEffect.of(range)});
-		view.dom.querySelector('.cm-tooltip-fold')?.remove();
-		return true;
+const service = (state: EditorState, from: number, to: number): {from: number, to: number} | null => {
+	const tree = syntaxTree(state);
+	let node: SyntaxNode | null = tree.resolve(from, 1);
+	while (node && node.to <= to && !isTemplate(node)) {
+		node = node.nextSibling;
 	}
-	return false;
+	return isTemplate(node) ? foldable(state, node!.to) : null;
 };
 
 /**
@@ -117,11 +118,17 @@ const cursorTooltipField = StateField.define<Tooltip | null>({
 });
 
 export const foldExtension = [
+	foldService.of(service),
 	codeFolding(),
 	cursorTooltipField,
 	keymap.of([
-		{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold},
-		{key: 'Ctrl-Shift-]', mac: 'Cmd-Alt-]', run: unfoldCode},
+		{
+			key: 'Ctrl-Alt-[',
+			run(view): boolean {
+				view.dom.querySelector('.cm-tooltip-fold')?.remove();
+				return foldAll(view);
+			},
+		},
 		{key: 'Ctrl-Alt-]', run: unfoldAll},
 	]),
 ];

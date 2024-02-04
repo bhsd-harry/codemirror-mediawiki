@@ -2,6 +2,10 @@
 
 *2024-02-05*
 
+**Added**
+
+- Keyboard shortcuts for folding and unfolding all templates
+
 **Fixed**
 
 - Folding a long template

@@ -46,6 +46,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
 		escape = document.getElementById('escape')!.closest<HTMLElement>('.fieldLayout')!,
+		codeFolding = document.getElementById('codeFolding')!.closest<HTMLElement>('.fieldLayout')!,
 		cm = new CodeMirror6(textarea),
 		/** @todo 避免重复加载linter的逻辑应该由CodeMirror6.prototype.getLinter实现 */
 		linters: Record<string, LintSource | undefined> = {};
@@ -57,8 +58,10 @@ export const getMwConfig = (config: Config): MwConfig => {
 	 * @param lang 语言
 	 */
 	const init = async (lang: string): Promise<void> => {
-		escape.style.display = lang === 'mediawiki' ? '' : 'none';
-		if (lang === 'mediawiki' || lang === 'html') {
+		const isMediaWiki = lang === 'mediawiki';
+		escape.style.display = isMediaWiki ? '' : 'none';
+		codeFolding.style.display = isMediaWiki ? '' : 'none';
+		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();
 			config ||= getMwConfig(parserConfig!);
@@ -66,7 +69,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		cm.setLanguage(lang, config);
 		if (!(lang in linters)) {
 			linters[lang] = await cm.getLinter();
-			if (lang === 'mediawiki') {
+			if (isMediaWiki) {
 				wikiparse.setConfig(parserConfig!);
 			}
 			if (linters[lang]) {

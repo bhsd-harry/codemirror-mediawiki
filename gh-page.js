@@ -26,18 +26,20 @@ export const getMwConfig = (config) => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
     }
-    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), escape = document.getElementById('escape').closest('.fieldLayout'), cm = new CodeMirror6(textarea), linters = {};
+    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), escape = document.getElementById('escape').closest('.fieldLayout'), codeFolding = document.getElementById('codeFolding').closest('.fieldLayout'), cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
-        escape.style.display = lang === 'mediawiki' ? '' : 'none';
-        if (lang === 'mediawiki' || lang === 'html') {
+        const isMediaWiki = lang === 'mediawiki';
+        escape.style.display = isMediaWiki ? '' : 'none';
+        codeFolding.style.display = isMediaWiki ? '' : 'none';
+        if (isMediaWiki || lang === 'html') {
             parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
             config || (config = getMwConfig(parserConfig));
         }
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {
             linters[lang] = await cm.getLinter();
-            if (lang === 'mediawiki') {
+            if (isMediaWiki) {
                 wikiparse.setConfig(parserConfig);
             }
             if (linters[lang]) {
