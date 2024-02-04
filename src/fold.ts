@@ -1,6 +1,6 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, syntaxTree, foldState, unfoldAll, unfoldEffect} from '@codemirror/language';
+import {foldEffect, ensureSyntaxTree, foldState, unfoldAll, unfoldEffect} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -22,9 +22,12 @@ const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-templ
  * 寻找可折叠的范围
  * @param state EditorState
  * @param pos 字符位置
+ * @param tree 语法树
  */
-const foldable = (state: EditorState, pos: number): DocRange | null => {
-	const tree = syntaxTree(state);
+const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state, pos)): DocRange | null => {
+	if (!tree) {
+		return null;
+	}
 	let node = tree.resolve(pos, -1);
 	if (!isTemplate(node)) {
 		node = tree.resolve(pos, 1);
@@ -67,16 +70,23 @@ const foldable = (state: EditorState, pos: number): DocRange | null => {
 	return null;
 };
 
-const foldRanges = (state: EditorState, start: number, end = start): StateEffect<DocRange>[] => {
-	const tree = syntaxTree(state),
+/**
+ * 折叠范围
+ * @param view EditorView
+ * @param start 起始位置
+ * @param end 结束位置
+ */
+const foldRanges = (view: EditorView, start: number, end: number): StateEffect<DocRange>[] => {
+	const {state, viewport: {to}} = view,
+		tree = ensureSyntaxTree(state, to),
 		effects: StateEffect<DocRange>[] = [];
-	let node: SyntaxNode | null = tree.resolve(start, 1);
+	let node: SyntaxNode | null | undefined = tree?.resolve(start, 1);
 	while (node && node.from <= end) {
 		if (isTemplate(node) && !isTemplateName(node)) {
-			const range = foldable(state, node.to);
+			const range = foldable(state, node.to, tree);
 			if (range) {
 				effects.push(foldEffect.of(range));
-				node = tree.resolve(range.to, 1);
+				node = tree!.resolve(range.to, 1);
 			}
 			continue;
 		}
@@ -143,14 +153,7 @@ export const foldExtension: Extension[] = [
 			mac: 'Cmd-Alt-[',
 			run(view): boolean {
 				const {state} = view;
-				return fold(view, state.selection.ranges.flatMap(({from, to}) => foldRanges(state, from, to)));
-			},
-		},
-		{
-			key: 'Ctrl-Alt-[',
-			run(view): boolean {
-				const {state} = view;
-				return fold(view, foldRanges(state, 0, state.doc.length));
+				return fold(view, state.selection.ranges.flatMap(({from, to}) => foldRanges(view, from, to)));
 			},
 		},
 		{

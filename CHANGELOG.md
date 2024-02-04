@@ -1,10 +1,10 @@
-## v2.3.4
+## v2.3.5
 
 *2024-02-05*
 
 **Added**
 
-- Keyboard shortcuts for unfold, fold-all and unfold-all
+- Keyboard shortcuts for unfold and unfold-all
 
 **Fixed**
 
