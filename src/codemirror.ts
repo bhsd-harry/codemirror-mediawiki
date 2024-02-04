@@ -17,15 +17,14 @@ import {
 	LanguageSupport,
 	bracketMatching,
 	indentUnit,
-	codeFolding,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
 import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
-import {keyMap} from './escape';
-import {fold, cursorTooltipField, handler} from './fold';
+import {escapeKeymap} from './escape';
+import {foldExtension, foldHandler} from './fold';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -57,14 +56,8 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
 	codeFolding: [
-		(flag: boolean): Extension => flag
-			? [
-				codeFolding(),
-				cursorTooltipField,
-				keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
-			]
-			: [],
-		{mediawiki: true},
+		(ext: Extension = []): Extension => ext,
+		{mediawiki: foldExtension},
 	],
 	allowMultipleSelections: [
 		(): Extension => [
@@ -75,7 +68,7 @@ const avail: Record<string, [(config?: any) => Extension, Record<string, unknown
 	],
 	escape: [
 		(keys: KeyBinding[] = []): Extension => keymap.of(keys),
-		{mediawiki: keyMap},
+		{mediawiki: escapeKeymap},
 	],
 };
 const phrases: Record<string, string> = {};
@@ -190,7 +183,7 @@ export class CodeMirror6 {
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
-		this.#view.dom.addEventListener('click', handler(this.#view));
+		this.#view.dom.addEventListener('click', foldHandler(this.#view));
 	}
 
 	/**

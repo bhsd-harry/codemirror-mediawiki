@@ -200,8 +200,7 @@ export const modeConfig = {
 	/**
 	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
 	 *
-	 * TODO: pass parent Tags in Tag.define() where appropriate for better theming.
-	 *
+	 * @todo pass parent Tags in Tag.define() where appropriate for better theming.
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
 	 */

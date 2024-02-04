@@ -47,6 +47,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
 		escape = document.getElementById('escape')!.closest<HTMLElement>('.fieldLayout')!,
 		cm = new CodeMirror6(textarea),
+		/** @todo 避免重复加载linter的逻辑应该由CodeMirror6.prototype.getLinter实现 */
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
 		parserConfig: Config | undefined;

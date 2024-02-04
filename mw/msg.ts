@@ -1,4 +1,3 @@
-import {CDN} from './base';
 import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.3';
@@ -22,8 +21,11 @@ const storageKey = 'codemirror-mediawiki-i18n',
 	{version} = i18n,
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
-/** 加载 I18N */
-export const setI18N = async (): Promise<void> => {
+/**
+ * 加载 I18N
+ * @param CDN CDN地址
+ */
+export const setI18N = async (CDN: string): Promise<void> => {
 	if (i18n['lang'] !== lang || version !== curVersion) {
 		try {
 			Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
@@ -62,6 +64,11 @@ const notify = async (key: string, ...args: string[]): Promise<JQuery<HTMLElemen
 	return $p;
 };
 
+/**
+ * 欢迎消息
+ * @param baseVersion 首次加入新插件的版本
+ * @param addons 新插件
+ */
 export const welcome = async (baseVersion: string, addons: string[]): Promise<void> => {
 	let notification: JQuery<HTMLElement> | undefined;
 	if (!version) { // 首次安装
@@ -84,6 +91,10 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 	});
 };
 
+/**
+ * 本地化
+ * @param cm 编辑器实例
+ */
 export const localize = (cm: CodeMirror): void => {
 	const obj: Record<string, string> = {},
 		messages = [

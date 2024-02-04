@@ -1,17 +1,14 @@
 import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.3.3/dist/main.min.js';
-import {getMwConfig, USING_LOCAL} from './config';
-import {openLinks, pageSelector} from './openLinks';
+import {getMwConfig, getParserConfig} from './config';
+import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference, storageKey, indentKey} from './preference';
+import {openPreference, prefs, indentKey} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
-import type {Config} from 'wikilint';
 import type {LintSource} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
 const baseVersion = '2.3',
 	addons = ['codeFolding'];
-
-export {CDN};
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -33,8 +30,8 @@ $.valHooks['textarea'] = {
 	},
 };
 
-const linters: Record<string, LintSource | undefined> = {},
-	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
+/** @todo 避免重复加载linter的逻辑应该由CodeMirror6.prototype.getLinter实现 */
+const linters: Record<string, LintSource | undefined> = {};
 
 export class CodeMirror extends CodeMirror6 {
 	ns;
@@ -104,34 +101,8 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			await this.getLinter(opt);
 			if (lang === 'mediawiki') {
-				const mwConfig = await getMwConfig(),
-					config: Config = {
-						...await wikiparse.getConfig(),
-						ext: Object.keys(mwConfig.tags),
-						namespaces: mw.config.get('wgFormattedNamespaces'),
-						nsid: mwConfig.nsid,
-						doubleUnderscore: mwConfig.doubleUnderscore.map(
-							obj => Object.keys(obj).map(s => s.slice(2, -2)),
-						) as [string[], string[]],
-						variants: mwConfig.variants!,
-						protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
-					};
-				[config.parserFunction[0]] = mwConfig.functionSynonyms;
-				if (!USING_LOCAL) {
-					for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
-						if (!key.startsWith('#')) {
-							config.parserFunction[0][`#${key}`] = val;
-						}
-					}
-				}
-				config.parserFunction[1] = [
-					...Object.keys(mwConfig.functionSynonyms[1]),
-					'=',
-				];
-				for (const key of Object.keys(mwConfig.img!)) {
-					config.img[key] = mwConfig.img![key]!.slice(4);
-				}
-				wikiparse.setConfig(config);
+				const [mwConfig, minConfig] = await Promise.all([getMwConfig(), wikiparse.getConfig()]);
+				wikiparse.setConfig(getParserConfig(minConfig, mwConfig));
 			}
 		} else if (opt) {
 			await this.getLinter(opt);
@@ -146,17 +117,11 @@ export class CodeMirror extends CodeMirror6 {
 		const hasExtension = Array.isArray(extensions)
 				? (ext: string): boolean => extensions.includes(ext)
 				: (ext: string): boolean | undefined => extensions[ext],
-			hasOpenLinks = hasExtension('openLinks'),
 			hasLint = hasExtension('lint');
-		if (hasOpenLinks) {
-			mw.loader.load('mediawiki.Title');
-			$(this.view.contentDOM).on('click', pageSelector, openLinks).css('--codemirror-cursor', 'pointer');
-		} else if (hasOpenLinks === false) {
-			$(this.view.contentDOM).off('click', pageSelector, openLinks).css('--codemirror-cursor', '');
-		}
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
 		}
+		openLinks(this.view.contentDOM, hasExtension('openLinks'));
 	}
 
 	/**
@@ -216,7 +181,7 @@ document.body.addEventListener('click', e => {
 	};
 	await Promise.all([
 		mw.loader.using('mediawiki.util'),
-		setI18N(),
+		setI18N(CDN),
 	]);
 	mw.hook('wiki-codemirror6').add(localize);
 	mw.util.addPortletLink(
@@ -227,7 +192,7 @@ document.body.addEventListener('click', e => {
 	).addEventListener('click', e => {
 		e.preventDefault();
 		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
-		void openPreference(prefs, textareas.map(textarea => instances.get(textarea)));
+		void openPreference(textareas.map(textarea => instances.get(textarea)));
 	});
 	void welcome(baseVersion, addons);
 })();

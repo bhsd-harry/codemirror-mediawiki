@@ -1,3 +1,4 @@
+import type {Config} from 'wikilint';
 import type {MwConfig} from '../src/mediawiki';
 
 declare interface MagicWord {
@@ -6,10 +7,9 @@ declare interface MagicWord {
 	'case-sensitive': boolean;
 }
 
-export const USING_LOCAL = mw.loader.getState('ext.CodeMirror') !== null;
-
 // 和本地缓存有关的常数
-const DATA_MODULE = mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
+const USING_LOCAL = mw.loader.getState('ext.CodeMirror') !== null,
+	DATA_MODULE = mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
 	ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
 		= JSON.parse(localStorage.getItem('InPageEditMwConfig')!) || {},
 	SITE_ID = `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`,
@@ -148,4 +148,39 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 	localStorage.setItem('InPageEditMwConfig', JSON.stringify(ALL_SETTINGS_CACHE));
 	return config!;
+};
+
+/**
+ * 将MwConfig转换为Config
+ * @param minConfig 基础Config
+ * @param mwConfig MwConfig
+ */
+export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
+	const config: Config = {
+		...minConfig,
+		ext: Object.keys(mwConfig.tags),
+		namespaces: mw.config.get('wgFormattedNamespaces'),
+		nsid: mwConfig.nsid,
+		doubleUnderscore: mwConfig.doubleUnderscore.map(
+			obj => Object.keys(obj).map(s => s.slice(2, -2)),
+		) as [string[], string[]],
+		variants: mwConfig.variants!,
+		protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
+	};
+	[config.parserFunction[0]] = mwConfig.functionSynonyms;
+	if (!USING_LOCAL) {
+		for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
+			if (!key.startsWith('#')) {
+				config.parserFunction[0][`#${key}`] = val;
+			}
+		}
+	}
+	config.parserFunction[1] = [
+		...Object.keys(mwConfig.functionSynonyms[1]),
+		'=',
+	];
+	for (const key of Object.keys(mwConfig.img!)) {
+		config.img[key] = mwConfig.img![key]!.slice(4);
+	}
+	return config;
 };

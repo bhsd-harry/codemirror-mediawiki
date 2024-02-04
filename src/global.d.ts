@@ -1,4 +1,5 @@
 import {CodeMirror6} from './codemirror';
+import type {Config} from 'wikilint';
 import type {Linter} from 'eslint';
 import type {LinterOptions, LinterResult} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';

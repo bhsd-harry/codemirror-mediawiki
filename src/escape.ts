@@ -2,6 +2,11 @@ import {CodeMirror6} from './codemirror';
 import type {KeyBinding, Command} from '@codemirror/view';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
+
+/**
+ * 根据函数转换选中文本
+ * @param func 转换函数
+ */
 const convert = (func: (str: string) => string): Command => (view): true => {
 		CodeMirror6.replaceSelections(view, func);
 		return true;
@@ -22,7 +27,7 @@ const convert = (func: (str: string) => string): Command => (view): true => {
 		return encodeURIComponent(str);
 	});
 
-export const keyMap: KeyBinding[] = [
+export const escapeKeymap: KeyBinding[] = [
 	{key: 'Mod-[', run: escapeHTML},
 	{key: 'Mod-]', run: escapeURI},
 ];

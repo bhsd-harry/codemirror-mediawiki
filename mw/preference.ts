@@ -1,8 +1,9 @@
 import {msg} from './msg';
 import type {CodeMirror} from './base';
 
-export const storageKey = 'codemirror-mediawiki-addons',
-	indentKey = 'codemirror-mediawiki-indent';
+const storageKey = 'codemirror-mediawiki-addons';
+export const indentKey = 'codemirror-mediawiki-indent',
+	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
 
 const options = [
 	'allowMultipleSelections',
@@ -28,13 +29,12 @@ let dialog: OO.ui.MessageDialog | undefined,
 
 /**
  * 打开设置对话框
- * @param addons 预设的扩展
  * @param editors CodeMirror实例
  */
-export const openPreference = async (addons: Set<string>, editors: (CodeMirror | undefined)[]): Promise<void> => {
+export const openPreference = async (editors: (CodeMirror | undefined)[]): Promise<void> => {
 	await mw.loader.using(['oojs-ui-windows', 'oojs-ui.styles.icons-content']);
 	if (dialog) {
-		widget.setValue([...addons] as unknown as string);
+		widget.setValue([...prefs] as unknown as string);
 		indentWidget.setValue(indent);
 	} else {
 		dialog = new OO.ui.MessageDialog();
@@ -43,13 +43,13 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 		windowManager.addWindows([dialog]);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
 			options: options.map(option => ({data: option, label: $($.parseHTML(msg(`addon-${option}`)))})),
-			value: [...addons] as unknown as string,
+			value: [...prefs] as unknown as string,
 		});
 		field = new OO.ui.FieldLayout(widget, {
 			label: msg('label'),
 			align: 'top',
 		});
-		indentWidget = new OO.ui.TextInputWidget({placeholder: '\\t'});
+		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: '\\t'});
 		indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
 	}
 
@@ -65,9 +65,9 @@ export const openPreference = async (addons: Set<string>, editors: (CodeMirror |
 	if (typeof data === 'object' && data.action === 'accept') {
 		const value = widget.getValue() as unknown as string[];
 		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
-		addons.clear();
+		prefs.clear();
 		for (const option of value) {
-			addons.add(option);
+			prefs.add(option);
 		}
 		for (const cm of editors) {
 			cm?.prefer(value);

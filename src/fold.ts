@@ -1,6 +1,6 @@
-import {showTooltip} from '@codemirror/view';
+import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, syntaxTree, foldState} from '@codemirror/language';
+import {foldEffect, syntaxTree, foldState, codeFolding} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -9,6 +9,10 @@ const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-templ
 	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node),
 	isDelimiter = (node: SyntaxNode): boolean => /-template-delimiter/u.test(node.type.name);
 
+/**
+ * 寻找可折叠的范围
+ * @param state EditorState
+ */
 const foldable = (state: EditorState): {from: number, to: number} | false => {
 	const {selection: {main: {head}}} = state,
 		tree = syntaxTree(state);
@@ -58,7 +62,7 @@ const foldable = (state: EditorState): {from: number, to: number} | false => {
  * 寻找匹配的括号并折叠
  * @param view EditorView
  */
-export const fold = (view: EditorView): boolean => {
+const fold = (view: EditorView): boolean => {
 	const {state} = view,
 		range = foldable(state);
 	if (range) {
@@ -69,6 +73,10 @@ export const fold = (view: EditorView): boolean => {
 	return false;
 };
 
+/**
+ * 创建折叠提示
+ * @param state EditorState
+ */
 const create = (state: EditorState): Tooltip | null => {
 	const range = foldable(state);
 	if (range) {
@@ -98,7 +106,7 @@ const create = (state: EditorState): Tooltip | null => {
 	return null;
 };
 
-export const cursorTooltipField = StateField.define<Tooltip | null>({
+const cursorTooltipField = StateField.define<Tooltip | null>({
 	create,
 	update(tooltip, {state, docChanged, selection}) {
 		return docChanged || selection ? create(state) : tooltip;
@@ -108,7 +116,17 @@ export const cursorTooltipField = StateField.define<Tooltip | null>({
 	},
 });
 
-export const handler = (view: EditorView) => (e: MouseEvent): void => {
+export const foldExtension = [
+	codeFolding(),
+	cursorTooltipField,
+	keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
+];
+
+/**
+ * 点击提示折叠模板参数
+ * @param view EditorView
+ */
+export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
 	const dom = (e.target as Element).closest<HTMLElement>('.cm-tooltip-fold');
 	if (dom) {
 		e.preventDefault();
