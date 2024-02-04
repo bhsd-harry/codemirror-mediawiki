@@ -1,8 +1,6 @@
-const {vendor, userAgent, maxTouchPoints, platform} = navigator,
-	modKey = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
-	|| platform.includes('Mac')
-		? 'metaKey'
-		: 'ctrlKey',
+import {isMac} from './msg';
+
+const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename';
 
 /**
@@ -45,8 +43,8 @@ const handler = function(this: HTMLElement, e: JQuery.ClickEvent): void {
 export const openLinks = (ele: HTMLElement, on?: boolean): void => {
 	if (on) {
 		mw.loader.load('mediawiki.Title');
-		$(ele).on('click', pageSelector, handler);
+		$(ele).on('click', pageSelector, handler).css('--codemirror-cursor', 'pointer');
 	} else if (on === false) {
-		$(ele).off('click', pageSelector, handler);
+		$(ele).off('click', pageSelector, handler).css('--codemirror-cursor', '');
 	}
 };

@@ -2,6 +2,11 @@ import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.3.3';
 
+const {vendor, userAgent, maxTouchPoints, platform} = navigator;
+
+export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
+	|| platform.includes('Mac');
+
 const storageKey = 'codemirror-mediawiki-i18n',
 	languages: Record<string, string> = {
 		zh: 'zh-hans',
@@ -36,7 +41,11 @@ export const setI18N = async (CDN: string): Promise<void> => {
 		}
 	}
 	for (const [k, v] of Object.entries(i18n)) {
-		mw.messages.set(`cm-mw-${k}`, v);
+		if (!k.endsWith('-mac')) {
+			mw.messages.set(`cm-mw-${k}`, v);
+		} else if (isMac) {
+			mw.messages.set(`cm-mw-${k.slice(0, -4)}`, v);
+		}
 	}
 };
 

@@ -1,6 +1,6 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, syntaxTree, foldState, codeFolding} from '@codemirror/language';
+import {foldEffect, syntaxTree, foldState, codeFolding, unfoldCode, unfoldAll} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -119,7 +119,11 @@ const cursorTooltipField = StateField.define<Tooltip | null>({
 export const foldExtension = [
 	codeFolding(),
 	cursorTooltipField,
-	keymap.of([{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold}]),
+	keymap.of([
+		{key: 'Ctrl-Shift-[', mac: 'Cmd-Alt-[', run: fold},
+		{key: 'Ctrl-Shift-]', mac: 'Cmd-Alt-]', run: unfoldCode},
+		{key: 'Ctrl-Alt-]', run: unfoldAll},
+	]),
 ];
 
 /**
