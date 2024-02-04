@@ -9,8 +9,6 @@ const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-templ
 	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node),
 	isDelimiter = (node: SyntaxNode): boolean => /-template-delimiter/u.test(node.type.name);
 
-const MaxScanDist = 10_000;
-
 const foldable = (state: EditorState): {from: number, to: number} | false => {
 	const {selection: {main: {head}}} = state,
 		tree = syntaxTree(state);
@@ -24,7 +22,7 @@ const foldable = (state: EditorState): {from: number, to: number} | false => {
 	let {prevSibling, nextSibling} = node,
 		stack = 1,
 		delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
-	while (nextSibling && nextSibling.to - head < MaxScanDist) {
+	while (nextSibling) {
 		if (isBracket(nextSibling)) {
 			stack += state.sliceDoc(nextSibling.from, nextSibling.from + 1) === '{' ? 1 : -1;
 			if (stack === 0) {
@@ -39,7 +37,7 @@ const foldable = (state: EditorState): {from: number, to: number} | false => {
 		return false;
 	}
 	stack = -1;
-	while (prevSibling && head - prevSibling.from < MaxScanDist) {
+	while (prevSibling) {
 		if (isBracket(prevSibling)) {
 			stack += state.sliceDoc(prevSibling.from, prevSibling.from + 1) === '{' ? 1 : -1;
 			if (stack === 0) {
