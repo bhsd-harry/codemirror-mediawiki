@@ -1,50 +1,58 @@
 import {isMac} from './msg';
+import type {CodeMirror} from './base';
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename';
+	pageSelector = '.cm-mw-template-name, .cm-mw-link-pagename',
+	regex = /-template-name|link-pagename/u,
+	handlers = new WeakMap<CodeMirror, JQuery.EventHandlerBase<HTMLElement, JQuery.ClickEvent>>();
 
 /**
  * 点击时在新页面打开链接、模板等
+ * @param cm CodeMirror实例
  * @param e 点击事件
  */
-const handler = function(this: HTMLElement, e: JQuery.ClickEvent): void {
-	if (!e[modKey]) {
-		return;
+const getHandler = (cm: CodeMirror): JQuery.EventHandlerBase<HTMLElement, JQuery.ClickEvent> => {
+	if (handlers.has(cm)) {
+		return handlers.get(cm)!;
 	}
-	e.preventDefault();
-	let page = this.textContent!,
-		{previousSibling, nextSibling} = this;
-	while (
-		previousSibling
-		&& (previousSibling.nodeType === Node.TEXT_NODE || (previousSibling as Element).matches(pageSelector))
-	) {
-		page = previousSibling.textContent! + page;
-		({previousSibling} = previousSibling);
-	}
-	while (
-		nextSibling
-		&& (nextSibling.nodeType === Node.TEXT_NODE || (nextSibling as Element).matches(pageSelector))
-	) {
-		page += nextSibling.textContent!;
-		({nextSibling} = nextSibling);
-	}
-	page = page.trim();
-	if (page.startsWith('/')) {
-		page = `:${mw.config.get('wgPageName')}${page}`;
-	}
-	open(new mw.Title(page, this.classList.contains('cm-mw-template-name') ? 10 : 0).getUrl(undefined), '_blank');
+	const handler: JQuery.EventHandlerBase<HTMLElement, JQuery.ClickEvent> = function(this, e): void {
+		if (!e[modKey]) {
+			return;
+		}
+		e.preventDefault();
+		const {view} = cm,
+			node = cm.getNodeAt(view.posAtCoords({x: e.clientX, y: e.clientY})!);
+		if (!node) {
+			return;
+		}
+		let prevSibling = node,
+			nextSibling = node;
+		while (regex.test(prevSibling.prevSibling?.name || '')) {
+			prevSibling = prevSibling.prevSibling!;
+		}
+		while (regex.test(nextSibling.nextSibling?.name || '')) {
+			nextSibling = nextSibling.nextSibling!;
+		}
+		let page = view.state.sliceDoc(prevSibling.from, nextSibling.to);
+		if (page.startsWith('/')) {
+			page = `:${mw.config.get('wgPageName')}${page}`;
+		}
+		open(new mw.Title(page, this.classList.contains('cm-mw-template-name') ? 10 : 0).getUrl(undefined), '_blank');
+	};
+	handlers.set(cm, handler);
+	return handler;
 };
 
 /**
  * 添加或移除打开链接的事件
- * @param ele 编辑器DOM
+ * @param cm CodeMirror实例
  * @param on 是否添加
  */
-export const openLinks = (ele: HTMLElement, on?: boolean): void => {
+export const openLinks = (cm: CodeMirror, on?: boolean): void => {
 	if (on) {
 		mw.loader.load('mediawiki.Title');
-		$(ele).on('click', pageSelector, handler).css('--codemirror-cursor', 'pointer');
+		$(cm.view.contentDOM).on('click', pageSelector, getHandler(cm)).css('--codemirror-cursor', 'pointer');
 	} else if (on === false) {
-		$(ele).off('click', pageSelector, handler).css('--codemirror-cursor', '');
+		$(cm.view.contentDOM).off('click', pageSelector, getHandler(cm)).css('--codemirror-cursor', '');
 	}
 };

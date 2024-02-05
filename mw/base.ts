@@ -120,7 +120,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
 		}
-		openLinks(this.view.contentDOM, hasExtension('openLinks'));
+		openLinks(this, hasExtension('openLinks'));
 	}
 
 	/**
