@@ -105,21 +105,11 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
  * @param cm 编辑器实例
  */
 export const localize = (cm: CodeMirror): void => {
-	const obj: Record<string, string> = {},
-		messages = [
-			'Find',
-			'next',
-			'previous',
-			'all',
-			'match case',
-			'regexp',
-			'by word',
-			'Replace',
-			'replace',
-			'replace all',
-		];
-	for (const message of messages) {
-		obj[message] = msg(`phrase-${message.replace(/ /gu, '-')}`);
+	const obj: Record<string, string> = {};
+	for (const [k, v] of Object.entries(i18n)) {
+		if (k.startsWith('phrase-')) {
+			obj[k.slice(7).replace(/-/gu, ' ')] = v;
+		}
 	}
 	cm.localize(obj);
 };

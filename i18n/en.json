@@ -32,5 +32,6 @@
 	"phrase-by-word": "by word",
 	"phrase-Replace": "Replace",
 	"phrase-replace": "replace",
-	"phrase-replace-all": "replace all"
+	"phrase-replace-all": "replace all",
+	"phrase-Fold-template-parameters": "Fold template parameters"
 }

@@ -32,5 +32,6 @@
 	"phrase-by-word": "符合整個字詞",
 	"phrase-Replace": "取代",
 	"phrase-replace": "取代",
-	"phrase-replace-all": "全部取代"
+	"phrase-replace-all": "全部取代",
+	"phrase-Fold-template-parameters": "摺疊模板參數"
 }

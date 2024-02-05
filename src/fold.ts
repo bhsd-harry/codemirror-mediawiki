@@ -10,11 +10,12 @@ declare interface DocRange {
 	to: number;
 }
 
-const isBracket = (node: SyntaxNode): boolean => node.type.name.includes('-template-bracket'),
+const isTemplateComponent = (s: string) => (node: SyntaxNode): boolean => node.type.name.includes(`-template-${s}`),
+	isBracket = isTemplateComponent('bracket'),
+	isDelimiter = isTemplateComponent('delimiter'),
+	isTemplateName = isTemplateComponent('name'),
 	isTemplate = (node: SyntaxNode | null): boolean =>
 		node ? /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node) : false,
-	isDelimiter = (node: SyntaxNode): boolean => node.type.name.includes('-template-delimiter'),
-	isTemplateName = (node: SyntaxNode): boolean => node.type.name.includes('-template-name'),
 	stackUpdate = (state: EditorState, node: SyntaxNode): number =>
 		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
 
@@ -127,7 +128,7 @@ const create = (state: EditorState): Tooltip | null => {
 					const dom = document.createElement('div');
 					dom.className = 'cm-tooltip-fold';
 					dom.textContent = '\uff0d';
-					dom.title = 'Fold template parameters';
+					dom.title = state.phrase('Fold template parameters');
 					dom.dataset['from'] = String(from);
 					dom.dataset['to'] = String(to);
 					return {dom};

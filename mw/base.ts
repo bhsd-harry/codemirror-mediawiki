@@ -30,7 +30,6 @@ $.valHooks['textarea'] = {
 	},
 };
 
-/** @todo 避免重复加载linter的逻辑应该由CodeMirror6.prototype.getLinter实现 */
 const linters: Record<string, LintSource | undefined> = {};
 
 export class CodeMirror extends CodeMirror6 {
