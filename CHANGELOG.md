@@ -1,3 +1,11 @@
+## v2.4.2
+
+*2024-02-07*
+
+**Added**
+
+- New method: [`getNodeAt`](./README.md#getnodeat)
+
 ## v2.4.1
 
 *2024-02-06*

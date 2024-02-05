@@ -55,6 +55,11 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag(?!-bracket)/u.t
 	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim(),
 	stackUpdate = ({closing}: Tag): 1 | -1 => closing ? -1 : 1;
 
+/**
+ * 获取标签信息
+ * @param state EditorState
+ * @param node 语法树节点
+ */
 const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 	const type = node.name.includes('exttag') ? 'ext' : 'html';
 	let {prevSibling} = node,
@@ -71,6 +76,11 @@ const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 	return new Tag(type, name, prevSibling!, nextSibling);
 };
 
+/**
+ * 搜索匹配的标签
+ * @param state EditorState
+ * @param origin 起始标签
+ */
 const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 	const {type, name, closing} = origin,
 		siblingGetter = closing ? 'prevSibling' : 'nextSibling',
@@ -91,6 +101,11 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 	return null;
 };
 
+/**
+ * 匹配标签
+ * @param state EditorState
+ * @param pos 位置
+ */
 const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
 	const tree = ensureSyntaxTree(state, pos);
 	if (!tree) {

@@ -15,6 +15,7 @@
 - [Methods](#methods)
 	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
+	- [getNodeAt](#getnodeat)
 	- [lint](#lint)
 	- [localize](#localize)
 	- [prefer](#prefer)
@@ -153,6 +154,23 @@ const linter = await cm.getLinter(); // default linter configuration
 const linterMediawiki = await cm.getLinter({include: true, i18n: 'zh-hans'}); // wikilint configuration
 const linterJavaScript = await cm.getLinter({env, parserOptions, rules}); // ESLint configuration
 const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
+```
+
+</details>
+
+## getNodeAt
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.4.2*
+
+**param**: `number` position  
+**returns**: [`SyntaxNode | undefined`](https://lezer.codemirror.net/docs/ref/#common.SyntaxNode)  
+Get the syntax node at the given position.
+
+```js
+const tree = cm.getNodeAt(0);
 ```
 
 </details>

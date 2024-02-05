@@ -18,6 +18,7 @@ import {
 	bracketMatching,
 	indentUnit,
 	codeFolding,
+	ensureSyntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -30,6 +31,7 @@ import {tagMatchingState} from './matchTag';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
+import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
@@ -517,6 +519,14 @@ export class CodeMirror6 {
 	localize(messages: Record<string, string>): void {
 		Object.assign(phrases, messages);
 		this.#effects(this.#phrases.reconfigure(EditorState.phrases.of(phrases)));
+	}
+
+	/**
+	 * 获取语法树节点
+	 * @param position 位置
+	 */
+	getNodeAt(position: number): SyntaxNode | undefined {
+		return ensureSyntaxTree(this.#view.state, position)?.resolve(position, 0);
 	}
 
 	/**
