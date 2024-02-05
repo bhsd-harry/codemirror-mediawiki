@@ -924,7 +924,8 @@ class MediaWiki {
 						// Check for parser function without '#'
 						const name = stream
 							.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
-						if (name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
+						if (
+							name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
 							&& (
 								name[1]!.toLowerCase() in this.config.functionSynonyms[0]
 								|| name[1]! in this.config.functionSynonyms[1]

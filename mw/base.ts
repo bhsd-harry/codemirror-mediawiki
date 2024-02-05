@@ -7,8 +7,8 @@ import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import type {LintSource} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.3',
-	addons = ['codeFolding'];
+const baseVersion = '2.4',
+	addons = ['tagMatching'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 

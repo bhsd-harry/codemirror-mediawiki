@@ -45,8 +45,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
-		escape = document.getElementById('escape')!.closest<HTMLElement>('.fieldLayout')!,
-		codeFolding = document.getElementById('codeFolding')!.closest<HTMLElement>('.fieldLayout')!,
+		mediawikiOnly = ['escape', 'codeFolding', 'tagMatching'],
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
@@ -57,9 +56,11 @@ export const getMwConfig = (config: Config): MwConfig => {
 	 * @param lang 语言
 	 */
 	const init = async (lang: string): Promise<void> => {
-		const isMediaWiki = lang === 'mediawiki';
-		escape.style.display = isMediaWiki ? '' : 'none';
-		codeFolding.style.display = isMediaWiki ? '' : 'none';
+		const isMediaWiki = lang === 'mediawiki',
+			display = isMediaWiki ? '' : 'none';
+		for (const id of mediawikiOnly) {
+			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
+		}
 		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();

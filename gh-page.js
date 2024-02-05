@@ -26,12 +26,13 @@ export const getMwConfig = (config) => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
     }
-    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), escape = document.getElementById('escape').closest('.fieldLayout'), codeFolding = document.getElementById('codeFolding').closest('.fieldLayout'), cm = new CodeMirror6(textarea), linters = {};
+    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), mediawikiOnly = ['escape', 'codeFolding', 'tagMatching'], cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
-        const isMediaWiki = lang === 'mediawiki';
-        escape.style.display = isMediaWiki ? '' : 'none';
-        codeFolding.style.display = isMediaWiki ? '' : 'none';
+        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none';
+        for (const id of mediawikiOnly) {
+            document.getElementById(id).closest('.fieldLayout').style.display = display;
+        }
         if (isMediaWiki || lang === 'html') {
             parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
             config || (config = getMwConfig(parserConfig));

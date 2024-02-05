@@ -26,6 +26,7 @@ import {closeBrackets} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler} from './fold';
+import {tagMatchingState} from './matchTag';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -57,10 +58,6 @@ const avail: Record<string, Addon<any>> = {
 	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
-	codeFolding: [
-		(ext: Extension[] = []): Extension => [codeFolding(), ...ext],
-		{mediawiki: foldExtension},
-	] as Addon<Extension[]>,
 	allowMultipleSelections: [
 		(): Extension => [
 			EditorState.allowMultipleSelections.of(true),
@@ -72,6 +69,14 @@ const avail: Record<string, Addon<any>> = {
 		(keys: KeyBinding[] = []): Extension => keymap.of(keys),
 		{mediawiki: escapeKeymap},
 	],
+	codeFolding: [
+		(ext: Extension[] = []): Extension => [codeFolding(), ...ext],
+		{mediawiki: foldExtension},
+	] as Addon<Extension[]>,
+	tagMatching: [
+		(ext: Extension = []): Extension => ext,
+		{mediawiki: tagMatchingState},
+	] as Addon<Extension>,
 };
 const phrases: Record<string, string> = {};
 

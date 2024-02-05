@@ -10,13 +10,13 @@ declare interface DocRange {
 	to: number;
 }
 
-const isTemplateComponent = (s: string) => (node: SyntaxNode): boolean => node.type.name.includes(`-template-${s}`),
+const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name.includes(`-template-${s}`),
 	isBracket = isTemplateComponent('bracket'),
 	isDelimiter = isTemplateComponent('delimiter'),
 	isTemplateName = isTemplateComponent('name'),
 	isTemplate = (node: SyntaxNode | null): boolean =>
-		node ? /-template[a-z\d-]+ground/u.test(node.type.name) && !isBracket(node) : false,
-	stackUpdate = (state: EditorState, node: SyntaxNode): number =>
+		node ? /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node) : false,
+	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
 		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
 
 /**

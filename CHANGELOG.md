@@ -1,3 +1,11 @@
+## v2.4.0
+
+*2024-02-06*
+
+**Added**
+
+- New extension option for the MediaWiki mode: `tagMatching`
+
 ## v2.3.5
 
 *2024-02-05*

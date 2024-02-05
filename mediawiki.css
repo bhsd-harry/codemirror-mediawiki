@@ -9,6 +9,12 @@
 	line-height: 1.2;
 	padding: 0 1px;
 }
+.cm-focused .cm-matchingTag {
+	background-color: rgba(50, 140, 130, .32);
+}
+.cm-focused .cm-nonmatchingTag {
+	background-color: rgba(187, 85, 85, .27);
+}
 
 /**
  * @author pastakhov and others
