@@ -19,11 +19,12 @@ const storageKey = 'codemirror-mediawiki-i18n',
 		'zh-hk': 'zh-hant',
 		'zh-mo': 'zh-hant',
 	},
-	lang = languages[mw.config.get('wgUserLanguage')] || 'en',
+	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
 
-	/** 预存的I18N，可以用于判断是否是首次安装 */
-	i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey)!) || {},
-	{version} = i18n,
+/** 预存的I18N，可以用于判断是否是首次安装 */
+export const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey)!) || {};
+
+const {version} = i18n,
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 /**

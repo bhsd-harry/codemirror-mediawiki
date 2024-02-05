@@ -1,23 +1,9 @@
-import {msg} from './msg';
+import {msg, i18n} from './msg';
 import type {CodeMirror} from './base';
 
 const storageKey = 'codemirror-mediawiki-addons';
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
-
-const options = [
-	'allowMultipleSelections',
-	'bracketMatching',
-	'closeBrackets',
-	'highlightActiveLine',
-	'highlightSpecialChars',
-	'highlightWhitespace',
-	'highlightTrailingWhitespace',
-	'lint',
-	'openLinks',
-	'escape',
-	'codeFolding',
-];
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,
@@ -42,7 +28,9 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: options.map(option => ({data: option, label: $($.parseHTML(msg(`addon-${option}`)))})),
+			options: Object.keys(i18n)
+				.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
+				.map(k => ({data: k.slice(6), label: $($.parseHTML(msg(k)))})),
 			value: [...prefs] as unknown as string,
 		});
 		field = new OO.ui.FieldLayout(widget, {
