@@ -26,6 +26,17 @@
 	- [update](#update)
 - [Static methods](#static-methods)
 	- [replaceSelections](#replaceselections)
+- [Extensions](#extensions)
+	- [allowMultipleSelections](#allowmultipleselections)
+	- [bracketMatching](#bracketmatching)
+	- [closeBrackets](#closebrackets)
+	- [highlightActiveLine](#highlightactiveline)
+	- [highlightSpecialChars](#highlightspecialchars)
+	- [highlightWhitespace](#highlightwhitespace)
+	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
+	- [escape](#escape)
+	- [codeFolding](#codefolding)
+	- [tagMatching](#tagmatching)
 
 </details>
 
@@ -226,7 +237,7 @@ cm.localize({
 *version added: 2.0.9*
 
 **param**: `string[] | Record<string, boolean>` the preferred [CodeMirror extensions](https://codemirror.net/docs/extensions/)  
-Set the preferred CodeMirror extensions.
+Set the preferred CodeMirror extensions. Available extensions are introduced [later](#extensions).
 
 ```js
 cm.prefer([
@@ -359,3 +370,70 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 ```
 
 </details>
+
+# Extensions
+
+## allowMultipleSelections
+
+*version added: 2.1.11*
+
+Allow multiple selections.
+
+## bracketMatching
+
+*version added: 2.0.9*
+
+Matched or unmatched brackets are highlighted in cyan or dark red when the cursor is next to them.
+
+## closeBrackets
+
+*version added: 2.0.9*
+
+Automatically close brackets (`{`, `[` and `(`) and quotes (`"`, and `'` except for the MediaWiki mode).
+
+## highlightActiveLine
+
+Highlight the line the cursor is on in light cyan.
+
+## highlightSpecialChars
+
+Show invisible characters as red dots.
+
+## highlightWhitespace
+
+*version added: 2.0.12*
+
+Show spaces and tabs as dots and arrows.
+
+## highlightTrailingWhitespace
+
+*version added: 2.0.9*
+
+Highlight trailing whitespace in a red-orange color.
+
+## escape
+
+*version added: 2.2.2*
+
+Key bindings:
+
+- `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
+- `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
+
+## codeFolding
+
+*version added: 2.3.0*
+
+Fold template parameters.
+
+Key bindings:
+
+- `Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`: Fold the selected templates
+- `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold the selected templates
+- `Ctrl` + `Alt` + `]`: Unfold all templates
+
+## tagMatching
+
+*version added: 2.4.1*
+
+Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
