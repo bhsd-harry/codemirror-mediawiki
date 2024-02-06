@@ -122,6 +122,11 @@ export class CodeMirror extends CodeMirror6 {
 			void this.defaultLint(hasLint);
 		}
 		openLinks(this, hasExtension('openLinks'));
+		if (!Array.isArray(extensions)) {
+			for (const [k, v] of Object.entries(extensions)) {
+				prefs[v ? 'add' : 'delete'](k);
+			}
+		}
 	}
 
 	/**
