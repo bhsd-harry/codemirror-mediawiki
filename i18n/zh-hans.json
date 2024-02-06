@@ -22,6 +22,8 @@
 	"addon-openLinks": "CTRL+点击可打开内部链接或模板页面",
 	"addon-openLinks-mac": "CMD+点击可打开内部链接或模板页面",
 	"addon-tagMatching": "高亮显示匹配和未匹配的标签",
+	"addon-wikiEditor": "加载WikiEditor工具栏",
+	"no-wikiEditor": "未找到WikiEditor扩展。",
 	"welcome": "欢迎使用 <b>codemirror-mediawiki</b>！<br>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更改本地设置。",
 	"welcome-addons": "<b>codemirror-mediawiki</b> 已升级到 $1。新版本添加了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。",
 	"phrase-Find": "查找",

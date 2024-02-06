@@ -4,6 +4,7 @@ import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, prefs, indentKey} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
+import {wikiEditor} from './wikiEditor';
 import type {LintSource} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
@@ -130,6 +131,9 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param ns 命名空间
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
+		if (prefs.has('wikiEditor')) {
+			await wikiEditor($(textarea));
+		}
 		const isWiki = lang === 'mediawiki' || lang === 'html',
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns),
 			indent = localStorage.getItem(indentKey);

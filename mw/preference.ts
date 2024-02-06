@@ -30,7 +30,11 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
 			options: Object.keys(i18n)
 				.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
-				.map(k => ({data: k.slice(6), label: $($.parseHTML(msg(k)))})),
+				.map(k => ({
+					data: k.slice(6),
+					label: $($.parseHTML(msg(k))),
+					disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor'),
+				})),
 			value: [...prefs] as unknown as string,
 		});
 		field = new OO.ui.FieldLayout(widget, {
