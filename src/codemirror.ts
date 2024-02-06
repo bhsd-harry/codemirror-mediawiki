@@ -472,7 +472,7 @@ export class CodeMirror6 {
 				hasFocus = document.activeElement === this.#textarea;
 			this.setContent(value);
 			this.#refresh();
-			this.#view.dom.style.setProperty('display', '');
+			this.#view.dom.style.removeProperty('display');
 			this.#textarea.style.display = 'none';
 			this.#view.requestMeasure();
 			this.#view.dispatch({
