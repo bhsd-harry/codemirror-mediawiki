@@ -24,7 +24,7 @@ const storageKey = 'codemirror-mediawiki-i18n',
 /* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
 export const getObject = mw.storage.getObject || ((key): unknown => JSON.parse(String(localStorage.getItem(key))));
 export const setObject = mw.storage.setObject || ((key, value): void => {
-	setObject(key, JSON.stringify(value));
+	localStorage.setItem(key, JSON.stringify(value));
 });
 /* eslint-enable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
 
