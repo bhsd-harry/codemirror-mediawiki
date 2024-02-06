@@ -1,9 +1,9 @@
-import {msg, i18n} from './msg';
+import {msg, i18n, setObject, getObject} from './msg';
 import type {CodeMirror} from './base';
 
 const storageKey = 'codemirror-mediawiki-addons';
 export const indentKey = 'codemirror-mediawiki-indent',
-	prefs = new Set<string>(JSON.parse(String(localStorage.getItem(storageKey))) as string[] | null);
+	prefs = new Set<string>(getObject(storageKey) as string[] | null);
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,
@@ -65,7 +65,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			cm?.prefer(value);
 			cm?.setIndent(indent || '\t');
 		}
-		localStorage.setItem(storageKey, JSON.stringify(value));
+		setObject(storageKey, value);
 		localStorage.setItem(indentKey, indent);
 	}
 };

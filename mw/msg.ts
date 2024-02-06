@@ -21,8 +21,15 @@ const storageKey = 'codemirror-mediawiki-i18n',
 	},
 	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
 
+/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
+export const getObject = mw.storage.getObject || ((key): unknown => JSON.parse(String(localStorage.getItem(key))));
+export const setObject = mw.storage.setObject || ((key, value): void => {
+	setObject(key, JSON.stringify(value));
+});
+/* eslint-enable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
+
 /** 预存的I18N，可以用于判断是否是首次安装 */
-export const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey) || '{}');
+export const i18n: Record<string, string> = getObject(storageKey) || {};
 
 const {version} = i18n,
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
@@ -35,7 +42,7 @@ export const setI18N = async (CDN: string): Promise<void> => {
 	if (i18n['lang'] !== lang || version !== curVersion) {
 		try {
 			Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
-			localStorage.setItem(storageKey, JSON.stringify(i18n));
+			setObject(storageKey, i18n);
 		} catch (e) {
 			void mw.notify(msg('i18n-failed', lang), {type: 'error'});
 			console.error(e);
