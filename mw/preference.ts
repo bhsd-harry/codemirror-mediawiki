@@ -3,7 +3,7 @@ import type {CodeMirror} from './base';
 
 const storageKey = 'codemirror-mediawiki-addons';
 export const indentKey = 'codemirror-mediawiki-indent',
-	prefs = new Set<string>(JSON.parse(localStorage.getItem(storageKey)!) as string[] | null);
+	prefs = new Set<string>(JSON.parse(String(localStorage.getItem(storageKey))) as string[] | null);
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,

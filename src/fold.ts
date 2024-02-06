@@ -21,7 +21,7 @@ const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name
 
 /**
  * 寻找可折叠的范围
- * @param state EditorState
+ * @param state
  * @param pos 字符位置
  * @param tree 语法树
  */
@@ -73,7 +73,7 @@ const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state
 
 /**
  * 折叠范围
- * @param view EditorView
+ * @param view
  * @param start 起始位置
  * @param end 结束位置
  */
@@ -107,7 +107,7 @@ const fold = (view: EditorView, effects: StateEffect<DocRange>[]): boolean => {
 
 /**
  * 创建折叠提示
- * @param state EditorState
+ * @param state
  */
 const create = (state: EditorState): Tooltip | null => {
 	const range = foldable(state, state.selection.main.head);
@@ -183,7 +183,7 @@ export const foldExtension: Extension[] = [
 
 /**
  * 点击提示折叠模板参数
- * @param view EditorView
+ * @param view
  */
 export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
 	const dom = (e.target as Element).closest<HTMLElement>('.cm-tooltip-fold');

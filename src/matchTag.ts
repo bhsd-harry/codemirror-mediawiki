@@ -57,7 +57,7 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag(?!-bracket)/u.t
 
 /**
  * 获取标签信息
- * @param state EditorState
+ * @param state
  * @param node 语法树节点
  */
 const getTag = (state: EditorState, node: SyntaxNode): Tag => {
@@ -78,7 +78,7 @@ const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 
 /**
  * 搜索匹配的标签
- * @param state EditorState
+ * @param state
  * @param origin 起始标签
  */
 const searchTag = (state: EditorState, origin: Tag): Tag | null => {
@@ -103,7 +103,7 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 
 /**
  * 匹配标签
- * @param state EditorState
+ * @param state
  * @param pos 位置
  */
 const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {

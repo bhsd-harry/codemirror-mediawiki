@@ -531,7 +531,7 @@ export class CodeMirror6 {
 
 	/**
 	 * 替换选中内容
-	 * @param view EditorView
+	 * @param view
 	 * @param func 替换函数
 	 */
 	static replaceSelections(view: EditorView, func: (str: string) => string): void {

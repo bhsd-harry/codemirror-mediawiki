@@ -177,6 +177,7 @@ document.body.addEventListener('click', e => {
 	const portletContainer: Record<string, string> = {
 		minerva: 'page-actions-overflow',
 		moeskin: 'ca-more-actions',
+		citizen: 'p-tb',
 	};
 	await Promise.all([
 		mw.loader.using('mediawiki.util'),

@@ -11,7 +11,7 @@ declare interface MagicWord {
 const USING_LOCAL = mw.loader.getState('ext.CodeMirror') !== null,
 	DATA_MODULE = mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
 	ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
-		= JSON.parse(localStorage.getItem('InPageEditMwConfig')!) || {},
+		= JSON.parse(localStorage.getItem('InPageEditMwConfig') || '{}'),
 	SITE_ID = `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
@@ -153,7 +153,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 /**
  * 将MwConfig转换为Config
  * @param minConfig 基础Config
- * @param mwConfig MwConfig
+ * @param mwConfig
  */
 export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
 	const config: Config = {

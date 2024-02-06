@@ -15,9 +15,11 @@ on:
   push:
     paths:
       - '**/*.ts'
+      - '!**/*.d.ts'
   pull_request:
     paths:
       - '**/*.ts'
+      - '!**/*.d.ts'
 
 jobs:
   analyze:

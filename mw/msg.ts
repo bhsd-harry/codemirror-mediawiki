@@ -22,7 +22,7 @@ const storageKey = 'codemirror-mediawiki-i18n',
 	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
 
 /** 预存的I18N，可以用于判断是否是首次安装 */
-export const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey)!) || {};
+export const i18n: Record<string, string> = JSON.parse(localStorage.getItem(storageKey) || '{}');
 
 const {version} = i18n,
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
@@ -103,7 +103,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 
 /**
  * 本地化
- * @param cm 编辑器实例
+ * @param cm
  */
 export const localize = (cm: CodeMirror): void => {
 	const obj: Record<string, string> = {};

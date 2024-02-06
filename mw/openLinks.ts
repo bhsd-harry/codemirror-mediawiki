@@ -9,7 +9,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 
 /**
  * 点击时在新页面打开链接、模板等
- * @param cm CodeMirror实例
+ * @param cm
  * @param e 点击事件
  */
 const getHandler = (cm: CodeMirror): MouseEventListener => {
@@ -47,7 +47,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 
 /**
  * 添加或移除打开链接的事件
- * @param cm CodeMirror实例
+ * @param cm
  * @param on 是否添加
  */
 export const openLinks = (cm: CodeMirror, on?: boolean): void => {

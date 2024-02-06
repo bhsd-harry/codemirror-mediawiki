@@ -3,5 +3,3 @@ dist/
 !/dist/main.min.js
 /.markdownlint.json
 .eslintcache
-test.txt
-processed.txt

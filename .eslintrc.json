@@ -143,12 +143,7 @@
 			2,
 			"separate-lines"
 		],
-		"new-cap": [
-			2,
-			{
-				"newIsCap": false
-			}
-		],
+		"new-cap": 2,
 		"no-alert": 2,
 		"no-array-constructor": 2,
 		"no-bitwise": 2,
@@ -199,6 +194,15 @@
 		"no-new-object": 2,
 		"no-new-wrappers": 2,
 		"no-octal-escape": 2,
+		"no-restricted-globals": [
+			2,
+			"history",
+			"name",
+			"origin",
+			"parent",
+			"Range",
+			"Text"
+		],
 		"no-param-reassign": 2,
 		"no-return-assign": [
 			2,
@@ -658,6 +662,57 @@
 		]
 	},
 	"overrides": [
+		{
+			"files": "**/*.json",
+			"parser": "eslint-plugin-json-es",
+			"extends": [
+				"plugin:eslint-plugin-json-es/recommended"
+			],
+			"rules": {
+				"@stylistic/array-bracket-newline": [
+					2,
+					{
+						"minItems": 1
+					}
+				],
+				"@stylistic/array-element-newline": [
+					2,
+					"always"
+				],
+				"@stylistic/comma-dangle": [
+					2,
+					"never"
+				],
+				"@stylistic/max-len": 0,
+				"@stylistic/no-multiple-empty-lines": [
+					2,
+					{
+						"max": 0
+					}
+				],
+				"@stylistic/object-curly-newline": [
+					2,
+					{
+						"minProperties": 1
+					}
+				],
+				"@stylistic/object-property-newline": [
+					2,
+					{
+						"allowAllPropertiesOnSameLine": false
+					}
+				],
+				"@stylistic/quotes": [
+					2,
+					"double"
+				],
+				"strict": [
+					2,
+					"never"
+				],
+				"unicorn/filename-case": 0
+			}
+		},
 		{
 			"files": "**/*.ts",
 			"parser": "@typescript-eslint/parser",
