@@ -1,3 +1,11 @@
+## v2.4.5
+
+*2024-02-07*
+
+**Added**
+
+- New extension option for the MediaWiki mode: [wikiEditor](./mw/README.md#wikieditor)
+
 ## v2.4.2
 
 *2024-02-06*
@@ -6,13 +14,17 @@
 
 - New method: [`getNodeAt`](./README.md#getnodeat)
 
+**Changed**
+
+- The [`openLinks`](./mw/README.md#openlinks) extension now utilizes the syntax tree to detect page names
+
 ## v2.4.1
 
 *2024-02-06*
 
 **Added**
 
-- New extension option for the MediaWiki mode: `tagMatching`
+- New extension option for the MediaWiki mode: [tagMatching](./README.md#tagmatching)
 
 ## v2.3.5
 
@@ -33,6 +45,7 @@
 **Added**
 
 - New method: [`localize`](./README.md#localize)
+- The search dialog is now localized when used in a MediaWiki site
 
 **Fixed**
 
@@ -44,7 +57,8 @@
 
 **Added**
 
-- New extension option for the MediaWiki mode: `codeFolding`
+- New extension option for the MediaWiki mode: [codeFolding](./README.md#codefolding)
+- When used in a MediaWiki site, a welcome message will be sent
 
 ## v2.2.3
 
@@ -53,6 +67,7 @@
 **Added**
 
 - The MediaWiki mode now has a comment syntax: `<!--` + `-->`
+- The preference dialog in a MediaWiki site now allows for full-HTML labels
 
 ## v2.2.2
 
@@ -60,13 +75,22 @@
 
 **Added**
 
-- New extension option for the MediaWiki mode: `escape`
+- New extension option for the MediaWiki mode: [escape](./README.md#escape)
 - New method: [`extraKeys`](./README.md#extrakeys)
 - New static method: [`replaceSelections`](./README.md#replaceselections)
+- Now in a MediaWiki site, a user can toggle extensions on and off with a dialog
+
+**Changed**
+
+- [`fromTextArea`](./mw/README.md#fromtextarea) now takes one more optional argument of the namespace id
 
 ## v2.1.15
 
 *2024-01-30*
+
+**Added**
+
+- New extension option for the MediaWiki mode: [openLinks](./mw/README.md#openlinks)
 
 **Changed**
 
@@ -75,6 +99,10 @@
 ## v2.1.12
 
 *2024-01-27*
+
+**Added**
+
+- [defaultLint](./mw/README.md#defaultlint) now detects the user's language preference
 
 **Fixed**
 
@@ -109,6 +137,7 @@
 **Added**
 
 - [lintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
+- [defaultLint](./mw/README.md#defaultlint) can take a namespace id as a second argument in place of a configuration object
 
 **Fixed**
 
@@ -153,6 +182,7 @@
 
 - Language support for JSON
 - Read-only mode
+- The MediaWiki-site version now automatically detects the language on editing pages
 
 ## v2.1.0
 
