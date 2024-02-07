@@ -52,14 +52,26 @@ You can download the code via CDN, for example:
 
 ```js
 // static import
-import {CodeMirror6} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js';
+import {CodeMirror6} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki';
+```
+
+or
+
+```js
+import {CodeMirror6} from 'https://unpkg.com/@bhsd/codemirror-mediawiki';
 ```
 
 or
 
 ```js
 // dynamic import
-const {CodeMirror6} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/main.min.js');
+const {CodeMirror6} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki');
+```
+
+or
+
+```js
+const {CodeMirror6} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
 ```
 
 # Constructor
