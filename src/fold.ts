@@ -65,8 +65,10 @@ const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state
 		}
 		({prevSibling} = prevSibling);
 	}
-	if (delimiter && delimiter.to < nextSibling.from) {
-		return {from: delimiter.from, to: nextSibling.from};
+	const from = delimiter?.to,
+		to = nextSibling.from;
+	if (from && from < to) {
+		return {from, to};
 	}
 	return null;
 };
@@ -105,25 +107,7 @@ const create = (state: EditorState): Tooltip | null => {
 };
 
 export const foldExtension: Extension[] = [
-	codeFolding({
-		preparePlaceholder(state, {from}): string[] {
-			return ensureSyntaxTree(state, from)!.resolve(from, 1).name.split('_').filter(Boolean);
-		},
-		placeholderDOM({state}, onclick, prepared: string[]) {
-			const element = document.createElement('span'),
-				delimiter = document.createElement('span'),
-				container = document.createElement('span');
-			element.textContent = '…';
-			element.setAttribute('aria-label', state.phrase('folded code'));
-			element.title = state.phrase('unfold');
-			element.className = 'cm-foldPlaceholder';
-			element.onclick = onclick;
-			delimiter.textContent = '|';
-			delimiter.className = prepared.map(s => `cm-${s}`).join(' ');
-			container.append(delimiter, element);
-			return container;
-		},
-	}),
+	codeFolding(),
 	StateField.define<Tooltip | null>({
 		create,
 		update(tooltip, {state, docChanged, selection}) {
