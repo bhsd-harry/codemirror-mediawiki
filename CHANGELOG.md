@@ -1,3 +1,11 @@
+## v2.4.6
+
+*2024-02-11*
+
+**Fixed**
+
+- The [`openLinks`](./mw/README.md#openlinks) extension now correctly detects page names with `&`
+
 ## v2.4.5
 
 *2024-02-07*

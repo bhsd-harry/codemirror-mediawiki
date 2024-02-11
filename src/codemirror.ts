@@ -526,7 +526,7 @@ export class CodeMirror6 {
 	 * @param position 位置
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
-		return ensureSyntaxTree(this.#view.state, position)?.resolve(position, 0);
+		return ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
 	}
 
 	/**

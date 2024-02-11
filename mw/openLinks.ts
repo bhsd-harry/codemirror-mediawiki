@@ -1,4 +1,5 @@
 import {isMac} from './msg';
+import type {SyntaxNode} from '@lezer/common';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
@@ -6,6 +7,16 @@ declare type MouseEventListener = (e: MouseEvent) => void;
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	regex = /-template-name|-link-pagename/u,
 	handlers = new WeakMap<CodeMirror, MouseEventListener>();
+
+/**
+ * 获取节点的名称
+ * @param node 语法树节点
+ */
+function getName(node: SyntaxNode): string;
+function getName(node: null): undefined;
+function getName(node: SyntaxNode | null): string | undefined {
+	return node?.name.replace(/_+/gu, ' ').trim();
+}
 
 /**
  * 点击时在新页面打开链接、模板等
@@ -26,13 +37,13 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			return;
 		}
 		e.preventDefault();
-		const {name} = node;
+		const name = getName(node);
 		let prev = node,
 			next = node;
-		while (prev.prevSibling?.name === name) {
+		while (getName(prev.prevSibling!) === name) {
 			prev = prev.prevSibling!;
 		}
-		while (next.nextSibling?.name === name) {
+		while (getName(next.nextSibling!) === name) {
 			next = next.nextSibling!;
 		}
 		let page = view.state.sliceDoc(prev.from, next.to).trim();
