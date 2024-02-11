@@ -330,7 +330,7 @@ export class CodeMirror6 {
 				}
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
 				return async doc =>
-					(await wikiLinter.codemirror(doc.toString())).filter(({severity}) => severity === 'error');
+					(await wikiLinter.codemirror(doc.toString())).map(e => ({...e, source: 'wikilint'}));
 			}
 			case 'javascript': {
 				await loadScript('npm/eslint-linter-browserify', 'eslint');
@@ -357,6 +357,7 @@ export class CodeMirror6 {
 					.map(({message, severity, line, column, endLine, endColumn}) => {
 						const from = pos(doc, line, column);
 						return {
+							source: 'ESLint',
 							message,
 							severity: severity === 1 ? 'warning' : 'error',
 							from,
@@ -419,6 +420,7 @@ export class CodeMirror6 {
 					const {results} = await stylelint.lint({code: doc.toString(), config: conf});
 					return results.flatMap(({warnings}) => warnings)
 						.map(({text, severity, line, column, endLine, endColumn}) => ({
+							source: 'Stylelint',
 							message: text,
 							severity,
 							from: pos(doc, line, column),
@@ -437,6 +439,7 @@ export class CodeMirror6 {
 						if (e instanceof luaparse.SyntaxError) {
 							return [
 								{
+									source: 'luaparse',
 									message: e.message,
 									severity: 'error',
 									from: e.index,
