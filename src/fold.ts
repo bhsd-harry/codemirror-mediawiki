@@ -1,6 +1,6 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, ensureSyntaxTree, foldState, unfoldAll, unfoldEffect} from '@codemirror/language';
+import {foldEffect, ensureSyntaxTree, foldState, unfoldAll, unfoldEffect, codeFolding} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -65,44 +65,10 @@ const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state
 		}
 		({prevSibling} = prevSibling);
 	}
-	if (delimiter) {
+	if (delimiter && delimiter.to < nextSibling.from) {
 		return {from: delimiter.from, to: nextSibling.from};
 	}
 	return null;
-};
-
-/**
- * 折叠范围
- * @param view
- * @param start 起始位置
- * @param end 结束位置
- */
-const foldRanges = (view: EditorView, start: number, end: number): StateEffect<DocRange>[] => {
-	const {state, viewport: {to}} = view,
-		tree = ensureSyntaxTree(state, to),
-		effects: StateEffect<DocRange>[] = [];
-	let node: SyntaxNode | null | undefined = tree?.resolve(start, 1);
-	while (node && node.from <= end) {
-		if (isTemplate(node) && !isTemplateName(node)) {
-			const range = foldable(state, node.to, tree);
-			if (range) {
-				effects.push(foldEffect.of(range));
-				node = tree!.resolve(range.to, 1);
-			}
-			continue;
-		}
-		node = node.nextSibling;
-	}
-	return effects;
-};
-
-const fold = (view: EditorView, effects: StateEffect<DocRange>[]): boolean => {
-	if (effects.length > 0) {
-		view.dom.querySelector('.cm-tooltip-fold')?.remove();
-		view.dispatch({effects});
-		return true;
-	}
-	return false;
 };
 
 /**
@@ -139,6 +105,25 @@ const create = (state: EditorState): Tooltip | null => {
 };
 
 export const foldExtension: Extension[] = [
+	codeFolding({
+		preparePlaceholder(state, {from}): string[] {
+			return ensureSyntaxTree(state, from)!.resolve(from, 1).name.split('_').filter(Boolean);
+		},
+		placeholderDOM({state}, onclick, prepared: string[]) {
+			const element = document.createElement('span'),
+				delimiter = document.createElement('span'),
+				container = document.createElement('span');
+			element.textContent = '…';
+			element.setAttribute('aria-label', state.phrase('folded code'));
+			element.title = state.phrase('unfold');
+			element.className = 'cm-foldPlaceholder';
+			element.onclick = onclick;
+			delimiter.textContent = '|';
+			delimiter.className = prepared.map(s => `cm-${s}`).join(' ');
+			container.append(delimiter, element);
+			return container;
+		},
+	}),
 	StateField.define<Tooltip | null>({
 		create,
 		update(tooltip, {state, docChanged, selection}) {
@@ -153,8 +138,30 @@ export const foldExtension: Extension[] = [
 			key: 'Ctrl-Shift-[',
 			mac: 'Cmd-Alt-[',
 			run(view): boolean {
-				const {state} = view;
-				return fold(view, state.selection.ranges.flatMap(({from, to}) => foldRanges(view, from, to)));
+				const {state} = view,
+					tree = ensureSyntaxTree(state, view.viewport.to),
+					effects = state.selection.ranges.flatMap(({from, to}) => {
+						const e: StateEffect<DocRange>[] = [];
+						let node: SyntaxNode | null | undefined = tree?.resolve(from, 1);
+						while (node && node.from <= to) {
+							if (isTemplate(node) && !isTemplateName(node)) {
+								const range = foldable(state, node.to, tree);
+								if (range) {
+									e.push(foldEffect.of(range));
+									node = tree!.resolve(range.to, 1);
+								}
+								continue;
+							}
+							node = node.nextSibling;
+						}
+						return e;
+					});
+				if (effects.length > 0) {
+					view.dom.querySelector('.cm-tooltip-fold')?.remove();
+					view.dispatch({effects});
+					return true;
+				}
+				return false;
 			},
 		},
 		{

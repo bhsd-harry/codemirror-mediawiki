@@ -17,7 +17,6 @@ import {
 	LanguageSupport,
 	bracketMatching,
 	indentUnit,
-	codeFolding,
 	ensureSyntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
@@ -51,7 +50,12 @@ const languages: Record<string, (config?: any) => LanguageSupport | []> = {
 for (const [language, parser] of Object.entries(plugins)) {
 	languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
 }
-const linters: Record<string, Extension> = {};
+
+/**
+ * 仅供mediawiki模式的扩展
+ * @param ext 扩展
+ */
+const mediawikiOnly = (ext: Extension = []): Addon<Extension> => [(e = []): Extension => e, {mediawiki: ext}];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, Addon<any>> = {
 	highlightSpecialChars: [highlightSpecialChars, {}],
@@ -67,19 +71,12 @@ const avail: Record<string, Addon<any>> = {
 		],
 		{},
 	],
-	escape: [
-		(keys: KeyBinding[] = []): Extension => keymap.of(keys),
-		{mediawiki: escapeKeymap},
-	],
-	codeFolding: [
-		(ext: Extension[] = []): Extension => [codeFolding(), ...ext],
-		{mediawiki: foldExtension},
-	] as Addon<Extension[]>,
-	tagMatching: [
-		(ext: Extension = []): Extension => ext,
-		{mediawiki: tagMatchingState},
-	] as Addon<Extension>,
+	escape: mediawikiOnly(keymap.of(escapeKeymap)),
+	codeFolding: mediawikiOnly(foldExtension),
+	tagMatching: mediawikiOnly(tagMatchingState),
 };
+
+const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
 
 export const CDN = 'https://testingcf.jsdelivr.net';
