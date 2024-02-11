@@ -8,16 +8,6 @@ export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
  */
 const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
 
-function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option: {startAndEnd: true}): [number, number];
-function getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: false}): number;
-function getCaretPosition(
-	this: JQuery<HTMLTextAreaElement>,
-	option?: {startAndEnd?: boolean},
-): [number, number] | number {
-	const {view: {state: {selection: {main}}}} = getInstance(this);
-	return option?.startAndEnd ? [main.from, main.to] : main.head;
-}
-
 /**
  * jQuery.textSelection overrides for CodeMirror.
  * See jQuery.textSelection.js for method documentation
@@ -46,11 +36,16 @@ export const textSelection = {
 		return this;
 	},
 	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
-		const {view} = getInstance(this);
+		const {view} = getInstance(this),
+			{state: {selection: {main: {from, to}}}} = view;
+		view.dispatch({selection: {anchor: from, head: to}});
 		view.dispatch(view.state.replaceSelection(value));
 		return this;
 	},
-	getCaretPosition,
+	getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: boolean}): [number, number] | number {
+		const {view: {state: {selection: {main}}}} = getInstance(this);
+		return option?.startAndEnd ? [main.from, main.to] : main.head;
+	},
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement> {
 		getInstance(this).view.dispatch({scrollIntoView: true});
 		return this;
