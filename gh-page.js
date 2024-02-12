@@ -1,27 +1,4 @@
 import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
-const fromEntries = (entries, obj) => {
-    for (const entry of entries) {
-        obj[entry] = true;
-    }
-};
-export const getMwConfig = (config) => {
-    const mwConfig = {
-        tags: {},
-        tagModes: {
-            ref: 'text/mediawiki',
-        },
-        doubleUnderscore: [{}, {}],
-        functionSynonyms: [config.parserFunction[0], {}],
-        urlProtocols: `${config.protocol}|//`,
-        nsid: config.nsid,
-    };
-    fromEntries(config.ext, mwConfig.tags);
-    fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);
-    fromEntries(config.doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
-    fromEntries(config.parserFunction.slice(2).flat(), mwConfig.functionSynonyms[0]);
-    fromEntries(config.parserFunction[1], mwConfig.functionSynonyms[1]);
-    return mwConfig;
-};
 (() => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
@@ -35,7 +12,7 @@ export const getMwConfig = (config) => {
         }
         if (isMediaWiki || lang === 'html') {
             parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
-            config || (config = getMwConfig(parserConfig));
+            config || (config = CodeMirror6.getMwConfig(parserConfig));
         }
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {

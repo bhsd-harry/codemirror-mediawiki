@@ -1,6 +1,10 @@
 ## v2.4.7
 
-*2024-02-11*
+*2024-02-12*
+
+**Added**
+
+- New static method: [`getMwConfig`](./README.md#getmwconfig)
 
 **Fixed**
 

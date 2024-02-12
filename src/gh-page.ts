@@ -2,40 +2,6 @@ import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
 import type {Config} from 'wikilint';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 
-/**
- * Object.fromEntries polyfill
- * @param entries
- * @param obj
- */
-const fromEntries = (entries: readonly string[], obj: Record<string, unknown>): void => {
-	for (const entry of entries) {
-		obj[entry] = true;
-	}
-};
-
-/**
- * 将wikiparser-node设置转换为codemirror-mediawiki设置
- * @param config
- */
-export const getMwConfig = (config: Config): MwConfig => {
-	const mwConfig: MwConfig = {
-		tags: {},
-		tagModes: {
-			ref: 'text/mediawiki',
-		},
-		doubleUnderscore: [{}, {}],
-		functionSynonyms: [config.parserFunction[0], {}],
-		urlProtocols: `${config.protocol}|//`,
-		nsid: config.nsid,
-	};
-	fromEntries(config.ext, mwConfig.tags);
-	fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);
-	fromEntries(config.doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
-	fromEntries((config.parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0]);
-	fromEntries(config.parserFunction[1], mwConfig.functionSynonyms[1]);
-	return mwConfig;
-};
-
 (() => {
 	if (!location.pathname.startsWith('/codemirror-mediawiki')) {
 		return;
@@ -64,7 +30,7 @@ export const getMwConfig = (config: Config): MwConfig => {
 		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ||= getMwConfig(parserConfig!);
+			config ||= CodeMirror6.getMwConfig(parserConfig!);
 		}
 		cm.setLanguage(lang, config);
 		if (!(lang in linters)) {

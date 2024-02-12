@@ -25,6 +25,7 @@
 	- [toggle](#toggle)
 	- [update](#update)
 - [Static methods](#static-methods)
+	- [getMwConfig](#getmwconfig)
 	- [replaceSelections](#replaceselections)
 - [Extensions](#extensions)
 	- [allowMultipleSelections](#allowmultipleselections)
@@ -368,6 +369,23 @@ Refresh linting immediately.
 
 # Static methods
 
+## getMwConfig
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.4.7*
+
+**param**: [`Config`](https://github.com/bhsd-harry/wikiparser-node/wiki/types#config) the [WikiLint](https://npmjs.com/package/wikilint) configuration  
+**returns**: `MwConfig`  
+Derive the configuration for the MediaWiki mode from WikiLint configuration.
+
+```js
+const mwConfig = CodeMirror6.getMwConfig(config);
+```
+
+</details>
+
 ## replaceSelections
 
 <details>
@@ -375,7 +393,7 @@ Refresh linting immediately.
 
 *version added: 2.2.2*
 
-**param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance
+**param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance  
 **param**: `(str: string) => string` the replacement function  
 Replace the selected text with the return value of the replacement function.
 

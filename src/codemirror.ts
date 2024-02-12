@@ -34,8 +34,10 @@ import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
+import type {Config} from 'wikilint';
+import type {MwConfig} from './mediawiki';
 
-export type {MwConfig} from './mediawiki';
+export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
@@ -106,6 +108,18 @@ const loadScript = (src: string, globalConst: string): Promise<void> => new Prom
  * @param column 列号
  */
 const pos = (doc: Text, line: number, column: number): number => doc.line(line).from + column - 1;
+
+/**
+ * Object.fromEntries polyfill
+ * @param entries
+ * @param obj
+ * @param string 是否为字符串
+ */
+const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, string?: boolean): void => {
+	for (const entry of entries) {
+		obj[entry] = string ? entry : true;
+	}
+};
 
 export class CodeMirror6 {
 	readonly #textarea;
@@ -543,5 +557,33 @@ export class CodeMirror6 {
 				changes: {from, to, insert},
 			};
 		}));
+	}
+
+	/**
+	 * 将wikiparser-node设置转换为codemirror-mediawiki设置
+	 * @param config
+	 */
+	static getMwConfig(config: Config): MwConfig {
+		const mwConfig: MwConfig = {
+			tags: {},
+			tagModes: {
+				ref: 'text/mediawiki',
+			},
+			doubleUnderscore: [{}, {}],
+			functionSynonyms: [config.parserFunction[0], {}],
+			urlProtocols: `${config.protocol}|//`,
+			nsid: config.nsid,
+			img: {},
+			variants: config.variants,
+		};
+		fromEntries(config.ext, mwConfig.tags);
+		fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);
+		fromEntries(config.doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
+		fromEntries((config.parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
+		fromEntries(config.parserFunction[1], mwConfig.functionSynonyms[1]);
+		for (const [key, val] of Object.entries(config.img)) {
+			mwConfig.img![key] = `img_${val}`;
+		}
+		return mwConfig;
 	}
 }
