@@ -31,7 +31,7 @@ import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
-import type {Diagnostic} from '@codemirror/lint';
+import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
 import type {Config} from 'wikilint';
@@ -364,15 +364,40 @@ export class CodeMirror6 {
 					}
 				}
 				return doc => esLinter.verify(doc.toString(), conf)
-					.map(({ruleId, message, severity, line, column, endLine, endColumn}) => {
-						const from = pos(doc, line, column);
-						return {
-							source: 'ESLint',
-							message: `${message} (${ruleId})`,
-							severity: severity === 1 ? 'warning' : 'error',
-							from,
-							to: endLine === undefined ? from + 1 : pos(doc, endLine, endColumn!),
-						};
+					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
+						const from = pos(doc, line, column),
+							diagnostic: Diagnostic = {
+								source: 'ESLint',
+								message: `${message}${ruleId ? ` (${ruleId})` : ''}`,
+								severity: severity === 1 ? 'warning' : 'error',
+								from,
+								to: endLine === undefined ? from + 1 : pos(doc, endLine, endColumn!),
+							};
+						if (fix || suggestions.length > 0) {
+							diagnostic.actions = [
+								...fix
+									? [
+										{
+											name: 'fix',
+											apply(view): void {
+												view.dispatch({
+													changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
+												});
+											},
+										} as Action,
+									]
+									: [],
+								...suggestions.map(({fix: {range, text}}): Action => ({
+									name: 'suggestion',
+									apply(view): void {
+										view.dispatch({
+											changes: {from: range[0], to: range[1], insert: text},
+										});
+									},
+								})),
+							];
+						}
+						return diagnostic;
 					});
 			}
 			case 'css': {
@@ -450,7 +475,7 @@ export class CodeMirror6 {
 							return [
 								{
 									source: 'luaparse',
-									message: e.message,
+									message: e.message.replace(/^\[\d+:\d+\]\s*/u, ''),
 									severity: 'error',
 									from: e.index,
 									to: e.index,
