@@ -5,7 +5,8 @@ import {instances, textSelection} from './textSelection';
 import {openPreference, prefs, indentKey} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
-import type {LintSource} from '../src/codemirror';
+import type {Config} from 'wikilint';
+import type {LintSource, MwConfig} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
 const baseVersion = '2.4',
@@ -143,7 +144,21 @@ export class CodeMirror extends CodeMirror6 {
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns),
 			indent = localStorage.getItem(indentKey);
 		if (isWiki) {
-			const config = await getMwConfig();
+			let config: MwConfig;
+			if (mw.config.get('wgServerName') === 'zh.moegirl.org.cn') {
+				if (mw.config.exists('wikilintConfig')) {
+					config = mw.config.get('extCodeMirrorConfig') as MwConfig;
+				} else {
+					const parserConfig: Config = await (await fetch(
+						`${CDN}/npm/wikiparser-node@browser/config/moegirl.json`,
+					)).json();
+					mw.config.set('wikilintConfig', parserConfig);
+					config = CodeMirror6.getMwConfig(parserConfig);
+					mw.config.set('extCodeMirrorConfig', config);
+				}
+			} else {
+				config = await getMwConfig();
+			}
 			cm.setLanguage(lang, config);
 		}
 		cm.prefer([...prefs]);

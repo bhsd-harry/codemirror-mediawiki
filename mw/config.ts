@@ -157,6 +157,9 @@ export const getMwConfig = async (): Promise<MwConfig> => {
  * @param mwConfig
  */
 export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
+	if (mw.config.exists('wikilintConfig')) {
+		return mw.config.get('wikilintConfig') as Config;
+	}
 	const config: Config = {
 		...minConfig,
 		ext: Object.keys(mwConfig.tags),
@@ -180,8 +183,8 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		...Object.keys(mwConfig.functionSynonyms[1]),
 		'=',
 	];
-	for (const key of Object.keys(mwConfig.img!)) {
-		config.img[key] = mwConfig.img![key]!.slice(4);
+	for (const [key, val] of Object.entries(mwConfig.img!)) {
+		config.img[key] = val.slice(4);
 	}
 	return config;
 };
