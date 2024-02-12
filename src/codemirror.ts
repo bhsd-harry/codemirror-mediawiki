@@ -403,7 +403,7 @@ export class CodeMirror6 {
 			case 'css': {
 				await loadScript('gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint');
 				/** @see https://npmjs.com/package/stylelint-config-recommended */
-				const conf = {
+				const config = {
 					rules: {
 						'annotation-no-unknown': true,
 						'at-rule-no-unknown': true,
@@ -452,7 +452,7 @@ export class CodeMirror6 {
 					},
 				};
 				return async doc => {
-					const {results} = await stylelint.lint({code: doc.toString(), config: conf});
+					const {results} = await stylelint.lint({code: doc.toString(), config});
 					return results.flatMap(({warnings}) => warnings)
 						.map(({text, severity, line, column, endLine, endColumn}) => ({
 							source: 'Stylelint',

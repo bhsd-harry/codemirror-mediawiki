@@ -1,7 +1,7 @@
 import {CodeMirror6} from './codemirror';
 import type {Config} from 'wikilint';
 import type {Linter} from 'eslint';
-import type {LinterOptions, LinterResult} from 'stylelint';
+import type {PublicApi} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';
 import type {MwConfig, LintSource} from './codemirror';
 
@@ -33,8 +33,6 @@ declare global {
 	const eslint: {
 		Linter: new () => Linter;
 	};
-	const stylelint: {
-		lint(option: LinterOptions): Promise<LinterResult>;
-	};
+	const stylelint: PublicApi;
 	const luaparse: luaparse;
 }
