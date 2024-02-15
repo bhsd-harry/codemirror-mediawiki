@@ -11,7 +11,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
-		mediawikiOnly = ['escape', 'codeFolding', 'tagMatching'],
+		mediawikiOnly = ['escape', 'codeFolding', 'tagMatching', 'autocompletion'],
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,

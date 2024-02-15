@@ -4,11 +4,19 @@
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import {HighlightStyle, LanguageSupport, StreamLanguage, syntaxHighlighting} from '@codemirror/language';
+import {
+	HighlightStyle,
+	LanguageSupport,
+	StreamLanguage,
+	syntaxHighlighting,
+	ensureSyntaxTree,
+} from '@codemirror/language';
 import {Tag} from '@lezer/highlight';
 import {modeConfig} from './config';
 import * as plugins from './plugins';
 import type {StreamParser, StringStream, TagStyle} from '@codemirror/language';
+import type {CompletionSource, CloseBracketConfig, Completion} from '@codemirror/autocomplete';
+import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
@@ -87,6 +95,9 @@ class MediaWiki {
 	declare readonly tokenTable;
 	declare readonly permittedHtmlTags;
 	declare readonly implicitlyClosedHtmlTags;
+	declare readonly fileRegex: RegExp;
+	declare readonly functionSynonyms: Completion[];
+	declare readonly doubleUnderscore: Completion[];
 
 	constructor(config: MwConfig) {
 		this.config = config;
@@ -115,15 +126,18 @@ class MediaWiki {
 		for (const tag of Object.keys(config.tags)) {
 			this.addTag(tag);
 		}
-	}
 
-	/**
-	 * Create RegExp for file links
-	 * @internal
-	 */
-	get fileRegex(): RegExp {
 		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
-		return new RegExp(`^\\s*(?:${nsFile})\\s*:\\s*`, 'iu');
+		this.fileRegex = new RegExp(`^\\s*(?:${nsFile})\\s*:\\s*`, 'iu');
+
+		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
+			type: i ? 'variable' : 'function',
+			label,
+		})));
+		this.doubleUnderscore = this.config.doubleUnderscore.flatMap(Object.keys).map(label => ({
+			type: 'variable',
+			label,
+		}));
 	}
 
 	/**
@@ -1074,6 +1088,38 @@ class MediaWiki {
 		this.wasItalic = this.isItalic;
 	}
 
+	/** 自动补全魔术字 */
+	get completionSource(): CompletionSource {
+		return context => {
+			const {state, pos} = context,
+				node = ensureSyntaxTree(state, pos)?.resolve(pos, -1);
+			if (!node) {
+				return null;
+			}
+			const types = node.name.split('_');
+			if (types.includes(modeConfig.tags.templateName) || types.includes(modeConfig.tags.parserFunctionName)) {
+				return {
+					from: node.from,
+					options: this.functionSynonyms,
+					validFor: /^[^|{}<]*$/u,
+				};
+			} else if (
+				!types.includes(modeConfig.tags.templateVariableName)
+				&& !types.includes(modeConfig.tags.htmlTagAttribute)
+			) {
+				const mt = context.matchBefore(/__(?:(?!__)\w)*$/u);
+				return mt
+					? {
+						from: mt.from,
+						options: this.doubleUnderscore,
+						validFor: /^\w*$/u,
+					}
+					: null;
+			}
+			return null;
+		};
+	}
+
 	/**
 	 * main entry
 	 *
@@ -1201,8 +1247,9 @@ class MediaWiki {
 			tokenTable: this.tokenTable,
 
 			languageData: {
-				commentTokens: {block: {open: '<!--', close: '-->'}},
-				closeBrackets: {brackets: ['(', '[', '{', '"']},
+				commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
+				closeBrackets: {brackets: ['(', '[', '{', '"']} as CloseBracketConfig,
+				autocomplete: this.completionSource,
 			},
 		};
 	}

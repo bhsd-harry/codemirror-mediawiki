@@ -1,12 +1,12 @@
 import {CodeMirror6} from './codemirror';
-import type {Config} from 'wikilint';
+import type {Config, Rule} from 'wikilint';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';
 import type {MwConfig, LintSource} from './codemirror';
 
 class WikiLinter {
-	codemirror(s: string): Promise<Diagnostic[]>;
+	codemirror(s: string): Promise<(Diagnostic & {rule: Rule})[]>;
 }
 
 interface luaparse {

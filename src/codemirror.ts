@@ -22,7 +22,7 @@ import {
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
-import {closeBrackets} from '@codemirror/autocomplete';
+import {closeBrackets, autocompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler} from './fold';
@@ -76,6 +76,7 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	codeFolding: mediawikiOnly(foldExtension),
 	tagMatching: mediawikiOnly(tagMatchingState),
+	autocompletion: mediawikiOnly(autocompletion({defaultKeymap: false})),
 };
 
 const linters: Record<string, Extension> = {};
@@ -327,7 +328,7 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.4.5-b',
+				const REPO = 'npm/wikiparser-node@1.4.4-b',
 					DIR = `${REPO}/extensions/dist`,
 					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
 					lang = opt?.['i18n'];
@@ -340,7 +341,7 @@ export class CodeMirror6 {
 					} catch {}
 				}
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
-				return doc => wikiLinter.codemirror(doc.toString());
+				return async doc => (await wikiLinter.codemirror(doc.toString())).filter(({rule}) => rule !== 'no-arg');
 			}
 			case 'javascript': {
 				await loadScript('npm/eslint-linter-browserify', 'eslint');
