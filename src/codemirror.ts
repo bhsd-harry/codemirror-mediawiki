@@ -366,37 +366,24 @@ export class CodeMirror6 {
 				}
 				return doc => esLinter.verify(doc.toString(), conf)
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
-						const from = pos(doc, line, column),
+						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
 								source: 'ESLint',
 								message: `${message}${ruleId ? ` (${ruleId})` : ''}`,
 								severity: severity === 1 ? 'warning' : 'error',
-								from,
-								to: endLine === undefined ? from + 1 : pos(doc, endLine, endColumn!),
+								from: start,
+								to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
 							};
 						if (fix || suggestions.length > 0) {
 							diagnostic.actions = [
-								...fix
-									? [
-										{
-											name: 'fix',
-											apply(view): void {
-												view.dispatch({
-													changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
-												});
-											},
-										} as Action,
-									]
-									: [],
-								...suggestions.map(({fix: {range, text}}): Action => ({
-									name: 'suggestion',
-									apply(view): void {
-										view.dispatch({
-											changes: {from: range[0], to: range[1], insert: text},
-										});
-									},
-								})),
-							];
+								...fix ? [{name: 'fix', fix}] : [],
+								...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
+							].map(({name, fix: {range: [from, to], text}}) => ({
+								name,
+								apply(view): void {
+									view.dispatch({changes: {from, to, insert: text}});
+								},
+							} as Action));
 						}
 						return diagnostic;
 					});
