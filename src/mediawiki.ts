@@ -98,6 +98,7 @@ class MediaWiki {
 	declare readonly fileRegex: RegExp;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
+	declare readonly tagNames: Completion[];
 
 	constructor(config: MwConfig) {
 		this.config = config;
@@ -131,11 +132,15 @@ class MediaWiki {
 		this.fileRegex = new RegExp(`^\\s*(?:${nsFile})\\s*:\\s*`, 'iu');
 
 		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
-			type: i ? 'variable' : 'function',
+			type: i ? 'constant' : 'function',
 			label,
 		})));
 		this.doubleUnderscore = this.config.doubleUnderscore.flatMap(Object.keys).map(label => ({
-			type: 'variable',
+			type: 'constant',
+			label,
+		}));
+		this.tagNames = [...new Set([...modeConfig.permittedHtmlTags, ...Object.keys(config.tags)])].map(label => ({
+			type: 'type',
 			label,
 		}));
 	}
@@ -1096,23 +1101,28 @@ class MediaWiki {
 			if (!node) {
 				return null;
 			}
-			const types = node.name.split('_');
-			if (types.includes(modeConfig.tags.templateName) || types.includes(modeConfig.tags.parserFunctionName)) {
+			const types = new Set(node.name.split('_'));
+			if (types.has(modeConfig.tags.templateName) || types.has(modeConfig.tags.parserFunctionName)) {
 				return {
 					from: node.from,
 					options: this.functionSynonyms,
 					validFor: /^[^|{}<]*$/u,
 				};
-			} else if (
-				!types.includes(modeConfig.tags.templateVariableName)
-				&& !types.includes(modeConfig.tags.htmlTagAttribute)
-			) {
-				const mt = context.matchBefore(/__(?:(?!__)\w)*$/u);
-				return mt
-					? {
+			} else if (!types.has(modeConfig.tags.comment) && !types.has(modeConfig.tags.templateVariableName)) {
+				let mt = context.matchBefore(/__(?:(?!__)\w)*$/u);
+				if (mt) {
+					return {
 						from: mt.from,
 						options: this.doubleUnderscore,
 						validFor: /^\w*$/u,
+					};
+				}
+				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
+				return mt && mt.to - mt.from > 1
+					? {
+						from: mt.from + 1 + (mt.text[1] === '/' ? 1 : 0),
+						options: this.tagNames,
+						validFor: /^[a-z\d]*$/iu,
 					}
 					: null;
 			}

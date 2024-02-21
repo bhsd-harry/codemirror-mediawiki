@@ -7,6 +7,7 @@
 	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/codemirror-mediawiki/issues\" target=\"_blank\">GitHub</a> ！",
 	"contentmodel": "請輸入內容模型：",
 	"addon-allowMultipleSelections": "允許選擇多個片段",
+	"addon-autocompletion": "自動填入魔術字和標籤名",
 	"addon-bracketMatching": "突出顯示匹配和未匹配的括號",
 	"addon-closeBrackets": "自動閉合括號和引號",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : 摺疊\nCtrl-Shift-] : 展開\nCtrl-Alt-] : 展開全部\">摺疊模板參數</span>",

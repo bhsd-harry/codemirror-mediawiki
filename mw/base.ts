@@ -9,8 +9,8 @@ import type {Config} from 'wikilint';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.4',
-	addons = ['tagMatching'];
+const baseVersion = '2.5',
+	addons = ['autocompletion'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 

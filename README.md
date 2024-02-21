@@ -411,6 +411,12 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 
 Allow multiple selections.
 
+## autocompletion
+
+*version added: 2.5.0*
+
+Provide autocompletion for the MediaWiki mode.
+
 ## bracketMatching
 
 *version added: 2.0.9*

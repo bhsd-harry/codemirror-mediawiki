@@ -1,3 +1,12 @@
+## v2.5.0
+
+*2024-02-21*
+
+**Added**
+
+- New extension option for the MediaWiki mode: [autocompletion](./README.md#autocompletion)
+- ESLint and Stylelint now provide auto-fix suggestions
+
 ## v2.4.7
 
 *2024-02-12*
