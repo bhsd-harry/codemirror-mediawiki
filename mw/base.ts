@@ -140,6 +140,21 @@ export class CodeMirror extends CodeMirror6 {
 		if (prefs.has('wikiEditor')) {
 			await wikiEditor($(textarea));
 		}
+		if (!lang && ns === undefined) {
+			/* eslint-disable no-param-reassign */
+			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
+			if (wgAction === 'edit' || wgAction === 'submit') {
+				ns = wgNamespaceNumber;
+				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
+			} else {
+				await mw.loader.using('oojs-ui-windows');
+				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
+			}
+			if (lang && lang in langMap) {
+				lang = langMap[lang];
+			}
+			/* eslint-enable no-param-reassign */
+		}
 		const isWiki = lang === 'mediawiki' || lang === 'html',
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns),
 			indent = localStorage.getItem(indentKey);
@@ -178,22 +193,7 @@ const langMap: Record<string, string> = {
 document.body.addEventListener('click', e => {
 	if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
 		e.preventDefault();
-		(async () => {
-			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
-			let lang: string | undefined,
-				ns: number | undefined;
-			if (wgAction === 'edit' || wgAction === 'submit') {
-				ns = wgNamespaceNumber;
-				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
-			} else {
-				await mw.loader.using('oojs-ui-windows');
-				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
-			}
-			if (lang && lang in langMap) {
-				lang = langMap[lang];
-			}
-			void CodeMirror.fromTextArea(e.target as HTMLTextAreaElement, lang, ns);
-		})();
+		void CodeMirror.fromTextArea(e.target);
 	}
 });
 
