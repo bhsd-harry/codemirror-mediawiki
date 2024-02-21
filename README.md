@@ -413,7 +413,7 @@ Allow multiple selections.
 
 ## autocompletion
 
-*version added: 2.5.0*
+*version added: 2.5.1*
 
 Provide autocompletion for the MediaWiki mode.
 

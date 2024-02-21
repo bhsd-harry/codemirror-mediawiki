@@ -21,12 +21,11 @@ const storageKey = 'codemirror-mediawiki-i18n',
 	},
 	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
 
-/* eslint-disable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
-export const getObject = mw.storage.getObject || ((key): unknown => JSON.parse(String(localStorage.getItem(key))));
-export const setObject = mw.storage.setObject || ((key, value): void => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const getObject = (key: string): any => JSON.parse(String(localStorage.getItem(key)));
+export const setObject = (key: string, value: unknown): void => {
 	localStorage.setItem(key, JSON.stringify(value));
-});
-/* eslint-enable @typescript-eslint/no-unnecessary-condition, @typescript-eslint/unbound-method */
+};
 
 /** 预存的I18N，可以用于判断是否是首次安装 */
 export const i18n: Record<string, string> = getObject(storageKey) || {};
