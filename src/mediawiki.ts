@@ -15,7 +15,11 @@ import {Tag} from '@lezer/highlight';
 import {modeConfig} from './config';
 import * as plugins from './plugins';
 import type {StreamParser, StringStream, TagStyle} from '@codemirror/language';
-import type {CompletionSource, CloseBracketConfig, Completion} from '@codemirror/autocomplete';
+import type {
+	CloseBracketConfig,
+	CompletionSource,
+	Completion,
+} from '@codemirror/autocomplete';
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
@@ -969,7 +973,8 @@ class MediaWiki {
 						return this.makeLocalStyle(modeConfig.tags.comment, state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+/u) as RegExpMatchArray | false;
+						mt = stream
+							.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u) as RegExpMatchArray | false;
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
@@ -1093,7 +1098,7 @@ class MediaWiki {
 		this.wasItalic = this.isItalic;
 	}
 
-	/** 自动补全魔术字 */
+	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
 		return context => {
 			const {state, pos} = context,

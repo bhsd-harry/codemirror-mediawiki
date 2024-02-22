@@ -78,7 +78,8 @@ const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state
  * @param state
  */
 const create = (state: EditorState): Tooltip | null => {
-	const range = foldable(state, state.selection.main.head);
+	const {selection: {main: {head}}} = state,
+		range = foldable(state, head);
 	if (range) {
 		const {from, to} = range;
 		let folded = false;
@@ -90,7 +91,7 @@ const create = (state: EditorState): Tooltip | null => {
 		return folded // eslint-disable-line @typescript-eslint/no-unnecessary-condition
 			? null
 			: {
-				pos: state.selection.main.head,
+				pos: head,
 				above: true,
 				create: (): {dom: HTMLElement} => {
 					const dom = document.createElement('div');
@@ -153,10 +154,9 @@ export const foldExtension: Extension[] = [
 			mac: 'Cmd-Alt-]',
 			run(view): boolean {
 				const {state} = view,
-					{selection: {ranges}} = state,
 					effects: StateEffect<DocRange>[] = [],
 					folded = state.field(foldState);
-				for (const {from, to} of ranges) {
+				for (const {from, to} of state.selection.ranges) {
 					folded.between(from, to, (i, j) => {
 						effects.push(unfoldEffect.of({from: i, to: j}));
 					});

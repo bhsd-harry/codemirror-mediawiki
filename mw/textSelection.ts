@@ -21,8 +21,9 @@ export const textSelection = {
 		return this;
 	},
 	getSelection(this: JQuery<HTMLTextAreaElement>): string {
-		const {view: {state}} = getInstance(this);
-		return state.sliceDoc(state.selection.main.from, state.selection.main.to);
+		const {view: {state}} = getInstance(this),
+			{selection: {main: {from, to}}} = state;
+		return state.sliceDoc(from, to);
 	},
 	setSelection(
 		this: JQuery<HTMLTextAreaElement>,
@@ -36,15 +37,14 @@ export const textSelection = {
 		return this;
 	},
 	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
-		const {view} = getInstance(this),
-			{state: {selection: {main: {from, to}}}} = view;
-		view.dispatch({selection: {anchor: from, head: to}});
+		const {view} = getInstance(this);
+		view.dispatch({selection: view.state.selection.asSingle()});
 		view.dispatch(view.state.replaceSelection(value));
 		return this;
 	},
 	getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: boolean}): [number, number] | number {
-		const {view: {state: {selection: {main}}}} = getInstance(this);
-		return option?.startAndEnd ? [main.from, main.to] : main.head;
+		const {view: {state: {selection: {main: {from, to, head}}}}} = getInstance(this);
+		return option?.startAndEnd ? [from, to] : head;
 	},
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement> {
 		getInstance(this).view.dispatch({scrollIntoView: true});
