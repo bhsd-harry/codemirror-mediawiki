@@ -1,5 +1,5 @@
 import {setObject, getObject} from './msg';
-import type {Config} from 'wikilint';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
 
 declare interface MagicWord {

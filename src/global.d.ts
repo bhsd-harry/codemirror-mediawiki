@@ -1,5 +1,5 @@
 import {CodeMirror6} from './codemirror';
-import type {Config, Rule} from 'wikilint';
+import type {Config, Rule} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
 import type {Diagnostic} from '@codemirror/lint';

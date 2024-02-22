@@ -1,11 +1,11 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.5.1/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.5.2/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, prefs, indentKey} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
-import type {Config} from 'wikilint';
+import type {Config} from 'wikiparser-node';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里

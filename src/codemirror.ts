@@ -34,7 +34,7 @@ import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
-import type {Config} from 'wikilint';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
 
 export type {MwConfig};

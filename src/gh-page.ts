@@ -1,5 +1,5 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
-import type {Config} from 'wikilint';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 
 (() => {
