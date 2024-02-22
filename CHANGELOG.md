@@ -1,3 +1,11 @@
+## v2.6.0
+
+*2024-02-22*
+
+**Added**
+
+- The preference dialog in a MediaWiki site adds a new tab for WikiLint configurations
+
 ## v2.5.1
 
 *2024-02-21*

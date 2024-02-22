@@ -2,7 +2,7 @@ import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemir
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference, prefs, indentKey} from './preference';
+import {openPreference, prefs, indentKey, wikilintConfig} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Config} from 'wikiparser-node';
@@ -109,7 +109,14 @@ export class CodeMirror extends CodeMirror6 {
 			await this.getLinter(opt);
 		}
 		if (linters[lang]) {
-			this.lint(linters[lang]);
+			if (lang === 'mediawiki') {
+				this.lint(
+					async doc => (await linters[lang]!(doc) as WikiDiagnostic[])
+						.filter(({rule, severity}) => Number(wikilintConfig[rule]) > Number(severity === 'warning')),
+				);
+			} else {
+				this.lint(linters[lang]);
+			}
 		}
 	}
 

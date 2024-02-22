@@ -341,7 +341,7 @@ export class CodeMirror6 {
 					} catch {}
 				}
 				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
-				return async doc => (await wikiLinter.codemirror(doc.toString())).filter(({rule}) => rule !== 'no-arg');
+				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {
 				await loadScript('npm/eslint-linter-browserify', 'eslint');

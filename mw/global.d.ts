@@ -1,4 +1,6 @@
 import 'types-mediawiki';
+import type {Diagnostic} from '@codemirror/lint';
+import type {LintError} from 'wikiparser-node';
 
 declare global {
 	namespace mw {
@@ -26,4 +28,8 @@ declare global {
 	interface JQuery {
 		wikiEditor(method: 'addModule', config: object): JQuery;
 	}
+
+	type Rule = LintError.Rule;
+
+	type WikiDiagnostic = Diagnostic & {rule: Rule};
 }
