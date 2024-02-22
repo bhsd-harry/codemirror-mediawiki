@@ -44,7 +44,7 @@ class Tag {
 	}
 }
 
-const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag(?!-bracket)/u.test(name),
+const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.test(name),
 	isTagComponent = (s: string) => ({name}: SyntaxNode, type: TagType): boolean =>
 		new RegExp(`-${type}tag-${s}`, 'u').test(name),
 	isBracket = isTagComponent('bracket'),

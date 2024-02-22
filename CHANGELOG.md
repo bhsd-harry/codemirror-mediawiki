@@ -1,3 +1,11 @@
+## v2.6.1
+
+*2024-02-22*
+
+**Fixed**
+
+- Interaction between the [tagMatching](./README.md#tagmatching) extension and uncustomized extension tags
+
 ## v2.6.0
 
 *2024-02-22*
@@ -25,11 +33,11 @@
 
 **Fixed**
 
-- The [`openLinks`](./mw/README.md#openlinks) extension now correctly detects page names with `&`
+- The [openLinks](./mw/README.md#openlinks) extension now correctly detects page names with `&`
 
 **Changed**
 
-- The placeholder of the [`codeFolding`](./README.md#codefolding) extension now contains a leading `|`
+- The placeholder of the [codeFolding](./README.md#codefolding) extension now contains a leading `|`
 
 ## v2.4.5
 
@@ -49,7 +57,7 @@
 
 **Changed**
 
-- The [`openLinks`](./mw/README.md#openlinks) extension now utilizes the syntax tree to detect page names
+- The [openLinks](./mw/README.md#openlinks) extension now utilizes the syntax tree to detect page names
 
 ## v2.4.1
 
