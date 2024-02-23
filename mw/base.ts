@@ -34,6 +34,7 @@ $.valHooks['textarea'] = {
 
 const linters: Record<string, LintSource | undefined> = {};
 
+/** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	ns;
 

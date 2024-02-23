@@ -19,6 +19,7 @@
 	- [lint](#lint)
 	- [localize](#localize)
 	- [prefer](#prefer)
+	- [scrollTo](#scrollto)
 	- [setContent](#setcontent)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
@@ -283,6 +284,22 @@ cm.prefer({
 	codeFolding: false,
 	tagMatching: false,
 });
+```
+
+</details>
+
+## scrollTo
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.6.2*
+
+**param**: [`number | {anchor: number, head: number}`](https://codemirror.net/docs/ref/#state.SelectionRange.anchor) the position or range to scroll to, default as the current cursor position  
+Scroll to the given position or range.
+
+```js
+cm.scrollTo();
 ```
 
 </details>

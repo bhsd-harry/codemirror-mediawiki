@@ -1,3 +1,15 @@
+## v2.6.2
+
+*2024-02-24*
+
+**Added**
+
+- New method: [`scrollTo`](./README.md#scrollto)
+
+**Fixed**
+
+- In the MediaWiki mode, a valid tag name now must end with `/[>/\s]/`.
+
 ## v2.6.1
 
 *2024-02-22*

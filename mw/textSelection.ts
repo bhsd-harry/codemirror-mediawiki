@@ -17,7 +17,11 @@ export const textSelection = {
 		return getInstance(this).view.state.doc.toString();
 	},
 	setContents(this: JQuery<HTMLTextAreaElement>, content: string): JQuery<HTMLTextAreaElement> {
-		getInstance(this).setContent(content);
+		const cm = getInstance(this),
+			{view: {scrollDOM}} = cm,
+			{scrollTop} = scrollDOM;
+		cm.setContent(content);
+		scrollDOM.scrollTop = scrollTop;
 		return this;
 	},
 	getSelection(this: JQuery<HTMLTextAreaElement>): string {
@@ -27,13 +31,11 @@ export const textSelection = {
 	},
 	setSelection(
 		this: JQuery<HTMLTextAreaElement>,
-		{start, end}: {start: number, end?: number},
+		{start, end = start}: {start: number, end?: number},
 	): JQuery<HTMLTextAreaElement> {
-		const {view} = getInstance(this);
-		view.dispatch({
-			selection: {anchor: start, head: end ?? start},
+		getInstance(this).view.dispatch({
+			selection: {anchor: start, head: end},
 		});
-		view.focus();
 		return this;
 	},
 	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
@@ -47,7 +49,8 @@ export const textSelection = {
 		return option?.startAndEnd ? [from, to] : head;
 	},
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement> {
-		getInstance(this).view.dispatch({scrollIntoView: true});
+		const cm = getInstance(this);
+		cm.scrollTo();
 		return this;
 	},
 };

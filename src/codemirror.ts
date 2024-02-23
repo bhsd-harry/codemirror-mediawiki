@@ -8,7 +8,7 @@ import {
 	highlightTrailingWhitespace,
 	drawSelection,
 } from '@codemirror/view';
-import {Compartment, EditorState, EditorSelection} from '@codemirror/state';
+import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
 import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
@@ -126,6 +126,7 @@ const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, s
 	}
 };
 
+/** CodeMirror 6 编辑器 */
 export class CodeMirror6 {
 	readonly #textarea;
 	readonly #view;
@@ -515,15 +516,11 @@ export class CodeMirror6 {
 				this.#view.scrollDOM.scrollTop = scrollTop;
 			});
 		} else if (!show && this.#visible) {
-			const {state: {selection: {main: {from, to}}}, hasFocus} = this.#view,
+			const {state: {selection: {main: {from, to, head}}}, hasFocus} = this.#view,
 				{scrollDOM: {scrollTop}} = this.#view;
 			this.#view.dom.style.setProperty('display', 'none', 'important');
 			this.#textarea.style.display = '';
-			this.#textarea.setSelectionRange(
-				Math.min(from, to),
-				Math.max(from, to),
-				from > to ? 'backward' : 'forward',
-			);
+			this.#textarea.setSelectionRange(from, to, head === to ? 'forward' : 'backward');
 			if (hasFocus) {
 				this.#textarea.focus();
 			}
@@ -557,6 +554,18 @@ export class CodeMirror6 {
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
 		return ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
+	}
+
+	/**
+	 * 滚动至指定位置
+	 * @param r 位置
+	 */
+	scrollTo(r: number | {anchor: number, head: number} = this.#view.state.selection.main): void {
+		const scrollEffect = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
+			? r
+			: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
+		scrollEffect.value.isSnapshot = true;
+		this.#view.dispatch({effects: scrollEffect});
 	}
 
 	/**
