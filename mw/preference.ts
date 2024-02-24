@@ -54,7 +54,9 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
 		for (const key of codeKeys) {
 			const c = codeConfigs.get(key);
-			widgets[key] = new OO.ui.MultilineTextInputWidget({value: c ? JSON.stringify(c, null, '\t') : ''});
+			widgets[key] = new OO.ui.MultilineTextInputWidget({
+				value: c ? JSON.stringify(c, null, indent || '\t') : '',
+			});
 			const codeField = new OO.ui.FieldLayout(widgets[key]!, {label: msg(`${key}-config`), align: 'top'}),
 				panel = new OO.ui.TabPanelLayout(key, {label: key, $content: codeField.$element});
 			panel.on('active', active => {
