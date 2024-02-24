@@ -6,6 +6,8 @@
 - [Accessors](#accessors)
 - [Methods](#methods)
 	- [defaultLint](#defaultlint)
+- [Static properties](#static-properties)
+	- [version](#version)
 - [Static methods](#static-methods)
 	- [fromTextArea](#fromtextarea)
 - [Extensions](#extensions)
@@ -93,6 +95,19 @@ Lint with a default linter.
 cm.defaultLint(true, 0);
 ```
 
+</details>
+
+# Static properties
+
+## version
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.6.3*
+
+**type**: `string`  
+The version number.
 </details>
 
 # Static methods

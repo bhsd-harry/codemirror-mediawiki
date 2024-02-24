@@ -3,7 +3,7 @@ import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs} from './preference';
-import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
+import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Config} from 'wikiparser-node';
 import type {LintSource, MwConfig} from '../src/codemirror';
@@ -36,6 +36,8 @@ const linters: Record<string, LintSource | undefined> = {};
 
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
+	static version = curVersion;
+
 	ns;
 
 	/**

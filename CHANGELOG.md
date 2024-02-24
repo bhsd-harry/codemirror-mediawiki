@@ -2,6 +2,10 @@
 
 *2024-02-24*
 
+**Added**
+
+- New static property: [`version`](./mw/README.md#version)
+
 **Fixed**
 
 - [Luaparse](https://www.npmjs.com/package/luaparse) now parses Lua 5.3

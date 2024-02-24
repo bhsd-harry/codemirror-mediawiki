@@ -1,6 +1,7 @@
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.6.2';
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.6.2',
+	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
@@ -30,8 +31,7 @@ export const setObject = (key: string, value: unknown): void => {
 /** 预存的I18N，可以用于判断是否是首次安装 */
 export const i18n: Record<string, string> = getObject(storageKey) || {};
 
-const {version} = i18n,
-	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
+const {version} = i18n;
 
 /**
  * 加载 I18N
