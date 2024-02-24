@@ -35,6 +35,12 @@ $.valHooks['textarea'] = {
 
 const linters: Record<string, LintSource | undefined> = {};
 
+/**
+ * 判断是否为普通编辑器
+ * @param textarea 文本框
+ */
+const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('#cm-preference');
+
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	static version = curVersion;
@@ -54,7 +60,9 @@ export class CodeMirror extends CodeMirror6 {
 		if (mw.loader.getState('jquery.textSelection') === 'ready') {
 			$(textarea).data('jquery.textSelection', textSelection);
 		}
-		mw.hook('wiki-codemirror6').fire(this);
+		if (isEditor(textarea)) {
+			mw.hook('wiki-codemirror6').fire(this);
+		}
 	}
 
 	override toggle(show = !this.visible): void {
@@ -91,7 +99,7 @@ export class CodeMirror extends CodeMirror6 {
 			} else if (lang === 'javascript') {
 				opt = {
 					env: {browser: true, es2024: true, jquery: true},
-					globals: {mw: 'readonly', OO: 'readonly'},
+					globals: {mw: 'readonly', mediaWiki: 'readonly', OO: 'readonly'},
 					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 6}} : {},
 					...eslint,
 				} as Linter.Config as Record<string, unknown>;
@@ -154,7 +162,7 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param ns 命名空间
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
-		if (prefs.has('wikiEditor') && !textarea.closest('#cm-preference')) {
+		if (prefs.has('wikiEditor') && isEditor(textarea)) {
 			await wikiEditor($(textarea));
 		}
 		if (!lang && ns === undefined) {
