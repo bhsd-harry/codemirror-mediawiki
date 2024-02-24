@@ -2,7 +2,7 @@ import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemir
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference, prefs, indentKey, wikilintConfig} from './preference';
+import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Config} from 'wikiparser-node';
@@ -78,16 +78,20 @@ export class CodeMirror extends CodeMirror6 {
 			this.lint();
 			return;
 		}
-		const {lang} = this;
+		const {lang} = this,
+			eslint = codeConfigs.get('ESLint'),
+			stylelint = codeConfigs.get('Stylelint');
 		let opt: Record<string, unknown> | undefined;
 		if (typeof optOrNs === 'number') {
 			if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828 || optOrNs === 2)) {
 				opt = {include: true};
-			} else if (lang === 'javascript' && (optOrNs === 8 || optOrNs === 2300)) {
-				opt = {
+			} else if (lang === 'javascript' && (eslint || optOrNs === 8 || optOrNs === 2300)) {
+				opt = eslint || {
 					env: {browser: true, es6: true},
 					parserOptions: {ecmaVersion: 6},
 				};
+			} else if (lang === 'css' && stylelint) {
+				opt = stylelint;
 			}
 		} else {
 			opt = optOrNs;
@@ -145,7 +149,7 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param ns 命名空间
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
-		if (prefs.has('wikiEditor')) {
+		if (prefs.has('wikiEditor') && !textarea.closest('#cm-preference')) {
 			await wikiEditor($(textarea));
 		}
 		if (!lang && ns === undefined) {

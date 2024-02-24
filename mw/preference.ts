@@ -1,23 +1,26 @@
 import {rules} from 'wikiparser-node/dist/base';
+import {CodeMirror} from './base';
 import {msg, i18n, setObject, getObject} from './msg';
-import type {CodeMirror} from './base';
+import {instances} from './textSelection';
 
 const storageKey = 'codemirror-mediawiki-addons',
-	wikilintKey = 'codemirror-mediawiki-wikilint';
+	wikilintKey = 'codemirror-mediawiki-wikilint',
+	codeKeys = ['ESLint', 'Stylelint'] as const;
+
+declare type codeKey = typeof codeKeys[number];
+
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set<string>(getObject(storageKey) as string[] | null),
-	wikilintConfig = (getObject(wikilintKey) || {}) as Record<Rule, RuleState | undefined>;
+	wikilintConfig = (getObject(wikilintKey) || {}) as Record<Rule, RuleState | undefined>,
+	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,
-	layout: OO.ui.IndexLayout | undefined,
-	panelMain: OO.ui.TabPanelLayout | undefined,
-	panelWikilint: OO.ui.TabPanelLayout | undefined,
+	layout: OO.ui.IndexLayout,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
-	field: OO.ui.FieldLayout,
-	indentField: OO.ui.FieldLayout,
 	indent = localStorage.getItem(indentKey) || '';
+const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 
 const enum RuleState {
 	off = '0',
@@ -28,7 +31,8 @@ const enum RuleState {
 const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
 mw.loader.addStyleTag(`#cm-preference>.oo-ui-window-frame{height:100%!important}
-#cm-preference .oo-ui-panelLayout{overflow:visible}`);
+#cm-preference .oo-ui-panelLayout{overflow:visible}
+#cm-preference .cm-editor{border:1.5px solid #dedede;border-radius:.3em}`);
 
 /**
  * 打开设置对话框
@@ -45,9 +49,23 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
 		layout = new OO.ui.IndexLayout();
-		panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')});
-		panelWikilint = new OO.ui.TabPanelLayout('eslint', {label: msg('wikilint')});
-		layout.addTabPanels([panelMain, panelWikilint], 0);
+		const panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')}),
+			panelWikilint = new OO.ui.TabPanelLayout('wikilint', {label: 'WikiLint'}),
+			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
+		for (const key of codeKeys) {
+			const c = codeConfigs.get(key);
+			widgets[key] = new OO.ui.MultilineTextInputWidget({value: c ? JSON.stringify(c, null, '\t') : ''});
+			const codeField = new OO.ui.FieldLayout(widgets[key]!, {label: msg(`${key}-config`), align: 'top'}),
+				panel = new OO.ui.TabPanelLayout(key, {label: key, $content: codeField.$element});
+			panel.on('active', active => {
+				const [textarea] = panel.$element.find('textarea') as unknown as [HTMLTextAreaElement];
+				if (active && !instances.has(textarea)) {
+					void CodeMirror.fromTextArea(textarea, 'json');
+				}
+			});
+			panels[key] = panel;
+		}
+		layout.addTabPanels([panelMain, panelWikilint, ...Object.values(panels)], 0);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
 			options: Object.keys(i18n)
 				.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
@@ -58,12 +76,12 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				})),
 			value: [...prefs] as unknown as string,
 		});
-		field = new OO.ui.FieldLayout(widget, {
-			label: msg('label'),
-			align: 'top',
-		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: '\\t'});
-		indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
+		const field = new OO.ui.FieldLayout(widget, {
+				label: msg('label'),
+				align: 'top',
+			}),
+			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
 		panelMain.$element.append(
 			field.$element,
 			indentField.$element,
@@ -98,6 +116,19 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		size: 'medium',
 	}).closing as unknown as Promise<{action?: unknown} | undefined>);
 	if (typeof data === 'object' && data.action === 'accept') {
+		const jsonErrors: string[] = [];
+		for (const key of codeKeys) {
+			try {
+				const config = JSON.parse(widgets[key]!.getValue().trim() || 'null');
+				codeConfigs.set(key, config);
+				setObject(`codemirror-mediawiki-${key}`, config);
+			} catch {
+				jsonErrors.push(key);
+			}
+		}
+		if (jsonErrors.length > 0) {
+			void OO.ui.alert(msg('json-error', jsonErrors.join(msg('and'))));
+		}
 		for (const [rule, dropdown] of wikilintWidgets) {
 			wikilintConfig[rule] = dropdown.getValue() as RuleState;
 		}

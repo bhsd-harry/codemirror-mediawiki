@@ -5,6 +5,7 @@
 **Added**
 
 - New method: [`scrollTo`](./README.md#scrollto)
+- The preference dialog in a MediaWiki site adds new tabs for ESLint and Stylelint configurations
 
 **Fixed**
 
