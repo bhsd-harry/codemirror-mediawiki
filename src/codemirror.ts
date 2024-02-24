@@ -472,6 +472,35 @@ export class CodeMirror6 {
 					}
 					return [];
 				};
+			case 'json':
+				return doc => {
+					try {
+						JSON.parse(doc.toString());
+					} catch (e) {
+						if (e instanceof SyntaxError) {
+							const {message} = e,
+								line = /\bline (\d+)/u.exec(message)?.[1],
+								column = /\bcolumn (\d+)/u.exec(message)?.[1],
+								position = /\bposition (\d+)/u.exec(message)?.[1];
+							let from = 0;
+							if (position) {
+								from = Number(position);
+							} else if (line && column) {
+								from = pos(doc, Number(line), Number(column));
+							}
+							return [
+								{
+									message,
+									severity: 'error',
+									from,
+									to: from,
+								},
+							];
+						}
+						return [];
+					}
+					return [];
+				};
 			default:
 				return undefined;
 		}
