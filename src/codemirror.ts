@@ -475,7 +475,10 @@ export class CodeMirror6 {
 			case 'json':
 				return doc => {
 					try {
-						JSON.parse(doc.toString());
+						const str = doc.toString();
+						if (str.trim()) {
+							JSON.parse(str);
+						}
 					} catch (e) {
 						if (e instanceof SyntaxError) {
 							const {message} = e,
@@ -497,7 +500,6 @@ export class CodeMirror6 {
 								},
 							];
 						}
-						return [];
 					}
 					return [];
 				};

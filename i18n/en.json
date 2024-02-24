@@ -19,7 +19,7 @@
 	"addon-highlightTrailingWhitespace": "Show trailing spaces",
 	"addon-highlightWhitespace": "Show whitespace characters",
 	"addon-indent": "Indent",
-	"addon-lint": "Wikitext linter",
+	"addon-lint": "Linter",
 	"addon-openLinks": "Open the wikilink or template page with CTRL-click",
 	"addon-openLinks-mac": "Open the wikilink or template page with CMD-click",
 	"addon-tagMatching": "Highlight matching/non-matching tags",

@@ -19,7 +19,7 @@
 	"addon-highlightTrailingWhitespace": "显示尾随空格",
 	"addon-highlightWhitespace": "显示空白字符",
 	"addon-indent": "缩进",
-	"addon-lint": "维基语法检查",
+	"addon-lint": "语法检查",
 	"addon-openLinks": "CTRL+点击可打开内部链接或模板页面",
 	"addon-openLinks-mac": "CMD+点击可打开内部链接或模板页面",
 	"addon-tagMatching": "高亮显示匹配和未匹配的标签",
