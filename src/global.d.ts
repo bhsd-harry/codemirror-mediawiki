@@ -10,6 +10,7 @@ class WikiLinter {
 }
 
 interface luaparse {
+	defaultOptions: {luaVersion: string};
 	parse(s: string): void;
 	SyntaxError: new () => {message: string, index: number};
 }

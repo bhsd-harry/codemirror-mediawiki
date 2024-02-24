@@ -393,7 +393,7 @@ Refresh linting immediately.
 
 *version added: 2.4.7*
 
-**param**: [`Config`](https://github.com/bhsd-harry/wikiparser-node/wiki/types#config) the [WikiLint](https://npmjs.com/package/wikilint) configuration  
+**param**: [`Config`](https://github.com/bhsd-harry/wikiparser-node/wiki/types#config) the [WikiLint](https://www.npmjs.com/package/wikilint) configuration  
 **returns**: `MwConfig`  
 Derive the configuration for the MediaWiki mode from WikiLint configuration.
 

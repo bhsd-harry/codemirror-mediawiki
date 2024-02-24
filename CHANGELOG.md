@@ -1,3 +1,11 @@
+## v2.6.3
+
+*2024-02-24*
+
+**Fixed**
+
+- [Luaparse](https://www.npmjs.com/package/luaparse) now parses Lua 5.3
+
 ## v2.6.2
 
 *2024-02-24*

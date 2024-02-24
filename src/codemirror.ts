@@ -350,7 +350,7 @@ export class CodeMirror6 {
 			}
 			case 'javascript': {
 				await loadScript('npm/eslint-linter-browserify', 'eslint');
-				/** @see https://npmjs.com/package/@codemirror/lang-javascript */
+				/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 				const esLinter = new eslint.Linter(),
 					conf: Linter.Config = {
 						env: {
@@ -395,7 +395,7 @@ export class CodeMirror6 {
 			}
 			case 'css': {
 				await loadScript('gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint');
-				/** @see https://npmjs.com/package/stylelint-config-recommended */
+				/** @see https://www.npmjs.com/package/stylelint-config-recommended */
 				const config = {
 					rules: {
 						'annotation-no-unknown': true,
@@ -458,8 +458,8 @@ export class CodeMirror6 {
 			}
 			case 'lua':
 				await loadScript('npm/luaparse', 'luaparse');
-				/** @see https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/lua_worker.js */
-
+				/** @see https://github.com/ajaxorg/ace/pull/4954 */
+				luaparse.defaultOptions.luaVersion = '5.3';
 				return doc => {
 					try {
 						luaparse.parse(doc.toString());
