@@ -133,7 +133,7 @@ textarea, .cm-editor {
 	article {
 		padding: 1rem;
 	}
-	.cm-editor {
+	.cm-content {
 		font-size: 16px;
 	}
 }
