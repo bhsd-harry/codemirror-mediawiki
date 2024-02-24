@@ -353,14 +353,8 @@ export class CodeMirror6 {
 				/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 				const esLinter = new eslint.Linter(),
 					conf: Linter.Config = {
-						env: {
-							browser: true,
-							es2024: true,
-						},
-						parserOptions: {
-							ecmaVersion: 15,
-							sourceType: 'module',
-						},
+						env: {browser: true, es2024: true},
+						parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 						rules: {},
 						...opt,
 					};

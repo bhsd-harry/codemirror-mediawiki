@@ -8,7 +8,11 @@
 
 **Fixed**
 
-- [Luaparse](https://www.npmjs.com/package/luaparse) now parses Lua 5.3
+- Luaparse now parses Lua 5.3
+
+**Changed**
+
+- When used in a MediaWiki site, ESLint now treats `mw`, `$` and `OO` as global variables
 
 ## v2.6.2
 

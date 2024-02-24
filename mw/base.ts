@@ -6,6 +6,7 @@ import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs} from './p
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Config} from 'wikiparser-node';
+import type {Linter} from 'eslint';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
@@ -87,11 +88,13 @@ export class CodeMirror extends CodeMirror6 {
 		if (typeof optOrNs === 'number') {
 			if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828 || optOrNs === 2)) {
 				opt = {include: true};
-			} else if (lang === 'javascript' && (eslint || optOrNs === 8 || optOrNs === 2300)) {
-				opt = eslint || {
-					env: {browser: true, es6: true},
-					parserOptions: {ecmaVersion: 6},
-				};
+			} else if (lang === 'javascript') {
+				opt = {
+					env: {browser: true, es2024: true, jquery: true},
+					globals: {mw: 'readonly', OO: 'readonly'},
+					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 6}} : {},
+					...eslint,
+				} as Linter.Config as Record<string, unknown>;
 			} else if (lang === 'css' && stylelint) {
 				opt = stylelint;
 			}
