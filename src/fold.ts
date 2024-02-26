@@ -108,7 +108,22 @@ const create = (state: EditorState): Tooltip | null => {
 };
 
 export const foldExtension: Extension[] = [
-	codeFolding(),
+	codeFolding({
+		placeholderDOM(view, _, prepared: {from: number, to: number}) {
+			const element = document.createElement('span');
+			element.textContent = '…';
+			element.setAttribute('aria-label', 'folded code');
+			element.title = view.state.phrase('unfold');
+			element.className = 'cm-foldPlaceholder';
+			element.onclick = (): void => {
+				view.dispatch({effects: unfoldEffect.of(prepared)});
+			};
+			return element;
+		},
+		preparePlaceholder(_, range) {
+			return range;
+		},
+	}),
 	StateField.define<Tooltip | null>({
 		create,
 		update(tooltip, {state, docChanged, selection}) {

@@ -1,3 +1,11 @@
+## v2.6.5
+
+*2024-02-26*
+
+**Fixed**
+
+- Onclick event of the placeholder of the [codeFolding](./README.md#codefolding) extension
+
 ## v2.6.4
 
 *2024-02-26*
