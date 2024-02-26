@@ -125,22 +125,21 @@ export const foldExtension: Extension[] = [
 			run(view): boolean {
 				const {state} = view,
 					tree = ensureSyntaxTree(state, view.viewport.to),
-					effects = state.selection.ranges.flatMap(({from, to}) => {
-						const e: StateEffect<DocRange>[] = [];
-						let node: SyntaxNode | null | undefined = tree?.resolve(from, 1);
-						while (node && node.from <= to) {
-							if (isTemplate(node) && !isTemplateName(node)) {
-								const range = foldable(state, node.to, tree);
-								if (range) {
-									e.push(foldEffect.of(range));
-									node = tree!.resolve(range.to, 1);
-								}
-								continue;
+					effects: StateEffect<DocRange>[] = [];
+				for (const {from, to} of state.selection.ranges) {
+					let node: SyntaxNode | null | undefined = tree?.resolve(from, 1);
+					while (node && node.from <= to) {
+						if (isTemplate(node) && !isTemplateName(node)) {
+							const range = foldable(state, node.to, tree);
+							if (range) {
+								effects.push(foldEffect.of(range));
+								node = tree!.resolve(range.to, 1);
 							}
-							node = node.nextSibling;
+							continue;
 						}
-						return e;
-					});
+						node = node.nextSibling;
+					}
+				}
 				if (effects.length > 0) {
 					view.dom.querySelector('.cm-tooltip-fold')?.remove();
 					view.dispatch({effects});

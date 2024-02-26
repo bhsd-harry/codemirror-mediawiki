@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.6.3/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.6.4/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -100,7 +100,7 @@ export class CodeMirror extends CodeMirror6 {
 				opt = {
 					env: {browser: true, es2024: true, jquery: true},
 					globals: {mw: 'readonly', mediaWiki: 'readonly', OO: 'readonly'},
-					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 6}} : {},
+					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
 					...eslint,
 				} as Linter.Config as Record<string, unknown>;
 			} else if (lang === 'css' && stylelint) {
