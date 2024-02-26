@@ -1,8 +1,5 @@
-.wikiEditor-ui-toolbar {
-	z-index: 7;
-}
-.cm-mw-template-name, .cm-mw-link-pagename {
-	cursor: var(--codemirror-cursor);
+.cm-editor {
+	background-color: #fff;
 }
 .cm-tooltip-fold {
 	cursor: pointer;
@@ -14,6 +11,25 @@
 }
 .cm-focused .cm-nonmatchingTag {
 	background-color: rgba(187, 85, 85, .27);
+}
+.cm-mw-template-name, .cm-mw-link-pagename {
+	cursor: var(--codemirror-cursor);
+}
+#cm-preference > .oo-ui-window-frame {
+	height: 100% !important;
+}
+#cm-preference .oo-ui-panelLayout {
+	overflow: visible;
+}
+#cm-preference .cm-editor {
+	border: 1.5px solid #dedede;
+	border-radius: .3em;
+}
+#cm-preference .oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled {
+	display: none;
+}
+.wikiEditor-ui-toolbar {
+	z-index: 7;
 }
 
 /**

@@ -30,11 +30,6 @@ const enum RuleState {
 
 const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
-mw.loader.addStyleTag(`#cm-preference>.oo-ui-window-frame{height:100%!important}
-#cm-preference .oo-ui-panelLayout{overflow:visible}
-#cm-preference .cm-editor{border:1.5px solid #dedede;border-radius:.3em}
-#cm-preference .oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled{display:none}`);
-
 /**
  * 打开设置对话框
  * @param editors CodeMirror实例

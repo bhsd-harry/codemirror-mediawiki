@@ -205,7 +205,6 @@ export class CodeMirror6 {
 		const {fontSize, lineHeight} = getComputedStyle(textarea);
 		textarea.parentNode!.insertBefore(this.#view.dom, textarea);
 		this.#minHeight();
-		this.#view.dom.style.backgroundColor = '#fff';
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
