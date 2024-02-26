@@ -10,11 +10,11 @@ export const wikiEditor = async ($textarea: JQuery<HTMLTextAreaElement>): Promis
 		prefs.delete('wikiEditor');
 		void mw.notify(msg('no-wikiEditor'), {type: 'error'});
 		return;
-	} else if ($textarea.data('wikiEditorContext')) {
-		return;
 	}
 	await mw.loader.using('ext.wikiEditor');
-	if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
+	if ($textarea.data('wikiEditorContext')) {
+		return;
+	} else if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
 		mw.addWikiEditor($textarea);
 	} else { // MW <= 1.33
 		const {wikiEditor: {modules: {dialogs: {config}}}} = $;

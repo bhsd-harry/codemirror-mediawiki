@@ -1,10 +1,11 @@
 ## v2.6.5
 
-*2024-02-26*
+*2024-02-27*
 
 **Fixed**
 
 - Onclick event of the placeholder of the [codeFolding](./README.md#codefolding) extension
+- Multiple WikiEditor toolbars in certain conditions
 
 ## v2.6.4
 
