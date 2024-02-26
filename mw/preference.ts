@@ -32,7 +32,8 @@ const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
 mw.loader.addStyleTag(`#cm-preference>.oo-ui-window-frame{height:100%!important}
 #cm-preference .oo-ui-panelLayout{overflow:visible}
-#cm-preference .cm-editor{border:1.5px solid #dedede;border-radius:.3em}`);
+#cm-preference .cm-editor{border:1.5px solid #dedede;border-radius:.3em}
+#cm-preference .oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled{display:none}`);
 
 /**
  * 打开设置对话框
@@ -69,13 +70,16 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 		layout.addTabPanels([panelMain, panelWikilint, ...Object.values(panels)], 0);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: Object.keys(i18n)
-				.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
-				.map(k => ({
-					data: k.slice(6),
-					label: $($.parseHTML(msg(k))),
-					disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor'),
-				})),
+			options: [
+				{disabled: true},
+				...Object.keys(i18n)
+					.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
+					.map(k => ({
+						data: k.slice(6),
+						label: $($.parseHTML(msg(k))),
+						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor'),
+					})),
+			],
 			value: [...prefs] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: '\\t'});

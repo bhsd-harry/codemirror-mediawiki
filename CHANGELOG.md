@@ -1,10 +1,14 @@
 ## v2.6.4
 
-*2024-02-25*
+*2024-02-26*
 
 **Added**
 
 - A simple linter for JSON
+
+**Fixed**
+
+- Unintentional change of the first checkbox due to click within the MediaWiki-site preference dialog
 
 ## v2.6.3
 
