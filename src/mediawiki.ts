@@ -778,25 +778,41 @@ class MediaWiki {
 		if (stream.eol()) {
 			/** @todo error message */
 		} else {
-			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray;
+			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
+				ch = stream.peek();
 			state.lpar ||= mt[0].includes('(');
-			if (stream.peek() === '~') {
-				if (stream.match(/^~{1,2}(?!~)/u)) {
-					return this.makeStyle(modeConfig.tags.freeExtLink, state);
-				}
-			} else if (stream.peek() === '{') {
-				if (stream.match(/^\{(?!\{)/u)) {
-					return this.makeStyle(modeConfig.tags.freeExtLink, state);
-				}
-			} else if (stream.peek() === "'") {
-				if (stream.match(/^'(?!')/u)) {
-					return this.makeStyle(modeConfig.tags.freeExtLink, state);
-				}
-			} else if (state.lpar && stream.peek() === ')') {
-				stream.next();
-				return this.makeStyle(modeConfig.tags.freeExtLink, state);
-			} else if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
-				return this.makeStyle(modeConfig.tags.freeExtLink, state);
+			switch (ch!) {
+				case '~':
+					if (stream.match(/^~~?(?!~)/u)) {
+						return this.makeStyle(modeConfig.tags.freeExtLink, state);
+					}
+					break;
+				case '{':
+					if (stream.match(/^\{(?!\{)/u)) {
+						return this.makeStyle(modeConfig.tags.freeExtLink, state);
+					}
+					break;
+				case "'":
+					if (stream.match(/^'(?!')/u)) {
+						return this.makeStyle(modeConfig.tags.freeExtLink, state);
+					}
+					break;
+				case ')':
+					if (state.lpar) {
+						stream.match(/^\)+/u);
+						return this.makeStyle(modeConfig.tags.freeExtLink, state);
+					}
+					// fall through
+				case '.':
+				case ',':
+				case ';':
+				case ':':
+				case '!':
+				case '?':
+					if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
+						return this.makeStyle(modeConfig.tags.freeExtLink, state);
+					}
+				// no default
 			}
 		}
 		state.lpar = false;
@@ -882,7 +898,6 @@ class MediaWiki {
 							chain(state, this.inTableDefinition.bind(this));
 							return this.makeLocalStyle(modeConfig.tags.tableBracket, state);
 						}
-						break;
 					// no default
 				}
 			} else {
