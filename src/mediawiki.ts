@@ -590,7 +590,7 @@ class MediaWiki {
 				return this.makeLocalStyle(modeConfig.tags.htmlTagAttribute, state);
 			} else if (stream.match(/^\/?>/u)) {
 				if (!this.implicitlyClosedHtmlTags.has(name)) {
-					state.inHtmlTag.push(name);
+					state.inHtmlTag.unshift(name);
 				}
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalStyle(modeConfig.tags.htmlTagBracket, state);
@@ -989,10 +989,14 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.extTagBracket, state);
 						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
-							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
-								state.stack.push(state.tokenize);
-								state.tokenize = this.inChar('>', modeConfig.tags.error);
-								return this.makeLocalStyle(modeConfig.tags.error, state);
+							if (isCloseTag) {
+								if (tagname === state.inHtmlTag[0]) {
+									state.inHtmlTag.shift();
+								} else {
+									state.stack.push(state.tokenize);
+									state.tokenize = this.inChar('>', modeConfig.tags.error);
+									return this.makeLocalStyle(modeConfig.tags.error, state);
+								}
 							}
 							stream.backUp(tagname.length);
 							state.stack.push(state.tokenize);

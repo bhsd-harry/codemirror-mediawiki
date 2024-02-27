@@ -7,6 +7,10 @@
 - Onclick event of the placeholder of the [codeFolding](./README.md#codefolding) extension
 - Multiple WikiEditor toolbars in certain conditions
 
+**Changed**
+
+- Now an unmatched closing HTML tag will not influence the stack
+
 ## v2.6.4
 
 *2024-02-26*
