@@ -92,6 +92,7 @@ const chain = (state: State, tokenizer: Tokenizer): void => {
 class MediaWiki {
 	declare readonly config;
 	declare readonly urlProtocols;
+	declare dt;
 	declare isBold;
 	declare wasBold;
 	declare isItalic;
@@ -113,6 +114,7 @@ class MediaWiki {
 		this.config = config;
 		// eslint-disable-next-line require-unicode-regexp
 		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'i');
+		this.dt = 0;
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
@@ -820,6 +822,15 @@ class MediaWiki {
 		return this.makeStyle(modeConfig.tags.freeExtLink, state);
 	}
 
+	eatList(stream: StringStream, state: State): string {
+		// Just consume all nested list and indention syntax when there is more
+		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
+		if (mt && mt[0].includes(';')) {
+			this.dt += mt[0].split(';').length - 1;
+		}
+		return this.makeLocalStyle(modeConfig.tags.list, state);
+	}
+
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
@@ -865,20 +876,18 @@ class MediaWiki {
 						}
 						break;
 					}
+					case ';':
+						this.dt++;
+						// fall through
 					case '*':
 					case '#':
-					case ';':
-						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^[*#;:]*/u);
-						return this.makeLocalStyle(modeConfig.tags.list, state);
+						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
 						if (stream.match(/^:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
 							chain(state, this.eatStartTable.bind(this));
 						}
-						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^[*#;:]*/u);
-						return this.makeLocalStyle(modeConfig.tags.list, state);
+						return this.eatList(stream, state);
 					case ' ': {
 						// Leading spaces is valid syntax for tables, bug T108454
 						const mt = stream.match(/^\s*(:+\s*)?(?=\{\||\{{3}\s*!\s*\}\})/u) as RegExpMatchArray | false;
@@ -1053,6 +1062,11 @@ class MediaWiki {
 					}
 					break;
 				}
+				case ':':
+					if (this.dt > 0) {
+						this.dt--;
+						return this.makeLocalStyle(modeConfig.tags.list, state);
+					}
 				// no default
 			}
 			if (/\s/u.test(ch || '')) {
@@ -1063,7 +1077,7 @@ class MediaWiki {
 					return this.makeStyle(style, state);
 				}
 			}
-			stream.match(/^[^\s_[<{'&~=]+/u);
+			stream.match(/^[^\s_[<{'&~:=]+/u);
 			return this.makeStyle(style, state);
 		};
 	}
@@ -1181,6 +1195,7 @@ class MediaWiki {
 					return t.style;
 				} else if (stream.sol()) {
 					// reset bold and italic status in every new line
+					this.dt = 0;
 					this.isBold = false;
 					this.isItalic = false;
 					this.firstSingleLetterWord = null;
