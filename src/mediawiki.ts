@@ -386,7 +386,7 @@ class MediaWiki {
 			} else if (stream.match(/^\s*<!--.*?-->/u)) {
 				return this.makeLocalStyle(modeConfig.tags.comment, state);
 			} else if (haveAte && stream.sol()) {
-				// @todo error message
+				/** @todo error message */
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
 				return '';
@@ -430,7 +430,7 @@ class MediaWiki {
 			}
 			if (stream.eol()) {
 				state.nLink--;
-				// @todo error message
+				/** @todo error message */
 				state.tokenize = state.stack.pop()!;
 			} else {
 				state.tokenize = this.inExternalLink.bind(this);
@@ -442,7 +442,7 @@ class MediaWiki {
 	inExternalLink(stream: StringStream, state: State): string {
 		if (stream.sol()) {
 			state.nLink--;
-			// @todo error message
+			/** @todo error message */
 			state.tokenize = state.stack.pop()!;
 			return '';
 		} else if (stream.match(/^\s*\]/u)) {
@@ -467,7 +467,7 @@ class MediaWiki {
 	inExternalLinkText(stream: StringStream, state: State): string {
 		if (stream.sol()) {
 			state.nLink--;
-			// @todo error message
+			/** @todo error message */
 			state.tokenize = state.stack.pop()!;
 			return '';
 		} else if (stream.eat(']')) {
@@ -483,7 +483,7 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
-				// @todo error message
+				/** @todo error message */
 				state.tokenize = state.stack.pop()!;
 				return '';
 			} else if (stream.match(/^\s*#\s*/u)) {
@@ -508,7 +508,7 @@ class MediaWiki {
 	inLinkToSection(file: boolean): Tokenizer {
 		return (stream, state) => {
 			if (stream.sol()) {
-				// @todo error message
+				/** @todo error message */
 				state.nLink--;
 				state.tokenize = state.stack.pop()!;
 				return '';
@@ -772,7 +772,7 @@ class MediaWiki {
 
 	inFreeExternalLink(stream: StringStream, state: State): string {
 		if (stream.eol()) {
-			// @todo error message
+			/** @todo error message */
 		} else {
 			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray;
 			state.lpar ||= mt[0].includes('(');
@@ -807,6 +807,7 @@ class MediaWiki {
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
+				/** @todo free external links anywhere */
 				if (stream.match('//')) {
 					return this.makeStyle(style, state);
 				// highlight free external links, see T108448
@@ -883,8 +884,7 @@ class MediaWiki {
 							return this.makeLocalStyle(modeConfig.tags.tableBracket, state);
 						}
 						break;
-					default:
-						// pass
+					// no default
 				}
 			} else {
 				ch = stream.next()!;
@@ -992,8 +992,6 @@ class MediaWiki {
 							if (isCloseTag && tagname !== state.inHtmlTag.pop()) {
 								state.stack.push(state.tokenize);
 								state.tokenize = this.inChar('>', modeConfig.tags.error);
-								return this.makeLocalStyle(modeConfig.tags.error, state);
-							} else if (isCloseTag && this.implicitlyClosedHtmlTags.has(tagname)) {
 								return this.makeLocalStyle(modeConfig.tags.error, state);
 							}
 							stream.backUp(tagname.length);
