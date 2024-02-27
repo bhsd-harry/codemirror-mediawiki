@@ -306,7 +306,7 @@ class MediaWiki {
 
 	inSectionHeader(count: number): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^[^&<[{~']+/u)) {
+			if (stream.match(/^[^&<[{~'_]+/u)) {
 				if (stream.eol()) {
 					stream.backUp(count);
 					state.tokenize = this.eatEnd(modeConfig.tags.sectionHeader);
@@ -844,7 +844,7 @@ class MediaWiki {
 						break;
 					case '=': {
 						const tmp = stream
-							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
+							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u) as RegExpMatchArray | false;
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
@@ -889,6 +889,7 @@ class MediaWiki {
 							}
 							stream.eat('{');
 						} else {
+							/** @todo indent-pre is sometimes suppressed */
 							return modeConfig.tags.skipFormatting;
 						}
 					}
@@ -1062,7 +1063,7 @@ class MediaWiki {
 					return this.makeStyle(style, state);
 				}
 			}
-			stream.match(/^[^\s_>}[\]<{'|&:~=]+/u);
+			stream.match(/^[^\s_[<{'&~=]+/u);
 			return this.makeStyle(style, state);
 		};
 	}
