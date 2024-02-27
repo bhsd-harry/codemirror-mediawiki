@@ -1048,17 +1048,16 @@ class MediaWiki {
 					}
 					break;
 				}
-				default:
-					if (/\s/u.test(ch || '')) {
-						stream.eatSpace();
-						// highlight free external links, bug T108448
-						if (stream.match(this.urlProtocols, false) && !stream.match('//')) {
-							state.stack.push(state.tokenize);
-							state.tokenize = this.eatFreeExternalLinkProtocol.bind(this);
-							return this.makeStyle(style, state);
-						}
-					}
-					break;
+				// no default
+			}
+			if (/\s/u.test(ch || '')) {
+				stream.eatSpace();
+				// highlight free external links, bug T108448
+				if (stream.match(this.urlProtocols, false) && !stream.match('//')) {
+					state.stack.push(state.tokenize);
+					state.tokenize = this.eatFreeExternalLinkProtocol.bind(this);
+					return this.makeStyle(style, state);
+				}
 			}
 			stream.match(/^[^\s_>}[\]<{'|&:~=]+/u);
 			return this.makeStyle(style, state);
