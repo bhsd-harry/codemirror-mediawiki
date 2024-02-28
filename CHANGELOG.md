@@ -13,6 +13,7 @@
 - Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now works wherever the tooltip is displayed
 - Syntax like `: {|` in the MediaWiki mode is now correctly highlighted as an indented table
 - Links and behavior switches are now ignored in table attributes
+- Disallow multiline free external links in the MediaWiki mode
 
 ## v2.6.5
 

@@ -713,7 +713,7 @@ class MediaWiki {
 	}
 
 	inTableDefinition(stream: StringStream, state: State): string {
-		if (stream.eol()) {
+		if (stream.sol()) {
 			state.tokenize = this.inTable.bind(this);
 			return '';
 		}
@@ -782,7 +782,7 @@ class MediaWiki {
 	}
 
 	inFreeExternalLink(stream: StringStream, state: State): string {
-		if (!stream.eol()) {
+		if (!stream.sol()) {
 			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
 				ch = stream.peek();
 			state.lpar ||= mt[0].includes('(');
