@@ -3,7 +3,7 @@ import {StateField} from '@codemirror/state';
 import {foldEffect, ensureSyntaxTree, foldState, unfoldAll, unfoldEffect, codeFolding} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
-import type {SyntaxNode} from '@lezer/common';
+import type {SyntaxNode, Tree} from '@lezer/common';
 
 declare interface DocRange {
 	from: number;
@@ -13,7 +13,6 @@ declare interface DocRange {
 const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name.includes(`-template-${s}`),
 	isBracket = isTemplateComponent('bracket'),
 	isDelimiter = isTemplateComponent('delimiter'),
-	isTemplateName = isTemplateComponent('name'),
 	isTemplate = (node: SyntaxNode | null): boolean =>
 		node ? /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node) : false,
 	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
@@ -23,18 +22,29 @@ const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name
  * 寻找可折叠的范围
  * @param state
  * @param pos 字符位置
+ * @param node 语法树节点
  * @param tree 语法树
  */
-const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state, pos)): DocRange | null => {
+function foldable(state: EditorState, pos: number): DocRange | null;
+function foldable(state: EditorState, node: SyntaxNode, tree: Tree): DocRange | null;
+function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | null {
+	if (typeof posOrNode === 'number') {
+		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
+	}
 	if (!tree) {
 		return null;
 	}
-	let node = tree.resolve(pos, -1);
-	if (!isTemplate(node)) {
-		node = tree.resolve(pos, 1);
+	let node: SyntaxNode;
+	if (typeof posOrNode === 'number') {
+		node = tree.resolve(posOrNode, -1);
 		if (!isTemplate(node)) {
-			return null;
+			node = tree.resolve(posOrNode, 1);
 		}
+	} else {
+		node = posOrNode;
+	}
+	if (!isTemplate(node)) {
+		return null;
 	}
 	let {prevSibling, nextSibling} = node,
 		stack = 1,
@@ -71,7 +81,7 @@ const foldable = (state: EditorState, pos: number, tree = ensureSyntaxTree(state
 		return {from, to};
 	}
 	return null;
-};
+}
 
 /**
  * 创建折叠提示
@@ -144,12 +154,10 @@ export const foldExtension: Extension[] = [
 				for (const {from, to} of state.selection.ranges) {
 					let node: SyntaxNode | null | undefined = tree?.resolve(from, 1);
 					while (node && node.from <= to) {
-						if (isTemplate(node) && !isTemplateName(node)) {
-							const range = foldable(state, node.to, tree);
-							if (range) {
-								effects.push(foldEffect.of(range));
-								node = tree!.resolve(range.to, 1);
-							}
+						const range = foldable(state, node, tree!);
+						if (range) {
+							effects.push(foldEffect.of(range));
+							node = tree!.resolve(range.to, 1);
 							continue;
 						}
 						node = node.nextSibling;
