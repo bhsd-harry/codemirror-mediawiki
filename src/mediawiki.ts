@@ -402,7 +402,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
 		}
-		return this.eatWikiText('')(stream, state);
+		return this.eatWikiText(modeConfig.tags.error)(stream, state);
 	}
 
 	inTableCell(needAttr: boolean, type: TableCell): Tokenizer {
@@ -863,8 +863,9 @@ class MediaWiki {
 						return this.makeLocalTagStyle('list', state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
-						if (stream.match(/^:*(?:\{\||\{{3}\s*!\s*\}\})/u, false)) {
+						if (stream.match(/^:*\s*(?=\{\||\{{3}\s*!\s*\}\})/u)) {
 							chain(state, this.eatStartTable.bind(this));
+							return this.makeLocalTagStyle('list', state);
 						}
 						// Just consume all nested list and indention syntax when there is more
 						stream.match(/^[*#;:]*/u);
