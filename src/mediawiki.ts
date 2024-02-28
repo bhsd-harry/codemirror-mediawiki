@@ -37,6 +37,7 @@ declare interface State {
 	nTemplate: number;
 	nLink: number;
 	nExt: number;
+	nDt: number;
 	lpar: boolean;
 	lbrack: boolean;
 }
@@ -94,7 +95,6 @@ const chain = (state: State, tokenizer: Tokenizer): void => {
 class MediaWiki {
 	declare readonly config;
 	declare readonly urlProtocols;
-	declare dt;
 	declare isBold;
 	declare wasBold;
 	declare isItalic;
@@ -116,7 +116,6 @@ class MediaWiki {
 		this.config = config;
 		// eslint-disable-next-line require-unicode-regexp
 		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'i');
-		this.dt = 0;
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
@@ -195,7 +194,9 @@ class MediaWiki {
 
 	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
 		return this.makeLocalStyle(
-			`${style} ${this.isBold ? modeConfig.tags.strong : ''} ${this.isItalic ? modeConfig.tags.em : ''}`,
+			`${style} ${
+				this.isBold || state.nDt > 0 ? modeConfig.tags.strong : ''
+			} ${this.isItalic ? modeConfig.tags.em : ''}`,
 			state,
 			endGround,
 		);
@@ -828,7 +829,7 @@ class MediaWiki {
 		// Just consume all nested list and indention syntax when there is more
 		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
 		if (mt && mt[0].includes(';')) {
-			this.dt += mt[0].split(';').length - 1;
+			state.nDt += mt[0].split(';').length - 1;
 		}
 		return this.makeLocalTagStyle('list', state);
 	}
@@ -879,7 +880,7 @@ class MediaWiki {
 						break;
 					}
 					case ';':
-						this.dt++;
+						state.nDt++;
 						// fall through
 					case '*':
 					case '#':
@@ -1065,8 +1066,8 @@ class MediaWiki {
 					break;
 				}
 				case ':':
-					if (this.dt > 0) {
-						this.dt--;
+					if (state.nDt > 0) {
+						state.nDt--;
 						return this.makeLocalTagStyle('list', state);
 					}
 				// no default
@@ -1175,6 +1176,7 @@ class MediaWiki {
 				nTemplate: 0,
 				nLink: 0,
 				nExt: 0,
+				nDt: 0,
 				lpar: false,
 				lbrack: false,
 			}),
@@ -1197,7 +1199,7 @@ class MediaWiki {
 					return t.style;
 				} else if (stream.sol()) {
 					// reset bold and italic status in every new line
-					this.dt = 0;
+					state.nDt = 0;
 					this.isBold = false;
 					this.isItalic = false;
 					this.firstSingleLetterWord = null;
