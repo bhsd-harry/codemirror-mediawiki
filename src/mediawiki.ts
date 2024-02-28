@@ -80,7 +80,10 @@ const copyState = (state: State): State => {
 const span = document.createElement('span'); // used for isHtmlEntity()
 
 const isHtmlEntity = (str: string): boolean => {
-	span.innerHTML = str;
+	if (str.startsWith('#')) {
+		return true;
+	}
+	span.innerHTML = `&${str}`;
 	return [...span.textContent!].length === 1;
 };
 
@@ -180,12 +183,6 @@ class MediaWiki {
 			tag: this.tokenTable[className]!,
 			class: `cm-${className}${className === 'templateName' ? ' cm-mw-pagename' : ''}`,
 		}));
-	}
-
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	eatHtmlEntity(stream: StringStream, style: string): string {
-		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
-		return entity && isHtmlEntity(`&${entity[0]}`) ? modeConfig.tags.htmlEntity : style;
 	}
 
 	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
@@ -468,110 +465,10 @@ class MediaWiki {
 		};
 	}
 
-	inVariable(stream: StringStream, state: State): string {
-		if (stream.match(/^[^{}|]+/u)) {
-			return this.makeLocalTagStyle('templateVariableName', state);
-		} else if (stream.eat('|')) {
-			state.tokenize = this.inVariableDefault(true);
-			return this.makeLocalTagStyle('templateVariableDelimiter', state);
-		} else if (stream.match('}}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('templateVariableBracket', state);
-		} else if (stream.match('{{{')) {
-			state.stack.push(state.tokenize);
-			return this.makeLocalTagStyle('templateVariableBracket', state);
-		}
-		stream.next();
-		return this.makeLocalTagStyle('templateVariableName', state);
-	}
-
-	inVariableDefault(isFirst?: boolean): Tokenizer {
-		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
-		return (stream, state) => {
-			if (stream.match(/^[^{}[<&~|]+/u)) {
-				return this.makeStyle(style, state);
-			} else if (stream.match('}}}')) {
-				state.tokenize = state.stack.pop()!;
-				return this.makeLocalTagStyle('templateVariableBracket', state);
-			} else if (stream.eat('|')) {
-				state.tokenize = this.inVariableDefault();
-				return this.makeLocalTagStyle('templateVariableDelimiter', state);
-			}
-			return this.eatWikiText(style)(stream, state);
-		};
-	}
-
-	inParserFunctionName(stream: StringStream, state: State): string {
-		// FIXME: {{#name}} and {{uc}} are wrong, must have ':'
-		if (stream.match(/^[^:}{~|<>[\]]+/u)) {
-			return this.makeLocalTagStyle('parserFunctionName', state);
-		} else if (stream.eat(':')) {
-			state.tokenize = this.inParserFunctionArguments.bind(this);
-			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
-		} else if (stream.match('}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
-		}
-		return this.eatWikiText(modeConfig.tags.error)(stream, state);
-	}
-
-	inParserFunctionArguments(stream: StringStream, state: State): string {
-		if (stream.match(/^[^|}{[<&~]+/u)) {
-			return this.makeLocalTagStyle('parserFunction', state);
-		} else if (stream.eat('|')) {
-			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
-		} else if (stream.match('}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
-		}
-		return this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
-	}
-
-	inTemplatePageName(haveAte?: boolean): Tokenizer {
-		return (stream, state) => {
-			if (stream.match(/^\s*\|\s*/u)) {
-				state.tokenize = this.inTemplateArgument(true);
-				return this.makeLocalTagStyle('templateDelimiter', state);
-			} else if (stream.match(/^\s*\}\}/u)) {
-				state.tokenize = state.stack.pop()!;
-				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			} else if (stream.match(/^\s*<!--.*?-->/u)) {
-				return this.makeLocalTagStyle('comment', state);
-			} else if (haveAte && stream.sol()) {
-				state.nTemplate--;
-				state.tokenize = state.stack.pop()!;
-				return '';
-			} else if (stream.match(/^\s*[^\s|&~{}<>[\]]+/u)) {
-				state.tokenize = this.inTemplatePageName(true);
-				return this.makeLocalTagStyle('templateName', state);
-			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
-				return this.makeLocalTagStyle('error', state);
-			}
-			return stream.eatSpace()
-				? this.makeLocalTagStyle('templateName', state)
-				: this.eatWikiText(modeConfig.tags.templateName)(stream, state);
-		};
-	}
-
-	inTemplateArgument(expectArgName?: boolean): Tokenizer {
-		return (stream, state) => {
-			if (expectArgName && stream.eatWhile(/[^=|}{[<&~]/u)) {
-				if (stream.eat('=')) {
-					state.tokenize = this.inTemplateArgument();
-					return this.makeLocalTagStyle('templateArgumentName', state);
-				}
-				return this.makeLocalTagStyle('template', state);
-			} else if (stream.eatWhile(/[^|}{[<&~]/u)) {
-				return this.makeLocalTagStyle('template', state);
-			} else if (stream.eat('|')) {
-				state.tokenize = this.inTemplateArgument(true);
-				return this.makeLocalTagStyle('templateDelimiter', state);
-			} else if (stream.match('}}')) {
-				state.tokenize = state.stack.pop()!;
-				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			}
-			return this.eatWikiText(modeConfig.tags.template)(stream, state);
-		};
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	eatHtmlEntity(stream: StringStream, style: string): string {
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
+		return entity && isHtmlEntity(entity[0]) ? modeConfig.tags.htmlEntity : style;
 	}
 
 	eatExternalLinkProtocol(chars: number): Tokenizer {
@@ -704,6 +601,112 @@ class MediaWiki {
 				state.lbrack = true;
 			}
 			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
+		};
+	}
+
+	inVariable(stream: StringStream, state: State): string {
+		if (stream.match(/^[^{}|]+/u)) {
+			return this.makeLocalTagStyle('templateVariableName', state);
+		} else if (stream.eat('|')) {
+			state.tokenize = this.inVariableDefault(true);
+			return this.makeLocalTagStyle('templateVariableDelimiter', state);
+		} else if (stream.match('}}}')) {
+			state.tokenize = state.stack.pop()!;
+			return this.makeLocalTagStyle('templateVariableBracket', state);
+		} else if (stream.match('{{{')) {
+			state.stack.push(state.tokenize);
+			return this.makeLocalTagStyle('templateVariableBracket', state);
+		}
+		stream.next();
+		return this.makeLocalTagStyle('templateVariableName', state);
+	}
+
+	inVariableDefault(isFirst?: boolean): Tokenizer {
+		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
+		return (stream, state) => {
+			if (stream.match(/^[^{}[<&~|]+/u)) {
+				return this.makeStyle(style, state);
+			} else if (stream.match('}}}')) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle('templateVariableBracket', state);
+			} else if (stream.eat('|')) {
+				state.tokenize = this.inVariableDefault();
+				return this.makeLocalTagStyle('templateVariableDelimiter', state);
+			}
+			return this.eatWikiText(style)(stream, state);
+		};
+	}
+
+	inParserFunctionName(stream: StringStream, state: State): string {
+		// FIXME: {{#name}} and {{uc}} are wrong, must have ':'
+		if (stream.match(/^[^:}{~|<>[\]]+/u)) {
+			return this.makeLocalTagStyle('parserFunctionName', state);
+		} else if (stream.eat(':')) {
+			state.tokenize = this.inParserFunctionArguments.bind(this);
+			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
+		} else if (stream.match('}}')) {
+			state.tokenize = state.stack.pop()!;
+			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+		}
+		return this.eatWikiText(modeConfig.tags.error)(stream, state);
+	}
+
+	inParserFunctionArguments(stream: StringStream, state: State): string {
+		if (stream.match(/^[^|}{[<&~]+/u)) {
+			return this.makeLocalTagStyle('parserFunction', state);
+		} else if (stream.eat('|')) {
+			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
+		} else if (stream.match('}}')) {
+			state.tokenize = state.stack.pop()!;
+			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+		}
+		return this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
+	}
+
+	inTemplatePageName(haveAte?: boolean): Tokenizer {
+		return (stream, state) => {
+			if (stream.match(/^\s*\|\s*/u)) {
+				state.tokenize = this.inTemplateArgument(true);
+				return this.makeLocalTagStyle('templateDelimiter', state);
+			} else if (stream.match(/^\s*\}\}/u)) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
+			} else if (stream.match(/^\s*<!--.*?-->/u)) {
+				return this.makeLocalTagStyle('comment', state);
+			} else if (haveAte && stream.sol()) {
+				state.nTemplate--;
+				state.tokenize = state.stack.pop()!;
+				return '';
+			} else if (stream.match(/^\s*[^\s|&~{}<>[\]]+/u)) {
+				state.tokenize = this.inTemplatePageName(true);
+				return this.makeLocalTagStyle('templateName', state);
+			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
+				return this.makeLocalTagStyle('error', state);
+			}
+			return stream.eatSpace()
+				? this.makeLocalTagStyle('templateName', state)
+				: this.eatWikiText(modeConfig.tags.templateName)(stream, state);
+		};
+	}
+
+	inTemplateArgument(expectArgName?: boolean): Tokenizer {
+		return (stream, state) => {
+			if (expectArgName && stream.eatWhile(/[^=|}{[<&~]/u)) {
+				if (stream.eat('=')) {
+					state.tokenize = this.inTemplateArgument();
+					return this.makeLocalTagStyle('templateArgumentName', state);
+				}
+				return this.makeLocalTagStyle('template', state);
+			} else if (stream.eatWhile(/[^|}{[<&~]/u)) {
+				return this.makeLocalTagStyle('template', state);
+			} else if (stream.eat('|')) {
+				state.tokenize = this.inTemplateArgument(true);
+				return this.makeLocalTagStyle('templateDelimiter', state);
+			} else if (stream.match('}}')) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
+			}
+			return this.eatWikiText(modeConfig.tags.template)(stream, state);
 		};
 	}
 
