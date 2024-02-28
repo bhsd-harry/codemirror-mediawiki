@@ -528,7 +528,7 @@ class MediaWiki {
 				return '';
 			} else if (stream.match(/^\s*#\s*/u)) {
 				state.tokenize = this.inLinkToSection(file);
-				return this.makeTagStyle('link', state);
+				return this.makeTagStyle(file ? 'error' : 'link', state);
 			} else if (stream.match(/^\s*\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
@@ -546,23 +546,22 @@ class MediaWiki {
 	}
 
 	inLinkToSection(file: boolean): Tokenizer {
+		const tag = file ? 'error' : 'linkToSection';
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			}
-			// FIXME '{{' breaks links, example: [[z{{page]]
-			if (stream.match(/^[^|\]&~{}]+/u)) {
-				return this.makeTagStyle('linkToSection', state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(']]')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+			} else if (stream.match(/^[^|\]&~{}]+/u)) {
+				return this.makeTagStyle(tag, state);
 			}
-			return this.eatWikiText(modeConfig.tags.linkToSection)(stream, state);
+			return this.eatWikiText(modeConfig.tags[tag])(stream, state);
 		};
 	}
 
