@@ -317,6 +317,56 @@ class MediaWiki {
 		};
 	}
 
+	eatFreeExternalLinkProtocol(stream: StringStream, state: State): string {
+		stream.match(this.urlProtocols);
+		state.tokenize = this.inFreeExternalLink.bind(this);
+		return this.makeTagStyle('freeExtLinkProtocol', state);
+	}
+
+	inFreeExternalLink(stream: StringStream, state: State): string {
+		if (!stream.sol()) {
+			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
+				ch = stream.peek();
+			state.lpar ||= mt[0].includes('(');
+			switch (ch!) {
+				case '~':
+					if (stream.match(/^~~?(?!~)/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case '{':
+					if (stream.match(/^\{(?!\{)/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case "'":
+					if (stream.match(/^'(?!')/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case ')':
+					if (state.lpar) {
+						stream.match(/^\)+/u);
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					// fall through
+				case '.':
+				case ',':
+				case ';':
+				case ':':
+				case '!':
+				case '?':
+					if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+				// no default
+			}
+		}
+		state.lpar = false;
+		state.tokenize = state.stack.pop()!;
+		return this.makeTagStyle('freeExtLink', state);
+	}
+
 	inSectionHeader(count: number): Tokenizer {
 		return (stream, state) => {
 			if (stream.match(/^[^&<[{~'_]+/u)) {
@@ -331,6 +381,84 @@ class MediaWiki {
 				return this.makeLocalTagStyle('section', state);
 			}
 			return this.eatWikiText(modeConfig.tags.section)(stream, state);
+		};
+	}
+
+	eatList(stream: StringStream, state: State): string {
+		// Just consume all nested list and indention syntax when there is more
+		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
+		if (mt && mt[0].includes(';')) {
+			state.nDt += mt[0].split(';').length - 1;
+		}
+		return this.makeLocalTagStyle('list', state);
+	}
+
+	eatStartTable(stream: StringStream, state: State): string {
+		stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
+		state.tokenize = this.inTableDefinition.bind(this);
+		return this.makeLocalTagStyle('tableBracket', state);
+	}
+
+	inTableDefinition(stream: StringStream, state: State): string {
+		if (stream.sol()) {
+			state.tokenize = this.inTable.bind(this);
+			return '';
+		}
+		return this.eatWikiText(modeConfig.tags.tableDefinition, /['[_]/u)(stream, state);
+	}
+
+	inTable(stream: StringStream, state: State): string {
+		if (stream.sol()) {
+			stream.eatSpace();
+			if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
+				if (stream.match(/^-+\s*/u)) {
+					state.tokenize = this.inTableDefinition.bind(this);
+					return this.makeLocalTagStyle('tableDelimiter', state);
+				} else if (stream.eat('+')) {
+					stream.eatSpace();
+					state.tokenize = this.inTableCell(true, TableCell.Caption);
+					return this.makeLocalTagStyle('tableDelimiter', state);
+				} else if (stream.eat('}')) {
+					state.tokenize = state.stack.pop()!;
+					return this.makeLocalTagStyle('tableBracket', state);
+				}
+				stream.eatSpace();
+				state.tokenize = this.inTableCell(true, TableCell.Td);
+				return this.makeLocalTagStyle('tableDelimiter', state);
+			} else if (stream.eat('!')) {
+				stream.eatSpace();
+				state.tokenize = this.inTableCell(true, TableCell.Th);
+				return this.makeLocalTagStyle('tableDelimiter', state);
+			}
+		}
+		return this.eatWikiText(modeConfig.tags.error)(stream, state);
+	}
+
+	inTableCell(needAttr: boolean, type: TableCell): Tokenizer {
+		let style = '';
+		if (type === TableCell.Caption) {
+			style = modeConfig.tags.tableCaption;
+		} else if (type === TableCell.Th) {
+			style = modeConfig.tags.strong;
+		}
+		return (stream, state) => {
+			if (stream.sol()) {
+				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
+					state.tokenize = this.inTable.bind(this);
+					return '';
+				}
+			} else if (stream.match(/^[^'|{[<&~!]+/u)) {
+				return this.makeStyle(style, state);
+			} else if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
+				this.isBold = false;
+				this.isItalic = false;
+				state.tokenize = this.inTableCell(true, type);
+				return this.makeLocalTagStyle('tableDelimiter', state);
+			} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
+				state.tokenize = this.inTableCell(false, type);
+				return this.makeLocalTagStyle('tableDelimiter', state);
+			}
+			return this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -704,134 +832,6 @@ class MediaWiki {
 			}
 			return ret;
 		};
-	}
-
-	eatStartTable(stream: StringStream, state: State): string {
-		stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
-		state.tokenize = this.inTableDefinition.bind(this);
-		return this.makeLocalTagStyle('tableBracket', state);
-	}
-
-	inTableDefinition(stream: StringStream, state: State): string {
-		if (stream.sol()) {
-			state.tokenize = this.inTable.bind(this);
-			return '';
-		}
-		return this.eatWikiText(modeConfig.tags.tableDefinition, /['[_]/u)(stream, state);
-	}
-
-	inTable(stream: StringStream, state: State): string {
-		if (stream.sol()) {
-			stream.eatSpace();
-			if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
-				if (stream.match(/^-+\s*/u)) {
-					state.tokenize = this.inTableDefinition.bind(this);
-					return this.makeLocalTagStyle('tableDelimiter', state);
-				} else if (stream.eat('+')) {
-					stream.eatSpace();
-					state.tokenize = this.inTableRow(true, TableCell.Caption);
-					return this.makeLocalTagStyle('tableDelimiter', state);
-				} else if (stream.eat('}')) {
-					state.tokenize = state.stack.pop()!;
-					return this.makeLocalTagStyle('tableBracket', state);
-				}
-				stream.eatSpace();
-				state.tokenize = this.inTableRow(true, TableCell.Td);
-				return this.makeLocalTagStyle('tableDelimiter', state);
-			} else if (stream.eat('!')) {
-				stream.eatSpace();
-				state.tokenize = this.inTableRow(true, TableCell.Th);
-				return this.makeLocalTagStyle('tableDelimiter', state);
-			}
-		}
-		return this.eatWikiText(modeConfig.tags.error)(stream, state);
-	}
-
-	inTableRow(isStart: boolean, type: TableCell): Tokenizer {
-		let style = '';
-		if (type === TableCell.Caption) {
-			style = modeConfig.tags.tableCaption;
-		} else if (type === TableCell.Th) {
-			style = modeConfig.tags.strong;
-		}
-		return (stream, state) => {
-			if (stream.sol()) {
-				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
-					state.tokenize = this.inTable.bind(this);
-					return this.inTable(stream, state);
-				}
-			} else if (stream.match(/^[^'|{[<&~!]+/u)) {
-				return this.makeStyle(style, state);
-			} else if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
-				this.isBold = false;
-				this.isItalic = false;
-				state.tokenize = this.inTableRow(true, type);
-				return this.makeLocalTagStyle('tableDelimiter', state);
-			} else if (isStart && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
-				state.tokenize = this.inTableRow(false, type);
-				return this.makeLocalTagStyle('tableDelimiter', state);
-			}
-			return this.eatWikiText(style)(stream, state);
-		};
-	}
-
-	eatFreeExternalLinkProtocol(stream: StringStream, state: State): string {
-		stream.match(this.urlProtocols);
-		state.tokenize = this.inFreeExternalLink.bind(this);
-		return this.makeTagStyle('freeExtLinkProtocol', state);
-	}
-
-	inFreeExternalLink(stream: StringStream, state: State): string {
-		if (!stream.sol()) {
-			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
-				ch = stream.peek();
-			state.lpar ||= mt[0].includes('(');
-			switch (ch!) {
-				case '~':
-					if (stream.match(/^~~?(?!~)/u)) {
-						return this.makeTagStyle('freeExtLink', state);
-					}
-					break;
-				case '{':
-					if (stream.match(/^\{(?!\{)/u)) {
-						return this.makeTagStyle('freeExtLink', state);
-					}
-					break;
-				case "'":
-					if (stream.match(/^'(?!')/u)) {
-						return this.makeTagStyle('freeExtLink', state);
-					}
-					break;
-				case ')':
-					if (state.lpar) {
-						stream.match(/^\)+/u);
-						return this.makeTagStyle('freeExtLink', state);
-					}
-					// fall through
-				case '.':
-				case ',':
-				case ';':
-				case ':':
-				case '!':
-				case '?':
-					if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
-						return this.makeTagStyle('freeExtLink', state);
-					}
-				// no default
-			}
-		}
-		state.lpar = false;
-		state.tokenize = state.stack.pop()!;
-		return this.makeTagStyle('freeExtLink', state);
-	}
-
-	eatList(stream: StringStream, state: State): string {
-		// Just consume all nested list and indention syntax when there is more
-		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
-		if (mt && mt[0].includes(';')) {
-			state.nDt += mt[0].split(';').length - 1;
-		}
-		return this.makeLocalTagStyle('list', state);
 	}
 
 	eatWikiText(style: string, ignore?: RegExp): Tokenizer {
