@@ -434,7 +434,7 @@ class MediaWiki {
 		return this.eatWikiText(modeConfig.tags.error)(stream, state);
 	}
 
-	inTableCell(needAttr: boolean, type: TableCell): Tokenizer {
+	inTableCell(needAttr: boolean, type: TableCell, firstLine = true): Tokenizer {
 		let style = '';
 		if (type === TableCell.Caption) {
 			style = modeConfig.tags.tableCaption;
@@ -446,17 +446,23 @@ class MediaWiki {
 				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
 					state.tokenize = this.inTable.bind(this);
 					return '';
+				} else if (firstLine) {
+					state.tokenize = this.inTableCell(false, type, false);
+					return '';
 				}
-			} else if (stream.match(/^[^'|{[<&~!]+/u)) {
+			}
+			if (stream.match(firstLine ? /^[^'{[<&~_|!]+/u : /^[^'{[<&~_]+/u)) {
 				return this.makeStyle(style, state);
-			} else if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
-				this.isBold = false;
-				this.isItalic = false;
-				state.tokenize = this.inTableCell(true, type);
-				return this.makeLocalTagStyle('tableDelimiter', state);
-			} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
-				state.tokenize = this.inTableCell(false, type);
-				return this.makeLocalTagStyle('tableDelimiter', state);
+			} else if (firstLine) {
+				if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
+					this.isBold = false;
+					this.isItalic = false;
+					state.tokenize = this.inTableCell(true, type);
+					return this.makeLocalTagStyle('tableDelimiter', state);
+				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
+					state.tokenize = this.inTableCell(false, type);
+					return this.makeLocalTagStyle('tableDelimiter', state);
+				}
 			}
 			return this.eatWikiText(style)(stream, state);
 		};
