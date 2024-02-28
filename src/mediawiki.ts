@@ -144,7 +144,7 @@ class MediaWiki {
 		}
 
 		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
-		this.fileRegex = new RegExp(`^\\s*(?:${nsFile})\\s*:\\s*`, 'iu');
+		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
 
 		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
@@ -535,11 +535,11 @@ class MediaWiki {
 			} else if (stream.match(/^\s*\]\]/u)) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
+			} else if (stream.match(/^(?:[>[\]}]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
 			const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
-			return stream.match(/^[^#|[\]&~{}<>]+/u)
+			return stream.match(/^[^#|[\]&{}<>]+/u)
 				? this.makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};

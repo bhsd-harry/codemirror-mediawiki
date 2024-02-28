@@ -15,6 +15,7 @@
 - Links and behavior switches are now ignored in table attributes
 - Disallow multiline free external links in the MediaWiki mode
 - Multiline table cells in the MediaWiki mode
+- Allow HTML comments in wikilinks in the MediaWiki mode
 
 **Changed**
 
