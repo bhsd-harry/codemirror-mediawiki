@@ -592,8 +592,11 @@ class MediaWiki {
 				linkIsItalic = !linkIsItalic;
 				return this.makeLocalStyle(`${modeConfig.tags.linkText} ${modeConfig.tags.apostrophes}`, state);
 			}
-			const mt = stream
-				.match(file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u) as RegExpMatchArray | false;
+			/** @todo image parameters */
+			const regex = file
+					? new RegExp(`^(?:[^'\\]{&~<_|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'u')
+					: /^[^'\]{&~<_]+/u,
+				mt = stream.match(regex) as RegExpMatchArray | false;
 			if (mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
