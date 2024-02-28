@@ -39,7 +39,7 @@ declare interface State {
 	nExt: number;
 	nDt: number;
 	lpar: boolean;
-	lbrack: boolean;
+	lbrack?: boolean;
 }
 
 declare interface Token {
@@ -535,6 +535,7 @@ class MediaWiki {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(/^\s*\]\]/u)) {
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (stream.match(/^(?:[>[\]}]|\{(?!\{))/u)) {
@@ -558,6 +559,7 @@ class MediaWiki {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(']]')) {
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (stream.match(/^[^|\]&{}<]+/u)) {
@@ -581,6 +583,7 @@ class MediaWiki {
 					state.lbrack = false;
 					return this.makeStyle(tmpstyle, state);
 				}
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (file && stream.eat('|')) {
@@ -597,7 +600,7 @@ class MediaWiki {
 					? new RegExp(`^(?:[^'\\]{&~<_|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'u')
 					: /^[^'\]{&~<_]+/u,
 				mt = stream.match(regex) as RegExpMatchArray | false;
-			if (mt && mt[0].includes('[')) {
+			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
 			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
@@ -950,7 +953,7 @@ class MediaWiki {
 						stream.eatSpace();
 						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
-							state.lbrack = false;
+							delete state.lbrack;
 							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
 							return this.makeLocalTagStyle('linkBracket', state);
 						}
@@ -1191,7 +1194,6 @@ class MediaWiki {
 				nExt: 0,
 				nDt: 0,
 				lpar: false,
-				lbrack: false,
 			}),
 
 			copyState: (state): State => {
