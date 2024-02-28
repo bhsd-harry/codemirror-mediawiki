@@ -713,11 +713,11 @@ class MediaWiki {
 	}
 
 	inTableDefinition(stream: StringStream, state: State): string {
-		if (stream.sol()) {
+		if (stream.eol()) {
 			state.tokenize = this.inTable.bind(this);
-			return this.inTable(stream, state);
+			return '';
 		}
-		return this.eatWikiText(modeConfig.tags.tableDefinition)(stream, state);
+		return this.eatWikiText(modeConfig.tags.tableDefinition, /['[_]/u)(stream, state);
 	}
 
 	inTable(stream: StringStream, state: State): string {
@@ -834,7 +834,7 @@ class MediaWiki {
 		return this.makeLocalTagStyle('list', state);
 	}
 
-	eatWikiText(style: string): Tokenizer {
+	eatWikiText(style: string, ignore?: RegExp): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
 
@@ -918,160 +918,163 @@ class MediaWiki {
 				ch = stream.next()!;
 			}
 
-			switch (ch) {
-				case '&':
-					return this.makeStyle(this.eatHtmlEntity(stream, style), state);
-				case "'":
-					// skip the irrelevant apostrophes ( >5 or =4 )
-					if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
-						break;
-					} else if (stream.match("''")) { // bold
-						if (!(this.firstSingleLetterWord || stream.match("''", false))) {
-							this.prepareItalicForCorrection(stream);
-						}
-						this.isBold = !this.isBold;
-						return this.makeLocalTagStyle('apostrophesBold', state);
-					} else if (stream.eat("'")) { // italic
-						this.isItalic = !this.isItalic;
-						return this.makeLocalTagStyle('apostrophesItalic', state);
-					}
-					break;
-				case '[':
-					if (stream.eat('[')) { // Link Example: [[ Foo | Bar ]]
-						stream.eatSpace();
-						if (/[^\]|[]/u.test(stream.peek() || '')) {
-							state.nLink++;
-							state.lbrack = false;
-							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
-							return this.makeLocalTagStyle('linkBracket', state);
-						}
-					} else {
-						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
-						if (mt) {
-							state.nLink++;
-							chain(state, this.eatExternalLinkProtocol(mt[0].length));
-							return this.makeLocalTagStyle('extLinkBracket', state);
-						}
-					}
-					break;
-				case '{':
-					// Can't be a variable when it starts with more than 3 brackets (T108450) or
-					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
-					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))/u)) {
-						stream.eatSpace();
-						chain(state, this.inVariable.bind(this));
-						return this.makeLocalTagStyle('templateVariableBracket', state);
-					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
-						// Parser function
-						if (stream.peek() === '#') {
-							state.nExt++;
-							chain(state, this.inParserFunctionName.bind(this));
-							return this.makeLocalTagStyle('parserFunctionBracket', state);
-						}
-						// Check for parser function without '#'
-						const name = stream
-							.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
-						if (
-							name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
-							&& (
-								name[1]!.toLowerCase() in this.config.functionSynonyms[0]
-								|| name[1]! in this.config.functionSynonyms[1]
-							)
-						) {
-							state.nExt++;
-							chain(state, this.inParserFunctionName.bind(this));
-							return this.makeLocalTagStyle('parserFunctionBracket', state);
-						}
-						// Template
-						state.nTemplate++;
-						chain(state, this.inTemplatePageName());
-						return this.makeLocalTagStyle('templateBracket', state);
-					}
-					break;
-				case '<': {
-					if (stream.match('!--')) { // comment
-						chain(state, this.inBlock('comment', '-->', true));
-						return this.makeLocalTagStyle('comment', state);
-					}
-					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream
-							.match(/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u) as RegExpMatchArray | false;
-					if (mt) {
-						const tagname = mt[0].toLowerCase();
-						if (tagname in this.config.tags) {
-							// Parser function
-							if (isCloseTag) {
-								chain(state, this.inChar('>', 'error'));
-								return this.makeLocalTagStyle('error', state);
+			if (!ignore || !ignore.test(ch)) {
+				switch (ch) {
+					case '&':
+						return this.makeStyle(this.eatHtmlEntity(stream, style), state);
+					case "'":
+						// skip the irrelevant apostrophes ( >5 or =4 )
+						if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
+							break;
+						} else if (stream.match("''")) { // bold
+							if (!(this.firstSingleLetterWord || stream.match("''", false))) {
+								this.prepareItalicForCorrection(stream);
 							}
-							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag));
-							return this.makeLocalTagStyle('extTagBracket', state);
-						} else if (this.permittedHtmlTags.has(tagname)) {
-							// Html tag
-							if (isCloseTag) {
-								if (tagname === state.inHtmlTag[0]) {
-									state.inHtmlTag.shift();
-								} else {
+							this.isBold = !this.isBold;
+							return this.makeLocalTagStyle('apostrophesBold', state);
+						} else if (stream.eat("'")) { // italic
+							this.isItalic = !this.isItalic;
+							return this.makeLocalTagStyle('apostrophesItalic', state);
+						}
+						break;
+					case '[':
+						if (stream.eat('[')) { // Link Example: [[ Foo | Bar ]]
+							stream.eatSpace();
+							if (/[^\]|[]/u.test(stream.peek() || '')) {
+								state.nLink++;
+								state.lbrack = false;
+								chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
+								return this.makeLocalTagStyle('linkBracket', state);
+							}
+						} else {
+							const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+							if (mt) {
+								state.nLink++;
+								chain(state, this.eatExternalLinkProtocol(mt[0].length));
+								return this.makeLocalTagStyle('extLinkBracket', state);
+							}
+						}
+						break;
+					case '{':
+						// Can't be a variable when it starts with more than 3 brackets (T108450) or
+						// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
+						if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))/u)) {
+							stream.eatSpace();
+							chain(state, this.inVariable.bind(this));
+							return this.makeLocalTagStyle('templateVariableBracket', state);
+						} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
+							// Parser function
+							if (stream.peek() === '#') {
+								state.nExt++;
+								chain(state, this.inParserFunctionName.bind(this));
+								return this.makeLocalTagStyle('parserFunctionBracket', state);
+							}
+							// Check for parser function without '#'
+							const name = stream
+								.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
+							if (
+								name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
+								&& (
+									name[1]!.toLowerCase() in this.config.functionSynonyms[0]
+									|| name[1]! in this.config.functionSynonyms[1]
+								)
+							) {
+								state.nExt++;
+								chain(state, this.inParserFunctionName.bind(this));
+								return this.makeLocalTagStyle('parserFunctionBracket', state);
+							}
+							// Template
+							state.nTemplate++;
+							chain(state, this.inTemplatePageName());
+							return this.makeLocalTagStyle('templateBracket', state);
+						}
+						break;
+					case '<': {
+						if (stream.match('!--')) { // comment
+							chain(state, this.inBlock('comment', '-->', true));
+							return this.makeLocalTagStyle('comment', state);
+						}
+						const isCloseTag = Boolean(stream.eat('/')),
+							mt = stream.match(
+								/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u,
+							) as RegExpMatchArray | false;
+						if (mt) {
+							const tagname = mt[0].toLowerCase();
+							if (tagname in this.config.tags) {
+								// Parser function
+								if (isCloseTag) {
 									chain(state, this.inChar('>', 'error'));
 									return this.makeLocalTagStyle('error', state);
 								}
+								stream.backUp(tagname.length);
+								chain(state, this.eatTagName(tagname.length, isCloseTag));
+								return this.makeLocalTagStyle('extTagBracket', state);
+							} else if (this.permittedHtmlTags.has(tagname)) {
+								// Html tag
+								if (isCloseTag) {
+									if (tagname === state.inHtmlTag[0]) {
+										state.inHtmlTag.shift();
+									} else {
+										chain(state, this.inChar('>', 'error'));
+										return this.makeLocalTagStyle('error', state);
+									}
+								}
+								stream.backUp(tagname.length);
+								chain(state, this.eatTagName(tagname.length, isCloseTag, true));
+								return this.makeLocalTagStyle('htmlTagBracket', state);
 							}
 							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag, true));
-							return this.makeLocalTagStyle('htmlTagBracket', state);
 						}
-						stream.backUp(tagname.length);
+						break;
 					}
-					break;
-				}
-				case '~':
-					if (stream.match(/^~{2,4}/u)) {
-						return modeConfig.tags.signature;
-					}
-					break;
-				// Maybe double underscored Magic Word such as __TOC__
-				case '_': {
-					let tmp = 1;
-					// Optimize processing of many underscore symbols
-					while (stream.eat('_')) {
-						tmp++;
-					}
-					// Many underscore symbols
-					if (tmp > 2) {
-						if (!stream.eol()) {
-							// Leave last two underscore symbols for processing in next iteration
-							stream.backUp(2);
+					case '~':
+						if (stream.match(/^~{2,4}/u)) {
+							return modeConfig.tags.signature;
 						}
-						// Optimization: skip regex function for EOL and backup-ed symbols
-						return this.makeStyle(style, state);
-					// Check on double underscore Magic Word
-					} else if (tmp === 2) {
-						// The same as the end of function except '_' inside and '__' at the end.
-						const name = stream.match(/^\w+?__/u) as RegExpMatchArray | false;
-						if (name) {
-							if (
-								`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
-								|| `__${name[0]}` in this.config.doubleUnderscore[1]
-							) {
-								return modeConfig.tags.doubleUnderscore;
-							} else if (!stream.eol()) {
-								// Two underscore symbols at the end can be the
-								// beginning of another double underscored Magic Word
+						break;
+					// Maybe double underscored Magic Word such as __TOC__
+					case '_': {
+						let tmp = 1;
+						// Optimize processing of many underscore symbols
+						while (stream.eat('_')) {
+							tmp++;
+						}
+						// Many underscore symbols
+						if (tmp > 2) {
+							if (!stream.eol()) {
+								// Leave last two underscore symbols for processing in next iteration
 								stream.backUp(2);
 							}
-							// Optimization: skip regex for EOL and backup-ed symbols
+							// Optimization: skip regex function for EOL and backup-ed symbols
 							return this.makeStyle(style, state);
+						// Check on double underscore Magic Word
+						} else if (tmp === 2) {
+							// The same as the end of function except '_' inside and '__' at the end.
+							const name = stream.match(/^\w+?__/u) as RegExpMatchArray | false;
+							if (name) {
+								if (
+									`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
+									|| `__${name[0]}` in this.config.doubleUnderscore[1]
+								) {
+									return modeConfig.tags.doubleUnderscore;
+								} else if (!stream.eol()) {
+									// Two underscore symbols at the end can be the
+									// beginning of another double underscored Magic Word
+									stream.backUp(2);
+								}
+								// Optimization: skip regex for EOL and backup-ed symbols
+								return this.makeStyle(style, state);
+							}
 						}
+						break;
 					}
-					break;
+					case ':':
+						if (state.nDt > 0) {
+							state.nDt--;
+							return this.makeLocalTagStyle('list', state);
+						}
+					// no default
 				}
-				case ':':
-					if (state.nDt > 0) {
-						state.nDt--;
-						return this.makeLocalTagStyle('list', state);
-					}
-				// no default
 			}
 			if (/\s/u.test(ch || '')) {
 				stream.eatSpace();
