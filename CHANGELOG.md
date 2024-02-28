@@ -17,6 +17,7 @@
 - Multiline table cells in the MediaWiki mode
 - Allow HTML comments in wikilinks in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
+- Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 
 **Changed**
 

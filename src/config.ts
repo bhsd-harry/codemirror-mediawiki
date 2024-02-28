@@ -107,8 +107,6 @@ export const modeConfig = {
 	 */
 	tags: {
 		apostrophes: 'mw-apostrophes',
-		apostrophesBold: 'mw-apostrophes-bold',
-		apostrophesItalic: 'mw-apostrophes-italic',
 		comment: 'mw-comment',
 		doubleUnderscore: 'mw-double-underscore',
 		extLink: 'mw-extlink',
