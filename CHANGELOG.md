@@ -1,3 +1,16 @@
+## v2.7.0
+
+*2024-02-28*
+
+**Added**
+
+- Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
+- Text after `;` in the MediaWiki mode is now highlighted in bold
+
+**Fixed**
+
+- Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now works wherever the tooltip is displayed
+
 ## v2.6.5
 
 *2024-02-27*
