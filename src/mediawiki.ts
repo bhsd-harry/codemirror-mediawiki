@@ -494,20 +494,16 @@ class MediaWiki {
 		} else if (stream.match(/^\s*\]/u)) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-		} else if (stream.eatSpace()) {
+		} else if (stream.eatSpace() || /[[<>"]/u.test(stream.peek() || '')) {
 			state.tokenize = this.inExternalLinkText.bind(this);
 			return this.makeLocalStyle('', state);
-		} else if (stream.match(/^[^\s\]{&~']+/u)) {
-			if (stream.peek() === "'") {
-				if (stream.match("''", false)) {
-					state.tokenize = this.inExternalLinkText.bind(this);
-				} else {
-					stream.next();
-				}
-			}
-			return this.makeLocalTagStyle('extLink', state);
+		} else if (stream.match(/^(?:&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{{2,})/u, false)) {
+			state.tokenize = this.inExternalLinkText.bind(this);
+			return '';
 		}
-		return this.eatWikiText(modeConfig.tags.extLink)(stream, state);
+		stream.next();
+		stream.match(/^[^\s[\]<>"&'{]+/u);
+		return this.makeLocalTagStyle('extLink', state);
 	}
 
 	inExternalLinkText(stream: StringStream, state: State): string {
@@ -519,7 +515,7 @@ class MediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
 		}
-		return stream.match(/^[^'\]{&~<]+/u)
+		return stream.match(/^(?:[^'[\]{&~<]+|\[(?!\[))/u)
 			? this.makeTagStyle('extLinkText', state)
 			: this.eatWikiText(modeConfig.tags.extLinkText)(stream, state);
 	}
@@ -949,7 +945,7 @@ class MediaWiki {
 					case '[':
 						if (stream.eat('[')) { // Link Example: [[ Foo | Bar ]]
 							stream.eatSpace();
-							if (/[^\]|[]/u.test(stream.peek() || '')) {
+							if (/[^[\]|]/u.test(stream.peek() || '')) {
 								state.nLink++;
 								state.lbrack = false;
 								chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));

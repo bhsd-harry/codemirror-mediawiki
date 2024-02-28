@@ -16,6 +16,10 @@
 - Disallow multiline free external links in the MediaWiki mode
 - Multiline table cells in the MediaWiki mode
 
+**Changed**
+
+- Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+
 ## v2.6.5
 
 *2024-02-27*
