@@ -744,7 +744,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
 		}
-		return this.eatWikiText('')(stream, state);
+		return this.eatWikiText(modeConfig.tags.error)(stream, state);
 	}
 
 	inTableRow(isStart: boolean, type: TableCell): Tokenizer {

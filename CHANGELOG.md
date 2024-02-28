@@ -6,6 +6,7 @@
 
 - Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
 - Text after `;` in the MediaWiki mode is now highlighted in bold
+- Fostered table content is now highlighted as errors in the MediaWiki mode
 
 **Fixed**
 
