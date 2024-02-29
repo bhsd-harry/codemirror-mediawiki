@@ -107,8 +107,6 @@ export const modeConfig = {
 	 */
 	tags: {
 		apostrophes: 'mw-apostrophes',
-		apostrophesBold: 'mw-apostrophes-bold',
-		apostrophesItalic: 'mw-apostrophes-italic',
 		comment: 'mw-comment',
 		doubleUnderscore: 'mw-double-underscore',
 		extLink: 'mw-extlink',
@@ -163,7 +161,6 @@ export const modeConfig = {
 		freeExtLink: 'mw-free-extlink',
 		freeExtLinkProtocol: 'mw-free-extlink-protocol',
 		htmlEntity: 'mw-html-entity',
-		link: 'mw-link',
 		linkGround: 'mw-link-ground',
 		linkPageName: 'mw-link-pagename',
 		pageName: 'mw-pagename',

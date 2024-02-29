@@ -87,9 +87,7 @@
 	color: #84a0a0;
 	font-weight: normal;
 }
-.cm-mw-apostrophes,
-.cm-mw-apostrophes-bold,
-.cm-mw-apostrophes-italic {
+.cm-mw-apostrophes {
 	color: #08f;
 }
 
@@ -140,7 +138,6 @@
 	color: #36c;
 	font-weight: normal;
 }
-.cm-mw-link,
 .cm-mw-link-tosection {
 	color: #18e;
 	font-weight: normal;

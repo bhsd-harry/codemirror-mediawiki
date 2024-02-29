@@ -119,19 +119,23 @@ const create = (state: EditorState): Tooltip | null => {
 
 export const foldExtension: Extension[] = [
 	codeFolding({
-		placeholderDOM(view, _, prepared: {from: number, to: number}) {
+		placeholderDOM(view) {
 			const element = document.createElement('span');
 			element.textContent = '…';
 			element.setAttribute('aria-label', 'folded code');
 			element.title = view.state.phrase('unfold');
 			element.className = 'cm-foldPlaceholder';
-			element.onclick = (): void => {
-				view.dispatch({effects: unfoldEffect.of(prepared)});
+			element.onclick = ({target}): void => {
+				const pos = view.posAtDOM(target as Node),
+					{state} = view,
+					{selection} = state;
+				state.field(foldState).between(pos, pos, (from, to) => {
+					if (from === pos) {
+						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
+					}
+				});
 			};
 			return element;
-		},
-		preparePlaceholder(_, range) {
-			return range;
 		},
 	}),
 	StateField.define<Tooltip | null>({
@@ -149,15 +153,24 @@ export const foldExtension: Extension[] = [
 			mac: 'Cmd-Alt-[',
 			run(view): boolean {
 				const {state} = view,
-					tree = ensureSyntaxTree(state, view.viewport.to),
-					effects: StateEffect<DocRange>[] = [];
-				for (const {from, to} of state.selection.ranges) {
-					let node: SyntaxNode | null | undefined = tree?.resolve(from, 1);
+					tree = ensureSyntaxTree(state, view.viewport.to);
+				if (!tree) {
+					return false;
+				}
+				const effects: StateEffect<DocRange>[] = [];
+				for (const {from, to, empty} of state.selection.ranges) {
+					let node: SyntaxNode | null | undefined;
+					if (empty) {
+						node = tree.resolve(from, -1);
+					}
+					if (!node || !isTemplate(node)) {
+						node = tree.resolve(from, 1);
+					}
 					while (node && node.from <= to) {
-						const range = foldable(state, node, tree!);
+						const range = foldable(state, node, tree);
 						if (range) {
 							effects.push(foldEffect.of(range));
-							node = tree!.resolve(range.to, 1);
+							node = tree.resolve(range.to, 1);
 							continue;
 						}
 						node = node.nextSibling;
@@ -176,15 +189,16 @@ export const foldExtension: Extension[] = [
 			mac: 'Cmd-Alt-]',
 			run(view): boolean {
 				const {state} = view,
+					{selection} = state,
 					effects: StateEffect<DocRange>[] = [],
 					folded = state.field(foldState);
-				for (const {from, to} of state.selection.ranges) {
+				for (const {from, to} of selection.ranges) {
 					folded.between(from, to, (i, j) => {
 						effects.push(unfoldEffect.of({from: i, to: j}));
 					});
 				}
 				if (effects.length > 0) {
-					view.dispatch({effects});
+					view.dispatch({effects, selection});
 					return true;
 				}
 				return false;
@@ -202,8 +216,13 @@ export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
 	const dom = (e.target as Element).closest<HTMLElement>('.cm-tooltip-fold');
 	if (dom) {
 		e.preventDefault();
-		const {dataset: {from, to}} = dom;
-		view.dispatch({effects: foldEffect.of({from: Number(from), to: Number(to)})});
+		const {dataset} = dom,
+			from = Number(dataset['from']),
+			to = Number(dataset['to']);
+		view.dispatch({
+			effects: foldEffect.of({from, to}),
+			selection: {anchor: to},
+		});
 		dom.remove();
 	}
 };
