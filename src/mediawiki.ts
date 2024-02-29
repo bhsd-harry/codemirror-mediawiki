@@ -192,7 +192,7 @@ class MediaWiki {
 	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
 		return this.makeLocalStyle(
 			`${style} ${
-				this.isBold || state.nDt > 0 ? modeConfig.tags.strong : ''
+				this.isBold || state.nDt ? modeConfig.tags.strong : ''
 			} ${this.isItalic ? modeConfig.tags.em : ''}`,
 			state,
 			endGround,
@@ -271,7 +271,7 @@ class MediaWiki {
 				ground += '-ext3';
 				break;
 		}
-		if (state.nLink > 0) {
+		if (state.nLink) {
 			ground += '-link';
 		}
 		if (endGround) {
@@ -1095,7 +1095,7 @@ class MediaWiki {
 					break;
 				}
 				case ':':
-					if (state.nDt > 0) {
+					if (state.nDt) {
 						state.nDt--;
 						return this.makeLocalTagStyle('list', state);
 					}
