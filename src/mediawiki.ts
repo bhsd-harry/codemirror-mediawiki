@@ -39,7 +39,7 @@ declare interface State {
 	nExt: number;
 	nDt: number;
 	lpar: boolean;
-	lbrack?: boolean;
+	lbrack?: boolean | undefined;
 }
 
 declare interface Token {
@@ -968,7 +968,7 @@ class MediaWiki {
 						stream.eatSpace();
 						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
-							delete state.lbrack;
+							state.lbrack = undefined;
 							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
 							return this.makeLocalTagStyle('linkBracket', state);
 						}
