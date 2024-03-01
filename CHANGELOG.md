@@ -11,7 +11,7 @@
 **Fixed**
 
 - Links and behavior switches are now ignored in table attributes
-- Allow HTML comments in wikilinks and template variables in the MediaWiki mode
+- Allow HTML comments in wikilinks in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
@@ -29,6 +29,7 @@
 - Behavior switches with non-ASCII characters in the MediaWiki mode
 - Disallow multiline free external links in the MediaWiki mode
 - Allow wikilinks in external links in the MediaWiki mode
+- Allow HTML comments in template variables in the MediaWiki mode
 
 **Changed**
 

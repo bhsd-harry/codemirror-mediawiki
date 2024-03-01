@@ -627,10 +627,12 @@ class MediaWiki {
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
-		} else if (stream.match(/^[^{}|]+/u)) {
-			return this.makeLocalTagStyle('templateVariableName', state);
+		} else if (stream.match('<!--', false)) {
+			chain(state, this.inComment);
+			return '';
+		} else if (!stream.match(/^[^{}|<]+/u)) {
+			stream.next();
 		}
-		stream.next();
 		return this.makeLocalTagStyle('templateVariableName', state);
 	}
 
@@ -641,12 +643,14 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateVariableBracket', state);
 			} else if (stream.eat('|')) {
-				state.tokenize = this.inVariableDefault();
+				if (isFirst) {
+					state.tokenize = this.inVariableDefault();
+				}
 				return this.makeLocalTagStyle('templateVariableDelimiter', state);
-			} else if (stream.match(/^[^{}[<&~|]+/u)) {
-				return this.makeStyle(style, state);
 			}
-			return this.eatWikiText(style)(stream, state);
+			return stream.match(/^[^{}[<&~|]+/u)
+				? this.makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -706,9 +710,9 @@ class MediaWiki {
 		};
 	}
 
-	inTemplateArgument(expectArgName?: boolean): Tokenizer {
+	inTemplateArgument(expectName?: boolean): Tokenizer {
 		return (stream, state) => {
-			if (expectArgName && stream.eatWhile(/[^=|}{[<&~]/u)) {
+			if (expectName && stream.eatWhile(/[^=|}{[<&~]/u)) {
 				if (stream.eat('=')) {
 					state.tokenize = this.inTemplateArgument();
 					return this.makeLocalTagStyle('templateArgumentName', state);
@@ -874,7 +878,7 @@ class MediaWiki {
 						break;
 					case '=': {
 						const tmp = stream
-							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->.*\S).*)?)$/u) as RegExpMatchArray | false;
+							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u) as RegExpMatchArray | false;
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
@@ -886,9 +890,9 @@ class MediaWiki {
 						}
 						break;
 					}
+					case ';':
 					case '*':
 					case '#':
-					case ';':
 						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
@@ -907,10 +911,11 @@ class MediaWiki {
 							}
 							stream.eat('{');
 						} else {
+							/** @todo indent-pre is sometimes suppressed */
 							return modeConfig.tags.skipFormatting;
 						}
 					}
-					// falls through
+					// fall through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 							chain(state, this.inTableDefinition.bind(this));
@@ -941,9 +946,8 @@ class MediaWiki {
 					}
 					break;
 				case '[':
-					if (stream.eat('[')) { // Link Example: [[ Foo | Bar ]]
-						stream.eatSpace();
-						if (/[^\]|[]/u.test(stream.peek() || '')) {
+					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
+						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.lbrack = false;
 							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
@@ -961,8 +965,7 @@ class MediaWiki {
 				case '{':
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
-					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))/u)) {
-						stream.eatSpace();
+					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 						chain(state, this.inVariable.bind(this));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
@@ -1034,9 +1037,10 @@ class MediaWiki {
 					break;
 				}
 				case '<': {
-					if (stream.match('!--')) { // comment
+					if (stream.match('!--', false)) { // comment
+						stream.backUp(1);
 						chain(state, this.inComment);
-						return this.makeLocalTagStyle('comment', state);
+						return '';
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(
@@ -1045,7 +1049,7 @@ class MediaWiki {
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
-							// Parser function
+							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inChar('>', 'error'));
 								return this.makeLocalTagStyle('error', state);
@@ -1101,7 +1105,6 @@ class MediaWiki {
 			str = stream.string.slice(0, end - 3),
 			x1 = str.slice(-1),
 			x2 = str.slice(-2, -1);
-
 		// this.firstSingleLetterWord always is undefined here
 		if (x1 === ' ') {
 			if (this.firstMultiLetterWord || this.firstSpace) {
@@ -1190,7 +1193,6 @@ class MediaWiki {
 
 			token: (stream, state): string => {
 				let t: Token;
-
 				if (this.oldTokens.length > 0) {
 					// just send saved tokens till they exists
 					t = this.oldTokens.shift()!;
@@ -1204,14 +1206,12 @@ class MediaWiki {
 					this.firstMultiLetterWord = null;
 					this.firstSpace = null;
 				}
-
 				let style: string,
 					p: number | null = null,
 					f: number | null;
 				const tmpTokens: Token[] = [],
 					readyTokens: Token[] = [];
 				do {
-					// get token style
 					style = state.tokenize(stream, state);
 					f = this.firstSingleLetterWord || this.firstMultiLetterWord || this.firstSpace;
 					if (f) {
@@ -1240,7 +1240,6 @@ class MediaWiki {
 						return style;
 					}
 				} while (!stream.eol());
-
 				if (this.isBold && this.isItalic) {
 					// needs to rollback
 					// restore status
