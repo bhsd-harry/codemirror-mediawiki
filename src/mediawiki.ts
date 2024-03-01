@@ -542,20 +542,22 @@ class MediaWiki {
 				state.nLink--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.match(/^\s*#\s*/u)) {
+			}
+			const space = stream.eatSpace();
+			if (stream.match(/^#\s*/u)) {
 				state.tokenize = this.inLinkToSection(file);
 				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
-			} else if (stream.match(/^\s*\|\s*/u)) {
+			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
-			} else if (stream.match(/^\s*\]\]/u)) {
+			} else if (stream.match(']]')) {
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(/^(?:[>[\]}]|\{(?!\{))/u)) {
+			} else if (stream.match(/^(?:[>[}]+|\]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
-			return stream.match(/^[^#|[\]&{}<>]+/u)
+			return space || stream.match(/^[^#|[\]&{}<>]+/u)
 				? this.makeTagStyle('linkPageName', state)
 				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
 		};
@@ -635,9 +637,7 @@ class MediaWiki {
 	}
 
 	inVariable(stream: StringStream, state: State): string {
-		if (stream.match(/^[^{}|]+/u)) {
-			return this.makeLocalTagStyle('templateVariableName', state);
-		} else if (stream.eat('|')) {
+		if (stream.eat('|')) {
 			state.tokenize = this.inVariableDefault(true);
 			return this.makeLocalTagStyle('templateVariableDelimiter', state);
 		} else if (stream.match('}}}')) {
@@ -646,8 +646,9 @@ class MediaWiki {
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
+		} else if (!stream.match(/^[^{}|]+/u)) {
+			stream.next();
 		}
-		stream.next();
 		return this.makeLocalTagStyle('templateVariableName', state);
 	}
 
