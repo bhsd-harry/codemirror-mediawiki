@@ -24,9 +24,8 @@ import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
-
 declare type Tokenizer = (stream: StringStream, state: State) => string;
-
+declare type TagName = keyof typeof modeConfig.tags;
 declare interface State {
 	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
@@ -40,14 +39,11 @@ declare interface State {
 	lpar: boolean;
 	lbrack: boolean;
 }
-
 declare interface Token {
 	pos: number;
 	readonly style: string;
 	readonly state: object;
 }
-
-declare type TagName = keyof typeof modeConfig.tags;
 
 export interface MwConfig {
 	readonly urlProtocols: string;
@@ -128,6 +124,7 @@ class MediaWiki {
 		this.oldStyle = null;
 		this.oldTokens = [];
 		this.tokenTable = {...modeConfig.tokenTable};
+		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
 			...modeConfig.permittedHtmlTags,
 			...config.permittedHtmlTags || [],
@@ -160,8 +157,9 @@ class MediaWiki {
 	}
 
 	/**
-	 * Register a tag in CodeMirror. The generated CSS class will be of the form 'cm-mw-tag-tagname'
-	 * This is for internal use to dynamically register tags from other MediaWiki extensions.
+	 * Register a token for the given tag in CodeMirror. The generated CSS class will be of
+	 * the form 'cm-mw-tag-tagname'. This is for internal use to dynamically register tags
+	 * from other MediaWiki extensions.
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 * @param tag
@@ -169,7 +167,69 @@ class MediaWiki {
 	 * @internal
 	 */
 	addTag(tag: string, parent?: Tag): void {
-		(this.tokenTable[`mw-tag-${tag}`] as Tag | undefined) ||= Tag.define(parent);
+		this.addToken(`mw-tag-${tag}`, parent);
+	}
+
+	/**
+	 * Dynamically register a token in CodeMirror.
+	 * This is solely for use by this.addTag() and CodeMirrorModeMediaWiki.makeLocalStyle().
+	 *
+	 * @param token
+	 * @param parent
+	 * @internal
+	 */
+	addToken(token: string, parent?: Tag): void {
+		(this.tokenTable[token] as Tag | undefined) ||= Tag.define(parent);
+	}
+
+	/**
+	 * Register the ground tokens. These aren't referenced directly in the StreamParser, nor do
+	 * they have a parent Tag, so we don't need them as constants like we do for other tokens.
+	 * See this.makeLocalStyle() for how these tokens are used.
+	 */
+	registerGroundTokens(): void {
+		const grounds = [
+			'mw-ext-ground',
+			'mw-ext-link-ground',
+			'mw-ext2-ground',
+			'mw-ext2-link-ground',
+			'mw-ext3-ground',
+			'mw-ext3-link-ground',
+			'mw-link-ground',
+			'mw-template-ext-ground',
+			'mw-template-ext-link-ground',
+			'mw-template-ext2-ground',
+			'mw-template-ext2-link-ground',
+			'mw-template-ext3-ground',
+			'mw-template-ext3-link-ground',
+			'mw-template-ground',
+			'mw-template-link-ground',
+			'mw-template2-ext-ground',
+			'mw-template2-ext-link-ground',
+			'mw-template2-ext2-ground',
+			'mw-template2-ext2-link-ground',
+			'mw-template2-ext3-ground',
+			'mw-template2-ext3-link-ground',
+			'mw-template2-ground',
+			'mw-template2-link-ground',
+			'mw-template3-ext-ground',
+			'mw-template3-ext-link-ground',
+			'mw-template3-ext2-ground',
+			'mw-template3-ext2-link-ground',
+			'mw-template3-ext3-ground',
+			'mw-template3-ext3-link-ground',
+			'mw-template3-ground',
+			'mw-template3-link-ground',
+			'mw-section-1',
+			'mw-section-2',
+			'mw-section-3',
+			'mw-section-4',
+			'mw-section-5',
+			'mw-section-6',
+		];
+		for (const ground of grounds) {
+			this.addToken(ground);
+		}
 	}
 
 	/**
@@ -180,7 +240,9 @@ class MediaWiki {
 	getTagStyles(): TagStyle[] {
 		return Object.keys(this.tokenTable).map(className => ({
 			tag: this.tokenTable[className]!,
-			class: `cm-${className}${className === 'templateName' ? ' cm-mw-pagename' : ''}`,
+			class: `cm-${className}${
+				className === 'mw-template-name' || className === 'mw-link-pagename' ? ' cm-mw-pagename' : ''
+			}`,
 		}));
 	}
 
@@ -205,45 +267,6 @@ class MediaWiki {
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
 		let ground = '';
-
-		/**
-		 * List out token names in a comment for search purposes.
-		 *
-		 * Tokens used here include:
-		 * - mw-ext-ground
-		 * - mw-ext-link-ground
-		 * - mw-ext2-ground
-		 * - mw-ext2-link-ground
-		 * - mw-ext3-ground
-		 * - mw-ext3-link-ground
-		 * - mw-link-ground
-		 * - mw-template-ext-ground
-		 * - mw-template-ext-link-ground
-		 * - mw-template-ext2-ground
-		 * - mw-template-ext2-link-ground
-		 * - mw-template-ext3-ground
-		 * - mw-template-ext3-link-ground
-		 * - mw-template-link-ground
-		 * - mw-template2-ext-ground
-		 * - mw-template2-ext-link-ground
-		 * - mw-template2-ext2-ground
-		 * - mw-template2-ext2-link-ground
-		 * - mw-template2-ext3-ground
-		 * - mw-template2-ext3-link-ground
-		 * - mw-template2-ground
-		 * - mw-template2-link-ground
-		 * - mw-template3-ext-ground
-		 * - mw-template3-ext-link-ground
-		 * - mw-template3-ext2-ground
-		 * - mw-template3-ext2-link-ground
-		 * - mw-template3-ext3-ground
-		 * - mw-template3-ext3-link-ground
-		 * - mw-template3-ground
-		 * - mw-template3-link-ground
-		 *
-		 * NOTE: these should be defined in modeConfig.tokenTable()
-		 * and modeConfig.highlightStyle()
-		 */
 		switch (state.nTemplate) {
 			case 0:
 				break;
@@ -516,10 +539,9 @@ class MediaWiki {
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
-			const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
 			return stream.match(/^[^#|[\]&~{}<>]+/u)
-				? this.makeStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+				? this.makeTagStyle('linkPageName', state)
+				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
 		};
 	}
 
@@ -845,19 +867,10 @@ class MediaWiki {
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!.length));
-							return this.makeLocalStyle(`${modeConfig.tags.sectionHeader} ${
-
-								/**
-								 * Tokens used here include:
-								 * - cm-mw-section-1
-								 * - cm-mw-section-2
-								 * - cm-mw-section-3
-								 * - cm-mw-section-4
-								 * - cm-mw-section-5
-								 * - cm-mw-section-6
-								 */
-								(modeConfig.tags as Record<string, string>)[`sectionHeader${tmp[1]!.length + 1}`]
-							}`, state);
+							return this.makeLocalStyle(
+								`${modeConfig.tags.sectionHeader} mw-section-${tmp[1]!.length + 1}`,
+								state,
+							);
 						}
 						break;
 					}

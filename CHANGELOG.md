@@ -31,6 +31,7 @@
 
 - Syntax like `: {|` in the MediaWiki mode is now correctly highlighted as an indented table
 - Multiline table cells in the MediaWiki mode
+- Missing underline of template names in the MediaWiki mode
 
 **Changed**
 
