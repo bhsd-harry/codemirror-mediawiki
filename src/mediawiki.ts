@@ -577,10 +577,10 @@ class MediaWiki {
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(/^[^|\]&{}<]+/u)) {
-				return this.makeTagStyle(tag, state);
 			}
-			return this.eatWikiText(modeConfig.tags[tag])(stream, state);
+			return stream.match(/^[^|\]&{}<]+/u)
+				? this.makeTagStyle(tag, state)
+				: this.eatWikiText(modeConfig.tags[tag])(stream, state);
 		};
 	}
 
@@ -646,7 +646,10 @@ class MediaWiki {
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
-		} else if (!stream.match(/^[^{}|]+/u)) {
+		} else if (stream.match('<!--')) {
+			chain(state, this.inComment);
+			return this.makeLocalTagStyle('comment', state);
+		} else if (!stream.match(/^[^{}|<]+/u)) {
 			stream.next();
 		}
 		return this.makeLocalTagStyle('templateVariableName', state);
@@ -655,17 +658,23 @@ class MediaWiki {
 	inVariableDefault(isFirst?: boolean): Tokenizer {
 		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
 		return (stream, state) => {
-			if (stream.match(/^[^{}[<&~|]+/u)) {
-				return this.makeStyle(style, state);
-			} else if (stream.match('}}}')) {
+			if (stream.match('}}}')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateVariableBracket', state);
 			} else if (stream.eat('|')) {
-				state.tokenize = this.inVariableDefault();
+				if (isFirst) {
+					state.tokenize = this.inVariableDefault();
+				}
 				return this.makeLocalTagStyle('templateVariableDelimiter', state);
 			}
-			return this.eatWikiText(style)(stream, state);
+			return stream.match(isFirst ? /^[^|{}[<&~'_]+/u : /^[^|{}[<]+/u)
+				? this.makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
+	}
+
+	get inComment(): Tokenizer {
+		return this.inBlock('comment', '-->', true);
 	}
 
 	inParserFunctionName(stream: StringStream, state: State): string {
@@ -774,7 +783,7 @@ class MediaWiki {
 		};
 	}
 
-	eatNowiki(): Tokenizer {
+	get eatNowiki(): Tokenizer {
 		return stream => {
 			if (stream.match(/^[^&]+/u)) {
 				return '';
@@ -796,7 +805,7 @@ class MediaWiki {
 					// so startState and copyState can be no-ops.
 					state.extMode = {
 						startState: () => ({}),
-						token: this.eatNowiki(),
+						token: this.eatNowiki,
 					};
 					state.extState = {};
 				} else if (name in this.config.tagModes) {
@@ -1009,7 +1018,7 @@ class MediaWiki {
 					break;
 				case '<': {
 					if (stream.match('!--')) { // comment
-						chain(state, this.inBlock('comment', '-->', true));
+						chain(state, this.inComment);
 						return this.makeLocalTagStyle('comment', state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
