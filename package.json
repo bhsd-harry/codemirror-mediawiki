@@ -58,7 +58,7 @@
 		"@stylistic/stylelint-plugin": "^2.0.0",
 		"@types/jquery": "^3.5.29",
 		"@types/oojs-ui": "^0.47.6",
-		"@typescript-eslint/eslint-plugin": "^6.19.1",
+		"@typescript-eslint/eslint-plugin": "^7.0.0",
 		"@typescript-eslint/parser": "^6.19.1",
 		"esbuild": "^0.19.12",
 		"eslint": "^8.56.0",
