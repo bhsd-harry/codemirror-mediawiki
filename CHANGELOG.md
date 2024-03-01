@@ -14,6 +14,7 @@
 - Allow HTML comments in wikilinks and template variables in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
+- Allow spaces in the parser function name in the MediaWiki mode
 
 **Changed**
 
