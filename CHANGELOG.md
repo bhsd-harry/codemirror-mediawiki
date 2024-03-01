@@ -1,6 +1,6 @@
 ## v2.7.0
 
-*2024-02-29*
+*2024-03-01*
 
 **Added**
 
@@ -21,6 +21,14 @@
 **Changed**
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+
+## v2.6.7
+
+*2024-03-01*
+
+**Changed**
+
+- Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now resets the cursor position
 
 ## v2.6.6
 
