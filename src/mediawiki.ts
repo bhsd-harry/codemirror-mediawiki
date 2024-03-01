@@ -24,9 +24,8 @@ import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
-
 declare type Tokenizer = (stream: StringStream, state: State) => string;
-
+declare type TagName = keyof typeof modeConfig.tags;
 declare interface State {
 	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
@@ -41,14 +40,11 @@ declare interface State {
 	lpar: boolean;
 	lbrack?: boolean | undefined;
 }
-
 declare interface Token {
 	pos: number;
 	readonly style: string;
 	readonly state: object;
 }
-
-declare type TagName = keyof typeof modeConfig.tags;
 
 export interface MwConfig {
 	readonly urlProtocols: string;
@@ -92,9 +88,7 @@ const chain = (state: State, tokenizer: Tokenizer): void => {
 	state.tokenize = tokenizer;
 };
 
-/**
- * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
- */
+/** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
 	declare readonly config;
 	declare readonly urlProtocols;
@@ -129,6 +123,7 @@ class MediaWiki {
 		this.oldStyle = null;
 		this.oldTokens = [];
 		this.tokenTable = {...modeConfig.tokenTable};
+		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
 			...modeConfig.permittedHtmlTags,
 			...config.permittedHtmlTags || [],
@@ -137,15 +132,11 @@ class MediaWiki {
 			...modeConfig.implicitlyClosedHtmlTags,
 			...config.implicitlyClosedHtmlTags || [],
 		]);
-
-		// Dynamically register any tags that aren't already in CodeMirrorModeMediaWikiConfig
 		for (const tag of Object.keys(config.tags)) {
 			this.addTag(tag);
 		}
-
 		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
 		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
-
 		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -161,8 +152,9 @@ class MediaWiki {
 	}
 
 	/**
-	 * Register a tag in CodeMirror. The generated CSS class will be of the form 'cm-mw-tag-tagname'
-	 * This is for internal use to dynamically register tags from other MediaWiki extensions.
+	 * Register a token for the given tag in CodeMirror. The generated CSS class will be of
+	 * the form 'cm-mw-tag-tagname'. This is for internal use to dynamically register tags
+	 * from other MediaWiki extensions.
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 * @param tag
@@ -170,7 +162,69 @@ class MediaWiki {
 	 * @internal
 	 */
 	addTag(tag: string, parent?: Tag): void {
-		(this.tokenTable[`mw-tag-${tag}`] as Tag | undefined) ||= Tag.define(parent);
+		this.addToken(`mw-tag-${tag}`, parent);
+	}
+
+	/**
+	 * Dynamically register a token in CodeMirror.
+	 * This is solely for use by this.addTag() and CodeMirrorModeMediaWiki.makeLocalStyle().
+	 *
+	 * @param token
+	 * @param parent
+	 * @internal
+	 */
+	addToken(token: string, parent?: Tag): void {
+		(this.tokenTable[token] as Tag | undefined) ||= Tag.define(parent);
+	}
+
+	/**
+	 * Register the ground tokens. These aren't referenced directly in the StreamParser, nor do
+	 * they have a parent Tag, so we don't need them as constants like we do for other tokens.
+	 * See this.makeLocalStyle() for how these tokens are used.
+	 */
+	registerGroundTokens(): void {
+		const grounds = [
+			'mw-ext-ground',
+			'mw-ext-link-ground',
+			'mw-ext2-ground',
+			'mw-ext2-link-ground',
+			'mw-ext3-ground',
+			'mw-ext3-link-ground',
+			'mw-link-ground',
+			'mw-template-ext-ground',
+			'mw-template-ext-link-ground',
+			'mw-template-ext2-ground',
+			'mw-template-ext2-link-ground',
+			'mw-template-ext3-ground',
+			'mw-template-ext3-link-ground',
+			'mw-template-ground',
+			'mw-template-link-ground',
+			'mw-template2-ext-ground',
+			'mw-template2-ext-link-ground',
+			'mw-template2-ext2-ground',
+			'mw-template2-ext2-link-ground',
+			'mw-template2-ext3-ground',
+			'mw-template2-ext3-link-ground',
+			'mw-template2-ground',
+			'mw-template2-link-ground',
+			'mw-template3-ext-ground',
+			'mw-template3-ext-link-ground',
+			'mw-template3-ext2-ground',
+			'mw-template3-ext2-link-ground',
+			'mw-template3-ext3-ground',
+			'mw-template3-ext3-link-ground',
+			'mw-template3-ground',
+			'mw-template3-link-ground',
+			'mw-section-1',
+			'mw-section-2',
+			'mw-section-3',
+			'mw-section-4',
+			'mw-section-5',
+			'mw-section-6',
+		];
+		for (const ground of grounds) {
+			this.addToken(ground);
+		}
 	}
 
 	/**
@@ -181,7 +235,9 @@ class MediaWiki {
 	getTagStyles(): TagStyle[] {
 		return Object.keys(this.tokenTable).map(className => ({
 			tag: this.tokenTable[className]!,
-			class: `cm-${className}${className === 'templateName' ? ' cm-mw-pagename' : ''}`,
+			class: `cm-${className}${
+				className === 'mw-template-name' || className === 'mw-link-pagename' ? ' cm-mw-pagename' : ''
+			}`,
 		}));
 	}
 
@@ -206,45 +262,6 @@ class MediaWiki {
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
 		let ground = '';
-
-		/**
-		 * List out token names in a comment for search purposes.
-		 *
-		 * Tokens used here include:
-		 * - mw-ext-ground
-		 * - mw-ext-link-ground
-		 * - mw-ext2-ground
-		 * - mw-ext2-link-ground
-		 * - mw-ext3-ground
-		 * - mw-ext3-link-ground
-		 * - mw-link-ground
-		 * - mw-template-ext-ground
-		 * - mw-template-ext-link-ground
-		 * - mw-template-ext2-ground
-		 * - mw-template-ext2-link-ground
-		 * - mw-template-ext3-ground
-		 * - mw-template-ext3-link-ground
-		 * - mw-template-link-ground
-		 * - mw-template2-ext-ground
-		 * - mw-template2-ext-link-ground
-		 * - mw-template2-ext2-ground
-		 * - mw-template2-ext2-link-ground
-		 * - mw-template2-ext3-ground
-		 * - mw-template2-ext3-link-ground
-		 * - mw-template2-ground
-		 * - mw-template2-link-ground
-		 * - mw-template3-ext-ground
-		 * - mw-template3-ext-link-ground
-		 * - mw-template3-ext2-ground
-		 * - mw-template3-ext2-link-ground
-		 * - mw-template3-ext3-ground
-		 * - mw-template3-ext3-link-ground
-		 * - mw-template3-ground
-		 * - mw-template3-link-ground
-		 *
-		 * NOTE: these should be defined in modeConfig.tokenTable()
-		 * and modeConfig.highlightStyle()
-		 */
 		switch (state.nTemplate) {
 			case 0:
 				break;
@@ -382,7 +399,6 @@ class MediaWiki {
 	}
 
 	eatList(stream: StringStream, state: State): string {
-		// Just consume all nested list and indention syntax when there is more
 		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
 		if (mt && mt[0].includes(';')) {
 			state.nDt += mt[0].split(';').length - 1;
@@ -413,8 +429,7 @@ class MediaWiki {
 				if (stream.match(/^-+\s*/u)) {
 					state.tokenize = this.inTableDefinition.bind(this);
 					return this.makeLocalTagStyle('tableDelimiter', state);
-				} else if (stream.eat('+')) {
-					stream.eatSpace();
+				} else if (stream.match(/^\+\s*/u)) {
 					state.tokenize = this.inTableCell(true, TableCell.Caption);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				} else if (stream.eat('}')) {
@@ -424,8 +439,7 @@ class MediaWiki {
 				stream.eatSpace();
 				state.tokenize = this.inTableCell(true, TableCell.Td);
 				return this.makeLocalTagStyle('tableDelimiter', state);
-			} else if (stream.eat('!')) {
-				stream.eatSpace();
+			} else if (stream.match(/^!\s*/u)) {
 				state.tokenize = this.inTableCell(true, TableCell.Th);
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
@@ -541,10 +555,9 @@ class MediaWiki {
 			} else if (stream.match(/^(?:[>[\]}]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
-			const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
 			return stream.match(/^[^#|[\]&{}<>]+/u)
-				? this.makeStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+				? this.makeTagStyle('linkPageName', state)
+				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
 		};
 	}
 
@@ -572,7 +585,6 @@ class MediaWiki {
 	inLinkText(file: boolean): Tokenizer {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
-
 		return (stream, state) => {
 			const tmpstyle = `${modeConfig.tags.linkText} ${linkIsBold ? modeConfig.tags.strong : ''} ${
 				linkIsItalic ? modeConfig.tags.em : ''
@@ -736,17 +748,12 @@ class MediaWiki {
 			}
 			stream.eatSpace();
 			name = name.toLowerCase();
-
 			if (isHtmlTag) {
-				state.tokenize = isCloseTag
-					? this.inChar('>', 'htmlTagBracket')
-					: this.inHtmlTagAttribute(name);
+				state.tokenize = isCloseTag ? this.inChar('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
 			}
 			// it is the extension tag
-			state.tokenize = isCloseTag
-				? this.inChar('>', 'extTagBracket')
-				: this.inExtTagAttribute(name);
+			state.tokenize = isCloseTag ? this.inChar('>', 'extTagBracket') : this.inExtTagAttribute(name);
 			return this.makeLocalTagStyle('extTagName', state);
 		};
 	}
@@ -783,7 +790,6 @@ class MediaWiki {
 				return this.makeLocalTagStyle('extTagAttribute', state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
-				// leverage the tagModes system for <nowiki> and <pre>
 				if (name === 'nowiki' || name === 'pre') {
 					// There's no actual processing within these tags (apart from HTML entities),
 					// so startState and copyState can be no-ops.
@@ -796,7 +802,6 @@ class MediaWiki {
 					state.extMode = this[this.config.tagModes[name] as MimeTypes];
 					state.extState = state.extMode.startState!(0);
 				}
-
 				state.tokenize = this.eatExtTagArea(name);
 				return this.makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
@@ -812,7 +817,6 @@ class MediaWiki {
 			const from = stream.pos,
 				m = new RegExp(`</${name}\\s*(?:>|$)`, 'iu').exec(from ? stream.string.slice(from) : stream.string);
 			let origString: string | false = false;
-
 			if (m) {
 				if (m.index === 0) {
 					state.tokenize = this.eatExtCloseTag(name);
@@ -826,7 +830,6 @@ class MediaWiki {
 				origString = stream.string;
 				stream.string = origString.slice(0, m.index + from);
 			}
-
 			chain(state, this.inExtTokens(origString));
 			return state.tokenize(stream, state);
 		};
@@ -864,7 +867,6 @@ class MediaWiki {
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
-
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
@@ -890,19 +892,10 @@ class MediaWiki {
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!.length));
-							return this.makeLocalStyle(`${modeConfig.tags.sectionHeader} ${
-
-								/**
-								 * Tokens used here include:
-								 * - cm-mw-section-1
-								 * - cm-mw-section-2
-								 * - cm-mw-section-3
-								 * - cm-mw-section-4
-								 * - cm-mw-section-5
-								 * - cm-mw-section-6
-								 */
-								(modeConfig.tags as Record<string, string>)[`sectionHeader${tmp[1]!.length + 1}`]
-							}`, state);
+							return this.makeLocalStyle(
+								`${modeConfig.tags.sectionHeader} mw-section-${tmp[1]!.length + 1}`,
+								state,
+							);
 						}
 						break;
 					}
@@ -933,7 +926,7 @@ class MediaWiki {
 							return modeConfig.tags.skipFormatting;
 						}
 					}
-					// falls through
+					// fall through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 							chain(state, this.inTableDefinition.bind(this));
@@ -964,8 +957,7 @@ class MediaWiki {
 					}
 					break;
 				case '[':
-					if (stream.eat('[')) { // Link Example: [[ Foo | Bar ]]
-						stream.eatSpace();
+					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
 						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.lbrack = undefined;
@@ -984,11 +976,10 @@ class MediaWiki {
 				case '{':
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
-					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))/u)) {
-						stream.eatSpace();
+					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 						chain(state, this.inVariable.bind(this));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
-					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
+					} else if (stream.match(/^\{\s*/u)) {
 						// Parser function
 						if (stream.peek() === '#') {
 							state.nExt++;
@@ -1027,7 +1018,7 @@ class MediaWiki {
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
-							// Parser function
+							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inChar('>', 'error'));
 								return this.makeLocalTagStyle('error', state);
@@ -1094,6 +1085,7 @@ class MediaWiki {
 					}
 					break;
 				}
+				/** @todo consider HTML tag balance */
 				case ':':
 					if (state.nDt) {
 						state.nDt--;
@@ -1132,7 +1124,6 @@ class MediaWiki {
 			str = stream.string.slice(0, end - 3),
 			x1 = str.slice(-1),
 			x2 = str.slice(-2, -1);
-
 		// this.firstSingleLetterWord always is undefined here
 		if (x1 === ' ') {
 			if (this.firstMultiLetterWord || this.firstSpace) {
@@ -1221,7 +1212,6 @@ class MediaWiki {
 
 			token: (stream, state): string => {
 				let t: Token;
-
 				if (this.oldTokens.length > 0) {
 					// just send saved tokens till they exists
 					t = this.oldTokens.shift()!;
@@ -1236,14 +1226,12 @@ class MediaWiki {
 					this.firstMultiLetterWord = null;
 					this.firstSpace = null;
 				}
-
 				let style: string,
 					p: number | null = null,
 					f: number | null;
 				const tmpTokens: Token[] = [],
 					readyTokens: Token[] = [];
 				do {
-					// get token style
 					style = state.tokenize(stream, state);
 					f = this.firstSingleLetterWord || this.firstMultiLetterWord || this.firstSpace;
 					if (f) {
@@ -1272,7 +1260,6 @@ class MediaWiki {
 						return style;
 					}
 				} while (!stream.eol());
-
 				if (this.isBold && this.isItalic) {
 					// needs to rollback
 					// restore status
