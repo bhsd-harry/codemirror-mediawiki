@@ -1,6 +1,6 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, ensureSyntaxTree, foldState, unfoldAll, unfoldEffect, codeFolding} from '@codemirror/language';
+import {foldEffect, ensureSyntaxTree, foldedRanges, unfoldAll, unfoldEffect, codeFolding} from '@codemirror/language';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
@@ -93,7 +93,7 @@ const create = (state: EditorState): Tooltip | null => {
 	if (range) {
 		const {from, to} = range;
 		let folded = false;
-		state.field(foldState).between(from, to, (i, j) => {
+		foldedRanges(state).between(from, to, (i, j) => {
 			if (i === from && j === to) {
 				folded = true;
 			}
@@ -129,7 +129,7 @@ export const foldExtension: Extension[] = [
 				const pos = view.posAtDOM(target as Node),
 					{state} = view,
 					{selection} = state;
-				state.field(foldState).between(pos, pos, (from, to) => {
+				foldedRanges(state).between(pos, pos, (from, to) => {
 					if (from === pos) {
 						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
 					}
@@ -157,8 +157,10 @@ export const foldExtension: Extension[] = [
 				if (!tree) {
 					return false;
 				}
-				const effects: StateEffect<DocRange>[] = [];
-				for (const {from, to, empty} of state.selection.ranges) {
+				const effects: StateEffect<DocRange>[] = [],
+					{selection: {ranges}} = state;
+				let anchor = Math.max(...ranges.map(({to}) => to));
+				for (const {from, to, empty} of ranges) {
 					let node: SyntaxNode | null | undefined;
 					if (empty) {
 						node = tree.resolve(from, -1);
@@ -171,6 +173,7 @@ export const foldExtension: Extension[] = [
 						if (range) {
 							effects.push(foldEffect.of(range));
 							node = tree.resolve(range.to, 1);
+							anchor = Math.max(anchor, range.to);
 							continue;
 						}
 						node = node.nextSibling;
@@ -178,7 +181,7 @@ export const foldExtension: Extension[] = [
 				}
 				if (effects.length > 0) {
 					view.dom.querySelector('.cm-tooltip-fold')?.remove();
-					view.dispatch({effects});
+					view.dispatch({effects, selection: {anchor}});
 					return true;
 				}
 				return false;
@@ -191,7 +194,7 @@ export const foldExtension: Extension[] = [
 				const {state} = view,
 					{selection} = state,
 					effects: StateEffect<DocRange>[] = [],
-					folded = state.field(foldState);
+					folded = foldedRanges(state);
 				for (const {from, to} of selection.ranges) {
 					folded.between(from, to, (i, j) => {
 						effects.push(unfoldEffect.of({from: i, to: j}));

@@ -1,19 +1,16 @@
 ## v2.7.0
 
-*2024-02-29*
+*2024-03-01*
 
 **Added**
 
 - Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
 - Text after `;` in the MediaWiki mode is now highlighted in bold
-- Fostered table content is now highlighted as errors in the MediaWiki mode
 
 **Fixed**
 
-- Syntax like `: {|` in the MediaWiki mode is now correctly highlighted as an indented table
 - Links and behavior switches are now ignored in table attributes
 - Disallow multiline free external links in the MediaWiki mode
-- Multiline table cells in the MediaWiki mode
 - Allow HTML comments in wikilinks in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
@@ -21,6 +18,23 @@
 **Changed**
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+
+## v2.6.7
+
+*2024-03-01*
+
+**Added**
+
+- Fostered table content is now highlighted as errors in the MediaWiki mode
+
+**Fixed**
+
+- Syntax like `: {|` in the MediaWiki mode is now correctly highlighted as an indented table
+- Multiline table cells in the MediaWiki mode
+
+**Changed**
+
+- Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now resets the cursor position
 
 ## v2.6.6
 
