@@ -57,6 +57,7 @@ export interface MwConfig {
 	nsid: Record<string, number>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
+	fromApi?: boolean;
 }
 
 const enum TableCell {
@@ -678,15 +679,15 @@ class MediaWiki {
 	}
 
 	inParserFunctionName(stream: StringStream, state: State): string {
-		// FIXME: {{#name}} and {{uc}} are wrong, must have ':'
-		if (stream.match(/^[^:}{~|<>[\]]+/u)) {
-			return this.makeLocalTagStyle('parserFunctionName', state);
-		} else if (stream.eat(':')) {
+		/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
+		if (stream.eat(':')) {
 			state.tokenize = this.inParserFunctionArguments.bind(this);
 			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
 		} else if (stream.match('}}')) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+		} else if (stream.match(/^[^:}{~|<>[\]]+/u)) {
+			return this.makeLocalTagStyle('parserFunctionName', state);
 		}
 		return this.eatWikiText(modeConfig.tags.error)(stream, state);
 	}
@@ -991,21 +992,17 @@ class MediaWiki {
 						return this.makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{\s*/u)) {
 						// Parser function
-						if (stream.peek() === '#') {
-							state.nExt++;
-							chain(state, this.inParserFunctionName.bind(this));
-							return this.makeLocalTagStyle('parserFunctionBracket', state);
-						}
-						// Check for parser function without '#'
 						const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
 						if (name) {
 							const [, f, delimiter] = name as [string, string, string],
-								ff = delimiter === ':' ? f : f.trim();
+								ff = delimiter === ':' ? f : f.trim(),
+								{config: {fromApi, functionSynonyms}} = this;
 							if (
 								(!delimiter || delimiter === ':' || delimiter === '}')
 								&& (
-									ff.toLowerCase() in this.config.functionSynonyms[0]
-									|| ff in this.config.functionSynonyms[1]
+									ff in functionSynonyms[1]
+									|| ff.toLowerCase() in functionSynonyms[0]
+									|| fromApi && ff.startsWith('#') && ff.slice(1) in functionSynonyms[0]
 								)
 							) {
 								state.nExt++;
