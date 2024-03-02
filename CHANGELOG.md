@@ -11,13 +11,26 @@
 
 - Links and behavior switches are now ignored in table attributes
 - Disallow multiline free external links in the MediaWiki mode
-- Allow HTML comments in wikilinks in the MediaWiki mode
+- Allow HTML comments in wikilinks and template variables in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
+- Allow spaces in the parser function name in the MediaWiki mode
 
 **Changed**
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+
+## v2.6.8
+
+*2024-03-02*
+
+**Added**
+
+- Spell-checking for the MediaWiki mode
+
+**Fixed**
+
+- When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
 
 ## v2.6.7
 
