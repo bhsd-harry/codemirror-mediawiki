@@ -62,6 +62,14 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (isEditor(textarea)) {
 			mw.hook('wiki-codemirror6').fire(this);
+			if (textarea.id === 'wpTextbox1') {
+				textarea.form?.addEventListener('submit', () => {
+					const scrollTop = document.querySelector<HTMLInputElement>('#wpScrolltop');
+					if (scrollTop) {
+						scrollTop.value = String(this.view.scrollDOM.scrollTop);
+					}
+				});
+			}
 		}
 	}
 
