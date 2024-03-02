@@ -445,7 +445,9 @@ class MediaWiki {
 					return '';
 				}
 			}
-			if (stream.match(firstLine ? /^[^'{[<&~_|!]+/u : /^[^'{[<&~_]+/u)) {
+			if (stream.sol() && /[-=*#;:]/u.test(stream.peek() || '')) {
+				return this.eatWikiText(style)(stream, state);
+			} else if (stream.match(firstLine ? /^[^'{[<&~_|!]+/u : /^[^'{[<&~_:]+/u)) {
 				return this.makeStyle(style, state);
 			} else if (firstLine) {
 				if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
@@ -647,15 +649,15 @@ class MediaWiki {
 	}
 
 	inParserFunctionArguments(stream: StringStream, state: State): string {
-		if (stream.match(/^[^|}{[<&~]+/u)) {
-			return this.makeLocalTagStyle('parserFunction', state);
-		} else if (stream.eat('|')) {
+		if (stream.eat('|')) {
 			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
 		} else if (stream.match('}}')) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 		}
-		return this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
+		return stream.match(/^[^|}{[<&~'_]+/u)
+			? this.makeLocalTagStyle('parserFunction', state)
+			: this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
 	}
 
 	inTemplatePageName(haveAte?: boolean): Tokenizer {
@@ -984,44 +986,6 @@ class MediaWiki {
 						return this.makeLocalTagStyle('templateBracket', state);
 					}
 					break;
-				case '<': {
-					if (stream.match('!--')) { // comment
-						chain(state, this.inBlock('comment', '-->', true));
-						return this.makeLocalTagStyle('comment', state);
-					}
-					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(
-							/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u,
-						) as RegExpMatchArray | false;
-					if (mt) {
-						const tagname = mt[0].toLowerCase();
-						if (tagname in this.config.tags) {
-							// Parser function
-							if (isCloseTag) {
-								chain(state, this.inChar('>', 'error'));
-								return this.makeLocalTagStyle('error', state);
-							}
-							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag));
-							return this.makeLocalTagStyle('extTagBracket', state);
-						} else if (this.permittedHtmlTags.has(tagname)) {
-							// Html tag
-							if (isCloseTag) {
-								if (tagname === state.inHtmlTag[0]) {
-									state.inHtmlTag.shift();
-								} else {
-									chain(state, this.inChar('>', 'error'));
-									return this.makeLocalTagStyle('error', state);
-								}
-							}
-							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag, true));
-							return this.makeLocalTagStyle('htmlTagBracket', state);
-						}
-						stream.backUp(tagname.length);
-					}
-					break;
-				}
 				case '~':
 					if (stream.match(/^~{2,4}/u)) {
 						return modeConfig.tags.signature;
@@ -1060,6 +1024,44 @@ class MediaWiki {
 							// Optimization: skip regex for EOL and backup-ed symbols
 							return this.makeStyle(style, state);
 						}
+					}
+					break;
+				}
+				case '<': {
+					if (stream.match('!--')) { // comment
+						chain(state, this.inBlock('comment', '-->', true));
+						return this.makeLocalTagStyle('comment', state);
+					}
+					const isCloseTag = Boolean(stream.eat('/')),
+						mt = stream.match(
+							/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u,
+						) as RegExpMatchArray | false;
+					if (mt) {
+						const tagname = mt[0].toLowerCase();
+						if (tagname in this.config.tags) {
+							// Parser function
+							if (isCloseTag) {
+								chain(state, this.inChar('>', 'error'));
+								return this.makeLocalTagStyle('error', state);
+							}
+							stream.backUp(tagname.length);
+							chain(state, this.eatTagName(tagname.length, isCloseTag));
+							return this.makeLocalTagStyle('extTagBracket', state);
+						} else if (this.permittedHtmlTags.has(tagname)) {
+							// Html tag
+							if (isCloseTag) {
+								if (tagname === state.inHtmlTag[0]) {
+									state.inHtmlTag.shift();
+								} else {
+									chain(state, this.inChar('>', 'error'));
+									return this.makeLocalTagStyle('error', state);
+								}
+							}
+							stream.backUp(tagname.length);
+							chain(state, this.eatTagName(tagname.length, isCloseTag, true));
+							return this.makeLocalTagStyle('htmlTagBracket', state);
+						}
+						stream.backUp(tagname.length);
 					}
 				}
 				// no default

@@ -1,11 +1,12 @@
 ## v2.7.0
 
-*2024-03-01*
+*2024-03-02*
 
 **Added**
 
 - Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
 - Text after `;` in the MediaWiki mode is now highlighted in bold
+- Highlighting syntax at SOL in variable default values and parser function arguments in the MediaWiki mode
 
 **Fixed**
 
@@ -22,7 +23,7 @@
 
 ## v2.6.8
 
-*2024-03-02*
+*2024-03-03*
 
 **Added**
 
@@ -31,6 +32,8 @@
 **Fixed**
 
 - When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
+- Syntax at SOL in a table cell in the MediaWiki mode, since [v2.6.7](#v267)
+- When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
 
 ## v2.6.7
 
