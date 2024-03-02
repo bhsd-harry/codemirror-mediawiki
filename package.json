@@ -43,7 +43,7 @@
 	"engines": {
 		"node": "20.9.0"
 	},
-	"devDependencies": {
+	"dependencies": {
 		"@codemirror/autocomplete": "^6.11.1",
 		"@codemirror/commands": "^6.3.2",
 		"@codemirror/language": "^6.9.3",
@@ -52,8 +52,11 @@
 		"@codemirror/search": "^6.5.4",
 		"@codemirror/state": "^6.3.3",
 		"@codemirror/view": "^6.22.2",
-		"@lezer/common": "^1.1.2",
 		"@lezer/highlight": "^1.2.0",
+		"wikiparser-node": "^1.5.0"
+	},
+	"devDependencies": {
+		"@lezer/common": "^1.1.2",
 		"@stylistic/eslint-plugin": "^1.5.4",
 		"@stylistic/stylelint-plugin": "^2.0.0",
 		"@types/jquery": "^3.5.29",
@@ -73,7 +76,6 @@
 		"stylelint": "^16.1.0",
 		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.4.0",
-		"typescript": "^5.3.3",
-		"wikiparser-node": "^1.5.0"
+		"typescript": "^5.3.3"
 	}
 }
