@@ -678,18 +678,35 @@ class MediaWiki {
 		return this.inBlock('comment', '-->', true);
 	}
 
-	inParserFunctionName(stream: StringStream, state: State): string {
-		/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
-		if (stream.eat(':')) {
-			state.tokenize = this.inParserFunctionArguments.bind(this);
-			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
-		} else if (stream.match('}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
-		} else if (stream.match(/^[^:}{~|<>[\]]+/u)) {
+	eatParserFunctionName(chars: number): Tokenizer {
+		return (stream, state) => {
+			for (let i = 0; i < chars; i++) {
+				stream.next();
+			}
+			state.tokenize = this.inParserFunctionColon(true);
 			return this.makeLocalTagStyle('parserFunctionName', state);
-		}
-		return this.eatWikiText(modeConfig.tags.error)(stream, state);
+		};
+	}
+
+	inParserFunctionColon(sameLine?: boolean): Tokenizer {
+		return (stream, state) => {
+			stream.eatSpace();
+			if (stream.eol()) {
+				if (sameLine) {
+					state.tokenize = this.inParserFunctionColon();
+				}
+				return this.makeLocalTagStyle('parserFunctionName', state);
+			} else if (stream.match('}}')) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+			} else if (sameLine && stream.eat(':')) {
+				state.tokenize = this.inParserFunctionArguments.bind(this);
+				return this.makeLocalTagStyle('parserFunctionDelimiter', state);
+			}
+			state.nExt--;
+			state.tokenize = state.stack.pop()!;
+			return this.makeLocalTagStyle('parserFunctionName', state);
+		};
 	}
 
 	inParserFunctionArguments(stream: StringStream, state: State): string {
@@ -997,6 +1014,7 @@ class MediaWiki {
 							const [, f, delimiter] = name as [string, string, string],
 								ff = delimiter === ':' ? f : f.trim(),
 								{config: {fromApi, functionSynonyms}} = this;
+							/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
 							if (
 								(!delimiter || delimiter === ':' || delimiter === '}')
 								&& (
@@ -1006,7 +1024,7 @@ class MediaWiki {
 								)
 							) {
 								state.nExt++;
-								chain(state, this.inParserFunctionName.bind(this));
+								chain(state, this.eatParserFunctionName(f.length));
 								return this.makeLocalTagStyle('parserFunctionBracket', state);
 							}
 						}
