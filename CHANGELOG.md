@@ -20,6 +20,18 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## v2.6.8
+
+*2024-03-02*
+
+**Added**
+
+- Spell-checking for the MediaWiki mode
+
+**Fixed**
+
+- When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
+
 ## v2.6.7
 
 *2024-03-01*

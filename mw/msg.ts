@@ -1,6 +1,6 @@
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.6.6',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.6.7',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
