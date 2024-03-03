@@ -13,6 +13,7 @@
 - [Extensions](#extensions)
 	- [openLinks](#openlinks)
 	- [wikiEditor](#wikieditor)
+	- [save](#save)
 
 </details>
 
@@ -140,10 +141,16 @@ The `CodeMirror` class inherits all the [extensions](../README.md#extensions) fr
 
 *version added: 2.1.15*
 
-CTRL/CMD-click opens a wikilink or template in a new tab.
+CTRL/CMD-click opens a wikilink or template or external link in a new tab.
 
 ## wikiEditor
 
 *version added: 2.4.5*
 
 Load the WikiEditor toolbar. This extension can only be used before CodeMirror instantiation, which means it is inaccessible by the [`prefer`](../README.md#prefer) method.
+
+## save
+
+*version added: 2.7.0*
+
+Save preferences as JSON on a user subpage (`Special:Mypage/codemirror-mediawiki.json`).

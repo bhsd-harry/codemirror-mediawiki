@@ -5,7 +5,6 @@ import type {CodeMirror} from './base';
 declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	regex = /-template-name|-link-pagename/u,
 	handlers = new WeakMap<CodeMirror, MouseEventListener>();
 
 /**
@@ -17,6 +16,19 @@ function getName(node: null): undefined;
 function getName(node: SyntaxNode | null): string | undefined {
 	return node?.name.replace(/_+/gu, ' ').trim();
 }
+
+/**
+ * 查找连续同名节点
+ * @param node 起始节点
+ * @param dir 方向
+ * @param name 节点名称
+ */
+const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling', name = getName(node)): SyntaxNode => {
+	while (getName(node[dir]!) === name) {
+		node = node[dir]!; // eslint-disable-line no-param-reassign
+	}
+	return node;
+};
 
 /**
  * 点击时在新页面打开链接、模板等
@@ -32,25 +44,37 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			return;
 		}
 		const {view} = cm,
+			{state} = view,
 			node = cm.getNodeAt(view.posAtCoords(e)!);
-		if (!node || !regex.test(node.name)) {
-			return;
+		if (!node) {
+			// pass
+		} else if (node.name.includes('mw-pagename')) {
+			e.preventDefault();
+			const name = getName(node);
+			let page = state.sliceDoc(
+				search(node, 'prevSibling', name).from,
+				search(node, 'nextSibling', name).to,
+			).trim();
+			if (page.startsWith('/')) {
+				page = `:${mw.config.get('wgPageName')}${page}`;
+			}
+			let ns = 0;
+			if (name.includes('-template-name')) {
+				ns = 10;
+			} else if (name.includes('-parserfunction')) {
+				ns = 828;
+			}
+			open(new mw.Title(page, ns).getUrl(undefined), '_blank');
+		} else if (/-extlink-protocol/u.test(node.name)) {
+			e.preventDefault();
+			open(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), '_blank');
+		} else if (/-extlink(?:_|$)/u.test(node.name)) {
+			e.preventDefault();
+			const name = getName(node),
+				prev = search(node, 'prevSibling', name).prevSibling!,
+				next = search(node, 'nextSibling', name);
+			open(state.sliceDoc(prev.from, next.to), '_blank');
 		}
-		e.preventDefault();
-		const name = getName(node);
-		let prev = node,
-			next = node;
-		while (getName(prev.prevSibling!) === name) {
-			prev = prev.prevSibling!;
-		}
-		while (getName(next.nextSibling!) === name) {
-			next = next.nextSibling!;
-		}
-		let page = view.state.sliceDoc(prev.from, next.to).trim();
-		if (page.startsWith('/')) {
-			page = `:${mw.config.get('wgPageName')}${page}`;
-		}
-		open(new mw.Title(page, name.includes('-template-name') ? 10 : 0).getUrl(undefined), '_blank');
 	};
 	handlers.set(cm, handler);
 	return handler;

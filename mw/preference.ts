@@ -12,12 +12,16 @@ const storageKey = 'codemirror-mediawiki-addons',
 
 declare type codeKey = typeof codeKeys[number];
 
-declare interface Preferences {
+declare type Preferences = {
 	addons?: string[];
 	indent?: string;
 	wikilint?: Record<Rule, RuleState>;
-	ESLint?: unknown;
-	Stylelint?: unknown;
+} & Record<codeKey, unknown>;
+
+const enum RuleState {
+	off = '0',
+	error = '1',
+	on = '2',
 }
 
 export const indentKey = 'codemirror-mediawiki-indent',
@@ -31,15 +35,8 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
 	indent = localStorage.getItem(indentKey) || '';
-const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
-
-const enum RuleState {
-	off = '0',
-	error = '1',
-	on = '2',
-}
-
-const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
+const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
+	wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
 /**
  * 处理Api请求错误
@@ -55,8 +52,51 @@ const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescr
 };
 
 const api = (async () => {
-	await mw.loader.using('mediawiki');
-	return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
+	if (user) {
+		await mw.loader.using('mediawiki.api');
+		return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
+	}
+	return undefined;
+})();
+
+export const loadJSON = (async () => {
+	if (!user) {
+		return;
+	}
+	const params: ApiQueryRevisionsParams = {
+		action: 'query',
+		prop: 'revisions',
+		titles: userPage,
+		rvprop: 'content',
+		rvlimit: 1,
+	};
+	(await api)!.get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
+		res => {
+			const {query: {pages: [page]}} = res as MediaWikiResponse;
+			if (page?.revisions) {
+				const json: Preferences = JSON.parse(page.revisions[0]!.content);
+				if (!json.addons?.includes('save')) {
+					return;
+				}
+				prefs.clear();
+				for (const option of json.addons) {
+					prefs.add(option);
+				}
+				if (json.indent) {
+					localStorage.setItem(indentKey, json.indent);
+				}
+				for (const key of codeKeys) {
+					if (json[key]) {
+						codeConfigs.set(key, json[key]);
+					}
+				}
+				if (json.wikilint) {
+					Object.assign(wikilintConfig, json.wikilint);
+				}
+			}
+		},
+		apiErr,
+	);
 })();
 
 /**
@@ -70,6 +110,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		'oojs-ui.styles.icons-content',
 		'mediawiki.jqueryMsg',
 	]);
+	await loadJSON;
 	if (dialog) {
 		widget.setValue([...prefs] as unknown as string);
 		indentWidget.setValue(indent);
@@ -124,7 +165,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
 		panelWikilint.$element.append(
-			...rules.map(rule => {
+			...rules.filter(rule => rule !== 'table-layout').map(rule => {
 				const state = rule === 'no-arg' ? RuleState.off : RuleState.error,
 					dropdown = new OO.ui.DropdownInputWidget({
 						options: [
@@ -152,10 +193,32 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		size: 'medium',
 	}).closing as unknown as Promise<{action?: unknown} | undefined>);
 	if (typeof data === 'object' && data.action === 'accept') {
+		// 缩进
+		const oldIndent = indent,
+			save = prefs.has('save');
+		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
+		let changed = indent !== oldIndent;
+		if (changed) {
+			for (const cm of editors) {
+				cm?.setIndent(indent || '\t');
+			}
+			localStorage.setItem(indentKey, indent);
+		}
+
+		// WikiLint
+		for (const [rule, dropdown] of wikilintWidgets) {
+			const val = dropdown.getValue() as RuleState;
+			changed ||= val !== wikilintConfig[rule];
+			wikilintConfig[rule] = val;
+		}
+		setObject(wikilintKey, wikilintConfig);
+
+		// ESLint & Stylelint
 		const jsonErrors: string[] = [];
 		for (const key of codeKeys) {
 			try {
 				const config = JSON.parse(widgets[key]!.getValue().trim() || 'null');
+				changed ||= JSON.stringify(config) !== JSON.stringify(codeConfigs.get(key));
 				codeConfigs.set(key, config);
 				setObject(`codemirror-mediawiki-${key}`, config);
 			} catch {
@@ -165,24 +228,23 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		if (jsonErrors.length > 0) {
 			void OO.ui.alert(msg('json-error', jsonErrors.join(msg('and'))));
 		}
-		for (const [rule, dropdown] of wikilintWidgets) {
-			wikilintConfig[rule] = dropdown.getValue() as RuleState;
-		}
-		setObject(wikilintKey, wikilintConfig);
-		const value = widget.getValue() as unknown as string[];
-		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
-		prefs.clear();
-		for (const option of value) {
-			prefs.add(option);
-		}
-		for (const cm of editors) {
-			cm?.prefer(value);
-			cm?.setIndent(indent || '\t');
-		}
-		setObject(storageKey, value);
-		localStorage.setItem(indentKey, indent);
 
-		if (prefs.has('save')) {
+		// 插件
+		const value = widget.getValue() as unknown as string[];
+		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
+			changed = true;
+			prefs.clear();
+			for (const option of value) {
+				prefs.add(option);
+			}
+			for (const cm of editors) {
+				cm?.prefer(value);
+			}
+			setObject(storageKey, value);
+		}
+
+		// 保存至用户子页面
+		if (changed && user && (save || prefs.has('save'))) {
 			const params: ApiEditPageParams = {
 				action: 'edit',
 				title: userPage,
@@ -196,7 +258,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				summary: msg('save-summary'),
 			};
 			// eslint-disable-next-line promise/prefer-await-to-then
-			(await api).postWithToken('csrf', params as Record<string, string>).then(
+			(await api)!.postWithToken('csrf', params as Record<string, string>).then(
 				() => {
 					void mw.notify(parseMsg('save-success'), {type: 'success'});
 				},
@@ -205,39 +267,3 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 	}
 };
-
-(async () => {
-	const params: ApiQueryRevisionsParams = {
-		action: 'query',
-		prop: 'revisions',
-		titles: userPage,
-		rvprop: 'content',
-		rvlimit: 1,
-	};
-	(await api).get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
-		res => {
-			const {query: {pages: [page]}} = res as MediaWikiResponse;
-			if (page?.revisions) {
-				const json: Preferences = JSON.parse(page.revisions[0]!.content);
-				for (const key of codeKeys) {
-					if (json[key]) {
-						codeConfigs.set(key, json[key]);
-					}
-				}
-				if (json.wikilint) {
-					Object.assign(wikilintConfig, json.wikilint);
-				}
-				if (json.addons) {
-					prefs.clear();
-					for (const option of json.addons) {
-						prefs.add(option);
-					}
-				}
-				if (json.indent) {
-					localStorage.setItem(indentKey, json.indent);
-				}
-			}
-		},
-		apiErr,
-	);
-})();

@@ -1,4 +1,5 @@
 import {setObject, getObject} from './msg';
+import {CodeMirror} from './base';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
 
@@ -70,13 +71,12 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		({config} = SITE_SETTINGS!);
 		setConfig(config);
 	}
-	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string);
+	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
+		nsid = mw.config.get('wgNamespaceIds'),
+		tagModes = CodeMirror.mwTagModes;
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.variants && !isIPE) {
-		return {
-			...config,
-			nsid: mw.config.get('wgNamespaceIds'),
-		};
+		return {...config, nsid, tagModes};
 	}
 
 	// 以下情形均需要发送API请求
@@ -114,17 +114,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	} else { // 情形4：`config === null`
 		// @ts-expect-error incomplete properties
 		config = {
-			tagModes: {
-				tab: 'text/mediawiki',
-				indicator: 'text/mediawiki',
-				poem: 'text/mediawiki',
-				ref: 'text/mediawiki',
-				option: 'text/mediawiki',
-				combooption: 'text/mediawiki',
-				tabs: 'text/mediawiki',
-				poll: 'text/mediawiki',
-				gallery: 'text/mediawiki',
-			},
+			tagModes: {},
 			tags: {},
 			urlProtocols: mw.config.get('wgUrlProtocols'),
 		};
@@ -145,7 +135,8 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	}
 	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 	config!.variants = variants ? variants.map(({code}) => code) : [];
-	config!.nsid = mw.config.get('wgNamespaceIds');
+	config!.nsid = nsid;
+	Object.assign(config!.tagModes, tagModes);
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 	setObject('InPageEditMwConfig', ALL_SETTINGS_CACHE);

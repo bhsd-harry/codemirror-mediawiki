@@ -22,11 +22,7 @@ import {
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
-import {
-	closeBrackets,
-	autocompletion,
-	completionKeymap,
-} from '@codemirror/autocomplete';
+import {closeBrackets, autocompletion, completionKeymap, acceptCompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler} from './fold';
@@ -83,7 +79,13 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	codeFolding: mediawikiOnly(foldExtension),
 	tagMatching: mediawikiOnly(tagMatchingState),
-	autocompletion: mediawikiOnly([autocompletion({defaultKeymap: false}), keymap.of(completionKeymap)]),
+	autocompletion: mediawikiOnly([
+		autocompletion({defaultKeymap: false}),
+		keymap.of([
+			...completionKeymap,
+			{key: 'Tab', run: acceptCompletion},
+		]),
+	]),
 };
 
 const linters: Record<string, Extension> = {};
@@ -178,6 +180,8 @@ export class CodeMirror6 {
 			syntaxHighlighting(defaultHighlightStyle as Highlighter),
 			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
+			}),
+			EditorView.editorAttributes.of({
 				dir: textarea.dir,
 				lang: textarea.lang,
 			}),
@@ -335,7 +339,7 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.5.3-b',
+				const REPO = 'npm/wikiparser-node@1.5.6-b',
 					DIR = `${REPO}/extensions/dist`,
 					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
 					lang = opt?.['i18n'];
@@ -596,6 +600,25 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 支持的MediaWiki扩展标签
+	 * @todo 修正已有标签（`references`, `choose`, `combobox`, `gallery`），支持更多标签
+	 */
+	static mwTagModes = {
+		tab: 'text/mediawiki',
+		tabs: 'text/mediawiki',
+		indicator: 'text/mediawiki',
+		poem: 'text/mediawiki',
+		ref: 'text/mediawiki',
+		references: 'text/mediawiki',
+		option: 'text/mediawiki',
+		choose: 'text/mediawiki',
+		combooption: 'text/mediawiki',
+		combobox: 'text/mediawiki',
+		poll: 'text/mediawiki',
+		gallery: 'text/mediawiki',
+	};
+
+	/**
 	 * 替换选中内容
 	 * @param view
 	 * @param func 替换函数
@@ -618,9 +641,7 @@ export class CodeMirror6 {
 	static getMwConfig(config: Config): MwConfig {
 		const mwConfig: MwConfig = {
 			tags: {},
-			tagModes: {
-				ref: 'text/mediawiki',
-			},
+			tagModes: CodeMirror6.mwTagModes,
 			doubleUnderscore: [{}, {}],
 			functionSynonyms: [config.parserFunction[0], {}],
 			urlProtocols: `${config.protocol}|//`,

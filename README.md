@@ -485,6 +485,7 @@ Key bindings:
 
 - `Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`: Fold the selected templates
 - `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold the selected templates
+- `Ctrl` + `Alt` + `[`: Fold all templates
 - `Ctrl` + `Alt` + `]`: Unfold all templates
 
 ## tagMatching

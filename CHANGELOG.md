@@ -1,4 +1,4 @@
-## v2.7.0
+## v2.8.0
 
 *2024-03-02*
 
@@ -11,8 +11,7 @@
 **Fixed**
 
 - Links and behavior switches are now ignored in table attributes
-- Disallow multiline free external links in the MediaWiki mode
-- Allow HTML comments in wikilinks and template variables in the MediaWiki mode
+- Allow HTML comments in wikilinks in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
@@ -21,7 +20,55 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
-## v2.6.9
+## 2.7.5
+
+*2024-03-10*
+
+**Fixed**
+
+- Improved tag [autocompletion](./README.md#autocompletion) in the MediaWiki mode
+
+## v2.7.4
+
+*2024-03-09*
+
+**Added**
+
+- New keyboard shortcut for [codeFolding](./README.md#codefolding): `Ctrl` + `Alt` + `[`
+- When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
+
+**Fixed**
+
+- Behavior switches with non-ASCII characters in the MediaWiki mode
+- Disallow multiline free external links in the MediaWiki mode
+- Allow wikilinks in external links in the MediaWiki mode
+- Allow HTML comments in template variables in the MediaWiki mode
+
+**Changed**
+
+- When used in a MediaWiki site, wikilinks in messages are now opened in a new tab
+
+## v2.7.2
+
+*2024-03-07*
+
+**Added**
+
+- More extension tags are now highlighted in the MediaWiki mode
+
+**Changed**
+
+- Now switching off the [save](./mw/README.md#save) extension will also be recorded on the user subpage, and the preference settings loaded from the user subpage will not be applied if the `save` extension is switched off
+
+## v2.7.1
+
+*2024-03-06*
+
+**Fixed**
+
+- Now [`fromTextArea`](./mw/README.md#fromtextarea) will wait to load preference settings from the user's subpage before creating the editor in a MediaWiki site
+
+## v2.7.0
 
 *2024-03-05*
 

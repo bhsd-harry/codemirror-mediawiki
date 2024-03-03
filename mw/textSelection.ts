@@ -17,11 +17,7 @@ export const textSelection = {
 		return getInstance(this).view.state.doc.toString();
 	},
 	setContents(this: JQuery<HTMLTextAreaElement>, content: string): JQuery<HTMLTextAreaElement> {
-		const cm = getInstance(this),
-			{view: {scrollDOM}} = cm,
-			{scrollTop} = scrollDOM;
-		cm.setContent(content);
-		scrollDOM.scrollTop = scrollTop;
+		getInstance(this).setContent(content);
 		return this;
 	},
 	getSelection(this: JQuery<HTMLTextAreaElement>): string {
