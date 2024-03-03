@@ -54,6 +54,9 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown) {
+		if (instances.get(textarea)?.visible) {
+			return;
+		}
 		super(textarea, lang, config);
 		this.ns = ns;
 		instances.set(textarea, this);
