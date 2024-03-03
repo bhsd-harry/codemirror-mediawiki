@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.6.7",
+	"version": "2.6.8",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
