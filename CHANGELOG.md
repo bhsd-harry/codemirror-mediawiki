@@ -23,7 +23,7 @@
 
 ## v2.6.8
 
-*2024-03-02*
+*2024-03-03*
 
 **Added**
 
@@ -33,6 +33,7 @@
 
 - When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
 - Syntax at SOL in a table cell in the MediaWiki mode, introduced in [v2.6.7](#v267)
+- When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
 
 ## v2.6.7
 
