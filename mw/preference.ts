@@ -55,7 +55,7 @@ const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescr
 };
 
 const api = (async () => {
-	await mw.loader.using('mediawiki');
+	await mw.loader.using('mediawiki.api');
 	return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
 })();
 
