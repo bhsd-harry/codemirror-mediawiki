@@ -32,4 +32,15 @@ declare global {
 	type Rule = LintError.Rule;
 
 	type WikiDiagnostic = Diagnostic & {rule: Rule};
+
+	interface MediaWikiPage {
+		readonly revisions?: {
+			readonly content: string;
+		}[];
+	}
+	interface MediaWikiResponse {
+		readonly query: {
+			readonly pages: MediaWikiPage[];
+		};
+	}
 }

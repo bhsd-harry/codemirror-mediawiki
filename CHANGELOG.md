@@ -21,6 +21,18 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## v2.6.9
+
+*2024-03-05*
+
+**Added**
+
+- When used in a MediaWiki site, users can now save their preference settings on a user subpage
+
+**Fixed**
+
+- When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
+
 ## v2.6.8
 
 *2024-03-03*
@@ -32,8 +44,7 @@
 **Fixed**
 
 - When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
-- Syntax at SOL in a table cell in the MediaWiki mode, introduced in [v2.6.7](#v267)
-- When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
+- Syntax at SOL in a table cell in the MediaWiki mode, since [v2.6.7](#v267)
 
 ## v2.6.7
 
