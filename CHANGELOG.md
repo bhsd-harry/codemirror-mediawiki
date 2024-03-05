@@ -25,6 +25,10 @@
 
 *2024-03-05*
 
+**Added**
+
+- When used in a MediaWiki site, users can now save their preference settings on a user subpage
+
 **Fixed**
 
 - When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited

@@ -1,13 +1,24 @@
 import {rules} from 'wikiparser-node/dist/base';
 import {CodeMirror} from './base';
-import {msg, i18n, setObject, getObject} from './msg';
+import {msg, parseMsg, i18n, setObject, getObject} from './msg';
 import {instances} from './textSelection';
+import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';
 
 const storageKey = 'codemirror-mediawiki-addons',
 	wikilintKey = 'codemirror-mediawiki-wikilint',
-	codeKeys = ['ESLint', 'Stylelint'] as const;
+	codeKeys = ['ESLint', 'Stylelint'] as const,
+	user = mw.config.get('wgUserName'),
+	userPage = user && `User:${user}/codemirror-mediawiki.json`;
 
 declare type codeKey = typeof codeKeys[number];
+
+declare interface Preferences {
+	addons?: string[];
+	indent?: string;
+	wikilint?: Record<Rule, RuleState>;
+	ESLint?: unknown;
+	Stylelint?: unknown;
+}
 
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set<string>(getObject(storageKey) as string[] | null),
@@ -31,11 +42,34 @@ const enum RuleState {
 const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
 /**
+ * 处理Api请求错误
+ * @param code 错误代码
+ * @param e 错误信息
+ */
+const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescript-eslint/no-explicit-any
+	const message = code === 'http' || code === 'okay-but-empty'
+		? `MediaWiki API request failed: ${code}`
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+		: $('<ul>', {html: (e.errors as {html: string}[]).map(({html}) => $('<li>', {html}))});
+	void mw.notify(message as string | HTMLElement[], {type: 'error', autoHideSeconds: 'long'});
+};
+
+const api = (async () => {
+	await mw.loader.using('mediawiki');
+	return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
+})();
+
+/**
  * 打开设置对话框
  * @param editors CodeMirror实例
  */
 export const openPreference = async (editors: (CodeMirror | undefined)[]): Promise<void> => {
-	await mw.loader.using(['oojs-ui-windows', 'oojs-ui-widgets', 'oojs-ui.styles.icons-content']);
+	await mw.loader.using([
+		'oojs-ui-windows',
+		'oojs-ui-widgets',
+		'oojs-ui.styles.icons-content',
+		'mediawiki.jqueryMsg',
+	]);
 	if (dialog) {
 		widget.setValue([...prefs] as unknown as string);
 		indentWidget.setValue(indent);
@@ -71,8 +105,9 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 					.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
 					.map(k => ({
 						data: k.slice(6),
-						label: $($.parseHTML(msg(k))),
-						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor'),
+						label: parseMsg(k),
+						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor')
+						|| k === 'addon-save' && !user,
 					})),
 			],
 			value: [...prefs] as unknown as string,
@@ -146,5 +181,63 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 		setObject(storageKey, value);
 		localStorage.setItem(indentKey, indent);
+
+		if (prefs.has('save')) {
+			const params: ApiEditPageParams = {
+				action: 'edit',
+				title: userPage,
+				text: JSON.stringify({
+					addons: [...prefs],
+					indent,
+					wikilint: wikilintConfig,
+					ESLint: codeConfigs.get('ESLint'),
+					Stylelint: codeConfigs.get('Stylelint'),
+				} as Preferences),
+				summary: msg('save-summary'),
+			};
+			// eslint-disable-next-line promise/prefer-await-to-then
+			(await api).postWithToken('csrf', params as Record<string, string>).then(
+				() => {
+					void mw.notify(parseMsg('save-success'), {type: 'success'});
+				},
+				apiErr,
+			);
+		}
 	}
 };
+
+(async () => {
+	const params: ApiQueryRevisionsParams = {
+		action: 'query',
+		prop: 'revisions',
+		titles: userPage,
+		rvprop: 'content',
+		rvlimit: 1,
+	};
+	(await api).get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
+		res => {
+			const {query: {pages: [page]}} = res as MediaWikiResponse;
+			if (page?.revisions) {
+				const json: Preferences = JSON.parse(page.revisions[0]!.content);
+				for (const key of codeKeys) {
+					if (json[key]) {
+						codeConfigs.set(key, json[key]);
+					}
+				}
+				if (json.wikilint) {
+					Object.assign(wikilintConfig, json.wikilint);
+				}
+				if (json.addons) {
+					prefs.clear();
+					for (const option of json.addons) {
+						prefs.add(option);
+					}
+				}
+				if (json.indent) {
+					localStorage.setItem(indentKey, json.indent);
+				}
+			}
+		},
+		apiErr,
+	);
+})();

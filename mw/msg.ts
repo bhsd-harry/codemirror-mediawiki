@@ -64,6 +64,12 @@ export const setI18N = async (CDN: string): Promise<void> => {
 export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${key}`, ...args);
 
 /**
+ * 解析I18N消息
+ * @param key 消息键，省略`cm-mw-`前缀
+ */
+export const parseMsg = (key: string): JQuery<HTMLElement> => mw.message(`cm-mw-${key}`).parseDom();
+
+/**
  * 解析版本号
  * @param v 版本号
  */
