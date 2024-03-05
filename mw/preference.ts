@@ -192,10 +192,45 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		size: 'medium',
 	}).closing as unknown as Promise<{action?: unknown} | undefined>);
 	if (typeof data === 'object' && data.action === 'accept') {
+		// 缩进
+		const oldIndent = indent;
+		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
+		let changed = indent !== oldIndent;
+		if (changed) {
+			for (const cm of editors) {
+				cm?.setIndent(indent || '\t');
+			}
+			localStorage.setItem(indentKey, indent);
+		}
+
+		// 插件
+		const value = widget.getValue() as unknown as string[];
+		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
+			changed = true;
+			prefs.clear();
+			for (const option of value) {
+				prefs.add(option);
+			}
+			for (const cm of editors) {
+				cm?.prefer(value);
+			}
+			setObject(storageKey, value);
+		}
+
+		// WikiLint
+		for (const [rule, dropdown] of wikilintWidgets) {
+			const val = dropdown.getValue() as RuleState;
+			changed ||= val !== wikilintConfig[rule];
+			wikilintConfig[rule] = val;
+		}
+		setObject(wikilintKey, wikilintConfig);
+
+		// ESLint & Stylelint
 		const jsonErrors: string[] = [];
 		for (const key of codeKeys) {
 			try {
 				const config = JSON.parse(widgets[key]!.getValue().trim() || 'null');
+				changed ||= JSON.stringify(config) !== JSON.stringify(codeConfigs.get(key));
 				codeConfigs.set(key, config);
 				setObject(`codemirror-mediawiki-${key}`, config);
 			} catch {
@@ -205,24 +240,9 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		if (jsonErrors.length > 0) {
 			void OO.ui.alert(msg('json-error', jsonErrors.join(msg('and'))));
 		}
-		for (const [rule, dropdown] of wikilintWidgets) {
-			wikilintConfig[rule] = dropdown.getValue() as RuleState;
-		}
-		setObject(wikilintKey, wikilintConfig);
-		const value = widget.getValue() as unknown as string[];
-		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
-		prefs.clear();
-		for (const option of value) {
-			prefs.add(option);
-		}
-		for (const cm of editors) {
-			cm?.prefer(value);
-			cm?.setIndent(indent || '\t');
-		}
-		setObject(storageKey, value);
-		localStorage.setItem(indentKey, indent);
 
-		if (user && prefs.has('save')) {
+		// 保存至用户子页面
+		if (changed && user && prefs.has('save')) {
 			const params: ApiEditPageParams = {
 				action: 'edit',
 				title: userPage,
