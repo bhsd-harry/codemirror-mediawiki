@@ -1,5 +1,5 @@
 {
-	"version": "2.6.10",
+	"version": "2.6.11",
 	"lang": "en",
 	"i18n-failed": "Failed to fetch the translation file in $1.",
 	"title": "CodeMirror Addons",
@@ -26,8 +26,8 @@
 	"addon-tagMatching": "Highlight matching/non-matching tags",
 	"addon-wikiEditor": "Load WikiEditor toolbar",
 	"no-wikiEditor": "WikiEditor is not available.",
-	"save-summary": "Update settings",
 	"save-success": "Settings saved on [[special:mypage/codemirror-mediawiki.json|user subpage]].",
+	"save-summary": "Update settings",
 	"welcome": "Welcome to <b>CodeMirror-MediaWiki</b>!<br>You can change your local settings <a id=\"settings\" href=\"#\">here</a>.",
 	"welcome-addons": "<b>CodeMirror-MediaWiki</b> has been upgraded to $1. This version introduces $2 new {{plural:$2|addon|addons}}: <ul>$3</ul>You may update your local settings <a id=\"settings\" href=\"#\">here</a>.",
 	"wikilint-error": "Error only",

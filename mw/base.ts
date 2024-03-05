@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.6.10/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.6.11/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -55,7 +55,7 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown) {
 		if (instances.get(textarea)?.visible) {
-			return;
+			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
 		super(textarea, lang, config);
 		this.ns = ns;
