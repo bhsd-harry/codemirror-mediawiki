@@ -12,12 +12,16 @@ const storageKey = 'codemirror-mediawiki-addons',
 
 declare type codeKey = typeof codeKeys[number];
 
-declare interface Preferences {
+declare type Preferences = {
 	addons?: string[];
 	indent?: string;
 	wikilint?: Record<Rule, RuleState>;
-	ESLint?: unknown;
-	Stylelint?: unknown;
+} & Record<codeKey, unknown>;
+
+const enum RuleState {
+	off = '0',
+	error = '1',
+	on = '2',
 }
 
 export const indentKey = 'codemirror-mediawiki-indent',
@@ -31,15 +35,8 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
 	indent = localStorage.getItem(indentKey) || '';
-const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
-
-const enum RuleState {
-	off = '0',
-	error = '1',
-	on = '2',
-}
-
-const wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
+const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
+	wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
 
 /**
  * 处理Api请求错误
@@ -62,6 +59,45 @@ const api = (async () => {
 	return undefined;
 })();
 
+const loadJSON = (async () => {
+	if (!user) {
+		return;
+	}
+	const params: ApiQueryRevisionsParams = {
+		action: 'query',
+		prop: 'revisions',
+		titles: userPage,
+		rvprop: 'content',
+		rvlimit: 1,
+	};
+	(await api)!.get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
+		res => {
+			const {query: {pages: [page]}} = res as MediaWikiResponse;
+			if (page?.revisions) {
+				const json: Preferences = JSON.parse(page.revisions[0]!.content);
+				for (const key of codeKeys) {
+					if (json[key]) {
+						codeConfigs.set(key, json[key]);
+					}
+				}
+				if (json.wikilint) {
+					Object.assign(wikilintConfig, json.wikilint);
+				}
+				if (json.addons) {
+					prefs.clear();
+					for (const option of json.addons) {
+						prefs.add(option);
+					}
+				}
+				if (json.indent) {
+					localStorage.setItem(indentKey, json.indent);
+				}
+			}
+		},
+		apiErr,
+	);
+})();
+
 /**
  * 打开设置对话框
  * @param editors CodeMirror实例
@@ -73,6 +109,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		'oojs-ui.styles.icons-content',
 		'mediawiki.jqueryMsg',
 	]);
+	await loadJSON;
 	if (dialog) {
 		widget.setValue([...prefs] as unknown as string);
 		indentWidget.setValue(indent);
@@ -208,41 +245,3 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 	}
 };
-
-if (user) {
-	(async () => {
-		const params: ApiQueryRevisionsParams = {
-			action: 'query',
-			prop: 'revisions',
-			titles: userPage,
-			rvprop: 'content',
-			rvlimit: 1,
-		};
-		(await api)!.get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
-			res => {
-				const {query: {pages: [page]}} = res as MediaWikiResponse;
-				if (page?.revisions) {
-					const json: Preferences = JSON.parse(page.revisions[0]!.content);
-					for (const key of codeKeys) {
-						if (json[key]) {
-							codeConfigs.set(key, json[key]);
-						}
-					}
-					if (json.wikilint) {
-						Object.assign(wikilintConfig, json.wikilint);
-					}
-					if (json.addons) {
-						prefs.clear();
-						for (const option of json.addons) {
-							prefs.add(option);
-						}
-					}
-					if (json.indent) {
-						localStorage.setItem(indentKey, json.indent);
-					}
-				}
-			},
-			apiErr,
-		);
-	})();
-}

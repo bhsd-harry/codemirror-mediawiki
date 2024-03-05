@@ -10,8 +10,8 @@ import type {Linter} from 'eslint';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.5',
-	addons = ['autocompletion'];
+const baseVersion = '2.7',
+	addons = ['save'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
