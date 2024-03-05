@@ -55,8 +55,11 @@ const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescr
 };
 
 const api = (async () => {
-	await mw.loader.using('mediawiki.api');
-	return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
+	if (user) {
+		await mw.loader.using('mediawiki.api');
+		return new mw.Api({parameters: {errorformat: 'html', formatversion: '2'}});
+	}
+	return undefined;
 })();
 
 /**
@@ -182,7 +185,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		setObject(storageKey, value);
 		localStorage.setItem(indentKey, indent);
 
-		if (prefs.has('save')) {
+		if (user && prefs.has('save')) {
 			const params: ApiEditPageParams = {
 				action: 'edit',
 				title: userPage,
@@ -196,7 +199,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				summary: msg('save-summary'),
 			};
 			// eslint-disable-next-line promise/prefer-await-to-then
-			(await api).postWithToken('csrf', params as Record<string, string>).then(
+			(await api)!.postWithToken('csrf', params as Record<string, string>).then(
 				() => {
 					void mw.notify(parseMsg('save-success'), {type: 'success'});
 				},
@@ -206,38 +209,40 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 	}
 };
 
-(async () => {
-	const params: ApiQueryRevisionsParams = {
-		action: 'query',
-		prop: 'revisions',
-		titles: userPage,
-		rvprop: 'content',
-		rvlimit: 1,
-	};
-	(await api).get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
-		res => {
-			const {query: {pages: [page]}} = res as MediaWikiResponse;
-			if (page?.revisions) {
-				const json: Preferences = JSON.parse(page.revisions[0]!.content);
-				for (const key of codeKeys) {
-					if (json[key]) {
-						codeConfigs.set(key, json[key]);
+if (user) {
+	(async () => {
+		const params: ApiQueryRevisionsParams = {
+			action: 'query',
+			prop: 'revisions',
+			titles: userPage,
+			rvprop: 'content',
+			rvlimit: 1,
+		};
+		(await api)!.get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
+			res => {
+				const {query: {pages: [page]}} = res as MediaWikiResponse;
+				if (page?.revisions) {
+					const json: Preferences = JSON.parse(page.revisions[0]!.content);
+					for (const key of codeKeys) {
+						if (json[key]) {
+							codeConfigs.set(key, json[key]);
+						}
+					}
+					if (json.wikilint) {
+						Object.assign(wikilintConfig, json.wikilint);
+					}
+					if (json.addons) {
+						prefs.clear();
+						for (const option of json.addons) {
+							prefs.add(option);
+						}
+					}
+					if (json.indent) {
+						localStorage.setItem(indentKey, json.indent);
 					}
 				}
-				if (json.wikilint) {
-					Object.assign(wikilintConfig, json.wikilint);
-				}
-				if (json.addons) {
-					prefs.clear();
-					for (const option of json.addons) {
-						prefs.add(option);
-					}
-				}
-				if (json.indent) {
-					localStorage.setItem(indentKey, json.indent);
-				}
-			}
-		},
-		apiErr,
-	);
-})();
+			},
+			apiErr,
+		);
+	})();
+}
