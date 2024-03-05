@@ -66,8 +66,14 @@ export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${k
 /**
  * 解析I18N消息
  * @param key 消息键，省略`cm-mw-`前缀
+ * @param text 是否输出为文本
  */
-export const parseMsg = (key: string): JQuery<HTMLElement> => mw.message(`cm-mw-${key}`).parseDom();
+function parseMsg(key: string): JQuery<HTMLElement>;
+function parseMsg(key: string, text: true): string;
+function parseMsg(key: string, text?: boolean): string | JQuery<HTMLElement> {
+	return mw.message(`cm-mw-${key}`)[text ? 'parse' : 'parseDom']();
+}
+export {parseMsg};
 
 /**
  * 解析版本号
@@ -103,7 +109,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 				'welcome-addons',
 				curVersion,
 				String(addons.length),
-				addons.map(addon => `<li>${msg(`addon-${addon}`)}</li>`).join(''),
+				addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
 			);
 		}
 	}
