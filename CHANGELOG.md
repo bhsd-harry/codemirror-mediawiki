@@ -21,7 +21,7 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
-## v2.6.9
+## v2.6.10
 
 *2024-03-05*
 
