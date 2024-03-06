@@ -13,8 +13,7 @@ declare interface DocRange {
 const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name.includes(`-template-${s}`),
 	isBracket = isTemplateComponent('bracket'),
 	isDelimiter = isTemplateComponent('delimiter'),
-	isTemplate = (node: SyntaxNode | null): boolean =>
-		node ? /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node) : false,
+	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node),
 	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
 		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
 
@@ -125,7 +124,7 @@ export const foldExtension: Extension[] = [
 			element.setAttribute('aria-label', 'folded code');
 			element.title = view.state.phrase('unfold');
 			element.className = 'cm-foldPlaceholder';
-			element.onclick = ({target}): void => {
+			element.addEventListener('click', ({target}) => {
 				const pos = view.posAtDOM(target as Node),
 					{state} = view,
 					{selection} = state;
@@ -134,7 +133,7 @@ export const foldExtension: Extension[] = [
 						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
 					}
 				});
-			};
+			});
 			return element;
 		},
 	}),
