@@ -2,7 +2,7 @@ import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemir
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
-import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs} from './preference';
+import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Config} from 'wikiparser-node';
@@ -192,8 +192,7 @@ export class CodeMirror extends CodeMirror6 {
 			/* eslint-enable no-param-reassign */
 		}
 		const isWiki = lang === 'mediawiki' || lang === 'html',
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns),
-			indent = localStorage.getItem(indentKey);
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
 		if (isWiki) {
 			let config: MwConfig;
 			if (mw.config.get('wgServerName') === 'zh.moegirl.org.cn') {
@@ -212,7 +211,9 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			cm.setLanguage(lang, config);
 		}
+		await loadJSON;
 		cm.prefer([...prefs]);
+		const indent = localStorage.getItem(indentKey);
 		if (indent) {
 			cm.setIndent(indent);
 		}

@@ -21,6 +21,14 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## v2.7.1
+
+*2024-03-06*
+
+**Fixed**
+
+- Now [`fromTextArea`](./mw/README.md#fromtextarea) will wait to load preference settings from the user's subpage before creating the editor in a MediaWiki site
+
 ## v2.7.0
 
 *2024-03-05*

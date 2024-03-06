@@ -59,7 +59,7 @@ const api = (async () => {
 	return undefined;
 })();
 
-const loadJSON = (async () => {
+export const loadJSON = (async () => {
 	if (!user) {
 		return;
 	}
@@ -203,20 +203,6 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			localStorage.setItem(indentKey, indent);
 		}
 
-		// 插件
-		const value = widget.getValue() as unknown as string[];
-		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
-			changed = true;
-			prefs.clear();
-			for (const option of value) {
-				prefs.add(option);
-			}
-			for (const cm of editors) {
-				cm?.prefer(value);
-			}
-			setObject(storageKey, value);
-		}
-
 		// WikiLint
 		for (const [rule, dropdown] of wikilintWidgets) {
 			const val = dropdown.getValue() as RuleState;
@@ -239,6 +225,20 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 		if (jsonErrors.length > 0) {
 			void OO.ui.alert(msg('json-error', jsonErrors.join(msg('and'))));
+		}
+
+		// 插件
+		const value = widget.getValue() as unknown as string[];
+		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
+			changed = true;
+			prefs.clear();
+			for (const option of value) {
+				prefs.add(option);
+			}
+			for (const cm of editors) {
+				cm?.prefer(value);
+			}
+			setObject(storageKey, value);
 		}
 
 		// 保存至用户子页面
