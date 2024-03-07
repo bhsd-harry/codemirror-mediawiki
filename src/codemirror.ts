@@ -335,7 +335,7 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.5.3-b',
+				const REPO = 'npm/wikiparser-node@1.5.6-b',
 					DIR = `${REPO}/extensions/dist`,
 					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
 					lang = opt?.['i18n'];

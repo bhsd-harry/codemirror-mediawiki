@@ -21,6 +21,14 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## v2.7.2
+
+*2024-03-07*
+
+**Changed**
+
+- Now switching off the [save](./mw/README.md#save) extension will also be recorded on the user subpage, and the preference settings loaded from the user subpage will not be applied if the `save` extension is switched off
+
 ## v2.7.1
 
 *2024-03-06*

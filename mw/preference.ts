@@ -75,6 +75,16 @@ export const loadJSON = (async () => {
 			const {query: {pages: [page]}} = res as MediaWikiResponse;
 			if (page?.revisions) {
 				const json: Preferences = JSON.parse(page.revisions[0]!.content);
+				if (!json.addons?.includes('save')) {
+					return;
+				}
+				prefs.clear();
+				for (const option of json.addons) {
+					prefs.add(option);
+				}
+				if (json.indent) {
+					localStorage.setItem(indentKey, json.indent);
+				}
 				for (const key of codeKeys) {
 					if (json[key]) {
 						codeConfigs.set(key, json[key]);
@@ -82,15 +92,6 @@ export const loadJSON = (async () => {
 				}
 				if (json.wikilint) {
 					Object.assign(wikilintConfig, json.wikilint);
-				}
-				if (json.addons) {
-					prefs.clear();
-					for (const option of json.addons) {
-						prefs.add(option);
-					}
-				}
-				if (json.indent) {
-					localStorage.setItem(indentKey, json.indent);
 				}
 			}
 		},
@@ -193,7 +194,8 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 	}).closing as unknown as Promise<{action?: unknown} | undefined>);
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
-		const oldIndent = indent;
+		const oldIndent = indent,
+			save = prefs.has('save');
 		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
 		let changed = indent !== oldIndent;
 		if (changed) {
@@ -242,7 +244,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 
 		// 保存至用户子页面
-		if (changed && user && prefs.has('save')) {
+		if (changed && user && (save || prefs.has('save'))) {
 			const params: ApiEditPageParams = {
 				action: 'edit',
 				title: userPage,
