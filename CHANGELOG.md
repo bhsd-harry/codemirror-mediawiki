@@ -25,6 +25,10 @@
 
 *2024-03-07*
 
+**Added**
+
+- More extension tags are now highlighted in the MediaWiki mode
+
 **Changed**
 
 - Now switching off the [save](./mw/README.md#save) extension will also be recorded on the user subpage, and the preference settings loaded from the user subpage will not be applied if the `save` extension is switched off

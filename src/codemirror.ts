@@ -596,6 +596,25 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 支持的MediaWiki扩展标签
+	 * @todo 修正已有标签（`references`, `choose`, `combobox`, `gallery`），支持更多标签
+	 */
+	static mwTagModes = {
+		tab: 'text/mediawiki',
+		tabs: 'text/mediawiki',
+		indicator: 'text/mediawiki',
+		poem: 'text/mediawiki',
+		ref: 'text/mediawiki',
+		references: 'text/mediawiki',
+		option: 'text/mediawiki',
+		choose: 'text/mediawiki',
+		combooption: 'text/mediawiki',
+		combobox: 'text/mediawiki',
+		poll: 'text/mediawiki',
+		gallery: 'text/mediawiki',
+	};
+
+	/**
 	 * 替换选中内容
 	 * @param view
 	 * @param func 替换函数
@@ -618,9 +637,7 @@ export class CodeMirror6 {
 	static getMwConfig(config: Config): MwConfig {
 		const mwConfig: MwConfig = {
 			tags: {},
-			tagModes: {
-				ref: 'text/mediawiki',
-			},
+			tagModes: CodeMirror6.mwTagModes,
 			doubleUnderscore: [{}, {}],
 			functionSynonyms: [config.parserFunction[0], {}],
 			urlProtocols: `${config.protocol}|//`,
