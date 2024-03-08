@@ -21,6 +21,14 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## v2.7.3
+
+*2024-03-08*
+
+**Changed**
+
+- When used in a MediaWiki site, wikilinks in messages are now opened in a new tab
+
 ## v2.7.2
 
 *2024-03-07*

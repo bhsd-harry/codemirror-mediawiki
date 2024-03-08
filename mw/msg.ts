@@ -64,6 +64,15 @@ export const setI18N = async (CDN: string): Promise<void> => {
 export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${key}`, ...args);
 
 /**
+ * 为所有链接添加`target="_blank"`
+ * @param $dom 容器
+ */
+const blankTarget = ($dom: JQuery<HTMLElement>): JQuery<HTMLElement> => {
+	$dom.find('a').attr('target', '_blank');
+	return $dom;
+};
+
+/**
  * 解析I18N消息
  * @param key 消息键，省略`cm-mw-`前缀
  * @param text 是否输出为文本
@@ -71,7 +80,8 @@ export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${k
 function parseMsg(key: string): JQuery<HTMLElement>;
 function parseMsg(key: string, text: true): string;
 function parseMsg(key: string, text?: boolean): string | JQuery<HTMLElement> {
-	return mw.message(`cm-mw-${key}`)[text ? 'parse' : 'parseDom']();
+	const message = mw.message(`cm-mw-${key}`);
+	return text ? message.parse() : blankTarget(message.parseDom());
 }
 export {parseMsg};
 
@@ -87,7 +97,7 @@ const parseVersion = (v: string): [number, number] => v.split('.', 2).map(Number
  * @param args 替换`$1`等的参数
  */
 const notify = async (key: string, ...args: string[]): Promise<JQuery<HTMLElement>> => {
-	const $p = $('<p>', {html: msg(key, ...args)});
+	const $p = blankTarget($('<p>', {html: msg(key, ...args)}));
 	await mw.notify($p, {type: 'success', autoHideSeconds: 'long'});
 	return $p;
 };
