@@ -87,9 +87,9 @@ const chain = (state: State, tokenizer: Tokenizer): void => {
 	state.tokenize = tokenizer;
 };
 
-/**
- * Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov
- */
+const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]/u.test(stream.peek() || '');
+
+/** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
 	declare readonly config;
 	declare readonly urlProtocols;
@@ -133,12 +133,9 @@ class MediaWiki {
 			...modeConfig.implicitlyClosedHtmlTags,
 			...config.implicitlyClosedHtmlTags || [],
 		]);
-
-		// Dynamically register any tags that aren't already in CodeMirrorModeMediaWikiConfig
 		for (const tag of Object.keys(config.tags)) {
 			this.addTag(tag);
 		}
-
 		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
 		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
 
@@ -293,7 +290,7 @@ class MediaWiki {
 				ground += '-ext3';
 				break;
 		}
-		if (state.nLink > 0) {
+		if (state.nLink) {
 			ground += '-link';
 		}
 		if (endGround) {
@@ -312,14 +309,6 @@ class MediaWiki {
 			} else {
 				stream.skipToEnd();
 			}
-			return this.makeLocalTagStyle(tag, state);
-		};
-	}
-
-	eatEnd(tag: TagName): Tokenizer {
-		return (stream, state) => {
-			stream.skipToEnd();
-			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle(tag, state);
 		};
 	}
@@ -343,26 +332,42 @@ class MediaWiki {
 	}
 
 	inFreeExternalLink(stream: StringStream, state: State): string {
-		if (!stream.eol()) {
-			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray;
+		if (!stream.sol()) {
+			const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
+				ch = stream.peek();
 			state.lpar ||= mt[0].includes('(');
-			if (stream.peek() === '~') {
-				if (stream.match(/^~{1,2}(?!~)/u)) {
-					return this.makeTagStyle('freeExtLink', state);
-				}
-			} else if (stream.peek() === '{') {
-				if (stream.match(/^\{(?!\{)/u)) {
-					return this.makeTagStyle('freeExtLink', state);
-				}
-			} else if (stream.peek() === "'") {
-				if (stream.match(/^'(?!')/u)) {
-					return this.makeTagStyle('freeExtLink', state);
-				}
-			} else if (state.lpar && stream.peek() === ')') {
-				stream.next();
-				return this.makeTagStyle('freeExtLink', state);
-			} else if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
-				return this.makeTagStyle('freeExtLink', state);
+			switch (ch!) {
+				case '~':
+					if (stream.match(/^~~?(?!~)/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case '{':
+					if (stream.match(/^\{(?!\{)/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case "'":
+					if (stream.match(/^'(?!')/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					break;
+				case ')':
+					if (state.lpar) {
+						stream.match(/^\)+/u);
+						return this.makeTagStyle('freeExtLink', state);
+					}
+					// fall through
+				case '.':
+				case ',':
+				case ';':
+				case ':':
+				case '!':
+				case '?':
+					if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
+						return this.makeTagStyle('freeExtLink', state);
+					}
+				// no default
 			}
 		}
 		state.lpar = false;
@@ -372,10 +377,10 @@ class MediaWiki {
 
 	inSectionHeader(count: number): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(/^[^&<[{~']+/u)) {
+			if (stream.match(/^[^&<[{~'_]+/u)) {
 				if (stream.eol()) {
 					stream.backUp(count);
-					state.tokenize = this.eatEnd('sectionHeader');
+					state.tokenize = this.eatSectionHeader.bind(this);
 				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
 					// T171074: handle trailing comments
 					stream.backUp(count);
@@ -387,6 +392,17 @@ class MediaWiki {
 		};
 	}
 
+	eatSectionHeader(stream: StringStream, state: State): string {
+		stream.skipToEnd();
+		state.tokenize = state.stack.pop()!;
+		return this.makeLocalTagStyle('sectionHeader', state);
+	}
+
+	eatList(stream: StringStream, state: State): string {
+		stream.match(/^[*#;:]*/u);
+		return this.makeLocalTagStyle('list', state);
+	}
+
 	eatStartTable(stream: StringStream, state: State): string {
 		stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
 		state.tokenize = this.inTableDefinition.bind(this);
@@ -396,7 +412,7 @@ class MediaWiki {
 	inTableDefinition(stream: StringStream, state: State): string {
 		if (stream.sol()) {
 			state.tokenize = this.inTable.bind(this);
-			return this.inTable(stream, state);
+			return '';
 		}
 		return this.eatWikiText(modeConfig.tags.tableDefinition)(stream, state);
 	}
@@ -408,8 +424,7 @@ class MediaWiki {
 				if (stream.match(/^-+\s*/u)) {
 					state.tokenize = this.inTableDefinition.bind(this);
 					return this.makeLocalTagStyle('tableDelimiter', state);
-				} else if (stream.eat('+')) {
-					stream.eatSpace();
+				} else if (stream.match(/^\+\s*/u)) {
 					state.tokenize = this.inTableCell(true, TableCell.Caption);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				} else if (stream.eat('}')) {
@@ -419,8 +434,7 @@ class MediaWiki {
 				stream.eatSpace();
 				state.tokenize = this.inTableCell(true, TableCell.Td);
 				return this.makeLocalTagStyle('tableDelimiter', state);
-			} else if (stream.eat('!')) {
-				stream.eatSpace();
+			} else if (stream.match(/^!\s*/u)) {
 				state.tokenize = this.inTableCell(true, TableCell.Th);
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
@@ -445,17 +459,20 @@ class MediaWiki {
 					return '';
 				}
 			}
-			if (stream.sol() && /[-=*#;:]/u.test(stream.peek() || '')) {
+			if (isSolSyntax(stream)) {
 				return this.eatWikiText(style)(stream, state);
 			} else if (stream.match(firstLine ? /^[^'{[<&~_|!]+/u : /^[^'{[<&~_:]+/u)) {
 				return this.makeStyle(style, state);
 			} else if (firstLine) {
-				if (stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}/u) || type === TableCell.Th && stream.match('!!')) {
+				if (
+					stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}\s*/u)
+					|| type === TableCell.Th && stream.match(/^!!\s*/u)
+				) {
 					this.isBold = false;
 					this.isItalic = false;
 					state.tokenize = this.inTableCell(true, type);
 					return this.makeLocalTagStyle('tableDelimiter', state);
-				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
+				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 					state.tokenize = this.inTableCell(false, type);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				}
@@ -674,7 +691,7 @@ class MediaWiki {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.match(/^\s*[^\s|&~{}<>[\]]+/u)) {
+			} else if (stream.match(/^\s*[^\s|{}<>[\]]+/u)) {
 				state.tokenize = this.inTemplatePageName(true);
 				return this.makeLocalTagStyle('templateName', state);
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
@@ -879,18 +896,14 @@ class MediaWiki {
 					case '*':
 					case '#':
 					case ';':
-						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^[*#;:]*/u);
-						return this.makeLocalTagStyle('list', state);
+						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
 						if (stream.match(/^:*\s*(?=\{\||\{{3}\s*!\s*\}\})/u)) {
 							chain(state, this.eatStartTable.bind(this));
 							return this.makeLocalTagStyle('list', state);
 						}
-						// Just consume all nested list and indention syntax when there is more
-						stream.match(/^[*#;:]*/u);
-						return this.makeLocalTagStyle('list', state);
+						return this.eatList(stream, state);
 					case ' ': {
 						// Leading spaces is valid syntax for tables, bug T108454
 						const mt = stream.match(/^\s*(:+\s*)?(?=\{\||\{{3}\s*!\s*\}\})/u) as RegExpMatchArray | false;
@@ -1009,7 +1022,7 @@ class MediaWiki {
 					// Check on double underscore Magic Word
 					} else if (tmp === 2) {
 						// The same as the end of function except '_' inside and '__' at the end.
-						const name = stream.match(/^\w+?__/u) as RegExpMatchArray | false;
+						const name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
 						if (name) {
 							if (
 								`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
@@ -1130,12 +1143,12 @@ class MediaWiki {
 					validFor: /^[^|{}<]*$/u,
 				};
 			} else if (!types.has(modeConfig.tags.comment) && !types.has(modeConfig.tags.templateVariableName)) {
-				let mt = context.matchBefore(/__(?:(?!__)\w)*$/u);
+				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);
 				if (mt) {
 					return {
 						from: mt.from,
 						options: this.doubleUnderscore,
-						validFor: /^\w*$/u,
+						validFor: /^[\p{L}\d_]*$/u,
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
