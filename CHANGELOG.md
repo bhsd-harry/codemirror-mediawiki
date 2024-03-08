@@ -28,6 +28,7 @@
 
 - Behavior switches with non-ASCII characters in the MediaWiki mode
 - Disallow multiline free external links in the MediaWiki mode
+- Allow wikilinks in external links in the MediaWiki mode
 
 **Changed**
 

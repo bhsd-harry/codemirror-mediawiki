@@ -138,7 +138,6 @@ class MediaWiki {
 		}
 		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
 		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
-
 		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -535,7 +534,7 @@ class MediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
 		}
-		return stream.match(/^[^'\]{&~<]+/u)
+		return stream.match(/^(?:[^'[\]{&~<]|\[(?!\[))+/u)
 			? this.makeTagStyle('extLinkText', state)
 			: this.eatWikiText(modeConfig.tags.extLinkText)(stream, state);
 	}
@@ -546,19 +545,21 @@ class MediaWiki {
 				state.nLink--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.match(/^\s*#\s*/u)) {
+			}
+			const space = stream.eatSpace();
+			if (stream.match(/^#\s*/u)) {
 				state.tokenize = this.inLinkToSection(file);
 				return this.makeTagStyle('linkToSection', state);
-			} else if (stream.match(/^\s*\|\s*/u)) {
+			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
-			} else if (stream.match(/^\s*\]\]/u)) {
+			} else if (stream.match(']]')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
-			return stream.match(/^[^#|[\]&~{}<>]+/u)
+			return stream.match(/^[^#|[\]&~{}<>]+/u) || space
 				? this.makeTagStyle('linkPageName', state)
 				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
 		};
@@ -570,24 +571,22 @@ class MediaWiki {
 				state.nLink--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			}
-			if (stream.eat('|')) {
+			} else if (stream.eat('|')) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(']]')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(/^[^|\]&~{}]+/u)) {
-				return this.makeTagStyle('linkToSection', state);
 			}
-			return this.eatWikiText(modeConfig.tags.linkToSection)(stream, state);
+			return stream.match(/^[^|\]&~{}]+/u)
+				? this.makeTagStyle('linkToSection', state)
+				: this.eatWikiText(modeConfig.tags.linkToSection)(stream, state);
 		};
 	}
 
 	inLinkText(file: boolean): Tokenizer {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
-
 		return (stream, state) => {
 			const tmpstyle = `${modeConfig.tags.linkText} ${linkIsBold ? modeConfig.tags.strong : ''} ${
 				linkIsItalic ? modeConfig.tags.em : ''
@@ -619,9 +618,7 @@ class MediaWiki {
 	}
 
 	inVariable(stream: StringStream, state: State): string {
-		if (stream.match(/^[^{}|]+/u)) {
-			return this.makeLocalTagStyle('templateVariableName', state);
-		} else if (stream.eat('|')) {
+		if (stream.eat('|')) {
 			state.tokenize = this.inVariableDefault(true);
 			return this.makeLocalTagStyle('templateVariableDelimiter', state);
 		} else if (stream.match('}}}')) {
@@ -630,6 +627,8 @@ class MediaWiki {
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
+		} else if (stream.match(/^[^{}|]+/u)) {
+			return this.makeLocalTagStyle('templateVariableName', state);
 		}
 		stream.next();
 		return this.makeLocalTagStyle('templateVariableName', state);
@@ -638,17 +637,21 @@ class MediaWiki {
 	inVariableDefault(isFirst?: boolean): Tokenizer {
 		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
 		return (stream, state) => {
-			if (stream.match(/^[^{}[<&~|]+/u)) {
-				return this.makeStyle(style, state);
-			} else if (stream.match('}}}')) {
+			if (stream.match('}}}')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateVariableBracket', state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inVariableDefault();
 				return this.makeLocalTagStyle('templateVariableDelimiter', state);
+			} else if (stream.match(/^[^{}[<&~|]+/u)) {
+				return this.makeStyle(style, state);
 			}
 			return this.eatWikiText(style)(stream, state);
 		};
+	}
+
+	get inComment(): Tokenizer {
+		return this.inBlock('comment', '-->', true);
 	}
 
 	inParserFunctionName(stream: StringStream, state: State): string {
@@ -677,7 +680,7 @@ class MediaWiki {
 			: this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
 	}
 
-	inTemplatePageName(haveAte?: boolean): Tokenizer {
+	inTemplatePageName(haveEaten?: boolean): Tokenizer {
 		return (stream, state) => {
 			if (stream.match(/^\s*\|\s*/u)) {
 				state.tokenize = this.inTemplateArgument(true);
@@ -687,7 +690,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
 			} else if (stream.match(/^\s*<!--.*?-->/u)) {
 				return this.makeLocalTagStyle('comment', state);
-			} else if (haveAte && stream.sol()) {
+			} else if (haveEaten && stream.sol()) {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
 				return '';
@@ -724,7 +727,7 @@ class MediaWiki {
 		};
 	}
 
-	eatTagName(chars: number, isCloseTag: boolean, isHtmlTag?: boolean): Tokenizer {
+	eatTagName(chars: number, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
 		return (stream, state) => {
 			let name = '';
 			for (let i = 0; i < chars; i++) {
@@ -732,17 +735,12 @@ class MediaWiki {
 			}
 			stream.eatSpace();
 			name = name.toLowerCase();
-
 			if (isHtmlTag) {
-				state.tokenize = isCloseTag
-					? this.inChar('>', 'htmlTagBracket')
-					: this.inHtmlTagAttribute(name);
+				state.tokenize = isCloseTag ? this.inChar('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
 			}
 			// it is the extension tag
-			state.tokenize = isCloseTag
-				? this.inChar('>', 'extTagBracket')
-				: this.inExtTagAttribute(name);
+			state.tokenize = isCloseTag ? this.inChar('>', 'extTagBracket') : this.inExtTagAttribute(name);
 			return this.makeLocalTagStyle('extTagName', state);
 		};
 	}
@@ -762,7 +760,7 @@ class MediaWiki {
 		};
 	}
 
-	eatNowiki(): Tokenizer {
+	get eatNowiki(): Tokenizer {
 		return stream => {
 			if (stream.match(/^[^&]+/u)) {
 				return '';
@@ -779,20 +777,18 @@ class MediaWiki {
 				return this.makeLocalTagStyle('extTagAttribute', state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
-				// leverage the tagModes system for <nowiki> and <pre>
 				if (name === 'nowiki' || name === 'pre') {
 					// There's no actual processing within these tags (apart from HTML entities),
 					// so startState and copyState can be no-ops.
 					state.extMode = {
 						startState: () => ({}),
-						token: this.eatNowiki(),
+						token: this.eatNowiki,
 					};
 					state.extState = {};
 				} else if (name in this.config.tagModes) {
 					state.extMode = this[this.config.tagModes[name] as MimeTypes];
 					state.extState = state.extMode.startState!(0);
 				}
-
 				state.tokenize = this.eatExtTagArea(name);
 				return this.makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
@@ -808,7 +804,6 @@ class MediaWiki {
 			const from = stream.pos,
 				m = new RegExp(`</${name}\\s*(?:>|$)`, 'iu').exec(from ? stream.string.slice(from) : stream.string);
 			let origString: string | false = false;
-
 			if (m) {
 				if (m.index === 0) {
 					state.tokenize = this.eatExtCloseTag(name);
@@ -822,7 +817,6 @@ class MediaWiki {
 				origString = stream.string;
 				stream.string = origString.slice(0, m.index + from);
 			}
-
 			chain(state, this.inExtTokens(origString));
 			return state.tokenize(stream, state);
 		};
@@ -860,7 +854,6 @@ class MediaWiki {
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
-
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
@@ -1042,7 +1035,7 @@ class MediaWiki {
 				}
 				case '<': {
 					if (stream.match('!--')) { // comment
-						chain(state, this.inBlock('comment', '-->', true));
+						chain(state, this.inComment);
 						return this.makeLocalTagStyle('comment', state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
