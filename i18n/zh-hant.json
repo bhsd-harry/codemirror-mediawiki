@@ -1,10 +1,10 @@
 {
-	"version": "2.7.2",
+	"version": "2.7.3",
 	"lang": "zh-hant",
 	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
 	"label": "請選擇您希望載入的外掛程式",
-	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\">GitHub</a> ！",
+	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\">GitHub</a> ！",
 	"contentmodel": "請輸入內容模型：",
 	"addon-allowMultipleSelections": "允許選擇多個片段",
 	"addon-autocompletion": "自動填入魔術字和標籤名",

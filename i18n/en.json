@@ -1,10 +1,10 @@
 {
-	"version": "2.7.2",
+	"version": "2.7.3",
 	"lang": "en",
 	"i18n-failed": "Failed to fetch the translation file in $1.",
 	"title": "CodeMirror Addons",
 	"label": "Please select the addons you wish to load",
-	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/$1/issues\">GitHub</a> .",
+	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\">GitHub</a> .",
 	"contentmodel": "Please indicate the content model:",
 	"addon-allowMultipleSelections": "Allow multiple selections",
 	"addon-autocompletion": "Autocomplete magic words and tag names",
