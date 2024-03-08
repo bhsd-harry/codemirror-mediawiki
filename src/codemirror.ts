@@ -178,6 +178,8 @@ export class CodeMirror6 {
 			syntaxHighlighting(defaultHighlightStyle as Highlighter),
 			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
+			}),
+			EditorView.editorAttributes.of({
 				dir: textarea.dir,
 				lang: textarea.lang,
 			}),

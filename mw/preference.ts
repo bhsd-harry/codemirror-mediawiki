@@ -165,7 +165,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
 		panelWikilint.$element.append(
-			...rules.map(rule => {
+			...rules.filter(rule => rule !== 'table-layout').map(rule => {
 				const state = rule === 'no-arg' ? RuleState.off : RuleState.error,
 					dropdown = new OO.ui.DropdownInputWidget({
 						options: [
