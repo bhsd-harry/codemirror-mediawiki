@@ -22,7 +22,11 @@
 
 ## v2.7.3
 
-*2024-03-08*
+*2024-03-09*
+
+**Added**
+
+- When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
 
 **Fixed**
 

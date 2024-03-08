@@ -141,7 +141,7 @@ The `CodeMirror` class inherits all the [extensions](../README.md#extensions) fr
 
 *version added: 2.1.15*
 
-CTRL/CMD-click opens a wikilink or template in a new tab.
+CTRL/CMD-click opens a wikilink or template or external link in a new tab.
 
 ## wikiEditor
 
