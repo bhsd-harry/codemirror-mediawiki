@@ -1,5 +1,5 @@
 {
-	"version": "2.7.3",
+	"version": "2.7.4",
 	"lang": "zh-hant",
 	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
@@ -20,8 +20,8 @@
 	"addon-highlightWhitespace": "顯示空白字符",
 	"addon-indent": "縮排",
 	"addon-lint": "語法檢查",
-	"addon-openLinks": "CTRL+點擊可打開內部連結或模板頁面",
-	"addon-openLinks-mac": "CMD+點擊可打開內部連結或模板頁面",
+	"addon-openLinks": "CTRL+點擊可打開連結或模板頁面",
+	"addon-openLinks-mac": "CMD+點擊可打開連結或模板頁面",
 	"addon-save": "將設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]",
 	"addon-tagMatching": "突出顯示匹配和未匹配的標籤",
 	"addon-wikiEditor": "載入WikiEditor工具列",
