@@ -148,6 +148,63 @@ const create = (state: EditorState): Tooltip | null => {
 	return null;
 };
 
+/**
+ * 执行折叠
+ * @param view
+ * @param effects 折叠
+ * @param anchor 光标位置
+ */
+const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
+	if (effects.length > 0) {
+		view.dom.querySelector('.cm-tooltip-fold')?.remove();
+		// Fold the template(s) and update the cursor position
+		view.dispatch({effects, selection: {anchor}});
+		return true;
+	}
+	return false;
+};
+
+/**
+ * The rightmost position of all selections, to be updated with folding
+ * @param state
+ */
+const getAnchor = (state: EditorState): number => Math.max(...state.selection.ranges.map(({to}) => to));
+
+/**
+ * 折叠所有模板
+ * @param state
+ * @param tree 语法书
+ * @param effects 折叠
+ * @param node 语法书节点
+ * @param end 终止位置
+ * @param anchor 光标位置
+ * @param update 更新光标位置
+ */
+const traverse = (
+	state: EditorState,
+	tree: Tree,
+	effects: StateEffect<DocRange>[],
+	node: SyntaxNode | null,
+	end: number,
+	anchor: number,
+	update = (pos: number, {to}: DocRange): number => Math.max(pos, to),
+): number => {
+	/* eslint-disable no-param-reassign */
+	while (node && node.from <= end) {
+		const range = foldable(state, node, tree);
+		if (range) {
+			effects.push(foldEffect.of(range));
+			node = tree.resolve(range.to, 1);
+			// Update the anchor with the end of the last folded range
+			anchor = update(anchor, range);
+			continue;
+		}
+		node = node.nextSibling;
+	}
+	return anchor;
+	/* eslint-enable no-param-reassign */
+};
+
 export const foldExtension: Extension[] = [
 	codeFolding({
 		placeholderDOM(view) {
@@ -191,12 +248,9 @@ export const foldExtension: Extension[] = [
 				if (!tree) {
 					return false;
 				}
-				const effects: StateEffect<DocRange>[] = [],
-					{selection: {ranges}} = state;
-
-				/** The rightmost position of all selections, to be updated with folding */
-				let anchor = Math.max(...ranges.map(({to}) => to));
-				for (const {from, to, empty} of ranges) {
+				const effects: StateEffect<DocRange>[] = [];
+				let anchor = getAnchor(state);
+				for (const {from, to, empty} of state.selection.ranges) {
 					let node: SyntaxNode | null | undefined;
 					if (empty) {
 						// No selection, try both sides of the cursor position
@@ -205,25 +259,28 @@ export const foldExtension: Extension[] = [
 					if (!node || !isTemplate(node)) {
 						node = tree.resolve(from, 1);
 					}
-					while (node && node.from <= to) {
-						const range = foldable(state, node, tree);
-						if (range) {
-							effects.push(foldEffect.of(range));
-							node = tree.resolve(range.to, 1);
-							// Update the anchor with the end of the last folded range
-							anchor = Math.max(anchor, range.to);
-							continue;
-						}
-						node = node.nextSibling;
-					}
+					anchor = traverse(state, tree, effects, node, to, anchor);
 				}
-				if (effects.length > 0) {
-					view.dom.querySelector('.cm-tooltip-fold')?.remove();
-					// Fold the template(s) and update the cursor position
-					view.dispatch({effects, selection: {anchor}});
-					return true;
-				}
-				return false;
+				return execute(view, effects, anchor);
+			},
+		},
+		{
+			// Fold all templates in the document
+			key: 'Ctrl-Alt-[',
+			run(view): boolean {
+				const {state} = view,
+					tree = syntaxTree(state),
+					effects: StateEffect<DocRange>[] = [],
+					anchor = traverse(
+						state,
+						tree,
+						effects,
+						tree.topNode.firstChild,
+						Infinity,
+						getAnchor(state),
+						(pos, {from, to}) => from <= pos && to > pos ? to : pos,
+					);
+				return execute(view, effects, anchor);
 			},
 		},
 		{
@@ -244,40 +301,6 @@ export const foldExtension: Extension[] = [
 				if (effects.length > 0) {
 					// Unfold the template(s) and redraw the selections
 					view.dispatch({effects, selection});
-					return true;
-				}
-				return false;
-			},
-		},
-		{
-			// Fold all templates in the document
-			key: 'Ctrl-Alt-[',
-			run(view): boolean {
-				const {state} = view,
-					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [];
-
-				/** The rightmost position of all selections, to be updated with folding */
-				let anchor = Math.max(...state.selection.ranges.map(({to}) => to)),
-					node = tree.topNode.firstChild;
-				while (node) {
-					const range = foldable(state, node, tree);
-					if (range) {
-						effects.push(foldEffect.of(range));
-						const {from, to} = range;
-						node = tree.resolve(to, 1);
-						if (from <= anchor && to > anchor) {
-							// Update the anchor with the end of the folded range
-							anchor = to;
-						}
-						continue;
-					}
-					node = node.nextSibling;
-				}
-				if (effects.length > 0) {
-					view.dom.querySelector('.cm-tooltip-fold')?.remove();
-					// Fold the template(s) and update the cursor position
-					view.dispatch({effects, selection: {anchor}});
 					return true;
 				}
 				return false;
