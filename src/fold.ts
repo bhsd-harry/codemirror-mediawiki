@@ -1,6 +1,15 @@
 import {showTooltip, keymap} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {foldEffect, ensureSyntaxTree, foldedRanges, unfoldAll, unfoldEffect, codeFolding} from '@codemirror/language';
+import {
+	syntaxTree,
+	ensureSyntaxTree,
+	foldEffect,
+	unfoldEffect,
+	foldedRanges,
+	unfoldAll,
+	codeFolding,
+} from '@codemirror/language';
+import {modeConfig} from './config';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
@@ -10,10 +19,26 @@ declare interface DocRange {
 	to: number;
 }
 
-const isTemplateComponent = (s: string) => ({name}: SyntaxNode): boolean => name.includes(`-template-${s}`),
-	isBracket = isTemplateComponent('bracket'),
-	isDelimiter = isTemplateComponent('delimiter'),
+const isTemplateComponent = (s: keyof typeof modeConfig.tags) =>
+		({name}: SyntaxNode): boolean => name.includes(modeConfig.tags[s]),
+
+	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
+	isBracket = isTemplateComponent('templateBracket'),
+
+	/** Check if a SyntaxNode is a template delimiter (`|`) */
+	isDelimiter = isTemplateComponent('templateDelimiter'),
+
+	/**
+	 * Check if a SyntaxNode is part of a template, except for the brackets
+	 * @param node 语法树节点
+	 */
 	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node),
+
+	/**
+	 * Update the stack of opening (+) or closing (-) brackets
+	 * @param state
+	 * @param node 语法树节点
+	 */
 	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
 		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
 
@@ -35,6 +60,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	}
 	let node: SyntaxNode;
 	if (typeof posOrNode === 'number') {
+		// Find the initial template node on both sides of the position
 		node = tree.resolve(posOrNode, -1);
 		if (!isTemplate(node)) {
 			node = tree.resolve(posOrNode, 1);
@@ -43,23 +69,27 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		node = posOrNode;
 	}
 	if (!isTemplate(node)) {
+		// Not a template
 		return null;
 	}
 	let {prevSibling, nextSibling} = node,
-		stack = 1,
-		delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
+		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
+		/** The first delimiter */ delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
 	while (nextSibling) {
 		if (isBracket(nextSibling)) {
 			stack += stackUpdate(state, nextSibling);
 			if (stack === 0) {
+				// The closing bracket of the current template
 				break;
 			}
 		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
+			// The first delimiter of the current template so far
 			delimiter = nextSibling;
 		}
 		({nextSibling} = nextSibling);
 	}
 	if (!nextSibling) {
+		// The closing bracket of the current template is missing
 		return null;
 	}
 	stack = -1;
@@ -67,15 +97,17 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		if (isBracket(prevSibling)) {
 			stack += stackUpdate(state, prevSibling);
 			if (stack === 0) {
+				// The opening bracket of the current template
 				break;
 			}
 		} else if (stack === -1 && isDelimiter(prevSibling)) {
+			// The first delimiter of the current template so far
 			delimiter = prevSibling;
 		}
 		({prevSibling} = prevSibling);
 	}
-	const from = delimiter?.to,
-		to = nextSibling.from;
+	const /** The end of the first delimiter */ from = delimiter?.to,
+		/** The start of the closing bracket */ to = nextSibling.from;
 	if (from && from < to) {
 		return {from, to};
 	}
@@ -130,6 +162,7 @@ export const foldExtension: Extension[] = [
 					{selection} = state;
 				foldedRanges(state).between(pos, pos, (from, to) => {
 					if (from === pos) {
+						// Unfold the template and redraw the selections
 						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
 					}
 				});
@@ -137,6 +170,7 @@ export const foldExtension: Extension[] = [
 			return element;
 		},
 	}),
+	/** @see https://codemirror.net/examples/tooltip/ */
 	StateField.define<Tooltip | null>({
 		create,
 		update(tooltip, {state, docChanged, selection}) {
@@ -148,6 +182,7 @@ export const foldExtension: Extension[] = [
 	}),
 	keymap.of([
 		{
+			// Fold the template at the selection/cursor
 			key: 'Ctrl-Shift-[',
 			mac: 'Cmd-Alt-[',
 			run(view): boolean {
@@ -158,10 +193,13 @@ export const foldExtension: Extension[] = [
 				}
 				const effects: StateEffect<DocRange>[] = [],
 					{selection: {ranges}} = state;
+
+				/** The rightmost position of all selections, to be updated with folding */
 				let anchor = Math.max(...ranges.map(({to}) => to));
 				for (const {from, to, empty} of ranges) {
 					let node: SyntaxNode | null | undefined;
 					if (empty) {
+						// No selection, try both sides of the cursor position
 						node = tree.resolve(from, -1);
 					}
 					if (!node || !isTemplate(node)) {
@@ -172,6 +210,7 @@ export const foldExtension: Extension[] = [
 						if (range) {
 							effects.push(foldEffect.of(range));
 							node = tree.resolve(range.to, 1);
+							// Update the anchor with the end of the last folded range
 							anchor = Math.max(anchor, range.to);
 							continue;
 						}
@@ -180,6 +219,7 @@ export const foldExtension: Extension[] = [
 				}
 				if (effects.length > 0) {
 					view.dom.querySelector('.cm-tooltip-fold')?.remove();
+					// Fold the template(s) and update the cursor position
 					view.dispatch({effects, selection: {anchor}});
 					return true;
 				}
@@ -187,6 +227,7 @@ export const foldExtension: Extension[] = [
 			},
 		},
 		{
+			// Unfold the template at the selection/cursor
 			key: 'Ctrl-Shift-]',
 			mac: 'Cmd-Alt-]',
 			run(view): boolean {
@@ -195,12 +236,48 @@ export const foldExtension: Extension[] = [
 					effects: StateEffect<DocRange>[] = [],
 					folded = foldedRanges(state);
 				for (const {from, to} of selection.ranges) {
+					// Unfold any folded range at the selection
 					folded.between(from, to, (i, j) => {
 						effects.push(unfoldEffect.of({from: i, to: j}));
 					});
 				}
 				if (effects.length > 0) {
+					// Unfold the template(s) and redraw the selections
 					view.dispatch({effects, selection});
+					return true;
+				}
+				return false;
+			},
+		},
+		{
+			// Fold all templates in the document
+			key: 'Ctrl-Alt-[',
+			run(view): boolean {
+				const {state} = view,
+					tree = syntaxTree(state),
+					effects: StateEffect<DocRange>[] = [];
+
+				/** The rightmost position of all selections, to be updated with folding */
+				let anchor = Math.max(...state.selection.ranges.map(({to}) => to)),
+					node = tree.topNode.firstChild;
+				while (node) {
+					const range = foldable(state, node, tree);
+					if (range) {
+						effects.push(foldEffect.of(range));
+						const {from, to} = range;
+						node = tree.resolve(to, 1);
+						if (from <= anchor && to > anchor) {
+							// Update the anchor with the end of the folded range
+							anchor = to;
+						}
+						continue;
+					}
+					node = node.nextSibling;
+				}
+				if (effects.length > 0) {
+					view.dom.querySelector('.cm-tooltip-fold')?.remove();
+					// Fold the template(s) and update the cursor position
+					view.dispatch({effects, selection: {anchor}});
 					return true;
 				}
 				return false;

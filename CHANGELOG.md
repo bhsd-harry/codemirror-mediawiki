@@ -26,6 +26,7 @@
 
 **Added**
 
+- New keyboard shortcut for [codeFolding](./README.md#codefolding): `Ctrl` + `Alt` + `[`
 - When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
 
 **Fixed**
