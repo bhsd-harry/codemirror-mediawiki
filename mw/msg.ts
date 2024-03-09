@@ -68,7 +68,7 @@ export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${k
  * @param $dom 容器
  */
 const blankTarget = ($dom: JQuery<HTMLElement>): JQuery<HTMLElement> => {
-	$dom.find('a').attr('target', '_blank');
+	$dom.find('a').add($dom.filter('a')).attr('target', '_blank');
 	return $dom;
 };
 
