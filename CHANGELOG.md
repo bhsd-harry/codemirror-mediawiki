@@ -1,6 +1,14 @@
-## v2.8.0
+## v2.x.0
 
-*2024-03-02*
+*2024-xx-xx*
+
+**Fixed**
+
+- Allow spaces in the parser function name in the MediaWiki mode
+
+## 2.8.0
+
+*2024-03-12*
 
 **Added**
 
@@ -10,23 +18,34 @@
 
 **Fixed**
 
-- Links and behavior switches are now ignored in table attributes
-- Allow HTML comments in wikilinks in the MediaWiki mode
-- Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
-- Allow spaces in the parser function name in the MediaWiki mode
+- Allow comments in template names in the MediaWiki mode
+- Allow external links in the image caption in the MediaWiki mode
 
 **Changed**
 
-- Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+- Darker text colors in the MediaWiki mode
 
-## 2.7.5
+## 2.7.7
 
-*2024-03-10*
+*2024-03-11*
+
+**Added**
+
+- Support for `jquery.textSelection` with multiple selections, except for headings, when used in a MediaWiki site
 
 **Fixed**
 
 - Improved tag [autocompletion](./README.md#autocompletion) in the MediaWiki mode
+- Links and behavior switches are now ignored in table attributes in the MediaWiki mode
+- Allow HTML comments in wikilinks in the MediaWiki mode
+- Conflict between the [openLinks](./mw/README.md#openlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
+
+**Changed**
+
+- Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
+- Anchors in file links are now highlighted as errors in the MediaWiki mode
+- The replacement function passed to [`CodeMirror6.replaceSelections`](./README.md#replaceselections) now has an expanded signature
 
 ## v2.7.4
 

@@ -36,12 +36,10 @@ declare interface State {
 	nTemplate: number;
 	nLink: number;
 	nExt: number;
-	nDt: number;
-	nTemplateDt: number;
-	nLinkDt: number;
-	nExtDt: number;
+	nVar: number;
 	lpar: boolean;
-	lbrack?: boolean | undefined;
+	lbrack: boolean | undefined;
+	dt: {n: number, nTemplate?: number, nLink?: number, nExt?: number, nVar?: number};
 }
 declare interface Token {
 	pos: number;
@@ -244,32 +242,30 @@ class MediaWiki {
 	getTagStyles(): TagStyle[] {
 		return Object.keys(this.tokenTable).map(className => ({
 			tag: this.tokenTable[className]!,
-			class: `cm-${className}${
-				className === 'mw-template-name' || className === 'mw-link-pagename' ? ' cm-mw-pagename' : ''
-			}`,
+			class: `cm-${className}`,
 		}));
 	}
 
-	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeStyle(modeConfig.tags[tag], state, endGround);
 	}
 
-	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(
 			`${style} ${
-				this.isBold || state.nDt ? modeConfig.tags.strong : ''
+				this.isBold || state.dt.n ? modeConfig.tags.strong : ''
 			} ${this.isItalic ? modeConfig.tags.em : ''}`,
 			state,
 			endGround,
 		);
 	}
 
-	makeLocalTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeLocalTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(modeConfig.tags[tag], state, endGround);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		let ground = '';
 		switch (state.nTemplate) {
 			case 0:
@@ -302,6 +298,10 @@ class MediaWiki {
 		}
 		if (endGround) {
 			state[endGround]--;
+			const {dt} = state;
+			if (dt.n && state[endGround] < dt[endGround]!) {
+				dt.n = 0;
+			}
 		}
 		return (ground && `mw${ground}-ground `) + style;
 	}
@@ -406,14 +406,16 @@ class MediaWiki {
 	}
 
 	eatList(stream: StringStream, state: State): string {
-		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false;
+		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false,
+			{dt} = state;
 		if (mt && mt[0].includes(';')) {
-			if (state.nDt === 0) {
-				state.nTemplateDt = state.nTemplate;
-				state.nLinkDt = state.nLink;
-				state.nExtDt = state.nExt;
-			}
-			state.nDt += mt[0].split(';').length - 1;
+			dt.n += mt[0].split(';').length - 1;
+		}
+		if (dt.n) {
+			dt.nTemplate = state.nTemplate;
+			dt.nLink = state.nLink;
+			dt.nExt = state.nExt;
+			dt.nVar = state.nVar;
 		}
 		return this.makeLocalTagStyle('list', state);
 	}
@@ -527,12 +529,12 @@ class MediaWiki {
 		} else if (stream.match(/^\s*\]/u)) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{{2,})/u, false)) {
+		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{{2}|~{3})/u, false)) {
 			state.tokenize = this.inExternalLinkText.bind(this);
 			return this.makeLocalStyle('', state);
 		}
 		stream.next();
-		stream.match(/^[^\s[\]<>"&'{]+/u);
+		stream.match(/^[^\s[\]<>"&~'{]+/u);
 		return this.makeLocalTagStyle('extLink', state);
 	}
 
@@ -551,9 +553,11 @@ class MediaWiki {
 	}
 
 	inLink(file: boolean): Tokenizer {
+		const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return '';
 			}
@@ -572,8 +576,8 @@ class MediaWiki {
 				return this.makeTagStyle('error', state);
 			}
 			return stream.match(/^[^#|[\]&{}<>]+/u) || space
-				? this.makeTagStyle('linkPageName', state)
-				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
+				? this.makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -582,6 +586,7 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return '';
 			} else if (stream.eat('|')) {
@@ -640,8 +645,8 @@ class MediaWiki {
 			}
 			/** @todo image parameters */
 			const regex = file
-					? new RegExp(`^(?:[^'\\]{&~<_|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'u')
-					: /^[^'\]{&~<_]+/u,
+					? new RegExp(`^(?:[^'\\]{&~<|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'iu')
+					: /^[^'\]{&~<]+/u,
 				mt = stream.match(regex) as RegExpMatchArray | false;
 			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
@@ -656,7 +661,7 @@ class MediaWiki {
 			return this.makeLocalTagStyle('templateVariableDelimiter', state);
 		} else if (stream.match('}}}')) {
 			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('templateVariableBracket', state);
+			return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
@@ -674,7 +679,7 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.match('}}}')) {
 				state.tokenize = state.stack.pop()!;
-				return this.makeLocalTagStyle('templateVariableBracket', state);
+				return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 			} else if (stream.eat('|')) {
 				if (isFirst) {
 					state.tokenize = this.inVariableDefault();
@@ -738,6 +743,7 @@ class MediaWiki {
 	}
 
 	inTemplatePageName(haveEaten?: boolean): Tokenizer {
+		const style = `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -753,17 +759,16 @@ class MediaWiki {
 			} else if (haveEaten && sol) {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
-				stream.pos = 0;
 				return '';
 			} else if (stream.match(/^[^|{}<>[\]]+/u)) {
 				state.tokenize = this.inTemplatePageName(true);
-				return this.makeLocalTagStyle('templateName', state);
+				return this.makeLocalStyle(style, state);
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeLocalTagStyle('error', state);
 			}
 			return space
-				? this.makeLocalTagStyle('templateName', state)
-				: this.eatWikiText(modeConfig.tags.templateName)(stream, state);
+				? this.makeLocalStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -916,6 +921,10 @@ class MediaWiki {
 		};
 	}
 
+	/**
+	 * @todo 添加stage参数
+	 * @ignore
+	 */
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
@@ -952,10 +961,7 @@ class MediaWiki {
 						break;
 					}
 					case ';':
-						state.nDt++;
-						state.nTemplateDt = state.nTemplate;
-						state.nLinkDt = state.nLink;
-						state.nExtDt = state.nExt;
+						state.dt.n++;
 						// fall through
 					case '*':
 					case '#':
@@ -1032,6 +1038,7 @@ class MediaWiki {
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
 					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
+						state.nVar++;
 						chain(state, this.inVariable.bind(this));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{\s*/u)) {
@@ -1102,18 +1109,21 @@ class MediaWiki {
 					}
 					break;
 				}
-				/** @todo consider HTML tag balance */
-				case ':':
+				/** @todo consider the balance of HTML tags, including apostrophes */
+				case ':': {
+					const {dt} = state;
 					if (
-						state.nDt
-						&& state.nTemplateDt === state.nTemplate
-						&& state.nLinkDt === state.nLink
-						&& state.nExtDt === state.nExt
+						dt.n
+						&& dt.nTemplate === state.nTemplate
+						&& dt.nLink === state.nLink
+						&& dt.nExt === state.nExt
+						&& dt.nVar === state.nVar
 					) {
-						state.nDt--;
+						dt.n--;
 						return this.makeLocalTagStyle('list', state);
 					}
 					break;
+				}
 				case '<': {
 					if (stream.match('!--', false)) { // comment
 						stream.backUp(1);
@@ -1275,15 +1285,15 @@ class MediaWiki {
 				nTemplate: 0,
 				nLink: 0,
 				nExt: 0,
-				nDt: 0,
-				nTemplateDt: 0,
-				nLinkDt: 0,
-				nExtDt: 0,
+				nVar: 0,
 				lpar: false,
+				lbrack: false,
+				dt: {n: 0},
 			}),
 
 			copyState: (state): State => {
 				const newState = copyState(state);
+				newState.dt = {...state.dt};
 				if (state.extMode && state.extMode.copyState) {
 					newState.extState = state.extMode.copyState(state.extState as State);
 				}
@@ -1299,7 +1309,7 @@ class MediaWiki {
 					return t.style;
 				} else if (stream.sol()) {
 					// reset bold and italic status in every new line
-					state.nDt = 0;
+					state.dt.n = 0;
 					this.isBold = false;
 					this.isItalic = false;
 					this.firstSingleLetterWord = null;

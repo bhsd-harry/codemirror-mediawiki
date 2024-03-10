@@ -61,12 +61,12 @@
 	font-weight: bold;
 }
 .cm-mw-section-header {
-	color: #08f;
+	color: #0076dd;
 	font-weight: normal;
 }
 
 .cm-mw-error {
-	color: #f00;
+	color: #d73333;
 }
 
 .cm-mw-pagename {
@@ -78,22 +78,22 @@
 	background-color: #adf;
 }
 .cm-mw-list {
-	color: #08f;
+	color: #0076dd;
 	font-weight: bold;
 }
 .cm-mw-double-underscore,
 .cm-mw-signature,
 .cm-mw-hr {
-	color: #08f;
+	color: #0076dd;
 	font-weight: bold;
 	background-color: #eee;
 }
 .cm-mw-comment {
-	color: #84a0a0;
+	color: #7b8c8f;
 	font-weight: normal;
 }
 .cm-mw-apostrophes {
-	color: #08f;
+	color: #0076dd;
 }
 
 /* template */
@@ -113,13 +113,13 @@
 
 /* template variable */
 .cm-mw-templatevariable {
-	color: #ff9500;
+	color: #ad9300;
 	font-weight: normal;
 }
 .cm-mw-templatevariable-name,
 .cm-mw-templatevariable-bracket,
 .cm-mw-templatevariable-delimiter {
-	color: #f50;
+	color: #ac6600;
 	font-weight: bold;
 }
 
@@ -140,17 +140,17 @@
 .cm-mw-link-delimiter,
 .cm-mw-extlink,
 .cm-mw-free-extlink {
-	color: #36c;
+	color: #000aaa;
 	font-weight: normal;
 }
 .cm-mw-link-tosection {
-	color: #18e;
+	color: #006fe6;
 	font-weight: normal;
 }
 .cm-mw-extlink-protocol,
 .cm-mw-free-extlink-protocol,
 .cm-mw-extlink-bracket {
-	color: #36c;
+	color: #000aaa;
 	font-weight: bold;
 }
 
@@ -164,25 +164,25 @@
 /* tag */
 .cm-mw-exttag-name,
 .cm-mw-htmltag-name {
-	color: #290;
+	color: #14866d;
 	font-weight: bold;
 }
 .cm-mw-exttag-bracket,
 .cm-mw-exttag-attribute,
 .cm-mw-htmltag-bracket,
 .cm-mw-htmltag-attribute {
-	color: #290;
+	color: #14866d;
 	font-weight: normal;
 }
 
 /* table */
 .cm-mw-table-bracket,
 .cm-mw-table-delimiter {
-	color: #e0e;
+	color: #d08;
 	font-weight: bold;
 }
 .cm-mw-table-definition {
-	color: #e0e;
+	color: #d08;
 	font-weight: normal;
 }
 .cm-mw-table-caption {
@@ -191,7 +191,7 @@
 
 /* HTML entity */
 .cm-mw-html-entity {
-	color: #84a0a0;
+	color: #00a1a1;
 }
 
 /* backgrounds */

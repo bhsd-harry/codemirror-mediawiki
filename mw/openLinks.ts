@@ -50,6 +50,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			// pass
 		} else if (node.name.includes('mw-pagename')) {
 			e.preventDefault();
+			e.stopPropagation();
 			const name = getName(node);
 			let page = state.sliceDoc(
 				search(node, 'prevSibling', name).from,
@@ -86,13 +87,14 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
  * @param on 是否添加
  */
 export const openLinks = (cm: CodeMirror, on?: boolean): void => {
-	const {view: {contentDOM}} = cm;
+	const {view: {contentDOM}} = cm,
+		handler = getHandler(cm);
 	if (on) {
 		mw.loader.load('mediawiki.Title');
-		contentDOM.addEventListener('click', getHandler(cm));
+		contentDOM.addEventListener('mousedown', handler, {capture: true});
 		contentDOM.style.setProperty('--codemirror-cursor', 'pointer');
 	} else if (on === false) {
-		contentDOM.removeEventListener('click', getHandler(cm));
+		contentDOM.removeEventListener('mousedown', handler, {capture: true});
 		contentDOM.style.removeProperty('--codemirror-cursor');
 	}
 };

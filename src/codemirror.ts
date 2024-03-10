@@ -36,6 +36,7 @@ import type {Highlighter} from '@lezer/highlight';
 import type {Linter} from 'eslint';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
+import type {DocRange} from './fold';
 
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
@@ -339,7 +340,7 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.5.6-b',
+				const REPO = 'npm/wikiparser-node@1.6.1-b',
 					DIR = `${REPO}/extensions/dist`,
 					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
 					lang = opt?.['i18n'];
@@ -623,12 +624,22 @@ export class CodeMirror6 {
 	 * @param view
 	 * @param func 替换函数
 	 */
-	static replaceSelections(view: EditorView, func: (str: string) => string): void {
+	static replaceSelections(
+		view: EditorView,
+		func: (str: string, range: DocRange) => string | [string, number, number?],
+	): void {
 		const {state} = view;
 		view.dispatch(state.changeByRange(({from, to}) => {
-			const insert = func(state.sliceDoc(from, to));
+			const result = func(state.sliceDoc(from, to), {from, to});
+			if (typeof result === 'string') {
+				return {
+					range: EditorSelection.range(from, from + result.length),
+					changes: {from, to, insert: result},
+				};
+			}
+			const [insert, start, end = start] = result;
 			return {
-				range: EditorSelection.range(from, from + insert.length),
+				range: EditorSelection.range(start, end),
 				changes: {from, to, insert},
 			};
 		}));

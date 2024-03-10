@@ -14,7 +14,7 @@ import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 
-declare interface DocRange {
+export interface DocRange {
 	from: number;
 	to: number;
 }
