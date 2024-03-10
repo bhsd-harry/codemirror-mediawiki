@@ -48,7 +48,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			node = cm.getNodeAt(view.posAtCoords(e)!);
 		if (!node) {
 			// pass
-		} else if (/-template-name|-link-pagename/u.test(node.name)) {
+		} else if (node.name.includes('mw-pagename')) {
 			e.preventDefault();
 			const name = getName(node);
 			let page = state.sliceDoc(
@@ -58,7 +58,13 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			if (page.startsWith('/')) {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
-			open(new mw.Title(page, name.includes('-template-name') ? 10 : 0).getUrl(undefined), '_blank');
+			let ns = 0;
+			if (name.includes('-template-name')) {
+				ns = 10;
+			} else if (name.includes('-parserfunction')) {
+				ns = 828;
+			}
+			open(new mw.Title(page, ns).getUrl(undefined), '_blank');
 		} else if (/-extlink-protocol/u.test(node.name)) {
 			e.preventDefault();
 			open(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), '_blank');
