@@ -20,6 +20,14 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 
+## 2.7.5
+
+*2024-03-10*
+
+**Fixed**
+
+- Improved tag [autocompletion](./README.md#autocompletion) in the MediaWiki mode
+
 ## v2.7.4
 
 *2024-03-09*

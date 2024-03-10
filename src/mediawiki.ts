@@ -108,7 +108,8 @@ class MediaWiki {
 	declare readonly fileRegex: RegExp;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
-	declare readonly tagNames: Completion[];
+	declare readonly extTags: Completion[];
+	declare readonly htmlTags: Completion[];
 
 	constructor(config: MwConfig) {
 		this.config = config;
@@ -146,7 +147,9 @@ class MediaWiki {
 			type: 'constant',
 			label,
 		}));
-		this.tagNames = [...new Set([...modeConfig.permittedHtmlTags, ...Object.keys(config.tags)])].map(label => ({
+		const extTags = Object.keys(config.tags);
+		this.extTags = extTags.map(label => ({type: 'type', label}));
+		this.htmlTags = modeConfig.permittedHtmlTags.filter(tag => !extTags.includes(tag)).map(label => ({
 			type: 'type',
 			label,
 		}));
@@ -1148,13 +1151,29 @@ class MediaWiki {
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-				return mt && mt.to - mt.from > 1
-					? {
-						from: mt.from + 1 + (mt.text[1] === '/' ? 1 : 0),
-						options: this.tagNames,
-						validFor: /^[a-z\d]*$/iu,
+				if (!mt || mt.to - mt.from < 2) {
+					return null;
+				}
+				const validFor = /^[a-z\d]*$/iu;
+				if (mt.text[1] === '/') {
+					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>((?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
+						target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
+						extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
+						options = [
+							...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
+							...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
+						],
+						i = this.permittedHtmlTags.has(target!) && options.findIndex(({label}) => label === target);
+					if (i !== false && i !== -1) {
+						options.splice(i, 1, {type: 'type', label: target!, boost: 99});
 					}
-					: null;
+					return {from: mt.from + 2, options, validFor};
+				}
+				return {
+					from: mt.from + 1,
+					options: [...this.htmlTags, ...this.extTags],
+					validFor,
+				};
 			}
 			return null;
 		};
