@@ -411,7 +411,7 @@ const mwConfig = CodeMirror6.getMwConfig(config);
 *version added: 2.2.2*
 
 **param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance  
-**param**: `(str: string) => string` the replacement function  
+**param**: `(str: string, range: {from: number, to: number}) => string | [string, number, number?]` the replacement function  
 Replace the selected text with the return value of the replacement function.
 
 ```js

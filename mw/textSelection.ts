@@ -1,5 +1,4 @@
-import type {SelectionRange} from '@codemirror/state';
-import type {CodeMirror} from './base';
+import {CodeMirror} from './base';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
@@ -88,7 +87,7 @@ export const textSelection = {
 			});
 			return this;
 		}
-		view.dispatch(state.changeByRange(({from, to}) => {
+		CodeMirror.replaceSelections(view, (_, {from, to}) => {
 			if (selectionStart !== undefined) {
 				/* eslint-disable no-param-reassign */
 				from = selectionStart;
@@ -103,14 +102,9 @@ export const textSelection = {
 			if (ownline) {
 				insertText = handleOwnline(from, to, insertText);
 			}
-			const head = from + insertText.length;
-			return {
-				changes: {from, to, insert: insertText},
-				range: (isSample
-					? {anchor: from + pre.length, head: head - post.length}
-					: {anchor: head, head}) as SelectionRange,
-			};
-		}));
+			const head = insertText.length;
+			return isSample ? [insertText, pre.length, head - post.length] : [insertText, head];
+		});
 		return this;
 	},
 	getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: boolean}): [number, number] | number {
