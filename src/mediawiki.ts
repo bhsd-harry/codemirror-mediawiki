@@ -240,9 +240,7 @@ class MediaWiki {
 	getTagStyles(): TagStyle[] {
 		return Object.keys(this.tokenTable).map(className => ({
 			tag: this.tokenTable[className]!,
-			class: `cm-${className}${
-				className === 'mw-template-name' || className === 'mw-link-pagename' ? ' cm-mw-pagename' : ''
-			}`,
+			class: `cm-${className}`,
 		}));
 	}
 
@@ -539,6 +537,7 @@ class MediaWiki {
 	}
 
 	inLink(file: boolean): Tokenizer {
+		const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
@@ -559,8 +558,8 @@ class MediaWiki {
 				return this.makeTagStyle('error', state);
 			}
 			return stream.match(/^[^#|[\]&{}<>]+/u) || space
-				? this.makeTagStyle('linkPageName', state)
-				: this.eatWikiText(modeConfig.tags.linkPageName)(stream, state);
+				? this.makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -685,6 +684,7 @@ class MediaWiki {
 	}
 
 	inTemplatePageName(haveEaten?: boolean): Tokenizer {
+		const style = `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
 			if (stream.match(/^\s*\|\s*/u)) {
 				state.tokenize = this.inTemplateArgument(true);
@@ -700,13 +700,13 @@ class MediaWiki {
 				return '';
 			} else if (stream.match(/^\s*[^\s|{}<>[\]]+/u)) {
 				state.tokenize = this.inTemplatePageName(true);
-				return this.makeLocalTagStyle('templateName', state);
+				return this.makeLocalStyle(style, state);
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeLocalTagStyle('error', state);
 			}
 			return stream.eatSpace()
-				? this.makeLocalTagStyle('templateName', state)
-				: this.eatWikiText(modeConfig.tags.templateName)(stream, state);
+				? this.makeLocalStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 

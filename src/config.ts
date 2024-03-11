@@ -150,6 +150,7 @@ export const modeConfig = {
 		freeExtLinkProtocol: 'mw-free-extlink-protocol',
 		htmlEntity: 'mw-html-entity',
 		linkPageName: 'mw-link-pagename',
+		pageName: 'mw-pagename',
 		skipFormatting: 'mw-skipformatting',
 		strong: 'mw-strong',
 		tableCaption: 'mw-table-caption',
