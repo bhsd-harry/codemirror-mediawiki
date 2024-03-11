@@ -64,23 +64,25 @@ export const textSelection = {
 	}: EncapsulateOptions): JQuery<HTMLTextAreaElement> {
 		const {view} = getInstance(this),
 			{state} = view;
-		const handleOwnline = (from: number, to: number, text: string): string => {
-			/* eslint-disable no-param-reassign */
-			if (from > 0 && !/[\n\r]/u.test(state.sliceDoc(from - 1, from))) {
-				text = `\n${text}`;
-				pre += '\n';
+		const handleOwnline = (from: number, to: number, text: string): [string, number, number] => {
+			let start = 0,
+				end = 0;
+			if (ownline) {
+				if (from > 0 && !/[\n\r]/u.test(state.sliceDoc(from - 1, from))) {
+					text = `\n${text}`; // eslint-disable-line no-param-reassign
+					start = 1;
+				}
+				if (!/[\n\r]/u.test(state.sliceDoc(to, to + 1))) {
+					text += '\n'; // eslint-disable-line no-param-reassign
+					end = 1;
+				}
 			}
-			if (!/[\n\r]/u.test(state.sliceDoc(to, to + 1))) {
-				text += '\n';
-				post += '\n';
-			}
-			return text;
-			/* eslint-enable no-param-reassign */
+			return [text, start, end];
 		};
 		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
 			// 单独处理改变标题层级
 			const {selection: {main: {from, to}}} = state,
-				insertText = handleOwnline(from, to, peri);
+				[insertText] = handleOwnline(from, to, peri);
 			view.dispatch({
 				changes: {from, to, insert: insertText},
 				selection: {anchor: from + insertText.length},
@@ -95,15 +97,16 @@ export const textSelection = {
 				/* eslint-enable no-param-reassign */
 			}
 			const isSample = selectPeri && from === to,
-				selText = replace || from === to ? peri : state.sliceDoc(from, to);
-			let insertText = splitlines
-				? selText.split('\n').map(line => `${pre}${line}${post}`).join('\n')
-				: `${pre}${selText}${post}`;
-			if (ownline) {
-				insertText = handleOwnline(from, to, insertText);
-			}
-			const head = insertText.length;
-			return isSample ? [insertText, pre.length, head - post.length] : [insertText, head];
+				selText = replace || from === to ? peri : state.sliceDoc(from, to),
+				[insertText, start, end] = handleOwnline(
+					from,
+					to,
+					splitlines
+						? selText.split('\n').map(line => `${pre}${line}${post}`).join('\n')
+						: `${pre}${selText}${post}`,
+				),
+				head = from + insertText.length;
+			return isSample ? [insertText, from + pre.length + start, head - post.length - end] : [insertText, head];
 		});
 		return this;
 	},

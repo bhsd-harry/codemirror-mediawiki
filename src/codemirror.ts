@@ -639,7 +639,7 @@ export class CodeMirror6 {
 			}
 			const [insert, start, end = start] = result;
 			return {
-				range: EditorSelection.range(from + start, from + end),
+				range: EditorSelection.range(start, end),
 				changes: {from, to, insert},
 			};
 		}));

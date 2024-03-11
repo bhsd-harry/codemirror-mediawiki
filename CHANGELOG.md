@@ -14,7 +14,7 @@
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
 
-## 2.7.6
+## 2.7.7
 
 *2024-03-11*
 
