@@ -18,6 +18,10 @@
 
 *2024-03-11*
 
+**Added**
+
+- Support for `jquery.textSelection` with multiple selections, except for headings, when used in a MediaWiki site
+
 **Fixed**
 
 - Improved tag [autocompletion](./README.md#autocompletion) in the MediaWiki mode

@@ -5,7 +5,8 @@ import {instances, textSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
-import type {Config} from 'wikiparser-node';
+import type {Diagnostic} from '@codemirror/lint';
+import type {Config, LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
@@ -140,7 +141,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (linters[lang]) {
 			if (lang === 'mediawiki') {
 				this.lint(
-					async doc => (await linters[lang]!(doc) as WikiDiagnostic[])
+					async doc => (await linters[lang]!(doc) as (Diagnostic & {rule: LintError.Rule})[])
 						.filter(({rule, severity}) => Number(wikilintConfig[rule]) > Number(severity === 'warning')),
 				);
 			} else {

@@ -1,3 +1,4 @@
+import type {SelectionRange} from '@codemirror/state';
 import type {CodeMirror} from './base';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
@@ -7,6 +8,18 @@ export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
  * @param $ele textarea元素的jQuery对象
  */
 const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
+
+declare interface EncapsulateOptions {
+	pre?: string;
+	peri?: string;
+	post?: string;
+	ownline?: boolean;
+	replace?: boolean;
+	selectPeri?: boolean;
+	splitlines?: boolean;
+	selectionStart?: number;
+	selectionEnd?: number;
+}
 
 /**
  * jQuery.textSelection overrides for CodeMirror.
@@ -36,8 +49,68 @@ export const textSelection = {
 	},
 	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
 		const {view} = getInstance(this);
-		view.dispatch({selection: view.state.selection.asSingle()});
 		view.dispatch(view.state.replaceSelection(value));
+		return this;
+	},
+	encapsulateSelection(this: JQuery<HTMLTextAreaElement>, {
+		pre = '',
+		peri = '',
+		post = '',
+		ownline,
+		replace,
+		selectPeri = true,
+		splitlines,
+		selectionStart,
+		selectionEnd = selectionStart,
+	}: EncapsulateOptions): JQuery<HTMLTextAreaElement> {
+		const {view} = getInstance(this),
+			{state} = view;
+		const handleOwnline = (from: number, to: number, text: string): string => {
+			/* eslint-disable no-param-reassign */
+			if (from > 0 && !/[\n\r]/u.test(state.sliceDoc(from - 1, from))) {
+				text = `\n${text}`;
+				pre += '\n';
+			}
+			if (!/[\n\r]/u.test(state.sliceDoc(to, to + 1))) {
+				text += '\n';
+				post += '\n';
+			}
+			return text;
+			/* eslint-enable no-param-reassign */
+		};
+		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
+			// 单独处理改变标题层级
+			const {selection: {main: {from, to}}} = state,
+				insertText = handleOwnline(from, to, peri);
+			view.dispatch({
+				changes: {from, to, insert: insertText},
+				selection: {anchor: from + insertText.length},
+			});
+			return this;
+		}
+		view.dispatch(state.changeByRange(({from, to}) => {
+			if (selectionStart !== undefined) {
+				/* eslint-disable no-param-reassign */
+				from = selectionStart;
+				to = selectionEnd!;
+				/* eslint-enable no-param-reassign */
+			}
+			const isSample = selectPeri && from === to,
+				selText = replace || from === to ? peri : state.sliceDoc(from, to);
+			let insertText = splitlines
+				? selText.split('\n').map(line => `${pre}${line}${post}`).join('\n')
+				: `${pre}${selText}${post}`;
+			if (ownline) {
+				insertText = handleOwnline(from, to, insertText);
+			}
+			const head = from + insertText.length;
+			return {
+				changes: {from, to, insert: insertText},
+				range: (isSample
+					? {anchor: from + pre.length, head: head - post.length}
+					: {anchor: head, head}) as SelectionRange,
+			};
+		}));
 		return this;
 	},
 	getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: boolean}): [number, number] | number {

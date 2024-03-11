@@ -2,6 +2,7 @@ import {rules} from 'wikiparser-node/dist/base';
 import {CodeMirror} from './base';
 import {msg, parseMsg, i18n, setObject, getObject} from './msg';
 import {instances} from './textSelection';
+import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';
 
 const storageKey = 'codemirror-mediawiki-addons',
@@ -15,8 +16,19 @@ declare type codeKey = typeof codeKeys[number];
 declare type Preferences = {
 	addons?: string[];
 	indent?: string;
-	wikilint?: Record<Rule, RuleState>;
+	wikilint?: Record<LintError.Rule, RuleState>;
 } & Record<codeKey, unknown>;
+
+declare interface MediaWikiPage {
+	readonly revisions?: {
+		readonly content: string;
+	}[];
+}
+declare interface MediaWikiResponse {
+	readonly query: {
+		readonly pages: MediaWikiPage[];
+	};
+}
 
 const enum RuleState {
 	off = '0',
@@ -26,7 +38,7 @@ const enum RuleState {
 
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set<string>(getObject(storageKey) as string[] | null),
-	wikilintConfig = (getObject(wikilintKey) || {}) as Record<Rule, RuleState | undefined>,
+	wikilintConfig = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
@@ -36,7 +48,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	indentWidget: OO.ui.TextInputWidget,
 	indent = localStorage.getItem(indentKey) || '';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
-	wikilintWidgets = new Map<Rule, OO.ui.DropdownInputWidget>();
+	wikilintWidgets = new Map<LintError.Rule, OO.ui.DropdownInputWidget>();
 
 /**
  * 处理Api请求错误
