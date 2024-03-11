@@ -131,6 +131,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 			magicwords,
 			({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
 		);
+		config!.fromApi = true;
 	}
 	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 	config!.variants = variants ? variants.map(({code}) => code) : [];
