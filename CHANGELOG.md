@@ -2,21 +2,21 @@
 
 *2024-xx-xx*
 
-**Added**
-
-- Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
-- Text after `;` in the MediaWiki mode is now highlighted in bold
-- Highlighting syntax at SOL in variable default values and parser function arguments in the MediaWiki mode
-
 **Fixed**
 
 - Allow external links in the image caption in the MediaWiki mode
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
 
-## 2.7.8
+## 2.8.0
 
 *2024-03-12*
+
+**Added**
+
+- Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
+- Text after `;` in the MediaWiki mode is now highlighted in bold
+- Highlighting syntax at SOL in variable default values and parser function arguments in the MediaWiki mode
 
 **Changed**
 

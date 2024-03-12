@@ -36,8 +36,10 @@ declare interface State {
 	nTemplate: number;
 	nLink: number;
 	nExt: number;
+	nVar: number;
 	lpar: boolean;
 	lbrack: boolean;
+	dt: {n: number, nTemplate?: number, nLink?: number, nExt?: number, nVar?: number};
 }
 declare interface Token {
 	pos: number;
@@ -244,26 +246,26 @@ class MediaWiki {
 		}));
 	}
 
-	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeStyle(modeConfig.tags[tag], state, endGround);
 	}
 
-	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(
 			`${style} ${
-				this.isBold ? modeConfig.tags.strong : ''
+				this.isBold || state.dt.n ? modeConfig.tags.strong : ''
 			} ${this.isItalic ? modeConfig.tags.em : ''}`,
 			state,
 			endGround,
 		);
 	}
 
-	makeLocalTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeLocalTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(modeConfig.tags[tag], state, endGround);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt'): string {
+	makeLocalStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		let ground = '';
 		switch (state.nTemplate) {
 			case 0:
@@ -296,6 +298,10 @@ class MediaWiki {
 		}
 		if (endGround) {
 			state[endGround]--;
+			const {dt} = state;
+			if (dt.n && state[endGround] < dt[endGround]!) {
+				dt.n = 0;
+			}
 		}
 		return (ground && `mw${ground}-ground `) + style;
 	}
@@ -400,7 +406,17 @@ class MediaWiki {
 	}
 
 	eatList(stream: StringStream, state: State): string {
-		stream.match(/^[*#;:]*/u);
+		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false,
+			{dt} = state;
+		if (mt && mt[0].includes(';')) {
+			dt.n += mt[0].split(';').length - 1;
+		}
+		if (dt.n) {
+			dt.nTemplate = state.nTemplate;
+			dt.nLink = state.nLink;
+			dt.nExt = state.nExt;
+			dt.nVar = state.nVar;
+		}
 		return this.makeLocalTagStyle('list', state);
 	}
 
@@ -622,7 +638,7 @@ class MediaWiki {
 			return this.makeLocalTagStyle('templateVariableDelimiter', state);
 		} else if (stream.match('}}}')) {
 			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('templateVariableBracket', state);
+			return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 		} else if (stream.match('{{{')) {
 			state.stack.push(state.tokenize);
 			return this.makeLocalTagStyle('templateVariableBracket', state);
@@ -640,16 +656,16 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.match('}}}')) {
 				state.tokenize = state.stack.pop()!;
-				return this.makeLocalTagStyle('templateVariableBracket', state);
+				return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 			} else if (stream.eat('|')) {
 				if (isFirst) {
 					state.tokenize = this.inVariableDefault();
 				}
 				return this.makeLocalTagStyle('templateVariableDelimiter', state);
 			}
-			return stream.match(/^[^{}[<&~|]+/u)
-				? this.makeStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+			return isFirst && isSolSyntax(stream) || !stream.match(isFirst ? /^[^|{}[<&~'_:]+/u : /^[^|{}[<]+/u)
+				? this.eatWikiText(style)(stream, state)
+				: this.makeStyle(style, state);
 		};
 	}
 
@@ -678,9 +694,9 @@ class MediaWiki {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 		}
-		return stream.match(/^[^|}{[<&~'_]+/u)
-			? this.makeLocalTagStyle('parserFunction', state)
-			: this.eatWikiText(modeConfig.tags.parserFunction)(stream, state);
+		return isSolSyntax(stream) || !stream.match(/^[^|}{[<&~'_:]+/u)
+			? this.eatWikiText(modeConfig.tags.parserFunction)(stream, state)
+			: this.makeLocalTagStyle('parserFunction', state);
 	}
 
 	inTemplatePageName(haveEaten?: boolean): Tokenizer {
@@ -891,6 +907,8 @@ class MediaWiki {
 						break;
 					}
 					case ';':
+						state.dt.n++;
+						// fall through
 					case '*':
 					case '#':
 						return this.eatList(stream, state);
@@ -966,6 +984,7 @@ class MediaWiki {
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
 					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
+						state.nVar++;
 						chain(state, this.inVariable.bind(this));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
@@ -1033,6 +1052,21 @@ class MediaWiki {
 							// Optimization: skip regex for EOL and backup-ed symbols
 							return this.makeStyle(style, state);
 						}
+					}
+					break;
+				}
+				/** @todo consider the balance of HTML tags, including apostrophes */
+				case ':': {
+					const {dt} = state;
+					if (
+						dt.n
+						&& dt.nTemplate === state.nTemplate
+						&& dt.nLink === state.nLink
+						&& dt.nExt === state.nExt
+						&& dt.nVar === state.nVar
+					) {
+						dt.n--;
+						return this.makeLocalTagStyle('list', state);
 					}
 					break;
 				}
@@ -1195,12 +1229,15 @@ class MediaWiki {
 				nTemplate: 0,
 				nLink: 0,
 				nExt: 0,
+				nVar: 0,
 				lpar: false,
 				lbrack: false,
+				dt: {n: 0},
 			}),
 
 			copyState: (state): State => {
 				const newState = copyState(state);
+				newState.dt = {...state.dt};
 				if (state.extMode && state.extMode.copyState) {
 					newState.extState = state.extMode.copyState(state.extState as State);
 				}
@@ -1216,6 +1253,7 @@ class MediaWiki {
 					return t.style;
 				} else if (stream.sol()) {
 					// reset bold and italic status in every new line
+					state.dt.n = 0;
 					this.isBold = false;
 					this.isItalic = false;
 					this.firstSingleLetterWord = null;
