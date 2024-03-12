@@ -38,7 +38,7 @@ declare interface State {
 	nExt: number;
 	nVar: number;
 	lpar: boolean;
-	lbrack: boolean;
+	lbrack: boolean | undefined;
 	dt: {n: number, nTemplate?: number, nLink?: number, nExt?: number, nVar?: number};
 }
 declare interface Token {
@@ -557,6 +557,7 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return '';
 			}
@@ -568,6 +569,7 @@ class MediaWiki {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(']]')) {
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (stream.match(/^(?:[>[}]+|\]|\{(?!\{))/u)) {
@@ -584,12 +586,14 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return '';
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inLinkText(file);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(']]')) {
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			}
@@ -612,6 +616,7 @@ class MediaWiki {
 					state.lbrack = false;
 					return this.makeStyle(tmpstyle, state);
 				}
+				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (file && stream.eat('|')) {
@@ -640,7 +645,7 @@ class MediaWiki {
 			}
 			const mt = stream
 				.match(file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u) as RegExpMatchArray | false;
-			if (mt && mt[0].includes('[')) {
+			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
 			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
@@ -889,6 +894,10 @@ class MediaWiki {
 		};
 	}
 
+	/**
+	 * @todo 添加stage参数
+	 * @ignore
+	 */
 	eatWikiText(style: string): Tokenizer {
 		return (stream, state) => {
 			let ch: string;
@@ -985,7 +994,7 @@ class MediaWiki {
 					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
 						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
-							state.lbrack = false;
+							state.lbrack = undefined;
 							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
 							return this.makeLocalTagStyle('linkBracket', state);
 						}
