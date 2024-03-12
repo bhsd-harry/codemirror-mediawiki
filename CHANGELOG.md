@@ -4,7 +4,6 @@
 
 **Fixed**
 
-- Allow external links in the image caption in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
 
 ## 2.8.0
@@ -21,6 +20,7 @@
 
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow comments in template names in the MediaWiki mode
+- Allow external links in the image caption in the MediaWiki mode
 
 **Changed**
 

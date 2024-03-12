@@ -643,8 +643,11 @@ class MediaWiki {
 				}
 				return this.makeStyle(tmpstyle, state);
 			}
-			const mt = stream
-				.match(file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u) as RegExpMatchArray | false;
+			/** @todo image parameters */
+			const regex = file
+					? new RegExp(`^(?:[^'\\]{&~<|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'iu')
+					: /^[^'\]{&~<]+/u,
+				mt = stream.match(regex) as RegExpMatchArray | false;
 			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
