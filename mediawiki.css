@@ -113,13 +113,13 @@
 
 /* template variable */
 .cm-mw-templatevariable {
-	color: #f24100;
+	color: #ad9300;
 	font-weight: normal;
 }
 .cm-mw-templatevariable-name,
 .cm-mw-templatevariable-bracket,
 .cm-mw-templatevariable-delimiter {
-	color: #d95e00;
+	color: #ac6600;
 	font-weight: bold;
 }
 

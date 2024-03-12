@@ -53,7 +53,7 @@
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.24.1",
 		"@lezer/highlight": "^1.2.0",
-		"wikiparser-node": "^1.5.6"
+		"wikiparser-node": "^1.5.7"
 	},
 	"devDependencies": {
 		"@lezer/common": "^1.1.2",
