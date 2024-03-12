@@ -20,6 +20,7 @@
 **Fixed**
 
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
+- Allow comments in template names in the MediaWiki mode
 
 **Changed**
 

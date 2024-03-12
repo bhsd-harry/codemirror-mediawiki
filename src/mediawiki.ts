@@ -717,25 +717,28 @@ class MediaWiki {
 	inTemplatePageName(haveEaten?: boolean): Tokenizer {
 		const style = `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
-			if (stream.match(/^\s*\|\s*/u)) {
+			const sol = stream.sol(),
+				space = stream.eatSpace();
+			if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);
 				return this.makeLocalTagStyle('templateDelimiter', state);
-			} else if (stream.match(/^\s*\}\}/u)) {
+			} else if (stream.match('}}')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			} else if (stream.match(/^\s*<!--.*?-->/u)) {
-				return this.makeLocalTagStyle('comment', state);
-			} else if (haveEaten && stream.sol()) {
+			} else if (stream.match('<!--', false)) {
+				chain(state, this.inComment);
+				return this.makeLocalStyle('', state);
+			} else if (haveEaten && sol) {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.match(/^\s*[^\s|{}<>[\]]+/u)) {
+			} else if (stream.match(/^[^\s|{}<>[\]]+/u)) {
 				state.tokenize = this.inTemplatePageName(true);
 				return this.makeLocalStyle(style, state);
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeLocalTagStyle('error', state);
 			}
-			return stream.eatSpace()
+			return space
 				? this.makeLocalStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
