@@ -5,7 +5,6 @@
 **Fixed**
 
 - Allow external links in the image caption in the MediaWiki mode
-- Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow spaces in the parser function name in the MediaWiki mode
 
 ## 2.8.0
@@ -17,6 +16,10 @@
 - Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
 - Text after `;` in the MediaWiki mode is now highlighted in bold
 - Highlighting syntax at SOL in variable default values and parser function arguments in the MediaWiki mode
+
+**Fixed**
+
+- Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 
 **Changed**
 

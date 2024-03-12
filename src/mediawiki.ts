@@ -616,12 +616,27 @@ class MediaWiki {
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (file && stream.eat('|')) {
 				return this.makeLocalTagStyle('linkDelimiter', state);
-			} else if (stream.match("'''")) {
-				linkIsBold = !linkIsBold;
-				return this.makeLocalStyle(`${modeConfig.tags.linkText} ${modeConfig.tags.apostrophes}`, state);
-			} else if (stream.match("''")) {
-				linkIsItalic = !linkIsItalic;
-				return this.makeLocalStyle(`${modeConfig.tags.linkText} ${modeConfig.tags.apostrophes}`, state);
+			} else if (stream.peek() === "'") {
+				const mt = stream.match(/^'+/u) as RegExpMatchArray;
+				switch (mt[0].length) {
+					case 3:
+						linkIsBold = !linkIsBold;
+						return this.makeLocalTagStyle('apostrophes', state);
+					case 5:
+						linkIsBold = !linkIsBold;
+						// fall through
+					case 2:
+						linkIsItalic = !linkIsItalic;
+						return this.makeLocalTagStyle('apostrophes', state);
+					case 4:
+						stream.backUp(3);
+						// fall through
+					case 1:
+						break;
+					default:
+						stream.backUp(5);
+				}
+				return this.makeStyle(tmpstyle, state);
 			}
 			const mt = stream
 				.match(file ? /^(?:[^'\]{&~<|[]|\[(?!\[))+/u : /^[^'\]{&~<]+/u) as RegExpMatchArray | false;
