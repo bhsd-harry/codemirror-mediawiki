@@ -6,6 +6,7 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 - Allow special characters in the anchor of a template name in the MediaWiki mode
+- Correctly highlight the `=` in a template argument in the MediaWiki mode
 
 ## 2.8.0
 
