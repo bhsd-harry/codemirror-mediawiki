@@ -1,5 +1,4 @@
-import {setObject, getObject} from './msg';
-import {CodeMirror} from './base';
+import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
 
@@ -72,11 +71,11 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		setConfig(config);
 	}
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
-		nsid = mw.config.get('wgNamespaceIds'),
-		tagModes = CodeMirror.mwTagModes;
+		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.variants && !isIPE) {
-		return {...config, nsid, tagModes};
+		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
+		return {...config, nsid};
 	}
 
 	// 以下情形均需要发送API请求
@@ -116,7 +115,6 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		config = {
 			tagModes: {},
 			tags: {},
-			urlProtocols: mw.config.get('wgUrlProtocols'),
 		};
 		for (const tag of extensiontags) {
 			config!.tags[tag.slice(1, -1)] = true;
@@ -136,7 +134,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 	config!.variants = variants ? variants.map(({code}) => code) : [];
 	config!.nsid = nsid;
-	Object.assign(config!.tagModes, tagModes);
+	config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 	setObject('InPageEditMwConfig', ALL_SETTINGS_CACHE);
@@ -161,7 +159,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 			obj => Object.keys(obj).map(s => s.slice(2, -2)),
 		) as [string[], string[]],
 		variants: mwConfig.variants!,
-		protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
+		protocol: mwConfig.urlProtocols,
 	};
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;
 	if (!USING_LOCAL) {

@@ -1,6 +1,7 @@
+import {getObject, setObject} from './util';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.8.1',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.9.1',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
@@ -21,12 +22,6 @@ const storageKey = 'codemirror-mediawiki-i18n',
 		'zh-mo': 'zh-hant',
 	},
 	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getObject = (key: string): any => JSON.parse(String(localStorage.getItem(key)));
-export const setObject = (key: string, value: unknown): void => {
-	localStorage.setItem(key, JSON.stringify(value));
-};
 
 /** 预存的I18N，可以用于判断是否是首次安装 */
 export const i18n: Record<string, string> = getObject(storageKey) || {};
