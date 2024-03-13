@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.8.1/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.8.2/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -196,7 +196,7 @@ export class CodeMirror extends CodeMirror6 {
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
 		if (isWiki) {
 			let config: MwConfig;
-			if (mw.config.get('wgServerName') === 'zh.moegirl.org.cn') {
+			if (mw.config.get('wgServerName').endsWith('.moegirl.org.cn')) {
 				if (mw.config.exists('wikilintConfig')) {
 					config = mw.config.get('extCodeMirrorConfig') as MwConfig;
 				} else {

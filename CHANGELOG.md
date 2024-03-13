@@ -6,34 +6,23 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
-## 2.8.2
+## 2.8.3
 
-*2024-03-13*
-
-**Added**
-
-- Highlighting syntax at SOL in template arguments in the MediaWiki mode
-
-**Fixed**
-
-- Allow special characters in the anchor of a template name in the MediaWiki mode
-- Correctly highlight the `=` in a template argument in the MediaWiki mode
-
-## 2.8.0
-
-*2024-03-12*
+*2024-03-15*
 
 **Added**
 
 - Syntax like `;a:b` in the MediaWiki mode is now correctly highlighted
 - Text after `;` in the MediaWiki mode is now highlighted in bold
-- Highlighting syntax at SOL in variable default values and parser function arguments in the MediaWiki mode
+- Highlighting syntax at SOL in variable default values and parser function/template arguments in the MediaWiki mode
 
 **Fixed**
 
 - Apostrophes in wikilinks are now correctly highlighted in the MediaWiki mode
 - Allow comments in template names in the MediaWiki mode
 - Allow external links in the image caption in the MediaWiki mode
+- Allow special characters in the anchor of a template name in the MediaWiki mode
+- Correctly highlight the `=` in a template argument in the MediaWiki mode
 
 **Changed**
 
