@@ -759,6 +759,10 @@ class MediaWiki {
 	}
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
+		const regex = new RegExp(
+			`^(?:[^=|}{[<&~'_:]|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
+			'iu',
+		);
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (stream.eol()) {
@@ -769,7 +773,7 @@ class MediaWiki {
 			} else if (stream.match('}}')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			} else if (expectName && stream.match(/^[^=|}{[<&~'_:]*=/u)) {
+			} else if (expectName && stream.match(regex)) {
 				state.tokenize = this.inTemplateArgument();
 				return this.makeLocalTagStyle('templateArgumentName', state);
 			}
