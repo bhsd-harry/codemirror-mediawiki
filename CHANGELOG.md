@@ -11,6 +11,10 @@
 
 *2024-03-13*
 
+**Added**
+
+- Highlighting syntax at SOL in template arguments in the MediaWiki mode
+
 **Fixed**
 
 - Allow special characters in the anchor of a template name in the MediaWiki mode

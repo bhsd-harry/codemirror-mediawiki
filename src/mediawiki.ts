@@ -769,14 +769,11 @@ class MediaWiki {
 			} else if (stream.match('}}')) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			} else if (expectName && stream.eatWhile(/[^=|}{[<&~]/u)) {
-				if (stream.eat('=')) {
-					state.tokenize = this.inTemplateArgument();
-					return this.makeLocalTagStyle('templateArgumentName', state);
-				}
-				return this.makeLocalTagStyle('template', state);
+			} else if (expectName && stream.match(/^[^=|}{[<&~'_:]*=/u)) {
+				state.tokenize = this.inTemplateArgument();
+				return this.makeLocalTagStyle('templateArgumentName', state);
 			}
-			return stream.eatWhile(/[^|}{[<&~]/u) || space
+			return !isSolSyntax(stream) && stream.eatWhile(/[^|}{[<&~'_:]/u) || space
 				? this.makeLocalTagStyle('template', state)
 				: this.eatWikiText(modeConfig.tags.template)(stream, state);
 		};
