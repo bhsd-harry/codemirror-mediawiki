@@ -742,12 +742,14 @@ class MediaWiki {
 			: this.makeLocalTagStyle('parserFunction', state);
 	}
 
-	inTemplatePageName(haveEaten?: boolean): Tokenizer {
-		const style = `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
+	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
+		const style = anchor ? modeConfig.tags.error : `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
-			if (stream.eat('|')) {
+			if (stream.eol()) {
+				return this.makeLocalStyle(style, state);
+			} else if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);
 				return this.makeLocalTagStyle('templateDelimiter', state);
 			} else if (stream.match('}}')) {
@@ -756,12 +758,16 @@ class MediaWiki {
 			} else if (stream.match('<!--', false)) {
 				chain(state, this.inComment);
 				return this.makeLocalStyle('', state);
-			} else if (haveEaten && sol) {
+			} else if (haveEaten && !anchor && sol) {
 				state.nTemplate--;
 				state.tokenize = state.stack.pop()!;
+				stream.pos = 0;
 				return '';
-			} else if (stream.match(/^[^|{}<>[\]]+/u)) {
-				state.tokenize = this.inTemplatePageName(true);
+			} else if (stream.eat('#')) {
+				state.tokenize = this.inTemplatePageName(true, true);
+				return this.makeLocalTagStyle('error', state);
+			} else if (stream.match(anchor ? /^(?:[^|{}<]|([{}])(?!\1)|<(?!!--))+/u : /^[^|{}<>[\]#]+/u)) {
+				state.tokenize = this.inTemplatePageName(true, anchor);
 				return this.makeLocalStyle(style, state);
 			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
 				return this.makeLocalTagStyle('error', state);
