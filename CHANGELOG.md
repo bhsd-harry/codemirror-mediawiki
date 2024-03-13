@@ -5,8 +5,15 @@
 **Fixed**
 
 - Allow spaces in the parser function name in the MediaWiki mode
-- Allow special characters in the anchor of a template name in the MediaWiki mode
 - Correctly highlight the `=` in a template argument in the MediaWiki mode
+
+## 2.8.2
+
+*2024-03-13*
+
+**Fixed**
+
+- Allow special characters in the anchor of a template name in the MediaWiki mode
 
 ## 2.8.0
 
