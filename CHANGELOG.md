@@ -12,7 +12,7 @@
 
 **Fixed**
 
-- Fix invalid `\\:` escaping in `MwConfig.urlProtocols` in the MediaWiki mode
+- Fix invalid `\\:` escaping in `MwConfig.urlProtocols` in the MediaWiki mode, since [v2.8.3](#283)
 
 ## 2.8.3
 
