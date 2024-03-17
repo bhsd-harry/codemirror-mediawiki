@@ -76,6 +76,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		tagModes = CodeMirror.mwTagModes;
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.variants && !isIPE) {
+		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		return {...config, nsid, tagModes};
 	}
 
@@ -116,7 +117,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		config = {
 			tagModes: {},
 			tags: {},
-			urlProtocols: mw.config.get('wgUrlProtocols'),
+			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
 		};
 		for (const tag of extensiontags) {
 			config!.tags[tag.slice(1, -1)] = true;
@@ -161,7 +162,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 			obj => Object.keys(obj).map(s => s.slice(2, -2)),
 		) as [string[], string[]],
 		variants: mwConfig.variants!,
-		protocol: mwConfig.urlProtocols.replace(/\\:/gu, ':'),
+		protocol: mwConfig.urlProtocols,
 	};
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;
 	if (!USING_LOCAL) {

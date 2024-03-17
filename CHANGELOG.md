@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.9.0
+
+*2024-03-17*
+
+**Fixed**
+
+- Fix invalid `\\:` escaping in `MwConfig.urlProtocols` in the MediaWiki mode
+
 ## 2.8.3
 
 *2024-03-15*

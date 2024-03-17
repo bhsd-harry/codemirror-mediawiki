@@ -48,9 +48,9 @@ declare interface Token {
 }
 
 export interface MwConfig {
-	readonly urlProtocols: string;
 	readonly tags: Record<string, true>;
 	readonly tagModes: Record<string, string>;
+	urlProtocols: string;
 	functionSynonyms: [Record<string, string>, Record<string, unknown>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
 	variants?: string[];
@@ -116,8 +116,7 @@ class MediaWiki {
 
 	constructor(config: MwConfig) {
 		this.config = config;
-		// eslint-disable-next-line require-unicode-regexp
-		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'i');
+		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
