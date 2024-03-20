@@ -117,7 +117,6 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		config = {
 			tagModes: {},
 			tags: {},
-			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
 		};
 		for (const tag of extensiontags) {
 			config!.tags[tag.slice(1, -1)] = true;
@@ -137,6 +136,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 	config!.variants = variants ? variants.map(({code}) => code) : [];
 	config!.nsid = nsid;
+	config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
 	Object.assign(config!.tagModes, tagModes);
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
