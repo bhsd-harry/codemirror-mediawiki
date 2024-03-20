@@ -1,5 +1,5 @@
 {
-	"version": "2.9.0",
+	"version": "2.9.1",
 	"lang": "zh-hans",
 	"i18n-failed": "获取 $1 的语言文件失败。",
 	"title": "CodeMirror插件",

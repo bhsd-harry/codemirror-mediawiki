@@ -205,7 +205,7 @@ const traverse = (
 	/* eslint-enable no-param-reassign */
 };
 
-export const foldExtension: Extension[] = [
+export const foldExtension: Extension = [
 	codeFolding({
 		placeholderDOM(view) {
 			const element = document.createElement('span');
