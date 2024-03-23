@@ -181,6 +181,7 @@ export class CodeMirror6 {
 			syntaxHighlighting(defaultHighlightStyle as Highlighter),
 			EditorView.contentAttributes.of({
 				accesskey: textarea.accessKey,
+				tabindex: String(textarea.tabIndex),
 			}),
 			EditorView.editorAttributes.of({
 				dir: textarea.dir,

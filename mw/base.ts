@@ -210,7 +210,7 @@ export class CodeMirror extends CodeMirror6 {
 			} else {
 				config = await getMwConfig();
 			}
-			cm.setLanguage(lang, config);
+			cm.setLanguage(lang, {...config, tagModes: CodeMirror.mwTagModes});
 		}
 		await loadJSON;
 		cm.prefer([...prefs]);

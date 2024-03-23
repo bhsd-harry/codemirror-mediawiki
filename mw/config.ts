@@ -1,5 +1,4 @@
-import {setObject, getObject} from './msg';
-import {CodeMirror} from './base';
+import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
 
@@ -72,12 +71,11 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		setConfig(config);
 	}
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
-		nsid = mw.config.get('wgNamespaceIds'),
-		tagModes = CodeMirror.mwTagModes;
+		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.variants && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
-		return {...config, nsid, tagModes};
+		return {...config, nsid};
 	}
 
 	// 以下情形均需要发送API请求
@@ -137,7 +135,6 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	config!.variants = variants ? variants.map(({code}) => code) : [];
 	config!.nsid = nsid;
 	config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
-	Object.assign(config!.tagModes, tagModes);
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 	setObject('InPageEditMwConfig', ALL_SETTINGS_CACHE);

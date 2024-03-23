@@ -1,6 +1,7 @@
 import {rules} from 'wikiparser-node/dist/base';
 import {CodeMirror} from './base';
-import {msg, parseMsg, i18n, setObject, getObject} from './msg';
+import {getObject, setObject} from './util';
+import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';

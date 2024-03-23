@@ -13,8 +13,6 @@
 	"license": "GPL-2.0",
 	"files": [
 		"/i18n/",
-		"/mw/*.ts",
-		"!/mw/*.d.ts",
 		"/dist/*.js",
 		"/dist/codemirror.d.ts",
 		"/dist/mediawiki.d.ts",
