@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.9.2
+
+*2024-04-01*
+
+**Fixed**
+
+- In the MediaWiki mode, `<` now breaks the HTML tag syntax
+
 ## 2.9.1
 
 *2024-03-20*

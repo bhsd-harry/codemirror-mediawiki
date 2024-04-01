@@ -68,6 +68,9 @@ const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 	while (nextSibling.nextSibling && !isBracket(nextSibling, type)) {
 		({nextSibling} = nextSibling);
 	}
+	if (isBracket(nextSibling, type) && getName(state, nextSibling) === '<') {
+		nextSibling = nextSibling.prevSibling!;
+	}
 	while (prevSibling && !isBracket(prevSibling, type)) {
 		nameNode ||= isName(prevSibling, type) ? prevSibling : null;
 		({prevSibling} = prevSibling);

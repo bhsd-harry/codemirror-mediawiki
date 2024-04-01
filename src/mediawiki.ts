@@ -804,6 +804,9 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'[^>/<{])+/u)) {
 				return this.makeLocalTagStyle('htmlTagAttribute', state);
+			} else if (stream.peek() === '<') {
+				state.tokenize = state.stack.pop()!;
+				return '';
 			} else if (stream.match(/^\/?>/u)) {
 				if (!this.implicitlyClosedHtmlTags.has(name)) {
 					state.inHtmlTag.unshift(name);
