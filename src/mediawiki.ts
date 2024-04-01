@@ -528,7 +528,7 @@ class MediaWiki {
 		} else if (stream.match(/^\s*\]/u)) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{{2}|~{3})/u, false)) {
+		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{\{|~{3})/u, false)) {
 			state.tokenize = this.inExternalLinkText.bind(this);
 			return this.makeLocalStyle('', state);
 		}
@@ -759,7 +759,7 @@ class MediaWiki {
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
 		const regex = new RegExp(
-			`^(?:[^=|}{[<&~'_:]|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
+			`^(?:[^=|}{[<]|\\[(?!\\[)|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
 			'iu',
 		);
 		return (stream, state) => {

@@ -13,6 +13,7 @@
 **Fixed**
 
 - In the MediaWiki mode, `<` now breaks the HTML tag syntax
+- Highlight template argument names containing special characters in the MediaWiki mode, since [v2.8.3](#283)
 
 ## 2.9.1
 
