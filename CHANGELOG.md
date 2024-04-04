@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.9.3
+
+*2024-04-04*
+
+**Added**
+
+- The textarea element now dispatches relevant events when the editor is focused or blurred
+
 ## 2.9.2
 
 *2024-04-01*

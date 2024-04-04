@@ -198,12 +198,15 @@ export class CodeMirror6 {
 				...searchKeymap,
 				...lintKeymap,
 			]),
-			EditorView.updateListener.of(({state: {doc}, docChanged}) => {
+			EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
 				if (docChanged) {
 					clearTimeout(timer);
 					timer = window.setTimeout(() => {
 						textarea.value = doc.toString();
 					}, 400);
+				}
+				if (focusChanged) {
+					textarea.dispatchEvent(new Event(this.#view.hasFocus ? 'focus' : 'blur'));
 				}
 			}),
 		];
