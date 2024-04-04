@@ -171,45 +171,49 @@ export class CodeMirror6 {
 		this.#textarea = textarea;
 		this.#lang = lang;
 		let timer: number | undefined;
-		const extensions = [
-			this.#language.of(languages[lang]!(config)),
-			this.#linter.of([]),
-			this.#extensions.of([]),
-			this.#indent.of(indentUnit.of('\t')),
-			this.#extraKeys.of([]),
-			this.#phrases.of([]),
-			syntaxHighlighting(defaultHighlightStyle as Highlighter),
-			EditorView.contentAttributes.of({
-				accesskey: textarea.accessKey,
-				tabindex: String(textarea.tabIndex),
-			}),
-			EditorView.editorAttributes.of({
-				dir: textarea.dir,
-				lang: textarea.lang,
-			}),
-			EditorState.readOnly.of(textarea.readOnly),
-			lineNumbers(),
-			EditorView.lineWrapping,
-			history(),
-			indentOnInput(),
-			keymap.of([
-				...defaultKeymap,
-				...historyKeymap,
-				...searchKeymap,
-				...lintKeymap,
-			]),
-			EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
-				if (docChanged) {
-					clearTimeout(timer);
-					timer = window.setTimeout(() => {
-						textarea.value = doc.toString();
-					}, 400);
-				}
-				if (focusChanged) {
-					textarea.dispatchEvent(new Event(this.#view.hasFocus ? 'focus' : 'blur'));
-				}
-			}),
-		];
+		const {readOnly} = textarea,
+			extensions = [
+				this.#language.of(languages[lang]!(config)),
+				this.#linter.of([]),
+				this.#extensions.of([]),
+				this.#indent.of(indentUnit.of('\t')),
+				this.#extraKeys.of([]),
+				this.#phrases.of([]),
+				syntaxHighlighting(defaultHighlightStyle as Highlighter),
+				EditorView.contentAttributes.of({
+					accesskey: textarea.accessKey,
+					tabindex: String(textarea.tabIndex),
+				}),
+				EditorView.editorAttributes.of({
+					dir: textarea.dir,
+					lang: textarea.lang,
+				}),
+				lineNumbers(),
+				EditorView.lineWrapping,
+				keymap.of([
+					...defaultKeymap,
+					...searchKeymap,
+					...lintKeymap,
+				]),
+				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
+					if (docChanged) {
+						clearTimeout(timer);
+						timer = window.setTimeout(() => {
+							textarea.value = doc.toString();
+						}, 400);
+					}
+					if (focusChanged) {
+						textarea.dispatchEvent(new Event(this.#view.hasFocus ? 'focus' : 'blur'));
+					}
+				}),
+				...readOnly
+					? [EditorState.readOnly.of(true)]
+					: [
+						history(),
+						indentOnInput(),
+						keymap.of(historyKeymap),
+					],
+			];
 		this.#view = new EditorView({
 			extensions,
 			doc: textarea.value,
