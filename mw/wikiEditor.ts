@@ -1,15 +1,10 @@
-import {msg} from './msg';
-import {prefs} from './preference';
-
 /**
  * 添加WikiEditor工具栏
  * @param $textarea 文本框
  */
 export const wikiEditor = async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => {
 	if (!mw.loader.getState('ext.wikiEditor')) {
-		prefs.delete('wikiEditor');
-		void mw.notify(msg('no-wikiEditor'), {type: 'error'});
-		return;
+		throw new Error('no-wikiEditor');
 	}
 	await mw.loader.using('ext.wikiEditor');
 	if ($textarea.data('wikiEditorContext')) {

@@ -221,12 +221,12 @@ class MediaWiki {
 			'mw-template3-ext3-link-ground',
 			'mw-template3-ground',
 			'mw-template3-link-ground',
-			'mw-section-1',
-			'mw-section-2',
-			'mw-section-3',
-			'mw-section-4',
-			'mw-section-5',
-			'mw-section-6',
+			'mw-section--1',
+			'mw-section--2',
+			'mw-section--3',
+			'mw-section--4',
+			'mw-section--5',
+			'mw-section--6',
 		];
 		for (const ground of grounds) {
 			this.addToken(ground);
@@ -528,7 +528,7 @@ class MediaWiki {
 		} else if (stream.match(/^\s*\]/u)) {
 			state.tokenize = state.stack.pop()!;
 			return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{{2}|~{3})/u, false)) {
+		} else if (stream.eatSpace() || stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{\{|~{3})/u, false)) {
 			state.tokenize = this.inExternalLinkText.bind(this);
 			return this.makeLocalStyle('', state);
 		}
@@ -779,7 +779,7 @@ class MediaWiki {
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
 		const regex = new RegExp(
-			`^(?:[^=|}{[<&~'_:]|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
+			`^(?:[^=|}{[<]|\\[(?!\\[)|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
 			'iu',
 		);
 		return (stream, state) => {
@@ -824,6 +824,9 @@ class MediaWiki {
 		return (stream, state) => {
 			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'[^>/<{])+/u)) {
 				return this.makeLocalTagStyle('htmlTagAttribute', state);
+			} else if (stream.peek() === '<') {
+				state.tokenize = state.stack.pop()!;
+				return '';
 			} else if (stream.match(/^\/?>/u)) {
 				if (!this.implicitlyClosedHtmlTags.has(name)) {
 					state.inHtmlTag.unshift(name);
@@ -911,7 +914,7 @@ class MediaWiki {
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
-				ret = modeConfig.tags.extTag;
+				ret = `mw-tag-${state.extName} ${modeConfig.tags.extTag}`;
 				stream.skipToEnd();
 			} else {
 				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as State)}`;
@@ -959,7 +962,7 @@ class MediaWiki {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!.length));
 							return this.makeLocalStyle(
-								`${modeConfig.tags.sectionHeader} mw-section-${tmp[1]!.length + 1}`,
+								`${modeConfig.tags.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
 								state,
 							);
 						}
@@ -1239,7 +1242,7 @@ class MediaWiki {
 					return {
 						from: mt.from,
 						options: this.doubleUnderscore,
-						validFor: /^[\p{L}\d_]*$/u,
+						validFor: /^[\p{L}\d]*$/u,
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
@@ -1248,7 +1251,7 @@ class MediaWiki {
 				}
 				const validFor = /^[a-z\d]*$/iu;
 				if (mt.text[1] === '/') {
-					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>((?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
+					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 						target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
 						extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
 						options = [
@@ -1411,11 +1414,13 @@ class MediaWiki {
 }
 
 for (const [language, parser] of Object.entries(plugins)) {
-	Object.defineProperty(MediaWiki.prototype, language, {
-		get() {
-			return parser;
-		},
-	});
+	if (language === 'css' || language === 'javascript') {
+		Object.defineProperty(MediaWiki.prototype, language, {
+			get() {
+				return parser;
+			},
+		});
+	}
 }
 
 /**

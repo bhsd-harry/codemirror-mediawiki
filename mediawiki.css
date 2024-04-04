@@ -44,20 +44,20 @@
  */
 
 /* section title */
-.cm-mw-section-1,
-.cm-mw-section-1 ~ * {
+.cm-mw-section--1,
+.cm-mw-section--1 ~ * {
 	font-size: 1.8em;
 	line-height: 1.2em;
 }
-.cm-mw-section-2,
-.cm-mw-section-2 ~ * {
+.cm-mw-section--2,
+.cm-mw-section--2 ~ * {
 	font-size: 1.5em;
 	line-height: 1.2em;
 }
-.cm-mw-section-3 ~ *,
-.cm-mw-section-4 ~ *,
-.cm-mw-section-5 ~ *,
-.cm-mw-section-6 ~ * {
+.cm-mw-section--3 ~ *,
+.cm-mw-section--4 ~ *,
+.cm-mw-section--5 ~ *,
+.cm-mw-section--6 ~ * {
 	font-weight: bold;
 }
 .cm-mw-section-header {

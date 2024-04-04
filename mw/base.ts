@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.9.1/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.10.0/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -34,7 +34,13 @@ $.valHooks['textarea'] = {
 	},
 };
 
-const linters: Record<string, LintSource | undefined> = {};
+const linters: Record<string, LintSource | undefined> = {},
+	langMap: Record<string, string> = {
+		'sanitized-css': 'css',
+		js: 'javascript',
+		scribunto: 'lua',
+		wikitext: 'mediawiki',
+	};
 
 /**
  * 判断是否为普通编辑器
@@ -175,10 +181,17 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
-			await wikiEditor($(textarea));
+			try {
+				await wikiEditor($(textarea));
+			} catch (e) {
+				if (e instanceof Error && e.message === 'no-wikiEditor') {
+					void mw.notify(msg(e.message), {type: 'error'});
+				}
+				prefs.delete('wikiEditor');
+			}
 		}
+		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
-			/* eslint-disable no-param-reassign */
 			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
@@ -187,11 +200,11 @@ export class CodeMirror extends CodeMirror6 {
 				await mw.loader.using('oojs-ui-windows');
 				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
 			}
-			if (lang && lang in langMap) {
-				lang = langMap[lang];
-			}
-			/* eslint-enable no-param-reassign */
 		}
+		if (lang && lang in langMap) {
+			lang = langMap[lang];
+		}
+		/* eslint-enable no-param-reassign */
 		const isWiki = lang === 'mediawiki' || lang === 'html',
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
 		if (isWiki) {
@@ -222,12 +235,6 @@ export class CodeMirror extends CodeMirror6 {
 	}
 }
 
-const langMap: Record<string, string> = {
-	'sanitized-css': 'css',
-	js: 'javascript',
-	scribunto: 'lua',
-	wikitext: 'mediawiki',
-};
 document.body.addEventListener('click', e => {
 	if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
 		e.preventDefault();
@@ -251,7 +258,7 @@ document.body.addEventListener('click', e => {
 		'#',
 		msg('title'),
 		'cm-settings',
-	).addEventListener('click', e => {
+	)!.addEventListener('click', e => {
 		e.preventDefault();
 		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
 		void openPreference(textareas.map(textarea => instances.get(textarea)));

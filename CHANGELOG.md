@@ -6,6 +6,52 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.10.0
+
+*2024-04-25*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) and [codeFolding](./README.md#codefolding) for CSS and JavaScript modes
+
+**Changed**
+
+- The [Lint](./README.md#lint) extension will not scroll to the panel after initialization
+
+## 2.9.5
+
+*2024-04-19*
+
+**Fixed**
+
+- Fix a style conflict with MediaWiki's [CodeMirror 5 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror)
+- Fix inconsistency with [ESLint v9](https://eslint.org/blog/2024/04/eslint-v9.0.0-released/)
+
+## 2.9.4
+
+*2024-04-17*
+
+**Fixed**
+
+- [Autocompletion](./README.md#autocompletion) for behavior switches and extension tags in the MediaWiki mode
+
+## 2.9.3
+
+*2024-04-04*
+
+**Added**
+
+- The textarea element now dispatches relevant events when the editor is focused or blurred
+
+## 2.9.2
+
+*2024-04-01*
+
+**Fixed**
+
+- In the MediaWiki mode, `<` now breaks the HTML tag syntax
+- Highlight template argument names containing special characters in the MediaWiki mode, since [v2.8.3](#283)
+
 ## 2.9.1
 
 *2024-03-20*

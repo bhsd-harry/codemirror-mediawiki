@@ -30,6 +30,7 @@
 	- [replaceSelections](#replaceselections)
 - [Extensions](#extensions)
 	- [allowMultipleSelections](#allowmultipleselections)
+	- [autocompletion](#autocompletion)
 	- [bracketMatching](#bracketmatching)
 	- [closeBrackets](#closebrackets)
 	- [highlightActiveLine](#highlightactiveline)
@@ -430,9 +431,9 @@ Allow multiple selections.
 
 ## autocompletion
 
-*version added: 2.5.1*
+*version added: 2.10.0*
 
-Provide autocompletion for the MediaWiki mode.
+Provide autocompletion for MediaWiki, CSS and JavaScript modes.
 
 ## bracketMatching
 
@@ -477,7 +478,7 @@ Key bindings:
 
 ## codeFolding
 
-*version added: 2.3.0*
+*version added: 2.10.0*
 
 Fold template parameters.
 

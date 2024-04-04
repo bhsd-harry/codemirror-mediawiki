@@ -18,6 +18,8 @@ import {
 	bracketMatching,
 	indentUnit,
 	ensureSyntaxTree,
+	foldGutter,
+	foldKeymap,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -27,17 +29,19 @@ import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
+import {CDN} from './util';
+import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
-import type {Linter} from 'eslint';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
 import type {DocRange} from './fold';
 
+export {CDN};
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
@@ -54,7 +58,11 @@ const languages: Record<string, (config?: any) => Extension> = {
 	html,
 };
 for (const [language, parser] of Object.entries(plugins)) {
-	languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
+	if (typeof parser === 'function') {
+		languages[language.slice(0, -2)] = parser;
+	} else if (!(language in languages)) {
+		languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
+	}
 }
 
 /**
@@ -77,40 +85,26 @@ const avail: Record<string, Addon<any>> = {
 		],
 		{},
 	],
+	autocompletion: [
+		(): Extension => [
+			autocompletion({defaultKeymap: false}),
+			keymap.of([
+				...completionKeymap,
+				{key: 'Tab', run: acceptCompletion},
+			]),
+		],
+		{},
+	],
+	codeFolding: [
+		(e = [foldGutter(), keymap.of(foldKeymap)]): Extension => e,
+		{mediawiki: foldExtension},
+	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
-	codeFolding: mediawikiOnly(foldExtension),
 	tagMatching: mediawikiOnly(tagMatchingState),
-	autocompletion: mediawikiOnly([
-		autocompletion({defaultKeymap: false}),
-		keymap.of([
-			...completionKeymap,
-			{key: 'Tab', run: acceptCompletion},
-		]),
-	]),
 };
 
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
-
-export const CDN = 'https://testingcf.jsdelivr.net';
-
-/**
- * 使用传统方法加载脚本
- * @param src 脚本地址
- * @param globalConst 脚本全局变量名
- */
-const loadScript = (src: string, globalConst: string): Promise<void> => new Promise(resolve => {
-	if (globalConst in window) {
-		resolve();
-		return;
-	}
-	const script = document.createElement('script');
-	script.src = `${CDN}/${src}`;
-	script.onload = (): void => {
-		resolve();
-	};
-	document.head.append(script);
-});
 
 /**
  * 获取指定行列的位置
@@ -171,42 +165,49 @@ export class CodeMirror6 {
 		this.#textarea = textarea;
 		this.#lang = lang;
 		let timer: number | undefined;
-		const extensions = [
-			this.#language.of(languages[lang]!(config)),
-			this.#linter.of([]),
-			this.#extensions.of([]),
-			this.#indent.of(indentUnit.of('\t')),
-			this.#extraKeys.of([]),
-			this.#phrases.of([]),
-			syntaxHighlighting(defaultHighlightStyle as Highlighter),
-			EditorView.contentAttributes.of({
-				accesskey: textarea.accessKey,
-				tabindex: String(textarea.tabIndex),
-			}),
-			EditorView.editorAttributes.of({
-				dir: textarea.dir,
-				lang: textarea.lang,
-			}),
-			EditorState.readOnly.of(textarea.readOnly),
-			lineNumbers(),
-			EditorView.lineWrapping,
-			history(),
-			indentOnInput(),
-			keymap.of([
-				...defaultKeymap,
-				...historyKeymap,
-				...searchKeymap,
-				...lintKeymap,
-			]),
-			EditorView.updateListener.of(({state: {doc}, docChanged}) => {
-				if (docChanged) {
-					clearTimeout(timer);
-					timer = window.setTimeout(() => {
-						textarea.value = doc.toString();
-					}, 400);
-				}
-			}),
-		];
+		const {readOnly} = textarea,
+			extensions = [
+				this.#language.of(languages[lang]!(config)),
+				this.#linter.of([]),
+				this.#extensions.of([]),
+				this.#indent.of(indentUnit.of('\t')),
+				this.#extraKeys.of([]),
+				this.#phrases.of([]),
+				syntaxHighlighting(defaultHighlightStyle as Highlighter),
+				EditorView.contentAttributes.of({
+					accesskey: textarea.accessKey,
+					tabindex: String(textarea.tabIndex),
+				}),
+				EditorView.editorAttributes.of({
+					dir: textarea.dir,
+					lang: textarea.lang,
+				}),
+				lineNumbers(),
+				EditorView.lineWrapping,
+				keymap.of([
+					...defaultKeymap,
+					...searchKeymap,
+					...lintKeymap,
+				]),
+				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
+					if (docChanged) {
+						clearTimeout(timer);
+						timer = window.setTimeout(() => {
+							textarea.value = doc.toString();
+						}, 400);
+					}
+					if (focusChanged) {
+						textarea.dispatchEvent(new Event(this.#view.hasFocus ? 'focus' : 'blur'));
+					}
+				}),
+				...readOnly
+					? [EditorState.readOnly.of(true)]
+					: [
+						history(),
+						indentOnInput(),
+						keymap.of(historyKeymap),
+					],
+			];
 		this.#view = new EditorView({
 			extensions,
 			doc: textarea.value,
@@ -247,8 +248,16 @@ export class CodeMirror6 {
 	 * @param show 是否显示
 	 */
 	#toggleLintPanel(show: boolean): void {
+		if (HTMLUListElement.prototype.focus.name !== 'lintPanelFocus') {
+			const lintPanelFocus = function(this: HTMLUListElement, opt?: FocusOptions): void {
+				HTMLElement.prototype.focus.call(this, {
+					...opt,
+					...this.matches('.cm-panel-lint ul') && {preventScroll: true},
+				});
+			};
+			HTMLUListElement.prototype.focus = lintPanelFocus;
+		}
 		(show ? openLintPanel : closeLintPanel)(this.#view);
-		document.querySelector<HTMLUListElement>('.cm-panel-lint ul')?.blur();
 		this.#minHeight(show);
 	}
 
@@ -341,37 +350,12 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const REPO = 'npm/wikiparser-node@1.6.2-b',
-					DIR = `${REPO}/extensions/dist`,
-					src = `combine/${DIR}/base.min.js,${DIR}/lint.min.js`,
-					lang = opt?.['i18n'];
-				await loadScript(src, 'wikiparse');
-				if (typeof lang === 'string') {
-					try {
-						const i18n: Record<string, string>
-							= await (await fetch(`${CDN}/${REPO}/i18n/${lang.toLowerCase()}.json`)).json();
-						wikiparse.setI18N(i18n);
-					} catch {}
-				}
-				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
+				const wikiLinter = await getWikiLinter(opt);
 				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {
-				await loadScript('npm/eslint-linter-browserify', 'eslint');
-				/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
-				const esLinter = new eslint.Linter(),
-					conf: Linter.Config = {
-						env: {browser: true, es2024: true},
-						parserOptions: {ecmaVersion: 15, sourceType: 'module'},
-						rules: {},
-						...opt,
-					};
-				for (const [name, {meta}] of esLinter.getRules()) {
-					if (meta?.docs?.recommended) {
-						conf.rules![name] ??= 2;
-					}
-				}
-				return doc => esLinter.verify(doc.toString(), conf)
+				const esLint = await getJsLinter(opt);
+				return doc => esLint(doc.toString())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
@@ -396,121 +380,37 @@ export class CodeMirror6 {
 					});
 			}
 			case 'css': {
-				await loadScript('gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint');
-				/** @see https://www.npmjs.com/package/stylelint-config-recommended */
-				const config = {
-					rules: {
-						'annotation-no-unknown': true,
-						'at-rule-no-unknown': true,
-						'block-no-empty': true,
-						'color-no-invalid-hex': true,
-						'comment-no-empty': true,
-						'custom-property-no-missing-var-function': true,
-						'declaration-block-no-duplicate-custom-properties': true,
-						'declaration-block-no-duplicate-properties': [
-							true,
-							{
-								ignore: ['consecutive-duplicates-with-different-syntaxes'],
-							},
-						],
-						'declaration-block-no-shorthand-property-overrides': true,
-						'font-family-no-duplicate-names': true,
-						'font-family-no-missing-generic-family-keyword': true,
-						'function-calc-no-unspaced-operator': true,
-						'function-linear-gradient-no-nonstandard-direction': true,
-						'function-no-unknown': true,
-						'keyframe-block-no-duplicate-selectors': true,
-						'keyframe-declaration-no-important': true,
-						'media-feature-name-no-unknown': true,
-						'media-query-no-invalid': true,
-						'named-grid-areas-no-invalid': true,
-						'no-descending-specificity': true,
-						'no-duplicate-at-import-rules': true,
-						'no-duplicate-selectors': true,
-						'no-empty-source': true,
-						'no-invalid-double-slash-comments': true,
-						'no-invalid-position-at-import-rule': true,
-						'no-irregular-whitespace': true,
-						'property-no-unknown': true,
-						'selector-anb-no-unmatchable': true,
-						'selector-pseudo-class-no-unknown': true,
-						'selector-pseudo-element-no-unknown': true,
-						'selector-type-no-unknown': [
-							true,
-							{
-								ignore: ['custom-elements'],
-							},
-						],
-						'string-no-newline': true,
-						'unit-no-unknown': true,
-						...opt?.['rules'] as Record<string, unknown>,
-					},
-				};
-				return async doc => {
-					const {results} = await stylelint.lint({code: doc.toString(), config});
-					return results.flatMap(({warnings}) => warnings)
-						.map(({text, severity, line, column, endLine, endColumn}) => ({
-							source: 'Stylelint',
-							message: text,
-							severity,
-							from: pos(doc, line, column),
-							to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
-						}));
+				const styleLint = await getCssLinter(opt);
+				return async doc => (await styleLint(doc.toString()))
+					.map(({text, severity, line, column, endLine, endColumn}) => ({
+						source: 'Stylelint',
+						message: text,
+						severity,
+						from: pos(doc, line, column),
+						to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
+					}));
+			}
+			case 'lua': {
+				const luaLint = await getLuaLinter();
+				return doc => luaLint(doc.toString());
+			}
+			case 'json': {
+				const jsonLint = getJsonLinter();
+				return doc => {
+					const [e] = jsonLint(doc.toString());
+					if (e) {
+						const {message, severity, line, column, position} = e;
+						let from = 0;
+						if (position) {
+							from = Number(position);
+						} else if (line && column) {
+							from = pos(doc, Number(line), Number(column));
+						}
+						return [{message, severity, from, to: from}];
+					}
+					return [];
 				};
 			}
-			case 'lua':
-				await loadScript('npm/luaparse', 'luaparse');
-				/** @see https://github.com/ajaxorg/ace/pull/4954 */
-				luaparse.defaultOptions.luaVersion = '5.3';
-				return doc => {
-					try {
-						luaparse.parse(doc.toString());
-					} catch (e) {
-						if (e instanceof luaparse.SyntaxError) {
-							return [
-								{
-									source: 'luaparse',
-									message: e.message.replace(/^\[\d+:\d+\]\s*/u, ''),
-									severity: 'error',
-									from: e.index,
-									to: e.index,
-								},
-							];
-						}
-					}
-					return [];
-				};
-			case 'json':
-				return doc => {
-					try {
-						const str = doc.toString();
-						if (str.trim()) {
-							JSON.parse(str);
-						}
-					} catch (e) {
-						if (e instanceof SyntaxError) {
-							const {message} = e,
-								line = /\bline (\d+)/u.exec(message)?.[1],
-								column = /\bcolumn (\d+)/u.exec(message)?.[1],
-								position = /\bposition (\d+)/u.exec(message)?.[1];
-							let from = 0;
-							if (position) {
-								from = Number(position);
-							} else if (line && column) {
-								from = pos(doc, Number(line), Number(column));
-							}
-							return [
-								{
-									message,
-									severity: 'error',
-									from,
-									to: from,
-								},
-							];
-						}
-					}
-					return [];
-				};
 			default:
 				return undefined;
 		}
