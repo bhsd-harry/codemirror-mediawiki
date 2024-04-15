@@ -360,7 +360,7 @@ export class CodeMirror6 {
 						wikiparse.setI18N(i18n);
 					} catch {}
 				}
-				const wikiLinter = new wikiparse.Linter(opt?.['include'] as boolean | undefined);
+				const wikiLinter = new wikiparse.Linter!(opt?.['include'] as boolean | undefined);
 				return doc => wikiLinter.codemirror(doc.toString());
 			}
 			case 'javascript': {
