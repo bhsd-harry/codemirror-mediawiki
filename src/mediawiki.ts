@@ -894,7 +894,7 @@ class MediaWiki {
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
-				ret = modeConfig.tags.extTag;
+				ret = `mw-tag-${state.extName} ${modeConfig.tags.extTag}`;
 				stream.skipToEnd();
 			} else {
 				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as State)}`;
@@ -1220,7 +1220,7 @@ class MediaWiki {
 					return {
 						from: mt.from,
 						options: this.doubleUnderscore,
-						validFor: /^[\p{L}\d_]*$/u,
+						validFor: /^[\p{L}\d]*$/u,
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
