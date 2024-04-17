@@ -1,4 +1,4 @@
-import {rules} from 'wikiparser-node/dist/base';
+import {rules} from 'wikiparser-node/base';
 import {CodeMirror} from './base';
 import {getObject, setObject} from './util';
 import {msg, parseMsg, i18n} from './msg';

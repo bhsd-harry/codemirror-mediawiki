@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.9.3/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.9.4/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection} from './textSelection';
@@ -34,7 +34,13 @@ $.valHooks['textarea'] = {
 	},
 };
 
-const linters: Record<string, LintSource | undefined> = {};
+const linters: Record<string, LintSource | undefined> = {},
+	langMap: Record<string, string> = {
+		'sanitized-css': 'css',
+		js: 'javascript',
+		scribunto: 'lua',
+		wikitext: 'mediawiki',
+	};
 
 /**
  * 判断是否为普通编辑器
@@ -222,12 +228,6 @@ export class CodeMirror extends CodeMirror6 {
 	}
 }
 
-const langMap: Record<string, string> = {
-	'sanitized-css': 'css',
-	js: 'javascript',
-	scribunto: 'lua',
-	wikitext: 'mediawiki',
-};
 document.body.addEventListener('click', e => {
 	if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
 		e.preventDefault();
