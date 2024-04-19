@@ -27,6 +27,7 @@ import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
+import {CDN, loadScript} from './util';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -38,6 +39,7 @@ import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
 import type {DocRange} from './fold';
 
+export {CDN};
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 
@@ -91,26 +93,6 @@ const avail: Record<string, Addon<any>> = {
 
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
-
-export const CDN = 'https://testingcf.jsdelivr.net';
-
-/**
- * 使用传统方法加载脚本
- * @param src 脚本地址
- * @param globalConst 脚本全局变量名
- */
-const loadScript = (src: string, globalConst: string): Promise<void> => new Promise(resolve => {
-	if (globalConst in window) {
-		resolve();
-		return;
-	}
-	const script = document.createElement('script');
-	script.src = `${CDN}/${src}`;
-	script.onload = (): void => {
-		resolve();
-	};
-	document.head.append(script);
-});
 
 /**
  * 获取指定行列的位置
