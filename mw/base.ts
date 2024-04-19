@@ -183,8 +183,8 @@ export class CodeMirror extends CodeMirror6 {
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
 			await wikiEditor($(textarea));
 		}
+		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
-			/* eslint-disable no-param-reassign */
 			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
@@ -193,11 +193,11 @@ export class CodeMirror extends CodeMirror6 {
 				await mw.loader.using('oojs-ui-windows');
 				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
 			}
-			if (lang && lang in langMap) {
-				lang = langMap[lang];
-			}
-			/* eslint-enable no-param-reassign */
 		}
+		if (lang && lang in langMap) {
+			lang = langMap[lang];
+		}
+		/* eslint-enable no-param-reassign */
 		const isWiki = lang === 'mediawiki' || lang === 'html',
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
 		if (isWiki) {

@@ -221,12 +221,12 @@ class MediaWiki {
 			'mw-template3-ext3-link-ground',
 			'mw-template3-ground',
 			'mw-template3-link-ground',
-			'mw-section-1',
-			'mw-section-2',
-			'mw-section-3',
-			'mw-section-4',
-			'mw-section-5',
-			'mw-section-6',
+			'mw-section--1',
+			'mw-section--2',
+			'mw-section--3',
+			'mw-section--4',
+			'mw-section--5',
+			'mw-section--6',
 		];
 		for (const ground of grounds) {
 			this.addToken(ground);
@@ -942,7 +942,7 @@ class MediaWiki {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!.length));
 							return this.makeLocalStyle(
-								`${modeConfig.tags.sectionHeader} mw-section-${tmp[1]!.length + 1}`,
+								`${modeConfig.tags.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
 								state,
 							);
 						}

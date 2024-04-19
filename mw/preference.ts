@@ -38,7 +38,7 @@ const enum RuleState {
 }
 
 export const indentKey = 'codemirror-mediawiki-indent',
-	prefs = new Set<string>(getObject(storageKey) as string[] | null),
+	prefs = new Set(getObject(storageKey) as string[] | null),
 	wikilintConfig = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 

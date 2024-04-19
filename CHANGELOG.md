@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.9.5
+
+*2024-04-19*
+
+**Fixed**
+
+- Fix a style conflict with MediaWiki's [CodeMirror 5 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror)
+
 ## 2.9.4
 
 *2024-04-17*
