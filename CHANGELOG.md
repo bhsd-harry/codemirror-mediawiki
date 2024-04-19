@@ -13,6 +13,7 @@
 **Fixed**
 
 - Fix a style conflict with MediaWiki's [CodeMirror 5 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror)
+- Fix inconsistency with [ESLint v9](https://eslint.org/blog/2024/04/eslint-v9.0.0-released/)
 
 ## 2.9.4
 

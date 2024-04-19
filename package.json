@@ -14,8 +14,8 @@
 	"files": [
 		"/i18n/",
 		"/dist/*.js",
-		"/dist/codemirror.d.ts",
-		"/dist/mediawiki.d.ts",
+		"/dist/*.d.ts",
+		"!/dist/gh-page.d.ts",
 		"/dist/mw.min.js.map",
 		"/mediawiki.css"
 	],
@@ -44,19 +44,19 @@
 		"node": "20.9.0"
 	},
 	"dependencies": {
-		"@codemirror/autocomplete": "^6.12.0",
-		"@codemirror/commands": "^6.3.3",
 		"@codemirror/language": "^6.10.1",
-		"@codemirror/legacy-modes": "^6.3.3",
 		"@codemirror/lint": "^6.5.0",
-		"@codemirror/search": "^6.5.6",
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.24.1",
-		"@lezer/highlight": "^1.2.0",
+		"@lezer/common": "^1.1.2",
 		"wikiparser-node": "^1.5.7"
 	},
 	"devDependencies": {
-		"@lezer/common": "^1.1.2",
+		"@codemirror/autocomplete": "^6.12.0",
+		"@codemirror/commands": "^6.3.3",
+		"@codemirror/legacy-modes": "^6.3.3",
+		"@codemirror/search": "^6.5.6",
+		"@lezer/highlight": "^1.2.0",
 		"@stylistic/eslint-plugin": "^1.5.4",
 		"@stylistic/stylelint-plugin": "^2.0.0",
 		"@types/jquery": "^3.5.29",
