@@ -3,7 +3,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
     }
-    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), mediawikiOnly = ['escape', 'codeFolding', 'tagMatching', 'autocompletion'], cm = new CodeMirror6(textarea), linters = {};
+    const textarea = document.querySelector('#wpTextbox'), languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), mediawikiOnly = ['escape', 'codeFolding', 'tagMatching'], cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
         const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none';

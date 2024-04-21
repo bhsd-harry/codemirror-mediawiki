@@ -56,7 +56,11 @@ const languages: Record<string, (config?: any) => Extension> = {
 	html,
 };
 for (const [language, parser] of Object.entries(plugins)) {
-	languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
+	if (typeof parser === 'function') {
+		languages[language.slice(0, -2)] = parser;
+	} else if (!(language in languages)) {
+		languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
+	}
 }
 
 /**
@@ -79,16 +83,19 @@ const avail: Record<string, Addon<any>> = {
 		],
 		{},
 	],
+	autocompletion: [
+		(): Extension => [
+			autocompletion({defaultKeymap: false}),
+			keymap.of([
+				...completionKeymap,
+				{key: 'Tab', run: acceptCompletion},
+			]),
+		],
+		{},
+	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	codeFolding: mediawikiOnly(foldExtension),
 	tagMatching: mediawikiOnly(tagMatchingState),
-	autocompletion: mediawikiOnly([
-		autocompletion({defaultKeymap: false}),
-		keymap.of([
-			...completionKeymap,
-			{key: 'Tab', run: acceptCompletion},
-		]),
-	]),
 };
 
 const linters: Record<string, Extension> = {};

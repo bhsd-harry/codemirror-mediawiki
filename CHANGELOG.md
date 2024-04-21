@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.10.0
+
+*2024-04-21*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for CSS and JavaScript modes
+
 ## 2.9.5
 
 *2024-04-19*

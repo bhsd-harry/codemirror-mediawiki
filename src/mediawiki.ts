@@ -1392,11 +1392,13 @@ class MediaWiki {
 }
 
 for (const [language, parser] of Object.entries(plugins)) {
-	Object.defineProperty(MediaWiki.prototype, language, {
-		get() {
-			return parser;
-		},
-	});
+	if (language === 'css' || language === 'javascript') {
+		Object.defineProperty(MediaWiki.prototype, language, {
+			get() {
+				return parser;
+			},
+		});
+	}
 }
 
 /**
