@@ -181,7 +181,14 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
-			await wikiEditor($(textarea));
+			try {
+				await wikiEditor($(textarea));
+			} catch (e) {
+				if (e instanceof Error && e.message === 'no-wikiEditor') {
+					void mw.notify(msg(e.message), {type: 'error'});
+				}
+				prefs.delete('wikiEditor');
+			}
 		}
 		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
