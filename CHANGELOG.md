@@ -8,11 +8,11 @@
 
 ## 2.10.0
 
-*2024-04-21*
+*2024-04-25*
 
 **Added**
 
-- [Autocompletion](./README.md#autocompletion) for CSS and JavaScript modes
+- [Autocompletion](./README.md#autocompletion) and [codeFolding](./README.md#codefolding) for CSS and JavaScript modes
 
 ## 2.9.5
 

@@ -478,7 +478,7 @@ Key bindings:
 
 ## codeFolding
 
-*version added: 2.3.0*
+*version added: 2.10.0*
 
 Fold template parameters.
 

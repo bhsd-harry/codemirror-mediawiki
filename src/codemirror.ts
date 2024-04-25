@@ -18,6 +18,8 @@ import {
 	bracketMatching,
 	indentUnit,
 	ensureSyntaxTree,
+	foldGutter,
+	foldKeymap,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -93,8 +95,11 @@ const avail: Record<string, Addon<any>> = {
 		],
 		{},
 	],
+	codeFolding: [
+		(e = [foldGutter(), keymap.of(foldKeymap)]): Extension => e,
+		{mediawiki: foldExtension},
+	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
-	codeFolding: mediawikiOnly(foldExtension),
 	tagMatching: mediawikiOnly(tagMatchingState),
 };
 
