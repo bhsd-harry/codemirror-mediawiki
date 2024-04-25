@@ -399,21 +399,14 @@ export class CodeMirror6 {
 				return doc => {
 					const [e] = jsonLint(doc.toString());
 					if (e) {
-						const {message, line, column, position} = e;
+						const {message, severity, line, column, position} = e;
 						let from = 0;
 						if (position) {
 							from = Number(position);
 						} else if (line && column) {
 							from = pos(doc, Number(line), Number(column));
 						}
-						return [
-							{
-								message,
-								severity: 'error',
-								from,
-								to: from,
-							},
-						];
+						return [{message, severity, from, to: from}];
 					}
 					return [];
 				};
