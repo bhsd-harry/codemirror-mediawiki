@@ -14,6 +14,10 @@
 
 - [Autocompletion](./README.md#autocompletion) and [codeFolding](./README.md#codefolding) for CSS and JavaScript modes
 
+**Changed**
+
+- The [Lint](./README.md#lint) extension will not scroll to the panel after initialization
+
 ## 2.9.5
 
 *2024-04-19*

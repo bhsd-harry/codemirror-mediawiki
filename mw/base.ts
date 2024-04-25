@@ -258,7 +258,7 @@ document.body.addEventListener('click', e => {
 		'#',
 		msg('title'),
 		'cm-settings',
-	).addEventListener('click', e => {
+	)!.addEventListener('click', e => {
 		e.preventDefault();
 		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
 		void openPreference(textareas.map(textarea => instances.get(textarea)));

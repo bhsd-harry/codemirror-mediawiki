@@ -79,7 +79,7 @@ export const loadJSON = (async () => {
 	const params: ApiQueryRevisionsParams = {
 		action: 'query',
 		prop: 'revisions',
-		titles: userPage,
+		titles: userPage!,
 		rvprop: 'content',
 		rvlimit: 1,
 	};
@@ -260,7 +260,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		if (changed && user && (save || prefs.has('save'))) {
 			const params: ApiEditPageParams = {
 				action: 'edit',
-				title: userPage,
+				title: userPage!,
 				text: JSON.stringify({
 					addons: [...prefs],
 					indent,

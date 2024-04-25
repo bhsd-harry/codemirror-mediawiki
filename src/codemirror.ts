@@ -248,8 +248,16 @@ export class CodeMirror6 {
 	 * @param show 是否显示
 	 */
 	#toggleLintPanel(show: boolean): void {
+		if (HTMLUListElement.prototype.focus.name !== 'lintPanelFocus') {
+			const lintPanelFocus = function(this: HTMLUListElement, opt?: FocusOptions): void {
+				HTMLElement.prototype.focus.call(this, {
+					...opt,
+					...this.matches('.cm-panel-lint ul') && {preventScroll: true},
+				});
+			};
+			HTMLUListElement.prototype.focus = lintPanelFocus;
+		}
 		(show ? openLintPanel : closeLintPanel)(this.#view);
-		document.querySelector<HTMLUListElement>('.cm-panel-lint ul')?.blur();
 		this.#minHeight(show);
 	}
 
