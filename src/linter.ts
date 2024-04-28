@@ -31,7 +31,7 @@ export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
  * @param opt 选项
  */
 export const getJsLinter: getAsyncLinter<(text: string) => Linter.LintMessage[]> = async opt => {
-	await loadScript('npm/eslint-linter-browserify@8.57.0', 'eslint');
+	await loadScript('npm/eslint-linter-browserify@8.57.0/linter.min.js', 'eslint', true);
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
 		conf: Linter.Config = {
@@ -108,7 +108,7 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 
 /** 获取 luaparse */
 export const getLuaLinter: getAsyncLinter<(text: string) => Diagnostic[]> = async () => {
-	await loadScript('npm/luaparse', 'luaparse');
+	await loadScript('npm/luaparse/luaparse.min.js', 'luaparse', true);
 	/** @see https://github.com/ajaxorg/ace/pull/4954 */
 	luaparse.defaultOptions.luaVersion = '5.3';
 	return doc => {
