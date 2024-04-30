@@ -129,22 +129,23 @@ const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, s
 /** CodeMirror 6 编辑器 */
 export class CodeMirror6 {
 	readonly #textarea;
-	readonly #view;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
 	readonly #extensions = new Compartment();
 	readonly #indent = new Compartment();
 	readonly #extraKeys = new Compartment();
 	readonly #phrases = new Compartment();
+	#view: EditorView | undefined;
 	#lang;
 	#visible = false;
 	#preferred = new Set<string>();
+	#indentStr = '\t';
 
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
 	}
 
-	get view(): EditorView {
+	get view(): EditorView | undefined {
 		return this.#view;
 	}
 
@@ -161,18 +162,28 @@ export class CodeMirror6 {
 	 * @param lang 语言
 	 * @param config 语言设置
 	 */
-	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown) {
+	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown, init = true) {
 		this.#textarea = textarea;
 		this.#lang = lang;
+		if (init) {
+			this.initialize(config);
+		}
+	}
+
+	/**
+	 * 初始化编辑器
+	 * @param config 语言设置
+	 */
+	initialize(config?: unknown): void {
 		let timer: number | undefined;
-		const {readOnly} = textarea,
+		const {textarea, lang} = this,
 			extensions = [
 				this.#language.of(languages[lang]!(config)),
-				this.#linter.of([]),
+				this.#linter.of(linters[lang] || []),
 				this.#extensions.of([]),
-				this.#indent.of(indentUnit.of('\t')),
+				this.#indent.of(indentUnit.of(this.#indentStr)),
 				this.#extraKeys.of([]),
-				this.#phrases.of([]),
+				this.#phrases.of(EditorState.phrases.of(phrases)),
 				syntaxHighlighting(defaultHighlightStyle as Highlighter),
 				EditorView.contentAttributes.of({
 					accesskey: textarea.accessKey,
@@ -197,10 +208,10 @@ export class CodeMirror6 {
 						}, 400);
 					}
 					if (focusChanged) {
-						textarea.dispatchEvent(new Event(this.#view.hasFocus ? 'focus' : 'blur'));
+						textarea.dispatchEvent(new Event(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
 				}),
-				...readOnly
+				...textarea.readOnly
 					? [EditorState.readOnly.of(true)]
 					: [
 						history(),
@@ -219,6 +230,7 @@ export class CodeMirror6 {
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
 		this.#view.dom.addEventListener('click', foldHandler(this.#view));
+		this.prefer({});
 	}
 
 	/**
@@ -226,13 +238,13 @@ export class CodeMirror6 {
 	 * @param effects 扩展变动
 	 */
 	#effects(effects: StateEffect<unknown> | StateEffect<unknown>[]): void {
-		this.#view.dispatch({effects});
+		this.#view!.dispatch({effects});
 	}
 
 	/** 刷新编辑器高度 */
 	#refresh(): void {
 		const {offsetHeight} = this.#textarea;
-		this.#view.dom.style.height = offsetHeight ? `${offsetHeight}px` : this.#textarea.style.height;
+		this.#view!.dom.style.height = offsetHeight ? `${offsetHeight}px` : this.#textarea.style.height;
 	}
 
 	/**
@@ -240,7 +252,7 @@ export class CodeMirror6 {
 	 * @param linting 是否启用语法检查
 	 */
 	#minHeight(linting?: boolean): void {
-		this.#view.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
+		this.#view!.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
 	}
 
 	/**
@@ -257,13 +269,13 @@ export class CodeMirror6 {
 			};
 			HTMLUListElement.prototype.focus = lintPanelFocus;
 		}
-		(show ? openLintPanel : closeLintPanel)(this.#view);
+		(show ? openLintPanel : closeLintPanel)(this.#view!);
 		this.#minHeight(show);
 	}
 
 	/** 获取语法检查扩展 */
 	#getLintExtension(): LintExtension | undefined {
-		return (this.#linter.get(this.#view.state) as LintExtension[])[0];
+		return (this.#linter.get(this.#view!.state) as LintExtension[])[0];
 	}
 
 	/**
@@ -272,13 +284,15 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	setLanguage(lang = 'plain', config?: unknown): void {
-		this.#effects([
-			this.#language.reconfigure(languages[lang]!(config)),
-			this.#linter.reconfigure(linters[lang] || []),
-		]);
 		this.#lang = lang;
-		this.#toggleLintPanel(Boolean(linters[lang]));
-		this.prefer({});
+		if (this.#view) {
+			this.#effects([
+				this.#language.reconfigure(languages[lang]!(config)),
+				this.#linter.reconfigure(linters[lang] || []),
+			]);
+			this.#toggleLintPanel(Boolean(linters[lang]));
+			this.prefer({});
+		}
 	}
 
 	/**
@@ -297,17 +311,21 @@ export class CodeMirror6 {
 		} else {
 			delete linters[this.#lang];
 		}
-		this.#effects(this.#linter.reconfigure(linterExtension));
-		this.#toggleLintPanel(Boolean(lintSource));
+		if (this.#view) {
+			this.#effects(this.#linter.reconfigure(linterExtension));
+			this.#toggleLintPanel(Boolean(lintSource));
+		}
 	}
 
 	/** 立即更新语法检查 */
 	update(): void {
-		const extension = this.#getLintExtension();
-		if (extension) {
-			const plugin = this.#view.plugin(extension[1])!;
-			plugin.set = true;
-			plugin.force();
+		if (this.#view) {
+			const extension = this.#getLintExtension();
+			if (extension) {
+				const plugin = this.#view.plugin(extension[1])!;
+				plugin.set = true;
+				plugin.force();
+			}
 		}
 	}
 
@@ -327,12 +345,14 @@ export class CodeMirror6 {
 				}
 			}
 		}
-		this.#effects(
-			this.#extensions.reconfigure([...this.#preferred].map(name => {
-				const [extension, configs] = avail[name]!;
-				return extension(configs[this.#lang]);
-			})),
-		);
+		if (this.#view) {
+			this.#effects(
+				this.#extensions.reconfigure([...this.#preferred].map(name => {
+					const [extension, configs] = avail[name]!;
+					return extension(configs[this.#lang]);
+				})),
+			);
+		}
 	}
 
 	/**
@@ -340,7 +360,10 @@ export class CodeMirror6 {
 	 * @param indent 缩进字符串
 	 */
 	setIndent(indent: string): void {
-		this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
+		this.#indentStr = indent;
+		if (this.#view) {
+			this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
+		}
 	}
 
 	/**
@@ -421,9 +444,11 @@ export class CodeMirror6 {
 	 * @param content 新内容
 	 */
 	setContent(content: string): void {
-		this.#view.dispatch({
-			changes: {from: 0, to: this.#view.state.doc.length, insert: content},
-		});
+		if (this.#view) {
+			this.#view.dispatch({
+				changes: {from: 0, to: this.#view.state.doc.length, insert: content},
+			});
+		}
 	}
 
 	/**
@@ -431,7 +456,9 @@ export class CodeMirror6 {
 	 * @param show 是否显示编辑器
 	 */
 	toggle(show = !this.#visible): void {
-		if (show && !this.#visible) {
+		if (!this.#view) {
+			return;
+		} else if (show && !this.#visible) {
 			const {value, selectionStart, selectionEnd, scrollTop} = this.#textarea,
 				hasFocus = document.activeElement === this.#textarea;
 			this.setContent(value);
@@ -446,7 +473,7 @@ export class CodeMirror6 {
 				this.#view.focus();
 			}
 			requestAnimationFrame(() => {
-				this.#view.scrollDOM.scrollTop = scrollTop;
+				this.#view!.scrollDOM.scrollTop = scrollTop;
 			});
 		} else if (!show && this.#visible) {
 			const {state: {selection: {main: {from, to, head}}}, hasFocus} = this.#view,
@@ -469,16 +496,20 @@ export class CodeMirror6 {
 	 * @param keys 快捷键
 	 */
 	extraKeys(keys: KeyBinding[]): void {
-		this.#effects(this.#extraKeys.reconfigure(keymap.of(keys)));
+		if (this.#view) {
+			this.#effects(this.#extraKeys.reconfigure(keymap.of(keys)));
+		}
 	}
 
 	/**
 	 * 设置翻译信息
 	 * @param messages 翻译信息
 	 */
-	localize(messages: Record<string, string>): void {
+	localize(messages?: Record<string, string>): void {
 		Object.assign(phrases, messages);
-		this.#effects(this.#phrases.reconfigure(EditorState.phrases.of(phrases)));
+		if (this.#view) {
+			this.#effects(this.#phrases.reconfigure(EditorState.phrases.of(phrases)));
+		}
 	}
 
 	/**
@@ -486,19 +517,22 @@ export class CodeMirror6 {
 	 * @param position 位置
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
-		return ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
+		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
 	}
 
 	/**
 	 * 滚动至指定位置
-	 * @param r 位置
+	 * @param position 位置
 	 */
-	scrollTo(r: number | {anchor: number, head: number} = this.#view.state.selection.main): void {
-		const scrollEffect = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
-			? r
-			: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
-		scrollEffect.value.isSnapshot = true;
-		this.#view.dispatch({effects: scrollEffect});
+	scrollTo(position?: number | {anchor: number, head: number}): void {
+		if (this.#view) {
+			const r = position ?? this.#view.state.selection.main,
+				scrollEffect = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
+					? r
+					: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
+			scrollEffect.value.isSnapshot = true;
+			this.#view.dispatch({effects: scrollEffect});
+		}
 	}
 
 	/**
