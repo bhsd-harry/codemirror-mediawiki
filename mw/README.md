@@ -4,8 +4,11 @@
 - [Usage](#usage)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
+	- [editor](#editor)
+	- [model](#model)
 - [Methods](#methods)
 	- [defaultLint](#defaultlint)
+	- [getContent](#getcontent)
 - [Static properties](#static-properties)
 	- [version](#version)
 - [Static methods](#static-methods)
@@ -77,6 +80,30 @@ const cm = new CodeMirror6(textarea, 'lua');
 
 The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from the `CodeMirror6` class.
 
+## editor
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.0*
+
+**type**: [`Monaco.editor.IStandaloneCodeEditor | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html)  
+The Monaco editor instance.
+
+</details>
+
+## model
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.0*
+
+**type**: [`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
+The Monaco text model instance.
+
+</details>
+
 # Methods
 
 The `CodeMirror` class inherits all the [methods](../README.md#methods) from the `CodeMirror6` class and addes more.
@@ -94,6 +121,22 @@ Lint with a default linter.
 
 ```js
 cm.defaultLint(true, 0);
+```
+
+</details>
+
+## getContent
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.0*
+
+**returns**: `string`  
+Get the content of the editor.
+
+```js
+cm.getContent();
 ```
 
 </details>

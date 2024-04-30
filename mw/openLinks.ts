@@ -44,8 +44,8 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			return;
 		}
 		const {view} = cm,
-			{state} = view,
-			node = cm.getNodeAt(view.posAtCoords(e)!);
+			{state} = view!,
+			node = cm.getNodeAt(view!.posAtCoords(e)!);
 		if (!node) {
 			// pass
 		} else if (node.name.includes('mw-pagename')) {
@@ -87,7 +87,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
  * @param on 是否添加
  */
 export const openLinks = (cm: CodeMirror, on?: boolean): void => {
-	const {view: {contentDOM}} = cm,
+	const {contentDOM} = cm.view!,
 		handler = getHandler(cm);
 	if (on) {
 		mw.loader.load('mediawiki.Title');

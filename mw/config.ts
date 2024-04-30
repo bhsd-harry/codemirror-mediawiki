@@ -9,11 +9,11 @@ declare interface MagicWord {
 }
 
 // 和本地缓存有关的常数
-const USING_LOCAL = mw.loader.getState('ext.CodeMirror') !== null,
-	DATA_MODULE = mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
-	ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
+const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
 		= getObject('InPageEditMwConfig') || {},
-	SITE_ID = `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`,
+	SITE_ID = typeof mw === 'object'
+		? `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`
+		: location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
 
@@ -61,8 +61,8 @@ const setConfig = (config: MwConfig): void => {
 
 /** 加载CodeMirror的mediawiki模块需要的设置 */
 export const getMwConfig = async (): Promise<MwConfig> => {
-	if (USING_LOCAL && !VALID) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
-		await mw.loader.using(DATA_MODULE);
+	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
+		await mw.loader.using(mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror');
 	}
 
 	let config = mw.config.get('extCodeMirrorConfig') as MwConfig | null;
@@ -162,7 +162,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		protocol: mwConfig.urlProtocols,
 	};
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;
-	if (!USING_LOCAL) {
+	if (mw.loader.getState('ext.CodeMirror') === null) {
 		for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
 			if (!key.startsWith('#')) {
 				config.parserFunction[0][`#${key}`] = val;

@@ -205,6 +205,7 @@ export class CodeMirror6 {
 						clearTimeout(timer);
 						timer = window.setTimeout(() => {
 							textarea.value = doc.toString();
+							textarea.dispatchEvent(new Event('input'));
 						}, 400);
 					}
 					if (focusChanged) {

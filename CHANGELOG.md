@@ -13,6 +13,11 @@
 **Added**
 
 - [Autocompletion](./README.md#autocompletion) for JavaScript now includes the [scopeCompletionSource](https://github.com/codemirror/lang-javascript#user-content-scopecompletionsource)
+- New extension option: [useMonaco](./README.md#usemonaco)
+
+**Changed**
+
+- Changes to the editor now trigger the `input` event on the textarea element
 
 ## 2.10.0
 

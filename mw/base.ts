@@ -1,18 +1,23 @@
 import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.10.0/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
-import {instances, textSelection} from './textSelection';
+import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Config, LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
+import type * as Monaco from 'monaco-editor';
 import type {LintSource, MwConfig} from '../src/codemirror';
 
+declare global {
+	const monaco: typeof Monaco;
+}
+
 // 每次新增插件都需要修改这里
-const baseVersion = '2.7',
-	addons = ['save'];
+const baseVersion = '2.11',
+	addons = ['useMonaco'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -22,7 +27,7 @@ mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 $.valHooks['textarea'] = {
 	get(elem: HTMLTextAreaElement): string {
 		const cm = instances.get(elem);
-		return cm?.visible ? cm.view.state.doc.toString() : elem.value;
+		return cm?.visible ? cm.getContent() : elem.value;
 	},
 	set(elem: HTMLTextAreaElement, value: string): void {
 		const cm = instances.get(elem);
@@ -40,6 +45,12 @@ const linters: Record<string, LintSource | undefined> = {},
 		js: 'javascript',
 		scribunto: 'lua',
 		wikitext: 'mediawiki',
+	},
+	monacoLangs: Record<string, string> = {
+		mediawiki: 'wikitext',
+		template: 'wikitext',
+		gadget: 'javascript',
+		plain: 'plaintext',
 	};
 
 /**
@@ -52,7 +63,25 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('
 export class CodeMirror extends CodeMirror6 {
 	static version = curVersion;
 
-	ns;
+	declare ns;
+	#visible = false;
+	#container: HTMLDivElement | undefined;
+	#model: Monaco.editor.ITextModel | undefined;
+	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
+	#isCM;
+	#indentStr = '\t';
+
+	override get visible(): boolean {
+		return this.#visible;
+	}
+
+	get model(): Monaco.editor.ITextModel | undefined {
+		return this.#model;
+	}
+
+	get editor(): Monaco.editor.IStandaloneCodeEditor | undefined {
+		return this.#editor;
+	}
 
 	/**
 	 * @param textarea 文本框
@@ -64,18 +93,23 @@ export class CodeMirror extends CodeMirror6 {
 		if (instances.get(textarea)?.visible) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
-		super(textarea, lang, config);
+		const isCM = !prefs.has('useMonaco');
+		super(textarea, lang, config, isCM);
+		if (!isCM) {
+			void this.#initMonaco();
+		}
 		this.ns = ns;
+		this.#isCM = isCM;
 		instances.set(textarea, this);
 		if (mw.loader.getState('jquery.textSelection') === 'ready') {
-			$(textarea).data('jquery.textSelection', textSelection);
+			$(textarea).data('jquery.textSelection', isCM ? textSelection : monacoTextSelection);
 		}
 		if (isEditor(textarea)) {
 			mw.hook('wiki-codemirror6').fire(this);
 			if (textarea.id === 'wpTextbox1') {
 				textarea.form?.addEventListener('submit', () => {
 					const scrollTop = document.querySelector<HTMLInputElement>('#wpScrolltop');
-					if (scrollTop) {
+					if (scrollTop && this.view && this.#visible) {
 						scrollTop.value = String(this.view.scrollDOM.scrollTop);
 					}
 				});
@@ -83,9 +117,92 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	override toggle(show = !this.visible): void {
-		super.toggle(show);
-		$(this.textarea).data('jquery.textSelection', show && textSelection);
+	/** 初始化 Monaco 编辑器 */
+	async #initMonaco(): Promise<void> {
+		if (!('monaco' in window)) {
+			await $.ajax(
+				`${CDN}/npm/monaco-wiki/dist/all.min.js`,
+				{dataType: 'script', scriptAttrs: {type: 'module'}} as JQuery.AjaxSettings,
+			);
+		}
+		const {textarea, lang: cmLang} = this,
+			lang = monacoLangs[cmLang] || cmLang,
+			tab = this.#indentStr.includes('\t');
+		// eslint-disable-next-line @typescript-eslint/await-thenable
+		this.#model = (await monaco).editor.createModel(textarea.value, lang);
+		this.#container = document.createElement('div');
+		this.#refresh();
+		this.#container.style.minHeight = '2em';
+		textarea.after(this.#container);
+		textarea.style.display = 'none';
+		this.#editor = monaco.editor.create(this.#container, {
+			model: this.#model,
+			automaticLayout: true,
+			theme: 'monokai',
+			readOnly: textarea.readOnly,
+			wordWrap: lang === 'wikitext' || lang === 'html' || lang === 'plaintext' ? 'on' : 'off',
+			wordBreak: 'keepAll',
+			tabSize: tab ? 4 : Number(this.#indentStr),
+			insertSpaces: !tab,
+			glyphMargin: true,
+			fontSize: parseFloat(getComputedStyle(textarea).fontSize),
+			unicodeHighlight: {
+				ambiguousCharacters: lang !== 'wikitext' && lang !== 'html' && lang !== 'plaintext',
+			},
+		});
+		let timer: number;
+		this.#model.onDidChangeContent(() => {
+			clearTimeout(timer);
+			timer = window.setTimeout(() => {
+				textarea.value = this.#model!.getValue();
+			}, 400);
+		});
+	}
+
+	/** 刷新 Monaco 编辑器高度 */
+	#refresh(): void {
+		const {textarea: {offsetHeight, style: {height}}} = this;
+		this.#container!.style.height = offsetHeight ? `${offsetHeight}px` : height;
+	}
+
+	override toggle(show = !this.#visible): void {
+		const {textarea} = this;
+		if (this.#isCM) {
+			super.toggle(show);
+			$(textarea).data('jquery.textSelection', show && textSelection);
+		} else if (show && !this.#visible) {
+			this.#model!.setValue(textarea.value);
+			this.#refresh();
+			this.#container!.style.display = '';
+			textarea.style.display = 'none';
+			$(textarea).data('jquery.textSelection', monacoTextSelection);
+		} else if (!show && this.#visible) {
+			this.#container!.style.display = 'none';
+			textarea.style.display = '';
+			$(textarea).removeData('jquery.textSelection');
+		}
+		this.#visible = show;
+	}
+
+	override setContent(content: string): void {
+		if (this.#isCM) {
+			super.setContent(content);
+		} else {
+			this.#model!.setValue(content);
+		}
+	}
+
+	/** 获取编辑器内容 */
+	getContent(): string {
+		return this.#isCM ? this.view!.state.doc.toString() : this.#model!.getValue();
+	}
+
+	override setIndent(indent: string): void {
+		this.#indentStr = indent;
+		if (this.#editor) {
+			const tab = indent.includes('\t');
+			this.#editor.updateOptions({tabSize: tab ? 4 : Number(indent), insertSpaces: !tab});
+		}
 	}
 
 	override async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
@@ -165,11 +282,13 @@ export class CodeMirror extends CodeMirror6 {
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
 		}
-		openLinks(this, hasExtension('openLinks'));
 		if (!Array.isArray(extensions)) {
 			for (const [k, v] of Object.entries(extensions)) {
 				prefs[v ? 'add' : 'delete'](k);
 			}
+		}
+		if (this.view) {
+			openLinks(this, hasExtension('openLinks'));
 		}
 	}
 

@@ -41,6 +41,7 @@
 	- [escape](#escape)
 	- [codeFolding](#codefolding)
 	- [tagMatching](#tagmatching)
+	- [useMonaco](#usemonaco)
 
 </details>
 
@@ -512,3 +513,9 @@ Key bindings:
 *version added: 2.4.1*
 
 Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
+
+## useMonaco
+
+*version added: 2.11.0*
+
+Use the Monaco editor instead of the CodeMirror editor.
