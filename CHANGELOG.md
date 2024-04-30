@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.11.0
+
+*2024-05-01*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for JavaScript now includes the [scopeCompletionSource](https://github.com/codemirror/lang-javascript#user-content-scopecompletionsource)
+
 ## 2.10.0
 
 *2024-04-25*

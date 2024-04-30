@@ -1229,7 +1229,7 @@ class MediaWiki {
 				}
 				const validFor = /^[a-z\d]*$/iu;
 				if (mt.text[1] === '/') {
-					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>((?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
+					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 						target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
 						extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
 						options = [
