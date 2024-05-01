@@ -49,7 +49,7 @@
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.24.1",
 		"@lezer/common": "^1.1.2",
-		"wikiparser-node": "^1.5.7"
+		"wikiparser-node": "^1.6.2"
 	},
 	"devDependencies": {
 		"@codemirror/autocomplete": "^6.12.0",
@@ -74,9 +74,9 @@
 		"eslint-plugin-json-es": "^1.5.7",
 		"eslint-plugin-promise": "^6.1.1",
 		"eslint-plugin-regexp": "^2.2.0",
-		"eslint-plugin-unicorn": "^51.0.1",
+		"eslint-plugin-unicorn": "^52.0.0",
 		"http-server": "^14.1.0",
-		"monaco-editor": "^0.47.0",
+		"monaco-editor": "^0.48.0",
 		"stylelint": "^16.1.0",
 		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.6.0",
