@@ -6,7 +6,7 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
-## 2.11.0
+## 2.11.1
 
 *2024-05-01*
 

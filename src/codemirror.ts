@@ -242,12 +242,6 @@ export class CodeMirror6 {
 		this.#view!.dispatch({effects});
 	}
 
-	/** 刷新编辑器高度 */
-	#refresh(): void {
-		const {offsetHeight} = this.#textarea;
-		this.#view!.dom.style.height = offsetHeight ? `${offsetHeight}px` : this.#textarea.style.height;
-	}
-
 	/**
 	 * 设置编辑器最小高度
 	 * @param linting 是否启用语法检查
@@ -460,10 +454,10 @@ export class CodeMirror6 {
 		if (!this.#view) {
 			return;
 		} else if (show && !this.#visible) {
-			const {value, selectionStart, selectionEnd, scrollTop} = this.#textarea,
+			const {value, selectionStart, selectionEnd, scrollTop, offsetHeight, style: {height}} = this.#textarea,
 				hasFocus = document.activeElement === this.#textarea;
 			this.setContent(value);
-			this.#refresh();
+			this.#view.dom.style.height = offsetHeight ? `${offsetHeight}px` : height;
 			this.#view.dom.style.removeProperty('display');
 			this.#textarea.style.display = 'none';
 			this.#view.requestMeasure();

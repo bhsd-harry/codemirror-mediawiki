@@ -211,7 +211,7 @@ const tree = cm.getNodeAt(0);
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.11.0*
+*version added: 2.11.1*
 
 **param**: `unknown` the optional language configuration  
 Initialize the editor.
@@ -516,6 +516,6 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 ## useMonaco
 
-*version added: 2.11.0*
+*version added: 2.11.1*
 
 Use the Monaco editor instead of the CodeMirror editor.

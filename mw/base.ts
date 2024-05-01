@@ -68,7 +68,6 @@ export class CodeMirror extends CodeMirror6 {
 	#container: HTMLDivElement | undefined;
 	#model: Monaco.editor.ITextModel | undefined;
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
-	#isCM;
 	#indentStr = '\t';
 
 	override get visible(): boolean {
@@ -88,21 +87,20 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param lang 语言
 	 * @param ns 命名空间
 	 * @param config 语言设置
+	 * @param isCM 是否使用 CodeMirror
 	 */
-	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown) {
+	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown, isCM = true) {
 		if (instances.get(textarea)?.visible) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
-		const isCM = !prefs.has('useMonaco');
-		super(textarea, lang, config, isCM);
-		if (!isCM) {
-			void this.#initMonaco();
-		}
+		super(textarea, lang, config, false);
 		this.ns = ns;
-		this.#isCM = isCM;
 		instances.set(textarea, this);
-		if (mw.loader.getState('jquery.textSelection') === 'ready') {
-			$(textarea).data('jquery.textSelection', isCM ? textSelection : monacoTextSelection);
+		if (isCM) {
+			this.initialize(config);
+		} else {
+			void this.#initMonaco();
+			$(textarea).data('jquery.textSelection', monacoTextSelection);
 		}
 		if (isEditor(textarea)) {
 			mw.hook('wiki-codemirror6').fire(this);
@@ -167,11 +165,11 @@ export class CodeMirror extends CodeMirror6 {
 
 	override toggle(show = !this.#visible): void {
 		const {textarea} = this;
-		if (this.#isCM) {
+		if (!this.#model) {
 			super.toggle(show);
 			$(textarea).data('jquery.textSelection', show && textSelection);
 		} else if (show && !this.#visible) {
-			this.#model!.setValue(textarea.value);
+			this.#model.setValue(textarea.value);
 			this.#refresh();
 			this.#container!.style.display = '';
 			textarea.style.display = 'none';
@@ -185,23 +183,25 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override setContent(content: string): void {
-		if (this.#isCM) {
-			super.setContent(content);
+		if (this.#model) {
+			this.#model.setValue(content);
 		} else {
-			this.#model!.setValue(content);
+			super.setContent(content);
 		}
 	}
 
 	/** 获取编辑器内容 */
 	getContent(): string {
-		return this.#isCM ? this.view!.state.doc.toString() : this.#model!.getValue();
+		return this.view ? this.view.state.doc.toString() : this.#model!.getValue();
 	}
 
 	override setIndent(indent: string): void {
-		this.#indentStr = indent;
 		if (this.#editor) {
+			this.#indentStr = indent;
 			const tab = indent.includes('\t');
 			this.#editor.updateOptions({tabSize: tab ? 4 : Number(indent), insertSpaces: !tab});
+		} else {
+			super.setIndent(indent);
 		}
 	}
 
@@ -274,20 +274,15 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {
-		super.prefer(extensions);
-		const hasExtension = Array.isArray(extensions)
-				? (ext: string): boolean => extensions.includes(ext)
-				: (ext: string): boolean | undefined => extensions[ext],
-			hasLint = hasExtension('lint');
-		if (hasLint !== undefined) {
-			void this.defaultLint(hasLint);
-		}
-		if (!Array.isArray(extensions)) {
-			for (const [k, v] of Object.entries(extensions)) {
-				prefs[v ? 'add' : 'delete'](k);
-			}
-		}
 		if (this.view) {
+			super.prefer(extensions);
+			const hasExtension = Array.isArray(extensions)
+					? (ext: string): boolean => extensions.includes(ext)
+					: (ext: string): boolean | undefined => extensions[ext],
+				hasLint = hasExtension('lint');
+			if (hasLint !== undefined) {
+				void this.defaultLint(hasLint);
+			}
 			openLinks(this, hasExtension('openLinks'));
 		}
 	}
@@ -324,8 +319,9 @@ export class CodeMirror extends CodeMirror6 {
 			lang = langMap[lang];
 		}
 		/* eslint-enable no-param-reassign */
-		const isWiki = lang === 'mediawiki' || lang === 'html',
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns);
+		const isCM = !prefs.has('useMonaco'),
+			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM);
 		if (isWiki) {
 			let config: MwConfig;
 			if (mw.config.get('wgServerName').endsWith('.moegirl.org.cn')) {

@@ -24,7 +24,7 @@
 	"addon-openLinks-mac": "CMD+點擊可打開連結或模板頁面",
 	"addon-save": "將設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]",
 	"addon-tagMatching": "突出顯示匹配和未匹配的標籤",
-	"addon-useMonaco": "使用Monaco編輯器（測試版）",
+	"addon-useMonaco": "新增的編輯區使用Monaco編輯器（測試版）",
 	"addon-wikiEditor": "載入WikiEditor工具列",
 	"no-wikiEditor": "未找到WikiEditor擴展。",
 	"save-success": "設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]。",

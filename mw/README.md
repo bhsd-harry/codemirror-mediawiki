@@ -85,7 +85,7 @@ The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.11.0*
+*version added: 2.11.1*
 
 **type**: [`Monaco.editor.IStandaloneCodeEditor | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html)  
 The Monaco editor instance.
@@ -97,7 +97,7 @@ The Monaco editor instance.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.11.0*
+*version added: 2.11.1*
 
 **type**: [`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
 The Monaco text model instance.
@@ -130,7 +130,7 @@ cm.defaultLint(true, 0);
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.11.0*
+*version added: 2.11.1*
 
 **returns**: `string`  
 Get the content of the editor.
