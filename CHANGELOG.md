@@ -1,6 +1,6 @@
-## v2.x.0
+## v2.11.4
 
-*2024-xx-xx*
+*2024-05-03*
 
 **Fixed**
 
@@ -14,6 +14,10 @@
 
 - [codeFolding](./README.md#codefolding) for Lua
 - Improved [autocompletion](./README.md#autocompletion) for CSS base on the browser [`CSS.supports()`](https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports_static) static method
+
+**Fixed**
+
+- [`visible`](./README.md#visible) is corrected for the Monaco editor
 
 ## 2.11.2
 

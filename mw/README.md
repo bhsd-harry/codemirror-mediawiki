@@ -63,6 +63,7 @@ The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) cla
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
 **param**: `unknown` the optional language configuration  
+**param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror
 
 ```js
 const cm = new CodeMirror6(textarea); // plain text

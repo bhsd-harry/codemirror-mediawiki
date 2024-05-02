@@ -1149,18 +1149,19 @@ class MediaWiki {
 						}
 						stream.backUp(tagname.length);
 					}
+					break;
 				}
-				// no default
+				default:
+					if (/\s/u.test(ch || '')) {
+						stream.eatSpace();
+						// highlight free external links, bug T108448
+						if (stream.match(this.urlProtocols, false) && !stream.match('//')) {
+							chain(state, this.eatFreeExternalLinkProtocol.bind(this));
+							return this.makeStyle(style, state);
+						}
+					}
 			}
-			if (/\s/u.test(ch || '')) {
-				stream.eatSpace();
-				// highlight free external links, bug T108448
-				if (stream.match(this.urlProtocols, false) && !stream.match('//')) {
-					chain(state, this.eatFreeExternalLinkProtocol.bind(this));
-					return this.makeStyle(style, state);
-				}
-			}
-			stream.eatWhile(/[^\s_>}[\]<{'|&:~=]/u);
+			stream.eatWhile(/[^\s_[<{'&~:|=>}\]]/u);
 			return this.makeStyle(style, state);
 		};
 	}
