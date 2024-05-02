@@ -27,7 +27,7 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets, autocompletion, completionKeymap, acceptCompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
-import {foldExtension, foldHandler} from './fold';
+import {foldExtension, foldHandler, luaFoldExtension} from './fold';
 import {tagMatchingState} from './matchTag';
 import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
@@ -97,7 +97,10 @@ const avail: Record<string, Addon<any>> = {
 	],
 	codeFolding: [
 		(e = [foldGutter(), keymap.of(foldKeymap)]): Extension => e,
-		{mediawiki: foldExtension},
+		{
+			mediawiki: foldExtension,
+			lua: [foldGutter(), keymap.of(foldKeymap), luaFoldExtension],
+		},
 	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),

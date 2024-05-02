@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.11.3
+
+*2024-05-02*
+
+**Added**
+
+- [codeFolding](./README.md#codefolding) for Lua
+
 ## 2.11.2
 
 *2024-05-02*
