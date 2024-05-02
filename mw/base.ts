@@ -64,7 +64,7 @@ export class CodeMirror extends CodeMirror6 {
 	static version = curVersion;
 
 	declare ns;
-	#visible = false;
+	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: Monaco.editor.ITextModel | undefined;
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;

@@ -330,7 +330,7 @@ export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
 	}
 };
 
-export const luaFoldExtension: Extension = foldService.of(({doc, tabSize}, start, from) => {
+export const foldOnIndent: Extension = foldService.of(({doc, tabSize}, start, from) => {
 	const {text, number} = doc.lineAt(start);
 	if (!text.trim()) {
 		return null;
