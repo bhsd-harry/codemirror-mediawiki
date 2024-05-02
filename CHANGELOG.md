@@ -6,6 +6,14 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.11.2
+
+*2024-05-02*
+
+**Fixed**
+
+- In a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now returns a `Promise` that resolves when the editor is initialized
+
 ## 2.11.1
 
 *2024-05-01*

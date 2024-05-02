@@ -68,6 +68,7 @@ export class CodeMirror extends CodeMirror6 {
 	#container: HTMLDivElement | undefined;
 	#model: Monaco.editor.ITextModel | undefined;
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
+	#init;
 	#indentStr = '\t';
 
 	override get visible(): boolean {
@@ -99,7 +100,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (isCM) {
 			this.initialize(config);
 		} else {
-			void this.#initMonaco();
+			this.#init = this.#initMonaco();
 			$(textarea).data('jquery.textSelection', monacoTextSelection);
 		}
 		if (isEditor(textarea)) {
@@ -340,7 +341,7 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			cm.setLanguage(lang, {...config, tagModes: CodeMirror.mwTagModes});
 		}
-		await loadJSON;
+		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);
 		const indent = localStorage.getItem(indentKey);
 		if (indent) {
