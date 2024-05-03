@@ -9,14 +9,14 @@ import {Tag} from '@lezer/highlight';
 /**
  * Configuration for the MediaWiki highlighting mode for CodeMirror.
  */
-export const modeConfig = {
+const modeConfig = {
 
 	/**
 	 * All HTML/XML tags permitted in MediaWiki Core.
 	 *
 	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
 	 */
-	permittedHtmlTags: [
+	htmlTags: [
 		'b',
 		'bdi',
 		'bdo',
@@ -87,7 +87,7 @@ export const modeConfig = {
 	/**
 	 * HTML tags that are only self-closing.
 	 */
-	implicitlyClosedHtmlTags: [
+	voidHtmlTags: [
 		'br',
 		'hr',
 		'wbr',
@@ -105,7 +105,7 @@ export const modeConfig = {
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
 	 * @internal
 	 */
-	tags: {
+	tokens: {
 		apostrophes: 'mw-apostrophes',
 		comment: 'mw-comment',
 		doubleUnderscore: 'mw-double-underscore',
@@ -166,9 +166,11 @@ export const modeConfig = {
 	 */
 	get tokenTable(): Record<string, Tag> {
 		const table: Record<string, Tag> = {};
-		for (const className of Object.values(this.tags)) {
+		for (const className of Object.values(this.tokens)) {
 			table[className] = Tag.define();
 		}
 		return table;
 	},
 };
+
+export default modeConfig;

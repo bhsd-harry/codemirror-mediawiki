@@ -12,7 +12,7 @@ import {
 	ensureSyntaxTree,
 } from '@codemirror/language';
 import {Tag} from '@lezer/highlight';
-import {modeConfig} from './config';
+import modeConfig from './config';
 import * as plugins from './plugins';
 import type {StreamParser, StringStream, TagStyle} from '@codemirror/language';
 import type {
@@ -23,9 +23,11 @@ import type {
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
+const {htmlTags, voidHtmlTags, tokenTable, tokens} = modeConfig;
+
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
 declare type Tokenizer = (stream: StringStream, state: State) => string;
-declare type TagName = keyof typeof modeConfig.tags;
+declare type TagName = keyof typeof tokens;
 declare interface State {
 	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
@@ -124,14 +126,15 @@ class MediaWiki {
 
 	constructor(config: MwConfig) {
 		const {
-			urlProtocols,
-			permittedHtmlTags,
-			implicitlyClosedHtmlTags,
-			tags,
-			nsid,
-			functionSynonyms,
-			doubleUnderscore,
-		} = config;
+				urlProtocols,
+				permittedHtmlTags,
+				implicitlyClosedHtmlTags,
+				tags,
+				nsid,
+				functionSynonyms,
+				doubleUnderscore,
+			} = config,
+			extTags = Object.keys(tags);
 		this.config = config;
 		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
 		this.isBold = false;
@@ -143,24 +146,22 @@ class MediaWiki {
 		this.firstSpace = null;
 		this.oldStyle = null;
 		this.oldTokens = [];
-		this.tokenTable = {...modeConfig.tokenTable};
+		this.tokenTable = {...tokenTable};
 		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
-			...modeConfig.permittedHtmlTags,
+			...htmlTags,
 			...permittedHtmlTags || [],
 		]);
 		this.implicitlyClosedHtmlTags = new Set([
-			...modeConfig.implicitlyClosedHtmlTags,
+			...voidHtmlTags,
 			...implicitlyClosedHtmlTags || [],
 		]);
-		const extTags = Object.keys(tags);
-		for (const tag of extTags) {
-			this.addTag(tag);
-		}
-		const nsFile = Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|'),
-			nsOther = Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ');
-		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
-		this.nsRegex = new RegExp(`^(${nsOther})\\s*:\\s*`, 'iu');
+		this.fileRegex = new RegExp(`^(?:${
+			Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')
+		})\\s*:`, 'iu');
+		this.nsRegex = new RegExp(`^(${
+			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
+		})\\s*:\\s*`, 'iu');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -170,10 +171,13 @@ class MediaWiki {
 			label,
 		}));
 		this.extTags = extTags.map(label => ({type: 'type', label}));
-		this.htmlTags = modeConfig.permittedHtmlTags.filter(tag => !extTags.includes(tag)).map(label => ({
+		this.htmlTags = htmlTags.filter(tag => !extTags.includes(tag)).map(label => ({
 			type: 'type',
 			label,
 		}));
+		for (const tag of extTags) {
+			this.addTag(tag);
+		}
 	}
 
 	/**
@@ -265,21 +269,21 @@ class MediaWiki {
 	}
 
 	makeTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
-		return this.makeStyle(modeConfig.tags[tag], state, endGround);
+		return this.makeStyle(tokens[tag], state, endGround);
 	}
 
 	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(
 			`${style} ${
-				this.isBold || state.dt.n ? modeConfig.tags.strong : ''
-			} ${this.isItalic ? modeConfig.tags.em : ''}`,
+				this.isBold || state.dt.n ? tokens.strong : ''
+			} ${this.isItalic ? tokens.em : ''}`,
 			state,
 			endGround,
 		);
 	}
 
 	makeLocalTagStyle(tag: TagName, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
-		return this.makeLocalStyle(modeConfig.tags[tag], state, endGround);
+		return this.makeLocalStyle(tokens[tag], state, endGround);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
@@ -413,7 +417,7 @@ class MediaWiki {
 				}
 				return this.makeLocalTagStyle('section', state);
 			}
-			return this.eatWikiText(modeConfig.tags.section)(stream, state);
+			return this.eatWikiText(tokens.section)(stream, state);
 		};
 	}
 
@@ -451,7 +455,7 @@ class MediaWiki {
 		}
 		return stream.eatWhile(/[^&{<]/u)
 			? this.makeLocalTagStyle('tableDefinition', state)
-			: this.eatWikiText(modeConfig.tags.tableDefinition)(stream, state);
+			: this.eatWikiText(tokens.tableDefinition)(stream, state);
 	}
 
 	inTable(stream: StringStream, state: State): string {
@@ -476,15 +480,15 @@ class MediaWiki {
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
 		}
-		return this.eatWikiText(modeConfig.tags.error)(stream, state);
+		return this.eatWikiText(tokens.error)(stream, state);
 	}
 
 	inTableCell(needAttr: boolean, type: TableCell, firstLine = true): Tokenizer {
 		let style = '';
 		if (type === TableCell.Caption) {
-			style = modeConfig.tags.tableCaption;
+			style = tokens.tableCaption;
 		} else if (type === TableCell.Th) {
-			style = modeConfig.tags.strong;
+			style = tokens.strong;
 		}
 		return (stream, state) => {
 			if (stream.sol()) {
@@ -521,7 +525,7 @@ class MediaWiki {
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatHtmlEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
-		return entity && isHtmlEntity(entity[0]) ? modeConfig.tags.htmlEntity : style;
+		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
 	}
 
 	eatExternalLinkProtocol(chars: number): Tokenizer {
@@ -567,11 +571,11 @@ class MediaWiki {
 		}
 		return stream.match(/^(?:[^'[\]{&~<]|\[(?!\[))+/u)
 			? this.makeTagStyle('extLinkText', state)
-			: this.eatWikiText(modeConfig.tags.extLinkText)(stream, state);
+			: this.eatWikiText(tokens.extLinkText)(stream, state);
 	}
 
 	inLink(file: boolean): Tokenizer {
-		const style = `${modeConfig.tags.linkPageName} ${modeConfig.tags.pageName}`;
+		const style = `${tokens.linkPageName} ${tokens.pageName}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.nLink--;
@@ -617,7 +621,7 @@ class MediaWiki {
 			}
 			return stream.eatWhile(/[^|\]&{}<]/u)
 				? this.makeTagStyle(tag, state)
-				: this.eatWikiText(modeConfig.tags[tag])(stream, state);
+				: this.eatWikiText(tokens[tag])(stream, state);
 		};
 	}
 
@@ -625,8 +629,8 @@ class MediaWiki {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
 		return (stream, state) => {
-			const tmpstyle = `${modeConfig.tags.linkText} ${linkIsBold ? modeConfig.tags.strong : ''} ${
-				linkIsItalic ? modeConfig.tags.em : ''
+			const tmpstyle = `${tokens.linkText} ${linkIsBold ? tokens.strong : ''} ${
+				linkIsItalic ? tokens.em : ''
 			}`;
 			if (stream.match(']]')) {
 				if (state.lbrack && stream.peek() === ']') {
@@ -693,7 +697,7 @@ class MediaWiki {
 	}
 
 	inVariableDefault(isFirst?: boolean): Tokenizer {
-		const style = modeConfig.tags[isFirst ? 'templateVariable' : 'comment'];
+		const style = tokens[isFirst ? 'templateVariable' : 'comment'];
 		return (stream, state) => {
 			if (stream.match('}}}')) {
 				state.tokenize = state.stack.pop()!;
@@ -714,7 +718,7 @@ class MediaWiki {
 		return this.inBlock('comment', '-->', true);
 	}
 
-	inParserFunctionName(sameLine?: boolean): Tokenizer {
+	inParserFunctionName(sameLine?: boolean, invoke?: boolean): Tokenizer {
 		return (stream, state) => {
 			if (sameLine && stream.sol()) {
 				state.tokenize = this.inParserFunctionName();
@@ -732,9 +736,19 @@ class MediaWiki {
 			}
 			const ch = stream.eat(/[:|]/u);
 			if (ch) {
-				state.tokenize = this.inParserFunctionArguments.bind(this);
+				state.tokenize = this.inParserFunctionArguments(invoke);
 				return this.makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
-			} else if (stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u)) {
+			}
+			const mt = stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u) as RegExpMatchArray | false;
+			if (mt) {
+				const name = mt[0].trim().toLowerCase(),
+					{config: {functionSynonyms: [insensitive]}} = this;
+				if (
+					name.startsWith('#')
+					&& (insensitive[name] === 'invoke' || insensitive[name.slice(1)] === 'invoke')
+				) {
+					state.tokenize = this.inParserFunctionName(true, true);
+				}
 				return this.makeLocalTagStyle('parserFunctionName', state);
 			}
 			state.tokenize = state.stack.pop()!;
@@ -742,20 +756,26 @@ class MediaWiki {
 		};
 	}
 
-	inParserFunctionArguments(stream: StringStream, state: State): string {
-		if (stream.eat('|')) {
-			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
-		} else if (stream.match('}}')) {
-			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
-		}
-		return isSolSyntax(stream) || !stream.eatWhile(/[^|}{[<&~'_:]/u)
-			? this.eatWikiText(modeConfig.tags.parserFunction)(stream, state)
-			: this.makeLocalTagStyle('parserFunction', state);
+	inParserFunctionArguments(module?: boolean): Tokenizer {
+		const style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
+		return (stream, state) => {
+			if (stream.eat('|')) {
+				if (module) {
+					state.tokenize = this.inParserFunctionArguments();
+				}
+				return this.makeLocalTagStyle('parserFunctionDelimiter', state);
+			} else if (stream.match('}}')) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+			}
+			return isSolSyntax(stream) || !stream.eatWhile(module ? /[^|}{[<]/u : /[^|}{[<&~'_:]/u)
+				? this.eatWikiText(tokens.parserFunction)(stream, state)
+				: this.makeLocalStyle(style, state);
+		};
 	}
 
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
-		const style = anchor ? modeConfig.tags.error : `${modeConfig.tags.templateName} ${modeConfig.tags.pageName}`;
+		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -811,7 +831,7 @@ class MediaWiki {
 			}
 			return !isSolSyntax(stream) && stream.eatWhile(/[^|}{[<&~'_:]/u) || space
 				? this.makeLocalTagStyle('template', state)
-				: this.eatWikiText(modeConfig.tags.template)(stream, state);
+				: this.eatWikiText(tokens.template)(stream, state);
 		};
 	}
 
@@ -847,7 +867,7 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('htmlTagBracket', state);
 			}
-			return this.eatWikiText(modeConfig.tags.htmlTagAttribute)(stream, state);
+			return this.eatWikiText(tokens.htmlTagAttribute)(stream, state);
 		};
 	}
 
@@ -887,7 +907,7 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('extTagBracket', state);
 			}
-			return this.eatWikiText(modeConfig.tags.extTagAttribute)(stream, state);
+			return this.eatWikiText(tokens.extTagAttribute)(stream, state);
 		};
 	}
 
@@ -928,7 +948,7 @@ class MediaWiki {
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
-				ret = `mw-tag-${state.extName} ${modeConfig.tags.extTag}`;
+				ret = `mw-tag-${state.extName} ${tokens.extTag}`;
 				stream.skipToEnd();
 			} else {
 				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as State)}`;
@@ -965,7 +985,7 @@ class MediaWiki {
 				switch (ch) {
 					case '-':
 						if (stream.match(/^-{3,}/u)) {
-							return modeConfig.tags.hr;
+							return tokens.hr;
 						}
 						break;
 					case '=': {
@@ -976,7 +996,7 @@ class MediaWiki {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!.length));
 							return this.makeLocalStyle(
-								`${modeConfig.tags.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
+								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
 								state,
 							);
 						}
@@ -1006,7 +1026,7 @@ class MediaWiki {
 							stream.eat('{');
 						} else {
 							/** @todo indent-pre is sometimes suppressed */
-							return modeConfig.tags.skipFormatting;
+							return tokens.skipFormatting;
 						}
 					}
 					// fall through
@@ -1094,7 +1114,7 @@ class MediaWiki {
 					break;
 				case '~':
 					if (stream.match(/^~{2,4}/u)) {
-						return modeConfig.tags.signature;
+						return tokens.signature;
 					}
 					break;
 				// Maybe double underscored Magic Word such as __TOC__
@@ -1122,7 +1142,7 @@ class MediaWiki {
 								`__${name[0].toLowerCase()}` in doubleUnderscore[0]
 								|| `__${name[0]}` in doubleUnderscore[1]
 							) {
-								return modeConfig.tags.doubleUnderscore;
+								return tokens.doubleUnderscore;
 							} else if (!stream.eol()) {
 								// Two underscore symbols at the end can be the
 								// beginning of another double underscored Magic Word
@@ -1282,34 +1302,38 @@ class MediaWiki {
 			if (!node) {
 				return null;
 			}
-			const types = new Set(node.name.split('_')),
-				{from} = node;
-			if (
-				explicit
-				&& (types.has(modeConfig.tags.templateName) || types.has(modeConfig.tags.parserFunctionName))
-			) {
-				const search = state.sliceDoc(from, pos),
-					options = search.includes(':') ? [] : [...this.functionSynonyms],
-					suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
-				options.push(...suggestions.options);
-				return options.length === 0
-					? null
-					: {
-						from: from + suggestions.offset,
-						options,
-						validFor: /^[^|{}<]*$/u,
-					};
-			} else if (explicit && types.has(modeConfig.tags.linkPageName)) {
-				const search = state.sliceDoc(from, pos),
-					suggestions = await this.#linkSuggest(search);
-				return suggestions
-					? {
-						from: from + suggestions.offset,
-						options: suggestions.options,
-						validFor: /^[^|{<\]#]*$/u,
-					}
-					: null;
-			} else if (!types.has(modeConfig.tags.comment) && !types.has(modeConfig.tags.templateVariableName)) {
+			const types = new Set(node.name.split('_'));
+			if (explicit) {
+				const validFor = /^[^|{}<>[\]#]*$/u,
+					{from} = node,
+					search = state.sliceDoc(from, pos);
+				if (types.has(tokens.templateName) || types.has(tokens.parserFunctionName)) {
+					const options = search.includes(':') ? [] : [...this.functionSynonyms],
+						suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
+					options.push(...suggestions.options);
+					return options.length === 0
+						? null
+						: {
+							from: from + suggestions.offset,
+							options,
+							validFor,
+						};
+				}
+				const isModule = types.has(tokens.pageName) && types.has(tokens.parserFunction) || 0;
+				if (isModule || types.has(tokens.linkPageName)) {
+					const suggestions = await this.#linkSuggest(
+						`${isModule ? 'Module:' : ''}${search}`,
+						isModule && 828,
+					);
+					return suggestions
+						? {
+							from: from + suggestions.offset - (isModule && 7),
+							options: suggestions.options,
+							validFor,
+						}
+						: null;
+				}
+			} else if (!types.has(tokens.comment) && !types.has(tokens.templateVariableName)) {
 				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);
 				if (mt) {
 					return {

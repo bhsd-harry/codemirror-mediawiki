@@ -10,7 +10,7 @@ import {
 	codeFolding,
 	foldService,
 } from '@codemirror/language';
-import {modeConfig} from './config';
+import modeConfig from './config';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
@@ -20,8 +20,10 @@ export interface DocRange {
 	to: number;
 }
 
-const isTemplateComponent = (s: keyof typeof modeConfig.tags) =>
-		({name}: SyntaxNode): boolean => name.includes(modeConfig.tags[s]),
+const {tokens} = modeConfig;
+
+const isTemplateComponent = (s: keyof typeof tokens) =>
+		({name}: SyntaxNode): boolean => name.includes(tokens[s]),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
 	isBracket = isTemplateComponent('templateBracket'),

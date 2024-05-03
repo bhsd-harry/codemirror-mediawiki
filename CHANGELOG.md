@@ -4,7 +4,9 @@
 
 **Added**
 
-- Wikilink and template [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [opensearch API](https://www.mediawiki.org/wiki/API:Opensearch)
+- Highlight the module page name in the MediaWiki mode
+- Wikilink, template and module [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [opensearch API](https://www.mediawiki.org/wiki/API:Opensearch)
+- When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens module pages
 
 **Fixed**
 
