@@ -2,6 +2,10 @@
 
 *2024-05-03*
 
+**Added**
+
+- Wikilink and template [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [opensearch API](https://www.mediawiki.org/wiki/API:Opensearch)
+
 **Fixed**
 
 - Allow spaces in the parser function name in the MediaWiki mode

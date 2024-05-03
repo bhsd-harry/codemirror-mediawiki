@@ -47,6 +47,13 @@ declare interface Token {
 	readonly state: object;
 }
 
+/**
+ * 获取维基链接建议
+ * @param search 搜索字符串
+ * @param namespace 命名空间
+ */
+export type LinkSuggest = (search: string, namespace?: number) => string[] | Promise<string[]>;
+
 export interface MwConfig {
 	readonly tags: Record<string, true>;
 	readonly tagModes: Record<string, string>;
@@ -58,7 +65,7 @@ export interface MwConfig {
 	nsid: Record<string, number>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
-	fromApi?: boolean;
+	linkSuggest?: LinkSuggest;
 }
 
 const enum TableCell {
@@ -109,14 +116,24 @@ class MediaWiki {
 	declare readonly permittedHtmlTags;
 	declare readonly implicitlyClosedHtmlTags;
 	declare readonly fileRegex: RegExp;
+	declare readonly nsRegex: RegExp;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
 	declare readonly htmlTags: Completion[];
 
 	constructor(config: MwConfig) {
+		const {
+			urlProtocols,
+			permittedHtmlTags,
+			implicitlyClosedHtmlTags,
+			tags,
+			nsid,
+			functionSynonyms,
+			doubleUnderscore,
+		} = config;
 		this.config = config;
-		this.urlProtocols = new RegExp(`^(?:${config.urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
+		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
@@ -130,26 +147,28 @@ class MediaWiki {
 		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
 			...modeConfig.permittedHtmlTags,
-			...config.permittedHtmlTags || [],
+			...permittedHtmlTags || [],
 		]);
 		this.implicitlyClosedHtmlTags = new Set([
 			...modeConfig.implicitlyClosedHtmlTags,
-			...config.implicitlyClosedHtmlTags || [],
+			...implicitlyClosedHtmlTags || [],
 		]);
-		for (const tag of Object.keys(config.tags)) {
+		const extTags = Object.keys(tags);
+		for (const tag of extTags) {
 			this.addTag(tag);
 		}
-		const nsFile = Object.entries(this.config.nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|');
+		const nsFile = Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|'),
+			nsOther = Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ');
 		this.fileRegex = new RegExp(`^(?:${nsFile})\\s*:`, 'iu');
-		this.functionSynonyms = this.config.functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
+		this.nsRegex = new RegExp(`^(${nsOther})\\s*:\\s*`, 'iu');
+		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
 		})));
-		this.doubleUnderscore = this.config.doubleUnderscore.flatMap(Object.keys).map(label => ({
+		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).map(label => ({
 			type: 'constant',
 			label,
 		}));
-		const extTags = Object.keys(config.tags);
 		this.extTags = extTags.map(label => ({type: 'type', label}));
 		this.htmlTags = modeConfig.permittedHtmlTags.filter(tag => !extTags.includes(tag)).map(label => ({
 			type: 'type',
@@ -849,6 +868,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('extTagAttribute', state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
+				const {config: {tagModes}} = this;
 				if (name === 'nowiki' || name === 'pre') {
 					// There's no actual processing within these tags (apart from HTML entities),
 					// so startState and copyState can be no-ops.
@@ -857,8 +877,8 @@ class MediaWiki {
 						token: this.eatNowiki,
 					};
 					state.extState = {};
-				} else if (name in this.config.tagModes) {
-					state.extMode = this[this.config.tagModes[name] as MimeTypes];
+				} else if (name in tagModes) {
+					state.extMode = this[tagModes[name] as MimeTypes];
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
@@ -1097,9 +1117,10 @@ class MediaWiki {
 						// The same as the end of function except '_' inside and '__' at the end.
 						const name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
 						if (name) {
+							const {config: {doubleUnderscore}} = this;
 							if (
-								`__${name[0].toLowerCase()}` in this.config.doubleUnderscore[0]
-								|| `__${name[0]}` in this.config.doubleUnderscore[1]
+								`__${name[0].toLowerCase()}` in doubleUnderscore[0]
+								|| `__${name[0]}` in doubleUnderscore[1]
 							) {
 								return modeConfig.tags.doubleUnderscore;
 							} else if (!stream.eol()) {
@@ -1216,24 +1237,78 @@ class MediaWiki {
 		this.wasItalic = this.isItalic;
 	}
 
+	/**
+	 * 提供链接建议
+	 * @param search 搜索字符串
+	 * @param ns 命名空间
+	 */
+	async #linkSuggest(search: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
+		const {config: {linkSuggest}, nsRegex} = this;
+		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(search)) {
+			return undefined;
+		}
+		/* eslint-disable no-param-reassign */
+		search = search.replace(/_/gu, ' ');
+		let offset = 0;
+		const mt = /^\s*:\s*/u.exec(search);
+		if (mt) {
+			const [{length}] = mt;
+			offset = length;
+			search = search.slice(length);
+			ns = 0;
+		}
+		if (!search) {
+			return undefined;
+		}
+		const mt2 = nsRegex.exec(search) as [string, string] | null;
+		if (mt2) {
+			const [{length}, prefix] = mt2;
+			offset += length;
+			search = `${prefix}:${search.slice(length)}`;
+			ns = 1;
+		}
+		/* eslint-enable no-param-reassign */
+		return {
+			offset,
+			options: (await linkSuggest(search, ns)).map(title => ({type: 'text', label: title})),
+		};
+	}
+
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		return context => {
+		return async context => {
 			const {state, pos, explicit} = context,
 				node = ensureSyntaxTree(state, pos)?.resolve(pos, -1);
 			if (!node) {
 				return null;
 			}
-			const types = new Set(node.name.split('_'));
+			const types = new Set(node.name.split('_')),
+				{from} = node;
 			if (
 				explicit
 				&& (types.has(modeConfig.tags.templateName) || types.has(modeConfig.tags.parserFunctionName))
 			) {
-				return {
-					from: node.from,
-					options: this.functionSynonyms,
-					validFor: /^[^|{}<]*$/u,
-				};
+				const search = state.sliceDoc(from, pos),
+					options = search.includes(':') ? [] : [...this.functionSynonyms],
+					suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
+				options.push(...suggestions.options);
+				return options.length === 0
+					? null
+					: {
+						from: from + suggestions.offset,
+						options,
+						validFor: /^[^|{}<]*$/u,
+					};
+			} else if (explicit && types.has(modeConfig.tags.linkPageName)) {
+				const search = state.sliceDoc(from, pos),
+					suggestions = await this.#linkSuggest(search);
+				return suggestions
+					? {
+						from: from + suggestions.offset,
+						options: suggestions.options,
+						validFor: /^[^|{<\]#]*$/u,
+					}
+					: null;
 			} else if (!types.has(modeConfig.tags.comment) && !types.has(modeConfig.tags.templateVariableName)) {
 				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);
 				if (mt) {

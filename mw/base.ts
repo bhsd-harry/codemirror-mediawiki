@@ -9,7 +9,9 @@ import type {Diagnostic} from '@codemirror/lint';
 import type {Config, LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
+import type {ApiOpenSearchParams} from 'types-mediawiki/api_params';
 import type {LintSource, MwConfig} from '../src/codemirror';
+import type {LinkSuggest} from '../src/mediawiki';
 
 declare global {
 	const monaco: typeof Monaco;
@@ -59,6 +61,25 @@ const linters: Record<string, LintSource | undefined> = {},
  */
 const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('#cm-preference');
 
+/**
+ * 获取维基链接建议
+ * @param api mw.Api 实例
+ */
+const linkSuggestFactory = (api: mw.Api): LinkSuggest => async (search: string, namespace = 0) => {
+	try {
+		const [, pages] = await api.get({
+			action: 'opensearch',
+			search,
+			namespace,
+			limit: 'max',
+			formatversion: '2',
+		} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+		return namespace === 0 ? pages : pages.map(page => new mw.Title(page).getMainText());
+	} catch {
+		return [];
+	}
+};
+
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	static version = curVersion;
@@ -98,7 +119,7 @@ export class CodeMirror extends CodeMirror6 {
 		this.ns = ns;
 		instances.set(textarea, this);
 		if (isCM) {
-			this.initialize(config);
+			super.initialize(config);
 		} else {
 			this.#init = this.#initMonaco();
 			$(textarea).data('jquery.textSelection', monacoTextSelection);
@@ -114,6 +135,13 @@ export class CodeMirror extends CodeMirror6 {
 				});
 			}
 		}
+	}
+
+	override initialize(config?: unknown): void {
+		if (this.#model) {
+			throw new Error('A Monaco editor is already initialized!');
+		}
+		super.initialize(config);
 	}
 
 	/** 初始化 Monaco 编辑器 */
@@ -181,6 +209,16 @@ export class CodeMirror extends CodeMirror6 {
 			$(textarea).removeData('jquery.textSelection');
 		}
 		this.#visible = show;
+	}
+
+	override async setLanguage(lang?: string, config?: unknown): Promise<void> {
+		if (this.#model) {
+			throw new Error('Cannot change the language of a Monaco editor!');
+		} else if (lang === 'mediawiki' || lang === 'html') {
+			await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
+			(config as MwConfig).linkSuggest = linkSuggestFactory(new mw.Api());
+		}
+		super.setLanguage(lang, config);
 	}
 
 	override setContent(content: string): void {
@@ -339,7 +377,7 @@ export class CodeMirror extends CodeMirror6 {
 			} else {
 				config = await getMwConfig();
 			}
-			cm.setLanguage(lang, {...config, tagModes: CodeMirror.mwTagModes});
+			await cm.setLanguage(lang, {...config, tagModes: CodeMirror.mwTagModes});
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);
