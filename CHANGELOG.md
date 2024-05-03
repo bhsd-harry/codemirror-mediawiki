@@ -6,13 +6,17 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+**Changed**
+
+- [Autocompletion](./README.md#autocompletion) for MediaWiki parser functions is now only triggered by `Ctrl` + `Space`
+
 ## 2.11.3
 
 *2024-05-02*
 
 **Added**
 
-- [codeFolding](./README.md#codefolding) for Lua
+- [CodeFolding](./README.md#codefolding) for Lua
 - Improved [autocompletion](./README.md#autocompletion) for CSS base on the browser [`CSS.supports()`](https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports_static) static method
 
 **Fixed**
@@ -50,7 +54,7 @@
 
 **Changed**
 
-- The [Lint](./README.md#lint) extension will not scroll to the panel after initialization
+- The [lint](./README.md#lint) extension will not scroll to the panel after initialization
 
 ## 2.9.5
 
@@ -427,7 +431,7 @@
 
 **Added**
 
-- [defaultLint](./mw/README.md#defaultlint) now detects the user's language preference
+- [`defaultLint`](./mw/README.md#defaultlint) now detects the user's language preference
 
 **Fixed**
 
@@ -461,8 +465,8 @@
 
 **Added**
 
-- [lintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
-- [defaultLint](./mw/README.md#defaultlint) can take a namespace id as a second argument in place of a configuration object
+- [LintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
+- [`defaultLint`](./mw/README.md#defaultlint) can take a namespace id as a second argument in place of a configuration object
 
 **Fixed**
 

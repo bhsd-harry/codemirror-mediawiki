@@ -1219,13 +1219,16 @@ class MediaWiki {
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
 		return context => {
-			const {state, pos} = context,
+			const {state, pos, explicit} = context,
 				node = ensureSyntaxTree(state, pos)?.resolve(pos, -1);
 			if (!node) {
 				return null;
 			}
 			const types = new Set(node.name.split('_'));
-			if (types.has(modeConfig.tags.templateName) || types.has(modeConfig.tags.parserFunctionName)) {
+			if (
+				explicit
+				&& (types.has(modeConfig.tags.templateName) || types.has(modeConfig.tags.parserFunctionName))
+			) {
 				return {
 					from: node.from,
 					options: this.functionSynonyms,
