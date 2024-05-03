@@ -16,6 +16,7 @@
 	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
 	- [getNodeAt](#getnodeat)
+	- [initialize](#initialize)
 	- [lint](#lint)
 	- [localize](#localize)
 	- [prefer](#prefer)
@@ -40,6 +41,7 @@
 	- [escape](#escape)
 	- [codeFolding](#codefolding)
 	- [tagMatching](#tagmatching)
+	- [useMonaco](#usemonaco)
 
 </details>
 
@@ -87,6 +89,7 @@ const {CodeMirror6} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `unknown` the optional language configuration  
+**param**: `boolean` whether to initialize immediately, default as true  
 
 ```js
 const cm = new CodeMirror6(textarea); // plain text
@@ -129,7 +132,7 @@ The current language mode, read-only.
 <details>
 	<summary>Expand</summary>
 
-**type**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView)  
+**type**: [`EditorView | undefined`](https://codemirror.net/6/docs/ref/#view.EditorView)  
 The CodeMirror EditorView instance, read-only.
 
 </details>
@@ -199,6 +202,22 @@ Get the syntax node at the given position.
 
 ```js
 const tree = cm.getNodeAt(0);
+```
+
+</details>
+
+## initialize
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.1*
+
+**param**: `unknown` the optional language configuration  
+Initialize the editor.
+
+```js
+cm.initialize();
 ```
 
 </details>
@@ -494,3 +513,9 @@ Key bindings:
 *version added: 2.4.1*
 
 Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
+
+## useMonaco
+
+*version added: 2.11.1*
+
+Use the Monaco editor instead of the CodeMirror editor.

@@ -6,6 +6,40 @@
 
 - Allow spaces in the parser function name in the MediaWiki mode
 
+## 2.11.3
+
+*2024-05-02*
+
+**Added**
+
+- [codeFolding](./README.md#codefolding) for Lua
+- Improved [autocompletion](./README.md#autocompletion) for CSS base on the browser [`CSS.supports()`](https://developer.mozilla.org/en-US/docs/Web/API/CSS/supports_static) static method
+
+**Fixed**
+
+- [`visible`](./README.md#visible) is corrected for the Monaco editor
+
+## 2.11.2
+
+*2024-05-02*
+
+**Fixed**
+
+- In a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now returns a `Promise` that resolves when the editor is initialized
+
+## 2.11.1
+
+*2024-05-01*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for JavaScript now includes the [scopeCompletionSource](https://github.com/codemirror/lang-javascript#user-content-scopecompletionsource)
+- New extension option: [useMonaco](./README.md#usemonaco)
+
+**Changed**
+
+- Changes to the editor now trigger the `input` event on the textarea element
+
 ## 2.10.0
 
 *2024-04-25*

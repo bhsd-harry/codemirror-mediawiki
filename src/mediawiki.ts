@@ -1049,21 +1049,18 @@ class MediaWiki {
 						state.nVar++;
 						chain(state, this.inVariable.bind(this));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
-					} else if (stream.match(/^\{\s*/u)) {
+					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
 						// Parser function
 						const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
 						if (name) {
 							const [, f, delimiter] = name as [string, string, string],
 								ff = delimiter === ':' ? f : f.trim(),
-								{config: {fromApi, functionSynonyms}} = this;
+								{config: {functionSynonyms}} = this;
 							/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
 							if (
 								(!delimiter || delimiter === ':' || delimiter === '}')
-								&& (
-									ff in functionSynonyms[1]
-									|| ff.toLowerCase() in functionSynonyms[0]
-									|| fromApi && ff.startsWith('#') && ff.slice(1) in functionSynonyms[0]
-								)
+								&& (ff.toLowerCase() in functionSynonyms[0] || ff in functionSynonyms[1])
+								|| stream.peek() === '#'
 							) {
 								state.nExt++;
 								chain(state, this.eatParserFunctionName(f.length));
@@ -1181,7 +1178,6 @@ class MediaWiki {
 						}
 					}
 					stream.eatWhile(/[^\s_[<{'&~:]/u);
-					return this.makeStyle(style, state);
 			}
 			return this.makeStyle(style, state);
 		};

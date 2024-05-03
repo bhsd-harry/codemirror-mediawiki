@@ -1,5 +1,5 @@
 {
-	"version": "2.10.0",
+	"version": "2.11.3",
 	"lang": "en",
 	"i18n-failed": "Failed to fetch the translation file in $1.",
 	"title": "CodeMirror Addons",
@@ -24,6 +24,7 @@
 	"addon-openLinks-mac": "Open the link or template page with CMD-click",
 	"addon-save": "Save your preferences on a [[special:mypage/codemirror-mediawiki.json|user subpage]]",
 	"addon-tagMatching": "Highlight matching/non-matching tags",
+	"addon-useMonaco": "Use Monaco Editor for new editors (Beta)",
 	"addon-wikiEditor": "Load WikiEditor toolbar",
 	"no-wikiEditor": "WikiEditor is not available.",
 	"save-success": "Settings saved on [[special:mypage/codemirror-mediawiki.json|user subpage]].",

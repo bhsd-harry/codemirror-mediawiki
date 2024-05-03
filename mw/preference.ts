@@ -146,7 +146,12 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			panel.on('active', active => {
 				const [textarea] = panel.$element.find('textarea') as unknown as [HTMLTextAreaElement];
 				if (active && !instances.has(textarea)) {
-					void CodeMirror.fromTextArea(textarea, 'json');
+					(async () => {
+						const {editor} = await CodeMirror.fromTextArea(textarea, 'json');
+						if (editor) {
+							editor.getContainerDomNode().style.height = `${Math.max(editor.getContentHeight(), 400)}px`;
+						}
+					})();
 				}
 			});
 			panels[key] = panel;

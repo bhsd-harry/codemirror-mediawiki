@@ -1,5 +1,15 @@
 export const CDN = 'https://testingcf.jsdelivr.net';
 
+interface Require {
+	config(config: {paths?: Record<string, string>}): void;
+
+	(modules: string[], ready: (exports: unknown) => unknown): void;
+}
+
+declare global {
+	const define: unknown;
+}
+
 /**
  * 使用传统方法加载脚本
  * @param src 脚本地址
@@ -11,8 +21,9 @@ export const loadScript = (src: string, globalConst: string, amd?: boolean): Pro
 	if (globalConst in window) {
 		resolve();
 	} else if (amd && typeof define === 'function' && 'amd' in define) {
-		require.config({paths: {[globalConst]: path}});
-		require([globalConst], (exports: unknown) => {
+		const requirejs = window.require as unknown as Require;
+		requirejs.config({paths: {[globalConst]: path}});
+		requirejs([globalConst], (exports: unknown) => {
 			Object.assign(window, {[globalConst]: exports});
 			resolve();
 		});

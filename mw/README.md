@@ -4,8 +4,11 @@
 - [Usage](#usage)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
+	- [editor](#editor)
+	- [model](#model)
 - [Methods](#methods)
 	- [defaultLint](#defaultlint)
+	- [getContent](#getcontent)
 - [Static properties](#static-properties)
 	- [version](#version)
 - [Static methods](#static-methods)
@@ -60,6 +63,7 @@ The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) cla
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
 **param**: `unknown` the optional language configuration  
+**param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror
 
 ```js
 const cm = new CodeMirror6(textarea); // plain text
@@ -76,6 +80,30 @@ const cm = new CodeMirror6(textarea, 'lua');
 # Accessors
 
 The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from the `CodeMirror6` class.
+
+## editor
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.1*
+
+**type**: [`Monaco.editor.IStandaloneCodeEditor | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html)  
+The Monaco editor instance.
+
+</details>
+
+## model
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.1*
+
+**type**: [`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
+The Monaco text model instance.
+
+</details>
 
 # Methods
 
@@ -94,6 +122,22 @@ Lint with a default linter.
 
 ```js
 cm.defaultLint(true, 0);
+```
+
+</details>
+
+## getContent
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.11.1*
+
+**returns**: `string`  
+Get the content of the editor.
+
+```js
+cm.getContent();
 ```
 
 </details>
