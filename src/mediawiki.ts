@@ -695,18 +695,32 @@ class MediaWiki {
 		return this.inBlock('comment', '-->', true);
 	}
 
-	inParserFunctionName(stream: StringStream, state: State): string {
-		// FIXME: {{#name}} and {{uc}} are wrong, must have ':'
-		if (stream.eatWhile(/[^:}{~|<>[\]]/u)) {
-			return this.makeLocalTagStyle('parserFunctionName', state);
-		} else if (stream.eat(':')) {
-			state.tokenize = this.inParserFunctionArguments.bind(this);
-			return this.makeLocalTagStyle('parserFunctionDelimiter', state);
-		} else if (stream.match('}}')) {
+	inParserFunctionName(sameLine?: boolean): Tokenizer {
+		return (stream, state) => {
+			if (sameLine && stream.sol()) {
+				state.tokenize = this.inParserFunctionName();
+				return '';
+			}
+			const space = stream.eatSpace();
+			if (stream.eol()) {
+				return this.makeLocalStyle('', state);
+			} else if (stream.match('<!--', false)) {
+				chain(state, this.inComment);
+				return this.makeLocalTagStyle('parserFunctionName', state);
+			} else if (stream.eat('}') || !sameLine) {
+				state.tokenize = state.stack.pop()!;
+				return this.makeLocalTagStyle(stream.eat('}') ? 'parserFunctionBracket' : 'error', state, 'nExt');
+			}
+			const ch = stream.eat(/[:|]/u);
+			if (ch) {
+				state.tokenize = this.inParserFunctionArguments.bind(this);
+				return this.makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
+			} else if (stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u)) {
+				return this.makeLocalTagStyle('parserFunctionName', state);
+			}
 			state.tokenize = state.stack.pop()!;
-			return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
-		}
-		return this.eatWikiText(modeConfig.tags.error)(stream, state);
+			return this.makeLocalStyle('', state, 'nExt');
+		};
 	}
 
 	inParserFunctionArguments(stream: StringStream, state: State): string {
@@ -1033,22 +1047,24 @@ class MediaWiki {
 						// Parser function
 						if (stream.peek() === '#') {
 							state.nExt++;
-							chain(state, this.inParserFunctionName.bind(this));
+							chain(state, this.inParserFunctionName(true));
 							return this.makeLocalTagStyle('parserFunctionBracket', state);
 						}
 						// Check for parser function without '#'
-						const name = stream
-							.match(/^([^\s}[\]<{'|&:]+)(:|\s*)(\}\}?)?(.)?/u, false) as RegExpMatchArray | false;
-						if (
-							name && (name[2] === ':' || name[4] === undefined || name[3] === '}}')
-							&& (
-								name[1]!.toLowerCase() in this.config.functionSynonyms[0]
-								|| name[1]! in this.config.functionSynonyms[1]
-							)
-						) {
-							state.nExt++;
-							chain(state, this.inParserFunctionName.bind(this));
-							return this.makeLocalTagStyle('parserFunctionBracket', state);
+						const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
+						if (name) {
+							const [, f, delimiter] = name as [string, string, string],
+								ff = delimiter === ':' ? f : f.trim(),
+								{config: {functionSynonyms}} = this;
+							/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
+							if (
+								(!delimiter || delimiter === ':' || delimiter === '}')
+								&& (ff.toLowerCase() in functionSynonyms[0] || ff in functionSynonyms[1])
+							) {
+								state.nExt++;
+								chain(state, this.inParserFunctionName(true));
+								return this.makeLocalTagStyle('parserFunctionBracket', state);
+							}
 						}
 						// Template
 						state.nTemplate++;
