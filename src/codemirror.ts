@@ -164,6 +164,7 @@ export class CodeMirror6 {
 	 * @param textarea 文本框
 	 * @param lang 语言
 	 * @param config 语言设置
+	 * @param init 是否初始化
 	 */
 	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown, init = true) {
 		this.#textarea = textarea;
@@ -358,9 +359,10 @@ export class CodeMirror6 {
 	 * @param indent 缩进字符串
 	 */
 	setIndent(indent: string): void {
-		this.#indentStr = indent;
 		if (this.#view) {
 			this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
+		} else {
+			this.#indentStr = indent;
 		}
 	}
 

@@ -41,7 +41,6 @@
 	- [escape](#escape)
 	- [codeFolding](#codefolding)
 	- [tagMatching](#tagmatching)
-	- [useMonaco](#usemonaco)
 
 </details>
 
@@ -159,7 +158,7 @@ Whether the editor is visible, read-only.
 *version added: 2.2.2*
 
 **param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding) the extra key bindings  
-Add extra key bindings.
+Add extra key bindings. Need initialization first.
 
 ```js
 cm.extraKeys([
@@ -316,7 +315,7 @@ cm.prefer({
 *version added: 2.6.2*
 
 **param**: [`number | {anchor: number, head: number}`](https://codemirror.net/docs/ref/#state.SelectionRange.anchor) the position or range to scroll to, default as the current cursor position  
-Scroll to the given position or range.
+Scroll to the given position or range. Need initialization first.
 
 ```js
 cm.scrollTo();
@@ -332,7 +331,7 @@ cm.scrollTo();
 *version added: 2.1.8*
 
 **param**: `string` new content  
-Reset the content of the editor.
+Reset the content of the editor. Need initialization first.
 
 ```js
 cm.setContent('');
@@ -385,7 +384,7 @@ cm.setLanguage('lua');
 *version added: 2.1.3*
 
 **param**: `boolean` whether to show the editor, optional  
-Switch between the CodeMirror editor and the native textarea.
+Switch between the CodeMirror editor and the native textarea. Need initialization first.
 
 ```js
 cm.toggle();
@@ -450,7 +449,7 @@ Allow multiple selections.
 
 ## autocompletion
 
-*version added: 2.10.0*
+*version added: 2.5.1*
 
 Provide autocompletion for MediaWiki, CSS and JavaScript modes.
 
@@ -497,9 +496,9 @@ Key bindings:
 
 ## codeFolding
 
-*version added: 2.10.0*
+*version added: 2.3.0*
 
-Fold template parameters.
+Fold template parameters in the MediaWiki mode and code blocks in other modes.
 
 Key bindings:
 
@@ -513,9 +512,3 @@ Key bindings:
 *version added: 2.4.1*
 
 Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
-
-## useMonaco
-
-*version added: 2.11.1*
-
-Use the Monaco editor instead of the CodeMirror editor.

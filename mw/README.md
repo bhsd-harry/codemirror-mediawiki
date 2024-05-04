@@ -17,6 +17,7 @@
 	- [openLinks](#openlinks)
 	- [wikiEditor](#wikieditor)
 	- [save](#save)
+	- [useMonaco](#usemonaco)
 
 </details>
 
@@ -118,7 +119,7 @@ The `CodeMirror` class inherits all the [methods](../README.md#methods) from the
 
 **param**: `boolean` whether to start linting  
 **param**: `Record<string, unknown> | number` the optional linter configuration or the namespace id  
-Lint with a default linter.
+Lint the CodeMirror editor with a default linter.
 
 ```js
 cm.defaultLint(true, 0);
@@ -169,7 +170,7 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
-Replace the textarea with CodeMirror editor.
+Replace the textarea with a CodeMirror or Monaco editor.
 
 ```js
 CodeMirror6.fromTextArea(textarea, 'mediawiki');
@@ -185,7 +186,7 @@ The `CodeMirror` class inherits all the [extensions](../README.md#extensions) fr
 
 *version added: 2.1.15*
 
-CTRL/CMD-click opens a wikilink or template or external link in a new tab.
+CTRL/CMD-click opens a link or a transcluded page in a new tab.
 
 ## wikiEditor
 
@@ -198,3 +199,9 @@ Load the WikiEditor toolbar. This extension can only be used before CodeMirror i
 *version added: 2.7.0*
 
 Save preferences as JSON on a user subpage (`Special:Mypage/codemirror-mediawiki.json`).
+
+## useMonaco
+
+*version added: 2.11.1*
+
+Use the Monaco editor instead of the CodeMirror editor.
