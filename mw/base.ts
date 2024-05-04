@@ -66,6 +66,16 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('
  * @param api mw.Api 实例
  */
 const linkSuggestFactory = (api: mw.Api): LinkSuggest => async (search: string, namespace = 0) => {
+	const title = mw.config.get('wgPageName'),
+		{length} = title;
+	let subpage = false;
+	if (search.startsWith('/')) {
+		/* eslint-disable no-param-reassign */
+		search = title + search;
+		namespace = 0;
+		/* eslint-enable no-param-reassign */
+		subpage = true;
+	}
 	try {
 		const [, pages] = await api.get({
 			action: 'opensearch',
@@ -74,6 +84,9 @@ const linkSuggestFactory = (api: mw.Api): LinkSuggest => async (search: string, 
 			limit: 'max',
 			formatversion: '2',
 		} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+		if (subpage) {
+			return pages.map(page => page.slice(length));
+		}
 		return namespace === 0 ? pages : pages.map(page => new mw.Title(page).getMainText());
 	} catch {
 		return [];

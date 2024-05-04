@@ -101,9 +101,7 @@ export const textSelection = {
 				[insertText, start, end] = handleOwnline(
 					from,
 					to,
-					splitlines
-						? selText.split('\n').map(line => `${pre}${line}${post}`).join('\n')
-						: `${pre}${selText}${post}`,
+					splitlines ? selText.split('\n').map(line => pre + line + post).join('\n') : pre + selText + post,
 				),
 				head = from + insertText.length;
 			return isSample ? [insertText, from + pre.length + start, head - post.length - end] : [insertText, head];
@@ -171,9 +169,8 @@ export const monacoTextSelection = {
 		const {model, editor} = getInstance(this),
 			selection = editor!.getSelection()!,
 			selText = replace || selection.isEmpty() ? peri : model!.getValueInRange(selection),
-			insertText = `${ownline && selection.startColumn > 1 ? '\n' : ''}${splitlines
-				? selText.split('\n').map(line => `${pre}${line}${post}`).join('\n')
-				: `${pre}${selText}${post}`
+			insertText = `${ownline && selection.startColumn > 1 ? '\n' : ''}${
+				splitlines ? selText.split('\n').map(line => pre + line + post).join('\n') : pre + selText + post
 			}${ownline && selection.endColumn <= model!.getLineLength(selection.endLineNumber) ? '\n' : ''}`;
 		editor!.executeEdits('encapsulateSelection', [{range: selection, text: insertText, forceMoveMarkers: true}]);
 		return this;

@@ -11,9 +11,7 @@ declare interface MagicWord {
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
 		= getObject('InPageEditMwConfig') || {},
-	SITE_ID = typeof mw === 'object'
-		? `${mw.config.get('wgServerName')}${mw.config.get('wgScriptPath')}`
-		: location.origin,
+	SITE_ID = typeof mw === 'object' ? mw.config.get('wgServerName') + mw.config.get('wgScriptPath') : location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
 

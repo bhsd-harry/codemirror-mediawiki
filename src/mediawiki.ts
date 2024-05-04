@@ -1321,10 +1321,7 @@ class MediaWiki {
 				}
 				const isModule = types.has(tokens.pageName) && types.has(tokens.parserFunction) || 0;
 				if (isModule || types.has(tokens.linkPageName)) {
-					const suggestions = await this.#linkSuggest(
-						`${isModule ? 'Module:' : ''}${search}`,
-						isModule && 828,
-					);
+					const suggestions = await this.#linkSuggest((isModule ? 'Module:' : '') + search, isModule && 828);
 					return suggestions
 						? {
 							from: from + suggestions.offset - (isModule && 7),
