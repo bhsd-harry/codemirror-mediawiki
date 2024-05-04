@@ -49,5 +49,5 @@
 	"phrase-replace": "取代",
 	"phrase-replace-all": "全部取代",
 	"phrase-unfold": "展開",
-	"phrase-Fold-template-parameters": "摺疊模板參數"
+	"phrase-Fold-template-parameters": "摺疊模板、解析器函數或擴展標籤"
 }

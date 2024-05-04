@@ -22,20 +22,30 @@ export interface DocRange {
 
 const {tokens} = modeConfig;
 
-const isTemplateComponent = (s: keyof typeof tokens) =>
-		({name}: SyntaxNode): boolean => name.includes(tokens[s]),
+const isComponent = (keys: (keyof typeof tokens)[]) =>
+		({name}: SyntaxNode): boolean => keys.some(key => name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
-	isBracket = isTemplateComponent('templateBracket'),
+	isTemplateBracket = isComponent(['templateBracket', 'parserFunctionBracket']),
 
-	/** Check if a SyntaxNode is a template delimiter (`|`) */
-	isDelimiter = isTemplateComponent('templateDelimiter'),
+	/** Check if a SyntaxNode is a template delimiter (`|` or `:`) */
+	isDelimiter = isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
 
 	/**
 	 * Check if a SyntaxNode is part of a template, except for the brackets
 	 * @param node 语法树节点
 	 */
-	isTemplate = (node: SyntaxNode): boolean => /-template[a-z\d-]+ground/u.test(node.name) && !isBracket(node),
+	isTemplate = (node: SyntaxNode): boolean =>
+		/-(?:template|ext)[a-z\d-]+ground/u.test(node.name) && !isTemplateBracket(node),
+
+	/** Check if a SyntaxNode is an extension tag bracket (`<` or `>`) */
+	isExtBracket = isComponent(['extTagBracket']),
+
+	/**
+	 * Check if a SyntaxNode is part of a extension tag
+	 * @param node 语法树节点
+	 */
+	isExt = (node: SyntaxNode): boolean => /exttag(?!-)/u.test(node.name),
 
 	/**
 	 * Update the stack of opening (+) or closing (-) brackets
@@ -43,7 +53,7 @@ const isTemplateComponent = (s: keyof typeof tokens) =>
 	 * @param node 语法树节点
 	 */
 	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
-		state.sliceDoc(node.from, node.from + 1) === '{' ? 1 : -1;
+		/[{>]/u.test(state.sliceDoc(node.from, node.to)) ? 1 : -1;
 
 /**
  * 寻找可折叠的范围
@@ -65,19 +75,21 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	if (typeof posOrNode === 'number') {
 		// Find the initial template node on both sides of the position
 		node = tree.resolve(posOrNode, -1);
-		if (!isTemplate(node)) {
+		if (!isTemplate(node) && !isExt(node)) {
 			node = tree.resolve(posOrNode, 1);
 		}
 	} else {
 		node = posOrNode;
 	}
-	if (!isTemplate(node)) {
+	const ext = isExt(node);
+	if (!ext && !isTemplate(node)) {
 		// Not a template
 		return null;
 	}
+	const isBracket = ext ? isExtBracket : isTemplateBracket;
 	let {prevSibling, nextSibling} = node,
 		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
-		/** The first delimiter */ delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
+		/** The first delimiter */ delimiter: SyntaxNode | null = !ext && isDelimiter(node) ? node : null;
 	while (nextSibling) {
 		if (isBracket(nextSibling)) {
 			stack += stackUpdate(state, nextSibling);
@@ -85,7 +97,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 				// The closing bracket of the current template
 				break;
 			}
-		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
+		} else if (!ext && !delimiter && stack === 1 && isDelimiter(nextSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = nextSibling;
 		}
@@ -103,13 +115,13 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 				// The opening bracket of the current template
 				break;
 			}
-		} else if (stack === -1 && isDelimiter(prevSibling)) {
+		} else if (!ext && stack === -1 && isDelimiter(prevSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = prevSibling;
 		}
 		({prevSibling} = prevSibling);
 	}
-	const /** The end of the first delimiter */ from = delimiter?.to,
+	const /** The end of the first delimiter */ from = (ext ? prevSibling : delimiter)?.to,
 		/** The start of the closing bracket */ to = nextSibling.from;
 	if (from && from < to) {
 		return {from, to};

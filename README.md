@@ -498,14 +498,14 @@ Key bindings:
 
 *version added: 2.3.0*
 
-Fold template parameters in the MediaWiki mode and code blocks in other modes.
+Fold templates, parser functions and extension tags in the MediaWiki mode, and code blocks in other modes.
 
 Key bindings:
 
-- `Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`: Fold the selected templates
-- `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold the selected templates
-- `Ctrl` + `Alt` + `[`: Fold all templates
-- `Ctrl` + `Alt` + `]`: Unfold all templates
+- `Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`: Fold at the selected text
+- `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold at the selected text
+- `Ctrl` + `Alt` + `[`: Fold all
+- `Ctrl` + `Alt` + `]`: Unfold all
 
 ## tagMatching
 

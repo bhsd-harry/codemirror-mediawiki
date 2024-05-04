@@ -49,5 +49,5 @@
 	"phrase-replace": "replace",
 	"phrase-replace-all": "replace all",
 	"phrase-unfold": "unfold",
-	"phrase-Fold-template-parameters": "Fold template parameters"
+	"phrase-Fold-template-parameters": "Fold template, parser function or extension tag"
 }
