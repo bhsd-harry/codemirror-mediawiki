@@ -291,8 +291,10 @@ cm.prefer([
 ]);
 cm.prefer({
 	allowMultipleSelections: false,
+	autocompletion: false,
 	bracketMatching: false,
 	closeBrackets: false,
+	codeFolding: false,
 	highlightActiveLine: false,
 	highlightSpecialChars: false,
 	highlightWhitespace: false,
@@ -300,7 +302,6 @@ cm.prefer({
 
 	// only available in MediaWiki mode
 	escape: false,
-	codeFolding: false,
 	tagMatching: false,
 });
 ```
