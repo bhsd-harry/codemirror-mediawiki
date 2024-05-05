@@ -441,12 +441,12 @@ export class CodeMirror6 {
 
 	/**
 	 * 重设编辑器内容
-	 * @param content 新内容
+	 * @param insert 新内容
 	 */
-	setContent(content: string): void {
+	setContent(insert: string): void {
 		if (this.#view) {
 			this.#view.dispatch({
-				changes: {from: 0, to: this.#view.state.doc.length, insert: content},
+				changes: {from: 0, to: this.#view.state.doc.length, insert},
 			});
 		}
 	}
@@ -527,11 +527,11 @@ export class CodeMirror6 {
 	scrollTo(position?: number | {anchor: number, head: number}): void {
 		if (this.#view) {
 			const r = position ?? this.#view.state.selection.main,
-				scrollEffect = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
+				effects = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
 					? r
 					: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
-			scrollEffect.value.isSnapshot = true;
-			this.#view.dispatch({effects: scrollEffect});
+			effects.value.isSnapshot = true;
+			this.#view.dispatch({effects});
 		}
 	}
 

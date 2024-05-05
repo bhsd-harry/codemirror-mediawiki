@@ -121,14 +121,14 @@ const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
 			return null;
 		}
 	}
-	const tag = getTag(state, node);
-	if (isNested(node, tag.type, tag.name)) {
-		return {matched: false, start: tag};
-	} else if (tag.selfClosing) {
-		return {matched: true, start: tag};
+	const start = getTag(state, node);
+	if (isNested(node, start.type, start.name)) {
+		return {matched: false, start};
+	} else if (start.selfClosing) {
+		return {matched: true, start};
 	}
-	const match = searchTag(state, tag);
-	return match ? {matched: true, start: tag, end: match} : {matched: false, start: tag};
+	const end = searchTag(state, start);
+	return end ? {matched: true, start, end} : {matched: false, start};
 };
 
 const matchingMark = Decoration.mark({class: 'cm-matchingTag'}),

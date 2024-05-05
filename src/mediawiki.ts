@@ -1302,12 +1302,13 @@ class MediaWiki {
 			if (!node) {
 				return null;
 			}
-			const types = new Set(node.name.split('_'));
-			if (explicit) {
-				const validFor = /^[^|{}<>[\]#]*$/u,
-					{from} = node,
-					search = state.sliceDoc(from, pos);
-				if (types.has(tokens.templateName) || types.has(tokens.parserFunctionName)) {
+			const types = new Set(node.name.split('_')),
+				{from} = node,
+				search = state.sliceDoc(from, pos),
+				isParserFunction = types.has(tokens.parserFunctionName);
+			if (explicit || isParserFunction && search.includes('#')) {
+				const validFor = /^[^|{}<>[\]#]*$/u;
+				if (isParserFunction || types.has(tokens.templateName)) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
 					options.push(...suggestions.options);

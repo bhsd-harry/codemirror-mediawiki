@@ -82,10 +82,10 @@ export const textSelection = {
 		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
 			// 单独处理改变标题层级
 			const {selection: {main: {from, to}}} = state,
-				[insertText] = handleOwnline(from, to, peri);
+				[insert] = handleOwnline(from, to, peri);
 			view!.dispatch({
-				changes: {from, to, insert: insertText},
-				selection: {anchor: from + insertText.length},
+				changes: {from, to, insert},
+				selection: {anchor: from + insert.length},
 			});
 			return this;
 		}
@@ -145,11 +145,11 @@ export const monacoTextSelection = {
 		editor!.setSelection({startLineNumber, startColumn, endLineNumber, endColumn});
 		return this;
 	},
-	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement> {
+	replaceSelection(this: JQuery<HTMLTextAreaElement>, text: string): JQuery<HTMLTextAreaElement> {
 		const {editor} = getInstance(this);
 		editor!.executeEdits(
 			'replaceSelection',
-			[{range: editor!.getSelection()!, text: value, forceMoveMarkers: true}],
+			[{range: editor!.getSelection()!, text, forceMoveMarkers: true}],
 		);
 		return this;
 	},
@@ -167,12 +167,12 @@ export const monacoTextSelection = {
 			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd!});
 		}
 		const {model, editor} = getInstance(this),
-			selection = editor!.getSelection()!,
-			selText = replace || selection.isEmpty() ? peri : model!.getValueInRange(selection),
-			insertText = `${ownline && selection.startColumn > 1 ? '\n' : ''}${
+			range = editor!.getSelection()!,
+			selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
+			text = `${ownline && range.startColumn > 1 ? '\n' : ''}${
 				splitlines ? selText.split('\n').map(line => pre + line + post).join('\n') : pre + selText + post
-			}${ownline && selection.endColumn <= model!.getLineLength(selection.endLineNumber) ? '\n' : ''}`;
-		editor!.executeEdits('encapsulateSelection', [{range: selection, text: insertText, forceMoveMarkers: true}]);
+			}${ownline && range.endColumn <= model!.getLineLength(range.endLineNumber) ? '\n' : ''}`;
+		editor!.executeEdits('encapsulateSelection', [{range, text, forceMoveMarkers: true}]);
 		return this;
 	},
 	getCaretPosition(this: JQuery<HTMLTextAreaElement>, option?: {startAndEnd?: boolean}): [number, number] | number {

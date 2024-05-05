@@ -39,7 +39,7 @@ const enum RuleState {
 
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set(getObject(storageKey) as string[] | null),
-	wikilintConfig = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
+	wikilint = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
@@ -104,7 +104,7 @@ export const loadJSON = (async () => {
 					}
 				}
 				if (json.wikilint) {
-					Object.assign(wikilintConfig, json.wikilint);
+					Object.assign(wikilint, json.wikilint);
 				}
 			}
 		},
@@ -136,13 +136,13 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		const panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')}),
 			panelWikilint = new OO.ui.TabPanelLayout('wikilint', {label: 'WikiLint'}),
 			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
-		for (const key of codeKeys) {
-			const c = codeConfigs.get(key);
-			widgets[key] = new OO.ui.MultilineTextInputWidget({
+		for (const label of codeKeys) {
+			const c = codeConfigs.get(label);
+			widgets[label] = new OO.ui.MultilineTextInputWidget({
 				value: c ? JSON.stringify(c, null, indent || '\t') : '',
 			});
-			const codeField = new OO.ui.FieldLayout(widgets[key]!, {label: msg(`${key}-config`), align: 'top'}),
-				panel = new OO.ui.TabPanelLayout(key, {label: key, $content: codeField.$element});
+			const codeField = new OO.ui.FieldLayout(widgets[label]!, {label: msg(`${label}-config`), align: 'top'}),
+				panel = new OO.ui.TabPanelLayout(label, {label, $content: codeField.$element});
 			panel.on('active', active => {
 				const [textarea] = panel.$element.find('textarea') as unknown as [HTMLTextAreaElement];
 				if (active && !instances.has(textarea)) {
@@ -154,7 +154,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 					})();
 				}
 			});
-			panels[key] = panel;
+			panels[label] = panel;
 		}
 		layout.addTabPanels([panelMain, panelWikilint, ...Object.values(panels)], 0);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
@@ -183,19 +183,19 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
 		panelWikilint.$element.append(
-			...rules.map(rule => {
-				const state = rule === 'no-arg' ? RuleState.off : RuleState.error,
+			...rules.map(label => {
+				const state = label === 'no-arg' ? RuleState.off : RuleState.error,
 					dropdown = new OO.ui.DropdownInputWidget({
 						options: [
 							{data: RuleState.off, label: msg('wikilint-off')},
 							{data: RuleState.error, label: msg('wikilint-error')},
 							{data: RuleState.on, label: msg('wikilint-on')},
 						],
-						value: wikilintConfig[rule] || state,
+						value: wikilint[label] || state,
 					}),
-					f = new OO.ui.FieldLayout(dropdown, {label: rule});
-				wikilintWidgets.set(rule, dropdown);
-				wikilintConfig[rule] ||= state;
+					f = new OO.ui.FieldLayout(dropdown, {label});
+				wikilintWidgets.set(label, dropdown);
+				wikilint[label] ||= state;
 				return f.$element;
 			}),
 			$('<p>', {html: msg('feedback', 'wikiparser-node')}),
@@ -226,10 +226,10 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		// WikiLint
 		for (const [rule, dropdown] of wikilintWidgets) {
 			const val = dropdown.getValue() as RuleState;
-			changed ||= val !== wikilintConfig[rule];
-			wikilintConfig[rule] = val;
+			changed ||= val !== wikilint[rule];
+			wikilint[rule] = val;
 		}
-		setObject(wikilintKey, wikilintConfig);
+		setObject(wikilintKey, wikilint);
 
 		// ESLint & Stylelint
 		const jsonErrors: string[] = [];
@@ -269,7 +269,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				text: JSON.stringify({
 					addons: [...prefs],
 					indent,
-					wikilint: wikilintConfig,
+					wikilint,
 					ESLint: codeConfigs.get('ESLint'),
 					Stylelint: codeConfigs.get('Stylelint'),
 				} as Preferences),
