@@ -2,19 +2,24 @@ import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemir
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {openPreference, prefs, indentKey, wikilintConfig, codeConfigs, loadJSON} from './preference';
+import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Config, LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
-import type {ApiOpenSearchParams} from 'types-mediawiki/api_params';
+import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {LintSource, MwConfig} from '../src/codemirror';
-import type {LinkSuggest} from '../src/mediawiki';
+import type {ApiSuggest, ApiSuggestions} from '../src/mediawiki';
 
 declare global {
 	const monaco: typeof Monaco;
+}
+
+declare interface TemplateParam {
+	label: string | null;
+	aliases: string[];
 }
 
 // 每次新增插件都需要修改这里
@@ -64,10 +69,10 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('
 /**
  * 获取维基链接建议
  * @param api mw.Api 实例
+ * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api): LinkSuggest => async (search: string, namespace = 0) => {
-	const title = mw.config.get('wgPageName'),
-		{length} = title;
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => async (search: string, namespace = 0) => {
+	const {length} = title;
 	let subpage = false;
 	if (search.startsWith('/')) {
 		/* eslint-disable no-param-reassign */
@@ -82,12 +87,45 @@ const linkSuggestFactory = (api: mw.Api): LinkSuggest => async (search: string, 
 			search,
 			namespace,
 			limit: 'max',
-			formatversion: '2',
 		} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
 		if (subpage) {
-			return pages.map(page => page.slice(length));
+			return pages.map(page => [page.slice(length)]);
 		}
-		return namespace === 0 ? pages : pages.map(page => new mw.Title(page).getMainText());
+		return namespace === 0 ? pages.map(page => [page]) : pages.map(page => [new mw.Title(page).getMainText()]);
+	} catch {
+		return [];
+	}
+};
+
+/**
+ * 获取模板参数建议
+ * @param api mw.Api 实例
+ * @param page 页面标题
+ */
+const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string) => {
+	/* eslint-disable no-param-reassign */
+	if (titles.startsWith('/')) {
+		titles = page + titles;
+	}
+	try {
+		titles = new mw.Title(titles, 10).getPrefixedDb();
+		/* eslint-enable no-param-reassign */
+		const {pages} = await api.get({
+				action: 'templatedata',
+				titles,
+				redirects: true,
+				converttitles: true,
+				lang: mw.config.get('wgUserLanguage'),
+			} as TemplateDataApiTemplateDataParams as Record<string, string>) as {
+				pages: Record<number, {params: Record<string, TemplateParam>}>;
+			},
+			params = Object.entries(Object.values(pages)[0]?.params || {}),
+			result: ApiSuggestions = [];
+		for (const [key, {aliases, label}] of params) {
+			const detail = label || '';
+			result.push([key, detail], ...aliases.map(alias => [alias, detail] as [string, string]));
+		}
+		return result;
 	} catch {
 		return [];
 	}
@@ -168,11 +206,11 @@ export class CodeMirror extends CodeMirror6 {
 				document.head.append(script);
 			});
 		}
-		const {textarea, lang: cmLang} = this,
-			lang = monacoLangs[cmLang] || cmLang,
+		const {textarea, lang} = this,
+			language = monacoLangs[lang] || lang,
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
-		this.#model = (await monaco).editor.createModel(textarea.value, lang);
+		this.#model = (await monaco).editor.createModel(textarea.value, language);
 		this.#container = document.createElement('div');
 		this.#refresh();
 		this.#container.style.minHeight = '2em';
@@ -183,14 +221,14 @@ export class CodeMirror extends CodeMirror6 {
 			automaticLayout: true,
 			theme: 'monokai',
 			readOnly: textarea.readOnly,
-			wordWrap: lang === 'wikitext' || lang === 'html' || lang === 'plaintext' ? 'on' : 'off',
+			wordWrap: language === 'wikitext' || language === 'html' || language === 'plaintext' ? 'on' : 'off',
 			wordBreak: 'keepAll',
 			tabSize: tab ? 4 : Number(this.#indentStr),
 			insertSpaces: !tab,
 			glyphMargin: true,
 			fontSize: parseFloat(getComputedStyle(textarea).fontSize),
 			unicodeHighlight: {
-				ambiguousCharacters: lang !== 'wikitext' && lang !== 'html' && lang !== 'plaintext',
+				ambiguousCharacters: language !== 'wikitext' && language !== 'html' && language !== 'plaintext',
 			},
 		});
 		let timer: number;
@@ -232,7 +270,12 @@ export class CodeMirror extends CodeMirror6 {
 			throw new Error('Cannot change the language of a Monaco editor!');
 		} else if (lang === 'mediawiki' || lang === 'html') {
 			await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
-			(config as MwConfig).linkSuggest = linkSuggestFactory(new mw.Api());
+			const api = new mw.Api({parameters: {formatversion: 2}}),
+				page = mw.config.get('wgPageName');
+			Object.assign(config as MwConfig, {
+				linkSuggest: linkSuggestFactory(api, page),
+				paramSuggest: paramSuggestFactory(api, page),
+			});
 		}
 		super.setLanguage(lang, config);
 	}
@@ -320,7 +363,7 @@ export class CodeMirror extends CodeMirror6 {
 			if (lang === 'mediawiki') {
 				this.lint(
 					async doc => (await linters[lang]!(doc) as (Diagnostic & {rule: LintError.Rule})[])
-						.filter(({rule, severity}) => Number(wikilintConfig[rule]) > Number(severity === 'warning')),
+						.filter(({rule, severity}) => Number(wikilint[rule]) > Number(severity === 'warning')),
 				);
 			} else {
 				this.lint(linters[lang]);

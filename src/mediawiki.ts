@@ -49,12 +49,14 @@ declare interface Token {
 	readonly state: object;
 }
 
+export type ApiSuggestions = [string, string?][];
+
 /**
  * 获取维基链接建议
  * @param search 搜索字符串
  * @param namespace 命名空间
  */
-export type LinkSuggest = (search: string, namespace?: number) => string[] | Promise<string[]>;
+export type ApiSuggest = (search: string, namespace?: number) => ApiSuggestions | Promise<ApiSuggestions>;
 
 export interface MwConfig {
 	readonly tags: Record<string, true>;
@@ -67,7 +69,8 @@ export interface MwConfig {
 	nsid: Record<string, number>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
-	linkSuggest?: LinkSuggest;
+	linkSuggest?: ApiSuggest;
+	paramSuggest?: ApiSuggest;
 }
 
 const enum TableCell {
@@ -819,7 +822,7 @@ class MediaWiki {
 			const space = stream.eatSpace();
 			if (stream.eol()) {
 				return this.makeLocalTagStyle('template', state);
-			} else if (stream.match(/^\|\s*/u)) {
+			} else if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);
 				return this.makeLocalTagStyle('templateDelimiter', state);
 			} else if (stream.match('}}')) {
@@ -1290,8 +1293,28 @@ class MediaWiki {
 		/* eslint-enable no-param-reassign */
 		return {
 			offset,
-			options: (await linkSuggest(search, ns)).map(title => ({type: 'text', label: title})),
+			options: (await linkSuggest(search, ns)).map(([label]) => ({type: 'text', label})),
 		};
+	}
+
+	/**
+	 * 提供模板参数建议
+	 * @param search 搜索字符串
+	 * @param page 模板名
+	 * @param equal 是否有等号
+	 */
+	async #paramSuggest(search: string, page: string, equal: string): Promise<{
+		offset: number;
+		options: Completion[];
+	} | undefined> {
+		const {config: {paramSuggest}} = this;
+		return page && typeof paramSuggest === 'function' && !/[|{}<>[\]]/u.test(page)
+			? {
+				offset: /^\s*/u.exec(search)![0].length,
+				options: (await paramSuggest(page))
+					.map(([key, detail]) => ({type: 'variable', label: key + equal, detail} as Completion)),
+			}
+			: undefined;
 	}
 
 	/** 自动补全魔术字和标签名 */
@@ -1303,9 +1326,9 @@ class MediaWiki {
 				return null;
 			}
 			const types = new Set(node.name.split('_')),
-				{from} = node,
-				search = state.sliceDoc(from, pos),
-				isParserFunction = types.has(tokens.parserFunctionName);
+				isParserFunction = types.has(tokens.parserFunctionName),
+				{from, to} = node,
+				search = state.sliceDoc(from, pos);
 			if (explicit || isParserFunction && search.includes('#')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
 				if (isParserFunction || types.has(tokens.templateName)) {
@@ -1321,7 +1344,7 @@ class MediaWiki {
 						};
 				}
 				const isModule = types.has(tokens.pageName) && types.has(tokens.parserFunction) || 0;
-				if (isModule || types.has(tokens.linkPageName)) {
+				if (isModule && search.trim() || types.has(tokens.linkPageName)) {
 					const suggestions = await this.#linkSuggest((isModule ? 'Module:' : '') + search, isModule && 828);
 					return suggestions
 						? {
@@ -1330,6 +1353,45 @@ class MediaWiki {
 							validFor,
 						}
 						: null;
+				}
+				let {prevSibling} = node;
+				const isArgument = types.has(tokens.templateArgumentName),
+					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
+					isDelimiter = types.has(tokens.templateDelimiter)
+					|| types.has(tokens.templateBracket) && prevIsDelimiter;
+				if (
+					'templatedata' in this.config.tags
+					&& (
+						isDelimiter
+						|| isArgument && !search.includes('=')
+						|| types.has(tokens.template) && prevIsDelimiter
+					)
+				) {
+					let stack = 1,
+						page = '';
+					while (prevSibling) {
+						const {name, from: f, to: t} = prevSibling;
+						if (name.includes(tokens.templateBracket)) {
+							stack += state.sliceDoc(f, t).includes('{{') ? -1 : 1;
+							if (stack === 0) {
+								break;
+							}
+						} else if (stack === 1 && name.includes(tokens.templateName)) {
+							page = state.sliceDoc(f, t) + page;
+						}
+						({prevSibling} = prevSibling);
+					}
+					if (prevSibling) {
+						const equal = isArgument && state.sliceDoc(pos, to).trim() === '=' ? '' : '=',
+							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
+						return suggestions && suggestions.options.length > 0
+							? {
+								from: isDelimiter ? pos : from + suggestions.offset,
+								options: suggestions.options,
+								validFor: /^[^|{}=]*$/u,
+							}
+							: null;
+					}
 				}
 			} else if (!types.has(tokens.comment) && !types.has(tokens.templateVariableName)) {
 				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);

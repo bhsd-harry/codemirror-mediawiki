@@ -1,3 +1,19 @@
+## v2.12.1
+
+*2024-05-05*
+
+**Added**
+
+- Template parameter [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [TemplateData extension](https://www.mediawiki.org/wiki/Extension:TemplateData#API)
+
+**Fixed**
+
+- Fix incompatibility with [jQuery](https://api.jquery.com/jQuery.ajax/#jQuery-ajax-settings-settings) < 3.4
+
+**Changed**
+
+- [Autocompletion](./README.md#autocompletion) for MediaWiki parser functions starting with `#` is now automatically triggered
+
 ## v2.12.0
 
 *2024-05-04*
