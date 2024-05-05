@@ -160,10 +160,13 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		if (!('monaco' in window)) {
-			await $.ajax(
-				`${CDN}/npm/monaco-wiki/dist/all.min.js`,
-				{dataType: 'script', scriptAttrs: {type: 'module'}} as JQuery.AjaxSettings,
-			);
+			await new Promise(resolve => {
+				const script = document.createElement('script');
+				script.addEventListener('load', resolve);
+				script.type = 'module';
+				script.src = `${CDN}/npm/monaco-wiki/dist/all.min.js`;
+				document.head.append(script);
+			});
 		}
 		const {textarea, lang: cmLang} = this,
 			lang = monacoLangs[cmLang] || cmLang,
