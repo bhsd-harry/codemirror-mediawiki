@@ -540,18 +540,18 @@ export class CodeMirror6 {
 	 * @todo 修正已有标签（`references`, `choose`, `combobox`, `gallery`），支持更多标签
 	 */
 	static mwTagModes = {
-		tab: 'text/mediawiki',
-		tabs: 'text/mediawiki',
-		indicator: 'text/mediawiki',
-		poem: 'text/mediawiki',
-		ref: 'text/mediawiki',
-		references: 'text/mediawiki',
-		option: 'text/mediawiki',
-		choose: 'text/mediawiki',
-		combooption: 'text/mediawiki',
-		combobox: 'text/mediawiki',
-		poll: 'text/mediawiki',
-		gallery: 'text/mediawiki',
+		tab: 'mediawiki',
+		tabs: 'mediawiki',
+		indicator: 'mediawiki',
+		poem: 'mediawiki',
+		ref: 'mediawiki',
+		references: 'mediawiki',
+		option: 'mediawiki',
+		choose: 'mediawiki',
+		combooption: 'mediawiki',
+		combobox: 'mediawiki',
+		poll: 'mediawiki',
+		gallery: 'mediawiki',
 	};
 
 	/**

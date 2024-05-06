@@ -1,3 +1,11 @@
+## v2.12.2
+
+*2024-05-06*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for URL protocols in the MediaWiki mode
+
 ## v2.12.1
 
 *2024-05-05*

@@ -79,6 +79,10 @@ const enum TableCell {
 	Caption,
 }
 
+/**
+ * 复制 StreamParser 状态
+ * @param state
+ */
 const copyState = (state: State): State => {
 	const newState = {} as State;
 	for (const [key, val] of Object.entries(state)) {
@@ -89,6 +93,10 @@ const copyState = (state: State): State => {
 
 const span = document.createElement('span'); // used for isHtmlEntity()
 
+/**
+ * 判断字符串是否为 HTML 实体
+ * @param str 字符串
+ */
 const isHtmlEntity = (str: string): boolean => {
 	if (str.startsWith('#')) {
 		return true;
@@ -97,12 +105,29 @@ const isHtmlEntity = (str: string): boolean => {
 	return [...span.textContent!].length === 1;
 };
 
+/**
+ * 更新内部 Tokenizer
+ * @param state
+ * @param tokenizer
+ */
 const chain = (state: State, tokenizer: Tokenizer): void => {
 	state.stack.push(state.tokenize);
 	state.tokenize = tokenizer;
 };
 
+/**
+ * 是否为行首语法
+ * @param stream
+ */
 const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]/u.test(stream.peek() || '');
+
+/**
+ * 判断节点是否包含指定类型
+ * @param types 节点类型
+ * @param names 指定类型
+ */
+const hasType = (types: Set<string>, names: TagName | TagName[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(tokens[name]));
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
@@ -118,6 +143,7 @@ class MediaWiki {
 	declare oldStyle: string | null;
 	declare oldTokens: Token[];
 	declare readonly tokenTable;
+	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
 	declare readonly implicitlyClosedHtmlTags;
 	declare readonly fileRegex: RegExp;
@@ -126,6 +152,7 @@ class MediaWiki {
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
 	declare readonly htmlTags: Completion[];
+	declare readonly protocols: Completion[];
 
 	constructor(config: MwConfig) {
 		const {
@@ -150,6 +177,7 @@ class MediaWiki {
 		this.oldStyle = null;
 		this.oldTokens = [];
 		this.tokenTable = {...tokenTable};
+		this.hiddenTable = {};
 		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
 			...htmlTags,
@@ -178,23 +206,16 @@ class MediaWiki {
 			type: 'type',
 			label,
 		}));
+		this.protocols = urlProtocols.split('|').map(label => ({
+			type: 'namespace',
+			label: label.replace(/\\\//gu, '/'),
+		}));
 		for (const tag of extTags) {
-			this.addTag(tag);
+			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
 		}
-	}
-
-	/**
-	 * Register a token for the given tag in CodeMirror. The generated CSS class will be of
-	 * the form 'cm-mw-tag-tagname'. This is for internal use to dynamically register tags
-	 * from other MediaWiki extensions.
-	 *
-	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
-	 * @param tag
-	 * @param parent
-	 * @internal
-	 */
-	addTag(tag: string, parent?: Tag): void {
-		this.addToken(`mw-tag-${tag}`, parent);
+		for (const tag of this.permittedHtmlTags) {
+			this.addToken(`html-${tag}`, true);
+		}
 	}
 
 	/**
@@ -202,11 +223,12 @@ class MediaWiki {
 	 * This is solely for use by this.addTag() and CodeMirrorModeMediaWiki.makeLocalStyle().
 	 *
 	 * @param token
+	 * @param hidden Whether the token is not highlighted
 	 * @param parent
 	 * @internal
 	 */
-	addToken(token: string, parent?: Tag): void {
-		(this.tokenTable[token] as Tag | undefined) ||= Tag.define(parent);
+	addToken(token: string, hidden = false, parent?: Tag): void {
+		(this[hidden ? 'hiddenTable' : 'tokenTable'][`mw-${token}`] as Tag | undefined) ||= Tag.define(parent);
 	}
 
 	/**
@@ -216,46 +238,43 @@ class MediaWiki {
 	 */
 	registerGroundTokens(): void {
 		const grounds = [
-			'mw-ext-ground',
-			'mw-ext-link-ground',
-			'mw-ext2-ground',
-			'mw-ext2-link-ground',
-			'mw-ext3-ground',
-			'mw-ext3-link-ground',
-			'mw-link-ground',
-			'mw-template-ext-ground',
-			'mw-template-ext-link-ground',
-			'mw-template-ext2-ground',
-			'mw-template-ext2-link-ground',
-			'mw-template-ext3-ground',
-			'mw-template-ext3-link-ground',
-			'mw-template-ground',
-			'mw-template-link-ground',
-			'mw-template2-ext-ground',
-			'mw-template2-ext-link-ground',
-			'mw-template2-ext2-ground',
-			'mw-template2-ext2-link-ground',
-			'mw-template2-ext3-ground',
-			'mw-template2-ext3-link-ground',
-			'mw-template2-ground',
-			'mw-template2-link-ground',
-			'mw-template3-ext-ground',
-			'mw-template3-ext-link-ground',
-			'mw-template3-ext2-ground',
-			'mw-template3-ext2-link-ground',
-			'mw-template3-ext3-ground',
-			'mw-template3-ext3-link-ground',
-			'mw-template3-ground',
-			'mw-template3-link-ground',
-			'mw-section--1',
-			'mw-section--2',
-			'mw-section--3',
-			'mw-section--4',
-			'mw-section--5',
-			'mw-section--6',
+			'ext',
+			'ext-link',
+			'ext2',
+			'ext2-link',
+			'ext3',
+			'ext3-link',
+			'link',
+			'template-ext',
+			'template-ext-link',
+			'template-ext2',
+			'template-ext2-link',
+			'template-ext3',
+			'template-ext3-link',
+			'template',
+			'template-link',
+			'template2-ext',
+			'template2-ext-link',
+			'template2-ext2',
+			'template2-ext2-link',
+			'template2-ext3',
+			'template2-ext3-link',
+			'template2',
+			'template2-link',
+			'template3-ext',
+			'template3-ext-link',
+			'template3-ext2',
+			'template3-ext2-link',
+			'template3-ext3',
+			'template3-ext3-link',
+			'template3',
+			'template3-link',
 		];
 		for (const ground of grounds) {
-			this.addToken(ground);
+			this.addToken(`${ground}-ground`);
+		}
+		for (let i = 1; i < 7; i++) {
+			this.addToken(`section--${i}`);
 		}
 	}
 
@@ -420,7 +439,7 @@ class MediaWiki {
 				}
 				return this.makeLocalTagStyle('section', state);
 			}
-			return this.eatWikiText(tokens.section)(stream, state);
+			return this.eatWikiText('section')(stream, state);
 		};
 	}
 
@@ -458,7 +477,7 @@ class MediaWiki {
 		}
 		return stream.eatWhile(/[^&{<]/u)
 			? this.makeLocalTagStyle('tableDefinition', state)
-			: this.eatWikiText(tokens.tableDefinition)(stream, state);
+			: this.eatWikiText('tableDefinition')(stream, state);
 	}
 
 	inTable(stream: StringStream, state: State): string {
@@ -483,7 +502,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('tableDelimiter', state);
 			}
 		}
-		return this.eatWikiText(tokens.error)(stream, state);
+		return this.eatWikiText('error')(stream, state);
 	}
 
 	inTableCell(needAttr: boolean, type: TableCell, firstLine = true): Tokenizer {
@@ -574,7 +593,7 @@ class MediaWiki {
 		}
 		return stream.match(/^(?:[^'[\]{&~<]|\[(?!\[))+/u)
 			? this.makeTagStyle('extLinkText', state)
-			: this.eatWikiText(tokens.extLinkText)(stream, state);
+			: this.eatWikiText('extLinkText')(stream, state);
 	}
 
 	inLink(file: boolean): Tokenizer {
@@ -772,7 +791,7 @@ class MediaWiki {
 				return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 			}
 			return isSolSyntax(stream) || !stream.eatWhile(module ? /[^|}{[<]/u : /[^|}{[<&~'_:]/u)
-				? this.eatWikiText(tokens.parserFunction)(stream, state)
+				? this.eatWikiText('parserFunction')(stream, state)
 				: this.makeLocalStyle(style, state);
 		};
 	}
@@ -834,7 +853,7 @@ class MediaWiki {
 			}
 			return !isSolSyntax(stream) && stream.eatWhile(/[^|}{[<&~'_:]/u) || space
 				? this.makeLocalTagStyle('template', state)
-				: this.eatWikiText(tokens.template)(stream, state);
+				: this.eatWikiText('template')(stream, state);
 		};
 	}
 
@@ -857,9 +876,10 @@ class MediaWiki {
 	}
 
 	inHtmlTagAttribute(name: string): Tokenizer {
+		const style = `${tokens.htmlTagAttribute} mw-html-${name}`;
 		return (stream, state) => {
 			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'[^>/<{])+/u)) {
-				return this.makeLocalTagStyle('htmlTagAttribute', state);
+				return this.makeLocalStyle(style, state);
 			} else if (stream.peek() === '<') {
 				state.tokenize = state.stack.pop()!;
 				return '';
@@ -870,7 +890,7 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('htmlTagBracket', state);
 			}
-			return this.eatWikiText(tokens.htmlTagAttribute)(stream, state);
+			return this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -910,7 +930,7 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('extTagBracket', state);
 			}
-			return this.eatWikiText(tokens.extTagAttribute)(stream, state);
+			return this.eatWikiText('extTagAttribute')(stream, state);
 		};
 	}
 
@@ -971,6 +991,9 @@ class MediaWiki {
 	 * @ignore
 	 */
 	eatWikiText(style: string): Tokenizer {
+		if (style in tokens) {
+			style = tokens[style as TagName]; // eslint-disable-line no-param-reassign
+		}
 		return (stream, state) => {
 			let ch: string;
 			if (stream.eol()) {
@@ -1006,7 +1029,7 @@ class MediaWiki {
 						break;
 					}
 					case ';':
-						state.dt.n++;
+						state.dt.n = 1;
 						// fall through
 					case '*':
 					case '#':
@@ -1326,12 +1349,12 @@ class MediaWiki {
 				return null;
 			}
 			const types = new Set(node.name.split('_')),
-				isParserFunction = types.has(tokens.parserFunctionName),
+				isParserFunction = hasType(types, 'parserFunctionName'),
 				{from, to} = node,
 				search = state.sliceDoc(from, pos);
 			if (explicit || isParserFunction && search.includes('#')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
-				if (isParserFunction || types.has(tokens.templateName)) {
+				if (isParserFunction || hasType(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
 					options.push(...suggestions.options);
@@ -1343,8 +1366,8 @@ class MediaWiki {
 							validFor,
 						};
 				}
-				const isModule = types.has(tokens.pageName) && types.has(tokens.parserFunction) || 0;
-				if (isModule && search.trim() || types.has(tokens.linkPageName)) {
+				const isModule = hasType(types, 'pageName') && hasType(types, 'parserFunction') || 0;
+				if (isModule && search.trim() || hasType(types, 'linkPageName')) {
 					const suggestions = await this.#linkSuggest((isModule ? 'Module:' : '') + search, isModule && 828);
 					return suggestions
 						? {
@@ -1355,16 +1378,16 @@ class MediaWiki {
 						: null;
 				}
 				let {prevSibling} = node;
-				const isArgument = types.has(tokens.templateArgumentName),
+				const isArgument = hasType(types, 'templateArgumentName'),
 					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
-					isDelimiter = types.has(tokens.templateDelimiter)
-					|| types.has(tokens.templateBracket) && prevIsDelimiter;
+					isDelimiter = hasType(types, 'templateDelimiter')
+					|| hasType(types, 'templateBracket') && prevIsDelimiter;
 				if (
 					'templatedata' in this.config.tags
 					&& (
 						isDelimiter
 						|| isArgument && !search.includes('=')
-						|| types.has(tokens.template) && prevIsDelimiter
+						|| hasType(types, 'template') && prevIsDelimiter
 					)
 				) {
 					let stack = 1,
@@ -1393,7 +1416,17 @@ class MediaWiki {
 							: null;
 					}
 				}
-			} else if (!types.has(tokens.comment) && !types.has(tokens.templateVariableName)) {
+			} else if (!hasType(types, [
+				'comment',
+				'extTagAttribute',
+				'htmlTagAttribute',
+				'templateVariableName',
+				'templateName',
+				'tableDefinition',
+				'linkPageName',
+				'linkToSection',
+				'extLink',
+			])) {
 				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);
 				if (mt) {
 					return {
@@ -1403,29 +1436,38 @@ class MediaWiki {
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-				if (!mt || mt.to - mt.from < 2) {
-					return null;
-				}
-				const validFor = /^[a-z\d]*$/iu;
-				if (mt.text[1] === '/') {
-					const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
-						target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
-						extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
-						options = [
-							...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
-							...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
-						],
-						i = this.permittedHtmlTags.has(target!) && options.findIndex(({label}) => label === target);
-					if (i !== false && i !== -1) {
-						options.splice(i, 1, {type: 'type', label: target!, boost: 99});
+				if (mt && mt.to - mt.from > 1) {
+					const validFor = /^[a-z\d]*$/iu;
+					if (mt.text[1] === '/') {
+						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
+							target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
+							extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
+							options = [
+								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
+								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
+							],
+							i = this.permittedHtmlTags.has(target!) && options.findIndex(({label}) => label === target);
+						if (i !== false && i !== -1) {
+							options.splice(i, 1, {type: 'type', label: target!, boost: 99});
+						}
+						return {from: mt.from + 2, options, validFor};
 					}
-					return {from: mt.from + 2, options, validFor};
+					return {
+						from: mt.from + 1,
+						options: [...this.htmlTags, ...this.extTags],
+						validFor,
+					};
 				}
-				return {
-					from: mt.from + 1,
-					options: [...this.htmlTags, ...this.extTags],
-					validFor,
-				};
+				if (!hasType(types, ['linkText', 'extLinkText'])) {
+					mt = context.matchBefore(/(?:^|[^[])\[[a-z:/]+$/iu);
+					if (mt) {
+						return {
+							from: mt.from + (mt.text[1] === '[' ? 2 : 1),
+							options: this.protocols,
+							validFor: /^[a-z:/]*$/iu,
+						};
+					}
+				}
 			}
 			return null;
 		};
@@ -1555,7 +1597,11 @@ class MediaWiki {
 				}
 			},
 
-			tokenTable: this.tokenTable,
+			tokenTable: {
+				...this.tokenTable,
+				...this.hiddenTable,
+				'': Tag.define(),
+			},
 
 			languageData: {
 				commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
