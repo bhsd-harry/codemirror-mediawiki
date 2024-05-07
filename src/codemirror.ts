@@ -594,6 +594,7 @@ export class CodeMirror6 {
 			nsid: config.nsid,
 			img: {},
 			variants: config.variants,
+			redirection: config.redirection,
 		};
 		fromEntries(config.ext, mwConfig.tags);
 		fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);

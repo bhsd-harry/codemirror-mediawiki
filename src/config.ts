@@ -137,6 +137,7 @@ const modeConfig = {
 		parserFunctionBracket: 'mw-parserfunction-bracket',
 		parserFunctionDelimiter: 'mw-parserfunction-delimiter',
 		parserFunctionName: 'mw-parserfunction-name',
+		redirect: 'mw-redirect',
 		section: 'mw-section',
 		sectionHeader: 'mw-section-header',
 		signature: 'mw-signature',

@@ -42,6 +42,7 @@ declare interface State {
 	lpar: boolean;
 	lbrack: boolean | undefined;
 	dt: {n: number, nTemplate?: number, nLink?: number, nExt?: number, nVar?: number};
+	redirect?: boolean;
 }
 declare interface Token {
 	pos: number;
@@ -64,9 +65,10 @@ export interface MwConfig {
 	urlProtocols: string;
 	functionSynonyms: [Record<string, string>, Record<string, unknown>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
+	nsid: Record<string, number>;
 	variants?: string[];
 	img?: Record<string, string>;
-	nsid: Record<string, number>;
+	redirection?: string[];
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	linkSuggest?: ApiSuggest;
@@ -132,7 +134,6 @@ const hasType = (types: Set<string>, names: TagName | TagName[]): boolean =>
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
 	declare readonly config;
-	declare readonly urlProtocols;
 	declare isBold;
 	declare wasBold;
 	declare isItalic;
@@ -146,8 +147,10 @@ class MediaWiki {
 	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
 	declare readonly implicitlyClosedHtmlTags;
-	declare readonly fileRegex: RegExp;
-	declare readonly nsRegex: RegExp;
+	declare readonly urlProtocols;
+	declare readonly fileRegex;
+	declare readonly nsRegex;
+	declare readonly redirectRegex;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
@@ -166,7 +169,6 @@ class MediaWiki {
 			} = config,
 			extTags = Object.keys(tags);
 		this.config = config;
-		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
 		this.isBold = false;
 		this.wasBold = false;
 		this.isItalic = false;
@@ -187,12 +189,16 @@ class MediaWiki {
 			...voidHtmlTags,
 			...implicitlyClosedHtmlTags || [],
 		]);
+		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
 		this.fileRegex = new RegExp(`^(?:${
 			Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')
 		})\\s*:`, 'iu');
 		this.nsRegex = new RegExp(`^(${
 			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
 		})\\s*:\\s*`, 'iu');
+		this.redirectRegex = new RegExp(`^(?:${
+			config.redirection?.map(s => s.slice(1)).join('|') || 'redirect'
+		})(?:\\s*:)?\\s*(?=\\[\\[)`, 'iu');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -450,12 +456,10 @@ class MediaWiki {
 	}
 
 	eatList(stream: StringStream, state: State): string {
-		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray | false,
+		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray,
 			{dt} = state;
-		if (mt && mt[0].includes(';')) {
-			dt.n += mt[0].split(';').length - 1;
-		}
-		if (dt.n) {
+		if (mt[0].includes(';')) {
+			dt.n = mt[0].split(';').length - 1;
 			dt.nTemplate = state.nTemplate;
 			dt.nLink = state.nLink;
 			dt.nExt = state.nExt;
@@ -596,7 +600,7 @@ class MediaWiki {
 			: this.eatWikiText('extLinkText')(stream, state);
 	}
 
-	inLink(file: boolean): Tokenizer {
+	inLink(file: boolean, redirect = false): Tokenizer {
 		const style = `${tokens.linkPageName} ${tokens.pageName}`;
 		return (stream, state) => {
 			if (stream.sol()) {
@@ -607,16 +611,17 @@ class MediaWiki {
 			}
 			const space = stream.eatSpace();
 			if (stream.match(/^#\s*/u)) {
-				state.tokenize = this.inLinkToSection(file);
+				state.tokenize = this.inLinkToSection(file, redirect);
 				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
 			} else if (stream.match(/^\|\s*/u)) {
-				state.tokenize = this.inLinkText(file);
-				return this.makeLocalTagStyle('linkDelimiter', state);
+				state.tokenize = this.inLinkText(file, redirect);
+				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
 			} else if (stream.match(']]')) {
+				state.redirect = false;
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(/^(?:[>[}]+|\]|\{(?!\{))/u)) {
+			} else if (stream.match(redirect ? /^[<>[{}]+|\]/u : /^(?:[>[}]+|\]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
 			return stream.eatWhile(/[^#|[\]&{}<>]/u) || space
@@ -625,7 +630,7 @@ class MediaWiki {
 		};
 	}
 
-	inLinkToSection(file: boolean): Tokenizer {
+	inLinkToSection(file: boolean, redirect: boolean): Tokenizer {
 		const tag = file ? 'error' : 'linkToSection';
 		return (stream, state) => {
 			if (stream.sol()) {
@@ -634,20 +639,21 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return '';
 			} else if (stream.eat('|')) {
-				state.tokenize = this.inLinkText(file);
-				return this.makeLocalTagStyle('linkDelimiter', state);
+				state.tokenize = this.inLinkText(file, redirect);
+				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
 			} else if (stream.match(']]')) {
+				state.redirect = false;
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			}
-			return stream.eatWhile(/[^|\]&{}<]/u)
+			return stream.eatWhile(redirect ? /[^|\]&]/u : /[^|\]&{<]/u)
 				? this.makeTagStyle(tag, state)
 				: this.eatWikiText(tokens[tag])(stream, state);
 		};
 	}
 
-	inLinkText(file: boolean): Tokenizer {
+	inLinkText(file: boolean, redirect: boolean): Tokenizer {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
 		return (stream, state) => {
@@ -655,14 +661,20 @@ class MediaWiki {
 				file ? 'mw-file-text' : ''
 			}`;
 			if (stream.match(']]')) {
-				if (state.lbrack && stream.peek() === ']') {
+				if (!redirect && state.lbrack && stream.peek() === ']') {
 					stream.backUp(1);
 					state.lbrack = false;
 					return this.makeStyle(tmpstyle, state);
 				}
+				state.redirect = false;
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+			} else if (redirect) {
+				if (!stream.skipTo(']]')) {
+					stream.skipToEnd();
+				}
+				return this.makeLocalTagStyle('error', state);
 			} else if (file && stream.eat('|')) {
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.peek() === "'") {
@@ -1030,11 +1042,15 @@ class MediaWiki {
 						}
 						break;
 					}
-					case ';':
-						state.dt.n = 1;
-						// fall through
-					case '*':
 					case '#':
+						if (stream.match(this.redirectRegex)) {
+							state.redirect = true;
+							return tokens.redirect;
+						}
+						// fall through
+					case ';':
+					case '*':
+						stream.backUp(1);
 						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
@@ -1092,7 +1108,12 @@ class MediaWiki {
 						if (/[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.lbrack = undefined;
-							chain(state, this.inLink(Boolean(stream.match(this.fileRegex, false))));
+							chain(
+								state,
+								state.redirect
+									? this.inLink(false, true)
+									: this.inLink(Boolean(stream.match(this.fileRegex, false))),
+							);
 							return this.makeLocalTagStyle('linkBracket', state);
 						}
 					} else {

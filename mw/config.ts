@@ -71,7 +71,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
-	if (config?.img && config.variants && !isIPE) {
+	if (config?.img && config.redirection && config.variants && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		return {...config, nsid};
 	}
@@ -130,6 +130,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	}
 	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 	config!.variants = variants ? variants.map(({code}) => code) : [];
+	config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
 	config!.nsid = nsid;
 	config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
 	setConfig(config!);
@@ -157,6 +158,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		) as [string[], string[]],
 		variants: mwConfig.variants!,
 		protocol: mwConfig.urlProtocols,
+		redirection: mwConfig.redirection || minConfig.redirection,
 	};
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;
 	if (mw.loader.getState('ext.CodeMirror') === null) {
