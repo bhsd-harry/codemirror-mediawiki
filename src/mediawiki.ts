@@ -212,10 +212,12 @@ class MediaWiki {
 		}));
 		for (const tag of extTags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
+			this.addToken(`ext-${tag}`, true);
 		}
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
+		this.addToken('file-text', true);
 	}
 
 	/**
@@ -296,9 +298,7 @@ class MediaWiki {
 
 	makeStyle(style: string, state: State, endGround?: 'nTemplate' | 'nLink' | 'nExt' | 'nVar'): string {
 		return this.makeLocalStyle(
-			`${style} ${
-				this.isBold || state.dt.n ? tokens.strong : ''
-			} ${this.isItalic ? tokens.em : ''}`,
+			`${style} ${this.isBold || state.dt.n ? tokens.strong : ''} ${this.isItalic ? tokens.em : ''}`,
 			state,
 			endGround,
 		);
@@ -651,8 +651,8 @@ class MediaWiki {
 		let linkIsBold: boolean,
 			linkIsItalic: boolean;
 		return (stream, state) => {
-			const tmpstyle = `${tokens.linkText} ${linkIsBold ? tokens.strong : ''} ${
-				linkIsItalic ? tokens.em : ''
+			const tmpstyle = `${tokens.linkText} ${linkIsBold ? tokens.strong : ''} ${linkIsItalic ? tokens.em : ''} ${
+				file ? 'mw-file-text' : ''
 			}`;
 			if (stream.match(']]')) {
 				if (state.lbrack && stream.peek() === ']') {
@@ -906,9 +906,10 @@ class MediaWiki {
 	}
 
 	inExtTagAttribute(name: string): Tokenizer {
+		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
 		return (stream, state) => {
 			if (stream.match(/^(?:"[^">]*"|'[^'>]*'|[^>/])+/u)) {
-				return this.makeLocalTagStyle('extTagAttribute', state);
+				return this.makeLocalStyle(style, state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
 				const {config: {tagModes}} = this;
@@ -930,7 +931,8 @@ class MediaWiki {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle('extTagBracket', state);
 			}
-			return this.eatWikiText('extTagAttribute')(stream, state);
+			stream.next();
+			return this.makeLocalStyle(style, state);
 		};
 	}
 

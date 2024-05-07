@@ -7,6 +7,10 @@
 - [Autocompletion](./README.md#autocompletion) for URL protocols in the MediaWiki mode
 - [CodeFolding](./README.md#codefolding) for extension tags with specified modes in the MediaWiki mode
 
+**Fixed**
+
+- Self-closing extension tags with `/` in its attributes in the MediaWiki mode
+
 **Removed**
 
 - Extra `cm-mw-tag-*` HTML classes, except for `cm-mw-tag-pre` and `cm-mw-tag-nowiki`, are removed in the MediaWiki mode
