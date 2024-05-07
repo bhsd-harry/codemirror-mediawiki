@@ -11,6 +11,7 @@ import {
 	foldService,
 } from '@codemirror/language';
 import modeConfig from './config';
+import {matchTag} from './matchTag';
 import type {EditorView, Tooltip} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
@@ -22,7 +23,20 @@ export interface DocRange {
 
 const {tokens} = modeConfig;
 
-const isComponent = (keys: (keyof typeof tokens)[]) =>
+/**
+ * Check if a SyntaxNode includes the specified text
+ * @param state
+ * @param node 语法树节点
+ * @param text 文本
+ */
+const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =>
+		state.sliceDoc(node.from, node.to).includes(text),
+
+	/**
+	 * Check if a SyntaxNode is among the specified components
+	 * @param keys The keys of the tokens to check
+	 */
+	isComponent = (keys: (keyof typeof tokens)[]) =>
 		({name}: SyntaxNode): boolean => keys.some(key => name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
@@ -45,15 +59,14 @@ const isComponent = (keys: (keyof typeof tokens)[]) =>
 	 * Check if a SyntaxNode is part of a extension tag
 	 * @param node 语法树节点
 	 */
-	isExt = (node: SyntaxNode): boolean => /exttag(?!-)/u.test(node.name),
+	isExt = (node: SyntaxNode): boolean => /-tag-/u.test(node.name),
 
 	/**
 	 * Update the stack of opening (+) or closing (-) brackets
 	 * @param state
 	 * @param node 语法树节点
 	 */
-	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 =>
-		/[{>]/u.test(state.sliceDoc(node.from, node.to)) ? 1 : -1;
+	stackUpdate = (state: EditorState, node: SyntaxNode): 1 | -1 => includes(state, node, '{') ? 1 : -1;
 
 /**
  * 寻找可折叠的范围
@@ -81,23 +94,30 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	} else {
 		node = posOrNode;
 	}
-	const ext = isExt(node);
-	if (!ext && !isTemplate(node)) {
+	if (!isTemplate(node)) {
 		// Not a template
+		if (isExt(node)) {
+			let {nextSibling} = node;
+			while (nextSibling && !(isExtBracket(nextSibling) && includes(state, nextSibling, '</'))) {
+				({nextSibling} = nextSibling);
+			}
+			if (nextSibling) { // The closing bracket of the current extension tag
+				return {from: matchTag(state, nextSibling.to)!.end!.to, to: nextSibling.from};
+			}
+		}
 		return null;
 	}
-	const isBracket = ext ? isExtBracket : isTemplateBracket;
 	let {prevSibling, nextSibling} = node,
 		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
-		/** The first delimiter */ delimiter: SyntaxNode | null = !ext && isDelimiter(node) ? node : null;
+		/** The first delimiter */ delimiter: SyntaxNode | null = isDelimiter(node) ? node : null;
 	while (nextSibling) {
-		if (isBracket(nextSibling)) {
+		if (isTemplateBracket(nextSibling)) {
 			stack += stackUpdate(state, nextSibling);
 			if (stack === 0) {
 				// The closing bracket of the current template
 				break;
 			}
-		} else if (!ext && !delimiter && stack === 1 && isDelimiter(nextSibling)) {
+		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = nextSibling;
 		}
@@ -109,19 +129,19 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	}
 	stack = -1;
 	while (prevSibling) {
-		if (isBracket(prevSibling)) {
+		if (isTemplateBracket(prevSibling)) {
 			stack += stackUpdate(state, prevSibling);
 			if (stack === 0) {
 				// The opening bracket of the current template
 				break;
 			}
-		} else if (!ext && stack === -1 && isDelimiter(prevSibling)) {
+		} else if (stack === -1 && isDelimiter(prevSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = prevSibling;
 		}
 		({prevSibling} = prevSibling);
 	}
-	const /** The end of the first delimiter */ from = (ext ? prevSibling : delimiter)?.to,
+	const /** The end of the first delimiter */ from = delimiter?.to,
 		/** The start of the closing bracket */ to = nextSibling.from;
 	if (from && from < to) {
 		return {from, to};
@@ -153,7 +173,7 @@ const create = (state: EditorState): Tooltip | null => {
 					const dom = document.createElement('div');
 					dom.className = 'cm-tooltip-fold';
 					dom.textContent = '\uff0d';
-					dom.title = state.phrase('Fold template parameters');
+					dom.title = state.phrase('Fold template or extension tag');
 					dom.dataset['from'] = String(from);
 					dom.dataset['to'] = String(to);
 					return {dom};

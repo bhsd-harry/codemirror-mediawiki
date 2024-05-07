@@ -1,10 +1,15 @@
 ## v2.12.2
 
-*2024-05-06*
+*2024-05-07*
 
 **Added**
 
 - [Autocompletion](./README.md#autocompletion) for URL protocols in the MediaWiki mode
+- [CodeFolding](./README.md#codefolding) for extension tags with specified modes in the MediaWiki mode
+
+**Removed**
+
+- Extra `cm-mw-tag-*` HTML classes, except for `cm-mw-tag-pre` and `cm-mw-tag-nowiki`, are removed in the MediaWiki mode
 
 ## v2.12.1
 

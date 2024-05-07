@@ -109,7 +109,7 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
  * @param state
  * @param pos 位置
  */
-const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
+export const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
 	const tree = ensureSyntaxTree(state, pos);
 	if (!tree) {
 		return null;
