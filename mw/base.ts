@@ -1,4 +1,4 @@
-import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.12.1/dist/main.min.js';
+import {CodeMirror6, CDN} from 'https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.12.2/dist/main.min.js';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
@@ -23,8 +23,8 @@ declare interface TemplateParam {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.11',
-	addons = ['useMonaco'];
+const baseVersion = '2.12',
+	addons = ['autocompletion', 'codeFolding'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 

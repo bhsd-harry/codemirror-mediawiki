@@ -1,5 +1,5 @@
 {
-	"version": "2.12.1",
+	"version": "2.12.2",
 	"lang": "zh-hans",
 	"i18n-failed": "获取 $1 的语言文件失败。",
 	"title": "CodeMirror插件",
@@ -30,7 +30,7 @@
 	"save-success": "设置保存至[[special:mypage/codemirror-mediawiki.json|用户子页面]]。",
 	"save-summary": "更新设置",
 	"welcome": "欢迎使用 <b>CodeMirror-MediaWiki</b>！<br>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更改本地设置。",
-	"welcome-addons": "<b>CodeMirror-MediaWiki</b> 已升级到 $1。新版本添加了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。",
+	"welcome-addons": "<b>CodeMirror-MediaWiki</b> 已升级到 $1。新版本添加或升级了 $2 个插件：<ul>$3</ul>您可以点击 <a id=\"settings\" href=\"#\">这里</a> 更新本地设置。",
 	"wikilint-error": "只显示错误",
 	"wikilint-off": "关闭",
 	"wikilint-on": "开启",

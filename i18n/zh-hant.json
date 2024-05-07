@@ -1,5 +1,5 @@
 {
-	"version": "2.12.1",
+	"version": "2.12.2",
 	"lang": "zh-hant",
 	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
@@ -30,7 +30,7 @@
 	"save-success": "設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]。",
 	"save-summary": "更新設定",
 	"welcome": "歡迎使用 <b>CodeMirror-MediaWiki</b>！<br>您可以點擊 <a id=\"settings\" href=\"#\">這裡</a> 更改本地設定。",
-	"welcome-addons": "<b>CodeMirror-MediaWiki</b> 已升級到 $1。新版本添加了 $2 個外掛程式：<ul>$3</ul>您可以點擊 <a id=\"settings\" href=\"#\">這裡</a> 更新本地設定。",
+	"welcome-addons": "<b>CodeMirror-MediaWiki</b> 已升級到 $1。新版本添加或升級了 $2 個外掛程式：<ul>$3</ul>您可以點擊 <a id=\"settings\" href=\"#\">這裡</a> 更新本地設定。",
 	"wikilint-error": "僅顯示錯誤",
 	"wikilint-off": "關閉",
 	"wikilint-on": "開啟",
