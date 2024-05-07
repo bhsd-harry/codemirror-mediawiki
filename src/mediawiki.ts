@@ -151,6 +151,7 @@ class MediaWiki {
 	declare readonly fileRegex;
 	declare readonly nsRegex;
 	declare readonly redirectRegex;
+	declare readonly imgRegex;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
@@ -166,7 +167,9 @@ class MediaWiki {
 				nsid,
 				functionSynonyms,
 				doubleUnderscore,
+				redirection = ['#REDIRECT'],
 			} = config,
+			img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word)),
 			extTags = Object.keys(tags);
 		this.config = config;
 		this.isBold = false;
@@ -197,8 +200,13 @@ class MediaWiki {
 			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
 		})\\s*:\\s*`, 'iu');
 		this.redirectRegex = new RegExp(`^(?:${
-			config.redirection?.map(s => s.slice(1)).join('|') || 'redirect'
+			redirection.map(s => s.slice(1)).join('|')
 		})(?:\\s*:)?\\s*(?=\\[\\[)`, 'iu');
+		this.imgRegex = new RegExp(`^(?:${
+			img.filter(word => word.endsWith('$1')).map(word => word.replace('$1', '')).join('|')
+		}|(?:${
+			img.filter(word => !word.endsWith('$1')).join('|')
+		})\\s*(?=\\||\\]\\]|$))`, 'u');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -372,7 +380,7 @@ class MediaWiki {
 
 	inChar(char: string, tag: TagName): Tokenizer {
 		return (stream, state) => {
-			if (stream.eat(char)) {
+			if (stream.match(char)) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle(tag, state);
 			} else if (!stream.skipTo(char)) {
@@ -600,6 +608,13 @@ class MediaWiki {
 			: this.eatWikiText('extLinkText')(stream, state);
 	}
 
+	eatImageParameter(stream: StringStream, state: State): void {
+		const mt = stream.match(this.imgRegex, false) as RegExpMatchArray | false;
+		if (mt) {
+			chain(state, this.inChar(mt[0], 'imageParameter'));
+		}
+	}
+
 	inLink(file: boolean, redirect = false): Tokenizer {
 		const style = `${tokens.linkPageName} ${tokens.pageName}`;
 		return (stream, state) => {
@@ -615,6 +630,9 @@ class MediaWiki {
 				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file, redirect);
+				if (file) {
+					this.eatImageParameter(stream, state);
+				}
 				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
 			} else if (stream.match(']]')) {
 				state.redirect = false;
@@ -638,8 +656,11 @@ class MediaWiki {
 				state.lbrack = false;
 				state.tokenize = state.stack.pop()!;
 				return '';
-			} else if (stream.eat('|')) {
+			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file, redirect);
+				if (file) {
+					this.eatImageParameter(stream, state);
+				}
 				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
 			} else if (stream.match(']]')) {
 				state.redirect = false;
@@ -675,7 +696,8 @@ class MediaWiki {
 					stream.skipToEnd();
 				}
 				return this.makeLocalTagStyle('error', state);
-			} else if (file && stream.eat('|')) {
+			} else if (file && stream.match(/^\|\s*/u)) {
+				this.eatImageParameter(stream, state);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.peek() === "'") {
 				const mt = stream.match(/^'+/u) as RegExpMatchArray;

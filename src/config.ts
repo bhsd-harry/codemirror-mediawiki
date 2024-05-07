@@ -126,6 +126,7 @@ const modeConfig = {
 		htmlTagAttribute: 'mw-htmltag-attribute',
 		htmlTagBracket: 'mw-htmltag-bracket',
 		htmlTagName: 'mw-htmltag-name',
+		imageParameter: 'mw-image-parameter',
 		linkBracket: 'mw-link-bracket',
 		linkDelimiter: 'mw-link-delimiter',
 		linkPageName: 'mw-link-pagename',
