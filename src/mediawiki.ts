@@ -1485,12 +1485,13 @@ class MediaWiki {
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
+				const extTags = [...types].filter(t => t.startsWith('mw-tag-')).reverse().map(s => s.slice(7));
 				if (mt && mt.to - mt.from > 1) {
 					const validFor = /^[a-z\d]*$/iu;
 					if (mt.text[1] === '/') {
 						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 							target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
-							extTag = [...types].reverse().find(t => t.startsWith('mw-tag-'))?.slice(7),
+							[extTag] = extTags,
 							options = [
 								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
 								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
@@ -1503,7 +1504,10 @@ class MediaWiki {
 					}
 					return {
 						from: mt.from + 1,
-						options: [...this.htmlTags, ...this.extTags],
+						options: [
+							...this.htmlTags,
+							...this.extTags.filter(({label}) => !extTags.includes(label)),
+						],
 						validFor,
 					};
 				}

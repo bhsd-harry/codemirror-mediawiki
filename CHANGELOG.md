@@ -1,3 +1,11 @@
+## v2.12.3
+
+*2024-05-08*
+
+**Fixed**
+
+- Exclude nested extension tags from [autocompletion](./README.md#autocompletion) in the MediaWiki mode
+
 ## v2.12.2
 
 *2024-05-07*
