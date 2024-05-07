@@ -4,7 +4,7 @@
 
 **Added**
 
-- [Autocompletion](./README.md#autocompletion) for URL protocols in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for URL protocols and image parameters in the MediaWiki mode
 - [CodeFolding](./README.md#codefolding) for extension tags with specified modes in the MediaWiki mode
 - Highlighting of redirection and image parameters in the MediaWiki mode
 

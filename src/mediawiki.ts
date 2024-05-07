@@ -128,7 +128,7 @@ const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]
  * @param types 节点类型
  * @param names 指定类型
  */
-const hasType = (types: Set<string>, names: TagName | TagName[]): boolean =>
+const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(tokens[name]));
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
@@ -157,6 +157,7 @@ class MediaWiki {
 	declare readonly extTags: Completion[];
 	declare readonly htmlTags: Completion[];
 	declare readonly protocols: Completion[];
+	declare readonly imgKeys: Completion[];
 
 	constructor(config: MwConfig) {
 		const {
@@ -203,7 +204,7 @@ class MediaWiki {
 			redirection.map(s => s.slice(1)).join('|')
 		})(?:\\s*:)?\\s*(?=\\[\\[)`, 'iu');
 		this.imgRegex = new RegExp(`^(?:${
-			img.filter(word => word.endsWith('$1')).map(word => word.replace('$1', '')).join('|')
+			img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
 		}|(?:${
 			img.filter(word => !word.endsWith('$1')).join('|')
 		})\\s*(?=\\||\\]\\]|$))`, 'u');
@@ -224,6 +225,9 @@ class MediaWiki {
 			type: 'namespace',
 			label: label.replace(/\\\//gu, '/'),
 		}));
+		this.imgKeys = img.map(label => label.endsWith('$1')
+			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
+			: {type: 'keyword', label});
 		for (const tag of extTags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
 			this.addToken(`ext-${tag}`, true);
@@ -1394,12 +1398,13 @@ class MediaWiki {
 				return null;
 			}
 			const types = new Set(node.name.split('_')),
-				isParserFunction = hasType(types, 'parserFunctionName'),
+				isParserFunction = hasTag(types, 'parserFunctionName'),
 				{from, to} = node,
 				search = state.sliceDoc(from, pos);
+			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
-				if (isParserFunction || hasType(types, 'templateName')) {
+				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
 					options.push(...suggestions.options);
@@ -1411,8 +1416,8 @@ class MediaWiki {
 							validFor,
 						};
 				}
-				const isModule = hasType(types, 'pageName') && hasType(types, 'parserFunction') || 0;
-				if (isModule && search.trim() || hasType(types, 'linkPageName')) {
+				const isModule = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
+				if (isModule && search.trim() || hasTag(types, 'linkPageName')) {
 					const suggestions = await this.#linkSuggest((isModule ? 'Module:' : '') + search, isModule && 828);
 					return suggestions
 						? {
@@ -1422,17 +1427,16 @@ class MediaWiki {
 						}
 						: null;
 				}
-				let {prevSibling} = node;
-				const isArgument = hasType(types, 'templateArgumentName'),
+				const isArgument = hasTag(types, 'templateArgumentName'),
 					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
-					isDelimiter = hasType(types, 'templateDelimiter')
-					|| hasType(types, 'templateBracket') && prevIsDelimiter;
+					isDelimiter = hasTag(types, 'templateDelimiter')
+					|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
 					'templatedata' in this.config.tags
 					&& (
 						isDelimiter
 						|| isArgument && !search.includes('=')
-						|| hasType(types, 'template') && prevIsDelimiter
+						|| hasTag(types, 'template') && prevIsDelimiter
 					)
 				) {
 					let stack = 1,
@@ -1461,7 +1465,7 @@ class MediaWiki {
 							: null;
 					}
 				}
-			} else if (!hasType(types, [
+			} else if (!hasTag(types, [
 				'comment',
 				'extTagAttribute',
 				'htmlTagAttribute',
@@ -1503,7 +1507,13 @@ class MediaWiki {
 						validFor,
 					};
 				}
-				if (!hasType(types, ['linkText', 'extLinkText'])) {
+				if (types.has('mw-file-text') && prevSibling?.name.includes(tokens.linkDelimiter)) {
+					return {
+						from: prevSibling.to,
+						options: this.imgKeys,
+						validFor: /^[^|{}<>[\]$]*$/u,
+					};
+				} else if (!hasTag(types, ['linkText', 'extLinkText'])) {
 					mt = context.matchBefore(/(?:^|[^[])\[[a-z:/]+$/iu);
 					if (mt) {
 						return {
