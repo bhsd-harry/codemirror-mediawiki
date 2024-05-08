@@ -23,7 +23,7 @@ import type {
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
-const {htmlTags, voidHtmlTags, tokenTable, tokens, htmlAttrs, elementAttrs} = modeConfig;
+const {htmlTags, voidHtmlTags, tokenTable, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
 declare type Tokenizer = (stream: StringStream, state: State) => string;
@@ -128,8 +128,8 @@ const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]
  * @param types 节点类型
  * @param names 指定类型
  */
-const hasTag = (types: string[], names: TagName | TagName[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.includes(tokens[name]));
+const hasTag = (types: Set<string>, names: string | string[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
@@ -160,6 +160,7 @@ class MediaWiki {
 	declare readonly imgKeys: Completion[];
 	declare readonly htmlAttrs: Completion[];
 	declare readonly elementAttrs: Map<string | undefined, Completion[]>;
+	declare readonly extAttrs: Map<string, Completion[]>;
 
 	constructor(config: MwConfig) {
 		const {
@@ -238,6 +239,10 @@ class MediaWiki {
 		this.elementAttrs = new Map();
 		for (const [key, value] of Object.entries(elementAttrs)) {
 			this.elementAttrs.set(key, value.map(label => ({type: 'property', label})));
+		}
+		this.extAttrs = new Map();
+		for (const [key, value] of Object.entries(extAttrs)) {
+			this.extAttrs.set(key, value.map(label => ({type: 'property', label})));
 		}
 		for (const tag of extTags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
@@ -1408,7 +1413,7 @@ class MediaWiki {
 			if (!node) {
 				return null;
 			}
-			const types = node.name.split('_'),
+			const types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				{from, to} = node,
 				search = state.sliceDoc(from, pos);
@@ -1477,8 +1482,7 @@ class MediaWiki {
 					}
 				}
 			} else if (
-				types.includes('mw-ext-pre') || types.includes('mw-ext-gallery') || types.includes('mw-ext-poem')
-				|| hasTag(types, ['htmlTagAttribute', 'tableDefinition'])
+				hasTag(types, ['htmlTagAttribute', 'tableDefinition', 'mw-ext-pre', 'mw-ext-gallery', 'mw-ext-poem'])
 			) {
 				const tagName = /mw-(?:ext|html)-([a-z]+)/u.exec(node.name)?.[1],
 					mt = context.matchBefore(tagName ? /\s[a-z]+$/u : /[\s|-][a-z]+$/u);
@@ -1494,12 +1498,20 @@ class MediaWiki {
 							validFor: /^[a-z]*$/u,
 						};
 				}
+			} else if (hasTag(types, 'extTagAttribute')) {
+				const [, tagName] = /mw-ext-([a-z]+)/u.exec(node.name) as string[] as [string, string],
+					mt = context.matchBefore(/\s[a-z]+$/u);
+				return mt && this.extAttrs.has(tagName)
+					? {
+						from: mt.from + 1,
+						options: this.extAttrs.get(tagName)!,
+						validFor: /^[a-z]*$/u,
+					}
+					: null;
 			} else if (!hasTag(types, [
 				'comment',
-				'extTagAttribute',
 				'templateVariableName',
 				'templateName',
-				'tableDefinition',
 				'linkPageName',
 				'linkToSection',
 				'extLink',
@@ -1539,7 +1551,7 @@ class MediaWiki {
 						validFor,
 					};
 				}
-				if (types.includes('mw-file-text') && prevSibling?.name.includes(tokens.linkDelimiter)) {
+				if (types.has('mw-file-text') && prevSibling?.name.includes(tokens.linkDelimiter)) {
 					return {
 						from: prevSibling.to,
 						options: this.imgKeys,

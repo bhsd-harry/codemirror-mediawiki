@@ -220,6 +220,15 @@ const modeConfig = {
 		gallery: ['mode', 'showfilename', 'caption', 'perrow', 'widths', 'heights', 'showthumbnails', 'type'],
 		poem: ['compact', 'align'],
 	},
+
+	extAttrs: {
+		indicator: ['name'],
+		langconvert: ['from', 'to'],
+		ref: ['group', 'name', 'extends', 'follow', 'dir'],
+		references: ['group', 'responsive'],
+		charinsert: ['label'],
+		templatestyles: ['src', 'wrapper'],
+	},
 };
 
 export default modeConfig;

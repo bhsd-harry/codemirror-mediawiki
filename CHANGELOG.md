@@ -1,3 +1,11 @@
+## v2.12.4
+
+*2024-05-09*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for extension tag attributes in the MediaWiki mode
+
 ## v2.12.3
 
 *2024-05-08*
