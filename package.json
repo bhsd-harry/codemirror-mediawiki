@@ -16,7 +16,6 @@
 		"/dist/*.js",
 		"/dist/*.d.ts",
 		"!/dist/gh-page.d.ts",
-		"/dist/mw.min.js.map",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",

@@ -1,7 +1,7 @@
 #!/usr/local/bin/bash
 if [[ $2 == 'npm' ]]
 then
-	sed -i '' -E "s|codemirror-mediawiki@[^/']+|codemirror-mediawiki@$1|g" mw/base.ts mw/msg.ts
+	sed -i '' -E "s|codemirror-mediawiki@[^/']+|codemirror-mediawiki@$1|g" mw/msg.ts
 	npm run build
 	for x in i18n/* package.json
 	do

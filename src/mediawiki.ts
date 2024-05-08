@@ -47,7 +47,6 @@ declare interface State {
 declare interface Token {
 	pos: number;
 	readonly style: string;
-	readonly state: object;
 }
 
 export type ApiSuggestions = [string, string?][];
@@ -398,12 +397,12 @@ class MediaWiki {
 		};
 	}
 
-	inChar(char: string, tag: TagName): Tokenizer {
+	inStr(str: string, tag: TagName): Tokenizer {
 		return (stream, state) => {
-			if (stream.match(char)) {
+			if (stream.match(str)) {
 				state.tokenize = state.stack.pop()!;
 				return this.makeLocalTagStyle(tag, state);
-			} else if (!stream.skipTo(char)) {
+			} else if (!stream.skipTo(str)) {
 				stream.skipToEnd();
 			}
 			return this.makeLocalTagStyle('error', state);
@@ -552,11 +551,11 @@ class MediaWiki {
 				} else if (firstLine) {
 					state.tokenize = this.inTableCell(false, type, false);
 					return '';
+				} else if (isSolSyntax(stream)) {
+					return this.eatWikiText(style)(stream, state);
 				}
 			}
-			if (isSolSyntax(stream)) {
-				return this.eatWikiText(style)(stream, state);
-			} else if (stream.eatWhile(firstLine ? /[^'{[<&~_|!]/u : /[^'{[<&~_:]/u)) {
+			if (stream.eatWhile(firstLine ? /[^'{[<&~_|!]/u : /[^'{[<&~_:]/u)) {
 				return this.makeStyle(style, state);
 			} else if (firstLine) {
 				if (
@@ -631,7 +630,7 @@ class MediaWiki {
 	eatImageParameter(stream: StringStream, state: State): void {
 		const mt = stream.match(this.imgRegex, false) as RegExpMatchArray | false;
 		if (mt) {
-			chain(state, this.inChar(mt[0], 'imageParameter'));
+			chain(state, this.inStr(mt[0], 'imageParameter'));
 		}
 	}
 
@@ -920,11 +919,11 @@ class MediaWiki {
 			stream.eatSpace();
 			name = name.toLowerCase();
 			if (isHtmlTag) {
-				state.tokenize = isCloseTag ? this.inChar('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
+				state.tokenize = isCloseTag ? this.inStr('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
 			}
 			// it is the extension tag
-			state.tokenize = isCloseTag ? this.inChar('>', 'extTagBracket') : this.inExtTagAttribute(name);
+			state.tokenize = isCloseTag ? this.inStr('>', 'extTagBracket') : this.inExtTagAttribute(name);
 			return this.makeLocalTagStyle('extTagName', state);
 		};
 	}
@@ -1275,7 +1274,7 @@ class MediaWiki {
 						if (tagname in this.config.tags) {
 							// Extension tag
 							if (isCloseTag) {
-								chain(state, this.inChar('>', 'error'));
+								chain(state, this.inStr('>', 'error'));
 								return this.makeLocalTagStyle('error', state);
 							}
 							stream.backUp(tagname.length);
@@ -1287,7 +1286,7 @@ class MediaWiki {
 								if (tagname === state.inHtmlTag[0]) {
 									state.inHtmlTag.shift();
 								} else {
-									chain(state, this.inChar('>', 'error'));
+									chain(state, this.inStr('>', 'error'));
 									return this.makeLocalTagStyle('error', state);
 								}
 							}
@@ -1643,11 +1642,7 @@ class MediaWiki {
 							}
 						}
 						// save token
-						tmpTokens.push({
-							pos: stream.pos,
-							style,
-							state: (state.extMode && state.extMode.copyState || copyState)(state),
-						});
+						tmpTokens.push({pos: stream.pos, style});
 					} else {
 						// rollback point does not exist
 						// remember style before possible rollback point

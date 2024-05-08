@@ -15,10 +15,6 @@ declare global {
 		export {CodeMirror6};
 		export type {MwConfig, LintSource};
 	}
-	module 'https://*' {
-		const CDN: string;
-		export {CodeMirror6, CDN};
-	}
 
 	const eslint: {
 		Linter: new () => Linter;
