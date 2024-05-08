@@ -2,6 +2,10 @@
 
 *2024-05-08*
 
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for HTML tag attributes in the MediaWiki mode
+
 **Fixed**
 
 - Exclude nested extension tags from [autocompletion](./README.md#autocompletion) in the MediaWiki mode
