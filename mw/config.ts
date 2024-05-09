@@ -1,5 +1,5 @@
-import {CodeMirror6} from '../src/codemirror';
 import {CDN} from '../src/util';
+import {getStaticMwConfig} from '../src/static';
 import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
@@ -81,7 +81,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 			`${CDN}/npm/wikiparser-node@1.7.0-beta.3/config/moegirl.json`,
 		)).json();
 		mw.config.set('wikilintConfig', parserConfig);
-		config = CodeMirror6.getMwConfig(parserConfig);
+		config = getStaticMwConfig(parserConfig);
 	} else {
 		// 以下情形均需要发送API请求
 		// 情形2：localStorage未过期但不包含新设置
