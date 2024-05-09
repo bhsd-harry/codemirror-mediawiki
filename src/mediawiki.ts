@@ -1362,9 +1362,8 @@ class MediaWiki {
 		let offset = 0;
 		const mt = /^\s*:\s*/u.exec(search);
 		if (mt) {
-			const [{length}] = mt;
-			offset = length;
-			search = search.slice(length);
+			[{length: offset}] = mt;
+			search = search.slice(offset);
 			ns = 0;
 		}
 		if (!search) {
@@ -1524,13 +1523,13 @@ class MediaWiki {
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-				const extTags = [...types].filter(t => t.startsWith('mw-tag-')).reverse().map(s => s.slice(7));
+				const extTags = [...types].filter(t => t.startsWith('mw-tag-')).map(s => s.slice(7));
 				if (mt && mt.to - mt.from > 1) {
 					const validFor = /^[a-z\d]*$/iu;
 					if (mt.text[1] === '/') {
 						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 							target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
-							[extTag] = extTags,
+							extTag = extTags[extTags.length - 1],
 							options = [
 								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
 								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
