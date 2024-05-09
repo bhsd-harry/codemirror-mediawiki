@@ -6,7 +6,7 @@ import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from 
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
-import type {Config, LintError} from 'wikiparser-node';
+import type {LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
@@ -415,22 +415,7 @@ export class CodeMirror extends CodeMirror6 {
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM);
 		if (isWiki) {
-			let config: MwConfig;
-			if (mw.config.get('wgServerName').endsWith('.moegirl.org.cn')) {
-				if (mw.config.exists('wikilintConfig')) {
-					config = mw.config.get('extCodeMirrorConfig') as MwConfig;
-				} else {
-					const parserConfig: Config = await (await fetch(
-						`${CDN}/npm/wikiparser-node@browser/config/moegirl.json`,
-					)).json();
-					mw.config.set('wikilintConfig', parserConfig);
-					config = CodeMirror6.getMwConfig(parserConfig);
-					mw.config.set('extCodeMirrorConfig', config);
-				}
-			} else {
-				config = await getMwConfig();
-			}
-			await cm.setLanguage(lang, {...config, tagModes: CodeMirror.mwTagModes});
+			await cm.setLanguage(lang, {...await getMwConfig(), tagModes: CodeMirror.mwTagModes});
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);

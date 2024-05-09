@@ -1,3 +1,4 @@
+import {CodeMirror6, CDN} from '../src/codemirror';
 import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';
@@ -74,69 +75,74 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 	if (config?.img && config.redirection && config.variants && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		return {...config, nsid};
-	}
+	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
+		const parserConfig: Config = await (await fetch(
+			`${CDN}/npm/wikiparser-node@1.7.0-beta.3/config/moegirl.json`,
+		)).json();
+		mw.config.set('wikilintConfig', parserConfig);
+		config = CodeMirror6.getMwConfig(parserConfig);
+	} else {
+		// 以下情形均需要发送API请求
+		// 情形2：localStorage未过期但不包含新设置
+		// 情形3：新加载的 ext.CodeMirror.data
+		// 情形4：`config === null`
+		await mw.loader.using('mediawiki.api');
+		const {
+			query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
+		}: {
+			query: {
+				general: {variants?: {code: string}[]};
+				magicwords: MagicWord[];
+				extensiontags: string[];
+				functionhooks: string[];
+				variables: string[];
+			};
+		} = await new mw.Api().get({
+			meta: 'siteinfo',
+			siprop: [
+				'general',
+				'magicwords',
+				...config && !isIPE ? [] : ['extensiontags', 'functionhooks', 'variables'],
+			],
+			formatversion: '2',
+		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+		const others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
 
-	// 以下情形均需要发送API请求
-	// 情形2：localStorage未过期但不包含新设置
-	// 情形3：新加载的 ext.CodeMirror.data
-	// 情形4：`config === null`
-	await mw.loader.using('mediawiki.api');
-	const {
-		query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
-	}: {
-		query: {
-			general: {variants?: {code: string}[]};
-			magicwords: MagicWord[];
-			extensiontags: string[];
-			functionhooks: string[];
-			variables: string[];
-		};
-	} = await new mw.Api().get({
-		meta: 'siteinfo',
-		siprop: [
-			'general',
-			'magicwords',
-			...config && !isIPE ? [] : ['extensiontags', 'functionhooks', 'variables'],
-		],
-		formatversion: '2',
-	}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-	const others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
-
-	// 先处理魔术字和状态开关
-	if (config && !isIPE) { // 情形2或3
-		const {functionSynonyms: [insensitive]} = config;
-		if (!('subst' in insensitive)) {
-			Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));
+		// 先处理魔术字和状态开关
+		if (config && !isIPE) { // 情形2或3
+			const {functionSynonyms: [insensitive]} = config;
+			if (!('subst' in insensitive)) {
+				Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));
+			}
+		} else { // 情形4：`config === null`
+			// @ts-expect-error incomplete properties
+			config = {
+				tagModes: {},
+				tags: {},
+			};
+			for (const tag of extensiontags) {
+				config!.tags[tag.slice(1, -1)] = true;
+			}
+			const functions = new Set([
+				...functionhooks,
+				...variables,
+				...others,
+			]);
+			config!.functionSynonyms = getConfigPair(magicwords, ({name}) => functions.has(name));
+			config!.doubleUnderscore = getConfigPair(
+				magicwords,
+				({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
+			);
 		}
-	} else { // 情形4：`config === null`
-		// @ts-expect-error incomplete properties
-		config = {
-			tagModes: {},
-			tags: {},
-		};
-		for (const tag of extensiontags) {
-			config!.tags[tag.slice(1, -1)] = true;
-		}
-		const functions = new Set([
-			...functionhooks,
-			...variables,
-			...others,
-		]);
-		config!.functionSynonyms = getConfigPair(magicwords, ({name}) => functions.has(name));
-		config!.doubleUnderscore = getConfigPair(
-			magicwords,
-			({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
-		);
+		config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
+		config!.variants = variants ? variants.map(({code}) => code) : [];
+		config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
+		config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
 	}
-	config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
-	config!.variants = variants ? variants.map(({code}) => code) : [];
-	config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
-	config!.nsid = nsid;
-	config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
 	setObject('InPageEditMwConfig', ALL_SETTINGS_CACHE);
-	return config!;
+	return {...config!, nsid};
 };
 
 /**
