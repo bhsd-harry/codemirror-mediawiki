@@ -78,7 +78,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: Config = await (await fetch(
-			`${CDN}/npm/wikiparser-node@1.7.0-beta.3/config/moegirl.json`,
+			`${CDN}/npm/wikiparser-node@1.7.0-beta.4/config/moegirl.json`,
 		)).json();
 		mw.config.set('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig);
@@ -164,7 +164,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 			obj => Object.keys(obj).map(s => s.slice(2, -2)),
 		) as [string[], string[]],
 		variants: mwConfig.variants!,
-		protocol: mwConfig.urlProtocols,
+		protocol: mwConfig.urlProtocols.replace(/\|\\?\/\\?\//u, ''),
 		redirection: mwConfig.redirection || minConfig.redirection,
 	};
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;

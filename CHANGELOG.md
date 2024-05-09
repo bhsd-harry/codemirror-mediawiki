@@ -1,3 +1,11 @@
+## v2.12.5
+
+*2024-05-09*
+
+**Fixed**
+
+- Fix the [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration when used in a MediaWiki site
+
 ## v2.12.4
 
 *2024-05-09*
