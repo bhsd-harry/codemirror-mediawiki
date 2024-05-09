@@ -1,4 +1,5 @@
-import {CodeMirror6, CDN} from '../src/codemirror';
+import {CodeMirror6} from '../src/codemirror';
+import {CDN} from '../src/util';
 import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/mediawiki';

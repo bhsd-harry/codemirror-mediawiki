@@ -31,13 +31,13 @@ import {foldExtension, foldHandler, foldOnIndent} from './fold';
 import {tagMatchingState} from './matchTag';
 import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
+import {tagModes, getStaticMwConfig} from './static';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
-import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
 import type {DocRange} from './fold';
 
@@ -116,18 +116,6 @@ const phrases: Record<string, string> = {};
  * @param column 列号
  */
 const pos = (doc: Text, line: number, column: number): number => doc.line(line).from + column - 1;
-
-/**
- * Object.fromEntries polyfill
- * @param entries
- * @param obj
- * @param string 是否为字符串
- */
-const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, string?: boolean): void => {
-	for (const entry of entries) {
-		obj[entry] = string ? entry : true;
-	}
-};
 
 /** CodeMirror 6 编辑器 */
 export class CodeMirror6 {
@@ -539,20 +527,7 @@ export class CodeMirror6 {
 	 * 支持的MediaWiki扩展标签
 	 * @todo 修正已有标签（`references`, `choose`, `combobox`, `gallery`），支持更多标签
 	 */
-	static mwTagModes = {
-		tab: 'mediawiki',
-		tabs: 'mediawiki',
-		indicator: 'mediawiki',
-		poem: 'mediawiki',
-		ref: 'mediawiki',
-		references: 'mediawiki',
-		option: 'mediawiki',
-		choose: 'mediawiki',
-		combooption: 'mediawiki',
-		combobox: 'mediawiki',
-		poll: 'mediawiki',
-		gallery: 'mediawiki',
-	};
+	static mwTagModes = tagModes;
 
 	/**
 	 * 替换选中内容
@@ -584,26 +559,5 @@ export class CodeMirror6 {
 	 * 将wikiparser-node设置转换为codemirror-mediawiki设置
 	 * @param config
 	 */
-	static getMwConfig(config: Config): MwConfig {
-		const mwConfig: MwConfig = {
-			tags: {},
-			tagModes: CodeMirror6.mwTagModes,
-			doubleUnderscore: [{}, {}],
-			functionSynonyms: [config.parserFunction[0], {}],
-			urlProtocols: `${config.protocol}|//`,
-			nsid: config.nsid,
-			img: {},
-			variants: config.variants,
-			redirection: config.redirection,
-		};
-		fromEntries(config.ext, mwConfig.tags);
-		fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);
-		fromEntries(config.doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
-		fromEntries((config.parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
-		fromEntries(config.parserFunction[1], mwConfig.functionSynonyms[1]);
-		for (const [key, val] of Object.entries(config.img)) {
-			mwConfig.img![key] = `img_${val}`;
-		}
-		return mwConfig;
-	}
+	static getMwConfig = getStaticMwConfig;
 }
