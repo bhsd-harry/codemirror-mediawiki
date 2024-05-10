@@ -59,7 +59,7 @@ const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =
 	 * Check if a SyntaxNode is part of a extension tag
 	 * @param node 语法树节点
 	 */
-	isExt = (node: SyntaxNode): boolean => /-tag-/u.test(node.name),
+	isExt = (node: SyntaxNode): boolean => node.name.includes('-tag-'),
 
 	/**
 	 * Update the stack of opening (+) or closing (-) brackets

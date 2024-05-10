@@ -1,11 +1,13 @@
 import {isMac} from './msg';
+import modeConfig from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	handlers = new WeakMap<CodeMirror, MouseEventListener>();
+	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
+	{tokens} = modeConfig;
 
 /**
  * 获取节点的名称
@@ -21,9 +23,9 @@ function getName(node: SyntaxNode | null): string | undefined {
  * 查找连续同名节点
  * @param node 起始节点
  * @param dir 方向
- * @param name 节点名称
  */
-const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling', name = getName(node)): SyntaxNode => {
+const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling'): SyntaxNode => {
+	const name = getName(node);
 	while (getName(node[dir]!) === name) {
 		node = node[dir]!; // eslint-disable-line no-param-reassign
 	}
@@ -48,32 +50,32 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			node = cm.getNodeAt(view!.posAtCoords(e)!);
 		if (!node) {
 			// pass
-		} else if (node.name.includes('mw-pagename')) {
+		} else if (node.name.includes(tokens.pageName)) {
 			e.preventDefault();
 			e.stopPropagation();
-			const name = getName(node);
-			let page = state.sliceDoc(
-				search(node, 'prevSibling', name).from,
-				search(node, 'nextSibling', name).to,
-			).trim();
+			const name = getName(node),
+				last = search(node, 'nextSibling'),
+				{nextSibling} = last;
+			let page = state.sliceDoc(search(node, 'prevSibling').from, last.to).trim();
 			if (page.startsWith('/')) {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
 			let ns = 0;
-			if (name.includes('-template-name')) {
+			if (name.includes(tokens.templateName)) {
 				ns = 10;
-			} else if (name.includes('-parserfunction')) {
+			} else if (name.includes(tokens.parserFunction)) {
 				ns = 828;
+			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
+				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
 			open(new mw.Title(page, ns).getUrl(undefined), '_blank');
-		} else if (/-extlink-protocol/u.test(node.name)) {
+		} else if (node.name.includes(tokens.extLinkProtocol)) {
 			e.preventDefault();
 			open(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), '_blank');
 		} else if (/-extlink(?:_|$)/u.test(node.name)) {
 			e.preventDefault();
-			const name = getName(node),
-				prev = search(node, 'prevSibling', name).prevSibling!,
-				next = search(node, 'nextSibling', name);
+			const prev = search(node, 'prevSibling').prevSibling!,
+				next = search(node, 'nextSibling');
 			open(state.sliceDoc(prev.from, next.to), '_blank');
 		}
 	};

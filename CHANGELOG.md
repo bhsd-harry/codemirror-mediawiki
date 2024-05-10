@@ -2,6 +2,10 @@
 
 *2024-05-10*
 
+**Added**
+
+- [OpenLinks](./mw/README.md#openlinks) now also includes fragment of wikilinks in the MediaWiki mode
+
 **Fixed**
 
 - [Autocompletion](./README.md#autocompletion) for subpage name and page name containing `_` in the MediaWiki mode

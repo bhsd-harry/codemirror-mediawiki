@@ -1397,7 +1397,7 @@ class MediaWiki {
 	/**
 	 * 提供模板参数建议
 	 * @param search 搜索字符串
-	 * @param page 模板名
+	 * @param page 模板名，可包含`_`、`:`等
 	 * @param equal 是否有等号
 	 */
 	async #paramSuggest(search: string, page: string, equal: string): Promise<{
@@ -1465,7 +1465,7 @@ class MediaWiki {
 					)
 				) {
 					let stack = 1,
-						page = '';
+						/** 可包含`_`、`:`等 */ page = '';
 					while (prevSibling) {
 						const {name, from: f, to: t} = prevSibling;
 						if (name.includes(tokens.templateBracket)) {
@@ -1475,6 +1475,9 @@ class MediaWiki {
 							}
 						} else if (stack === 1 && name.includes(tokens.templateName)) {
 							page = state.sliceDoc(f, t) + page;
+						} else if (page && !name.includes(tokens.comment)) {
+							prevSibling = null;
+							break;
 						}
 						({prevSibling} = prevSibling);
 					}
