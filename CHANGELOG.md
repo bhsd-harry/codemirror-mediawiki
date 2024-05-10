@@ -4,7 +4,11 @@
 
 **Fixed**
 
-- [Autocompletion](./README.md#autocompletion) for subpage name in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for subpage name and page name containing `_` in the MediaWiki mode
+
+**Removed**
+
+- Highlighting of HTML entities in page names in the MediaWiki mode
 
 ## v2.12.5
 

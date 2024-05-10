@@ -663,7 +663,7 @@ class MediaWiki {
 			} else if (stream.match(redirect ? /^[<>[{}]+|\]/u : /^(?:[>[}]+|\]|\{(?!\{))/u)) {
 				return this.makeTagStyle('error', state);
 			}
-			return stream.eatWhile(/[^#|[\]&{}<>]/u) || space
+			return stream.eatWhile(/[^#|[\]{}<>]/u) || space
 				? this.makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};

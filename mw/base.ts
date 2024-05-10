@@ -77,12 +77,15 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest =>
 			search = title + search; // eslint-disable-line no-param-reassign
 		}
 		try {
-			const [, pages] = await api.get({
+			let [, pages] = await api.get({
 				action: 'opensearch',
 				search,
 				namespace,
 				limit: 'max',
 			} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+			if (search.includes(' ')) {
+				pages = pages.map(page => page.replace(/ /gu, '_'));
+			}
 			if (subpage) {
 				const {length} = title;
 				return pages.map(page => [page.slice(length)]);
