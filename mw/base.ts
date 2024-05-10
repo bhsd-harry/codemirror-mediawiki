@@ -71,31 +71,27 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => async (search: string, namespace = 0) => {
-	const {length} = title;
-	let subpage = false;
-	if (search.startsWith('/')) {
-		/* eslint-disable no-param-reassign */
-		search = title + search;
-		namespace = 0;
-		/* eslint-enable no-param-reassign */
-		subpage = true;
-	}
-	try {
-		const [, pages] = await api.get({
-			action: 'opensearch',
-			search,
-			namespace,
-			limit: 'max',
-		} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest =>
+	async (search: string, namespace = 0, subpage?: boolean) => {
 		if (subpage) {
-			return pages.map(page => [page.slice(length)]);
+			search = title + search; // eslint-disable-line no-param-reassign
 		}
-		return namespace === 0 ? pages.map(page => [page]) : pages.map(page => [new mw.Title(page).getMainText()]);
-	} catch {
-		return [];
-	}
-};
+		try {
+			const [, pages] = await api.get({
+				action: 'opensearch',
+				search,
+				namespace,
+				limit: 'max',
+			} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+			if (subpage) {
+				const {length} = title;
+				return pages.map(page => [page.slice(length)]);
+			}
+			return namespace === 0 ? pages.map(page => [page]) : pages.map(page => [new mw.Title(page).getMainText()]);
+		} catch {
+			return [];
+		}
+	};
 
 /**
  * 获取模板参数建议

@@ -53,10 +53,12 @@ export type ApiSuggestions = [string, string?][];
 
 /**
  * 获取维基链接建议
- * @param search 搜索字符串
+ * @param search 搜索字符串，开头不包含` `
  * @param namespace 命名空间
+ * @param subpage 是否为子页面
  */
-export type ApiSuggest = (search: string, namespace?: number) => ApiSuggestions | Promise<ApiSuggestions>;
+export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean) =>
+	ApiSuggestions | Promise<ApiSuggestions>;
 
 export interface MwConfig {
 	readonly tags: Record<string, true>;
@@ -1349,7 +1351,7 @@ class MediaWiki {
 
 	/**
 	 * 提供链接建议
-	 * @param search 搜索字符串
+	 * @param search 搜索字符串，开头不包含` `，但可能包含`_`
 	 * @param ns 命名空间
 	 */
 	async #linkSuggest(search: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
@@ -1357,29 +1359,38 @@ class MediaWiki {
 		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(search)) {
 			return undefined;
 		}
+		let subpage = false,
+			offset = 0;
 		/* eslint-disable no-param-reassign */
-		search = search.replace(/_/gu, ' ');
-		let offset = 0;
-		const mt = /^\s*:\s*/u.exec(search);
-		if (mt) {
+		if (search.startsWith('/')) {
+			ns = 0;
+			subpage = true;
+		} else {
+			search = search.replace(/_/gu, ' ');
+			const mt = /^\s*/u.exec(search)!;
 			[{length: offset}] = mt;
 			search = search.slice(offset);
-			ns = 0;
-		}
-		if (!search) {
-			return undefined;
-		}
-		const mt2 = nsRegex.exec(search) as [string, string] | null;
-		if (mt2) {
-			const [{length}, prefix] = mt2;
-			offset += length;
-			search = `${prefix}:${search.slice(length)}`;
-			ns = 1;
+			if (search.startsWith(':')) {
+				const [{length}] = /^:\s*/u.exec(search)!;
+				offset += length;
+				search = search.slice(length);
+				ns = 0;
+			}
+			if (!search) {
+				return undefined;
+			}
+			const mt2 = nsRegex.exec(search) as [string, string] | null;
+			if (mt2) {
+				const [{length}, prefix] = mt2;
+				offset += length;
+				search = `${prefix}:${search.slice(length)}`;
+				ns = 1;
+			}
 		}
 		/* eslint-enable no-param-reassign */
 		return {
 			offset,
-			options: (await linkSuggest(search, ns)).map(([label]) => ({type: 'text', label})),
+			options: (await linkSuggest(search, ns, subpage)).map(([label]) => ({type: 'text', label})),
 		};
 	}
 
@@ -1414,7 +1425,7 @@ class MediaWiki {
 			const types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				{from, to} = node,
-				search = state.sliceDoc(from, pos);
+				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(from, pos);
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;

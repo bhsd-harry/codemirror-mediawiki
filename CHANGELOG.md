@@ -1,3 +1,11 @@
+## 2.12.6
+
+*2024-05-10*
+
+**Fixed**
+
+- [Autocompletion](./README.md#autocompletion) for subpage name in the MediaWiki mode
+
 ## v2.12.5
 
 *2024-05-09*
