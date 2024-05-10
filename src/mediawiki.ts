@@ -1351,15 +1351,16 @@ class MediaWiki {
 
 	/**
 	 * 提供链接建议
-	 * @param search 搜索字符串，开头不包含` `，但可能包含`_`
+	 * @param str 搜索字符串，开头不包含` `，但可能包含`_`
 	 * @param ns 命名空间
 	 */
-	async #linkSuggest(search: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
+	async #linkSuggest(str: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
 		const {config: {linkSuggest}, nsRegex} = this;
-		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(search)) {
+		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(str)) {
 			return undefined;
 		}
 		let subpage = false,
+			search = str,
 			offset = 0;
 		/* eslint-disable no-param-reassign */
 		if (search.startsWith('/')) {
@@ -1388,9 +1389,13 @@ class MediaWiki {
 			}
 		}
 		/* eslint-enable no-param-reassign */
+		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,
-			options: (await linkSuggest(search, ns, subpage)).map(([label]) => ({type: 'text', label})),
+			options: (await linkSuggest(search, ns, subpage)).map(([label]) => ({
+				type: 'text',
+				label: underscore ? label.replace(/ /gu, '_') : label,
+			})),
 		};
 	}
 
