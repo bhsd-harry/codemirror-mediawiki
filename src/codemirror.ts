@@ -48,13 +48,12 @@ export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
 declare type Addon<T> = [(config?: T) => Extension, Record<string, T>];
 
+const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, (config?: any) => Extension> = {
-	plain: () => EditorView.contentAttributes.of({spellcheck: 'true'}),
-	mediawiki: (config: MwConfig) => [
-		mediawiki(config),
-		EditorView.contentAttributes.of({spellcheck: 'true'}),
-	],
+	plain,
+	mediawiki: (config: MwConfig) => [mediawiki(config), plain()],
 	html,
 };
 for (const [language, parser] of Object.entries(plugins)) {

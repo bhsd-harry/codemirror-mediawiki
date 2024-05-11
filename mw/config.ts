@@ -10,6 +10,8 @@ declare interface MagicWord {
 	'case-sensitive': boolean;
 }
 
+declare type MagicRule = (word: MagicWord) => boolean;
+
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
 		= getObject('InPageEditMwConfig') || {},
@@ -23,11 +25,7 @@ const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}>
  * @param rule 过滤函数
  * @param flip 是否反向筛选对大小写敏感的魔术字
  */
-const getConfig = (
-	magicWords: MagicWord[],
-	rule: (word: MagicWord) => boolean,
-	flip?: boolean,
-): Record<string, string> => {
+const getConfig = (magicWords: MagicWord[], rule: MagicRule, flip?: boolean): Record<string, string> => {
 	const words = magicWords.filter(rule).filter(({'case-sensitive': i}) => i !== flip)
 			.flatMap(({aliases, name, 'case-sensitive': i}) => aliases.map(alias => ({
 				alias: (i ? alias : alias.toLowerCase()).replace(/:$/u, ''),
@@ -45,11 +43,8 @@ const getConfig = (
  * @param magicWords 完整魔术字列表
  * @param rule 过滤函数
  */
-const getConfigPair = (
-	magicWords: MagicWord[],
-	rule: (word: MagicWord) => boolean,
-): [Record<string, string>, Record<string, string>] => [true, false]
-	.map(bool => getConfig(magicWords, rule, bool)) as [Record<string, string>, Record<string, string>];
+const getConfigPair = (magicWords: MagicWord[], rule: MagicRule): [Record<string, string>, Record<string, string>] =>
+	[true, false].map(bool => getConfig(magicWords, rule, bool)) as [Record<string, string>, Record<string, string>];
 
 /**
  * 将设置保存到mw.config

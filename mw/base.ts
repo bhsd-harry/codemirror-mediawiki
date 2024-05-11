@@ -3,7 +3,7 @@ import {getMwConfig, getParserConfig} from './config';
 import {openLinks} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
-import {msg, setI18N, welcome, REPO_CDN, curVersion, localize} from './msg';
+import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
 import {wikiEditor} from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
@@ -334,12 +334,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (!(lang in linters)) {
 			if (lang === 'mediawiki') {
-				const i18n = mw.config.get('wgUserLanguage');
-				if (['zh', 'zh-hans', 'zh-cn', 'zh-sg', 'zh-my'].includes(i18n)) {
-					opt = {...opt, i18n: 'zh-hans'};
-				} else if (['zh-hant', 'zh-tw', 'zh-hk', 'zh-mo'].includes(i18n)) {
-					opt = {...opt, i18n: 'zh-hant'};
-				}
+				opt = {...opt, i18n: languages[mw.config.get('wgUserLanguage')]};
 			}
 			await this.getLinter(opt);
 			if (lang === 'mediawiki') {

@@ -1,7 +1,7 @@
 import {getObject, setObject} from './util';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.12.5',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.12.6',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
@@ -9,18 +9,19 @@ const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
 	|| platform.includes('Mac');
 
+export const languages: Record<string, string> = {
+	zh: 'zh-hans',
+	'zh-hans': 'zh-hans',
+	'zh-cn': 'zh-hans',
+	'zh-my': 'zh-hans',
+	'zh-sg': 'zh-hans',
+	'zh-hant': 'zh-hant',
+	'zh-tw': 'zh-hant',
+	'zh-hk': 'zh-hant',
+	'zh-mo': 'zh-hant',
+};
+
 const storageKey = 'codemirror-mediawiki-i18n',
-	languages: Record<string, string> = {
-		zh: 'zh-hans',
-		'zh-hans': 'zh-hans',
-		'zh-cn': 'zh-hans',
-		'zh-my': 'zh-hans',
-		'zh-sg': 'zh-hans',
-		'zh-hant': 'zh-hant',
-		'zh-tw': 'zh-hant',
-		'zh-hk': 'zh-hant',
-		'zh-mo': 'zh-hant',
-	},
 	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
 
 /** 预存的I18N，可以用于判断是否是首次安装 */
