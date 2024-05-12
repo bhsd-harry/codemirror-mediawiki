@@ -2,6 +2,7 @@ import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror
 import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
 import {
 	syntaxTree,
+	ensureSyntaxTree,
 	foldEffect,
 	unfoldEffect,
 	foldedRanges,
@@ -83,13 +84,14 @@ const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =
  * @param node 语法树节点
  * @param tree 语法树
  */
-function foldable(state: EditorState, pos: number): DocRange | null;
-function foldable(state: EditorState, node: SyntaxNode, tree: Tree): DocRange | null;
-function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | null {
+function foldable(state: EditorState, pos: number): DocRange | false;
+function foldable(state: EditorState, node: SyntaxNode, tree: Tree): DocRange | false;
+function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false {
 	if (typeof posOrNode === 'number') {
-		tree = syntaxTree(state); // eslint-disable-line no-param-reassign
-	} else if (!tree) {
-		return null;
+		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
+	}
+	if (!tree) {
+		return false;
 	}
 	let node: SyntaxNode;
 	if (typeof posOrNode === 'number') {
@@ -112,7 +114,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 				return {from: matchTag(state, nextSibling.to)!.end!.to, to: nextSibling.from};
 			}
 		}
-		return null;
+		return false;
 	}
 	let {prevSibling, nextSibling} = node,
 		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
@@ -132,7 +134,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	}
 	if (!nextSibling) {
 		// The closing bracket of the current template is missing
-		return null;
+		return false;
 	}
 	stack = -1;
 	while (prevSibling) {
@@ -150,10 +152,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	}
 	const /** The end of the first delimiter */ from = delimiter?.to,
 		/** The start of the closing bracket */ to = nextSibling.from;
-	if (from && from < to) {
-		return {from, to};
-	}
-	return null;
+	return from && from < to ? {from, to} : false;
 }
 
 /**
@@ -283,7 +282,7 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 const foldableLine = (
 	{state, viewport: {to}, viewportLineBlocks}: EditorView,
 	{from: f, to: t}: BlockInfo,
-): DocRange | undefined => {
+): DocRange | false => {
 	const tree = syntaxTree(state);
 
 	/**
@@ -297,14 +296,14 @@ const foldableLine = (
 
 	const level = getLevel(f);
 	if (level > 6) {
-		return undefined;
+		return false;
 	}
 	for (const {from} of viewportLineBlocks) {
 		if (from > f && getLevel(from) <= level) {
 			return {from: t, to: from - 1};
 		}
 	}
-	return to === state.doc.length && to > t ? {from: t, to} : undefined;
+	return to === state.doc.length && to > t && {from: t, to};
 };
 
 const markers = ViewPlugin.fromClass(class {
@@ -343,40 +342,6 @@ const markers = ViewPlugin.fromClass(class {
 		return builder.finish();
 	}
 });
-
-/**
- * 折叠所有章节
- * @param view
- * @param effects 折叠
- * @param start 起始位置
- * @param end 终止位置
- * @param anchor 光标位置
- * @param update 更新光标位置
- */
-const traverseLine = (
-	view: EditorView,
-	effects: StateEffect<DocRange>[],
-	start: number,
-	end: number,
-	anchor: number,
-	update: AnchorUpdate,
-): number => {
-	while (start <= end) {
-		/* eslint-disable no-param-reassign */
-		const line = view.lineBlockAt(start),
-			range = foldableLine(view, line);
-		if (range) {
-			effects.push(foldEffect.of(range));
-			start = range.to + 1;
-			// Update the anchor with the end of the last folded range
-			anchor = update(anchor, range);
-			continue;
-		}
-		start = line.to + 1;
-		/* eslint-enable no-param-reassign */
-	}
-	return anchor;
-};
 
 export const foldExtension: Extension = [
 	codeFolding({
@@ -426,11 +391,10 @@ export const foldExtension: Extension = [
 						// No selection, try both sides of the cursor position
 						node = tree.resolve(from, -1);
 					}
-					if (!node || !isTemplate(node) && !isExt(node)) {
+					if (!node || node.name === 'Document') {
 						node = tree.resolve(from, 1);
 					}
 					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
-					anchor = traverseLine(view, effects, from, to, anchor, updateSelection);
 				}
 				return execute(view, effects, anchor);
 			},
@@ -441,17 +405,16 @@ export const foldExtension: Extension = [
 			run(view): boolean {
 				const {state} = view,
 					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [];
-				let anchor = traverse(
-					state,
-					tree,
-					effects,
-					tree.topNode.firstChild,
-					Infinity,
-					getAnchor(state),
-					updateAll,
-				);
-				anchor = traverseLine(view, effects, 0, state.doc.length, anchor, updateAll);
+					effects: StateEffect<DocRange>[] = [],
+					anchor = traverse(
+						state,
+						tree,
+						effects,
+						tree.topNode.firstChild,
+						Infinity,
+						getAnchor(state),
+						updateAll,
+					);
 				return execute(view, effects, anchor);
 			},
 		},

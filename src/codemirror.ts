@@ -17,7 +17,7 @@ import {
 	LanguageSupport,
 	bracketMatching,
 	indentUnit,
-	syntaxTree,
+	ensureSyntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -499,7 +499,7 @@ export class CodeMirror6 {
 	 * @param position 位置
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
-		return this.#view && syntaxTree(this.#view.state).resolve(position, 1);
+		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
 	}
 
 	/**
