@@ -49,5 +49,7 @@
 	"phrase-replace": "替换",
 	"phrase-replace-all": "替换所有",
 	"phrase-unfold": "展开",
+	"phrase-Fold-line": "折叠行",
+	"phrase-Unfold-line": "展开行",
 	"phrase-Fold-template-or-extension-tag": "折叠模板、解析器函数或扩展标签"
 }

@@ -18,8 +18,6 @@ import {
 	bracketMatching,
 	indentUnit,
 	ensureSyntaxTree,
-	foldGutter,
-	foldKeymap,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
@@ -27,7 +25,7 @@ import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@co
 import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
-import {foldExtension, foldHandler, foldOnIndent} from './fold';
+import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
 import {tagMatchingState} from './matchTag';
 import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
@@ -92,10 +90,10 @@ const avail: Record<string, Addon<any>> = {
 		{},
 	],
 	codeFolding: [
-		(e = [foldGutter(), keymap.of(foldKeymap)]): Extension => e,
+		(e = defaultFoldExtension): Extension => e,
 		{
 			mediawiki: foldExtension,
-			lua: [foldGutter(), keymap.of(foldKeymap), foldOnIndent],
+			lua: [defaultFoldExtension, foldOnIndent],
 		},
 	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),

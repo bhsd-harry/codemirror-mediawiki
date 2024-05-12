@@ -14,10 +14,10 @@ declare interface TagMatchResult extends MatchResult {
 }
 
 class Tag {
-	type: TagType;
-	name: string;
-	first: SyntaxNode;
-	last: SyntaxNode;
+	declare readonly type;
+	declare readonly name;
+	declare readonly first;
+	declare readonly last;
 
 	get closing(): boolean {
 		return isClosing(this.first, this.type);

@@ -1,5 +1,5 @@
-import {showTooltip, keymap} from '@codemirror/view';
-import {StateField} from '@codemirror/state';
+import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror/view';
+import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
 import {
 	syntaxTree,
 	ensureSyntaxTree,
@@ -9,10 +9,14 @@ import {
 	unfoldAll,
 	codeFolding,
 	foldService,
+	foldGutter,
+	foldKeymap,
+	foldState,
+	language,
 } from '@codemirror/language';
 import modeConfig from './config';
 import {matchTag} from './matchTag';
-import type {EditorView, Tooltip} from '@codemirror/view';
+import type {EditorView, Tooltip, ViewUpdate, BlockInfo} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 
@@ -59,7 +63,7 @@ const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =
 	 * Check if a SyntaxNode is part of a extension tag
 	 * @param node 语法树节点
 	 */
-	isExt = (node: SyntaxNode): boolean => node.name.includes('-tag-'),
+	isExt = (node: SyntaxNode): boolean => node.name.includes('mw-tag-'),
 
 	/**
 	 * Update the stack of opening (+) or closing (-) brackets
@@ -240,6 +244,105 @@ const traverse = (
 	/* eslint-enable no-param-reassign */
 };
 
+class FoldMarker extends GutterMarker {
+	declare readonly open;
+
+	constructor(open: boolean) {
+		super();
+		this.open = open;
+	}
+
+	override eq(other: this): boolean {
+		return this.open === other.open;
+	}
+
+	override toDOM({state}: EditorView): HTMLSpanElement {
+		const span = document.createElement('span');
+		span.textContent = this.open ? '⌄' : '›';
+		span.title = state.phrase(this.open ? 'Fold line' : 'Unfold line');
+		return span;
+	}
+}
+
+const canFold = new FoldMarker(true),
+	canUnfold = new FoldMarker(false);
+
+const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
+	let found: DocRange | undefined;
+	state.field(foldState, false)?.between(line.from, line.to, (from, to) => {
+		if (!found && to === line.to) {
+			found = {from, to};
+		}
+	});
+	return found;
+};
+
+const foldableLine = (
+	{state, viewport: {to}, viewportLineBlocks}: EditorView,
+	{from: f, to: t}: BlockInfo,
+): DocRange | undefined => {
+	const tree = ensureSyntaxTree(state, to);
+
+	/**
+	 * 获取标题层级
+	 * @param pos 行首位置
+	 */
+	const getLevel = (pos: number): number => {
+		const node = tree?.resolve(pos, 1);
+		return node?.name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(node.name)![1]) : 7;
+	};
+
+	const level = getLevel(f);
+	if (level > 6) {
+		return undefined;
+	}
+	for (const {from} of viewportLineBlocks) {
+		if (from > f && getLevel(from) <= level) {
+			return {from: t, to: from - 1};
+		}
+	}
+	return to === state.doc.length && to > t ? {from: t, to} : undefined;
+};
+
+const markers = ViewPlugin.fromClass(class {
+	declare markers;
+	declare from;
+
+	constructor(view: EditorView) {
+		this.from = view.viewport.from;
+		this.markers = this.buildMarkers(view);
+	}
+
+	update(update: ViewUpdate): void {
+		if (
+			update.docChanged
+			|| update.viewportChanged
+			|| update.startState.facet(language) !== update.state.facet(language)
+			|| update.startState.field(foldState, false) !== update.state.field(foldState, false)
+			|| syntaxTree(update.startState) !== syntaxTree(update.state)
+		) {
+			this.markers = this.buildMarkers(update.view);
+		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	buildMarkers(view: EditorView): RangeSet<FoldMarker> {
+		const builder = new RangeSetBuilder<FoldMarker>();
+		for (const line of view.viewportLineBlocks) {
+			let mark: FoldMarker | undefined;
+			if (findFold(view, line)) {
+				mark = canUnfold;
+			} else if (foldableLine(view, line)) {
+				mark = canFold;
+			}
+			if (mark) {
+				builder.add(line.from, line.from, mark);
+			}
+		}
+		return builder.finish();
+	}
+});
+
 export const foldExtension: Extension = [
 	codeFolding({
 		placeholderDOM(view) {
@@ -343,6 +446,31 @@ export const foldExtension: Extension = [
 		},
 		{key: 'Ctrl-Alt-]', run: unfoldAll},
 	]),
+	markers,
+	gutter({
+		class: 'cm-foldGutter',
+		markers(view) {
+			return view.plugin(markers)?.markers || RangeSet.empty;
+		},
+		initialSpacer() {
+			return new FoldMarker(false);
+		},
+		domEventHandlers: {
+			click: (view, line) => {
+				const folded = findFold(view, line);
+				if (folded) {
+					view.dispatch({effects: unfoldEffect.of(folded)});
+					return true;
+				}
+				const range = foldableLine(view, line);
+				if (range) {
+					view.dispatch({effects: foldEffect.of(range)});
+					return true;
+				}
+				return false;
+			},
+		},
+	}),
 ];
 
 /**
@@ -385,3 +513,5 @@ export const foldOnIndent: Extension = foldService.of(({doc, tabSize}, start, fr
 	}
 	return empty || j === number ? null : {from, to: doc.line(j).to};
 });
+
+export const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];

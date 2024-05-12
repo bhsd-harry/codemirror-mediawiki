@@ -1,3 +1,11 @@
+## 2.13.0
+
+*2024-05-12*
+
+**Added**
+
+- [CodeFolding](./README.md#codefolding) for sections in the MediaWiki mode
+
 ## 2.12.6
 
 *2024-05-11*

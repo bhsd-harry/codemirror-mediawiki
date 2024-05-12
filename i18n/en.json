@@ -38,16 +38,5 @@
 	"Stylelint-config": "Stylelint configuration as JSON:",
 	"and": " and ",
 	"json-error": "Invalid JSON: $1",
-	"phrase-Find": "Find",
-	"phrase-next": "next",
-	"phrase-previous": "previous",
-	"phrase-all": "all",
-	"phrase-match-case": "match case",
-	"phrase-regexp": "regexp",
-	"phrase-by-word": "by word",
-	"phrase-Replace": "Replace",
-	"phrase-replace": "replace",
-	"phrase-replace-all": "replace all",
-	"phrase-unfold": "unfold",
 	"phrase-Fold-template-or-extension-tag": "Fold template, parser function or extension tag"
 }

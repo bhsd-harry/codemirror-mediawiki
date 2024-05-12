@@ -23,8 +23,8 @@ declare interface TemplateParam {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.12',
-	addons = ['autocompletion', 'codeFolding'];
+const baseVersion = '2.13',
+	addons = ['codeFolding'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
