@@ -1611,7 +1611,7 @@ class MediaWiki {
 				dt: {n: 0},
 			}),
 
-			copyState: (state): State => {
+			copyState(state): State {
 				const newState = copyState(state);
 				newState.dt = {...state.dt};
 				if (state.extMode && state.extMode.copyState) {
@@ -1700,7 +1700,7 @@ class MediaWiki {
 				return t.style;
 			},
 
-			blankLine: (state): void => {
+			blankLine(state): void {
 				if (state.extMode && state.extMode.blankLine) {
 					state.extMode.blankLine(state.extState as State, 0);
 				}

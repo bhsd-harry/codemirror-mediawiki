@@ -6,6 +6,10 @@
 
 - [CodeFolding](./README.md#codefolding) for sections in the MediaWiki mode
 
+**Fixed**
+
+- [CodeFolding](./README.md#codefolding) keyboard shortcuts in the MediaWiki mode
+
 ## 2.12.6
 
 *2024-05-11*

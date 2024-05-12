@@ -499,7 +499,7 @@ Key bindings:
 
 *version added: 2.3.0*
 
-Fold templates, parser functions and extension tags in the MediaWiki mode, and code blocks in other modes.
+Fold sections, templates, parser functions and extension tags in the MediaWiki mode, and code blocks in other modes.
 
 Key bindings:
 

@@ -24,6 +24,11 @@ export interface DocRange {
 	to: number;
 }
 
+declare type AnchorUpdate = (pos: number, range: DocRange) => number;
+
+const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
+	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
+
 const {tokens} = modeConfig;
 
 /**
@@ -210,9 +215,9 @@ const getAnchor = (state: EditorState): number => Math.max(...state.selection.ra
 /**
  * 折叠所有模板
  * @param state
- * @param tree 语法书
+ * @param tree 语法树
  * @param effects 折叠
- * @param node 语法书节点
+ * @param node 语法树节点
  * @param end 终止位置
  * @param anchor 光标位置
  * @param update 更新光标位置
@@ -224,10 +229,10 @@ const traverse = (
 	node: SyntaxNode | null,
 	end: number,
 	anchor: number,
-	update = (pos: number, {to}: DocRange): number => Math.max(pos, to),
+	update: AnchorUpdate,
 ): number => {
-	/* eslint-disable no-param-reassign */
 	while (node && node.from <= end) {
+		/* eslint-disable no-param-reassign */
 		const range = foldable(state, node, tree);
 		if (range) {
 			effects.push(foldEffect.of(range));
@@ -237,9 +242,9 @@ const traverse = (
 			continue;
 		}
 		node = node.nextSibling;
+		/* eslint-enable no-param-reassign */
 	}
 	return anchor;
-	/* eslint-enable no-param-reassign */
 };
 
 class FoldMarker extends GutterMarker {
@@ -339,6 +344,40 @@ const markers = ViewPlugin.fromClass(class {
 	}
 });
 
+/**
+ * 折叠所有章节
+ * @param view
+ * @param effects 折叠
+ * @param start 起始位置
+ * @param end 终止位置
+ * @param anchor 光标位置
+ * @param update 更新光标位置
+ */
+const traverseLine = (
+	view: EditorView,
+	effects: StateEffect<DocRange>[],
+	start: number,
+	end: number,
+	anchor: number,
+	update: AnchorUpdate,
+): number => {
+	while (start <= end) {
+		/* eslint-disable no-param-reassign */
+		const line = view.lineBlockAt(start),
+			range = foldableLine(view, line);
+		if (range) {
+			effects.push(foldEffect.of(range));
+			start = range.to + 1;
+			// Update the anchor with the end of the last folded range
+			anchor = update(anchor, range);
+			continue;
+		}
+		start = line.to + 1;
+		/* eslint-enable no-param-reassign */
+	}
+	return anchor;
+};
+
 export const foldExtension: Extension = [
 	codeFolding({
 		placeholderDOM(view) {
@@ -387,10 +426,11 @@ export const foldExtension: Extension = [
 						// No selection, try both sides of the cursor position
 						node = tree.resolve(from, -1);
 					}
-					if (!node || !isTemplate(node)) {
+					if (!node || !isTemplate(node) && !isExt(node)) {
 						node = tree.resolve(from, 1);
 					}
-					anchor = traverse(state, tree, effects, node, to, anchor);
+					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+					anchor = traverseLine(view, effects, from, to, anchor, updateSelection);
 				}
 				return execute(view, effects, anchor);
 			},
@@ -401,16 +441,17 @@ export const foldExtension: Extension = [
 			run(view): boolean {
 				const {state} = view,
 					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [],
-					anchor = traverse(
-						state,
-						tree,
-						effects,
-						tree.topNode.firstChild,
-						Infinity,
-						getAnchor(state),
-						(pos, {from, to}) => from <= pos && to > pos ? to : pos,
-					);
+					effects: StateEffect<DocRange>[] = [];
+				let anchor = traverse(
+					state,
+					tree,
+					effects,
+					tree.topNode.firstChild,
+					Infinity,
+					getAnchor(state),
+					updateAll,
+				);
+				anchor = traverseLine(view, effects, 0, state.doc.length, anchor, updateAll);
 				return execute(view, effects, anchor);
 			},
 		},
@@ -449,7 +490,7 @@ export const foldExtension: Extension = [
 			return new FoldMarker(false);
 		},
 		domEventHandlers: {
-			click: (view, line) => {
+			click(view, line) {
 				const folded = findFold(view, line);
 				if (folded) {
 					view.dispatch({effects: unfoldEffect.of(folded)});
