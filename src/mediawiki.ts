@@ -669,7 +669,9 @@ class MediaWiki {
 						}
 					}
 			}
-			stream.eatWhile(/[^\s_[<{'&~:|=>}\]]/u);
+			if (state.tokenize.name === 'eatNoWiki') {
+				stream.eatWhile(/[^\s_[<{'&~:]/u);
+			}
 			return this.makeStyle(style, state);
 		};
 	}
