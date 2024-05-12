@@ -2,7 +2,6 @@ import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror
 import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
 import {
 	syntaxTree,
-	ensureSyntaxTree,
 	foldEffect,
 	unfoldEffect,
 	foldedRanges,
@@ -83,9 +82,8 @@ function foldable(state: EditorState, pos: number): DocRange | null;
 function foldable(state: EditorState, node: SyntaxNode, tree: Tree): DocRange | null;
 function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | null {
 	if (typeof posOrNode === 'number') {
-		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
-	}
-	if (!tree) {
+		tree = syntaxTree(state); // eslint-disable-line no-param-reassign
+	} else if (!tree) {
 		return null;
 	}
 	let node: SyntaxNode;
@@ -281,15 +279,15 @@ const foldableLine = (
 	{state, viewport: {to}, viewportLineBlocks}: EditorView,
 	{from: f, to: t}: BlockInfo,
 ): DocRange | undefined => {
-	const tree = ensureSyntaxTree(state, to);
+	const tree = syntaxTree(state);
 
 	/**
 	 * 获取标题层级
 	 * @param pos 行首位置
 	 */
 	const getLevel = (pos: number): number => {
-		const node = tree?.resolve(pos, 1);
-		return node?.name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(node.name)![1]) : 7;
+		const {name} = tree.resolve(pos, 1);
+		return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
 	};
 
 	const level = getLevel(f);
@@ -306,10 +304,8 @@ const foldableLine = (
 
 const markers = ViewPlugin.fromClass(class {
 	declare markers;
-	declare from;
 
 	constructor(view: EditorView) {
-		this.from = view.viewport.from;
 		this.markers = this.buildMarkers(view);
 	}
 
@@ -382,11 +378,8 @@ export const foldExtension: Extension = [
 			mac: 'Cmd-Alt-[',
 			run(view): boolean {
 				const {state} = view,
-					tree = ensureSyntaxTree(state, view.viewport.to);
-				if (!tree) {
-					return false;
-				}
-				const effects: StateEffect<DocRange>[] = [];
+					tree = syntaxTree(state),
+					effects: StateEffect<DocRange>[] = [];
 				let anchor = getAnchor(state);
 				for (const {from, to, empty} of state.selection.ranges) {
 					let node: SyntaxNode | null | undefined;

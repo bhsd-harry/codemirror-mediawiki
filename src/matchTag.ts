@@ -1,6 +1,6 @@
 import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
-import {ensureSyntaxTree} from '@codemirror/language';
+import {syntaxTree} from '@codemirror/language';
 import modeConfig from './config';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
@@ -110,10 +110,7 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
  * @param pos 位置
  */
 export const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
-	const tree = ensureSyntaxTree(state, pos);
-	if (!tree) {
-		return null;
-	}
+	const tree = syntaxTree(state);
 	let node = tree.resolve(pos, -1);
 	if (!isTag(node)) {
 		node = tree.resolve(pos, 1);

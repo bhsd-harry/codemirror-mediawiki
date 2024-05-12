@@ -9,7 +9,7 @@ import {
 	LanguageSupport,
 	StreamLanguage,
 	syntaxHighlighting,
-	ensureSyntaxTree,
+	syntaxTree,
 } from '@codemirror/language';
 import {Tag} from '@lezer/highlight';
 import modeConfig from './config';
@@ -1423,11 +1423,8 @@ class MediaWiki {
 	get completionSource(): CompletionSource {
 		return async context => {
 			const {state, pos, explicit} = context,
-				node = ensureSyntaxTree(state, pos)?.resolve(pos, -1);
-			if (!node) {
-				return null;
-			}
-			const types = new Set(node.name.split('_')),
+				node = syntaxTree(state).resolve(pos, -1),
+				types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				{from, to} = node,
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(from, pos);
