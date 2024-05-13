@@ -70,7 +70,11 @@
 	color: #d73333;
 }
 
-.cm-mw-pagename {
+.cm-mw-pagename,
+.cm-mw-extlink-protocol,
+.cm-mw-extlink,
+.cm-mw-free-extlink-protocol,
+.cm-mw-free-extlink {
 	text-decoration: underline;
 }
 

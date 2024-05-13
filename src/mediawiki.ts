@@ -36,7 +36,6 @@ declare interface State extends Record<NestCount, number> {
 	extName: string | false;
 	extMode: StreamParser<object> | false;
 	extState: object | false;
-	lpar: boolean;
 	lbrack: boolean | undefined;
 	dt: Partial<Record<NestCount, number>> & {n: number};
 	redirect?: boolean;
@@ -137,6 +136,29 @@ const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]
 const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
+/**
+ * 获取外部链接正则表达式
+ * @param punctuations 标点符号
+ */
+const getUrlRegex = (punctuations = ''): string =>
+	`[^&~{'\\p{Zs}[\\]<>"${punctuations}]|&(?![lg]t;)|~~?(?!~)|\\{(?!\\{)|'(?!')`;
+
+/**
+ * 获取标点符号
+ * @param lpar 是否包含左括号
+ */
+const getPunctuations = (lpar?: boolean): string => `.,;:!?\\\\${lpar ? '' : ')'}`;
+
+/**
+ * 获取自由外链正则表达式
+ * @param lpar 是否包含左括号
+ */
+const getFreeRegex = (lpar?: boolean): RegExp => {
+	const punctuations = getPunctuations(lpar),
+		source = getUrlRegex(punctuations);
+	return new RegExp(`^(?:${source}|[${punctuations}]+(?=${source}))*`, 'u');
+};
+
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
 	declare readonly config;
@@ -202,7 +224,7 @@ class MediaWiki {
 			...voidHtmlTags,
 			...implicitlyClosedHtmlTags || [],
 		]);
-		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\s[\\]<>])`, 'iu');
+		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\p{Zs}[\\]<>"])`, 'iu');
 		this.fileRegex = new RegExp(`^(?:${
 			Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')
 		})\\s*:`, 'iu');
@@ -415,35 +437,16 @@ class MediaWiki {
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
-				/** @todo free external links anywhere */
 				if (stream.match('//')) {
 					return this.makeStyle(style, state);
-				// highlight free external links, see T108448
-				} else if (stream.match(this.urlProtocols, false)) {
-					chain(state, this.eatFreeExternalLinkProtocol);
+				}
+				const mtFree = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+				if (mtFree) {
+					chain(state, this.eatExternalLinkProtocol(mtFree[0]));
 					return '';
 				}
 				ch = stream.next()!;
 				switch (ch) {
-					case '-':
-						if (stream.match(/^-{3,}/u)) {
-							return tokens.hr;
-						}
-						break;
-					case '=': {
-						const tmp = stream
-							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u) as RegExpMatchArray | false;
-						// Title
-						if (tmp) {
-							stream.backUp(tmp[2]!.length);
-							chain(state, this.inSectionHeader(tmp[3]!.length));
-							return this.makeLocalStyle(
-								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
-								state,
-							);
-						}
-						break;
-					}
 					case '#':
 						if (stream.match(this.redirectRegex)) {
 							state.redirect = true;
@@ -461,6 +464,20 @@ class MediaWiki {
 							return this.makeLocalTagStyle('list', state);
 						}
 						return this.eatList(stream, state);
+					case '=': {
+						const tmp = stream
+							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u) as RegExpMatchArray | false;
+						// Title
+						if (tmp) {
+							stream.backUp(tmp[2]!.length);
+							chain(state, this.inSectionHeader(tmp[3]!.length));
+							return this.makeLocalStyle(
+								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
+								state,
+							);
+						}
+						break;
+					}
 					case ' ': {
 						// Leading spaces is valid syntax for tables, bug T108454
 						const mt = stream.match(/^\s*(:+\s*)?(?=\{\||\{{3}\s*!\s*\}\})/u) as RegExpMatchArray | false;
@@ -481,6 +498,11 @@ class MediaWiki {
 							chain(state, this.inTableDefinition);
 							return this.makeLocalTagStyle('tableBracket', state);
 						}
+						break;
+					case '-':
+						if (stream.match(/^-{3,}/u)) {
+							return tokens.hr;
+						}
 					// no default
 				}
 			} else {
@@ -488,45 +510,50 @@ class MediaWiki {
 			}
 
 			switch (ch) {
-				case '&':
-					return this.makeStyle(this.eatHtmlEntity(stream, style), state);
-				case "'":
-					// skip the irrelevant apostrophes ( >5 or =4 )
-					if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
-						break;
-					} else if (stream.match("''")) { // bold
-						if (!(this.firstSingleLetterWord || stream.match("''", false))) {
-							this.prepareItalicForCorrection(stream);
-						}
-						this.isBold = !this.isBold;
-						return this.makeLocalTagStyle('apostrophes', state);
-					} else if (stream.eat("'")) { // italic
-						this.isItalic = !this.isItalic;
-						return this.makeLocalTagStyle('apostrophes', state);
+				case '~':
+					if (stream.match(/^~{2,4}/u)) {
+						return tokens.signature;
 					}
 					break;
-				case '[':
-					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
-						if (/[^[\]|]/u.test(stream.peek() || '')) {
-							state.nLink++;
-							state.lbrack = undefined;
-							chain(
-								state,
-								state.redirect
-									? this.inLink(false, true)
-									: this.inLink(Boolean(stream.match(this.fileRegex, false))),
-							);
-							return this.makeLocalTagStyle('linkBracket', state);
+				case '<': {
+					if (stream.match('!--', false)) { // comment
+						stream.backUp(1);
+						chain(state, this.inComment);
+						return '';
+					}
+					const isCloseTag = Boolean(stream.eat('/')),
+						mt = stream.match(
+							/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u,
+						) as RegExpMatchArray | false;
+					if (mt) {
+						const tagname = mt[0].toLowerCase();
+						if (tagname in this.config.tags) {
+							// Extension tag
+							if (isCloseTag) {
+								chain(state, this.inStr('>', 'error'));
+								return this.makeLocalTagStyle('error', state);
+							}
+							stream.backUp(tagname.length);
+							chain(state, this.eatTagName(tagname, isCloseTag));
+							return this.makeLocalTagStyle('extTagBracket', state);
+						} else if (this.permittedHtmlTags.has(tagname)) {
+							// Html tag
+							if (isCloseTag) {
+								if (tagname === state.inHtmlTag[0]) {
+									state.inHtmlTag.shift();
+								} else {
+									chain(state, this.inStr('>', 'error'));
+									return this.makeLocalTagStyle('error', state);
+								}
+							}
+							stream.backUp(tagname.length);
+							chain(state, this.eatTagName(tagname, isCloseTag, true));
+							return this.makeLocalTagStyle('htmlTagBracket', state);
 						}
-					} else {
-						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
-						if (mt) {
-							state.nLink++;
-							chain(state, this.eatExternalLinkProtocol(mt[0].length));
-							return this.makeLocalTagStyle('extLinkBracket', state);
-						}
+						stream.backUp(tagname.length);
 					}
 					break;
+				}
 				case '{':
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
@@ -561,11 +588,6 @@ class MediaWiki {
 						state.nTemplate++;
 						chain(state, this.inTemplatePageName());
 						return this.makeLocalTagStyle('templateBracket', state);
-					}
-					break;
-				case '~':
-					if (stream.match(/^~{2,4}/u)) {
-						return tokens.signature;
 					}
 					break;
 				// Maybe double underscored Magic Word such as __TOC__
@@ -605,6 +627,43 @@ class MediaWiki {
 					}
 					break;
 				}
+				case '[':
+					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
+						if (state.redirect || /[^[\]|]/u.test(stream.peek() || '')) {
+							state.nLink++;
+							state.lbrack = undefined;
+							chain(
+								state,
+								state.redirect
+									? this.inLink(false, true)
+									: this.inLink(Boolean(stream.match(this.fileRegex, false))),
+							);
+							return this.makeLocalTagStyle('linkBracket', state);
+						}
+					} else {
+						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+						if (mt) {
+							state.nLink++;
+							chain(state, this.eatExternalLinkProtocol(mt[0], false));
+							return this.makeLocalTagStyle('extLinkBracket', state);
+						}
+					}
+					break;
+				case "'":
+					// skip the irrelevant apostrophes ( >5 or =4 )
+					if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
+						break;
+					} else if (stream.match("''")) { // bold
+						if (!(this.firstSingleLetterWord || stream.match("''", false))) {
+							this.prepareItalicForCorrection(stream);
+						}
+						this.isBold = !this.isBold;
+						return this.makeLocalTagStyle('apostrophes', state);
+					} else if (stream.eat("'")) { // italic
+						this.isItalic = !this.isItalic;
+						return this.makeLocalTagStyle('apostrophes', state);
+					}
+					break;
 				/** @todo consider the balance of HTML tags, including apostrophes */
 				case ':': {
 					const {dt} = state;
@@ -620,114 +679,201 @@ class MediaWiki {
 					}
 					break;
 				}
-				case '<': {
-					if (stream.match('!--', false)) { // comment
-						stream.backUp(1);
-						chain(state, this.inComment);
-						return '';
-					}
-					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(
-							/^[^>/\s.*,[\]{}$^+?|\\'`~<=!@#%&()-]+(?=[>/\s]|$)/u,
-						) as RegExpMatchArray | false;
-					if (mt) {
-						const tagname = mt[0].toLowerCase();
-						if (tagname in this.config.tags) {
-							// Extension tag
-							if (isCloseTag) {
-								chain(state, this.inStr('>', 'error'));
-								return this.makeLocalTagStyle('error', state);
-							}
-							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag));
-							return this.makeLocalTagStyle('extTagBracket', state);
-						} else if (this.permittedHtmlTags.has(tagname)) {
-							// Html tag
-							if (isCloseTag) {
-								if (tagname === state.inHtmlTag[0]) {
-									state.inHtmlTag.shift();
-								} else {
-									chain(state, this.inStr('>', 'error'));
-									return this.makeLocalTagStyle('error', state);
-								}
-							}
-							stream.backUp(tagname.length);
-							chain(state, this.eatTagName(tagname.length, isCloseTag, true));
-							return this.makeLocalTagStyle('htmlTagBracket', state);
-						}
-						stream.backUp(tagname.length);
-					}
-					break;
-				}
-				default:
-					if (/\s/u.test(ch || '')) {
-						stream.eatSpace();
-						// highlight free external links, bug T108448
-						if (stream.match(this.urlProtocols, false) && !stream.match('//')) {
-							chain(state, this.eatFreeExternalLinkProtocol);
-							return this.makeStyle(style, state);
-						}
-					}
+				case '&':
+					return this.makeStyle(this.eatHtmlEntity(stream, style), state);
+				// no default
 			}
-			if (state.tokenize.name === 'eatNoWiki') {
-				stream.eatWhile(/[^\s_[<{'&~:]/u);
+			if (state.stack.length === 0) {
+				if (/[^\p{L}\d_]/u.test(ch || '')) {
+					// highlight free external links, bug T108448
+					stream.eatWhile(/[^\p{L}\d_&'{[<~:]/u);
+					const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+					if (mt && !stream.match('//')) {
+						chain(state, this.eatExternalLinkProtocol(mt[0]));
+						return this.makeStyle(style, state);
+					}
+				}
+				stream.eatWhile(/[\p{L}\d]/u);
 			}
 			return this.makeStyle(style, state);
 		};
 	}
 
-	get eatFreeExternalLinkProtocol(): Tokenizer {
+	eatExternalLinkProtocol(chars: string, free = true): Tokenizer {
 		return (stream, state) => {
-			stream.match(this.urlProtocols);
-			state.tokenize = this.inFreeExternalLink;
-			return this.makeTagStyle('freeExtLinkProtocol', state);
+			stream.match(chars);
+			state.tokenize = this[free ? 'eatFreeExternalLink' : 'inExternalLink'];
+			return this.makeLocalTagStyle(free ? 'freeExtLinkProtocol' : 'extLinkProtocol', state);
 		};
 	}
 
-	get inFreeExternalLink(): Tokenizer {
+	get inExternalLink(): Tokenizer {
+		const regex = new RegExp(`^(?:${getUrlRegex()})+`, 'u');
 		return (stream, state) => {
-			if (!stream.sol()) {
-				const mt = stream.match(/^[^\s{[\]<>~).,;:!?'"]*/u) as RegExpMatchArray,
-					ch = stream.peek();
-				state.lpar ||= mt[0].includes('(');
-				switch (ch!) {
-					case '~':
-						if (stream.match(/^~~?(?!~)/u)) {
-							return this.makeTagStyle('freeExtLink', state);
-						}
-						break;
-					case '{':
-						if (stream.match(/^\{(?!\{)/u)) {
-							return this.makeTagStyle('freeExtLink', state);
-						}
-						break;
-					case "'":
-						if (stream.match(/^'(?!')/u)) {
-							return this.makeTagStyle('freeExtLink', state);
-						}
-						break;
-					case ')':
-						if (state.lpar) {
-							stream.eatWhile(')');
-							return this.makeTagStyle('freeExtLink', state);
-						}
-						// fall through
-					case '.':
-					case ',':
-					case ';':
-					case ':':
-					case '!':
-					case '?':
-						if (stream.match(/^[).,;:!?]+(?=[^\s{[\]<>~).,;:!?'"]|~~?(?!~)|\{(?!\{)|'(?!'))/u)) {
-							return this.makeTagStyle('freeExtLink', state);
-						}
-					// no default
-				}
+			if (stream.sol()) {
+				state.nLink--;
+				pop(state);
+				return '';
+			} else if (stream.match(/^\p{Zs}*\]/u)) {
+				pop(state);
+				return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
+			} else if (stream.match(regex)) {
+				return this.makeLocalTagStyle('extLink', state);
 			}
-			state.lpar = false;
+			state.tokenize = this.inExternalLinkText;
+			return this.makeLocalStyle('', state);
+		};
+	}
+
+	get inExternalLinkText(): Tokenizer {
+		return (stream, state) => {
+			if (stream.sol()) {
+				state.nLink--;
+				pop(state);
+				return '';
+			} else if (stream.eat(']')) {
+				pop(state);
+				return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
+			}
+			return stream.match(/^(?:[^'[\]{&~<]|\[(?!\[))+/u)
+				? this.makeTagStyle('extLinkText', state)
+				: this.eatWikiText('extLinkText')(stream, state);
+		};
+	}
+
+	get eatFreeExternalLink(): Tokenizer {
+		return (stream, state) => {
+			const mt = stream.match(getFreeRegex()) as RegExpMatchArray;
+			if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
+				stream.match(getFreeRegex(true));
+			}
 			pop(state);
 			return this.makeTagStyle('freeExtLink', state);
 		};
+	}
+
+	inLink(file: boolean, redirect = false): Tokenizer {
+		const style = `${tokens.linkPageName} ${tokens.pageName}`;
+		return (stream, state) => {
+			if (stream.sol()) {
+				state.nLink--;
+				state.lbrack = false;
+				pop(state);
+				return '';
+			}
+			const space = stream.eatSpace();
+			if (stream.match(/^#\s*/u)) {
+				state.tokenize = this.inLinkToSection(file, redirect);
+				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
+			} else if (stream.match(/^\|\s*/u)) {
+				state.tokenize = this.inLinkText(file, redirect);
+				if (file) {
+					this.eatImageParameter(stream, state);
+				}
+				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
+			} else if (stream.match(']]')) {
+				state.redirect = false;
+				state.lbrack = false;
+				pop(state);
+				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+			} else if (stream.match(redirect ? /^[<>[{}]+|\]/u : /^(?:[>[}]+|\]|\{(?!\{))/u)) {
+				return this.makeTagStyle('error', state);
+			}
+			return stream.eatWhile(/[^#|[\]{}<>]/u) || space
+				? this.makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
+		};
+	}
+
+	inLinkToSection(file: boolean, redirect: boolean): Tokenizer {
+		const tag = file ? 'error' : 'linkToSection';
+		return (stream, state) => {
+			if (stream.sol()) {
+				state.nLink--;
+				state.lbrack = false;
+				pop(state);
+				return '';
+			} else if (stream.match(/^\|\s*/u)) {
+				state.tokenize = this.inLinkText(file, redirect);
+				if (file) {
+					this.eatImageParameter(stream, state);
+				}
+				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
+			} else if (stream.match(']]')) {
+				state.redirect = false;
+				state.lbrack = false;
+				pop(state);
+				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+			}
+			return stream.eatWhile(redirect ? /[^|\]&]/u : /[^|\]&{<]/u)
+				? this.makeTagStyle(tag, state)
+				: this.eatWikiText(tokens[tag])(stream, state);
+		};
+	}
+
+	inLinkText(file: boolean, redirect: boolean): Tokenizer {
+		let linkIsBold: boolean,
+			linkIsItalic: boolean;
+		return (stream, state) => {
+			const tmpstyle = `${tokens.linkText} ${linkIsBold ? tokens.strong : ''} ${linkIsItalic ? tokens.em : ''} ${
+				file ? 'mw-file-text' : ''
+			}`;
+			if (stream.match(']]')) {
+				if (!redirect && state.lbrack && stream.peek() === ']') {
+					stream.backUp(1);
+					state.lbrack = false;
+					return this.makeStyle(tmpstyle, state);
+				}
+				state.redirect = false;
+				state.lbrack = false;
+				pop(state);
+				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+			} else if (redirect) {
+				if (!stream.skipTo(']]')) {
+					stream.skipToEnd();
+				}
+				return this.makeLocalTagStyle('error', state);
+			} else if (file && stream.match(/^\|\s*/u)) {
+				this.eatImageParameter(stream, state);
+				return this.makeLocalTagStyle('linkDelimiter', state);
+			} else if (stream.peek() === "'") {
+				const mt = stream.match(/^'+/u) as RegExpMatchArray;
+				switch (mt[0].length) {
+					case 3:
+						linkIsBold = !linkIsBold;
+						return this.makeLocalTagStyle('apostrophes', state);
+					case 5:
+						linkIsBold = !linkIsBold;
+						// fall through
+					case 2:
+						linkIsItalic = !linkIsItalic;
+						return this.makeLocalTagStyle('apostrophes', state);
+					case 4:
+						stream.backUp(3);
+						// fall through
+					case 1:
+						break;
+					default:
+						stream.backUp(5);
+				}
+				return this.makeStyle(tmpstyle, state);
+			}
+			const regex = file
+					? new RegExp(`^(?:[^'\\]{&~<|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'iu')
+					: /^[^'\]{&~<]+/u,
+				mt = stream.match(regex) as RegExpMatchArray | false;
+			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
+				state.lbrack = true;
+			}
+			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
+		};
+	}
+
+	eatImageParameter(stream: StringStream, state: State): void {
+		const mt = stream.match(this.imgRegex, false) as RegExpMatchArray | false;
+		if (mt) {
+			chain(state, this.inStr(mt[0], 'imageParameter'));
+		}
 	}
 
 	inSectionHeader(count: number): Tokenizer {
@@ -858,183 +1004,6 @@ class MediaWiki {
 	eatHtmlEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
-	}
-
-	eatExternalLinkProtocol(chars: number): Tokenizer {
-		return (stream, state) => {
-			for (let i = 0; i < chars; i++) {
-				stream.next();
-			}
-			if (stream.eol()) {
-				state.nLink--;
-				pop(state);
-			} else {
-				state.tokenize = this.inExternalLink;
-			}
-			return this.makeLocalTagStyle('extLinkProtocol', state);
-		};
-	}
-
-	get inExternalLink(): Tokenizer {
-		return (stream, state) => {
-			if (stream.sol()) {
-				state.nLink--;
-				pop(state);
-				return '';
-			} else if (stream.match(/^\s*\]/u)) {
-				pop(state);
-				return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-			} else if (
-				stream.eatSpace()
-				|| stream.match(/^(?:[[<>"]|&[lg]t;|'{2,3}(?!')|'{5}(?!')|\{\{|~{3})/u, false)
-			) {
-				state.tokenize = this.inExternalLinkText;
-				return this.makeLocalStyle('', state);
-			}
-			stream.next();
-			stream.eatWhile(/[^\s[\]<>"&~'{]/u);
-			return this.makeLocalTagStyle('extLink', state);
-		};
-	}
-
-	get inExternalLinkText(): Tokenizer {
-		return (stream, state) => {
-			if (stream.sol()) {
-				state.nLink--;
-				pop(state);
-				return '';
-			} else if (stream.eat(']')) {
-				pop(state);
-				return this.makeLocalTagStyle('extLinkBracket', state, 'nLink');
-			}
-			return stream.match(/^(?:[^'[\]{&~<]|\[(?!\[))+/u)
-				? this.makeTagStyle('extLinkText', state)
-				: this.eatWikiText('extLinkText')(stream, state);
-		};
-	}
-
-	eatImageParameter(stream: StringStream, state: State): void {
-		const mt = stream.match(this.imgRegex, false) as RegExpMatchArray | false;
-		if (mt) {
-			chain(state, this.inStr(mt[0], 'imageParameter'));
-		}
-	}
-
-	inLink(file: boolean, redirect = false): Tokenizer {
-		const style = `${tokens.linkPageName} ${tokens.pageName}`;
-		return (stream, state) => {
-			if (stream.sol()) {
-				state.nLink--;
-				state.lbrack = false;
-				pop(state);
-				return '';
-			}
-			const space = stream.eatSpace();
-			if (stream.match(/^#\s*/u)) {
-				state.tokenize = this.inLinkToSection(file, redirect);
-				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
-			} else if (stream.match(/^\|\s*/u)) {
-				state.tokenize = this.inLinkText(file, redirect);
-				if (file) {
-					this.eatImageParameter(stream, state);
-				}
-				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
-			} else if (stream.match(']]')) {
-				state.redirect = false;
-				state.lbrack = false;
-				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (stream.match(redirect ? /^[<>[{}]+|\]/u : /^(?:[>[}]+|\]|\{(?!\{))/u)) {
-				return this.makeTagStyle('error', state);
-			}
-			return stream.eatWhile(/[^#|[\]{}<>]/u) || space
-				? this.makeStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
-		};
-	}
-
-	inLinkToSection(file: boolean, redirect: boolean): Tokenizer {
-		const tag = file ? 'error' : 'linkToSection';
-		return (stream, state) => {
-			if (stream.sol()) {
-				state.nLink--;
-				state.lbrack = false;
-				pop(state);
-				return '';
-			} else if (stream.match(/^\|\s*/u)) {
-				state.tokenize = this.inLinkText(file, redirect);
-				if (file) {
-					this.eatImageParameter(stream, state);
-				}
-				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
-			} else if (stream.match(']]')) {
-				state.redirect = false;
-				state.lbrack = false;
-				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			}
-			return stream.eatWhile(redirect ? /[^|\]&]/u : /[^|\]&{<]/u)
-				? this.makeTagStyle(tag, state)
-				: this.eatWikiText(tokens[tag])(stream, state);
-		};
-	}
-
-	inLinkText(file: boolean, redirect: boolean): Tokenizer {
-		let linkIsBold: boolean,
-			linkIsItalic: boolean;
-		return (stream, state) => {
-			const tmpstyle = `${tokens.linkText} ${linkIsBold ? tokens.strong : ''} ${linkIsItalic ? tokens.em : ''} ${
-				file ? 'mw-file-text' : ''
-			}`;
-			if (stream.match(']]')) {
-				if (!redirect && state.lbrack && stream.peek() === ']') {
-					stream.backUp(1);
-					state.lbrack = false;
-					return this.makeStyle(tmpstyle, state);
-				}
-				state.redirect = false;
-				state.lbrack = false;
-				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
-			} else if (redirect) {
-				if (!stream.skipTo(']]')) {
-					stream.skipToEnd();
-				}
-				return this.makeLocalTagStyle('error', state);
-			} else if (file && stream.match(/^\|\s*/u)) {
-				this.eatImageParameter(stream, state);
-				return this.makeLocalTagStyle('linkDelimiter', state);
-			} else if (stream.peek() === "'") {
-				const mt = stream.match(/^'+/u) as RegExpMatchArray;
-				switch (mt[0].length) {
-					case 3:
-						linkIsBold = !linkIsBold;
-						return this.makeLocalTagStyle('apostrophes', state);
-					case 5:
-						linkIsBold = !linkIsBold;
-						// fall through
-					case 2:
-						linkIsItalic = !linkIsItalic;
-						return this.makeLocalTagStyle('apostrophes', state);
-					case 4:
-						stream.backUp(3);
-						// fall through
-					case 1:
-						break;
-					default:
-						stream.backUp(5);
-				}
-				return this.makeStyle(tmpstyle, state);
-			}
-			const regex = file
-					? new RegExp(`^(?:[^'\\]{&~<|[]|\\[(?!\\[|${this.config.urlProtocols}))+`, 'iu')
-					: /^[^'\]{&~<]+/u,
-				mt = stream.match(regex) as RegExpMatchArray | false;
-			if (state.lbrack === undefined && mt && mt[0].includes('[')) {
-				state.lbrack = true;
-			}
-			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
-		};
 	}
 
 	get inVariable(): Tokenizer {
@@ -1197,14 +1166,11 @@ class MediaWiki {
 		};
 	}
 
-	eatTagName(chars: number, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
+	eatTagName(chars: string, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
 		return (stream, state) => {
-			let name = '';
-			for (let i = 0; i < chars; i++) {
-				name += stream.next();
-			}
+			stream.match(chars);
 			stream.eatSpace();
-			name = name.toLowerCase();
+			const name = chars.toLowerCase();
 			if (isHtmlTag) {
 				state.tokenize = isCloseTag ? this.inStr('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
@@ -1303,7 +1269,7 @@ class MediaWiki {
 		return (stream, state) => {
 			stream.next(); // eat <
 			stream.next(); // eat /
-			state.tokenize = this.eatTagName(name.length, true);
+			state.tokenize = this.eatTagName(name, true);
 			return this.makeLocalTagStyle('extTagBracket', state);
 		};
 	}
@@ -1619,7 +1585,6 @@ class MediaWiki {
 				nLink: 0,
 				nExt: 0,
 				nVar: 0,
-				lpar: false,
 				lbrack: false,
 				dt: {n: 0},
 			}),
