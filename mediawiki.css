@@ -202,10 +202,6 @@
 }
 
 /* backgrounds */
-.cm-mw-tag-pre,
-.cm-mw-tag-nowiki {
-	background-color: rgba(0, 0, 0, .04);
-}
 .cm-mw-template-ground {
 	background-color: rgba(170, 17, 17, .04);
 }
@@ -285,4 +281,8 @@
 }
 .cm-mw-template3-ext3-link-ground {
 	background-color: rgba(122, 9, 116, .24);
+}
+.cm-mw-tag-pre,
+.cm-mw-tag-nowiki {
+	background-color: rgba(0, 0, 0, .04);
 }
