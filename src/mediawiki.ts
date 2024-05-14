@@ -26,7 +26,8 @@ import type {Highlighter} from '@lezer/highlight';
 const {htmlTags, voidHtmlTags, tokenTable, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
-declare type Tokenizer<T = string> = (stream: StringStream, state: State) => T;
+declare type Style = string | [string];
+declare type Tokenizer<T = Style> = (stream: StringStream, state: State) => T;
 declare type TagName = keyof typeof tokens;
 declare type NestCount = 'nTemplate' | 'nLink' | 'nExt' | 'nVar';
 declare interface State extends Record<NestCount, number> {
@@ -37,12 +38,17 @@ declare interface State extends Record<NestCount, number> {
 	extMode: StreamParser<object> | false;
 	extState: object | false;
 	lbrack: boolean | undefined;
+	bold: boolean;
+	italic: boolean;
 	dt: Partial<Record<NestCount, number>> & {n: number};
 	redirect: boolean;
 }
+declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
-	pos: number;
-	readonly style: string;
+	readonly pos: number;
+	readonly string: string;
+	readonly style: Style;
+	readonly state: State;
 }
 
 export type ApiSuggestions = [string, string?][];
@@ -85,7 +91,13 @@ const enum TableCell {
 const copyState = (state: State): State => {
 	const newState = {} as State;
 	for (const [key, val] of Object.entries(state)) {
-		Object.assign(newState, {[key]: Array.isArray(val) ? [...val] : val});
+		if (Array.isArray(val)) {
+			Object.assign(newState, {[key]: [...val]});
+		} else if (key === 'extState') {
+			newState.extState = (state.extMode && state.extMode.copyState || copyState)(val as State);
+		} else {
+			Object.assign(newState, {[key]: typeof val === 'object' ? {...val} : val});
+		}
 	}
 	return newState;
 };
@@ -162,15 +174,11 @@ const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 class MediaWiki {
 	declare readonly config;
-	declare isBold;
-	declare wasBold;
-	declare isItalic;
-	declare wasItalic;
 	declare firstSingleLetterWord: number | null;
 	declare firstMultiLetterWord: number | null;
 	declare firstSpace: number | null;
-	declare oldStyle: string | null;
 	declare oldTokens: Token[];
+	declare mark: number | null;
 	declare readonly tokenTable;
 	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
@@ -204,18 +212,13 @@ class MediaWiki {
 			img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word)),
 			extTags = Object.keys(tags);
 		this.config = config;
-		this.isBold = false;
-		this.wasBold = false;
-		this.isItalic = false;
-		this.wasItalic = false;
 		this.firstSingleLetterWord = null;
 		this.firstMultiLetterWord = null;
 		this.firstSpace = null;
-		this.oldStyle = null;
 		this.oldTokens = [];
+		this.mark = null;
 		this.tokenTable = {...tokenTable};
 		this.hiddenTable = {};
-		this.registerGroundTokens();
 		this.permittedHtmlTags = new Set([
 			...htmlTags,
 			...permittedHtmlTags || [],
@@ -272,14 +275,7 @@ class MediaWiki {
 		for (const [key, value] of Object.entries(extAttrs)) {
 			this.extAttrs.set(key, value.map(label => ({type: 'property', label})));
 		}
-		for (const tag of extTags) {
-			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
-			this.addToken(`ext-${tag}`, true);
-		}
-		for (const tag of this.permittedHtmlTags) {
-			this.addToken(`html-${tag}`, true);
-		}
-		this.addToken('file-text', true);
+		this.registerGroundTokens();
 	}
 
 	/**
@@ -340,6 +336,14 @@ class MediaWiki {
 		for (let i = 1; i < 7; i++) {
 			this.addToken(`section--${i}`);
 		}
+		for (const tag of Object.keys(this.config.tags)) {
+			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
+			this.addToken(`ext-${tag}`, true);
+		}
+		for (const tag of this.permittedHtmlTags) {
+			this.addToken(`html-${tag}`, true);
+		}
+		this.addToken('file-text', true);
 	}
 
 	/**
@@ -354,16 +358,19 @@ class MediaWiki {
 		}));
 	}
 
-	makeTagStyle(tag: TagName, state: State, endGround?: NestCount): string {
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	makeFullStyle(style: Style, state: ExtState): string {
+		return typeof style === 'string'
+			? style
+			: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`;
+	}
+
+	makeTagStyle(tag: TagName, state: State, endGround?: NestCount): [string] {
 		return this.makeStyle(tokens[tag], state, endGround);
 	}
 
-	makeStyle(style: string, state: State, endGround?: NestCount): string {
-		return this.makeLocalStyle(
-			`${style} ${this.isBold || state.dt.n ? tokens.strong : ''} ${this.isItalic ? tokens.em : ''}`,
-			state,
-			endGround,
-		);
+	makeStyle(style: string, state: ExtState, endGround?: NestCount): [string] {
+		return [this.makeLocalStyle(style, state, endGround)];
 	}
 
 	makeLocalTagStyle(tag: TagName, state: State, endGround?: NestCount): string {
@@ -371,7 +378,7 @@ class MediaWiki {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	makeLocalStyle(style: string, state: State, endGround?: NestCount): string {
+	makeLocalStyle(style: string, state: ExtState, endGround?: NestCount): string {
 		let ground = '';
 		switch (state.nTemplate) {
 			case 0:
@@ -405,7 +412,7 @@ class MediaWiki {
 		if (endGround) {
 			state[endGround]--;
 			const {dt} = state;
-			if (dt.n && state[endGround] < dt[endGround]!) {
+			if (dt?.n && state[endGround] < dt[endGround]!) {
 				dt.n = 0;
 			}
 		}
@@ -522,7 +529,7 @@ class MediaWiki {
 						return '';
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(/^[a-z][^\s/>]*(?=[\s/>]|$)/u, false) as RegExpMatchArray | false;
+						mt = stream.match(/^[a-z][^\s/>]*(?=[\s/>]|$)/iu, false) as RegExpMatchArray | false;
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
@@ -641,7 +648,7 @@ class MediaWiki {
 					}
 					break;
 				case "'": {
-					const result = this.eatApostrophes(this)(stream, state);
+					const result = this.eatApostrophes(state)(stream, state);
 					if (result) {
 						return result;
 					}
@@ -682,25 +689,23 @@ class MediaWiki {
 		};
 	}
 
-	eatApostrophes(
-		obj: {isBold: boolean, isItalic: boolean, firstSingleLetterWord?: number | null},
-	): Tokenizer<string | false> {
+	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
 			// skip the irrelevant apostrophes ( >5 or =4 )
 			if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
 				return false;
 			} else if (stream.match("''''")) { // bold italic
-				obj.isBold = !obj.isBold;
-				obj.isItalic = !obj.isItalic;
+				obj.bold = !obj.bold;
+				obj.italic = !obj.italic;
 				return this.makeLocalTagStyle('apostrophes', state);
 			} else if (stream.match("''")) { // bold
-				if (obj.firstSingleLetterWord === null) {
+				if (this.firstSingleLetterWord === null && obj === state) {
 					this.prepareItalicForCorrection(stream);
 				}
-				obj.isBold = !obj.isBold;
+				obj.bold = !obj.bold;
 				return this.makeLocalTagStyle('apostrophes', state);
 			} else if (stream.eat("'")) { // italic
-				obj.isItalic = !obj.isItalic;
+				obj.italic = !obj.italic;
 				return this.makeLocalTagStyle('apostrophes', state);
 			}
 			return false;
@@ -788,10 +793,15 @@ class MediaWiki {
 	}
 
 	inLinkText(file: boolean): Tokenizer {
-		const linkState = {isBold: false, isItalic: false};
+		const linkState = {bold: false, italic: false},
+			regex = file
+				? new RegExp(`^(?:[^'\\]{&<~|[]|'(?!')|\\](?!\\])|\\{(?!\\{)|<(?![!/a-z])|~~?(?!~)|\\[(?!${
+					this.config.urlProtocols
+				}|\\[))+`, 'iu')
+				: /^(?:[^'\]{&<]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z]))+/iu;
 		return (stream, state) => {
-			const tmpstyle = `${tokens.linkText} ${linkState.isBold ? tokens.strong : ''} ${
-					linkState.isItalic ? tokens.em : ''
+			const tmpstyle = `${tokens.linkText} ${linkState.bold ? tokens.strong : ''} ${
+					linkState.italic ? tokens.em : ''
 				} ${file ? 'mw-file-text' : ''}`,
 				{redirect, lbrack} = state;
 			if (stream.match(']]')) {
@@ -812,15 +822,10 @@ class MediaWiki {
 			} else if (file && stream.match(/^\|\s*/u)) {
 				this.toEatImageParameter(stream, state);
 				return this.makeLocalTagStyle('linkDelimiter', state);
-			} else if (stream.eat(/'(?=')/u)) {
+			} else if (stream.match(/^'(?=')/u)) {
 				return this.eatApostrophes(linkState)(stream, state) || this.makeStyle(tmpstyle, state);
 			}
-			const regex = file
-					? new RegExp(`^(?:[^'\\]{&<~|[]|'(?!')|\\](?!\\])|\\{(?!\\{)|<(?![!/a-z])|~~?(?!~)|\\[(?!${
-						this.config.urlProtocols
-					}|\\[))+`, 'iu')
-					: /^(?:[^'\]{&<]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z]))+/iu,
-				mt = stream.match(regex) as RegExpMatchArray | false;
+			const mt = stream.match(regex) as RegExpMatchArray | false;
 			if (lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
@@ -946,8 +951,8 @@ class MediaWiki {
 					stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}\s*/u)
 					|| type === TableCell.Th && stream.match(/^!!\s*/u)
 				) {
-					this.isBold = false;
-					this.isItalic = false;
+					state.bold = false;
+					state.italic = false;
 					state.tokenize = this.inTableCell(true, type);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
@@ -1127,7 +1132,7 @@ class MediaWiki {
 
 	eatTagName(chars: string, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
 		return (stream, state) => {
-			stream.match(chars);
+			stream.match(new RegExp(`^${chars}`, 'iu'));
 			stream.eatSpace();
 			const name = chars.toLowerCase();
 			if (isHtmlTag) {
@@ -1159,7 +1164,7 @@ class MediaWiki {
 		};
 	}
 
-	get eatNowiki(): Tokenizer {
+	get eatNowiki(): Tokenizer<string> {
 		return stream => {
 			if (stream.eatWhile(/[^&]/u)) {
 				return '';
@@ -1177,7 +1182,7 @@ class MediaWiki {
 				return this.makeLocalStyle(style, state);
 			} else if (stream.eat('>')) {
 				state.extName = name;
-				const {config: {tagModes}} = this;
+				const {config: {tagModes, tags}} = this;
 				if (name === 'nowiki' || name === 'pre') {
 					// There's no actual processing within these tags (apart from HTML entities),
 					// so startState and copyState can be no-ops.
@@ -1185,9 +1190,12 @@ class MediaWiki {
 						startState: () => ({}),
 						token: this.eatNowiki,
 					};
-					state.extState = {};
 				} else if (name in tagModes) {
-					state.extMode = this[tagModes[name] as MimeTypes];
+					const innerTags = {...tags};
+					delete innerTags[name];
+					state.extMode = new MediaWiki({...this.config, tags: innerTags})[tagModes[name] as MimeTypes];
+				}
+				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
@@ -1214,13 +1222,13 @@ class MediaWiki {
 						state.extMode = false;
 						state.extState = false;
 					}
-					return state.tokenize(stream, state);
+					return '';
 				}
 				origString = stream.string;
 				stream.string = origString.slice(0, m.index + from);
 			}
 			chain(state, this.inExtTokens(origString));
-			return state.tokenize(stream, state);
+			return '';
 		};
 	}
 
@@ -1282,9 +1290,115 @@ class MediaWiki {
 		} else {
 			this.firstMultiLetterWord = end;
 		}
-		// remember bold and italic state for later restoration
-		this.wasBold = this.isBold;
-		this.wasItalic = this.isItalic;
+		this.mark = end;
+	}
+
+	/**
+	 * main entry
+	 *
+	 * @see https://codemirror.net/docs/ref/#language.StreamParser
+	 */
+	get mediawiki(): StreamParser<State> {
+		return {
+			name: 'mediawiki',
+
+			startState: () => ({
+				tokenize: this.eatWikiText(''),
+				stack: [],
+				inHtmlTag: [],
+				extName: false,
+				extMode: false,
+				extState: false,
+				nTemplate: 0,
+				nLink: 0,
+				nExt: 0,
+				nVar: 0,
+				lbrack: false,
+				bold: false,
+				italic: false,
+				dt: {n: 0},
+				redirect: false,
+			}),
+
+			copyState,
+
+			token: (stream, state): string => {
+				if (this.oldTokens.length > 0) {
+					const {pos, string, state: {bold, italic, ...other}, style} = this.oldTokens[0]!;
+					Object.assign(state, other);
+					if (
+						!state.extMode
+						&& typeof style === 'string'
+						&& style.includes(tokens.apostrophes)
+						&& !style.includes('-link-ground')
+					) {
+						if (this.mark === pos) {
+							// rollback
+							this.mark = null;
+							stream.string = string.slice(0, pos - 2);
+							const s = state.tokenize(stream, state);
+							stream.string = string;
+							return this.makeFullStyle(s, state);
+						}
+						const length = pos - stream.pos;
+						if (length !== 3) {
+							state.italic = !state.italic;
+						}
+						if (length !== 2) {
+							state.bold = !state.bold;
+						}
+					}
+					this.oldTokens.shift();
+					stream.pos = pos;
+					stream.string = string;
+					return this.makeFullStyle(style, state);
+				} else if (stream.sol()) {
+					// reset bold and italic status in every new line
+					state.bold = false;
+					state.italic = false;
+					state.dt.n = 0;
+					this.firstSingleLetterWord = null;
+					this.firstMultiLetterWord = null;
+					this.firstSpace = null;
+				}
+				const {pos, string} = stream,
+					oldState = copyState(state);
+				let style: Style;
+				do {
+					style = state.tokenize(stream, state);
+					this.oldTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
+				} while (!stream.eol());
+				if (!state.bold || !state.italic) {
+					this.mark = null;
+				}
+				stream.pos = pos;
+				stream.string = string;
+				Object.assign(state, oldState);
+				return '';
+			},
+
+			blankLine(state): void {
+				if (state.extMode && state.extMode.blankLine) {
+					state.extMode.blankLine(state.extState as State, 0);
+				}
+			},
+
+			tokenTable: {
+				...this.tokenTable,
+				...this.hiddenTable,
+				'': Tag.define(),
+			},
+
+			languageData: {
+				commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
+				closeBrackets: {brackets: ['(', '[', '{', '"']} as CloseBracketConfig,
+				autocomplete: this.completionSource,
+			},
+		};
+	}
+
+	get 'text/mediawiki'(): StreamParser<State> {
+		return this.mediawiki;
 	}
 
 	/**
@@ -1437,7 +1551,7 @@ class MediaWiki {
 				hasTag(types, ['htmlTagAttribute', 'tableDefinition', 'mw-ext-pre', 'mw-ext-gallery', 'mw-ext-poem'])
 			) {
 				const tagName = /mw-(?:ext|html)-([a-z]+)/u.exec(node.name)?.[1],
-					mt = context.matchBefore(tagName ? /\s[a-z]+$/u : /[\s|-][a-z]+$/u);
+					mt = context.matchBefore(tagName ? /\s[a-z]+$/iu : /[\s|-][a-z]+$/iu);
 				if (mt) {
 					return mt.from >= from && /^[|-]/u.test(mt.text)
 						? null
@@ -1447,17 +1561,17 @@ class MediaWiki {
 								...tagName === 'meta' || tagName === 'link' ? [] : this.htmlAttrs,
 								...this.elementAttrs.get(tagName) || [],
 							],
-							validFor: /^[a-z]*$/u,
+							validFor: /^[a-z]*$/iu,
 						};
 				}
 			} else if (hasTag(types, 'extTagAttribute')) {
 				const [, tagName] = /mw-ext-([a-z]+)/u.exec(node.name) as string[] as [string, string],
-					mt = context.matchBefore(/\s[a-z]+$/u);
+					mt = context.matchBefore(/\s[a-z]+$/iu);
 				return mt && this.extAttrs.has(tagName)
 					? {
 						from: mt.from + 1,
 						options: this.extAttrs.get(tagName)!,
-						validFor: /^[a-z]*$/u,
+						validFor: /^[a-z]*$/iu,
 					}
 					: null;
 			} else if (!hasTag(types, [
@@ -1522,144 +1636,6 @@ class MediaWiki {
 			}
 			return null;
 		};
-	}
-
-	/**
-	 * main entry
-	 *
-	 * @see https://codemirror.net/docs/ref/#language.StreamParser
-	 */
-	get mediawiki(): StreamParser<State> {
-		return {
-			name: 'mediawiki',
-
-			startState: () => ({
-				tokenize: this.eatWikiText(''),
-				stack: [],
-				inHtmlTag: [],
-				extName: false,
-				extMode: false,
-				extState: false,
-				nTemplate: 0,
-				nLink: 0,
-				nExt: 0,
-				nVar: 0,
-				lbrack: false,
-				dt: {n: 0},
-				redirect: false,
-			}),
-
-			copyState(state): State {
-				const newState = copyState(state);
-				newState.dt = {...state.dt};
-				if (state.extMode && state.extMode.copyState) {
-					newState.extState = state.extMode.copyState(state.extState as State);
-				}
-				return newState;
-			},
-
-			token: (stream, state): string => {
-				let t: Token;
-				if (this.oldTokens.length > 0) {
-					// just send saved tokens till they exists
-					t = this.oldTokens.shift()!;
-					stream.pos = t.pos;
-					return t.style;
-				} else if (stream.sol()) {
-					// reset bold and italic status in every new line
-					state.dt.n = 0;
-					this.isBold = false;
-					this.isItalic = false;
-					this.firstSingleLetterWord = null;
-					this.firstMultiLetterWord = null;
-					this.firstSpace = null;
-				}
-				let style: string,
-					p: number | null = null,
-					f: number | null;
-				const tmpTokens: Token[] = [],
-					readyTokens: Token[] = [];
-				do {
-					style = state.tokenize(stream, state);
-					f = this.firstSingleLetterWord || this.firstMultiLetterWord || this.firstSpace;
-					if (f) {
-						// rollback point exists
-						if (f !== p) {
-							// new rollback point
-							p = f;
-							// it's not first rollback point
-							if (tmpTokens.length > 0) {
-								// save tokens
-								readyTokens.push(...tmpTokens);
-								tmpTokens.length = 0;
-							}
-						}
-						// save token
-						tmpTokens.push({pos: stream.pos, style});
-					} else {
-						// rollback point does not exist
-						// remember style before possible rollback point
-						this.oldStyle = style;
-						// just return token style
-						return style;
-					}
-				} while (!stream.eol());
-				if (this.isBold && this.isItalic) {
-					// needs to rollback
-					// restore status
-					this.isItalic = this.wasItalic;
-					this.isBold = this.wasBold;
-					this.firstSingleLetterWord = null;
-					this.firstMultiLetterWord = null;
-					this.firstSpace = null;
-					if (readyTokens.length > 0) {
-						// it contains tickets before the point of rollback
-						// add one apostrophe, next token will be italic (two apostrophes)
-						readyTokens[readyTokens.length - 1]!.pos++;
-						// for sending tokens till the point of rollback
-						this.oldTokens = readyTokens;
-					} else {
-						// there are no tickets before the point of rollback
-						stream.pos = tmpTokens[0]!.pos - 2; // eat( "'" )
-						// send saved Style
-						return this.oldStyle || '';
-					}
-				} else {
-					// do not need to rollback
-					// send all saved tokens
-					this.oldTokens = [
-						...readyTokens,
-						...tmpTokens,
-					];
-				}
-				// return first saved token
-				t = this.oldTokens.shift()!;
-				stream.pos = t.pos;
-				return t.style;
-			},
-
-			blankLine(state): void {
-				if (state.extMode && state.extMode.blankLine) {
-					state.extMode.blankLine(state.extState as State, 0);
-				}
-			},
-
-			tokenTable: {
-				...this.tokenTable,
-				...this.hiddenTable,
-				'': Tag.define(),
-			},
-
-			languageData: {
-				commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
-				closeBrackets: {brackets: ['(', '[', '{', '"']} as CloseBracketConfig,
-				autocomplete: this.completionSource,
-			},
-		};
-	}
-
-	get 'text/mediawiki'(): StreamParser<State> {
-		return this.mediawiki;
 	}
 }
 

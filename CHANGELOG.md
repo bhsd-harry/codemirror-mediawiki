@@ -10,6 +10,10 @@
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts in the MediaWiki mode
 
+**Changed**
+
+- MediaWiki tokenizer reworked to mimic the parser more closely
+
 ## 2.12.6
 
 *2024-05-11*
