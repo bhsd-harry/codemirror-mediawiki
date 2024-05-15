@@ -102,14 +102,14 @@ const copyState = (state: State): State => {
 	return newState;
 };
 
-const span = document.createElement('span'); // used for isHtmlEntity()
+const span = typeof document === 'object' && document.createElement('span'); // used for isHtmlEntity()
 
 /**
  * 判断字符串是否为 HTML 实体
  * @param str 字符串
  */
 const isHtmlEntity = (str: string): boolean => {
-	if (str.startsWith('#')) {
+	if (!span || str.startsWith('#')) {
 		return true;
 	}
 	span.innerHTML = `&${str}`;
@@ -172,7 +172,7 @@ const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
-class MediaWiki {
+export class MediaWiki {
 	declare readonly config;
 	declare firstSingleLetterWord: number | null;
 	declare firstMultiLetterWord: number | null;

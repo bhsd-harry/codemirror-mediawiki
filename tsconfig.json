@@ -1,10 +1,12 @@
 {
 	"include": [
-		"src/*.ts"
+		"src/*.ts",
+		"test/*.ts"
 	],
 	"compilerOptions": {
 		"target": "ES2018",
 		"module": "CommonJS",
+		"resolveJsonModule": true,
 		"declaration": true,
 		"outDir": "dist",
 		"alwaysStrict": true,

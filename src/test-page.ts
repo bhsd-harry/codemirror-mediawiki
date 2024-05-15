@@ -8,7 +8,7 @@ declare interface Test {
 }
 
 (async () => {
-	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
+	const tests: Test[] = await (await fetch('/wikiparser-node/test/parserTests.json')).json(),
 		select = document.querySelector('select')!,
 		textarea = document.querySelector('textarea')!,
 		container = document.getElementById('frame')!,

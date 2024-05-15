@@ -708,6 +708,7 @@
 					2,
 					"double"
 				],
+				"no-irregular-whitespace": 0,
 				"strict": [
 					2,
 					"never"
