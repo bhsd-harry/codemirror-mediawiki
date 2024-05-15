@@ -1,6 +1,6 @@
 {
 	"include": [
-		"src/temp.ts"
+		"src/temp-*.ts"
 	],
 	"exclude": [],
 	"compilerOptions": {

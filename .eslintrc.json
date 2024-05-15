@@ -23,7 +23,7 @@
 		"ecmaVersion": 13
 	},
 	"ignorePatterns": [
-		"gh-page.js",
+		"*-page.js",
 		"dist/"
 	],
 	"rules": {

@@ -1,0 +1,24 @@
+textarea {
+	margin: 0;
+	border: 0;
+	font: inherit;
+	vertical-align: baseline;
+	width: 100%;
+	max-height: 100vh;
+	direction: ltr;
+	padding: .4em;
+}
+textarea, .cm-editor {
+	border-radius: .3em;
+	border: 1.5px solid #dedede;
+	margin-top: .5em;
+}
+.cm-editor {
+	height: auto !important;
+}
+
+@media screen and (max-width: 720px) {
+	.cm-content {
+		font-size: 16px;
+	}
+}
