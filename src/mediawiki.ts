@@ -30,13 +30,15 @@ declare type Style = string | [string];
 declare type Tokenizer<T = Style> = (stream: StringStream, state: State) => T;
 declare type TagName = keyof typeof tokens;
 declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
-declare type Nesting = Record<NestCount, number> & {extName: string | false};
+declare interface Nesting extends Record<NestCount, number> {
+	extName: string | false;
+	extState: object | false;
+}
 declare interface State extends Nesting {
 	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
 	extMode: StreamParser<object> | false;
-	extState: object | false;
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
@@ -45,7 +47,7 @@ declare interface State extends Nesting {
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
-	readonly pos: number;
+	pos: number;
 	readonly string: string;
 	style: Style;
 	readonly state: State;
@@ -95,7 +97,8 @@ const cmpNesting = (a: Partial<Nesting>, b: Nesting): boolean =>
 	&& a.nVar === b.nVar
 	&& a.nLink === b.nLink
 	&& a.nExtLink === b.nExtLink
-	&& a.extName === b.extName;
+	&& a.extName === b.extName
+	&& (a.extName !== 'mediawiki' || cmpNesting(a.extState as Partial<Nesting>, b.extState as Nesting));
 
 /**
  * 复制嵌套状态
@@ -109,6 +112,10 @@ const copyNesting = (a: Partial<Nesting>, b: Nesting): void => {
 	a.nLink = b.nLink;
 	a.nExtLink = b.nExtLink;
 	a.extName = b.extName;
+	if (a.extName === 'mediawiki') {
+		a.extState = {};
+		copyNesting(a.extState, b.extState as Nesting);
+	}
 };
 
 /**
@@ -200,12 +207,19 @@ const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
+	/** 已解析的节点 */
+	declare readonly readyTokens: Token[];
+
+	/** 当前起始位置 */
+	declare oldToken: Token | null;
+
+	/** 可能需要回滚的`'''` */
+	declare mark: number | null;
+
 	declare readonly config;
 	declare firstSingleLetterWord: number | null;
 	declare firstMultiLetterWord: number | null;
 	declare firstSpace: number | null;
-	declare oldTokens: Token[];
-	declare mark: number | null;
 	declare readonly tokenTable;
 	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
@@ -242,7 +256,8 @@ export class MediaWiki {
 		this.firstSingleLetterWord = null;
 		this.firstMultiLetterWord = null;
 		this.firstSpace = null;
-		this.oldTokens = [];
+		this.readyTokens = [];
+		this.oldToken = null;
 		this.mark = null;
 		this.tokenTable = {...tokenTable};
 		this.hiddenTable = {};
@@ -312,7 +327,6 @@ export class MediaWiki {
 	 * @param token
 	 * @param hidden Whether the token is not highlighted
 	 * @param parent
-	 * @internal
 	 */
 	addToken(token: string, hidden = false, parent?: Tag): void {
 		(this[hidden ? 'hiddenTable' : 'tokenTable'][`mw-${token}`] as Tag | undefined) ||= Tag.define(parent);
@@ -529,7 +543,7 @@ export class MediaWiki {
 					// fall through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
-							chain(state, this.inTableDefinition);
+							chain(state, this.inTableDefinition());
 							return this.makeLocalTagStyle('tableBracket', state);
 						}
 						break;
@@ -906,20 +920,21 @@ export class MediaWiki {
 	get eatStartTable(): Tokenizer {
 		return (stream, state) => {
 			stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
-			state.tokenize = this.inTableDefinition;
+			state.tokenize = this.inTableDefinition();
 			return this.makeLocalTagStyle('tableBracket', state);
 		};
 	}
 
-	get inTableDefinition(): Tokenizer {
+	inTableDefinition(tr?: boolean): Tokenizer {
+		const style = `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.tokenize = this.inTable;
 				return '';
 			}
 			return stream.eatWhile(/[^&{<]/u)
-				? this.makeLocalTagStyle('tableDefinition', state)
-				: this.eatWikiText('tableDefinition')(stream, state);
+				? this.makeLocalStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -929,7 +944,7 @@ export class MediaWiki {
 				stream.eatSpace();
 				if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
 					if (stream.match(/^-+\s*/u)) {
-						state.tokenize = this.inTableDefinition;
+						state.tokenize = this.inTableDefinition(true);
 						return this.makeLocalTagStyle('tableDelimiter', state);
 					} else if (stream.match(/^\+\s*/u)) {
 						state.tokenize = this.inTableCell(true, TableCell.Caption);
@@ -982,7 +997,7 @@ export class MediaWiki {
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 					state.tokenize = this.inTableCell(false, type);
-					return this.makeLocalTagStyle('tableDelimiter', state);
+					return this.makeLocalTagStyle('tableDelimiter2', state);
 				}
 			}
 			return this.eatWikiText(style)(stream, state);
@@ -1349,8 +1364,26 @@ export class MediaWiki {
 			copyState,
 
 			token: (stream, state): string => {
-				if (this.oldTokens.length > 0) {
-					const {pos, string, state: {bold, italic, ...other}, style} = this.oldTokens[0]!;
+				const {readyTokens} = this;
+				let {oldToken} = this;
+				while (
+					oldToken
+					&& (
+						// 如果 PartialParse 的起点位于当前位置之后
+						stream.pos > oldToken.pos
+						|| stream.pos === oldToken.pos && state.tokenize !== oldToken.state.tokenize
+					)
+				) {
+					oldToken = readyTokens.shift()!;
+				}
+				if (
+					// 检查起点
+					stream.pos === oldToken?.pos
+					&& stream.string === oldToken.string
+					&& cmpNesting(state, oldToken.state)
+				) {
+					const {pos, string, state: {bold, italic, ...other}, style} = readyTokens[0]!;
+					// just send saved tokens till they exists
 					Object.assign(state, other);
 					if (
 						!state.extMode && state.nLink === 0
@@ -1359,9 +1392,12 @@ export class MediaWiki {
 						if (this.mark === pos) {
 							// rollback
 							this.mark = null;
+							// add one apostrophe, next token will be italic (two apostrophes)
 							stream.string = string.slice(0, pos - 2);
 							const s = state.tokenize(stream, state);
 							stream.string = string;
+							oldToken.pos++;
+							this.oldToken = oldToken;
 							return this.makeFullStyle(s, state);
 						}
 						const length = pos - stream.pos;
@@ -1372,7 +1408,8 @@ export class MediaWiki {
 							state.bold = !state.bold;
 						}
 					}
-					this.oldTokens.shift();
+					// return first saved token
+					this.oldToken = readyTokens.shift()!;
 					stream.pos = pos;
 					stream.string = string;
 					return this.makeFullStyle(style, state);
@@ -1385,14 +1422,16 @@ export class MediaWiki {
 					this.firstMultiLetterWord = null;
 					this.firstSpace = null;
 				}
-				const {pos, string} = stream,
-					oldState = copyState(state);
+				readyTokens.length = 0;
+				this.mark = null;
+				this.oldToken = {pos: stream.pos, string: stream.string, state: copyState(state), style: ''};
 				let style: Style;
 				do {
+					// get token style
 					style = state.tokenize(stream, state);
 					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
-						for (let i = this.oldTokens.length - 1; i >= 0; i--) {
-							const token = this.oldTokens[i]!;
+						for (let i = readyTokens.length - 1; i >= 0; i--) {
+							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state)) {
 								const types = typeof token.style === 'string' && token.style.split(' '),
 									j = types && types.indexOf(tokens.template);
@@ -1404,15 +1443,41 @@ export class MediaWiki {
 								}
 							}
 						}
+					} else if (typeof style === 'string' && style.includes(tokens.tableDelimiter2)) {
+						for (let i = readyTokens.length - 1; i >= 0; i--) {
+							const token = readyTokens[i]!,
+								{state: st, style: s} = token;
+							if (cmpNesting(state, st)) {
+								const local = typeof s === 'string',
+									type = !local && s[0].split(' ').find(t => t && !t.endsWith('-ground')),
+									isCaption = type === tokens.tableCaption,
+									isTh = type === tokens.strong;
+								if (isCaption) {
+									token.style = `${
+										s[0].replace(tokens.tableCaption, '')
+									} ${tokens.tableDefinition} mw-html-caption`;
+								} else if (isTh) {
+									token.style = `${
+										s[0].replace(tokens.strong, '')
+									} ${tokens.tableDefinition} mw-html-th`;
+								} else if (type === undefined) {
+									token.style = `${s[0]} ${tokens.tableDefinition} mw-html-td`;
+								} else if (local && s.includes(tokens.tableDelimiter)) {
+									break;
+								}
+							}
+						}
 					}
-					this.oldTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
+					// save token
+					readyTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
 				} while (!stream.eol());
 				if (!state.bold || !state.italic) {
+					// no need to rollback
 					this.mark = null;
 				}
-				stream.pos = pos;
-				stream.string = string;
-				Object.assign(state, oldState);
+				stream.pos = this.oldToken.pos;
+				stream.string = this.oldToken.string;
+				Object.assign(state, this.oldToken.state);
 				return '';
 			},
 
@@ -1589,8 +1654,8 @@ export class MediaWiki {
 			} else if (
 				hasTag(types, ['htmlTagAttribute', 'tableDefinition', 'mw-ext-pre', 'mw-ext-gallery', 'mw-ext-poem'])
 			) {
-				const tagName = /mw-(?:ext|html)-([a-z]+)/u.exec(node.name)?.[1],
-					mt = context.matchBefore(tagName ? /\s[a-z]+$/iu : /[\s|-][a-z]+$/iu);
+				const [, tagName] = /mw-(?:ext|html)-([a-z]+)/u.exec(node.name) as string[] as [string, string],
+					mt = context.matchBefore(hasTag(types, 'tableDefinition') ? /[\s|-][a-z]+$/iu : /\s[a-z]+$/iu);
 				if (mt) {
 					return mt.from >= from && /^[|-]/u.test(mt.text)
 						? null

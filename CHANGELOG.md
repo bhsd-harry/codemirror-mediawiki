@@ -13,10 +13,12 @@
 - Double brackets followed by a valid URL protocol should be an external link in the MediaWiki mode
 - Template argument names are now correctly highlighted in the MediaWiki mode
 - `<` breaks the wikilink syntax in the MediaWiki mode
+- Table cell attributes are now correctly highlighted and [autocompleted](./README.md#autocompletion) in the MediaWiki mode
 
 **Changed**
 
 - MediaWiki tokenizer reworked to mimic the parser more closely
+- New CSS class `cm-mw-table-delimiter2` for `|` delimiter within a table cell in the MediaWiki mode
 
 ## 2.12.6
 

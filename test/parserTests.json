@@ -11632,7 +11632,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "[[",
@@ -11656,11 +11656,11 @@
 			},
 			{
 				"text": " ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "three",
@@ -11680,11 +11680,11 @@
 			},
 			{
 				"text": "testing one two ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "three",
@@ -11704,7 +11704,7 @@
 			},
 			{
 				"text": "testing=\"",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "[[",
@@ -11728,11 +11728,11 @@
 			},
 			{
 				"text": "\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "three",
@@ -15832,7 +15832,7 @@
 			},
 			{
 				"text": "class=\"123\" ",
-				"name": "template-ground table-definition"
+				"name": "template-ground table-definition html-table"
 			},
 			{
 				"text": "<",
@@ -19852,7 +19852,7 @@
 			},
 			{
 				"text": "title= id=",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -19996,11 +19996,11 @@
 			},
 			{
 				"text": "+ class=\"error\" class=\"awesome\"",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "status",
@@ -22214,7 +22214,7 @@
 			},
 			{
 				"text": "+ style=\"",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "<",
@@ -22246,11 +22246,11 @@
 			},
 			{
 				"text": "\"",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "status",
@@ -22276,7 +22276,7 @@
 			},
 			{
 				"text": "+ style=\"",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "<",
@@ -22308,11 +22308,11 @@
 			},
 			{
 				"text": "\"",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "status",
@@ -24154,11 +24154,11 @@
 			},
 			{
 				"text": "http://a",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			}
 		]
 	},
@@ -24210,7 +24210,7 @@
 			},
 			{
 				"text": "STYLE=__TOC__",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			}
 		]
 	},
@@ -25334,11 +25334,11 @@
 			},
 			{
 				"text": "colspan=\"1\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo ",
@@ -29650,7 +29650,7 @@
 			},
 			{
 				"text": "id=foo | style='color: red'",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|",
@@ -30366,11 +30366,11 @@
 			},
 			{
 				"text": "title=\"Hello world",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "Foo",
@@ -30396,11 +30396,11 @@
 			},
 			{
 				"text": "title=\"Hello world",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "Foo",
@@ -30412,11 +30412,11 @@
 			},
 			{
 				"text": "style=\"color:red",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "Bar",
@@ -30442,19 +30442,23 @@
 			},
 			{
 				"text": "align=\"center\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo",
 				"name": ""
 			},
 			{
-				"text": "||  |",
+				"text": "||  ",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "|}",
@@ -30484,11 +30488,11 @@
 			},
 			{
 				"text": "style=\"color: red\" ",
-				"name": "strong"
+				"name": "table-definition html-th"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "Bar",
@@ -30509,16 +30513,24 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "!|",
+				"text": "!",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo",
 				"name": "strong"
 			},
 			{
-				"text": "!!|",
+				"text": "!!",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "bar",
@@ -30560,7 +30572,7 @@
 			},
 			{
 				"text": "class=\"foo\"",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|-",
@@ -30586,7 +30598,7 @@
 			},
 			{
 				"text": "[[foo]]",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|}",
@@ -30632,7 +30644,7 @@
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo",
@@ -39306,8 +39318,12 @@
 				"name": "table-caption"
 			},
 			{
-				"text": " !  |",
+				"text": " !  ",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "bar",
@@ -63395,7 +63411,7 @@
 			},
 			{
 				"text": "|}",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			}
 		]
 	},
@@ -63487,7 +63503,7 @@
 			},
 			{
 				"text": "style=\"color: red;\"|}",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "{|",
@@ -63495,7 +63511,7 @@
 			},
 			{
 				"text": "style=\"color: red;\" |}",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -63511,7 +63527,7 @@
 			},
 			{
 				"text": "style=\"color: red;\"|} id=\"foo\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -63527,7 +63543,7 @@
 			},
 			{
 				"text": "style=\"color: red;\" |} id=\"foo\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -63579,11 +63595,11 @@
 			},
 			{
 				"text": "style=\"color: red;\" ",
-				"name": "table-caption"
+				"name": "table-definition html-caption"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "caption1",
@@ -63617,11 +63633,11 @@
 			},
 			{
 				"text": "style=\"color: red;\"",
-				"name": "table-caption"
+				"name": "table-definition html-caption"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "caption2",
@@ -63633,11 +63649,11 @@
 			},
 			{
 				"text": "style=\"color: red;\"",
-				"name": "table-caption"
+				"name": "table-definition html-caption"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "caption3",
@@ -63671,11 +63687,11 @@
 			},
 			{
 				"text": "foo bar foo",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "baz",
@@ -63703,11 +63719,11 @@
 			},
 			{
 				"text": "style='color:red;'",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "baz",
@@ -63821,7 +63837,7 @@
 			},
 			{
 				"text": "border=\"1\" cellpadding=\"2\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|+",
@@ -64258,16 +64274,24 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "!|",
+				"text": "!",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "h1",
 				"name": "strong"
 			},
 			{
-				"text": "||",
+				"text": "|",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "a",
@@ -64293,11 +64317,11 @@
 			},
 			{
 				"text": "!style=\"color:red\"",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "bar",
@@ -64323,11 +64347,11 @@
 			},
 			{
 				"text": "style='color:red;'",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "+1",
@@ -64339,11 +64363,11 @@
 			},
 			{
 				"text": "style='color:blue;'",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "-1",
@@ -64429,7 +64453,7 @@
 			},
 			{
 				"text": "border=1",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -64445,11 +64469,11 @@
 			},
 			{
 				"text": "rowspan=2",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "Cell 2, row 1 (and 2)",
@@ -64495,7 +64519,7 @@
 			},
 			{
 				"text": "border=1",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "| ",
@@ -64515,7 +64539,7 @@
 			},
 			{
 				"text": "bgcolor=#ABCDEF border=2",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|",
@@ -64565,11 +64589,11 @@
 			},
 			{
 				"text": "Cell:",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "broken",
@@ -64595,11 +64619,11 @@
 			},
 			{
 				"text": "title=\"foo\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "bar",
@@ -64611,7 +64635,7 @@
 			},
 			{
 				"text": "title=\"foo",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "<",
@@ -64643,11 +64667,11 @@
 			},
 			{
 				"text": "\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "bar",
@@ -64778,8 +64802,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "| |",
+				"text": "| ",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "[",
@@ -64933,11 +64961,11 @@
 			},
 			{
 				"text": "\"",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo",
@@ -64971,7 +64999,7 @@
 			},
 			{
 				"text": "boo",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "</",
@@ -64987,7 +65015,7 @@
 			},
 			{
 				"text": " style='border:1px solid black'",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|  ",
@@ -65007,7 +65035,7 @@
 			},
 			{
 				"text": "boo",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "</",
@@ -65023,11 +65051,11 @@
 			},
 			{
 				"text": " style='color:blue'  ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "1",
@@ -65051,7 +65079,7 @@
 			},
 			{
 				"text": "boo",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "</",
@@ -65067,11 +65095,11 @@
 			},
 			{
 				"text": " style='color:blue'",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "2",
@@ -65124,8 +65152,12 @@
 				"name": "template-ground template-bracket"
 			},
 			{
-				"text": "|| ",
+				"text": "|",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "| ",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "{{",
@@ -65437,11 +65469,11 @@
 			},
 			{
 				"text": "style=",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "hello",
@@ -65625,7 +65657,7 @@
 			},
 			{
 				"text": "class=\"wikitable\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "!",
@@ -65649,7 +65681,7 @@
 			},
 			{
 				"text": "style=\"color:red;\"",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "{{!}}",
@@ -65665,11 +65697,11 @@
 			},
 			{
 				"text": "style=\"color:red;\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "{{!}}",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "second data",
@@ -65691,7 +65723,7 @@
 			},
 			{
 				"text": "class=\"wikitable\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "!",
@@ -65715,7 +65747,7 @@
 			},
 			{
 				"text": "style=\"color:red;\"",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|",
@@ -65731,11 +65763,11 @@
 			},
 			{
 				"text": "style=\"color:red;\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "second data",
@@ -65747,11 +65779,11 @@
 			},
 			{
 				"text": "style=\"color:red;\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "data with | ",
@@ -65763,27 +65795,35 @@
 			},
 			{
 				"text": "style=\"color:red;\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "| ",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "second data with |",
 				"name": ""
 			},
 			{
-				"text": "|-||",
+				"text": "|-|",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "data with | ",
 				"name": ""
 			},
 			{
-				"text": "|||",
+				"text": "||",
 				"name": "table-delimiter"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "second data with |",
@@ -65805,7 +65845,7 @@
 			},
 			{
 				"text": "class=\"wikitable\"",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "!",
@@ -65829,7 +65869,7 @@
 			},
 			{
 				"text": "style=\"color:red;\"",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|",
@@ -66613,7 +66653,7 @@
 			},
 			{
 				"text": "class=\"foo",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "| ",
@@ -66621,11 +66661,11 @@
 			},
 			{
 				"text": "class=\"bar\" ",
-				"name": ""
+				"name": "table-definition html-td"
 			},
 			{
 				"text": "|",
-				"name": "table-delimiter"
+				"name": "table-delimiter2"
 			},
 			{
 				"text": "foo",
@@ -66647,7 +66687,7 @@
 			},
 			{
 				"text": "|| |} ++",
-				"name": "table-definition"
+				"name": "table-definition html-table"
 			},
 			{
 				"text": "|- ",
@@ -66655,7 +66695,7 @@
 			},
 			{
 				"text": "|| || ++ --",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|- ",
@@ -66663,7 +66703,7 @@
 			},
 			{
 				"text": "> [",
-				"name": "table-definition"
+				"name": "table-definition html-tr"
 			},
 			{
 				"text": "|}",
