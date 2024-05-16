@@ -6897,11 +6897,7 @@
 				"name": "link-ground exttag-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": " ",
+				"text": "]] ",
 				"name": ""
 			},
 			{
@@ -6995,11 +6991,7 @@
 				"name": "link-ground exttag-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": " ",
+				"text": "]] ",
 				"name": ""
 			},
 			{
@@ -23059,7 +23051,15 @@
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "meatball:Foo<Bar",
+				"text": "meatball:Foo",
+				"name": "link-ground link-pagename pagename"
+			},
+			{
+				"text": "<",
+				"name": "link-ground error"
+			},
+			{
+				"text": "Bar",
 				"name": "link-ground link-pagename pagename"
 			},
 			{

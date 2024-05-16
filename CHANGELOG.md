@@ -5,12 +5,14 @@
 **Added**
 
 - [CodeFolding](./README.md#codefolding) for sections in the MediaWiki mode
+- [Parser tests](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html)
 
 **Fixed**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts in the MediaWiki mode
 - Double brackets followed by a valid URL protocol should be an external link in the MediaWiki mode
 - Template argument names are now correctly highlighted in the MediaWiki mode
+- `<` breaks the wikilink syntax in the MediaWiki mode
 
 **Changed**
 

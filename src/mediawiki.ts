@@ -774,14 +774,16 @@ export class MediaWiki {
 
 	inLink(file: boolean, section?: boolean): Tokenizer {
 		const style = section ? tokens[file ? 'error' : 'linkToSection'] : `${tokens.linkPageName} ${tokens.pageName}`;
+		let lt: number | undefined;
 		return (stream, state) => {
-			if (stream.sol() || stream.match(/^\s*\]\]/u)) {
+			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
 				state.nLink--;
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
 				return this.makeLocalTagStyle('linkBracket', state);
 			}
+			lt = undefined;
 			const space = stream.eatSpace(),
 				{redirect} = state;
 			if (!section && stream.match(/^#\s*/u)) {
@@ -808,9 +810,13 @@ export class MediaWiki {
 				stream.eatWhile(/[^|\]]/u);
 				return this.makeStyle(style, state);
 			}
-			return stream.eatWhile(section ? /[^|<[\]{}]|<(?![!/a-z])/iu : /[^#|<>[\]{}]/u) || space
-				? this.makeStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+			if (stream.eatWhile(section ? /[^|<[\]{}]|<(?![!/a-z])/iu : /[^#|<>[\]{}]/u) || space) {
+				return this.makeStyle(style, state);
+			}
+			if (stream.match(/^<[a-z]/iu, false)) {
+				lt = stream.pos + 1;
+			}
+			return this.eatWikiText(section ? style : 'error')(stream, state);
 		};
 	}
 
