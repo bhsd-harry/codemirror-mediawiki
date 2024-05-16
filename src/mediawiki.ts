@@ -691,22 +691,24 @@ export class MediaWiki {
 
 	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
+			const isRoot = obj === state,
+				tag = isRoot ? 'apostrophes' : 'apostrophesLink';
 			// skip the irrelevant apostrophes ( >5 or =4 )
 			if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
 				return false;
 			} else if (stream.match("''''")) { // bold italic
 				obj.bold = !obj.bold;
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return this.makeLocalTagStyle(tag, state);
 			} else if (stream.match("''")) { // bold
-				if (this.firstSingleLetterWord === null && obj === state) {
+				if (isRoot && this.firstSingleLetterWord === null) {
 					this.prepareItalicForCorrection(stream);
 				}
 				obj.bold = !obj.bold;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return this.makeLocalTagStyle(tag, state);
 			} else if (stream.eat("'")) { // italic
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return this.makeLocalTagStyle(tag, state);
 			}
 			return false;
 		};
@@ -1329,8 +1331,7 @@ export class MediaWiki {
 					if (
 						!state.extMode
 						&& typeof style === 'string'
-						&& style.includes(tokens.apostrophes)
-						&& !style.includes('-link-ground')
+						&& style.split(' ').includes(tokens.apostrophes)
 					) {
 						if (this.mark === pos) {
 							// rollback

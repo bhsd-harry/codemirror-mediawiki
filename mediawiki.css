@@ -98,7 +98,8 @@
 	color: #7b8c8f;
 	font-weight: normal;
 }
-.cm-mw-apostrophes {
+.cm-mw-apostrophes,
+.cm-mw-apostrophes-link {
 	color: #0076dd;
 }
 

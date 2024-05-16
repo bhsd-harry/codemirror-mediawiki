@@ -13,6 +13,7 @@
 **Changed**
 
 - MediaWiki tokenizer reworked to mimic the parser more closely
+- New CSS class `cm-mw-apostrophes-link` for apostrophes in wikilinks in the MediaWiki mode
 
 ## 2.12.6
 
