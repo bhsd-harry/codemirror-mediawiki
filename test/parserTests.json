@@ -6287,16 +6287,28 @@
 		"wikitext": "[[http://www.example.com]]",
 		"tokens": [
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": ""
 			},
 			{
-				"text": "http://www.example.com",
-				"name": "link-ground link-pagename pagename"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "http://",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "link-ground extlink"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6305,16 +6317,32 @@
 		"wikitext": "[[http://www.example.com Link text]]",
 		"tokens": [
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": ""
 			},
 			{
-				"text": "http://www.example.com Link text",
-				"name": "link-ground link-pagename pagename"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "http://",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "link-ground extlink"
+			},
+			{
+				"text": " Link text",
+				"name": "link-ground extlink-text"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6323,16 +6351,32 @@
 		"wikitext": "[[http://www.example.com/?q=%7Babc%7D Link text]]",
 		"tokens": [
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": ""
 			},
 			{
-				"text": "http://www.example.com/?q=%7Babc%7D Link text",
-				"name": "link-ground link-pagename pagename"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "http://",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com/?q=%7Babc%7D",
+				"name": "link-ground extlink"
+			},
+			{
+				"text": " Link text",
+				"name": "link-ground extlink-text"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6341,16 +6385,28 @@
 		"wikitext": "[[//www.example.com]]",
 		"tokens": [
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": ""
 			},
 			{
-				"text": "//www.example.com",
-				"name": "link-ground link-pagename pagename"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "//",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "link-ground extlink"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6359,16 +6415,32 @@
 		"wikitext": "[[//www.example.com Link text]]",
 		"tokens": [
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": ""
 			},
 			{
-				"text": "//www.example.com Link text",
-				"name": "link-ground link-pagename pagename"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "//",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "link-ground extlink"
+			},
+			{
+				"text": " Link text",
+				"name": "link-ground extlink-text"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6415,28 +6487,32 @@
 		"wikitext": "Piped link to URL: [[http://www.example.com|an example URL]]",
 		"tokens": [
 			{
-				"text": "Piped link to URL: ",
+				"text": "Piped link to URL: [",
 				"name": ""
 			},
 			{
-				"text": "[[",
-				"name": "link-ground link-bracket"
+				"text": "[",
+				"name": "link-ground extlink-bracket"
 			},
 			{
-				"text": "http://www.example.com",
-				"name": "link-ground link-pagename pagename"
+				"text": "http://",
+				"name": "link-ground extlink-protocol"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "www.example.com|an",
+				"name": "link-ground extlink"
 			},
 			{
-				"text": "an example URL",
-				"name": "link-ground link-text"
+				"text": " example URL",
+				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]]",
-				"name": "link-ground link-bracket"
+				"text": "]",
+				"name": "extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": ""
 			}
 		]
 	},
@@ -6445,24 +6521,36 @@
 		"wikitext": "[[http://example.com|[[Example]]]]",
 		"tokens": [
 			{
+				"text": "[",
+				"name": ""
+			},
+			{
+				"text": "[",
+				"name": "link-ground extlink-bracket"
+			},
+			{
+				"text": "http://",
+				"name": "link-ground extlink-protocol"
+			},
+			{
+				"text": "example.com|",
+				"name": "link-ground extlink"
+			},
+			{
 				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "http://example.com",
+				"text": "Example",
 				"name": "link-ground link-pagename pagename"
-			},
-			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "[[Example]",
-				"name": "link-ground link-text"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "]",
+				"name": "extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6519,24 +6607,32 @@
 				"name": "template-ground template-delimiter"
 			},
 			{
-				"text": "[[",
-				"name": "template-link-ground link-bracket"
+				"text": "[",
+				"name": "template-ground template"
 			},
 			{
-				"text": "http://www.example.com ",
-				"name": "template-link-ground link-pagename pagename"
+				"text": "[",
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
-				"text": "|",
-				"name": "template-link-ground link-delimiter"
+				"text": "http://",
+				"name": "template-link-ground extlink-protocol"
 			},
 			{
-				"text": "123",
-				"name": "template-link-ground link-text"
+				"text": "www.example.com",
+				"name": "template-link-ground extlink"
 			},
 			{
-				"text": "]]",
-				"name": "template-link-ground link-bracket"
+				"text": " |123",
+				"name": "template-link-ground extlink-text"
+			},
+			{
+				"text": "]",
+				"name": "template-ground extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": "template-ground template"
 			},
 			{
 				"text": "}}{{",
@@ -6551,60 +6647,68 @@
 				"name": "template-ground template-delimiter"
 			},
 			{
-				"text": "[[",
-				"name": "template-link-ground link-bracket"
-			},
-			{
-				"text": "http://www.example.com ",
-				"name": "template-link-ground link-pagename pagename"
-			},
-			{
-				"text": "|",
-				"name": "template-link-ground link-delimiter"
-			},
-			{
-				"text": "123]}}",
-				"name": "template-link-ground link-text"
-			},
-			{
-				"text": "{{",
-				"name": "template2-link-ground template-bracket"
-			},
-			{
-				"text": "1x",
-				"name": "template2-link-ground template-name pagename"
-			},
-			{
-				"text": "|",
-				"name": "template2-link-ground template-delimiter"
+				"text": "[",
+				"name": "template-ground template"
 			},
 			{
 				"text": "[",
-				"name": "template2-link-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "http://",
-				"name": "template2-link-ground extlink-protocol"
+				"name": "template-link-ground extlink-protocol"
 			},
 			{
 				"text": "www.example.com",
-				"name": "template2-link-ground extlink"
+				"name": "template-link-ground extlink"
 			},
 			{
 				"text": " |123",
-				"name": "template2-link-ground extlink-text"
+				"name": "template-link-ground extlink-text"
 			},
 			{
 				"text": "]",
-				"name": "template2-link-ground extlink-bracket"
+				"name": "template-ground extlink-bracket"
+			},
+			{
+				"text": "}}{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "[",
+				"name": "template-link-ground extlink-bracket"
+			},
+			{
+				"text": "http://",
+				"name": "template-link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "template-link-ground extlink"
+			},
+			{
+				"text": " |123",
+				"name": "template-link-ground extlink-text"
 			},
 			{
 				"text": "]",
-				"name": "template2-link-ground template"
+				"name": "template-ground extlink-bracket"
+			},
+			{
+				"text": "]",
+				"name": "template-ground template"
 			},
 			{
 				"text": "}}",
-				"name": "template2-link-ground template-bracket"
+				"name": "template-ground template-bracket"
 			}
 		]
 	},

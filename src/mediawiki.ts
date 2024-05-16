@@ -630,7 +630,8 @@ export class MediaWiki {
 					break;
 				}
 				case '[':
-					if (stream.match(/^\[\s*/u)) { // Link Example: [[ Foo | Bar ]]
+					// Link Example: [[ Foo | Bar ]]
+					if (stream.match(new RegExp(`^\\[(?!${this.config.urlProtocols})\\s*`, 'iu'))) {
 						const {redirect} = state;
 						if (redirect || /[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;

@@ -9,6 +9,7 @@
 **Fixed**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts in the MediaWiki mode
+- Double brackets followed by a valid URL protocol should be an external link in the MediaWiki mode
 
 **Changed**
 
