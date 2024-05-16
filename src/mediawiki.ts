@@ -29,25 +29,25 @@ declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = (stream: StringStream, state: State) => T;
 declare type TagName = keyof typeof tokens;
-declare type NestCount = 'nTemplate' | 'nLink' | 'nExt' | 'nVar';
-declare interface State extends Record<NestCount, number> {
+declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
+declare type Nesting = Record<NestCount, number> & {extName: string | false};
+declare interface State extends Nesting {
 	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
-	extName: string | false;
 	extMode: StreamParser<object> | false;
 	extState: object | false;
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
-	dt: Partial<Record<NestCount, number>> & {n: number};
+	dt: Partial<Nesting> & {n: number};
 	redirect: boolean;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
 	readonly pos: number;
 	readonly string: string;
-	readonly style: Style;
+	style: Style;
 	readonly state: State;
 }
 
@@ -83,6 +83,33 @@ const enum TableCell {
 	Th,
 	Caption,
 }
+
+/**
+ * 比较两个嵌套状态是否相同
+ * @param a
+ * @param b
+ */
+const cmpNesting = (a: Partial<Nesting>, b: Nesting): boolean =>
+	a.nTemplate === b.nTemplate
+	&& a.nExt === b.nExt
+	&& a.nVar === b.nVar
+	&& a.nLink === b.nLink
+	&& a.nExtLink === b.nExtLink
+	&& a.extName === b.extName;
+
+/**
+ * 复制嵌套状态
+ * @param a
+ * @param b
+ */
+const copyNesting = (a: Partial<Nesting>, b: Nesting): void => {
+	a.nTemplate = b.nTemplate;
+	a.nExt = b.nExt;
+	a.nVar = b.nVar;
+	a.nLink = b.nLink;
+	a.nExtLink = b.nExtLink;
+	a.extName = b.extName;
+};
 
 /**
  * 复制 StreamParser 状态
@@ -406,7 +433,7 @@ export class MediaWiki {
 				ground += '-ext3';
 				break;
 		}
-		if (state.nLink) {
+		if (state.nLink || state.nExtLink) {
 			ground += '-link';
 		}
 		if (endGround) {
@@ -642,7 +669,7 @@ export class MediaWiki {
 					} else {
 						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 						if (mt) {
-							state.nLink++;
+							state.nExtLink++;
 							chain(state, this.eatExternalLinkProtocol(mt[0], false));
 							return this.makeLocalTagStyle('extLinkBracket', state);
 						}
@@ -658,13 +685,7 @@ export class MediaWiki {
 				/** @todo consider the balance of HTML tags, including apostrophes */
 				case ':': {
 					const {dt} = state;
-					if (
-						dt.n
-						&& dt.nTemplate === state.nTemplate
-						&& dt.nLink === state.nLink
-						&& dt.nExt === state.nExt
-						&& dt.nVar === state.nVar
-					) {
+					if (dt.n && cmpNesting(dt, state)) {
 						dt.n--;
 						return this.makeLocalTagStyle('list', state);
 					}
@@ -692,24 +713,22 @@ export class MediaWiki {
 
 	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
-			const isRoot = obj === state,
-				tag = isRoot ? 'apostrophes' : 'apostrophesLink';
 			// skip the irrelevant apostrophes ( >5 or =4 )
 			if (stream.match(/^'*(?='{5})/u) || stream.match(/^'''(?!')/u, false)) {
 				return false;
 			} else if (stream.match("''''")) { // bold italic
 				obj.bold = !obj.bold;
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle(tag, state);
+				return this.makeLocalTagStyle('apostrophes', state);
 			} else if (stream.match("''")) { // bold
-				if (isRoot && this.firstSingleLetterWord === null) {
+				if (this.firstSingleLetterWord === null && obj === state) {
 					this.prepareItalicForCorrection(stream);
 				}
 				obj.bold = !obj.bold;
-				return this.makeLocalTagStyle(tag, state);
+				return this.makeLocalTagStyle('apostrophes', state);
 			} else if (stream.eat("'")) { // italic
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle(tag, state);
+				return this.makeLocalTagStyle('apostrophes', state);
 			}
 			return false;
 		};
@@ -727,7 +746,7 @@ export class MediaWiki {
 		const regex = new RegExp(`^(?:${getUrlRegex()})+`, 'u');
 		return (stream, state) => {
 			if (stream.sol() || stream.match(/^\p{Zs}*\]/u)) {
-				state.nLink--;
+				state.nExtLink--;
 				pop(state);
 				return this.makeLocalTagStyle('extLinkBracket', state);
 			} else if (text) {
@@ -873,10 +892,7 @@ export class MediaWiki {
 			{dt} = state;
 		if (mt[0].includes(';')) {
 			dt.n = mt[0].split(';').length - 1;
-			dt.nTemplate = state.nTemplate;
-			dt.nLink = state.nLink;
-			dt.nExt = state.nExt;
-			dt.nVar = state.nVar;
+			copyNesting(dt, state);
 		}
 		return this.makeLocalTagStyle('list', state);
 	}
@@ -1313,9 +1329,10 @@ export class MediaWiki {
 				extMode: false,
 				extState: false,
 				nTemplate: 0,
-				nLink: 0,
 				nExt: 0,
 				nVar: 0,
+				nLink: 0,
+				nExtLink: 0,
 				lbrack: false,
 				bold: false,
 				italic: false,
@@ -1330,9 +1347,8 @@ export class MediaWiki {
 					const {pos, string, state: {bold, italic, ...other}, style} = this.oldTokens[0]!;
 					Object.assign(state, other);
 					if (
-						!state.extMode
-						&& typeof style === 'string'
-						&& style.split(' ').includes(tokens.apostrophes)
+						!state.extMode && state.nLink === 0
+						&& typeof style === 'string' && style.includes(tokens.apostrophes)
 					) {
 						if (this.mark === pos) {
 							// rollback
@@ -1368,6 +1384,21 @@ export class MediaWiki {
 				let style: Style;
 				do {
 					style = state.tokenize(stream, state);
+					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
+						for (let i = this.oldTokens.length - 1; i >= 0; i--) {
+							const token = this.oldTokens[i]!;
+							if (cmpNesting(state, token.state)) {
+								const types = typeof token.style === 'string' && token.style.split(' '),
+									j = types && types.indexOf(tokens.template);
+								if (j !== false && j !== -1) {
+									types[j] = tokens.templateArgumentName;
+									token.style = types.join(' ');
+								} else if (types && types.includes(tokens.templateDelimiter)) {
+									break;
+								}
+							}
+						}
+					}
 					this.oldTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
 				} while (!stream.eol());
 				if (!state.bold || !state.italic) {

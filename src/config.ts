@@ -107,7 +107,6 @@ const modeConfig = {
 	 */
 	tokens: {
 		apostrophes: 'mw-apostrophes',
-		apostrophesLink: 'mw-apostrophes-link',
 		comment: 'mw-comment',
 		doubleUnderscore: 'mw-double-underscore',
 		em: 'mw-em',

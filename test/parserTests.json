@@ -4222,7 +4222,7 @@
 			},
 			{
 				"text": "1",
-				"name": "template-ground template"
+				"name": "template-ground template-argument-name"
 			},
 			{
 				"text": "<!-- should be ignored -->",
@@ -6126,7 +6126,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "italics",
@@ -6134,7 +6134,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " and stuff",
@@ -6180,7 +6180,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "italics",
@@ -6188,7 +6188,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " and stuff",
@@ -6266,7 +6266,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "Pentecoste",
@@ -6274,7 +6274,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "]]",
@@ -7562,7 +7562,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "bar",
@@ -7570,7 +7570,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "]]",
@@ -41781,7 +41781,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "two",
@@ -41789,7 +41789,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " ",
@@ -43465,7 +43465,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "bold",
@@ -43473,7 +43473,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " in alt",
@@ -43501,7 +43501,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "bold",
@@ -43509,7 +43509,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " in alt",
@@ -43845,7 +43845,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "x",
@@ -43853,7 +43853,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "|",
@@ -44147,7 +44147,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "s bar",
@@ -44155,7 +44155,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "s",
@@ -44187,7 +44187,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "Main Page",
@@ -44195,7 +44195,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "|",
@@ -46857,7 +46857,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "italic",
@@ -46865,7 +46865,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " bar",
@@ -50615,7 +50615,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "two",
@@ -50623,7 +50623,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " ",
@@ -52417,7 +52417,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "bold",
@@ -52425,7 +52425,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " in alt",
@@ -52453,7 +52453,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "bold",
@@ -52461,7 +52461,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " in alt",
@@ -52797,7 +52797,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "x",
@@ -52805,7 +52805,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "|",
@@ -53099,7 +53099,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "s bar",
@@ -53107,7 +53107,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "s",
@@ -53139,7 +53139,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "Main Page",
@@ -53147,7 +53147,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "|",
@@ -55909,7 +55909,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "italic",
@@ -55917,7 +55917,7 @@
 			},
 			{
 				"text": "''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": " bar",
@@ -58961,7 +58961,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "thumb",
@@ -58969,7 +58969,7 @@
 			},
 			{
 				"text": "'''",
-				"name": "link-ground apostrophes-link"
+				"name": "link-ground apostrophes"
 			},
 			{
 				"text": "]]",

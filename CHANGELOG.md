@@ -10,11 +10,11 @@
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts in the MediaWiki mode
 - Double brackets followed by a valid URL protocol should be an external link in the MediaWiki mode
+- Template argument names are now correctly highlighted in the MediaWiki mode
 
 **Changed**
 
 - MediaWiki tokenizer reworked to mimic the parser more closely
-- New CSS class `cm-mw-apostrophes-link` for apostrophes in wikilinks in the MediaWiki mode
 
 ## 2.12.6
 
