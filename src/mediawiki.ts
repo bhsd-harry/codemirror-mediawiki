@@ -570,7 +570,7 @@ export class MediaWiki {
 						return '';
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(/^[a-z][^\s/>]*(?=[\s/>]|$)/iu, false) as RegExpMatchArray | false;
+						mt = stream.match(/^[a-z][^\s/>]*/iu, false) as RegExpMatchArray | false;
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
 						if (tagname in this.config.tags) {
@@ -760,9 +760,8 @@ export class MediaWiki {
 		const regex = new RegExp(`^(?:${getUrlRegex()})+`, 'u');
 		return (stream, state) => {
 			if (stream.sol() || stream.match(/^\p{Zs}*\]/u)) {
-				state.nExtLink--;
 				pop(state);
-				return this.makeLocalTagStyle('extLinkBracket', state);
+				return this.makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
 				return stream.match(/^(?:[^'[\]{&<]|\[(?!\[)|\{(?!\{)|'(?!')|<(?![!/a-z]))+/iu)
 					? this.makeTagStyle('extLinkText', state)
@@ -791,11 +790,10 @@ export class MediaWiki {
 		let lt: number | undefined;
 		return (stream, state) => {
 			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
-				state.nLink--;
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state);
+				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
 			}
 			lt = undefined;
 			const space = stream.eatSpace(),
@@ -840,14 +838,15 @@ export class MediaWiki {
 				? new RegExp(`^(?:[^'\\]{&<~|[]|'(?!')|\\](?!\\])|\\{(?!\\{)|<(?![!/a-z])|~~?(?!~)|\\[(?!${
 					this.config.urlProtocols
 				}|\\[))+`, 'iu')
-				: /^(?:[^'\]{&<]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z]))+/iu;
+				: /^(?:[^'\]{&<[]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|\[(?!\[))+/iu;
 		return (stream, state) => {
 			const tmpstyle = `${tokens.linkText} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
 				} ${file ? 'mw-file-text' : ''}`,
-				{redirect, lbrack} = state;
-			if (stream.match(']]')) {
-				if (!redirect && lbrack && stream.peek() === ']') {
+				{redirect, lbrack} = state,
+				closing = stream.match(']]');
+			if (closing || !file && stream.match('[[', false)) {
+				if (closing && !redirect && lbrack && stream.peek() === ']') {
 					stream.backUp(1);
 					state.lbrack = false;
 					return this.makeStyle(tmpstyle, state);

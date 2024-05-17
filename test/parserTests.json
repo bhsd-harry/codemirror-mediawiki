@@ -372,7 +372,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "=",
@@ -414,7 +414,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -3172,7 +3172,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " : ",
@@ -4812,7 +4812,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -4845,11 +4845,7 @@
 				"name": "link-ground apostrophes"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -4874,7 +4870,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "'''''",
@@ -4906,7 +4902,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "''",
@@ -4942,7 +4938,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "''''''''",
@@ -4974,7 +4970,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -5050,7 +5046,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5068,7 +5064,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5260,7 +5256,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5282,7 +5278,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5304,7 +5300,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5326,7 +5322,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5348,7 +5344,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": ", xxx",
@@ -5364,7 +5360,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": ", Xxx",
@@ -5380,7 +5376,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " XXX",
@@ -5396,7 +5392,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": ", XXX",
@@ -5412,7 +5408,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5430,7 +5426,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "xxx, ",
@@ -5446,7 +5442,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "XXX, ",
@@ -5462,7 +5458,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "!!!",
@@ -5542,7 +5538,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "&quot;",
@@ -5562,7 +5558,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "&#97;",
@@ -5598,7 +5594,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "]]",
@@ -5718,7 +5714,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5736,7 +5732,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": ", ",
@@ -5752,7 +5748,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5770,7 +5766,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5788,7 +5784,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5836,7 +5832,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5853,11 +5849,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -5892,7 +5884,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5909,11 +5901,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -5922,7 +5910,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5939,11 +5927,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -5952,7 +5936,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -5969,11 +5953,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -5982,7 +5962,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6000,7 +5980,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6017,11 +5997,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -6029,11 +6005,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -6042,7 +6014,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6060,7 +6032,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6078,7 +6050,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6096,7 +6068,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6221,11 +6193,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -6233,11 +6201,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -6304,7 +6268,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6338,7 +6302,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6372,7 +6336,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6402,7 +6366,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6436,7 +6400,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6457,11 +6421,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -6508,7 +6468,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6550,7 +6510,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6592,7 +6552,7 @@
 			},
 			{
 				"text": "]",
-				"name": "template-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "}}{{",
@@ -6628,7 +6588,7 @@
 			},
 			{
 				"text": "]",
-				"name": "template-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6668,7 +6628,7 @@
 			},
 			{
 				"text": "]",
-				"name": "template-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "}}{{",
@@ -6700,7 +6660,7 @@
 			},
 			{
 				"text": "]",
-				"name": "template-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "]",
@@ -6756,7 +6716,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -6772,7 +6732,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6794,7 +6754,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6816,7 +6776,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6834,7 +6794,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -6852,7 +6812,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -7058,7 +7018,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -7170,7 +7130,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -7260,7 +7220,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -7292,7 +7252,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "l",
@@ -7320,7 +7280,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "l",
@@ -7356,7 +7316,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "<",
@@ -7416,7 +7376,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "l",
@@ -7454,7 +7414,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -7496,7 +7456,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "s are ",
@@ -7585,11 +7545,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -7618,7 +7574,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -7640,7 +7596,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -7662,7 +7618,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -7683,15 +7639,19 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[Ho]",
-				"name": "link-ground link-text"
+				"text": "[[",
+				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "Ho",
+				"name": "link-ground link-pagename pagename"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "]",
+				"text": "]]",
 				"name": ""
 			}
 		]
@@ -7709,11 +7669,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -7722,7 +7678,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -11871,11 +11827,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -11916,7 +11868,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "Page",
@@ -12104,7 +12056,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template2-ground link-bracket"
+				"name": "template2-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -13670,7 +13622,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " and ",
@@ -14745,11 +14697,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -14781,11 +14729,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -14849,11 +14793,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -14964,7 +14904,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -16766,7 +16706,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<",
@@ -16845,11 +16785,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -16858,7 +16794,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<",
@@ -17928,7 +17864,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -17946,7 +17882,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -17963,11 +17899,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -17975,11 +17907,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -17988,7 +17916,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18069,11 +17997,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18089,11 +18013,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18109,11 +18029,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18121,11 +18037,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18133,11 +18045,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18145,11 +18053,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18173,11 +18077,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18305,11 +18205,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18333,11 +18229,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18361,11 +18253,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18389,11 +18277,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18417,11 +18301,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18445,11 +18325,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18473,11 +18349,7 @@
 				"name": "template-link-ground template-bracket"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18502,7 +18374,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18520,7 +18392,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18555,11 +18427,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18568,7 +18436,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18604,7 +18472,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18622,7 +18490,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18640,7 +18508,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18658,7 +18526,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -18834,7 +18702,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " BarFoo ",
@@ -18850,7 +18718,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "BarFoo",
@@ -18866,7 +18734,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "BarFoo",
@@ -18882,7 +18750,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " BarFoo",
@@ -18898,7 +18766,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -18913,11 +18781,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18926,7 +18790,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "Bar",
@@ -18942,7 +18806,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -18957,11 +18821,15 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
+				"text": "]][[",
+				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "[[",
+				"text": "Category:Baz",
+				"name": "link-ground link-pagename pagename"
+			},
+			{
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -18970,19 +18838,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
 				"name": "link-ground link-bracket"
-			},
-			{
-				"text": "Category:Baz",
-				"name": "link-ground link-pagename pagename"
-			},
-			{
-				"text": "]]",
-				"name": "link-bracket"
 			},
 			{
 				"text": " ",
@@ -19010,7 +18866,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -19026,7 +18882,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -19056,7 +18912,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " and this should be part of same paragraph (not an indent-pre)",
@@ -19092,7 +18948,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": " and so should this!",
@@ -19134,7 +18990,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " and this should be part of the same list item",
@@ -19170,7 +19026,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": " and this should be part of the same list item",
@@ -19196,7 +19052,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<",
@@ -19224,7 +19080,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "</",
@@ -19253,11 +19109,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19265,11 +19117,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19277,11 +19125,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19290,7 +19134,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -19307,11 +19151,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19345,11 +19185,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19383,11 +19219,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -19554,7 +19386,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -19576,7 +19408,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -20797,11 +20629,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -20809,11 +20637,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -20822,7 +20646,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -20866,7 +20690,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -20941,11 +20765,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -20954,7 +20774,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -20975,15 +20795,19 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[Test]",
-				"name": "link-ground link-text"
+				"text": "[[",
+				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "Test",
+				"name": "link-ground link-pagename pagename"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "]",
+				"text": "]]",
 				"name": ""
 			},
 			{
@@ -20999,15 +20823,19 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:Foobar.jpg]",
-				"name": "link-ground link-text"
+				"text": "[[File:",
+				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "Foobar.jpg",
+				"name": "link-ground link-pagename pagename"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "]",
+				"text": "]]",
 				"name": ""
 			}
 		]
@@ -21055,11 +20883,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -21071,11 +20895,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -21087,11 +20907,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -21103,11 +20919,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -21116,7 +20928,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -21366,7 +21178,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "]",
@@ -23038,7 +22850,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -23063,11 +22875,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -23083,11 +22891,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -23095,11 +22899,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -23108,7 +22908,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -24044,7 +23844,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": " ",
@@ -24064,7 +23864,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": " ",
@@ -24084,7 +23884,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "ftp://",
@@ -24111,11 +23911,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -24128,7 +23924,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "mailto:",
@@ -25395,11 +25191,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -25416,7 +25208,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -26140,7 +25932,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -26172,7 +25964,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -26284,7 +26076,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -26356,7 +26148,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -26374,7 +26166,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -26812,7 +26604,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "ext-ground link-bracket"
+				"name": "ext-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -28606,7 +28398,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28621,11 +28413,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -28634,7 +28422,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28674,7 +28462,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28689,11 +28477,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -28702,7 +28486,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28718,7 +28502,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28762,7 +28546,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -28778,7 +28562,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -28840,7 +28624,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -30100,7 +29884,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -30126,7 +29910,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -31135,11 +30919,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -31155,11 +30935,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -31175,11 +30951,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -31196,7 +30968,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -31344,7 +31116,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -31398,7 +31170,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -31558,7 +31330,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31574,7 +31346,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31590,7 +31362,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31606,7 +31378,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31622,7 +31394,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "{{",
@@ -31686,7 +31458,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31702,7 +31474,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -31792,7 +31564,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31808,7 +31580,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31824,7 +31596,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31840,7 +31612,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31856,7 +31628,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "{{",
@@ -31920,7 +31692,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -31936,7 +31708,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -32026,7 +31798,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -32042,7 +31814,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -32058,7 +31830,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -32074,7 +31846,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -32090,7 +31862,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "{{",
@@ -32154,7 +31926,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -32170,7 +31942,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -32208,7 +31980,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -32265,11 +32037,7 @@
 				"name": "link-ground htmltag-bracket"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -32318,7 +32086,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -32445,11 +32213,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -32532,7 +32296,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -32685,7 +32449,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -32711,7 +32475,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -32773,7 +32537,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -33287,7 +33051,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": ":",
@@ -33317,7 +33081,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": ":",
@@ -33399,7 +33163,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": " ",
@@ -35158,7 +34922,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "Numbered: ",
@@ -35178,7 +34942,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "Numbered: ",
@@ -35198,7 +34962,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35228,7 +34992,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35258,7 +35022,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "s",
@@ -35298,7 +35062,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35342,7 +35106,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35368,7 +35132,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35422,7 +35186,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35474,7 +35238,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35500,7 +35264,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35522,7 +35286,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -35564,7 +35328,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "[[",
@@ -35906,7 +35670,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": " testtest ",
@@ -35994,7 +35758,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36096,7 +35860,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": ", and another ",
@@ -36120,7 +35884,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": ".",
@@ -36248,7 +36012,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36278,7 +36042,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36308,7 +36072,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36338,7 +36102,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36438,7 +36202,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36472,7 +36236,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36494,7 +36258,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36516,7 +36280,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36538,7 +36302,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36588,7 +36352,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36614,7 +36378,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36714,7 +36478,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36768,7 +36532,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36812,7 +36576,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36838,7 +36602,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36863,11 +36627,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -36912,7 +36672,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -36953,11 +36713,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -36990,7 +36746,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37098,7 +36854,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37120,7 +36876,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37142,7 +36898,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37168,7 +36924,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37194,7 +36950,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37220,7 +36976,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37245,11 +37001,7 @@
 				"name": "link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -37266,7 +37018,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37287,11 +37039,7 @@
 				"name": "link-ground extlink"
 			},
 			{
-				"text": "]",
-				"name": "extlink-bracket"
-			},
-			{
-				"text": "[",
+				"text": "][",
 				"name": "link-ground extlink-bracket"
 			},
 			{
@@ -37308,7 +37056,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37354,7 +37102,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "!",
@@ -37408,7 +37156,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "!",
@@ -37478,7 +37226,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37508,7 +37256,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -37534,7 +37282,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -38106,7 +37854,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -38218,7 +37966,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -38310,7 +38058,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "&nbsp;",
@@ -38338,7 +38086,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			}
 		]
 	},
@@ -40417,7 +40165,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": " ",
@@ -40453,7 +40201,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "template-ground link-bracket"
+				"name": "template-link-ground link-bracket"
 			},
 			{
 				"text": "}}",
@@ -40515,7 +40263,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "   ",
@@ -40531,7 +40279,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -40746,7 +40494,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "tag-indicator link-bracket"
+				"name": "tag-indicator link-ground link-bracket"
 			},
 			{
 				"text": "</",
@@ -41533,7 +41281,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -41551,7 +41299,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -41569,7 +41317,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -41839,7 +41587,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -41861,7 +41609,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "Bar foo",
@@ -41995,7 +41743,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "]]",
@@ -42065,7 +41813,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "s",
@@ -42333,7 +42081,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "456123",
@@ -44135,7 +43883,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<!-- Note that \"italics\" are stripped, even though this is a valid page title -->",
@@ -45587,7 +45335,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -46817,7 +46565,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -46835,7 +46583,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -46852,11 +46600,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -47024,15 +46768,19 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:Foobar.jpg]",
-				"name": "link-ground link-text"
+				"text": "[[File:",
+				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "Foobar.jpg",
+				"name": "link-ground link-pagename pagename"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "]",
+				"text": "]]",
 				"name": ""
 			}
 		]
@@ -47153,7 +46901,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -47179,7 +46927,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -47197,7 +46945,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -47215,7 +46963,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -47619,7 +47367,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "tag-gallery link-bracket"
+				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
 				"text": "File:Foobar.jpgFile:Redirect to foobar.jpg",
@@ -48112,11 +47860,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -48300,11 +48044,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -48722,11 +48462,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -48799,7 +48535,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "tag-gallery link-bracket"
+				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
 				"text": "</",
@@ -50367,7 +50103,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -50385,7 +50121,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -50403,7 +50139,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -50673,7 +50409,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -50695,7 +50431,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "Bar foo",
@@ -50829,7 +50565,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "]]",
@@ -50933,7 +50669,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "s",
@@ -51201,7 +50937,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "456123",
@@ -51646,11 +51382,7 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -53087,7 +52819,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<!-- Note that \"italics\" are stripped, even though this is a valid page title -->",
@@ -54565,7 +54297,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -55823,7 +55555,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -55887,7 +55619,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -55904,11 +55636,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -56076,15 +55804,19 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:Foobar.jpg]",
-				"name": "link-ground link-text"
+				"text": "[[File:",
+				"name": "link-ground link-bracket"
+			},
+			{
+				"text": "Foobar.jpg",
+				"name": "link-ground link-pagename pagename"
 			},
 			{
 				"text": "]]",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "]",
+				"text": "]]",
 				"name": ""
 			}
 		]
@@ -56205,7 +55937,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -56231,7 +55963,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -56249,7 +55981,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -56267,7 +55999,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			}
 		]
 	},
@@ -56733,7 +56465,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "tag-gallery link-bracket"
+				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
 				"text": "File:Foobar.jpgFile:Redirect to foobar.jpg",
@@ -57226,11 +56958,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -57530,11 +57258,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -58022,11 +57746,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -58099,7 +57819,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "tag-gallery link-bracket"
+				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
 				"text": "</",
@@ -58128,11 +57848,7 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
-				"name": "link-bracket"
-			},
-			{
-				"text": "[[File:",
+				"text": "]][[File:",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -60902,7 +60618,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "*",
@@ -60926,7 +60642,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "*",
@@ -60962,7 +60678,7 @@
 			},
 			{
 				"text": "]",
-				"name": "template-ground extlink-bracket"
+				"name": "template-link-ground extlink-bracket"
 			},
 			{
 				"text": "}}",
@@ -62033,7 +61749,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "'",
@@ -62145,7 +61861,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "''",
@@ -63155,7 +62871,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "'",
@@ -63312,7 +63028,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "<!-- haha -->",
@@ -63342,7 +63058,7 @@
 			},
 			{
 				"text": "]]",
-				"name": "link-bracket"
+				"name": "link-ground link-bracket"
 			},
 			{
 				"text": "----",
@@ -64823,7 +64539,7 @@
 			},
 			{
 				"text": "]",
-				"name": "extlink-bracket"
+				"name": "link-ground extlink-bracket"
 			},
 			{
 				"text": "\" onmouseover=\"alert(document.cookie)\">test",
