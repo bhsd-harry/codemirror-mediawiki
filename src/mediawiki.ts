@@ -677,7 +677,7 @@ export class MediaWiki {
 						if (redirect || /[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.lbrack = undefined;
-							chain(state, this.inLink(!redirect && Boolean(stream.match(this.fileRegex))));
+							chain(state, this.inLink(!redirect && Boolean(stream.match(this.fileRegex, false))));
 							return this.makeLocalTagStyle('linkBracket', state);
 						}
 					} else {
@@ -835,9 +835,7 @@ export class MediaWiki {
 	inLinkText(file: boolean): Tokenizer {
 		const linkState = {bold: false, italic: false},
 			regex = file
-				? new RegExp(`^(?:[^'\\]{&<~|[]|'(?!')|\\](?!\\])|\\{(?!\\{)|<(?![!/a-z])|~~?(?!~)|\\[(?!${
-					this.config.urlProtocols
-				}|\\[))+`, 'iu')
+				? /^(?:[^'\]{&<[~|]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|~~?(?!~))+/iu
 				: /^(?:[^'\]{&<[]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|\[(?!\[))+/iu;
 		return (stream, state) => {
 			const tmpstyle = `${tokens.linkText} ${linkState.bold ? tokens.strong : ''} ${

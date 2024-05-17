@@ -6185,11 +6185,11 @@
 		"wikitext": "[[File:Denys_Savchenko_''Pentecoste''.jpg]]\n\n[[''Pentecoste'']]\n\n[[''Pentecoste''|Pentecoste]]\n\n[[''Pentecoste''|''Pentecoste'']]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Denys_Savchenko_''Pentecoste''.jpg",
+				"text": "File:Denys_Savchenko_''Pentecoste''.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -20823,11 +20823,11 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -28509,11 +28509,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "%+abc%39",
+				"text": "File:%+abc%39",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -40521,11 +40521,11 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "tag-indicator link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "tag-indicator link-ground link-pagename pagename"
 			},
 			{
@@ -40573,11 +40573,11 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "tag-indicator link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "tag-indicator link-ground link-pagename pagename"
 			},
 			{
@@ -41272,11 +41272,11 @@
 		"wikitext": "[[Image:foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41290,11 +41290,11 @@
 		"wikitext": "[[Image:Redirect to foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Redirect to foobar.jpg",
+				"text": "Image:Redirect to foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41308,11 +41308,11 @@
 		"wikitext": "[[File:Foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41326,11 +41326,11 @@
 		"wikitext": "[[File:Foobar.jpg|right]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41352,11 +41352,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41386,11 +41386,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41420,11 +41420,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page=]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41454,11 +41454,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page=stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41488,11 +41488,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|one &#x7C; two]]\n[[File:Foobar.jpg|thumb|one ''two'' &#x7C; three]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41520,11 +41520,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41578,11 +41578,11 @@
 		"wikitext": "[[File:Bad.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Bad.jpg",
+				"text": "File:Bad.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41600,11 +41600,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Bad.jpg",
+				"text": "File:Bad.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41622,11 +41622,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Bad.jpg|Uh oh]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41694,11 +41694,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Caption [[Link1]]\n[[]]\n[[Link2]]\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41756,11 +41756,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=|stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41804,11 +41804,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41826,11 +41826,11 @@
 		"wikitext": "[[File:Foobar.jpg|right||Caption text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41860,11 +41860,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|{{1x|137px}}|This is a caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41918,11 +41918,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{1x|thumb}}|{{1x|137px}}|This is a caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -41992,11 +41992,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{1x|50px}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42034,11 +42034,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{image_attribs}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42072,11 +42072,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42088,11 +42088,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42112,11 +42112,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42142,11 +42142,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption1 - ignored|[[Caption2]] - ignored|Caption3 - accepted]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42204,11 +42204,11 @@
 		"wikitext": "[[File:Foobar.jpg|200px|300px|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42246,11 +42246,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|left|right|center|caption]]\n\n[[File:Foobar.jpg|middle|text-top|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42294,11 +42294,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42336,11 +42336,11 @@
 		"wikitext": "[[File:Foobar.jpg|200px|right|Caption]]\n[[File:Foobar.jpg|right|200px|Caption]]\n[[File:Foobar.jpg|right|Caption|200px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42368,11 +42368,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42400,11 +42400,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42442,11 +42442,11 @@
 		"wikitext": "[[File:Foobar.jpg|20pxpx]]\n[[File:Foobar.jpg|200x20pxpx]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42458,11 +42458,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42484,11 +42484,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Main Page]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42514,11 +42514,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42544,11 +42544,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=//example.com/]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42574,11 +42574,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42604,11 +42604,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42634,11 +42634,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42664,11 +42664,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42702,11 +42702,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42728,11 +42728,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Main_Page|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42766,11 +42766,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42804,11 +42804,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42850,11 +42850,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42888,11 +42888,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42938,11 +42938,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=http://example.com|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -42988,11 +42988,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43034,11 +43034,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|alt=alttext|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43096,11 +43096,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame|left|This is a test image [[Main Page]]]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43146,11 +43146,11 @@
 		"wikitext": "[[Image:Foobar.jpg|frame|left|This is a test image [[Main Page]]|alt=Altitude]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43212,11 +43212,11 @@
 		"wikitext": "[[Image:Foobar.jpg|testing '''bold''' in alt]]\n\n[[Image:Foobar.jpg|alt=testing '''bold''' in alt]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43244,11 +43244,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[Image:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43290,11 +43290,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|This is the image caption|alt=This is a [[link]] and a {{1x|''bold template''}}.]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43384,11 +43384,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=&amp;amp;]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=&amp;amp;\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43458,11 +43458,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=http://testing.123?4=5&#x7C;6|caption]]\n\n[[File:Foobar.jpg|alt=http://testing.123?4=5&vert;6|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=http://testing.123?4=5&#x7C;6|caption\nFile:Foobar.jpg|alt=http://testing.123?4=5&vert;6|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43494,11 +43494,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43592,11 +43592,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=''x''|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=''x''|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43686,11 +43686,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=<nowiki>''x''</nowiki>|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=<nowiki>''x''</nowiki>|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43812,11 +43812,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Foo_&_bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo_&_bar\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43890,11 +43890,11 @@
 				"name": "comment"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -43934,11 +43934,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44044,11 +44044,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44178,11 +44178,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=https://example.com?foo&params=bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=https://example.com?foo&params=bar\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44248,11 +44248,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|\n===Testing===\n123\n--------------\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44282,11 +44282,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|caption]]\n\n[[File:Foobar.jpg|frameless|frame|caption]]\n\n[[File:Foobar.jpg|frameless|thumb|caption]]\n\n[[File:Foobar.jpg|frameless|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44306,11 +44306,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44338,11 +44338,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44370,11 +44370,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44416,11 +44416,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame|caption]]\n[[File:Foobar.jpg|frame|frameless|caption]]\n[[File:Foobar.jpg|frame|thumb|caption]]\n[[File:Foobar.jpg|frame|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44440,11 +44440,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44472,11 +44472,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44504,11 +44504,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44550,11 +44550,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|caption]]\n[[File:Foobar.jpg|thumb|frameless|caption]]\n[[File:Foobar.jpg|thumb|frame|caption]]\n[[File:Foobar.jpg|thumb|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44574,11 +44574,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44606,11 +44606,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44638,11 +44638,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44684,11 +44684,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|frameless|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|frame|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|thumb|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44712,11 +44712,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44748,11 +44748,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44784,11 +44784,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44830,11 +44830,11 @@
 		"wikitext": "[[File:Foobar.jpg|2000px]]\n\n[[File:Foobar.jpg|border|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44846,11 +44846,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44880,11 +44880,11 @@
 		"wikitext": "[[File:Foobar.jpg|1000px]]\n\n[[File:Foobar.jpg|border|1000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44896,11 +44896,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44930,11 +44930,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|50px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44964,11 +44964,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|2000px]]\n\n[[File:Foobar.svg|thumb|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -44988,11 +44988,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45022,11 +45022,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|50px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45056,11 +45056,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|2000px]]\n\n[[File:Foobar.svg|frameless|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45080,11 +45080,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45114,11 +45114,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame]]\n\n[[File:Foobar.jpg|frame|50px]]\n\n[[File:Foobar.jpg|frame|50x50px]]\n\n[[File:Foobar.jpg|frame|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45130,11 +45130,11 @@
 				"name": "link-ground image-parameter"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45154,11 +45154,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45178,11 +45178,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45212,11 +45212,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|50px]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|50x50px]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45232,11 +45232,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45260,11 +45260,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45288,11 +45288,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45370,11 +45370,11 @@
 		"wikitext": "[[File:Foobar.jpg|http://example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45396,11 +45396,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45430,11 +45430,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com|alt=Alteration]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45476,11 +45476,11 @@
 		"wikitext": "[[File:Foobar.svg|thumb|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45510,11 +45510,11 @@
 		"wikitext": "[[File:Foobar.svg|lang=de|thumb|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45556,11 +45556,11 @@
 		"wikitext": "[[File:Foobar.svg|thumb|caption|lang=invalid:language:code]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45602,11 +45602,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|ISBN 1235467890]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45636,11 +45636,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|This is RFC 12354]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45670,11 +45670,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Please mailto:nobody@example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45704,11 +45704,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45746,11 +45746,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[link]]foo in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45788,11 +45788,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[MeatBall:Link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45830,11 +45830,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[MeatBall:Link|link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45880,11 +45880,11 @@
 		"wikitext": "[[File:Foobar.jpg|& < > \"]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45906,11 +45906,11 @@
 		"wikitext": "[[File:7%25 solution.gif|manualthumb=7%25 solution.gif|link=7%25 solution|[[7%25 solution]]]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "7%25 solution.gif",
+				"text": "File:7%25 solution.gif",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45956,11 +45956,11 @@
 		"wikitext": "[[File:Foobar.jpg|&#9792;]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -45982,11 +45982,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|This is a broken caption. But [[Main Page|this]] is just an ordinary link.",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46036,11 +46036,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|This is a caption with another [[File:Thumb.png|image]] inside it!]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46060,11 +46060,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Thumb.png",
+				"text": "File:Thumb.png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46094,11 +46094,11 @@
 		"wikitext": "[[File:Foobar.jpg|This\n*is some text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46120,11 +46120,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb| bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46154,11 +46154,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|200px|This is an example image thumbnail caption with a table\n{|\n!Foo!!Bar\n|-\n|Foo1||Bar1\n|}\nand some more text.]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46236,11 +46236,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|200x200px|This caption has [irc://example.net irc] and [https://example.com Secure] ext links in it.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46326,11 +46326,11 @@
 		"wikitext": "[[Image:foobar.jpg|a|class=b]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46364,11 +46364,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|border|class=extra|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46418,11 +46418,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|float|left|caption]]\n\n[[File:Foobar.jpg|thumb|righ|caption]]\n\n[[File:Foobar.jpg|bogus1|thumb|bogus2|left|bogus3|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46458,11 +46458,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46490,11 +46490,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46556,11 +46556,11 @@
 		"wikitext": "[[Image:Barfoo.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Barfoo.jpg",
+				"text": "Image:Barfoo.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46574,11 +46574,11 @@
 		"wikitext": "[[File:Cool \"Gator\".png]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Cool \"Gator\".png",
+				"text": "File:Cool \"Gator\".png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46592,19 +46592,19 @@
 		"wikitext": "[[File:Foo's ''italic'' bar.jpg]]\n[[File:Foo's ''italic'' bar.jpg|Foo's ''italic'' bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foo's ''italic'' bar.jpg",
+				"text": "File:Foo's ''italic'' bar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foo's ''italic'' bar.jpg",
+				"text": "File:Foo's ''italic'' bar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46642,11 +46642,11 @@
 		"wikitext": "[[File:Nonexistent|<script></script>]]\n[[File:Nonexistent|100x100px|<script></script>]]\n[[File:Nonexistent|&lt;]]\n[[File:Nonexistent|a<i>b</i>c]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46658,11 +46658,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46682,11 +46682,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46698,11 +46698,11 @@
 				"name": "link-ground entity"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46768,11 +46768,11 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46806,11 +46806,11 @@
 				"name": "template-ground template-argument-name"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "template-link-ground link-bracket"
 			},
 			{
-				"text": "noimage.png",
+				"text": "Image:noimage.png",
 				"name": "template-link-ground link-pagename pagename"
 			},
 			{
@@ -46892,11 +46892,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46918,11 +46918,11 @@
 				"name": "free-extlink"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46936,11 +46936,11 @@
 		"wikitext": "[[File:No_such.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "No_such.jpg",
+				"text": "File:No_such.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -46972,11 +46972,11 @@
 		"wikitext": "[[Image:foobar.jpg|thumbnail= ]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47190,11 +47190,11 @@
 				"name": "tag-gallery"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "tag-gallery link-ground link-pagename pagename"
 			},
 			{
@@ -47696,11 +47696,11 @@
 		"wikitext": "[[Image:foobar.jpg|centre]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47722,11 +47722,11 @@
 		"wikitext": "[[Image:foobar.jpg|none]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47748,11 +47748,11 @@
 		"wikitext": "[[Image:foobar.jpg|640x480px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47774,11 +47774,11 @@
 		"wikitext": "[[Image:foobar.jpg|640px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47800,11 +47800,11 @@
 		"wikitext": "[[Image:foobar.jpg|640px ]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47826,11 +47826,11 @@
 		"wikitext": "[[Image:foobar.jpg| 640px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47852,19 +47852,19 @@
 		"wikitext": "[[File:LoremIpsum.djvu]]\n\n[[File:LoremIpsum.djvu|page=2]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47890,11 +47890,11 @@
 		"wikitext": "[[File:LoremIpsum.djvu|page={{1x|2}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47936,11 +47936,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|An [http://test/?param1=|left|&param2=|x external] URL]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -47994,11 +47994,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://x|hello]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48036,19 +48036,19 @@
 		"wikitext": "[[File:Contains & ampersand.jpg]]\n[[File:Does not exist.jpg|Title with & ampersand]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Contains & ampersand.jpg",
+				"text": "File:Contains & ampersand.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Does not exist.jpg",
+				"text": "File:Does not exist.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48090,11 +48090,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48148,11 +48148,11 @@
 				"name": "strong"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -48196,11 +48196,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48262,11 +48262,11 @@
 				"name": "strong"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -48332,11 +48332,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -48382,11 +48382,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=|thumb|bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48424,11 +48424,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=<]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48462,11 +48462,11 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48482,11 +48482,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48556,11 +48556,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com]]\n[[File:Foobar.jpg|thumb|RFC 1234]]\n[[File:Foobar.jpg|thumb|PMID 1234]]\n[[File:Foobar.jpg|thumb|ISBN 123456789x]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48580,11 +48580,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48604,11 +48604,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48628,11 +48628,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48662,11 +48662,11 @@
 		"wikitext": "[[File:Thumb.png|thumb]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Thumb.png",
+				"text": "File:Thumb.png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48688,11 +48688,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Test <nowiki bogus=\"attri|bute\"/> 123]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48742,11 +48742,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|\n{|\n|-  \n|hi\n|}\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48800,11 +48800,11 @@
 		"wikitext": "[[File:Broken.jpg|alt=An alternative text description.|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48838,11 +48838,11 @@
 		"wikitext": "[[File:Broken.jpg|alt=An alternative text description.|thumb|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48884,11 +48884,11 @@
 		"wikitext": "[[File:Broken.jpg|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -48910,11 +48910,11 @@
 		"wikitext": "[[File:Broken.jpg|thumb|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50094,11 +50094,11 @@
 		"wikitext": "[[Image:foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50112,11 +50112,11 @@
 		"wikitext": "[[Image:Redirect to foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Redirect to foobar.jpg",
+				"text": "Image:Redirect to foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50130,11 +50130,11 @@
 		"wikitext": "[[File:Foobar.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50148,11 +50148,11 @@
 		"wikitext": "[[File:Foobar.jpg|right]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50174,11 +50174,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50208,11 +50208,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50242,11 +50242,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page=]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50276,11 +50276,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption page=stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50310,11 +50310,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|one &#x7C; two]]\n[[File:Foobar.jpg|thumb|one ''two'' &#x7C; three]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50342,11 +50342,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50400,11 +50400,11 @@
 		"wikitext": "[[File:Bad.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Bad.jpg",
+				"text": "File:Bad.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50422,11 +50422,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Bad.jpg",
+				"text": "File:Bad.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50444,11 +50444,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Bad.jpg|Uh oh]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50516,11 +50516,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Caption [[Link1]]\n[[]]\n[[Link2]]\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50578,11 +50578,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=|stuff]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50660,11 +50660,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50682,11 +50682,11 @@
 		"wikitext": "[[File:Foobar.jpg|right||Caption text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50716,11 +50716,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|{{1x|137px}}|This is a caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50774,11 +50774,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{1x|thumb}}|{{1x|137px}}|This is a caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50848,11 +50848,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{1x|50px}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50890,11 +50890,11 @@
 		"wikitext": "[[File:Foobar.jpg|{{image_attribs}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50928,11 +50928,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50944,11 +50944,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50968,11 +50968,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -50998,11 +50998,11 @@
 		"wikitext": "[[File:Foobar.jpg|right|Caption1 - ignored|[[Caption2]] - ignored|Caption3 - accepted]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51060,11 +51060,11 @@
 		"wikitext": "[[File:Foobar.jpg|200px|300px|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51102,11 +51102,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|left|right|center|caption]]\n\n[[File:Foobar.jpg|middle|text-top|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51150,11 +51150,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51192,11 +51192,11 @@
 		"wikitext": "[[File:Foobar.jpg|200px|right|Caption]]\n[[File:Foobar.jpg|right|200px|Caption]]\n[[File:Foobar.jpg|right|Caption|200px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51224,11 +51224,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51256,11 +51256,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51298,11 +51298,11 @@
 		"wikitext": "[[File:Foobar.jpg|20pxpx]]\n[[File:Foobar.jpg|200x20pxpx]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51314,11 +51314,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51340,11 +51340,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Main Page]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51382,11 +51382,11 @@
 				"name": "link-ground link-tosection"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51412,11 +51412,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51442,11 +51442,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=//example.com/]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51472,11 +51472,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51502,11 +51502,11 @@
 		"wikitext": "[[Image:foobar.jpg|thumb|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51540,11 +51540,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51570,11 +51570,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51600,11 +51600,11 @@
 		"wikitext": "[[Image:foobar.jpg|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51638,11 +51638,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51664,11 +51664,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Main_Page|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51702,11 +51702,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51740,11 +51740,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|link=http://example.com/|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51786,11 +51786,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51824,11 +51824,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51874,11 +51874,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=http://example.com|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51924,11 +51924,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -51970,11 +51970,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|alt=alttext|Title]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52032,11 +52032,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame|left|This is a test image [[Main Page]]]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52082,11 +52082,11 @@
 		"wikitext": "[[Image:Foobar.jpg|frame|left|This is a test image [[Main Page]]|alt=Altitude]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52148,11 +52148,11 @@
 		"wikitext": "[[Image:Foobar.jpg|testing '''bold''' in alt]]\n\n[[Image:Foobar.jpg|alt=testing '''bold''' in alt]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52180,11 +52180,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[Image:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52226,11 +52226,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|This is the image caption|alt=This is a [[link]] and a {{1x|''bold template''}}.]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52320,11 +52320,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=&amp;amp;]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=&amp;amp;\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52394,11 +52394,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=http://testing.123?4=5&#x7C;6|caption]]\n\n[[File:Foobar.jpg|alt=http://testing.123?4=5&vert;6|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=http://testing.123?4=5&#x7C;6|caption\nFile:Foobar.jpg|alt=http://testing.123?4=5&vert;6|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52430,11 +52430,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52528,11 +52528,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=''x''|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=''x''|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52622,11 +52622,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=<nowiki>''x''</nowiki>|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|alt=<nowiki>''x''</nowiki>|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52748,11 +52748,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Foo_&_bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo_&_bar\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52826,11 +52826,11 @@
 				"name": "comment"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52870,11 +52870,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -52980,11 +52980,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53114,11 +53114,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=https://example.com?foo&params=bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=https://example.com?foo&params=bar\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53184,11 +53184,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|\n===Testing===\n123\n--------------\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53218,11 +53218,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|caption]]\n\n[[File:Foobar.jpg|frameless|frame|caption]]\n\n[[File:Foobar.jpg|frameless|thumb|caption]]\n\n[[File:Foobar.jpg|frameless|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53242,11 +53242,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53274,11 +53274,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53306,11 +53306,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53352,11 +53352,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame|caption]]\n[[File:Foobar.jpg|frame|frameless|caption]]\n[[File:Foobar.jpg|frame|thumb|caption]]\n[[File:Foobar.jpg|frame|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53376,11 +53376,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53408,11 +53408,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53440,11 +53440,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53486,11 +53486,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|caption]]\n[[File:Foobar.jpg|thumb|frameless|caption]]\n[[File:Foobar.jpg|thumb|frame|caption]]\n[[File:Foobar.jpg|thumb|thumbnail=Thumb.png|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53510,11 +53510,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53542,11 +53542,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53574,11 +53574,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53620,11 +53620,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|frameless|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|frame|caption]]\n[[File:Foobar.jpg|thumbnail=Thumb.png|thumb|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53648,11 +53648,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53684,11 +53684,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53720,11 +53720,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53766,11 +53766,11 @@
 		"wikitext": "[[File:Foobar.jpg|2000px]]\n\n[[File:Foobar.jpg|border|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53782,11 +53782,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53816,11 +53816,11 @@
 		"wikitext": "[[File:Foobar.jpg|1000px]]\n\n[[File:Foobar.jpg|border|1000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53832,11 +53832,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53866,11 +53866,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|50px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53900,11 +53900,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|2000px]]\n\n[[File:Foobar.svg|thumb|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53924,11 +53924,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53958,11 +53958,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|50px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -53992,11 +53992,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|2000px]]\n\n[[File:Foobar.svg|frameless|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54016,11 +54016,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54050,11 +54050,11 @@
 		"wikitext": "[[File:Foobar.jpg|frame]]\n\n[[File:Foobar.jpg|frame|50px]]\n\n[[File:Foobar.jpg|frame|50x50px]]\n\n[[File:Foobar.jpg|frame|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54066,11 +54066,11 @@
 				"name": "link-ground image-parameter"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54090,11 +54090,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54114,11 +54114,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54148,11 +54148,11 @@
 		"wikitext": "[[File:Foobar.svg|frame]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54174,11 +54174,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Thumb.png]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|50px]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|50x50px]]\n\n[[File:Foobar.jpg|thumbnail=Thumb.png|2000px]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54194,11 +54194,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54222,11 +54222,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54250,11 +54250,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54332,11 +54332,11 @@
 		"wikitext": "[[File:Foobar.jpg|http://example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54358,11 +54358,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54392,11 +54392,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com|alt=Alteration]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54438,11 +54438,11 @@
 		"wikitext": "[[File:Foobar.svg|thumb|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54472,11 +54472,11 @@
 		"wikitext": "[[File:Foobar.svg|lang=de|thumb|caption]]\n\n<gallery>\nFile:Foobar.svg|lang=de|caption\n</gallery>",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54546,11 +54546,11 @@
 		"wikitext": "[[File:Foobar.svg|thumb|caption|lang=invalid:language:code]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54592,11 +54592,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|ISBN 1235467890]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54626,11 +54626,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|This is RFC 12354]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54660,11 +54660,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Please mailto:nobody@example.com]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54694,11 +54694,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54736,11 +54736,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[link]]foo in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54778,11 +54778,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[MeatBall:Link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54820,11 +54820,11 @@
 		"wikitext": "[[File:Foobar.jpg|text with a [[MeatBall:Link|link]] in it]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54870,11 +54870,11 @@
 		"wikitext": "[[File:Foobar.jpg|& < > \"]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54896,11 +54896,11 @@
 		"wikitext": "[[File:7%25 solution.gif|manualthumb=7%25 solution.gif|link=7%25 solution|[[7%25 solution]]]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "7%25 solution.gif",
+				"text": "File:7%25 solution.gif",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54946,11 +54946,11 @@
 		"wikitext": "[[File:Foobar.jpg|&#9792;]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -54972,11 +54972,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|This is a broken caption. But [[Main Page|this]] is just an ordinary link.",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55026,11 +55026,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|This is a caption with another [[File:Thumb.png|image]] inside it!]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55050,11 +55050,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Thumb.png",
+				"text": "File:Thumb.png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55084,11 +55084,11 @@
 		"wikitext": "[[File:Foobar.jpg|This\n*is some text]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55110,11 +55110,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb| bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55144,11 +55144,11 @@
 		"wikitext": "[[Image:Foobar.jpg|thumb|200px|This is an example image thumbnail caption with a table\n{|\n!Foo!!Bar\n|-\n|Foo1||Bar1\n|}\nand some more text.]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55226,11 +55226,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|200x200px|This caption has [irc://example.net irc] and [https://example.com Secure] ext links in it.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55316,11 +55316,11 @@
 		"wikitext": "[[Image:foobar.jpg|a|class=b]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55354,11 +55354,11 @@
 		"wikitext": "[[File:Foobar.jpg|frameless|border|class=extra|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55408,11 +55408,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|float|left|caption]]\n\n[[File:Foobar.jpg|thumb|righ|caption]]\n\n[[File:Foobar.jpg|bogus1|thumb|bogus2|left|bogus3|caption]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55448,11 +55448,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55480,11 +55480,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55546,11 +55546,11 @@
 		"wikitext": "[[Image:Barfoo.jpg]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Barfoo.jpg",
+				"text": "Image:Barfoo.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55568,11 +55568,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.svg",
+				"text": "File:Foobar.svg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55610,11 +55610,11 @@
 		"wikitext": "[[File:Cool \"Gator\".png]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Cool \"Gator\".png",
+				"text": "File:Cool \"Gator\".png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55628,19 +55628,19 @@
 		"wikitext": "[[File:Foo's ''italic'' bar.jpg]]\n[[File:Foo's ''italic'' bar.jpg|Foo's ''italic'' bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foo's ''italic'' bar.jpg",
+				"text": "File:Foo's ''italic'' bar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foo's ''italic'' bar.jpg",
+				"text": "File:Foo's ''italic'' bar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55678,11 +55678,11 @@
 		"wikitext": "[[File:Nonexistent|<script></script>]]\n[[File:Nonexistent|100x100px|<script></script>]]\n[[File:Nonexistent|&lt;]]\n[[File:Nonexistent|a<i>b</i>c]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55694,11 +55694,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55718,11 +55718,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55734,11 +55734,11 @@
 				"name": "link-ground entity"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Nonexistent",
+				"text": "File:Nonexistent",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55804,11 +55804,11 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55842,11 +55842,11 @@
 				"name": "template-ground template-argument-name"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "template-link-ground link-bracket"
 			},
 			{
-				"text": "noimage.png",
+				"text": "Image:noimage.png",
 				"name": "template-link-ground link-pagename pagename"
 			},
 			{
@@ -55928,11 +55928,11 @@
 				"name": ""
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55954,11 +55954,11 @@
 				"name": "free-extlink"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -55972,11 +55972,11 @@
 		"wikitext": "[[File:No_such.jpg]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "No_such.jpg",
+				"text": "File:No_such.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56008,11 +56008,11 @@
 		"wikitext": "[[Image:foobar.jpg|thumbnail= ]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56288,11 +56288,11 @@
 				"name": "tag-gallery"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "tag-gallery link-ground link-pagename pagename"
 			},
 			{
@@ -56794,11 +56794,11 @@
 		"wikitext": "[[Image:foobar.jpg|centre]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56820,11 +56820,11 @@
 		"wikitext": "[[Image:foobar.jpg|none]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56846,11 +56846,11 @@
 		"wikitext": "[[Image:foobar.jpg|640x480px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56872,11 +56872,11 @@
 		"wikitext": "[[Image:foobar.jpg|640px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56898,11 +56898,11 @@
 		"wikitext": "[[Image:foobar.jpg|640px ]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56924,11 +56924,11 @@
 		"wikitext": "[[Image:foobar.jpg| 640px]]",
 		"tokens": [
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "foobar.jpg",
+				"text": "Image:foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56950,19 +56950,19 @@
 		"wikitext": "[[File:LoremIpsum.djvu]]\n\n[[File:LoremIpsum.djvu|page=2]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -56988,11 +56988,11 @@
 		"wikitext": "[[File:LoremIpsum.djvu|link=https://google.com|page=2]]\n[[File:LoremIpsum.djvu|link=https://google.com?page=4|page=2]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57020,11 +57020,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57062,11 +57062,11 @@
 		"wikitext": "[[File:LoremIpsum.djvu|thumbnail=Thumb.png|page=2]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57104,11 +57104,11 @@
 		"wikitext": "[[File:LoremIpsum.djvu|page={{1x|2}}]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57150,11 +57150,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|An [http://test/?param1=|left|&param2=|x external] URL]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57208,11 +57208,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://x|hello]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57250,19 +57250,19 @@
 		"wikitext": "[[File:Contains & ampersand.jpg]]\n[[File:Does not exist.jpg|Title with & ampersand]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Contains & ampersand.jpg",
+				"text": "File:Contains & ampersand.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Does not exist.jpg",
+				"text": "File:Does not exist.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57304,11 +57304,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57362,11 +57362,11 @@
 				"name": "strong"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -57410,11 +57410,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57476,11 +57476,11 @@
 				"name": "strong"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -57546,11 +57546,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "[[Image:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "Image:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong"
 			},
 			{
@@ -57596,11 +57596,11 @@
 		"wikitext": "[[File:Foobar.jpg|alt=|thumb|bar]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57638,11 +57638,11 @@
 		"wikitext": "[[File:Foobar.jpg|link=<]]\n[[File:Foobar.jpg|link=<|thumb]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57658,11 +57658,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57696,11 +57696,11 @@
 		"wikitext": "[[File:LoremIpsum.djvu|link=<|page=2]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "LoremIpsum.djvu",
+				"text": "File:LoremIpsum.djvu",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57746,11 +57746,11 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57766,11 +57766,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57848,11 +57848,11 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57868,11 +57868,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57902,11 +57902,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com]]\n[[File:Foobar.jpg|thumb|RFC 1234]]\n[[File:Foobar.jpg|thumb|PMID 1234]]\n[[File:Foobar.jpg|thumb|ISBN 123456789x]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57926,11 +57926,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57950,11 +57950,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -57974,11 +57974,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58008,11 +58008,11 @@
 		"wikitext": "[[File:Thumb.png|thumb]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Thumb.png",
+				"text": "File:Thumb.png",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58034,11 +58034,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|Test <nowiki bogus=\"attri|bute\"/> 123]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58088,11 +58088,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumb|\n{|\n|-  \n|hi\n|}\n]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58162,11 +58162,11 @@
 				"name": "apostrophes"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename em"
 			},
 			{
@@ -58220,11 +58220,11 @@
 				"name": "apostrophes"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename strong em"
 			},
 			{
@@ -58282,11 +58282,11 @@
 				"name": "em"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename em"
 			},
 			{
@@ -58352,11 +58352,11 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58406,11 +58406,11 @@
 		"wikitext": "[[File:Broken.jpg|alt=An alternative text description.|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58444,11 +58444,11 @@
 		"wikitext": "[[File:Broken.jpg|alt=An alternative text description.|thumb|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58490,11 +58490,11 @@
 		"wikitext": "[[File:Broken.jpg|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58516,11 +58516,11 @@
 		"wikitext": "[[File:Broken.jpg|thumb|A caption for the media.]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Broken.jpg",
+				"text": "File:Broken.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58584,11 +58584,11 @@
 		"wikitext": "[[File:Barfoo.jpg|frame|123]]\n[[File:Barfoo.jpg|frameless|123]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Barfoo.jpg",
+				"text": "File:Barfoo.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58608,11 +58608,11 @@
 				"name": "link-ground link-text file-text"
 			},
 			{
-				"text": "]][[File:",
+				"text": "]][[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Barfoo.jpg",
+				"text": "File:Barfoo.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58642,11 +58642,11 @@
 		"wikitext": "[[File:Foobar.jpg|thumbnail=Barfoo.jpg|123]]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{
@@ -58680,11 +58680,11 @@
 		"wikitext": "[[File:Foobar.jpg|'''thumb''']]",
 		"tokens": [
 			{
-				"text": "[[File:",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "Foobar.jpg",
+				"text": "File:Foobar.jpg",
 				"name": "link-ground link-pagename pagename"
 			},
 			{

@@ -1,6 +1,6 @@
 ## 2.13.0
 
-*2024-05-12*
+*2024-05-18*
 
 **Added**
 
@@ -14,6 +14,7 @@
 - Template argument names are now correctly highlighted in the MediaWiki mode
 - `<` breaks the wikilink syntax in the MediaWiki mode
 - Table cell attributes are now correctly highlighted and [autocompleted](./README.md#autocompletion) in the MediaWiki mode
+- Page name of a file link now contains the namespace in the MediaWiki mode
 
 **Changed**
 
