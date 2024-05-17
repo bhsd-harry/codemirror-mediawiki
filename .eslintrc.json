@@ -933,6 +933,12 @@
 			"parserOptions": {
 				"project": "./mw/tsconfig.json"
 			}
+		},
+		{
+			"files": "test/*.ts",
+			"parserOptions": {
+				"project": "./test/tsconfig.json"
+			}
 		}
 	],
 	"settings": {

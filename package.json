@@ -15,7 +15,8 @@
 		"/i18n/",
 		"/dist/*.js",
 		"/dist/*.d.ts",
-		"!/dist/gh-page.d.ts",
+		"!/dist/*-page.d.ts",
+		"!/dist/parserTests.js",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
@@ -33,7 +34,7 @@
 		"build": "npm run build:core && npm run build:mw && npm run build:test",
 		"diff": "git diff --ignore-all-space --color-moved",
 		"diff:stat": "f() { git diff --stat --ignore-all-space --color=always $1 $2 -- . ':!dist/' ':!.github/'; }; f",
-		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && eslint --cache .",
+		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",

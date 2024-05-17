@@ -75,7 +75,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		const parserConfig: Config = await (await fetch(
 			`${CDN}/npm/wikiparser-node@1.7.0-beta.4/config/moegirl.json`,
 		)).json();
-		mw.config.set('wikilintConfig', parserConfig);
+		setObject('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig);
 	} else {
 		// 以下情形均需要发送API请求
@@ -147,10 +147,11 @@ export const getMwConfig = async (): Promise<MwConfig> => {
  * @param mwConfig
  */
 export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
-	if (mw.config.exists('wikilintConfig')) {
-		return mw.config.get('wikilintConfig') as Config;
+	let config: Config | null = getObject('wikilintConfig');
+	if (config) {
+		return config;
 	}
-	const config: Config = {
+	config = {
 		...minConfig,
 		ext: Object.keys(mwConfig.tags),
 		namespaces: mw.config.get('wgFormattedNamespaces'),
@@ -162,6 +163,9 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		protocol: mwConfig.urlProtocols.replace(/\|\\?\/\\?\//u, ''),
 		redirection: mwConfig.redirection || minConfig.redirection,
 	};
+	if (location.hostname.endsWith('.moegirl.org.cn')) {
+		config.html[2].push('img');
+	}
 	[config.parserFunction[0]] = mwConfig.functionSynonyms;
 	if (mw.loader.getState('ext.CodeMirror') === null) {
 		for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
