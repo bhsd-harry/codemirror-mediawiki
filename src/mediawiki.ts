@@ -821,11 +821,9 @@ export class MediaWiki {
 			} else if (redirect) {
 				stream.eatWhile(/[^|\]]/u);
 				return this.makeStyle(style, state);
-			}
-			if (stream.eatWhile(section ? /[^|<[\]{}]|<(?![!/a-z])/iu : /[^#|<>[\]{}]/u) || space) {
+			} else if (stream.eatWhile(section ? /[^|<[\]{}]|<(?![!/a-z])/iu : /[^#|<>[\]{}]/u) || space) {
 				return this.makeStyle(style, state);
-			}
-			if (stream.match(/^<[a-z]/iu, false)) {
+			} else if (stream.match(/^<[/a-z]/iu, false)) {
 				lt = stream.pos + 1;
 			}
 			return this.eatWikiText(section ? style : 'error')(stream, state);
@@ -840,7 +838,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			const tmpstyle = `${tokens.linkText} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
-				} ${file ? 'mw-file-text' : ''}`,
+				}${file ? ' mw-file-text' : ''}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (closing || !file && stream.match('[[', false)) {
