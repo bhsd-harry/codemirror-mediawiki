@@ -3881,7 +3881,11 @@
 				"name": "template-ground comment"
 			},
 			{
-				"text": " 1",
+				"text": " ",
+				"name": "template-ground"
+			},
+			{
+				"text": "1",
 				"name": "template-ground template-name pagename"
 			},
 			{
@@ -3897,11 +3901,7 @@
 				"name": "template-ground comment"
 			},
 			{
-				"text": "  ",
-				"name": "template-ground template-name pagename"
-			},
-			{
-				"text": "   ",
+				"text": "     ",
 				"name": "template-ground"
 			},
 			{
