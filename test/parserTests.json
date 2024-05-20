@@ -5003,28 +5003,20 @@
 				"name": "template-ground htmltag-name"
 			},
 			{
-				"text": "class=\"hi|ho\"",
+				"text": "class=\"hi",
 				"name": "template-ground htmltag-attribute html-div"
 			},
 			{
-				"text": ">",
-				"name": "template-ground htmltag-bracket"
+				"text": "|",
+				"name": "template-ground template-delimiter"
 			},
 			{
-				"text": "ha",
+				"text": "ho\">ha",
 				"name": "template-ground template"
 			},
 			{
-				"text": "</",
-				"name": "template-ground htmltag-bracket"
-			},
-			{
-				"text": "div",
-				"name": "template-ground htmltag-name"
-			},
-			{
-				"text": ">",
-				"name": "template-ground htmltag-bracket"
+				"text": "</div>",
+				"name": "template-ground error"
 			},
 			{
 				"text": "}}",

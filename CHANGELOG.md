@@ -1,3 +1,11 @@
+## 2.13.2
+
+*2024-05-21*
+
+**Fixed**
+
+- `|` and `=` in HTML tag attributes inside a template or parser function argument in the MediaWiki mode
+
 ## 2.13.1
 
 *2024-05-21*

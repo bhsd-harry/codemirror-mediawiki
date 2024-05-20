@@ -1055,8 +1055,7 @@ export class MediaWiki {
 
 	inHtmlTagAttribute(name: string): Tokenizer {
 		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
-			chars = '{/',
-			re = new RegExp(`^(?:[^<>&${chars}]|${lookahead(chars)})+`, 'u');
+			chars = '{/';
 		return (stream, state) => {
 			if (stream.peek() === '<') {
 				pop(state);
@@ -1070,7 +1069,17 @@ export class MediaWiki {
 				pop(state);
 				return this.makeLocalTagStyle('htmlTagBracket', state);
 			}
-			return stream.match(re) ? this.makeLocalStyle(style, state) : this.eatWikiText(style)(stream, state);
+			const t = state.stack[0]!,
+				isArgument = t.name === 'inTemplateArgument' && 'expectName' in t,
+				isNested = ['inTemplateArgument', 'inParserFunctionArgument'].includes(t.name),
+				pipe = `${isNested ? '|' : ''}${isArgument ? '=' : ''}`;
+			if (pipe.includes(stream.peek() || '')) {
+				pop(state);
+				return this.makeLocalTagStyle('htmlTagBracket', state);
+			}
+			return stream.match(new RegExp(`^(?:[^<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'))
+				? this.makeLocalStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
