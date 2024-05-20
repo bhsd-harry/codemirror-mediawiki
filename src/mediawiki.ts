@@ -175,11 +175,31 @@ const pop = (state: State): void => {
 const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]/u.test(stream.peek() || '');
 
 /**
+ * 获取负向先行断言
+ * @param chars
+ * @param comment 是否仅排除注释
+ */
+const lookahead = (chars: string, comment?: boolean): string => {
+	const table = {
+		"'": "'(?!')",
+		'{': '\\{(?!\\{)',
+		'<': comment ? '<(?!!--)' : '<(?![!/a-z])',
+		'~': '~~?(?!~)',
+		_: '_(?!_)',
+		'[': '\\[(?!\\[)',
+		']': '\\](?!\\])',
+	};
+	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
+};
+
+/**
  * 获取外部链接正则表达式
  * @param punctuations 标点符号
  */
-const getUrlRegex = (punctuations = ''): string =>
-	`[^&~{'\\p{Zs}[\\]<>"${punctuations}]|&(?![lg]t;)|~~?(?!~)|\\{(?!\\{)|'(?!')`;
+const getUrlRegex = (punctuations = ''): string => {
+	const chars = "~{'";
+	return `[^&${chars}\\p{Zs}[\\]<>"${punctuations}]|&(?![lg]t;)|${lookahead(chars)}`;
+};
 
 /**
  * 获取标点符号
@@ -517,7 +537,7 @@ export class MediaWiki {
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
-							chain(state, this.inSectionHeader(tmp[3]!.length));
+							chain(state, this.inSectionHeader(tmp[3]!));
 							return this.makeLocalStyle(
 								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
 								state,
@@ -736,7 +756,8 @@ export class MediaWiki {
 				pop(state);
 				return this.makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
-				return stream.match(/^(?:[^'[\]{&<]|\[(?!\[)|\{(?!\{)|'(?!')|<(?![!/a-z]))+/iu)
+				const chars = "[{'<";
+				return stream.match(new RegExp(`^(?:[^\\]&${chars}]|${lookahead(chars)})+`, 'iu'))
 					? this.makeTagStyle('extLinkText', state)
 					: this.eatWikiText('extLinkText')(stream, state);
 			} else if (stream.match(regex)) {
@@ -783,18 +804,20 @@ export class MediaWiki {
 			}
 			let regex;
 			if (redirect) {
-				regex = /^(?:[<>[{}]|\](?!\]))+/u;
+				regex = `^(?:[<>[{}]|${lookahead(']')})+`;
 			} else if (section) {
-				regex = /^(?:[[}]|\](?!\])|\{(?!\{))+/u;
+				regex = `^(?:[[}]|${lookahead(']{')})+`;
 			} else {
-				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?![!/a-z]))+/iu;
+				regex = `^(?:[>[}]|${lookahead(']{<')})+`;
 			}
-			if (stream.match(regex)) {
+			if (stream.match(new RegExp(regex, 'iu'))) {
 				return this.makeTagStyle('error', state);
 			} else if (redirect) {
 				stream.eatWhile(/[^|\]]/u);
 				return this.makeStyle(style, state);
-			} else if (stream.match(section ? /^(?:[^|<[\]{}]|<(?![!/a-z]))+/iu : /^[^#|<>[\]{}]+/u) || space) {
+			}
+			const re = section ? new RegExp(`^(?:[^|<[\\]{}]|${lookahead('<')})+`, 'iu') : /^[^#|<>[\]{}]+/u;
+			if (stream.match(re) || space) {
 				return this.makeStyle(style, state);
 			} else if (stream.match(/^<[/a-z]/iu, false)) {
 				lt = stream.pos + 1;
@@ -805,9 +828,8 @@ export class MediaWiki {
 
 	inLinkText(file: boolean): Tokenizer {
 		const linkState = {bold: false, italic: false},
-			regex = file
-				? /^(?:[^'\]{&<[~|]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|~~?(?!~))+/iu
-				: /^(?:[^'\]{&<[]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|\[(?!\[))+/iu;
+			chars = `]'{<${file ? '~' : '['}`,
+			regex = new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
 		return (stream, state) => {
 			const tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
@@ -892,7 +914,8 @@ export class MediaWiki {
 				state.tokenize = this.inTable;
 				return '';
 			}
-			return stream.match(/^(?:[^&{<]|\{(?!\{)|<(?![!/a-z]))+/iu)
+			const chars = '{<';
+			return stream.match(new RegExp(`^(?:[^&${chars}]|${lookahead(chars)})+`, 'iu'))
 				? this.makeLocalStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
@@ -944,7 +967,8 @@ export class MediaWiki {
 					return this.eatWikiText(style)(stream, state);
 				}
 			}
-			if (stream.eatWhile(firstLine ? /[^'{[<&~_|!]/u : /[^'{[<&~_:]/u)) {
+			const chars = "'<~_";
+			if (stream.match(new RegExp(`^(?:[^[&{${firstLine ? '|!' : ':'}${chars}]|${lookahead(chars)})+`, 'iu'))) {
 				return this.makeStyle(style, state);
 			} else if (firstLine) {
 				if (
@@ -964,28 +988,21 @@ export class MediaWiki {
 		};
 	}
 
-	inSectionHeader(count: number): Tokenizer {
+	inSectionHeader(str: string): Tokenizer {
 		return (stream, state) => {
-			if (stream.eatWhile(/[^&<[{~'_]/u)) {
+			const chars = "<{~'";
+			if (stream.match(new RegExp(`^(?:[^&[${chars}]|${lookahead(chars)})+`, 'iu'))) {
 				if (stream.eol()) {
-					stream.backUp(count);
-					state.tokenize = this.eatSectionHeader;
+					stream.backUp(str.length);
+					state.tokenize = this.inStr(str, 'sectionHeader');
 				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
 					// T171074: handle trailing comments
-					stream.backUp(count);
+					stream.backUp(str.length);
 					state.tokenize = this.inStr('<!--', false, 'sectionHeader');
 				}
 				return this.makeLocalTagStyle('section', state);
 			}
 			return this.eatWikiText('section')(stream, state);
-		};
-	}
-
-	get eatSectionHeader(): Tokenizer {
-		return (stream, state) => {
-			stream.skipToEnd();
-			pop(state);
-			return this.makeLocalTagStyle('sectionHeader', state);
 		};
 	}
 
@@ -1118,10 +1135,13 @@ export class MediaWiki {
 			} else if (!anchor && stream.eat('#')) {
 				state.tokenize = this.inTemplatePageName(true, true);
 				return this.makeLocalTagStyle('error', state);
-			} else if (stream.match(anchor ? /^(?:[^|{}<]|([{}])(?!\1)|<(?!!--))+/u : /^[^|{}<>[\]#]+/u)) {
+			}
+			const chars = '{}<',
+				regex = anchor ? new RegExp(`^(?:[^|${chars}]|${lookahead(chars, true)})+`, 'u') : /^[^|{}<>[\]#]+/u;
+			if (stream.match(regex)) {
 				state.tokenize = this.inTemplatePageName(true, anchor);
 				return this.makeLocalStyle(style, state);
-			} else if (stream.match(/^(?:[<>[\]}]|\{(?!\{))/u)) {
+			} else if (stream.match(new RegExp(`^(?:[<>[\\]}]|${lookahead('{')})`, 'u'))) {
 				return this.makeLocalTagStyle('error', state);
 			}
 			return space
@@ -1132,7 +1152,7 @@ export class MediaWiki {
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
 		const regex = new RegExp(
-			`^(?:[^=|}{[<]|\\[(?!\\[)|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
+			`^(?:[^=|}{[<]|${lookahead('[')}|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
 			'iu',
 		);
 		return (stream, state) => {
