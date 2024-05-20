@@ -96,6 +96,15 @@ const modeConfig = {
 		'link',
 	],
 
+	selfClosingTags: [
+		'onlyinclude',
+		'includeonly',
+		'noinclude',
+		'li',
+		'dt',
+		'dd',
+	],
+
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
 	 * Values are one of the default highlighting tags.

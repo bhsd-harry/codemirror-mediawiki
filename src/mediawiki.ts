@@ -23,7 +23,7 @@ import type {
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 
-const {htmlTags, voidHtmlTags, tokenTable, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
+const {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
 
 declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
 declare type Style = string | [string];
@@ -90,18 +90,19 @@ const enum TableCell {
  * 比较两个嵌套状态是否相同
  * @param a
  * @param b
+ * @param shallow 是否浅比较
  */
-const cmpNesting = (a: Partial<Nesting>, b: Nesting): boolean =>
+const cmpNesting = (a: Partial<Nesting>, b: Nesting, shallow?: boolean): boolean =>
 	a.nTemplate === b.nTemplate
 	&& a.nExt === b.nExt
 	&& a.nVar === b.nVar
 	&& a.nLink === b.nLink
 	&& a.nExtLink === b.nExtLink
 	&& a.extName === b.extName
-	&& (a.extName !== 'mediawiki' || cmpNesting(a.extState as Partial<Nesting>, b.extState as Nesting));
+	&& (shallow || a.extName !== 'mediawiki' || cmpNesting(a.extState as Partial<Nesting>, b.extState as Nesting));
 
 /**
- * 复制嵌套状态
+ * 浅复制嵌套状态
  * @param a
  * @param b
  */
@@ -112,10 +113,6 @@ const copyNesting = (a: Partial<Nesting>, b: Nesting): void => {
 	a.nLink = b.nLink;
 	a.nExtLink = b.nExtLink;
 	a.extName = b.extName;
-	if (a.extName === 'mediawiki') {
-		a.extState = {};
-		copyNesting(a.extState, b.extState as Nesting);
-	}
 };
 
 /**
@@ -188,6 +185,7 @@ const lookahead = (chars: string, comment?: boolean): string => {
 		_: '_(?!_)',
 		'[': '\\[(?!\\[)',
 		']': '\\](?!\\])',
+		'/': '/(?!>)',
 	};
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -692,7 +690,7 @@ export class MediaWiki {
 				/** @todo consider the balance of HTML tags, including apostrophes */
 				case ':': {
 					const {dt} = state;
-					if (dt.n && cmpNesting(dt, state)) {
+					if (dt.n && cmpNesting(dt, state, true)) {
 						dt.n--;
 						return this.makeLocalTagStyle('list', state);
 					}
@@ -968,9 +966,7 @@ export class MediaWiki {
 					return this.eatWikiText(style)(stream, state);
 				}
 			}
-			if (stream.match(re)) {
-				return this.makeStyle(style, state);
-			} else if (firstLine) {
+			if (firstLine) {
 				if (
 					stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}\s*/u)
 					|| type === TableCell.Th && stream.match(/^!!\s*/u)
@@ -984,7 +980,7 @@ export class MediaWiki {
 					return this.makeLocalTagStyle('tableDelimiter2', state);
 				}
 			}
-			return this.eatWikiText(style)(stream, state);
+			return stream.match(re) ? this.makeStyle(style, state) : this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -1029,30 +1025,32 @@ export class MediaWiki {
 	}
 
 	inHtmlTagAttribute(name: string): Tokenizer {
-		const style = `${tokens.htmlTagAttribute} mw-html-${name}`;
+		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
+			chars = '{/',
+			re = new RegExp(`^(?:[^<>&${chars}]|${lookahead(chars)})+`, 'u');
 		return (stream, state) => {
-			if (stream.match(/^(?:"[^<">]*"|'[^<'>]*'[^>/<{])+/u)) {
-				return this.makeLocalStyle(style, state);
-			} else if (stream.peek() === '<') {
+			if (stream.peek() === '<') {
 				pop(state);
 				return '';
-			} else if (stream.match(/^\/?>/u)) {
-				if (!this.implicitlyClosedHtmlTags.has(name)) {
+			}
+			const mt = stream.match(/^\/?>/u) as RegExpMatchArray | false;
+			if (mt) {
+				if (!this.implicitlyClosedHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.unshift(name);
 				}
 				pop(state);
 				return this.makeLocalTagStyle('htmlTagBracket', state);
 			}
-			return this.eatWikiText(style)(stream, state);
+			return stream.match(re) ? this.makeLocalStyle(style, state) : this.eatWikiText(style)(stream, state);
 		};
 	}
 
 	inExtTagAttribute(name: string): Tokenizer {
-		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
+		const style = `${tokens.extTagAttribute} mw-ext-${name}`,
+			char = '/',
+			re = new RegExp(`^(?:[^>${char}]|${lookahead(char)})+`, 'u');
 		return (stream, state) => {
-			if (stream.match(/^(?:"[^">]*"|'[^'>]*'|[^>/])+/u)) {
-				return this.makeLocalStyle(style, state);
-			} else if (stream.eat('>')) {
+			if (stream.eat('>')) {
 				state.extName = name;
 				const {config: {tagModes, tags}} = this;
 				if (name === 'nowiki' || name === 'pre') {
@@ -1076,67 +1074,51 @@ export class MediaWiki {
 				pop(state);
 				return this.makeLocalTagStyle('extTagBracket', state);
 			}
-			stream.next();
+			stream.match(re);
 			return this.makeLocalStyle(style, state);
 		};
 	}
 
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
-			const from = stream.pos,
-				m = new RegExp(`</${name}\\s*(?:>|$)`, 'iu').exec(from ? stream.string.slice(from) : stream.string);
-			let origString: string | false = false;
-			if (m) {
-				if (m.index === 0) {
-					state.tokenize = this.eatExtCloseTag(name);
-					state.extName = false;
-					if (state.extMode) {
-						state.extMode = false;
-						state.extState = false;
-					}
-					return '';
-				}
+			const {pos} = stream,
+				i = stream.string.slice(pos).search(new RegExp(`</${name}\\s*(?:>|$)`, 'iu'));
+			if (i === 0) {
+				stream.match('</');
+				state.tokenize = this.eatTagName(name, true);
+				state.extName = false;
+				state.extMode = false;
+				state.extState = false;
+				return this.makeLocalTagStyle('extTagBracket', state);
+			}
+			let origString = '';
+			if (i !== -1) {
 				origString = stream.string;
-				stream.string = origString.slice(0, m.index + from);
+				stream.string = origString.slice(0, pos + i);
 			}
 			chain(state, this.inExtTokens(origString));
 			return '';
 		};
 	}
 
-	eatExtCloseTag(name: string): Tokenizer {
-		return (stream, state) => {
-			stream.next(); // eat <
-			stream.next(); // eat /
-			state.tokenize = this.eatTagName(name, true);
-			return this.makeLocalTagStyle('extTagBracket', state);
-		};
-	}
-
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	inExtTokens(origString: string | false): Tokenizer {
+	inExtTokens(origString: string): Tokenizer {
 		return (stream, state) => {
 			let ret: string;
 			if (state.extMode === false) {
 				ret = `mw-tag-${state.extName} ${tokens.extTag}`;
 				stream.skipToEnd();
 			} else {
-				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as State)}`;
+				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as object)}`;
 			}
 			if (stream.eol()) {
-				if (origString !== false) {
+				if (origString) {
 					stream.string = origString;
 				}
 				pop(state);
 			}
 			return ret;
 		};
-	}
-
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	eatEntity(stream: StringStream, style: string): string {
-		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
-		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
 	}
 
 	get inVariable(): Tokenizer {
@@ -1299,6 +1281,12 @@ export class MediaWiki {
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	eatEntity(stream: StringStream, style: string): string {
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
+		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
+	}
+
 	get eatNowiki(): Tokenizer<string> {
 		return stream => {
 			if (stream.eatWhile(/[^&]/u)) {
@@ -1441,7 +1429,7 @@ export class MediaWiki {
 					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
-							if (cmpNesting(state, token.state)) {
+							if (cmpNesting(state, token.state, true)) {
 								const types = typeof token.style === 'string' && token.style.split(' '),
 									j = types && types.indexOf(tokens.template);
 								if (j !== false && j !== -1) {
@@ -1454,10 +1442,10 @@ export class MediaWiki {
 						}
 					} else if (typeof style === 'string' && style.includes(tokens.tableDelimiter2)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
-							const token = readyTokens[i]!,
-								{state: st, style: s} = token;
-							if (cmpNesting(state, st)) {
-								const local = typeof s === 'string',
+							const token = readyTokens[i]!;
+							if (cmpNesting(state, token.state, true)) {
+								const {style: s} = token,
+									local = typeof s === 'string',
 									type = !local && s[0].split(' ').find(t => t && !t.endsWith('-ground')),
 									isCaption = type === tokens.tableCaption,
 									isTh = type === tokens.strong;

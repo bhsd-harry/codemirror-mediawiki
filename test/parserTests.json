@@ -15215,7 +15215,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"{{1x|This is a long title}} with just one piece templated\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "This is a long title",
+				"name": "template-ground template"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": " with just one piece templated\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -15253,7 +15277,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"This is a long title with just {{1x|one piece}} templated\"",
+				"text": "title=\"This is a long title with just ",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "one piece",
+				"name": "template-ground template"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": " templated\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -15291,7 +15339,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"This is a long title with just one piece {{1x|templated}}\"",
+				"text": "title=\"This is a long title with just one piece ",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "templated",
+				"name": "template-ground template"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -20983,12 +21055,8 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "color=",
+				"text": "color=''",
 				"name": "htmltag-attribute html-font"
-			},
-			{
-				"text": "''",
-				"name": "apostrophes"
 			},
 			{
 				"text": ">",
@@ -20996,7 +21064,7 @@
 			},
 			{
 				"text": "foo",
-				"name": "em"
+				"name": ""
 			},
 			{
 				"text": "</",
@@ -21255,7 +21323,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"{{test}}\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "test",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -21285,7 +21369,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"{{dangerous attribute}}\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "dangerous attribute",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -21315,7 +21415,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"{{dangerous style attribute}}\"",
+				"text": "style=\"",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "dangerous style attribute",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -21987,7 +22103,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"&#100;&#97;&#116;&#97;&#58;&#116;&#101;&#120;&#116;&#47;&#104;&#116;&#109;&#108;&#44;&#60;&#105;&#109;&#103;&#32;&#115;&#114;&#99;&#61;&#49;&#32;&#111;&#110;&#101;&#114;&#114;&#111;&#114;&#61;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;&#62;\"style=\"-o-link:attr(title);-o-link-source:current\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&#100;&#97;&#116;&#97;&#58;&#116;&#101;&#120;&#116;&#47;&#104;&#116;&#109;&#108;&#44;&#60;&#105;&#109;&#103;&#32;&#115;&#114;&#99;&#61;&#49;&#32;&#111;&#110;&#101;&#114;&#114;&#111;&#114;&#61;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;&#62;",
+				"name": "entity"
+			},
+			{
+				"text": "\"style=\"-o-link:attr(title);-o-link-source:current\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22149,7 +22273,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image: u\\&#10;rl(test.jpg);\"",
+				"text": "style=\"background-image: u\\",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&#10;",
+				"name": "entity"
+			},
+			{
+				"text": "rl(test.jpg);\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22179,7 +22311,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image: u\\&#13;rl(test.jpg); \"",
+				"text": "style=\"background-image: u\\",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&#13;",
+				"name": "entity"
+			},
+			{
+				"text": "rl(test.jpg); \"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22275,7 +22415,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background: {{1x|#00FF00}}\"",
+				"text": "style=\"background: ",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "#00FF00",
+				"name": "template-ground template"
+			},
+			{
+				"text": "}}",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22313,15 +22477,7 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background:",
-				"name": "htmltag-attribute html-div"
-			},
-			{
-				"text": "#",
-				"name": "list"
-			},
-			{
-				"text": "00FF00\"",
+				"text": "style=\"background:#00FF00\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22359,7 +22515,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background: &#10;#00FF00\"",
+				"text": "style=\"background: ",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&#10;",
+				"name": "entity"
+			},
+			{
+				"text": "#00FF00\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -22741,7 +22905,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "itemprop=\"hello\" href=\"{{SERVER}}\"",
+				"text": "itemprop=\"hello\" href=\"",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "SERVER",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-link"
 			},
 			{
@@ -22761,7 +22941,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "rel=\"stylesheet\" href=\"{{SERVER}}\"",
+				"text": "rel=\"stylesheet\" href=\"",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "SERVER",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-link"
 			},
 			{
@@ -22781,7 +22977,23 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "rel=\"stylesheet\" itemprop=\"hello\" href=\"{{SERVER}}\"",
+				"text": "rel=\"stylesheet\" itemprop=\"hello\" href=\"",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "SERVER",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-link"
 			},
 			{
@@ -24245,12 +24457,8 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "CLASS=||",
+				"text": "CLASS=|| ",
 				"name": "htmltag-attribute html-li"
-			},
-			{
-				"text": " ",
-				"name": "skipformatting"
 			},
 			{
 				"text": ">",
@@ -28145,7 +28353,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50%&nbsp;!important\"",
+				"text": "style=\"width:50%",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&nbsp;",
+				"name": "entity"
+			},
+			{
+				"text": "!important\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -28173,7 +28389,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50%&#160;!important\"",
+				"text": "style=\"width:50%",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "&#160;",
+				"name": "entity"
+			},
+			{
+				"text": "!important\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -30009,7 +30233,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"&amp;amp;\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "&amp;",
+				"name": "entity"
+			},
+			{
+				"text": "amp;\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -30047,7 +30279,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"&amp;\"",
+				"text": "title=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "&amp;",
+				"name": "entity"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -31187,7 +31427,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"1&2&amp;3&amp;amp;4&amp;amp;amp;5\"",
+				"text": "class=\"1&2",
+				"name": "htmltag-attribute html-table"
+			},
+			{
+				"text": "&amp;",
+				"name": "entity"
+			},
+			{
+				"text": "3",
+				"name": "htmltag-attribute html-table"
+			},
+			{
+				"text": "&amp;",
+				"name": "entity"
+			},
+			{
+				"text": "amp;4",
+				"name": "htmltag-attribute html-table"
+			},
+			{
+				"text": "&amp;",
+				"name": "entity"
+			},
+			{
+				"text": "amp;amp;5\"",
 				"name": "htmltag-attribute html-table"
 			},
 			{
@@ -31429,7 +31693,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"{{anchorencode:💩}}\"",
+				"text": "id=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "anchorencode",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": ":",
+				"name": "ext-ground parserfunction-delimiter"
+			},
+			{
+				"text": "💩",
+				"name": "ext-ground parserfunction"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -31663,7 +31951,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"{{anchorencode:💩}}\"",
+				"text": "id=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "anchorencode",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": ":",
+				"name": "ext-ground parserfunction-delimiter"
+			},
+			{
+				"text": "💩",
+				"name": "ext-ground parserfunction"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -31897,7 +32209,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"{{anchorencode:💩}}\"",
+				"text": "id=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "anchorencode",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": ":",
+				"name": "ext-ground parserfunction-delimiter"
+			},
+			{
+				"text": "💩",
+				"name": "ext-ground parserfunction"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -32061,7 +32397,23 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with &#91;brackets&#93;\"",
+				"text": "title=\"title with ",
+				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "&#91;",
+				"name": "link-ground entity"
+			},
+			{
+				"text": "brackets",
+				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "&#93;",
+				"name": "link-ground entity"
+			},
+			{
+				"text": "\"",
 				"name": "link-ground htmltag-attribute html-span"
 			},
 			{
@@ -32167,7 +32519,23 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with &#91;&#91;double brackets&#93;&#93;\"",
+				"text": "title=\"title with ",
+				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "&#91;&#91;",
+				"name": "link-ground entity"
+			},
+			{
+				"text": "double brackets",
+				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "&#93;&#93;",
+				"name": "link-ground entity"
+			},
+			{
+				"text": "\"",
 				"name": "link-ground htmltag-attribute html-span"
 			},
 			{
@@ -32251,7 +32619,31 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"{{anchorencode:[foo]}}\"",
+				"text": "id=\"",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "anchorencode",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": ":",
+				"name": "ext-ground parserfunction-delimiter"
+			},
+			{
+				"text": "[foo]",
+				"name": "ext-ground parserfunction"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
 				"name": "htmltag-attribute html-span"
 			},
 			{
@@ -33196,11 +33588,7 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=",
-				"name": "htmltag-attribute html-b strong"
-			},
-			{
-				"text": "\"display: inline\"",
+				"text": "style=\"display: inline\"",
 				"name": "htmltag-attribute html-b"
 			},
 			{
