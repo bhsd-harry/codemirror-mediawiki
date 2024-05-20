@@ -1,3 +1,11 @@
+## 2.13.1
+
+*2024-05-20*
+
+**Fixed**
+
+- [Autocompletion](./README.md#autocompletion) for external links inside a file link in the MediaWiki mode
+
 ## 2.13.0
 
 *2024-05-18*

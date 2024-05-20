@@ -384,7 +384,6 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
-		this.addToken('file-text', true);
 	}
 
 	/**
@@ -810,9 +809,9 @@ export class MediaWiki {
 				? /^(?:[^'\]{&<[~|]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|~~?(?!~))+/iu
 				: /^(?:[^'\]{&<[]|'(?!')|\](?!\])|\{(?!\{)|<(?![!/a-z])|\[(?!\[))+/iu;
 		return (stream, state) => {
-			const tmpstyle = `${tokens.linkText} ${linkState.bold ? tokens.strong : ''} ${
+			const tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
-				}${file ? ' mw-file-text' : ''}`,
+				}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (closing || !file && stream.match('[[', false)) {
@@ -1707,7 +1706,11 @@ export class MediaWiki {
 						validFor,
 					};
 				}
-				if (types.has('mw-file-text') && prevSibling?.name.includes(tokens.linkDelimiter)) {
+				if (
+					hasTag(types, 'fileText')
+					&& prevSibling?.name.includes(tokens.linkDelimiter)
+					&& !search.includes('[')
+				) {
 					return {
 						from: prevSibling.to,
 						options: this.imgKeys,

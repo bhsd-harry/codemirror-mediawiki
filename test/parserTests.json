@@ -28522,7 +28522,7 @@
 			},
 			{
 				"text": "foo",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -40534,7 +40534,7 @@
 			},
 			{
 				"text": "25px",
-				"name": "tag-indicator link-ground link-text file-text"
+				"name": "tag-indicator link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -40586,7 +40586,7 @@
 			},
 			{
 				"text": "25px",
-				"name": "tag-indicator link-ground link-text file-text"
+				"name": "tag-indicator link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41373,7 +41373,7 @@
 			},
 			{
 				"text": "Caption text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41407,7 +41407,7 @@
 			},
 			{
 				"text": "Caption page stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41441,7 +41441,7 @@
 			},
 			{
 				"text": "Caption page=",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41475,7 +41475,7 @@
 			},
 			{
 				"text": "Caption page=stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41509,7 +41509,7 @@
 			},
 			{
 				"text": "one ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -41517,7 +41517,7 @@
 			},
 			{
 				"text": " two",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -41541,7 +41541,7 @@
 			},
 			{
 				"text": "one ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -41549,7 +41549,7 @@
 			},
 			{
 				"text": "two",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -41557,7 +41557,7 @@
 			},
 			{
 				"text": " ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -41565,7 +41565,7 @@
 			},
 			{
 				"text": " three",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41639,7 +41639,7 @@
 			},
 			{
 				"text": "Bad.jpg",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -41647,7 +41647,7 @@
 			},
 			{
 				"text": "Uh oh",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41715,7 +41715,7 @@
 			},
 			{
 				"text": "Caption ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -41731,7 +41731,7 @@
 			},
 			{
 				"text": "[[",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -41777,7 +41777,7 @@
 			},
 			{
 				"text": "stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41847,7 +41847,7 @@
 			},
 			{
 				"text": "Caption text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41905,7 +41905,7 @@
 			},
 			{
 				"text": "This is a caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -41979,7 +41979,7 @@
 			},
 			{
 				"text": "This is a caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42163,7 +42163,7 @@
 			},
 			{
 				"text": "Caption1 - ignored",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42183,7 +42183,7 @@
 			},
 			{
 				"text": " - ignored",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42191,7 +42191,7 @@
 			},
 			{
 				"text": "Caption3 - accepted",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42217,7 +42217,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42225,7 +42225,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42233,7 +42233,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42291,7 +42291,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -42323,7 +42323,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42349,7 +42349,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42365,7 +42365,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -42389,7 +42389,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42397,7 +42397,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -42421,7 +42421,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42429,7 +42429,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42455,7 +42455,7 @@
 			},
 			{
 				"text": "20pxpx",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -42471,7 +42471,7 @@
 			},
 			{
 				"text": "200x20pxpx",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42501,7 +42501,7 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42531,7 +42531,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42561,7 +42561,7 @@
 			},
 			{
 				"text": "//example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42591,7 +42591,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42621,7 +42621,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42651,7 +42651,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42681,7 +42681,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42689,7 +42689,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42745,7 +42745,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42753,7 +42753,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42783,7 +42783,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42791,7 +42791,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42829,7 +42829,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42837,7 +42837,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42867,7 +42867,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42875,7 +42875,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42905,7 +42905,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42917,7 +42917,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42925,7 +42925,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -42955,7 +42955,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42967,7 +42967,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -42975,7 +42975,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43005,7 +43005,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43021,7 +43021,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43051,7 +43051,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43063,7 +43063,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43075,7 +43075,7 @@
 			},
 			{
 				"text": "alttext",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43083,7 +43083,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43125,7 +43125,7 @@
 			},
 			{
 				"text": "This is a test image ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -43175,7 +43175,7 @@
 			},
 			{
 				"text": "This is a test image ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -43199,7 +43199,7 @@
 			},
 			{
 				"text": "Altitude",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43225,7 +43225,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "'''",
@@ -43233,7 +43233,7 @@
 			},
 			{
 				"text": "bold",
-				"name": "link-ground link-text strong file-text"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "'''",
@@ -43241,7 +43241,7 @@
 			},
 			{
 				"text": " in alt",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -43261,7 +43261,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "'''",
@@ -43269,7 +43269,7 @@
 			},
 			{
 				"text": "bold",
-				"name": "link-ground link-text strong file-text"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "'''",
@@ -43277,7 +43277,7 @@
 			},
 			{
 				"text": " in alt",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43311,7 +43311,7 @@
 			},
 			{
 				"text": "This is the image caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43323,7 +43323,7 @@
 			},
 			{
 				"text": "This is a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -43339,7 +43339,7 @@
 			},
 			{
 				"text": " and a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "{{",
@@ -43371,7 +43371,7 @@
 			},
 			{
 				"text": ".",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43405,7 +43405,7 @@
 			},
 			{
 				"text": "amp;",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43475,7 +43475,7 @@
 			},
 			{
 				"text": "http://testing.123?4=5",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -43483,7 +43483,7 @@
 			},
 			{
 				"text": "6",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43491,7 +43491,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -43511,7 +43511,7 @@
 			},
 			{
 				"text": "http://testing.123?4=5",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&vert;",
@@ -43519,7 +43519,7 @@
 			},
 			{
 				"text": "6",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43527,7 +43527,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43613,7 +43613,7 @@
 			},
 			{
 				"text": "x",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -43625,7 +43625,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43735,7 +43735,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43829,7 +43829,7 @@
 			},
 			{
 				"text": "Foo_&_bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -43907,7 +43907,7 @@
 			},
 			{
 				"text": "Foo",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -43915,7 +43915,7 @@
 			},
 			{
 				"text": "s bar",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -43923,7 +43923,7 @@
 			},
 			{
 				"text": "s",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -43931,7 +43931,7 @@
 			},
 			{
 				"text": "caption1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -43955,7 +43955,7 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -43967,7 +43967,7 @@
 			},
 			{
 				"text": "caption2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44061,7 +44061,7 @@
 			},
 			{
 				"text": "Foo",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -44093,7 +44093,7 @@
 			},
 			{
 				"text": "s",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44101,7 +44101,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44195,7 +44195,7 @@
 			},
 			{
 				"text": "https://example.com?foo&params=bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44269,7 +44269,7 @@
 			},
 			{
 				"text": "===Testing===123--------------",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44303,7 +44303,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44335,7 +44335,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44367,7 +44367,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44395,7 +44395,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44403,7 +44403,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44437,7 +44437,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44469,7 +44469,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44501,7 +44501,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44529,7 +44529,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44537,7 +44537,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44571,7 +44571,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44603,7 +44603,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44635,7 +44635,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44663,7 +44663,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44671,7 +44671,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44701,7 +44701,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44709,7 +44709,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44729,7 +44729,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44745,7 +44745,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44765,7 +44765,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44781,7 +44781,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44801,7 +44801,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -44817,7 +44817,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44843,7 +44843,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44867,7 +44867,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44893,7 +44893,7 @@
 			},
 			{
 				"text": "1000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -44917,7 +44917,7 @@
 			},
 			{
 				"text": "1000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44951,7 +44951,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -44985,7 +44985,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45009,7 +45009,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45043,7 +45043,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45077,7 +45077,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45101,7 +45101,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45151,7 +45151,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45175,7 +45175,7 @@
 			},
 			{
 				"text": "50x50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45199,7 +45199,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45229,7 +45229,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45249,7 +45249,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45257,7 +45257,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45277,7 +45277,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45285,7 +45285,7 @@
 			},
 			{
 				"text": "50x50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -45305,7 +45305,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45313,7 +45313,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45383,7 +45383,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45417,7 +45417,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45451,7 +45451,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45463,7 +45463,7 @@
 			},
 			{
 				"text": "Alteration",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45497,7 +45497,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45527,7 +45527,7 @@
 			},
 			{
 				"text": "de",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45543,7 +45543,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45577,7 +45577,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45589,7 +45589,7 @@
 			},
 			{
 				"text": "invalid:language:code",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45623,7 +45623,7 @@
 			},
 			{
 				"text": "ISBN 1235467890",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45657,7 +45657,7 @@
 			},
 			{
 				"text": "This is RFC 12354",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45691,7 +45691,7 @@
 			},
 			{
 				"text": "Please mailto:nobody@example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45717,7 +45717,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -45733,7 +45733,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45759,7 +45759,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -45775,7 +45775,7 @@
 			},
 			{
 				"text": "foo in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45801,7 +45801,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -45817,7 +45817,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45843,7 +45843,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -45867,7 +45867,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45893,7 +45893,7 @@
 			},
 			{
 				"text": "& < > \"",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -45919,7 +45919,7 @@
 			},
 			{
 				"text": "manualthumb=7%25 solution.gif",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -45931,7 +45931,7 @@
 			},
 			{
 				"text": "7%25 solution",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46003,7 +46003,7 @@
 			},
 			{
 				"text": "This is a broken caption. But ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -46027,7 +46027,7 @@
 			},
 			{
 				"text": " is just an ordinary link.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			}
 		]
 	},
@@ -46057,7 +46057,7 @@
 			},
 			{
 				"text": "This is a caption with another ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -46073,7 +46073,7 @@
 			},
 			{
 				"text": "image",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46081,7 +46081,7 @@
 			},
 			{
 				"text": " inside it!",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46107,7 +46107,7 @@
 			},
 			{
 				"text": "This*is some text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46141,7 +46141,7 @@
 			},
 			{
 				"text": "bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46175,7 +46175,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46183,7 +46183,7 @@
 			},
 			{
 				"text": "This is an example image thumbnail caption with a table{",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46191,7 +46191,7 @@
 			},
 			{
 				"text": "!Foo!!Bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46199,7 +46199,7 @@
 			},
 			{
 				"text": "-",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46207,7 +46207,7 @@
 			},
 			{
 				"text": "Foo1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "||",
@@ -46215,7 +46215,7 @@
 			},
 			{
 				"text": "Bar1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46223,7 +46223,7 @@
 			},
 			{
 				"text": "}and some more text.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46257,7 +46257,7 @@
 			},
 			{
 				"text": "200x200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46265,7 +46265,7 @@
 			},
 			{
 				"text": "This caption has ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -46289,7 +46289,7 @@
 			},
 			{
 				"text": " and ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -46313,7 +46313,7 @@
 			},
 			{
 				"text": " ext links in it.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46339,7 +46339,7 @@
 			},
 			{
 				"text": "a",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46351,7 +46351,7 @@
 			},
 			{
 				"text": "b",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46397,7 +46397,7 @@
 			},
 			{
 				"text": "extra",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46405,7 +46405,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46439,7 +46439,7 @@
 			},
 			{
 				"text": "float",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46455,7 +46455,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -46479,7 +46479,7 @@
 			},
 			{
 				"text": "righ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46487,7 +46487,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -46503,7 +46503,7 @@
 			},
 			{
 				"text": "bogus1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46519,7 +46519,7 @@
 			},
 			{
 				"text": "bogus2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46535,7 +46535,7 @@
 			},
 			{
 				"text": "bogus3",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46543,7 +46543,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46613,7 +46613,7 @@
 			},
 			{
 				"text": "Foo's ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -46621,7 +46621,7 @@
 			},
 			{
 				"text": "italic",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -46629,7 +46629,7 @@
 			},
 			{
 				"text": " bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46655,7 +46655,7 @@
 			},
 			{
 				"text": "<script></script>",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -46671,7 +46671,7 @@
 			},
 			{
 				"text": "100x100px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -46679,7 +46679,7 @@
 			},
 			{
 				"text": "<script></script>",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -46711,7 +46711,7 @@
 			},
 			{
 				"text": "a",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -46727,7 +46727,7 @@
 			},
 			{
 				"text": "b",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "</",
@@ -46743,7 +46743,7 @@
 			},
 			{
 				"text": "c",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -46847,7 +46847,7 @@
 			},
 			{
 				"text": " ",
-				"name": "template-link-ground link-text file-text"
+				"name": "template-link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -46989,7 +46989,7 @@
 			},
 			{
 				"text": " ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47207,7 +47207,7 @@
 			},
 			{
 				"text": "inneralt",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -47215,7 +47215,7 @@
 			},
 			{
 				"text": "20x20px",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -47223,7 +47223,7 @@
 			},
 			{
 				"text": "desc",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47761,7 +47761,7 @@
 			},
 			{
 				"text": "640x480px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47787,7 +47787,7 @@
 			},
 			{
 				"text": "640px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47813,7 +47813,7 @@
 			},
 			{
 				"text": "640px ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47839,7 +47839,7 @@
 			},
 			{
 				"text": "640px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47877,7 +47877,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -47957,7 +47957,7 @@
 			},
 			{
 				"text": "An ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -47981,7 +47981,7 @@
 			},
 			{
 				"text": " URL",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48015,7 +48015,7 @@
 			},
 			{
 				"text": "http://x",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -48023,7 +48023,7 @@
 			},
 			{
 				"text": "hello",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48057,7 +48057,7 @@
 			},
 			{
 				"text": "Title with & ampersand",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48111,7 +48111,7 @@
 			},
 			{
 				"text": "Test",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48169,7 +48169,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -48217,7 +48217,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48283,7 +48283,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -48353,7 +48353,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -48411,7 +48411,7 @@
 			},
 			{
 				"text": "bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48441,7 +48441,7 @@
 			},
 			{
 				"text": "<",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48479,7 +48479,7 @@
 			},
 			{
 				"text": "Test%22123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -48577,7 +48577,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -48601,7 +48601,7 @@
 			},
 			{
 				"text": "RFC 1234",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -48625,7 +48625,7 @@
 			},
 			{
 				"text": "PMID 1234",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -48649,7 +48649,7 @@
 			},
 			{
 				"text": "ISBN 123456789x",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48709,7 +48709,7 @@
 			},
 			{
 				"text": "Test ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -48729,7 +48729,7 @@
 			},
 			{
 				"text": " 123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48763,7 +48763,7 @@
 			},
 			{
 				"text": "{",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "||",
@@ -48771,7 +48771,7 @@
 			},
 			{
 				"text": "-  ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -48779,7 +48779,7 @@
 			},
 			{
 				"text": "hi",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -48787,7 +48787,7 @@
 			},
 			{
 				"text": "}",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48817,7 +48817,7 @@
 			},
 			{
 				"text": "An alternative text description.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -48825,7 +48825,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48855,7 +48855,7 @@
 			},
 			{
 				"text": "An alternative text description.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -48871,7 +48871,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48897,7 +48897,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -48931,7 +48931,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50195,7 +50195,7 @@
 			},
 			{
 				"text": "Caption text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50229,7 +50229,7 @@
 			},
 			{
 				"text": "Caption page stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50263,7 +50263,7 @@
 			},
 			{
 				"text": "Caption page=",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50297,7 +50297,7 @@
 			},
 			{
 				"text": "Caption page=stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50331,7 +50331,7 @@
 			},
 			{
 				"text": "one ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -50339,7 +50339,7 @@
 			},
 			{
 				"text": " two",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -50363,7 +50363,7 @@
 			},
 			{
 				"text": "one ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -50371,7 +50371,7 @@
 			},
 			{
 				"text": "two",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -50379,7 +50379,7 @@
 			},
 			{
 				"text": " ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -50387,7 +50387,7 @@
 			},
 			{
 				"text": " three",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50461,7 +50461,7 @@
 			},
 			{
 				"text": "Bad.jpg",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -50469,7 +50469,7 @@
 			},
 			{
 				"text": "Uh oh",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50537,7 +50537,7 @@
 			},
 			{
 				"text": "Caption ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -50553,7 +50553,7 @@
 			},
 			{
 				"text": "[[",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -50599,7 +50599,7 @@
 			},
 			{
 				"text": "stuff",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50703,7 +50703,7 @@
 			},
 			{
 				"text": "Caption text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50761,7 +50761,7 @@
 			},
 			{
 				"text": "This is a caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -50835,7 +50835,7 @@
 			},
 			{
 				"text": "This is a caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51019,7 +51019,7 @@
 			},
 			{
 				"text": "Caption1 - ignored",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51039,7 +51039,7 @@
 			},
 			{
 				"text": " - ignored",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51047,7 +51047,7 @@
 			},
 			{
 				"text": "Caption3 - accepted",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51073,7 +51073,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51081,7 +51081,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51089,7 +51089,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51147,7 +51147,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -51179,7 +51179,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51205,7 +51205,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51221,7 +51221,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -51245,7 +51245,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51253,7 +51253,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -51277,7 +51277,7 @@
 			},
 			{
 				"text": "Caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51285,7 +51285,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51311,7 +51311,7 @@
 			},
 			{
 				"text": "20pxpx",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -51327,7 +51327,7 @@
 			},
 			{
 				"text": "200x20pxpx",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51357,7 +51357,7 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51399,7 +51399,7 @@
 			},
 			{
 				"text": "Main Page#section",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51429,7 +51429,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51459,7 +51459,7 @@
 			},
 			{
 				"text": "//example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51489,7 +51489,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51527,7 +51527,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51557,7 +51557,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51587,7 +51587,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51617,7 +51617,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51625,7 +51625,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51681,7 +51681,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51689,7 +51689,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51719,7 +51719,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51727,7 +51727,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51765,7 +51765,7 @@
 			},
 			{
 				"text": "http://example.com/",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51773,7 +51773,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51803,7 +51803,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51811,7 +51811,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51841,7 +51841,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51853,7 +51853,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51861,7 +51861,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51891,7 +51891,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51903,7 +51903,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51911,7 +51911,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51941,7 +51941,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51957,7 +51957,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -51987,7 +51987,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -51999,7 +51999,7 @@
 			},
 			{
 				"text": "Main_Page",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52011,7 +52011,7 @@
 			},
 			{
 				"text": "alttext",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52019,7 +52019,7 @@
 			},
 			{
 				"text": "Title",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52061,7 +52061,7 @@
 			},
 			{
 				"text": "This is a test image ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -52111,7 +52111,7 @@
 			},
 			{
 				"text": "This is a test image ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -52135,7 +52135,7 @@
 			},
 			{
 				"text": "Altitude",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52161,7 +52161,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "'''",
@@ -52169,7 +52169,7 @@
 			},
 			{
 				"text": "bold",
-				"name": "link-ground link-text strong file-text"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "'''",
@@ -52177,7 +52177,7 @@
 			},
 			{
 				"text": " in alt",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -52197,7 +52197,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "'''",
@@ -52205,7 +52205,7 @@
 			},
 			{
 				"text": "bold",
-				"name": "link-ground link-text strong file-text"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "'''",
@@ -52213,7 +52213,7 @@
 			},
 			{
 				"text": " in alt",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52247,7 +52247,7 @@
 			},
 			{
 				"text": "This is the image caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52259,7 +52259,7 @@
 			},
 			{
 				"text": "This is a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -52275,7 +52275,7 @@
 			},
 			{
 				"text": " and a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "{{",
@@ -52307,7 +52307,7 @@
 			},
 			{
 				"text": ".",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52341,7 +52341,7 @@
 			},
 			{
 				"text": "amp;",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52411,7 +52411,7 @@
 			},
 			{
 				"text": "http://testing.123?4=5",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&#x7C;",
@@ -52419,7 +52419,7 @@
 			},
 			{
 				"text": "6",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52427,7 +52427,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -52447,7 +52447,7 @@
 			},
 			{
 				"text": "http://testing.123?4=5",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "&vert;",
@@ -52455,7 +52455,7 @@
 			},
 			{
 				"text": "6",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52463,7 +52463,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52549,7 +52549,7 @@
 			},
 			{
 				"text": "x",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -52561,7 +52561,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52671,7 +52671,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52765,7 +52765,7 @@
 			},
 			{
 				"text": "Foo_&_bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52843,7 +52843,7 @@
 			},
 			{
 				"text": "Foo",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -52851,7 +52851,7 @@
 			},
 			{
 				"text": "s bar",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -52859,7 +52859,7 @@
 			},
 			{
 				"text": "s",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -52867,7 +52867,7 @@
 			},
 			{
 				"text": "caption1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -52891,7 +52891,7 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -52903,7 +52903,7 @@
 			},
 			{
 				"text": "caption2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -52997,7 +52997,7 @@
 			},
 			{
 				"text": "Foo",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -53029,7 +53029,7 @@
 			},
 			{
 				"text": "s",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53037,7 +53037,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53131,7 +53131,7 @@
 			},
 			{
 				"text": "https://example.com?foo&params=bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53205,7 +53205,7 @@
 			},
 			{
 				"text": "===Testing===123--------------",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53239,7 +53239,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53271,7 +53271,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53303,7 +53303,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53331,7 +53331,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53339,7 +53339,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53373,7 +53373,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53405,7 +53405,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53437,7 +53437,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53465,7 +53465,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53473,7 +53473,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53507,7 +53507,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53539,7 +53539,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53571,7 +53571,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53599,7 +53599,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53607,7 +53607,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53637,7 +53637,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53645,7 +53645,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53665,7 +53665,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53681,7 +53681,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53701,7 +53701,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53717,7 +53717,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53737,7 +53737,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -53753,7 +53753,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53779,7 +53779,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53803,7 +53803,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53829,7 +53829,7 @@
 			},
 			{
 				"text": "1000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53853,7 +53853,7 @@
 			},
 			{
 				"text": "1000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53887,7 +53887,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53921,7 +53921,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -53945,7 +53945,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -53979,7 +53979,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54013,7 +54013,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54037,7 +54037,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54087,7 +54087,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54111,7 +54111,7 @@
 			},
 			{
 				"text": "50x50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54135,7 +54135,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54191,7 +54191,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54211,7 +54211,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54219,7 +54219,7 @@
 			},
 			{
 				"text": "50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54239,7 +54239,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54247,7 +54247,7 @@
 			},
 			{
 				"text": "50x50px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -54267,7 +54267,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54275,7 +54275,7 @@
 			},
 			{
 				"text": "2000px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54345,7 +54345,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54379,7 +54379,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54413,7 +54413,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54425,7 +54425,7 @@
 			},
 			{
 				"text": "Alteration",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54459,7 +54459,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54489,7 +54489,7 @@
 			},
 			{
 				"text": "de",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54505,7 +54505,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54567,7 +54567,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54579,7 +54579,7 @@
 			},
 			{
 				"text": "invalid:language:code",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54613,7 +54613,7 @@
 			},
 			{
 				"text": "ISBN 1235467890",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54647,7 +54647,7 @@
 			},
 			{
 				"text": "This is RFC 12354",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54681,7 +54681,7 @@
 			},
 			{
 				"text": "Please mailto:nobody@example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54707,7 +54707,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -54723,7 +54723,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54749,7 +54749,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -54765,7 +54765,7 @@
 			},
 			{
 				"text": "foo in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54791,7 +54791,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -54807,7 +54807,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54833,7 +54833,7 @@
 			},
 			{
 				"text": "text with a ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -54857,7 +54857,7 @@
 			},
 			{
 				"text": " in it",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54883,7 +54883,7 @@
 			},
 			{
 				"text": "& < > \"",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -54909,7 +54909,7 @@
 			},
 			{
 				"text": "manualthumb=7%25 solution.gif",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54921,7 +54921,7 @@
 			},
 			{
 				"text": "7%25 solution",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -54993,7 +54993,7 @@
 			},
 			{
 				"text": "This is a broken caption. But ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -55017,7 +55017,7 @@
 			},
 			{
 				"text": " is just an ordinary link.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			}
 		]
 	},
@@ -55047,7 +55047,7 @@
 			},
 			{
 				"text": "This is a caption with another ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -55063,7 +55063,7 @@
 			},
 			{
 				"text": "image",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55071,7 +55071,7 @@
 			},
 			{
 				"text": " inside it!",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55097,7 +55097,7 @@
 			},
 			{
 				"text": "This*is some text",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55131,7 +55131,7 @@
 			},
 			{
 				"text": "bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55165,7 +55165,7 @@
 			},
 			{
 				"text": "200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55173,7 +55173,7 @@
 			},
 			{
 				"text": "This is an example image thumbnail caption with a table{",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55181,7 +55181,7 @@
 			},
 			{
 				"text": "!Foo!!Bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55189,7 +55189,7 @@
 			},
 			{
 				"text": "-",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55197,7 +55197,7 @@
 			},
 			{
 				"text": "Foo1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "||",
@@ -55205,7 +55205,7 @@
 			},
 			{
 				"text": "Bar1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55213,7 +55213,7 @@
 			},
 			{
 				"text": "}and some more text.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55247,7 +55247,7 @@
 			},
 			{
 				"text": "200x200px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55255,7 +55255,7 @@
 			},
 			{
 				"text": "This caption has ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -55279,7 +55279,7 @@
 			},
 			{
 				"text": " and ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -55303,7 +55303,7 @@
 			},
 			{
 				"text": " ext links in it.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55329,7 +55329,7 @@
 			},
 			{
 				"text": "a",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55341,7 +55341,7 @@
 			},
 			{
 				"text": "b",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55387,7 +55387,7 @@
 			},
 			{
 				"text": "extra",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55395,7 +55395,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55429,7 +55429,7 @@
 			},
 			{
 				"text": "float",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55445,7 +55445,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -55469,7 +55469,7 @@
 			},
 			{
 				"text": "righ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55477,7 +55477,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -55493,7 +55493,7 @@
 			},
 			{
 				"text": "bogus1",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55509,7 +55509,7 @@
 			},
 			{
 				"text": "bogus2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55525,7 +55525,7 @@
 			},
 			{
 				"text": "bogus3",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55533,7 +55533,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55585,7 +55585,7 @@
 			},
 			{
 				"text": "de",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55593,7 +55593,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55649,7 +55649,7 @@
 			},
 			{
 				"text": "Foo's ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "''",
@@ -55657,7 +55657,7 @@
 			},
 			{
 				"text": "italic",
-				"name": "link-ground link-text em file-text"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "''",
@@ -55665,7 +55665,7 @@
 			},
 			{
 				"text": " bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55691,7 +55691,7 @@
 			},
 			{
 				"text": "<script></script>",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -55707,7 +55707,7 @@
 			},
 			{
 				"text": "100x100px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -55715,7 +55715,7 @@
 			},
 			{
 				"text": "<script></script>",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -55747,7 +55747,7 @@
 			},
 			{
 				"text": "a",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -55763,7 +55763,7 @@
 			},
 			{
 				"text": "b",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "</",
@@ -55779,7 +55779,7 @@
 			},
 			{
 				"text": "c",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -55883,7 +55883,7 @@
 			},
 			{
 				"text": " ",
-				"name": "template-link-ground link-text file-text"
+				"name": "template-link-ground file-text"
 			},
 			{
 				"text": "[[",
@@ -56025,7 +56025,7 @@
 			},
 			{
 				"text": " ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56305,7 +56305,7 @@
 			},
 			{
 				"text": "inneralt",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -56313,7 +56313,7 @@
 			},
 			{
 				"text": "20x20px",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -56321,7 +56321,7 @@
 			},
 			{
 				"text": "desc",
-				"name": "tag-gallery link-ground link-text file-text"
+				"name": "tag-gallery link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56859,7 +56859,7 @@
 			},
 			{
 				"text": "640x480px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56885,7 +56885,7 @@
 			},
 			{
 				"text": "640px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56911,7 +56911,7 @@
 			},
 			{
 				"text": "640px ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56937,7 +56937,7 @@
 			},
 			{
 				"text": "640px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -56975,7 +56975,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57005,7 +57005,7 @@
 			},
 			{
 				"text": "https://google.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57017,7 +57017,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57037,7 +57037,7 @@
 			},
 			{
 				"text": "https://google.com?page=4",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57049,7 +57049,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57079,7 +57079,7 @@
 			},
 			{
 				"text": "Thumb.png",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57091,7 +57091,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57171,7 +57171,7 @@
 			},
 			{
 				"text": "An ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "[",
@@ -57195,7 +57195,7 @@
 			},
 			{
 				"text": " URL",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57229,7 +57229,7 @@
 			},
 			{
 				"text": "http://x",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57237,7 +57237,7 @@
 			},
 			{
 				"text": "hello",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57271,7 +57271,7 @@
 			},
 			{
 				"text": "Title with & ampersand",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57325,7 +57325,7 @@
 			},
 			{
 				"text": "Test",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57383,7 +57383,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -57431,7 +57431,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57497,7 +57497,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -57567,7 +57567,7 @@
 			},
 			{
 				"text": "300px",
-				"name": "link-ground link-text file-text strong"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "]]",
@@ -57625,7 +57625,7 @@
 			},
 			{
 				"text": "bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57655,7 +57655,7 @@
 			},
 			{
 				"text": "<",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57675,7 +57675,7 @@
 			},
 			{
 				"text": "<",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57713,7 +57713,7 @@
 			},
 			{
 				"text": "<",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -57725,7 +57725,7 @@
 			},
 			{
 				"text": "2",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -57763,7 +57763,7 @@
 			},
 			{
 				"text": "Test%22123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57865,7 +57865,7 @@
 			},
 			{
 				"text": "Test%2522",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57923,7 +57923,7 @@
 			},
 			{
 				"text": "http://example.com",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57947,7 +57947,7 @@
 			},
 			{
 				"text": "RFC 1234",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57971,7 +57971,7 @@
 			},
 			{
 				"text": "PMID 1234",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -57995,7 +57995,7 @@
 			},
 			{
 				"text": "ISBN 123456789x",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58055,7 +58055,7 @@
 			},
 			{
 				"text": "Test ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "<",
@@ -58075,7 +58075,7 @@
 			},
 			{
 				"text": " 123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58109,7 +58109,7 @@
 			},
 			{
 				"text": "{",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "||",
@@ -58117,7 +58117,7 @@
 			},
 			{
 				"text": "-  ",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58125,7 +58125,7 @@
 			},
 			{
 				"text": "hi",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58133,7 +58133,7 @@
 			},
 			{
 				"text": "}",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58303,7 +58303,7 @@
 			},
 			{
 				"text": "123",
-				"name": "link-ground link-text file-text em"
+				"name": "link-ground file-text em"
 			},
 			{
 				"text": "]]",
@@ -58373,7 +58373,7 @@
 			},
 			{
 				"text": "{",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "||",
@@ -58381,7 +58381,7 @@
 			},
 			{
 				"text": "bar",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58389,7 +58389,7 @@
 			},
 			{
 				"text": "}",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58423,7 +58423,7 @@
 			},
 			{
 				"text": "An alternative text description.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58431,7 +58431,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58461,7 +58461,7 @@
 			},
 			{
 				"text": "An alternative text description.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58477,7 +58477,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58503,7 +58503,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58537,7 +58537,7 @@
 			},
 			{
 				"text": "A caption for the media.",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58605,7 +58605,7 @@
 			},
 			{
 				"text": "123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]][[",
@@ -58629,7 +58629,7 @@
 			},
 			{
 				"text": "123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58659,7 +58659,7 @@
 			},
 			{
 				"text": "Barfoo.jpg",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "|",
@@ -58667,7 +58667,7 @@
 			},
 			{
 				"text": "123",
-				"name": "link-ground link-text file-text"
+				"name": "link-ground file-text"
 			},
 			{
 				"text": "]]",
@@ -58697,7 +58697,7 @@
 			},
 			{
 				"text": "thumb",
-				"name": "link-ground link-text strong file-text"
+				"name": "link-ground file-text strong"
 			},
 			{
 				"text": "'''",

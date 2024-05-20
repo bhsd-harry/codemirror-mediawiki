@@ -119,6 +119,7 @@ const modeConfig = {
 		extTagAttribute: 'mw-exttag-attribute',
 		extTagBracket: 'mw-exttag-bracket',
 		extTagName: 'mw-exttag-name',
+		fileText: 'mw-file-text',
 		freeExtLink: 'mw-free-extlink',
 		freeExtLinkProtocol: 'mw-free-extlink-protocol',
 		hr: 'mw-hr',
