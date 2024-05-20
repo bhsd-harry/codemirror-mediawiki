@@ -1,11 +1,7 @@
 /* eslint-disable es-x/no-string-prototype-matchall */
 import * as fs from 'fs';
 import * as path from 'path';
-import {StreamLanguage} from '@codemirror/language';
-import {MediaWiki} from '../src/mediawiki';
-import {getStaticMwConfig} from '../src/static';
-import * as config from 'wikiparser-node/config/default.json';
-import type {Config} from 'wikiparser-node';
+import parser from './parser.min.js';
 
 declare interface Token {
 	text: string;
@@ -14,8 +10,7 @@ declare interface Token {
 
 const tests: {desc: string, wikitext?: string, tokens?: Token[]}[] = [],
 	cwd = '../wikiparser-node/test/core',
-	files = new Set(fs.readdirSync(`${cwd}/`)),
-	{parser} = StreamLanguage.define(new MediaWiki(getStaticMwConfig(config as unknown as Config)).mediawiki);
+	files = new Set(fs.readdirSync(`${cwd}/`));
 files.delete('parserTests.txt');
 for (const file of ['parserTests.txt', ...files]) {
 	tests.push({desc: file.slice(0, -4)});

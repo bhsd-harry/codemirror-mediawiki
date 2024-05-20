@@ -4,6 +4,7 @@
 		"*.ts"
 	],
 	"compilerOptions": {
-		"resolveJsonModule": true
+		"declaration": false,
+		"outDir": "dist"
 	}
 }
