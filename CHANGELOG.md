@@ -7,6 +7,7 @@
 - [Autocompletion](./README.md#autocompletion) for external links inside a file link in the MediaWiki mode
 - Some invalid section header syntax in the MediaWiki mode
 - Allow templates in HTML tag attributes in the MediaWiki mode
+- `|` delimiter in a external link inside a template or parser function argument or table cell in the MediaWiki mode
 
 ## 2.13.0
 

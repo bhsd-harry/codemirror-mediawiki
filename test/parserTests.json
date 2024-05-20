@@ -6547,51 +6547,15 @@
 				"name": "template-link-ground extlink"
 			},
 			{
-				"text": " |123",
+				"text": " ",
 				"name": "template-link-ground extlink-text"
-			},
-			{
-				"text": "]",
-				"name": "template-link-ground extlink-bracket"
-			},
-			{
-				"text": "}}{{",
-				"name": "template-ground template-bracket"
-			},
-			{
-				"text": "1x",
-				"name": "template-ground template-name pagename"
 			},
 			{
 				"text": "|",
 				"name": "template-ground template-delimiter"
 			},
 			{
-				"text": "[",
-				"name": "template-ground template"
-			},
-			{
-				"text": "[",
-				"name": "template-link-ground extlink-bracket"
-			},
-			{
-				"text": "http://",
-				"name": "template-link-ground extlink-protocol"
-			},
-			{
-				"text": "www.example.com",
-				"name": "template-link-ground extlink"
-			},
-			{
-				"text": " |123",
-				"name": "template-link-ground extlink-text"
-			},
-			{
-				"text": "]",
-				"name": "template-link-ground extlink-bracket"
-			},
-			{
-				"text": "]",
+				"text": "123]",
 				"name": "template-ground template"
 			},
 			{
@@ -6623,12 +6587,56 @@
 				"name": "template-link-ground extlink"
 			},
 			{
-				"text": " |123",
+				"text": " ",
 				"name": "template-link-ground extlink-text"
 			},
 			{
-				"text": "]",
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "123]]",
+				"name": "template-ground template"
+			},
+			{
+				"text": "}}{{",
+				"name": "template-ground template-bracket"
+			},
+			{
+				"text": "1x",
+				"name": "template-ground template-name pagename"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "[",
+				"name": "template-ground template"
+			},
+			{
+				"text": "[",
 				"name": "template-link-ground extlink-bracket"
+			},
+			{
+				"text": "http://",
+				"name": "template-link-ground extlink-protocol"
+			},
+			{
+				"text": "www.example.com",
+				"name": "template-link-ground extlink"
+			},
+			{
+				"text": " ",
+				"name": "template-link-ground extlink-text"
+			},
+			{
+				"text": "|",
+				"name": "template-ground template-delimiter"
+			},
+			{
+				"text": "123]",
+				"name": "template-ground template"
 			},
 			{
 				"text": "}}{{",
@@ -6655,15 +6663,15 @@
 				"name": "template-link-ground extlink"
 			},
 			{
-				"text": " |123",
+				"text": " ",
 				"name": "template-link-ground extlink-text"
 			},
 			{
-				"text": "]",
-				"name": "template-link-ground extlink-bracket"
+				"text": "|",
+				"name": "template-ground template-delimiter"
 			},
 			{
-				"text": "]",
+				"text": "123]]",
 				"name": "template-ground template"
 			},
 			{
@@ -64922,15 +64930,15 @@
 				"name": "link-ground extlink-protocol"
 			},
 			{
-				"text": "|x||",
-				"name": "link-ground extlink"
+				"text": "|x",
+				"name": ""
 			},
 			{
-				"text": "]",
-				"name": "link-ground extlink-bracket"
+				"text": "||",
+				"name": "table-delimiter"
 			},
 			{
-				"text": "\" onmouseover=\"alert(document.cookie)\">test",
+				"text": "]\" onmouseover=\"alert(document.cookie)\">test",
 				"name": ""
 			}
 		]
