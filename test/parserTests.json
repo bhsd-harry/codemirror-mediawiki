@@ -30445,7 +30445,7 @@
 		"wikitext": " {|\n |-\n |\n |foo\n |}",
 		"tokens": [
 			{
-				"text": " {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{
@@ -30467,7 +30467,7 @@
 		"wikitext": " {|\n |foo\n \n \n |}",
 		"tokens": [
 			{
-				"text": " {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{
@@ -30521,7 +30521,7 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": " {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{
@@ -38986,7 +38986,7 @@
 		"wikitext": " {|\n |-\n !h1!!h2\n |foo||bar\n |}",
 		"tokens": [
 			{
-				"text": " {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{
@@ -39032,7 +39032,7 @@
 		"wikitext": "  {|\n |-\n|foo\n|}",
 		"tokens": [
 			{
-				"text": "  {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{
@@ -39096,7 +39096,7 @@
 				"name": ""
 			},
 			{
-				"text": " {|",
+				"text": "{|",
 				"name": "table-bracket"
 			},
 			{

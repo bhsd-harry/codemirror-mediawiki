@@ -530,17 +530,12 @@ export class MediaWiki {
 						// Leading spaces is valid syntax for tables, bug T108454
 						const mt = stream.match(/^\s*(:+\s*)?(?=\{\||\{{3}\s*!\s*\}\})/u) as RegExpMatchArray | false;
 						if (mt) {
-							if (mt[1]) { // ::{|
-								chain(state, this.eatStartTable);
-								return this.makeLocalTagStyle('list', state);
-							}
-							stream.eat('{');
-						} else {
-							/** @todo indent-pre is sometimes suppressed */
-							return tokens.skipFormatting;
+							chain(state, this.eatStartTable);
+							return this.makeLocalStyle(mt[1] ? tokens.list : '', state);
 						}
+						/** @todo indent-pre is sometimes suppressed */
+						return tokens.skipFormatting;
 					}
-					// fall through
 					case '{':
 						if (stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 							chain(state, this.inTableDefinition());
@@ -633,40 +628,19 @@ export class MediaWiki {
 						return this.makeLocalTagStyle('templateBracket', state);
 					}
 					break;
-				// Maybe double underscored Magic Word such as __TOC__
 				case '_': {
-					let tmp = 1;
-					// Optimize processing of many underscore symbols
-					while (stream.eat('_')) {
-						tmp++;
-					}
-					// Many underscore symbols
-					if (tmp > 2) {
-						if (!stream.eol()) {
-							// Leave last two underscore symbols for processing in next iteration
-							stream.backUp(2);
-						}
-						// Optimization: skip regex function for EOL and backup-ed symbols
-						return this.makeStyle(style, state);
-					// Check on double underscore Magic Word
-					} else if (tmp === 2) {
-						// The same as the end of function except '_' inside and '__' at the end.
-						const name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
-						if (name) {
-							const {config: {doubleUnderscore}} = this;
-							if (
-								`__${name[0].toLowerCase()}` in doubleUnderscore[0]
-								|| `__${name[0]}` in doubleUnderscore[1]
-							) {
-								return tokens.doubleUnderscore;
-							} else if (!stream.eol()) {
-								// Two underscore symbols at the end can be the
-								// beginning of another double underscored Magic Word
+					const {pos} = stream;
+					stream.eatWhile('_');
+					switch (stream.pos - pos) {
+						case 0:
+							break;
+						case 1:
+							return this.eatDoubleUnderscore(style)(stream, state);
+						default:
+							if (!stream.eol()) {
 								stream.backUp(2);
 							}
-							// Optimization: skip regex for EOL and backup-ed symbols
 							return this.makeStyle(style, state);
-						}
 					}
 					break;
 				}
@@ -821,7 +795,7 @@ export class MediaWiki {
 			} else if (redirect) {
 				stream.eatWhile(/[^|\]]/u);
 				return this.makeStyle(style, state);
-			} else if (stream.eatWhile(section ? /[^|<[\]{}]|<(?![!/a-z])/iu : /[^#|<>[\]{}]/u) || space) {
+			} else if (stream.match(section ? /^(?:[^|<[\]{}]|<(?![!/a-z]))+/iu : /^[^#|<>[\]{}]+/u) || space) {
 				return this.makeStyle(style, state);
 			} else if (stream.match(/^<[/a-z]/iu, false)) {
 				lt = stream.pos + 1;
@@ -877,31 +851,6 @@ export class MediaWiki {
 		}
 	}
 
-	inSectionHeader(count: number): Tokenizer {
-		return (stream, state) => {
-			if (stream.eatWhile(/[^&<[{~'_]/u)) {
-				if (stream.eol()) {
-					stream.backUp(count);
-					state.tokenize = this.eatSectionHeader;
-				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
-					// T171074: handle trailing comments
-					stream.backUp(count);
-					state.tokenize = this.inStr('<!--', false, 'sectionHeader');
-				}
-				return this.makeLocalTagStyle('section', state);
-			}
-			return this.eatWikiText('section')(stream, state);
-		};
-	}
-
-	get eatSectionHeader(): Tokenizer {
-		return (stream, state) => {
-			stream.skipToEnd();
-			pop(state);
-			return this.makeLocalTagStyle('sectionHeader', state);
-		};
-	}
-
 	eatList(stream: StringStream, state: State): string {
 		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray,
 			{dt} = state;
@@ -910,6 +859,23 @@ export class MediaWiki {
 			copyNesting(dt, state);
 		}
 		return this.makeLocalTagStyle('list', state);
+	}
+
+	eatDoubleUnderscore(style: string): Tokenizer {
+		const {config: {doubleUnderscore}} = this;
+		return (stream, state) => {
+			const name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
+			if (name) {
+				if (`__${name[0].toLowerCase()}` in doubleUnderscore[0] || `__${name[0]}` in doubleUnderscore[1]) {
+					return tokens.doubleUnderscore;
+				} else if (!stream.eol()) {
+					// Two underscore symbols at the end can be the
+					// beginning of another double underscored Magic Word
+					stream.backUp(2);
+				}
+			}
+			return this.makeStyle(style, state);
+		};
 	}
 
 	get eatStartTable(): Tokenizer {
@@ -927,7 +893,7 @@ export class MediaWiki {
 				state.tokenize = this.inTable;
 				return '';
 			}
-			return stream.eatWhile(/[^&{<]/u)
+			return stream.match(/^(?:[^&{<]|\{(?!\{)|<(?![!/a-z]))+/iu)
 				? this.makeLocalStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
@@ -996,6 +962,31 @@ export class MediaWiki {
 				}
 			}
 			return this.eatWikiText(style)(stream, state);
+		};
+	}
+
+	inSectionHeader(count: number): Tokenizer {
+		return (stream, state) => {
+			if (stream.eatWhile(/[^&<[{~'_]/u)) {
+				if (stream.eol()) {
+					stream.backUp(count);
+					state.tokenize = this.eatSectionHeader;
+				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
+					// T171074: handle trailing comments
+					stream.backUp(count);
+					state.tokenize = this.inStr('<!--', false, 'sectionHeader');
+				}
+				return this.makeLocalTagStyle('section', state);
+			}
+			return this.eatWikiText('section')(stream, state);
+		};
+	}
+
+	get eatSectionHeader(): Tokenizer {
+		return (stream, state) => {
+			stream.skipToEnd();
+			pop(state);
+			return this.makeLocalTagStyle('sectionHeader', state);
 		};
 	}
 
