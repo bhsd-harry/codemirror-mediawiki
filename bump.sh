@@ -11,7 +11,7 @@ then
 	git commit -m "chore: publish $1 to npm"
 	npm publish --tag ${3-latest}
 else 
-	npm run lint && npm run build:gh-page
+	npm run lint && npm run build:gh-page && npm run test:real
 	if [[ $? -eq 0 ]]
 	then
 		git add -A
