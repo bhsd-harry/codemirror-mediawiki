@@ -5,6 +5,7 @@
 **Fixed**
 
 - `|` and `=` in HTML tag attributes inside a template or parser function argument in the MediaWiki mode
+- `|` inside a variable default value in the MediaWiki mode
 
 ## 2.13.1
 

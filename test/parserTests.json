@@ -24359,8 +24359,16 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "CLASS=| ",
+				"text": "CLASS=",
 				"name": "htmltag-attribute html-u"
+			},
+			{
+				"text": "|",
+				"name": "templatevariable-delimiter"
+			},
+			{
+				"text": " ",
+				"name": "comment"
 			},
 			{
 				"text": "{{",
@@ -24403,28 +24411,8 @@
 				"name": "template-ground template-bracket"
 			},
 			{
-				"text": " ",
-				"name": "htmltag-attribute html-u"
-			},
-			{
-				"text": "><",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "br ",
-				"name": "htmltag-name"
-			},
-			{
-				"text": "style=\"onmouseover='alert(document.cookie);' \" ",
-				"name": "htmltag-attribute html-br"
-			},
-			{
-				"text": "/>",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "MOVE YOUR MOUSE CURSOR OVER THIS TEXT",
-				"name": "templatevariable"
+				"text": " ><br style=\"onmouseover='alert(document.cookie);' \" />MOVE YOUR MOUSE CURSOR OVER THIS TEXT",
+				"name": "comment"
 			},
 			{
 				"text": "|",
@@ -24457,12 +24445,16 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "CLASS=|| ",
+				"text": "CLASS=",
 				"name": "htmltag-attribute html-li"
 			},
 			{
-				"text": ">",
-				"name": "htmltag-bracket"
+				"text": "||",
+				"name": "templatevariable-delimiter"
+			},
+			{
+				"text": " >",
+				"name": "comment"
 			},
 			{
 				"text": "}}}",

@@ -512,7 +512,8 @@ export class MediaWiki {
 					return '';
 				}
 				ch = stream.next()!;
-				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument'].includes(state.tokenize.name),
+				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
+						.includes(state.tokenize.name),
 					pipe = `${isTemplate ? '' : '\\||'}\\{\\{\\s*!\\s*\\}\\}`;
 				switch (ch) {
 					case '#':
@@ -755,7 +756,8 @@ export class MediaWiki {
 		return (stream, state) => {
 			const t = state.stack[0]!,
 				isArgument = t.name === 'inTemplateArgument' && 'expectName' in t,
-				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inTableCell'].includes(t.name),
+				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable', 'inTableCell']
+					.includes(t.name),
 				pipe = `${isNested ? '|' : ''}${isArgument ? '=' : ''}`;
 			if (
 				stream.sol()
@@ -1071,7 +1073,7 @@ export class MediaWiki {
 			}
 			const t = state.stack[0]!,
 				isArgument = t.name === 'inTemplateArgument' && 'expectName' in t,
-				isNested = ['inTemplateArgument', 'inParserFunctionArgument'].includes(t.name),
+				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name),
 				pipe = `${isNested ? '|' : ''}${isArgument ? '=' : ''}`;
 			if (pipe.includes(stream.peek() || '')) {
 				pop(state);
@@ -1167,20 +1169,22 @@ export class MediaWiki {
 			tag = 'templateVariable';
 		}
 		const re = new RegExp(`^(?:[^|{}<${pos === 1 ? "[&~'_:" : ''}]|\\}(?!\\}\\})|${
-			pos === 1 ? lookahead("{<~'_") : lookahead('{<', true)
-		})+`, 'iu');
-		return (stream, state) => {
-			if (stream.eat('|')) {
-				state.tokenize = this.inVariable(pos + 1);
-				return this.makeLocalTagStyle('templateVariableDelimiter', state);
-			} else if (stream.match('}}}')) {
-				pop(state);
-				return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
-			}
-			return pos === 1 && isSolSyntax(stream) || !stream.match(re)
-				? this.eatWikiText(tag)(stream, state)
-				: this[pos === 1 ? 'makeTagStyle' : 'makeLocalTagStyle'](tag, state);
-		};
+				pos === 1 ? lookahead("{<~'_") : lookahead('{<', true)
+			})+`, 'iu'),
+			f: Tokenizer = (stream, state) => {
+				if (stream.eat('|')) {
+					state.tokenize = this.inVariable(pos + 1);
+					return this.makeLocalTagStyle('templateVariableDelimiter', state);
+				} else if (stream.match('}}}')) {
+					pop(state);
+					return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
+				}
+				return pos === 1 && isSolSyntax(stream) || !stream.match(re)
+					? this.eatWikiText(tag)(stream, state)
+					: this[pos === 1 ? 'makeTagStyle' : 'makeLocalTagStyle'](tag, state);
+			};
+		Object.defineProperty(f, 'name', {value: 'inVariable'});
+		return f;
 	}
 
 	inParserFunctionName(invoke?: boolean): Tokenizer {
