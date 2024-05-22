@@ -1,11 +1,12 @@
 ## 2.13.2
 
-*2024-05-21*
+*2024-05-22*
 
 **Fixed**
 
 - `|` and `=` in HTML tag attributes inside a template or parser function argument in the MediaWiki mode
 - `|` inside a variable default value in the MediaWiki mode
+- Allow extension tags in HTML tag attributes in the MediaWiki mode
 
 ## 2.13.1
 

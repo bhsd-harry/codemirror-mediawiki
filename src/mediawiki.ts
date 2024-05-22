@@ -176,18 +176,21 @@ const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]
  * @param chars
  * @param comment 是否仅排除注释
  */
-const lookahead = (chars: string, comment?: boolean): string => {
+const lookahead = (chars: string, comment?: boolean | Record<string, unknown>): string => {
 	const table = {
 		"'": "'(?!')",
 		'{': '\\{(?!\\{)',
 		'}': '\\}(?!\\})',
-		'<': comment ? '<(?!!--)' : '<(?![!/a-z])',
+		'<': comment ? '<(?!!--)' : '<(?!!--|/?[a-z])',
 		'~': '~~?(?!~)',
 		_: '_(?!_)',
 		'[': '\\[(?!\\[)',
 		']': '\\](?!\\])',
 		'/': '/(?!>)',
 	};
+	if (typeof comment === 'object') {
+		table['<'] = `<(?!!--|(?:${Object.keys(comment).join('|')})[\\s/>])`;
+	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
 
@@ -1057,9 +1060,10 @@ export class MediaWiki {
 
 	inHtmlTagAttribute(name: string): Tokenizer {
 		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
-			chars = '{/';
+			chars = '{/',
+			regex = new RegExp(`^${lookahead('<', this.config.tags)}`, 'iu');
 		return (stream, state) => {
-			if (stream.peek() === '<') {
+			if (stream.match(regex, false)) {
 				pop(state);
 				return '';
 			}
@@ -1291,10 +1295,7 @@ export class MediaWiki {
 	}
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
-		const re1 = new RegExp(
-				`^(?:[^=|}{[<]|${lookahead('}{[')}|<(?!!--|(?:${Object.keys(this.config.tags).join('|')})[\\s/>]))*=`,
-				'iu',
-			),
+		const re1 = new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', this.config.tags)})*=`, 'iu'),
 			chars = "}{<~'_",
 			re2 = new RegExp(`^(?:[^|${chars}[&:]|${lookahead(chars)})+`, 'iu'),
 			f: Tokenizer = (stream, state) => {

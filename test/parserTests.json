@@ -21837,12 +21837,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "\">",
-				"name": ""
+				"text": "\"",
+				"name": "htmltag-attribute html-div"
 			},
 			{
-				"text": "</div>",
-				"name": "error"
+				"text": "></",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "div",
+				"name": "htmltag-name"
+			},
+			{
+				"text": ">",
+				"name": "htmltag-bracket"
 			}
 		]
 	},
@@ -21891,12 +21899,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "\">",
-				"name": ""
+				"text": "\"",
+				"name": "htmltag-attribute html-div"
 			},
 			{
-				"text": "</div>",
-				"name": "error"
+				"text": "></",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "div",
+				"name": "htmltag-name"
+			},
+			{
+				"text": ">",
+				"name": "htmltag-bracket"
 			}
 		]
 	},
