@@ -11588,7 +11588,7 @@
 			},
 			{
 				"text": "testing ",
-				"name": "table-definition html-td"
+				"name": ""
 			},
 			{
 				"text": "[[",
@@ -11611,15 +11611,7 @@
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": " ",
-				"name": "table-definition html-td"
-			},
-			{
-				"text": "|",
-				"name": "table-delimiter2"
-			},
-			{
-				"text": "three",
+				"text": " |three",
 				"name": ""
 			},
 			{
@@ -11660,7 +11652,7 @@
 			},
 			{
 				"text": "testing=\"",
-				"name": "table-definition html-td"
+				"name": ""
 			},
 			{
 				"text": "[[",
@@ -11683,15 +11675,7 @@
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "\" ",
-				"name": "table-definition html-td"
-			},
-			{
-				"text": "|",
-				"name": "table-delimiter2"
-			},
-			{
-				"text": "three",
+				"text": "\" |three",
 				"name": ""
 			},
 			{

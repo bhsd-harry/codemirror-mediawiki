@@ -1001,6 +1001,8 @@ export class MediaWiki {
 					} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 						state.tokenize = this.inTableCell(false, type);
 						return this.makeLocalTagStyle('tableDelimiter2', state);
+					} else if (needAttr && stream.match('[[', false)) {
+						state.tokenize = this.inTableCell(false, type);
 					}
 				}
 				const t = state.stack[0]!,

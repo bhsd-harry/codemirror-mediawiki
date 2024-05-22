@@ -7,6 +7,7 @@
 - `|` and `=` in HTML tag attributes inside a template or parser function argument in the MediaWiki mode
 - `|` inside a variable default value in the MediaWiki mode
 - Allow extension tags in HTML tag attributes in the MediaWiki mode
+- No wikilink in table cell attributes in the MediaWiki mode
 
 **Changed**
 
