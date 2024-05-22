@@ -12398,55 +12398,55 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "zar",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "bar",
-				"name": ""
+				"name": "tag-includeonly"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			}
 		]
 	},
@@ -12456,15 +12456,15 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			}
 		]
 	},
@@ -12478,23 +12478,23 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "></",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "!",
@@ -12508,63 +12508,55 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "x",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "tag-noinclude exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "tag-noinclude exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "tag-noinclude exttag-bracket"
 			},
 			{
 				"text": "y",
-				"name": ""
+				"name": "tag-noinclude tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "z",
 				"name": ""
 			},
 			{
-				"text": "</",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "noinclude",
-				"name": "htmltag-name"
-			},
-			{
-				"text": ">",
-				"name": "htmltag-bracket"
+				"text": "</noinclude>",
+				"name": "error"
 			}
 		]
 	},
@@ -12574,31 +12566,31 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "onlyinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "Foo",
-				"name": ""
+				"name": "tag-onlyinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "onlyinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "bar",
@@ -12612,15 +12604,15 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "onlyinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			}
 		]
 	},
@@ -12630,31 +12622,31 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude ",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "/><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly ",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "/><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
-				"text": "onlyinclude ",
-				"name": "htmltag-name"
+				"text": "onlyinclude",
+				"name": "exttag-name"
 			},
 			{
-				"text": "/>",
-				"name": "htmltag-bracket"
+				"text": " />",
+				"name": "error"
 			}
 		]
 	},
@@ -12744,39 +12736,39 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "==",
-				"name": "section-header section--2"
+				"name": "tag-includeonly section-header section--2"
 			},
 			{
 				"text": "Includeonly section",
-				"name": "section"
+				"name": "tag-includeonly section"
 			},
 			{
 				"text": "==",
-				"name": "section-header"
+				"name": "tag-includeonly section-header"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "==",
@@ -12798,15 +12790,15 @@
 		"tokens": [
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			}
 		]
 	},
@@ -12820,31 +12812,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "<!-- comment -->",
-				"name": "comment"
+				"name": "tag-noinclude comment"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "<!-- comment -->",
@@ -12856,31 +12848,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "some",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "*stuff",
@@ -12896,31 +12888,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "some",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "* stuff",
@@ -12936,31 +12928,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "can have stuff",
-				"name": ""
+				"name": "tag-includeonly"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "===here===",
@@ -13146,42 +13138,62 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "id=\"v1\"",
-				"name": ""
+				"name": "tag-includeonly"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "id=\"v2\"",
+				"name": "tag-noinclude"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "noinclude",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "id=\"v2\"",
+				"text": "bar",
 				"name": ""
 			},
 			{
@@ -13189,20 +13201,12 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "noinclude",
+				"text": "span",
 				"name": "htmltag-name"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
-			},
-			{
-				"text": ">bar",
-				"name": ""
-			},
-			{
-				"text": "</span>",
-				"name": "error"
 			}
 		]
 	},
@@ -13220,42 +13224,66 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "id",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "about",
+				"name": "tag-includeonly"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "includeonly",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "=\"foo\"",
+				"name": "htmltag-attribute html-span"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "about",
+				"text": "bar",
 				"name": ""
 			},
 			{
@@ -13263,20 +13291,12 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "includeonly",
+				"text": "span",
 				"name": "htmltag-name"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
-			},
-			{
-				"text": "=\"foo\">bar",
-				"name": ""
-			},
-			{
-				"text": "</span>",
-				"name": "error"
 			}
 		]
 	},
@@ -13298,18 +13318,66 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "v1",
+				"name": "tag-noinclude"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "noinclude",
+				"name": "exttag-name"
+			},
+			{
+				"text": "><",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "includeonly",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "v2",
+				"name": "tag-includeonly"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "includeonly",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute html-span"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "v1",
+				"text": "bar",
 				"name": ""
 			},
 			{
@@ -13317,47 +13385,11 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "noinclude",
+				"text": "span",
 				"name": "htmltag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "includeonly",
-				"name": "htmltag-name"
-			},
-			{
-				"text": ">",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "v2",
-				"name": ""
-			},
-			{
-				"text": "</",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "includeonly",
-				"name": "htmltag-name"
-			},
-			{
-				"text": ">",
-				"name": "htmltag-bracket"
-			},
-			{
-				"text": "\">bar",
-				"name": ""
-			},
-			{
-				"text": "</span>",
-				"name": "error"
-			},
-			{
-				"text": "<",
 				"name": "htmltag-bracket"
 			},
 			{
@@ -13370,42 +13402,62 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "\"v1\"",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "\"v2\"",
+				"name": "tag-includeonly"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "includeonly",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "\"v2\"",
+				"text": "bar",
 				"name": ""
 			},
 			{
@@ -13413,20 +13465,12 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "includeonly",
+				"text": "span",
 				"name": "htmltag-name"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
-			},
-			{
-				"text": ">bar",
-				"name": ""
-			},
-			{
-				"text": "</span>",
-				"name": "error"
 			}
 		]
 	},
@@ -13448,42 +13492,66 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "red",
-				"name": ""
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": "><",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "blue",
+				"name": "tag-includeonly"
+			},
+			{
+				"text": "</",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": "includeonly",
+				"name": "exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "exttag-bracket"
+			},
+			{
+				"text": ";\"",
+				"name": "htmltag-attribute html-span"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "blue",
+				"text": "bar",
 				"name": ""
 			},
 			{
@@ -13491,20 +13559,12 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": "includeonly",
+				"text": "span",
 				"name": "htmltag-name"
 			},
 			{
 				"text": ">",
 				"name": "htmltag-bracket"
-			},
-			{
-				"text": ";\">bar",
-				"name": ""
-			},
-			{
-				"text": "</span>",
-				"name": "error"
 			}
 		]
 	},
@@ -13522,35 +13582,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
-				"text": "|-|",
-				"name": "table-delimiter"
-			},
-			{
-				"text": "a",
-				"name": ""
+				"text": "|-|a",
+				"name": "tag-noinclude"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "noinclude",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "|- ",
@@ -13558,35 +13614,31 @@
 			},
 			{
 				"text": "<",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
-				"text": "|-|",
-				"name": "table-delimiter"
-			},
-			{
-				"text": "b",
-				"name": ""
+				"text": "|-|b",
+				"name": "tag-includeonly"
 			},
 			{
 				"text": "</",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "includeonly",
-				"name": "htmltag-name"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "htmltag-bracket"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "|}",

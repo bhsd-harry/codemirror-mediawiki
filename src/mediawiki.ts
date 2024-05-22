@@ -176,7 +176,7 @@ const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]
  * @param chars
  * @param comment 是否仅排除注释
  */
-const lookahead = (chars: string, comment?: boolean | Record<string, unknown>): string => {
+const lookahead = (chars: string, comment?: boolean | string[]): string => {
 	const table = {
 		"'": "'(?!')",
 		'{': '\\{(?!\\{)',
@@ -188,8 +188,8 @@ const lookahead = (chars: string, comment?: boolean | Record<string, unknown>): 
 		']': '\\](?!\\])',
 		'/': '/(?!>)',
 	};
-	if (typeof comment === 'object') {
-		table['<'] = `<(?!!--|(?:${Object.keys(comment).join('|')})[\\s/>])`;
+	if (Array.isArray(comment)) {
+		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.join('|')})[\\s/>])`;
 	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -251,6 +251,7 @@ export class MediaWiki {
 	declare readonly nsRegex;
 	declare readonly redirectRegex;
 	declare readonly imgRegex;
+	declare readonly tags;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
@@ -272,8 +273,7 @@ export class MediaWiki {
 				doubleUnderscore,
 				redirection = ['#REDIRECT'],
 			} = config,
-			img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word)),
-			extTags = Object.keys(tags);
+			img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word));
 		this.config = config;
 		this.firstSingleLetterWord = null;
 		this.firstMultiLetterWord = null;
@@ -314,8 +314,9 @@ export class MediaWiki {
 			type: 'constant',
 			label,
 		}));
-		this.extTags = extTags.map(label => ({type: 'type', label}));
-		this.htmlTags = htmlTags.filter(tag => !extTags.includes(tag)).map(label => ({
+		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude'];
+		this.extTags = this.tags.map(label => ({type: 'type', label}));
+		this.htmlTags = htmlTags.filter(tag => !this.tags.includes(tag)).map(label => ({
 			type: 'type',
 			label,
 		}));
@@ -399,7 +400,7 @@ export class MediaWiki {
 		for (let i = 1; i < 7; i++) {
 			this.addToken(`section--${i}`);
 		}
-		for (const tag of Object.keys(this.config.tags)) {
+		for (const tag of [...this.tags, 'onlyinclude']) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
 			this.addToken(`ext-${tag}`, true);
 		}
@@ -593,7 +594,7 @@ export class MediaWiki {
 						mt = stream.match(/^[a-z][^\s/>]*/iu, false) as RegExpMatchArray | false;
 					if (mt) {
 						const tagname = mt[0].toLowerCase();
-						if (tagname in this.config.tags) {
+						if (mt[0] === 'onlyinclude' || this.tags.includes(tagname)) {
 							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inStr('>', 'error'));
@@ -1046,8 +1047,12 @@ export class MediaWiki {
 
 	eatTagName(name: string, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
 		return (stream, state) => {
-			stream.match(new RegExp(`^${name}`, 'iu'));
-			stream.eatSpace();
+			if (name === 'onlyinclude') {
+				stream.match(name);
+			} else {
+				stream.match(new RegExp(`^${name}`, 'iu'));
+				stream.eatSpace();
+			}
 			if (isHtmlTag) {
 				state.tokenize = isCloseTag ? this.inStr('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
@@ -1061,7 +1066,7 @@ export class MediaWiki {
 	inHtmlTagAttribute(name: string): Tokenizer {
 		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
 			chars = '{/',
-			regex = new RegExp(`^${lookahead('<', this.config.tags)}`, 'iu');
+			regex = new RegExp(`^${lookahead('<', this.tags)}`, 'iu');
 		return (stream, state) => {
 			if (stream.match(regex, false)) {
 				pop(state);
@@ -1090,7 +1095,7 @@ export class MediaWiki {
 	}
 
 	inExtTagAttribute(name: string): Tokenizer {
-		const style = `${tokens.extTagAttribute} mw-ext-${name}`,
+		const style = name === 'onlyinclude' ? tokens.error : `${tokens.extTagAttribute} mw-ext-${name}`,
 			char = '/',
 			re = new RegExp(`^(?:[^>${char}]|${lookahead(char)})+`, 'u');
 		return (stream, state) => {
@@ -1116,7 +1121,7 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
 				pop(state);
-				return this.makeLocalTagStyle('extTagBracket', state);
+				return this.makeLocalTagStyle(name === 'onlyinclude' ? 'error' : 'extTagBracket', state);
 			}
 			stream.match(re);
 			return this.makeLocalStyle(style, state);
@@ -1295,7 +1300,7 @@ export class MediaWiki {
 	}
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
-		const re1 = new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', this.config.tags)})*=`, 'iu'),
+		const re1 = new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', this.tags)})*=`, 'iu'),
 			chars = "}{<~'_",
 			re2 = new RegExp(`^(?:[^|${chars}[&:]|${lookahead(chars)})+`, 'iu'),
 			f: Tokenizer = (stream, state) => {
@@ -1654,12 +1659,12 @@ export class MediaWiki {
 					isDelimiter = hasTag(types, 'templateDelimiter')
 					|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
-					'templatedata' in this.config.tags
-					&& (
-						isDelimiter
-						|| isArgument && !search.includes('=')
-						|| hasTag(types, 'template') && prevIsDelimiter
-					)
+					this.tags.includes('templatedata')
+						&& (
+							isDelimiter
+							|| isArgument && !search.includes('=')
+							|| hasTag(types, 'template') && prevIsDelimiter
+						)
 				) {
 					let stack = 1,
 						/** 可包含`_`、`:`等 */ page = '';

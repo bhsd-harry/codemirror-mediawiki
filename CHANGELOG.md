@@ -8,6 +8,10 @@
 - `|` inside a variable default value in the MediaWiki mode
 - Allow extension tags in HTML tag attributes in the MediaWiki mode
 
+**Changed**
+
+- Treat `onlyinclude`, `includeonly` and `noinclude` as extension tags in the MediaWiki mode
+
 ## 2.13.1
 
 *2024-05-21*

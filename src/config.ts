@@ -76,9 +76,6 @@ const modeConfig = {
 		'td',
 		'th',
 		'tr',
-		'noinclude',
-		'includeonly',
-		'onlyinclude',
 		'img',
 		'meta',
 		'link',
@@ -97,9 +94,6 @@ const modeConfig = {
 	],
 
 	selfClosingTags: [
-		'onlyinclude',
-		'includeonly',
-		'noinclude',
 		'li',
 		'dt',
 		'dd',

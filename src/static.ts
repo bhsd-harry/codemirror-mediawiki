@@ -2,6 +2,9 @@ import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './mediawiki';
 
 export const tagModes = {
+	onlyinclude: 'mediawiki',
+	includeonly: 'mediawiki',
+	noinclude: 'mediawiki',
 	tab: 'mediawiki',
 	tabs: 'mediawiki',
 	indicator: 'mediawiki',
