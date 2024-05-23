@@ -518,10 +518,6 @@ export class MediaWiki {
 		};
 	}
 
-	/**
-	 * @todo 添加stage参数
-	 * @ignore
-	 */
 	eatWikiText(style: string): Tokenizer {
 		if (style in tokens) {
 			style = tokens[style as TagName]; // eslint-disable-line no-param-reassign
@@ -609,10 +605,9 @@ export class MediaWiki {
 					}
 					break;
 				case '<': {
-					if (stream.match('!--', false)) { // comment
-						stream.backUp(1);
+					if (stream.match('!--')) { // comment
 						chain(state, this.inComment);
-						return '';
+						return this.makeLocalTagStyle('comment', state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false) as RegExpMatchArray | false;
@@ -1232,9 +1227,9 @@ export class MediaWiki {
 			} else if (stream.eat('}')) {
 				pop(state);
 				return this.makeLocalTagStyle(stream.eat('}') ? 'parserFunctionBracket' : 'error', state, 'nExt');
-			} else if (stream.match('<!--', false)) {
+			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalStyle('', state);
+				return this.makeLocalTagStyle('comment', state);
 			} else if (sol) {
 				state.nExt--;
 				pop(state);
@@ -1276,9 +1271,9 @@ export class MediaWiki {
 			} else if (stream.match('}}')) {
 				pop(state);
 				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-			} else if (stream.match('<!--', false)) {
+			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalStyle('', state);
+				return this.makeLocalTagStyle('comment', state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);
 				return this.makeLocalTagStyle('templateDelimiter', state);
@@ -1569,9 +1564,9 @@ export class MediaWiki {
 	inReferences(tag: string, comment?: boolean): Tokenizer<string> {
 		const re = new RegExp(`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\\s/>]|$)))+`, 'iu');
 		return (stream, state) => {
-			if (comment && stream.match('<!--', false)) {
+			if (comment && stream.match('<!--')) {
 				chain(state, this.inComment);
-				return '';
+				return this.makeLocalTagStyle('comment', state);
 			} else if (stream.match(re)) {
 				return tokens.comment;
 			}

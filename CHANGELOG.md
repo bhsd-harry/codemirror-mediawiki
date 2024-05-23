@@ -14,6 +14,7 @@
 - No wikilink in table cell attributes in the MediaWiki mode
 - Tags in template names in the MediaWiki mode
 - Non-existent magic words such as `toString` and `__proto__` in the MediaWiki mode
+- `<!-->` in the MediaWiki mode
 
 **Changed**
 

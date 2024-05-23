@@ -3873,11 +3873,7 @@
 				"name": "template-ground template-bracket"
 			},
 			{
-				"text": " ",
-				"name": "template-ground"
-			},
-			{
-				"text": "<!--X-->",
+				"text": " <!--X-->",
 				"name": "template-ground comment"
 			},
 			{
@@ -3901,19 +3897,11 @@
 				"name": "template-ground comment"
 			},
 			{
-				"text": "     ",
+				"text": "  ",
 				"name": "template-ground"
 			},
 			{
-				"text": "<!--X-->",
-				"name": "template-ground comment"
-			},
-			{
-				"text": "   ",
-				"name": "template-ground"
-			},
-			{
-				"text": "<!--X-->",
+				"text": "   <!--X-->   <!--X-->",
 				"name": "template-ground comment"
 			},
 			{
@@ -30843,7 +30831,7 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "<!--hi-->",
+				"text": " <!--hi-->",
 				"name": "comment"
 			},
 			{
@@ -30955,7 +30943,7 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "<!--c-->",
+				"text": " <!--c-->",
 				"name": "comment"
 			},
 			{
@@ -33231,23 +33219,7 @@
 		"wikitext": "<!-- Browsers --!> think this is closed -->\n<!--> This would normally be text -->\n<!---> As would this -->\n<!-- XML doesn't like trailing dashes -------->\n<!-- Nor doubled hyphens -- anywhere in the data -->\nBut this is not a comment.",
 		"tokens": [
 			{
-				"text": "<!-- Browsers --!> think this is closed --><!-->",
-				"name": "comment"
-			},
-			{
-				"text": " This would normally be text -->",
-				"name": ""
-			},
-			{
-				"text": "<!--->",
-				"name": "comment"
-			},
-			{
-				"text": " As would this -->",
-				"name": ""
-			},
-			{
-				"text": "<!-- XML doesn't like trailing dashes --------><!-- Nor doubled hyphens -- anywhere in the data -->",
+				"text": "<!-- Browsers --!> think this is closed --><!--> This would normally be text --><!---> As would this --><!-- XML doesn't like trailing dashes --------><!-- Nor doubled hyphens -- anywhere in the data -->",
 				"name": "comment"
 			},
 			{
