@@ -1,6 +1,10 @@
-## 2.13.2
+## 2.14.0
 
-*2024-05-22*
+*2024-05-23*
+
+**Added**
+
+- Extension modes for `<references>` and `<inputbox>` in the MediaWiki mode
 
 **Fixed**
 

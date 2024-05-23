@@ -115,6 +115,27 @@ const copyNesting = (a: Partial<Nesting>, b: Nesting): void => {
 	a.extName = b.extName;
 };
 
+const simpleToken: Tokenizer<string> = (stream, state): string => state.tokenize(stream, state) as string;
+
+const startState = (tokenize: Tokenizer): State => ({
+	tokenize,
+	stack: [],
+	inHtmlTag: [],
+	extName: false,
+	extMode: false,
+	extState: false,
+	nTemplate: 0,
+	nExt: 0,
+	nVar: 0,
+	nLink: 0,
+	nExtLink: 0,
+	lbrack: false,
+	bold: false,
+	italic: false,
+	dt: {n: 0},
+	redirect: false,
+});
+
 /**
  * 复制 StreamParser 状态
  * @param state
@@ -189,7 +210,7 @@ const lookahead = (chars: string, comment?: boolean | string[]): string => {
 		'/': '/(?!>)',
 	};
 	if (Array.isArray(comment)) {
-		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.slice(0, -1).join('|')})[\\s/>])`;
+		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.slice(0, -1).join('|')})(?:[\\s/>]|$))`;
 	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -626,35 +647,7 @@ export class MediaWiki {
 						chain(state, this.inVariable(0));
 						return this.makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
-						// Parser function
-						if (stream.peek() === '#') {
-							state.nExt++;
-							chain(state, this.inParserFunctionName());
-							return this.makeLocalTagStyle('parserFunctionBracket', state);
-						}
-						// Check for parser function without '#'
-						const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
-						if (name) {
-							const [, f, delimiter] = name as [string, string, string],
-								ff = delimiter === ':' ? f : f.trim(),
-								{config: {functionSynonyms}} = this;
-							/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
-							if (
-								(!delimiter || delimiter === ':' || delimiter === '}')
-								&& (
-									Object.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
-									|| Object.hasOwnProperty.call(functionSynonyms[1], ff)
-								)
-							) {
-								state.nExt++;
-								chain(state, this.inParserFunctionName());
-								return this.makeLocalTagStyle('parserFunctionBracket', state);
-							}
-						}
-						// Template
-						state.nTemplate++;
-						chain(state, this.inTemplatePageName());
-						return this.makeLocalTagStyle('templateBracket', state);
+						return this.eatTransclusion(stream, state);
 					}
 					break;
 				case '_': {
@@ -1106,14 +1099,7 @@ export class MediaWiki {
 			if (stream.eat('>')) {
 				state.extName = name;
 				const {config: {tagModes, tags}} = this;
-				if (name === 'nowiki' || name === 'pre') {
-					// There's no actual processing within these tags (apart from HTML entities),
-					// so startState and copyState can be no-ops.
-					state.extMode = {
-						startState: () => ({}),
-						token: this.eatNowiki,
-					};
-				} else if (name in tagModes) {
+				if (name in tagModes) {
 					const innerTags = {...tags};
 					delete innerTags[name];
 					state.extMode = new MediaWiki({...this.config, tags: innerTags})[tagModes[name] as MimeTypes];
@@ -1200,6 +1186,38 @@ export class MediaWiki {
 			};
 		Object.defineProperty(f, 'name', {value: 'inVariable'});
 		return f;
+	}
+
+	eatTransclusion(stream: StringStream, state: State): string {
+		// Parser function
+		if (stream.peek() === '#') {
+			state.nExt++;
+			chain(state, this.inParserFunctionName());
+			return this.makeLocalTagStyle('parserFunctionBracket', state);
+		}
+		// Check for parser function without '#'
+		const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
+		if (name) {
+			const [, f, delimiter] = name as [string, string, string],
+				ff = delimiter === ':' ? f : f.trim(),
+				{config: {functionSynonyms}} = this;
+			/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
+			if (
+				(!delimiter || delimiter === ':' || delimiter === '}')
+				&& (
+					Object.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
+					|| Object.hasOwnProperty.call(functionSynonyms[1], ff)
+				)
+			) {
+				state.nExt++;
+				chain(state, this.inParserFunctionName());
+				return this.makeLocalTagStyle('parserFunctionBracket', state);
+			}
+		}
+		// Template
+		state.nTemplate++;
+		chain(state, this.inTemplatePageName());
+		return this.makeLocalTagStyle('templateBracket', state);
 	}
 
 	inParserFunctionName(invoke?: boolean): Tokenizer {
@@ -1343,17 +1361,6 @@ export class MediaWiki {
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
 	}
 
-	get eatNowiki(): Tokenizer<string> {
-		return stream => {
-			if (stream.eatWhile(/[^&]/u)) {
-				return '';
-			}
-			// eat &
-			stream.next();
-			return this.eatEntity(stream, '');
-		};
-	}
-
 	/**
 	 * Remembers position and status for rollbacking.
 	 * It is needed for changing from bold to italic with apostrophes before it, if required.
@@ -1395,24 +1402,7 @@ export class MediaWiki {
 		return {
 			name: 'mediawiki',
 
-			startState: () => ({
-				tokenize: this.eatWikiText(''),
-				stack: [],
-				inHtmlTag: [],
-				extName: false,
-				extMode: false,
-				extState: false,
-				nTemplate: 0,
-				nExt: 0,
-				nVar: 0,
-				nLink: 0,
-				nExtLink: 0,
-				lbrack: false,
-				bold: false,
-				italic: false,
-				dt: {n: 0},
-				redirect: false,
-			}),
+			startState: () => startState(this.eatWikiText('')),
 
 			copyState,
 
@@ -1556,6 +1546,82 @@ export class MediaWiki {
 
 	get 'text/mediawiki'(): StreamParser<State> {
 		return this.mediawiki;
+	}
+
+	get 'text/nowiki'(): StreamParser<Record<string, never>> {
+		return {
+			startState: () => ({}),
+
+			token: (stream): string => {
+				if (stream.eatWhile(/[^&]/u)) {
+					return '';
+				}
+				// eat &
+				stream.next();
+				return this.eatEntity(stream, '');
+			},
+		};
+	}
+
+	inReferences(tag: string, comment?: boolean): Tokenizer<string> {
+		const re = new RegExp(`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\\s/>]|$)))+`, 'iu');
+		return (stream, state) => {
+			if (comment && stream.match('<!--', false)) {
+				chain(state, this.inComment);
+				return '';
+			} else if (stream.match(re)) {
+				return tokens.comment;
+			}
+			stream.eat('<');
+			chain(state, this.eatTagName(tag));
+			return tokens.extTagBracket;
+		};
+	}
+
+	get 'text/references'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inReferences('ref', true)),
+
+			token: simpleToken,
+		};
+	}
+
+	get 'text/choose'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inReferences('option')),
+
+			token: simpleToken,
+		};
+	}
+
+	get 'text/combobox'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inReferences('combooption')),
+
+			token: simpleToken,
+		};
+	}
+
+	get inInputbox(): Tokenizer<string> {
+		const re = new RegExp(`^(?:[^{]|${lookahead('{')})+`, 'u');
+		return (stream, state) => {
+			if (stream.match(/^\{{3}(?!\{)\s*/u)) {
+				chain(state, this.inVariable(0));
+				return tokens.templateVariableBracket;
+			} else if (stream.match(/^\{\{\s*/u)) {
+				return this.eatTransclusion(stream, state);
+			}
+			stream.match(re);
+			return '';
+		};
+	}
+
+	get 'text/inputbox'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inInputbox),
+
+			token: simpleToken,
+		};
 	}
 
 	/**
