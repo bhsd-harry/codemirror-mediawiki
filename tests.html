@@ -6,7 +6,11 @@
 		<meta name="viewport" content="initial-scale=1.0, user-scalable=yes, minimum-scale=0.25, maximum-scale=5.0, width=device-width">
 		<link rel="stylesheet" href="test-page.css">
 		<link rel="stylesheet" href="/wikiparser-node/extensions/test-page.css">
+		<link rel="stylesheet" href="/wikiparser-node/extensions/ui.css">
 		<link rel="stylesheet" href="mediawiki.css">
+		<script src="/wikiparser-node/extensions/dist/base.js"></script>
+		<script src="/wikiparser-node/extensions/dist/highlight.js"></script>
+		<script src="/wikiparser-node/bundle/bundle.min.js"></script>
 		<script defer="" src="test-page.js" type="module"></script>
 	</head>
 	<body>
@@ -17,8 +21,16 @@
 						<option value="" disabled selected>Please select tests</option>
 					</select>
 				</div>
-				<textarea readonly=""></textarea>
-				<div id="frame"></div>
+				<div id="compare">
+					<div>
+						<h2>CodeMirror-MediaWiki</h2>
+						<textarea readonly=""></textarea>
+					</div>
+					<div>
+						<h2>WikiParser-Node</h2>
+						<pre></pre>
+					</div>
+				</div>
 			</article>
 		</main>
 	</body>

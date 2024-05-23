@@ -189,7 +189,7 @@ const lookahead = (chars: string, comment?: boolean | string[]): string => {
 		'/': '/(?!>)',
 	};
 	if (Array.isArray(comment)) {
-		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.join('|')})[\\s/>])`;
+		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.slice(0, -1).join('|')})[\\s/>])`;
 	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -314,7 +314,7 @@ export class MediaWiki {
 			type: 'constant',
 			label,
 		}));
-		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude'];
+		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.extTags = this.tags.map(label => ({type: 'type', label}));
 		this.htmlTags = htmlTags.filter(tag => !this.tags.includes(tag)).map(label => ({
 			type: 'type',
@@ -400,7 +400,7 @@ export class MediaWiki {
 		for (let i = 1; i < 7; i++) {
 			this.addToken(`section--${i}`);
 		}
-		for (const tag of [...this.tags, 'onlyinclude']) {
+		for (const tag of this.tags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
 			this.addToken(`ext-${tag}`, true);
 		}
@@ -591,10 +591,10 @@ export class MediaWiki {
 						return '';
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(/^[a-z][^\s/>]*/iu, false) as RegExpMatchArray | false;
+						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false) as RegExpMatchArray | false;
 					if (mt) {
-						const tagname = mt[0].toLowerCase();
-						if (mt[0] === 'onlyinclude' || this.tags.includes(tagname)) {
+						const tagname = mt[1]!.toLowerCase();
+						if (mt[0] === 'onlyinclude>' || tagname !== 'onlyinclude' && this.tags.includes(tagname)) {
 							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inStr('>', 'error'));
@@ -1049,12 +1049,8 @@ export class MediaWiki {
 
 	eatTagName(name: string, isCloseTag?: boolean, isHtmlTag?: boolean): Tokenizer {
 		return (stream, state) => {
-			if (name === 'onlyinclude') {
-				stream.match(name);
-			} else {
-				stream.match(new RegExp(`^${name}`, 'iu'));
-				stream.eatSpace();
-			}
+			stream.match(name, true, true);
+			stream.eatSpace();
 			if (isHtmlTag) {
 				state.tokenize = isCloseTag ? this.inStr('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
 				return this.makeLocalTagStyle('htmlTagName', state);
@@ -1097,7 +1093,7 @@ export class MediaWiki {
 	}
 
 	inExtTagAttribute(name: string): Tokenizer {
-		const style = name === 'onlyinclude' ? tokens.error : `${tokens.extTagAttribute} mw-ext-${name}`,
+		const style = `${tokens.extTagAttribute} mw-ext-${name}`,
 			char = '/',
 			re = new RegExp(`^(?:[^>${char}]|${lookahead(char)})+`, 'u');
 		return (stream, state) => {
@@ -1123,7 +1119,7 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
 				pop(state);
-				return this.makeLocalTagStyle(name === 'onlyinclude' ? 'error' : 'extTagBracket', state);
+				return this.makeLocalTagStyle('extTagBracket', state);
 			}
 			stream.match(re);
 			return this.makeLocalStyle(style, state);
@@ -1133,7 +1129,9 @@ export class MediaWiki {
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
 			const {pos} = stream,
-				i = stream.string.slice(pos).search(new RegExp(`</${name}\\s*(?:>|$)`, 'iu'));
+				i = stream.string.slice(pos).search(
+					new RegExp(`</${name}${name === 'onlyinclude' ? '>' : '\\s*(?:>|$)'}`, 'iu'),
+				);
 			if (i === 0) {
 				stream.match('</');
 				state.tokenize = this.eatTagName(name, true);

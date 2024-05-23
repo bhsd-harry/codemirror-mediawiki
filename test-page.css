@@ -1,3 +1,8 @@
+#compare h2 {
+	font-size: 1.3em;
+	margin: .5rem 0;
+	font-weight: bold;
+}
 textarea {
 	margin: 0;
 	border: 0;
@@ -17,6 +22,16 @@ textarea, .cm-editor {
 	height: auto !important;
 }
 
+@media screen and (min-width: 1200px) {
+	#compare {
+		column-count: 2;
+		column-gap: 1rem;
+	}
+	#compare > div {
+		display: inline-block;
+		width: 100%;
+	}
+}
 @media screen and (max-width: 720px) {
 	.cm-content {
 		font-size: 16px;

@@ -12621,16 +12621,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "/><",
+				"text": "/>",
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "onlyinclude",
-				"name": "exttag-name"
-			},
-			{
-				"text": " />",
-				"name": "error"
+				"text": "<onlyinclude />",
+				"name": ""
 			}
 		]
 	},
