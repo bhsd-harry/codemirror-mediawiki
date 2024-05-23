@@ -3960,43 +3960,35 @@
 			},
 			{
 				"text": "<",
-				"name": "template-ground error"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "nowiki",
-				"name": "template-ground template-name pagename"
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "template-ground error"
+				"name": "exttag-bracket"
 			},
 			{
 				"text": "hi",
-				"name": "template-ground template-name pagename"
+				"name": "tag-nowiki"
 			},
 			{
-				"text": "<",
-				"name": "template-ground error"
+				"text": "</",
+				"name": "exttag-bracket"
 			},
 			{
-				"text": "/nowiki",
-				"name": "template-ground template-name pagename"
+				"text": "nowiki",
+				"name": "exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "template-ground error"
+				"name": "exttag-bracket"
 			},
 			{
-				"text": "|",
-				"name": "template-ground template-delimiter"
-			},
-			{
-				"text": "ho",
-				"name": "template-ground template"
-			},
-			{
-				"text": "}}",
-				"name": "template-ground template-bracket"
+				"text": "|ho}}",
+				"name": ""
 			}
 		]
 	},
@@ -10554,7 +10546,7 @@
 		"tokens": [
 			{
 				"text": "__proto__",
-				"name": "double-underscore"
+				"name": ""
 			}
 		]
 	},
@@ -10931,28 +10923,40 @@
 				"name": "template2-ground template-bracket"
 			},
 			{
-				"text": "}<",
+				"text": "}",
 				"name": "template2-ground error"
+			},
+			{
+				"text": "<",
+				"name": "template-ground exttag-bracket"
 			},
 			{
 				"text": "nowiki",
-				"name": "template2-ground template-name pagename"
-			},
-			{
-				"text": ">}<",
-				"name": "template2-ground error"
-			},
-			{
-				"text": "/nowiki",
-				"name": "template2-ground template-name pagename"
+				"name": "template-ground exttag-name"
 			},
 			{
 				"text": ">",
-				"name": "template2-ground error"
+				"name": "template-ground exttag-bracket"
+			},
+			{
+				"text": "}",
+				"name": "tag-nowiki"
+			},
+			{
+				"text": "</",
+				"name": "template-ground exttag-bracket"
+			},
+			{
+				"text": "nowiki",
+				"name": "template-ground exttag-name"
+			},
+			{
+				"text": ">",
+				"name": "template-ground exttag-bracket"
 			},
 			{
 				"text": "}}",
-				"name": "template2-ground template-bracket"
+				"name": "template-ground template-bracket"
 			}
 		]
 	},
@@ -24439,32 +24443,44 @@
 				"name": "template2-ground template-name pagename"
 			},
 			{
-				"text": "><",
-				"name": "template2-ground error"
-			},
-			{
-				"text": "noinclude",
-				"name": "template2-ground template-name pagename"
-			},
-			{
 				"text": ">",
 				"name": "template2-ground error"
 			},
 			{
-				"text": "}}",
-				"name": "template2-ground template-bracket"
-			},
-			{
-				"text": "}}",
-				"name": "template-ground template-bracket"
-			},
-			{
-				"text": " ><br style=\"onmouseover='alert(document.cookie);' \" />MOVE YOUR MOUSE CURSOR OVER THIS TEXT",
+				"text": "<noinclude>",
 				"name": "comment"
 			},
 			{
+				"text": "}}}",
+				"name": "templatevariable-bracket"
+			},
+			{
+				"text": "} >",
+				"name": "error"
+			},
+			{
+				"text": "<",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "br ",
+				"name": "htmltag-name"
+			},
+			{
+				"text": "style=\"onmouseover='alert(document.cookie);' \" ",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "/>",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "MOVE YOUR MOUSE CURSOR OVER THIS TEXT",
+				"name": "error"
+			},
+			{
 				"text": "|",
-				"name": "templatevariable-delimiter"
+				"name": "table-delimiter"
 			}
 		]
 	},

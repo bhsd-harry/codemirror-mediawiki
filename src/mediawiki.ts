@@ -641,7 +641,10 @@ export class MediaWiki {
 							/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
 							if (
 								(!delimiter || delimiter === ':' || delimiter === '}')
-								&& (ff.toLowerCase() in functionSynonyms[0] || ff in functionSynonyms[1])
+								&& (
+									Object.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
+									|| Object.hasOwnProperty.call(functionSynonyms[1], ff)
+								)
 							) {
 								state.nExt++;
 								chain(state, this.inParserFunctionName());
@@ -902,7 +905,10 @@ export class MediaWiki {
 		return (stream, state) => {
 			const name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
 			if (name) {
-				if (`__${name[0].toLowerCase()}` in doubleUnderscore[0] || `__${name[0]}` in doubleUnderscore[1]) {
+				if (
+					Object.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)
+					|| Object.hasOwnProperty.call(doubleUnderscore[1], `__${name[0]}`)
+				) {
 					return tokens.doubleUnderscore;
 				} else if (!stream.eol()) {
 					// Two underscore symbols at the end can be the
@@ -1240,7 +1246,7 @@ export class MediaWiki {
 		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
 			chars = '{}<',
 			re1 = anchor ? new RegExp(`^(?:[^|${chars}]|${lookahead(chars, true)})+`, 'u') : /^[^|{}<>[\]#]+/u,
-			re2 = new RegExp(`^(?:[>[\\]]|${lookahead(chars, true)})+`, 'u');
+			re2 = new RegExp(`^(?:[>[\\]]|${lookahead(chars, this.tags)})+`, 'u');
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1265,6 +1271,9 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.match(re2)) {
 				return this.makeLocalTagStyle('error', state);
+			} else if (!anchor && stream.peek() === '<') {
+				pop(state);
+				return this.makeLocalStyle('', state, 'nTemplate');
 			} else if (space && !haveEaten) {
 				return this.makeLocalStyle('', state);
 			} else if (stream.match(re1)) {

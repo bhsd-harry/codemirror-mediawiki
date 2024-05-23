@@ -8,6 +8,8 @@
 - `|` inside a variable default value in the MediaWiki mode
 - Allow extension tags in HTML tag attributes in the MediaWiki mode
 - No wikilink in table cell attributes in the MediaWiki mode
+- Tags in template names in the MediaWiki mode
+- Non-existent magic words such as `toString` and `__proto__` in the MediaWiki mode
 
 **Changed**
 
