@@ -115,7 +115,10 @@ const copyNesting = (a: Partial<Nesting>, b: Nesting): void => {
 	a.extName = b.extName;
 };
 
-const simpleToken: Tokenizer<string> = (stream, state): string => state.tokenize(stream, state) as string;
+const simpleToken: Tokenizer<string> = (stream, state): string => {
+	const style = state.tokenize(stream, state);
+	return Array.isArray(style) ? style[0] : style;
+};
 
 const startState = (tokenize: Tokenizer): State => ({
 	tokenize,
@@ -1621,6 +1624,44 @@ export class MediaWiki {
 			startState: () => startState(this.inInputbox),
 
 			token: simpleToken,
+		};
+	}
+
+	inGallery(section?: boolean): Tokenizer {
+		const style = section ? tokens.error : `${tokens.linkPageName} ${tokens.pageName}`,
+			regex = new RegExp(
+				section ? `^(?:[[}\\]]|${lookahead('{')})+` : `^(?:[>[}\\]]|${lookahead('{<', true)})+`,
+				'iu',
+			),
+			re = section ? new RegExp(`^(?:[^|<[\\]{}]|${lookahead('<', true)})+`, 'iu') : /^[^#|<>[\]{}]+/u;
+		return (stream, state) => {
+			const space = stream.eatSpace();
+			if (!section && stream.match(/^#\s*/u)) {
+				state.tokenize = this.inGallery(true);
+				return this.makeTagStyle('error', state);
+			} else if (stream.match(/^\|\s*/u)) {
+				state.tokenize = this.inLinkText(true);
+				this.toEatImageParameter(stream, state);
+				return this.makeLocalTagStyle('linkDelimiter', state);
+			} else if (stream.match(regex)) {
+				return this.makeTagStyle('error', state);
+			}
+			return stream.match(re) || space
+				? this.makeStyle(style, state)
+				: this.eatWikiText(section ? style : 'error')(stream, state);
+		};
+	}
+
+	get 'text/gallery'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inGallery()),
+
+			token: (stream, state): string => {
+				if (stream.sol()) {
+					Object.assign(state, startState(this.inGallery()));
+				}
+				return simpleToken(stream, state);
+			},
 		};
 	}
 

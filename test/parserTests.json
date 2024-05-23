@@ -42117,7 +42117,7 @@
 			},
 			{
 				"text": "File:Bad.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -43872,8 +43872,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "&amp;",
@@ -43881,7 +43889,7 @@
 			},
 			{
 				"text": "amp;",
-				"name": "tag-gallery"
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -43994,28 +44002,68 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "testing.123?4=5&#x7C;6|caption",
-				"name": "tag-gallery free-extlink"
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "http://testing.123?4=5",
+				"name": "tag-gallery file-text"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "&#x7C;",
+				"name": "tag-gallery entity"
 			},
 			{
-				"text": "testing.123?4=5&vert;6|caption",
-				"name": "tag-gallery free-extlink"
+				"text": "6",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "http://testing.123?4=5",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "&vert;",
+				"name": "tag-gallery entity"
+			},
+			{
+				"text": "6",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44092,8 +44140,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "''",
@@ -44101,15 +44157,19 @@
 			},
 			{
 				"text": "x",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "|caption",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44202,8 +44262,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "<",
@@ -44234,8 +44302,12 @@
 				"name": "tag-gallery exttag-bracket"
 			},
 			{
-				"text": "|caption",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44296,8 +44368,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo_&_bar",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo_&_bar",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44434,8 +44518,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "''",
@@ -44443,15 +44539,35 @@
 			},
 			{
 				"text": "s bar",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "s|caption1File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "s",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption1",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "''",
@@ -44459,15 +44575,19 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "|caption2",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption2",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44568,8 +44688,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "<",
@@ -44600,8 +44732,16 @@
 				"name": "tag-gallery exttag-bracket"
 			},
 			{
-				"text": "s|caption",
-				"name": "tag-gallery"
+				"text": "s",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -44662,16 +44802,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "https://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "example.com?foo&params=bar",
-				"name": "tag-gallery free-extlink"
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "https://example.com?foo&params=bar",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -47463,7 +47607,7 @@
 			},
 			{
 				"text": "File:File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -47501,7 +47645,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -47539,7 +47683,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -47576,8 +47720,12 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "{{",
@@ -47630,8 +47778,24 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "[[",
@@ -47674,8 +47838,24 @@
 				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "{{",
@@ -47740,8 +47920,12 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "</ref>",
@@ -47782,8 +47966,28 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Nonexistent.jpg|captionFile:Nonexistent.jpgFile:Foobar.jpg|some ",
-				"name": "tag-gallery"
+				"text": "File:Nonexistent.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Nonexistent.jpgFile:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "some ",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "'''",
@@ -47791,7 +47995,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "tag-gallery strong"
+				"name": "tag-gallery file-text strong"
 			},
 			{
 				"text": "'''",
@@ -47799,7 +48003,7 @@
 			},
 			{
 				"text": " ",
-				"name": "tag-gallery"
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "[[",
@@ -47815,7 +48019,7 @@
 			},
 			{
 				"text": "File:Foobar.jpgFile:Redirect to foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -47848,8 +48052,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Wikilink|alt=galleryalt",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Wikilink",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -47882,16 +48110,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "www.example.org",
-				"name": "tag-gallery free-extlink"
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "http://www.example.org",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -47929,7 +48173,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -47966,8 +48210,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -48005,7 +48257,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -48043,7 +48295,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -48080,8 +48332,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -48118,8 +48378,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -48966,8 +49234,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Test%22123File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Test%22123",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "[[",
@@ -50939,7 +51231,7 @@
 			},
 			{
 				"text": "File:Bad.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -51068,8 +51360,24 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=|stuff",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "stuff",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -52808,8 +53116,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "&amp;",
@@ -52817,7 +53133,7 @@
 			},
 			{
 				"text": "amp;",
-				"name": "tag-gallery"
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -52930,28 +53246,68 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "testing.123?4=5&#x7C;6|caption",
-				"name": "tag-gallery free-extlink"
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "http://testing.123?4=5",
+				"name": "tag-gallery file-text"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "&#x7C;",
+				"name": "tag-gallery entity"
 			},
 			{
-				"text": "testing.123?4=5&vert;6|caption",
-				"name": "tag-gallery free-extlink"
+				"text": "6",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "http://testing.123?4=5",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "&vert;",
+				"name": "tag-gallery entity"
+			},
+			{
+				"text": "6",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53028,8 +53384,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "''",
@@ -53037,15 +53401,19 @@
 			},
 			{
 				"text": "x",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "|caption",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53138,8 +53506,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "<",
@@ -53170,8 +53546,12 @@
 				"name": "tag-gallery exttag-bracket"
 			},
 			{
-				"text": "|caption",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53232,8 +53612,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo_&_bar",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo_&_bar",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53370,8 +53762,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "''",
@@ -53379,15 +53783,35 @@
 			},
 			{
 				"text": "s bar",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "s|caption1File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "s",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption1",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "''",
@@ -53395,15 +53819,19 @@
 			},
 			{
 				"text": "Main Page",
-				"name": "tag-gallery em"
+				"name": "tag-gallery file-text em"
 			},
 			{
 				"text": "''",
 				"name": "tag-gallery apostrophes"
 			},
 			{
-				"text": "|caption2",
-				"name": "tag-gallery"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption2",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53504,8 +53932,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "<",
@@ -53536,8 +53976,16 @@
 				"name": "tag-gallery exttag-bracket"
 			},
 			{
-				"text": "s|caption",
-				"name": "tag-gallery"
+				"text": "s",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -53598,16 +54046,20 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "https://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "example.com?foo&params=bar",
-				"name": "tag-gallery free-extlink"
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "https://example.com?foo&params=bar",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -54968,8 +55420,28 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.svg|lang=de|caption",
-				"name": "tag-gallery"
+				"text": "File:Foobar.svg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "lang=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "de",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -56499,7 +56971,7 @@
 			},
 			{
 				"text": "File:File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -56532,36 +57004,8 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": ":",
-				"name": "tag-gallery list"
-			},
-			{
-				"text": "'''''",
-				"name": "tag-gallery apostrophes"
-			},
-			{
-				"text": "Albert Willimsky",
-				"name": "tag-gallery strong em"
-			},
-			{
-				"text": "'''",
-				"name": "tag-gallery apostrophes"
-			},
-			{
-				"text": " ",
-				"name": "tag-gallery em"
-			},
-			{
-				"text": "''",
-				"name": "tag-gallery apostrophes"
-			},
-			{
-				"text": "Geboren am 28.2.1890",
-				"name": "tag-gallery"
-			},
-			{
-				"text": "''",
-				"name": "tag-gallery apostrophes"
+				"text": ":'''''Albert Willimsky''' ''Geboren am 28.2.1890''",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -56599,7 +57043,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -56637,7 +57081,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -56674,8 +57118,12 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "{{",
@@ -56728,8 +57176,24 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "[[",
@@ -56772,8 +57236,24 @@
 				"name": "tag-gallery link-ground link-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "{{",
@@ -56838,8 +57318,12 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
 				"text": "</ref>",
@@ -56880,8 +57364,28 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Nonexistent.jpg|captionFile:Nonexistent.jpgFile:Foobar.jpg|some ",
-				"name": "tag-gallery"
+				"text": "File:Nonexistent.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "caption",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Nonexistent.jpgFile:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "some ",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "'''",
@@ -56889,7 +57393,7 @@
 			},
 			{
 				"text": "caption",
-				"name": "tag-gallery strong"
+				"name": "tag-gallery file-text strong"
 			},
 			{
 				"text": "'''",
@@ -56897,7 +57401,7 @@
 			},
 			{
 				"text": " ",
-				"name": "tag-gallery"
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "[[",
@@ -56913,7 +57417,7 @@
 			},
 			{
 				"text": "File:Foobar.jpgFile:Redirect to foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -56946,8 +57450,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Wikilink|alt=galleryalt",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Wikilink",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -56980,16 +57508,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|alt=galleryalt|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
-				"text": "http://",
-				"name": "tag-gallery free-extlink-protocol"
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
 			},
 			{
-				"text": "www.example.org",
-				"name": "tag-gallery free-extlink"
+				"text": "alt=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "galleryalt",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "http://www.example.org",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -57027,7 +57571,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -57064,8 +57608,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -57103,7 +57655,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -57141,7 +57693,7 @@
 			},
 			{
 				"text": "File:Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",
@@ -57178,8 +57730,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -57216,8 +57776,16 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|foo",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": "tag-gallery file-text"
 			},
 			{
 				"text": "</",
@@ -58250,8 +58818,32 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "File:Foobar.jpg|link=Test%22123File:Foobar.jpg|link=",
-				"name": "tag-gallery"
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
+			},
+			{
+				"text": "Test%22123",
+				"name": "tag-gallery file-text"
+			},
+			{
+				"text": "File:Foobar.jpg",
+				"name": "tag-gallery link-pagename pagename"
+			},
+			{
+				"text": "|",
+				"name": "tag-gallery link-delimiter"
+			},
+			{
+				"text": "link=",
+				"name": "tag-gallery image-parameter"
 			},
 			{
 				"text": "[[",
@@ -59007,7 +59599,7 @@
 			},
 			{
 				"text": "Foobar.jpg",
-				"name": "tag-gallery"
+				"name": "tag-gallery link-pagename pagename"
 			},
 			{
 				"text": "</",

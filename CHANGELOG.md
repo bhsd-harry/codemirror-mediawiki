@@ -4,7 +4,7 @@
 
 **Added**
 
-- Extension modes for `<references>` and `<inputbox>` in the MediaWiki mode
+- Extension modes for `<references>`, `<inputbox>` and `<gallery>` in the MediaWiki mode
 
 **Fixed**
 

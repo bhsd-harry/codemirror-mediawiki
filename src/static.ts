@@ -11,7 +11,7 @@ export const tagModes = {
 	poem: 'mediawiki',
 	ref: 'mediawiki',
 	references: 'text/references',
-	gallery: 'mediawiki',
+	gallery: 'text/gallery',
 	poll: 'mediawiki',
 	tabs: 'mediawiki',
 	tab: 'mediawiki',
