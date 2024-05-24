@@ -137,6 +137,7 @@ const modeConfig = {
 		linkText: 'mw-link-text',
 		linkToSection: 'mw-link-tosection',
 		list: 'mw-list',
+		magicLink: 'mw-magic-link',
 		pageName: 'mw-pagename',
 		parserFunction: 'mw-parserfunction',
 		parserFunctionBracket: 'mw-parserfunction-bracket',

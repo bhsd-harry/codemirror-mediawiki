@@ -74,7 +74,8 @@
 .cm-mw-extlink-protocol,
 .cm-mw-extlink,
 .cm-mw-free-extlink-protocol,
-.cm-mw-free-extlink {
+.cm-mw-free-extlink,
+.cm-mw-magic-link {
 	text-decoration: underline;
 }
 
@@ -145,7 +146,8 @@
 .cm-mw-link-bracket,
 .cm-mw-link-delimiter,
 .cm-mw-extlink,
-.cm-mw-free-extlink {
+.cm-mw-free-extlink,
+.cm-mw-magic-link {
 	color: #000aaa;
 	font-weight: normal;
 }

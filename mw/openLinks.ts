@@ -69,7 +69,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
 			open(new mw.Title(page, ns).getUrl(undefined), '_blank');
-		} else if (node.name.includes(tokens.extLinkProtocol)) {
+		} else if (/-extlink-protocol/u.test(node.name)) {
 			e.preventDefault();
 			open(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), '_blank');
 		} else if (/-extlink(?:_|$)/u.test(node.name)) {
@@ -77,6 +77,16 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			const prev = search(node, 'prevSibling').prevSibling!,
 				next = search(node, 'nextSibling');
 			open(state.sliceDoc(prev.from, next.to), '_blank');
+		} else if (node.name.includes(tokens.magicLink)) {
+			e.preventDefault();
+			const link = state.sliceDoc(node.from, node.to).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X');
+			if (link.startsWith('RFC')) {
+				open(`https://tools.ietf.org/html/rfc${link.slice(3)}`, '_blank');
+			} else if (link.startsWith('PMID')) {
+				open(`https://pubmed.ncbi.nlm.nih.gov/${link.slice(4)}`, '_blank');
+			} else {
+				open(new mw.Title(`Special:Booksources/${link.slice(4)}`).getUrl(undefined), '_blank');
+			}
 		}
 	};
 	handlers.set(cm, handler);

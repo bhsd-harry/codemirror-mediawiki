@@ -522,6 +522,8 @@ export class MediaWiki {
 		if (style in tokens) {
 			style = tokens[style as TagName]; // eslint-disable-line no-param-reassign
 		}
+		const regex
+			= /^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
 		return (stream, state) => {
 			let ch: string;
 			if (stream.eol()) {
@@ -529,6 +531,8 @@ export class MediaWiki {
 			} else if (stream.sol()) {
 				if (stream.match('//')) {
 					return this.makeStyle(style, state);
+				} else if (stream.match(regex)) {
+					return this.makeTagStyle('magicLink', state);
 				}
 				const mtFree = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 				if (mtFree) {
@@ -710,6 +714,11 @@ export class MediaWiki {
 					const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 					if (mt && !stream.match('//')) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
+						return this.makeStyle(style, state);
+					}
+					const mtMagic = stream.match(regex, false) as RegExpMatchArray | false;
+					if (mtMagic) {
+						chain(state, this.inStr(mtMagic[0], 'magicLink'));
 						return this.makeStyle(style, state);
 					}
 				}

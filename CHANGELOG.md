@@ -1,10 +1,11 @@
 ## 2.14.0
 
-*2024-05-23*
+*2024-05-24*
 
 **Added**
 
 - Extension modes for `<references>`, `<inputbox>` and `<gallery>` in the MediaWiki mode
+- Magic links (RFC, PMID and ISBN) and [openLinks](./mw/README.md#openlinks) support in the MediaWiki mode
 
 **Fixed**
 

@@ -26078,7 +26078,7 @@
 		"tokens": [
 			{
 				"text": "ISBN  978-0-1234-56",
-				"name": ""
+				"name": "magic-link"
 			},
 			{
 				"text": "&#x20;",
@@ -26105,8 +26105,12 @@
 		"wikitext": "ISBN ISBN 1234567890",
 		"tokens": [
 			{
-				"text": "ISBN ISBN 1234567890",
+				"text": "ISBN ",
 				"name": ""
+			},
+			{
+				"text": "ISBN 1234567890",
+				"name": "magic-link"
 			}
 		]
 	},
@@ -26116,7 +26120,7 @@
 		"tokens": [
 			{
 				"text": "ISBN 3-462-04561-XISBN 3-462-04561-xISBN 080442957XISBN 080442957xISBN 978080442957XISBN 978080442957x",
-				"name": ""
+				"name": "magic-link"
 			}
 		]
 	},
@@ -26126,7 +26130,7 @@
 		"tokens": [
 			{
 				"text": "ISBN 1234567890",
-				"name": ""
+				"name": "magic-link"
 			}
 		]
 	},
@@ -26163,7 +26167,15 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": " ISBN 2753300917 ",
+				"text": " ",
+				"name": ""
+			},
+			{
+				"text": "ISBN 2753300917",
+				"name": "magic-link"
+			},
+			{
+				"text": " ",
 				"name": ""
 			},
 			{
@@ -26193,8 +26205,12 @@
 		"wikitext": "RFC RFC 1234",
 		"tokens": [
 			{
-				"text": "RFC RFC 1234",
+				"text": "RFC ",
 				"name": ""
+			},
+			{
+				"text": "RFC 1234",
+				"name": "magic-link"
 			}
 		]
 	},
@@ -26226,7 +26242,7 @@
 		"tokens": [
 			{
 				"text": "RFC   983",
-				"name": ""
+				"name": "magic-link"
 			},
 			{
 				"text": "&#x20;",
@@ -26690,7 +26706,7 @@
 		"tokens": [
 			{
 				"text": "ISBN 92 9017 032 8",
-				"name": ""
+				"name": "magic-link"
 			}
 		]
 	},
@@ -26709,7 +26725,15 @@
 		"wikitext": "ISBN 123456789\n\nISBN 1234567890\n\nISBN 12345678901",
 		"tokens": [
 			{
-				"text": "ISBN 123456789ISBN 1234567890ISBN 12345678901",
+				"text": "ISBN 123456789",
+				"name": ""
+			},
+			{
+				"text": "ISBN 1234567890",
+				"name": "magic-link"
+			},
+			{
+				"text": "ISBN 12345678901",
 				"name": ""
 			}
 		]
@@ -26719,7 +26743,19 @@
 		"wikitext": "ISBN 1-234-56789-0 - 2006\n\nISBN 1 234 56789 0 - 2006",
 		"tokens": [
 			{
-				"text": "ISBN 1-234-56789-0 - 2006ISBN 1 234 56789 0 - 2006",
+				"text": "ISBN 1-234-56789-0",
+				"name": "magic-link"
+			},
+			{
+				"text": " - 2006",
+				"name": ""
+			},
+			{
+				"text": "ISBN 1 234 56789 0",
+				"name": "magic-link"
+			},
+			{
+				"text": " - 2006",
 				"name": ""
 			}
 		]
@@ -37797,7 +37833,15 @@
 		"wikitext": "http://[2404:130:0:1000::187:2]/index.php\n\nExamples from RFC 2373, section 2.2:\n\n*http://[1080::8:800:200C:417A]/unicast\n*http://[FF01::101]/multicast\n*http://[::1]/loopback\n*http://[::]/unspecified\n*http://[::13.1.68.3]/ipv4compat\n*http://[::FFFF:129.144.52.38]/ipv4compat\n\nExamples from RFC 2732, section 2:\n\n*http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html\n*http://[1080:0:0:0:8:800:200C:417A]/index.html\n*http://[3ffe:2a00:100:7031::1]\n*http://[1080::8:800:200C:417A]/foo\n*http://[::192.9.5.5]/ipng\n*http://[::FFFF:129.144.52.38]:80/index.html\n*http://[2010:836B:4179::836B:4179]",
 		"tokens": [
 			{
-				"text": "http://[2404:130:0:1000::187:2]/index.phpExamples from RFC 2373, section 2.2:",
+				"text": "http://[2404:130:0:1000::187:2]/index.phpExamples from ",
+				"name": ""
+			},
+			{
+				"text": "RFC 2373",
+				"name": "magic-link"
+			},
+			{
+				"text": ", section 2.2:",
 				"name": ""
 			},
 			{
@@ -37845,7 +37889,15 @@
 				"name": "list"
 			},
 			{
-				"text": "http://[::FFFF:129.144.52.38]/ipv4compatExamples from RFC 2732, section 2:",
+				"text": "http://[::FFFF:129.144.52.38]/ipv4compatExamples from ",
+				"name": ""
+			},
+			{
+				"text": "RFC 2732",
+				"name": "magic-link"
+			},
+			{
+				"text": ", section 2:",
 				"name": ""
 			},
 			{
@@ -37941,7 +37993,15 @@
 		"wikitext": "[http://[2404:130:0:1000::187:2]/index.php test]\n\nExamples from RFC 2373, section 2.2:\n\n*[http://[1080::8:800:200C:417A] unicast]\n*[http://[FF01::101] multicast]\n*[http://[::1]/ loopback]\n*[http://[::] unspecified]\n*[http://[::13.1.68.3] ipv4compat]\n*[http://[::FFFF:129.144.52.38] ipv4compat]\n\nExamples from RFC 2732, section 2:\n\n*[http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html 1]\n*[http://[1080:0:0:0:8:800:200C:417A]/index.html 2]\n*[http://[3ffe:2a00:100:7031::1] 3]\n*[http://[1080::8:800:200C:417A]/foo 4]\n*[http://[::192.9.5.5]/ipng 5]\n*[http://[::FFFF:129.144.52.38]:80/index.html 6]\n*[http://[2010:836B:4179::836B:4179] 7]",
 		"tokens": [
 			{
-				"text": "[http://[2404:130:0:1000::187:2]/index.php test]Examples from RFC 2373, section 2.2:",
+				"text": "[http://[2404:130:0:1000::187:2]/index.php test]Examples from ",
+				"name": ""
+			},
+			{
+				"text": "RFC 2373",
+				"name": "magic-link"
+			},
+			{
+				"text": ", section 2.2:",
 				"name": ""
 			},
 			{
@@ -37989,7 +38049,15 @@
 				"name": "list"
 			},
 			{
-				"text": "[http://[::FFFF:129.144.52.38] ipv4compat]Examples from RFC 2732, section 2:",
+				"text": "[http://[::FFFF:129.144.52.38] ipv4compat]Examples from ",
+				"name": ""
+			},
+			{
+				"text": "RFC 2732",
+				"name": "magic-link"
+			},
+			{
+				"text": ", section 2:",
 				"name": ""
 			},
 			{
