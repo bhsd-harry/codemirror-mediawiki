@@ -331,7 +331,7 @@ export class MediaWiki {
 			img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
 		}|(?:${
 			img.filter(word => !word.endsWith('$1')).join('|')
-		})\\s*(?=\\||\\]\\]|$))`, 'u');
+		}|(?:\\d+x?|\\d*x\\d+)(?:\\s*px)?px)\\s*(?=\\||\\]\\]|$))`, 'u');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
