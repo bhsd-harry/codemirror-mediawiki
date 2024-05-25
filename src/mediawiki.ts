@@ -575,17 +575,6 @@ export class MediaWiki {
 						}
 						break;
 					}
-					case ' ': {
-						// Leading spaces is valid syntax for tables, bug T108454
-						const re = new RegExp(`^\\s*(:+\\s*)?(?=\\{(?:${pipe}))`, 'u'),
-							mt = stream.match(re) as RegExpMatchArray | false;
-						if (mt) {
-							chain(state, this.eatStartTable);
-							return this.makeLocalStyle(mt[1] ? tokens.list : '', state);
-						}
-						/** @todo indent-pre is sometimes suppressed */
-						return tokens.skipFormatting;
-					}
 					case '{':
 						if (stream.match(new RegExp(`^(?:${pipe})\\s*`, 'u'))) {
 							chain(state, this.inTableDefinition());
@@ -596,7 +585,20 @@ export class MediaWiki {
 						if (stream.match(/^-{3,}/u)) {
 							return tokens.hr;
 						}
-					// no default
+						break;
+					default:
+						if (/\s/u.test(ch)) {
+							// Leading spaces is valid syntax for tables, bug T108454
+							const re = new RegExp(`^\\s*(:+\\s*)?(?=\\{(?:${pipe}))`, 'u'),
+								mt = stream.match(re) as RegExpMatchArray | false;
+							if (mt) {
+								chain(state, this.eatStartTable);
+								return this.makeLocalStyle(mt[1] ? tokens.list : '', state);
+							} else if (ch === ' ') {
+								/** @todo indent-pre is sometimes suppressed */
+								return tokens.skipFormatting;
+							}
+						}
 				}
 			} else {
 				ch = stream.next()!;

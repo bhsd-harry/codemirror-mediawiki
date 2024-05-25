@@ -1,6 +1,6 @@
 ## 2.14.0
 
-*2024-05-24*
+*2024-05-25*
 
 **Added**
 
@@ -16,6 +16,7 @@
 - Tags in template names in the MediaWiki mode
 - Non-existent magic words such as `toString` and `__proto__` in the MediaWiki mode
 - `<!-->` in the MediaWiki mode
+- Leading whitespace (e.g., `\t`) of a table in the MediaWiki mode
 
 **Changed**
 

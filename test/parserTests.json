@@ -40454,8 +40454,24 @@
 				"name": "skipformatting"
 			},
 			{
-				"text": "   foo\t{||foo|}",
+				"text": "   foo",
 				"name": ""
+			},
+			{
+				"text": "{|",
+				"name": "table-bracket"
+			},
+			{
+				"text": "|",
+				"name": "table-delimiter"
+			},
+			{
+				"text": "foo",
+				"name": ""
+			},
+			{
+				"text": "|}",
+				"name": "table-bracket"
 			}
 		]
 	},
