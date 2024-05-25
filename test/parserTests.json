@@ -42230,11 +42230,11 @@
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "[[",
+				"text": "[[]]",
 				"name": "link-ground file-text"
 			},
 			{
-				"text": "]][[",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -42242,12 +42242,8 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
+				"text": "]]]]",
 				"name": "link-ground link-bracket"
-			},
-			{
-				"text": "]]",
-				"name": ""
 			}
 		]
 	},
@@ -44912,8 +44908,24 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "===Testing===123--------------",
+				"text": "===",
+				"name": "link-ground section-header section--3"
+			},
+			{
+				"text": "Testing",
+				"name": "link-ground section"
+			},
+			{
+				"text": "===",
+				"name": "link-ground section-header"
+			},
+			{
+				"text": "123",
 				"name": "link-ground file-text"
+			},
+			{
+				"text": "--------------",
+				"name": "hr"
 			},
 			{
 				"text": "]]",
@@ -46826,47 +46838,51 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "This is an example image thumbnail caption with a table{",
+				"text": "This is an example image thumbnail caption with a table",
 				"name": "link-ground file-text"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "{|",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "!Foo!!Bar",
-				"name": "link-ground file-text"
+				"text": "!",
+				"name": "link-ground table-delimiter"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "Foo",
+				"name": "link-ground strong"
 			},
 			{
-				"text": "-",
-				"name": "link-ground file-text"
+				"text": "!!",
+				"name": "link-ground table-delimiter"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "Bar",
+				"name": "link-ground strong"
+			},
+			{
+				"text": "|-|",
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "Foo1",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
 				"text": "||",
-				"name": "link-ground link-delimiter"
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "Bar1",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "}and some more text.",
+				"text": "and some more text.",
 				"name": "link-ground file-text"
 			},
 			{
@@ -49554,32 +49570,20 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "{",
-				"name": "link-ground file-text"
+				"text": "{|",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "||",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "-  ",
-				"name": "link-ground file-text"
-			},
-			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "|-  |",
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "hi",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "}",
-				"name": "link-ground file-text"
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
 				"text": "]]",
@@ -51344,11 +51348,11 @@
 				"name": "link-ground link-bracket"
 			},
 			{
-				"text": "[[",
+				"text": "[[]]",
 				"name": "link-ground file-text"
 			},
 			{
-				"text": "]][[",
+				"text": "[[",
 				"name": "link-ground link-bracket"
 			},
 			{
@@ -51356,12 +51360,8 @@
 				"name": "link-ground link-pagename pagename"
 			},
 			{
-				"text": "]]",
+				"text": "]]]]",
 				"name": "link-ground link-bracket"
-			},
-			{
-				"text": "]]",
-				"name": ""
 			}
 		]
 	},
@@ -54156,8 +54156,24 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "===Testing===123--------------",
+				"text": "===",
+				"name": "link-ground section-header section--3"
+			},
+			{
+				"text": "Testing",
+				"name": "link-ground section"
+			},
+			{
+				"text": "===",
+				"name": "link-ground section-header"
+			},
+			{
+				"text": "123",
 				"name": "link-ground file-text"
+			},
+			{
+				"text": "--------------",
+				"name": "hr"
 			},
 			{
 				"text": "]]",
@@ -56144,47 +56160,51 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "This is an example image thumbnail caption with a table{",
+				"text": "This is an example image thumbnail caption with a table",
 				"name": "link-ground file-text"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "{|",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "!Foo!!Bar",
-				"name": "link-ground file-text"
+				"text": "!",
+				"name": "link-ground table-delimiter"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "Foo",
+				"name": "link-ground strong"
 			},
 			{
-				"text": "-",
-				"name": "link-ground file-text"
+				"text": "!!",
+				"name": "link-ground table-delimiter"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "Bar",
+				"name": "link-ground strong"
+			},
+			{
+				"text": "|-|",
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "Foo1",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
 				"text": "||",
-				"name": "link-ground link-delimiter"
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "Bar1",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "}and some more text.",
+				"text": "and some more text.",
 				"name": "link-ground file-text"
 			},
 			{
@@ -59200,32 +59220,20 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "{",
-				"name": "link-ground file-text"
+				"text": "{|",
+				"name": "link-ground table-bracket"
 			},
 			{
-				"text": "||",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "-  ",
-				"name": "link-ground file-text"
-			},
-			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
+				"text": "|-  |",
+				"name": "link-ground table-delimiter"
 			},
 			{
 				"text": "hi",
-				"name": "link-ground file-text"
+				"name": "link-ground"
 			},
 			{
-				"text": "|",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "}",
-				"name": "link-ground file-text"
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
 				"text": "]]",
@@ -59464,24 +59472,20 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "{",
-				"name": "link-ground file-text"
-			},
-			{
-				"text": "||",
-				"name": "link-ground link-delimiter"
-			},
-			{
-				"text": "bar",
-				"name": "link-ground file-text"
+				"text": "{|",
+				"name": "link-ground table-bracket"
 			},
 			{
 				"text": "|",
-				"name": "link-ground link-delimiter"
+				"name": "link-ground table-delimiter"
 			},
 			{
-				"text": "}",
-				"name": "link-ground file-text"
+				"text": "bar",
+				"name": "link-ground"
+			},
+			{
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
 				"text": "]]",

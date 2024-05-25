@@ -192,8 +192,10 @@ const pop = (state: State): void => {
 /**
  * 是否为行首语法
  * @param stream
+ * @param file 是否为文件
  */
-const isSolSyntax = (stream: StringStream): boolean => stream.sol() && /[-=*#;:]/u.test(stream.peek() || '');
+const isSolSyntax = (stream: StringStream, file?: boolean): boolean =>
+	stream.sol() && (file ? /[-={]/u : /[-=*#;:]/u).test(stream.peek() || '');
 
 /**
  * 获取负向先行断言
@@ -679,6 +681,8 @@ export class MediaWiki {
 							state.lbrack = undefined;
 							chain(state, this.inLink(!redirect && Boolean(stream.match(this.fileRegex, false))));
 							return this.makeLocalTagStyle('linkBracket', state);
+						} else if (stream.match(']]')) {
+							return this.makeStyle(style, state);
 						}
 					} else {
 						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
@@ -876,6 +880,8 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(/^'(?=')/u)) {
 				return this.eatApostrophes(linkState)(stream, state) || this.makeStyle(tmpstyle, state);
+			} else if (file && isSolSyntax(stream, true)) {
+				return this.eatWikiText(tmpstyle)(stream, state);
 			}
 			const mt = stream.match(regex) as RegExpMatchArray | false;
 			if (lbrack === undefined && mt && mt[0].includes('[')) {

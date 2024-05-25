@@ -17,6 +17,8 @@
 - Non-existent magic words such as `toString` and `__proto__` in the MediaWiki mode
 - `<!-->` in the MediaWiki mode
 - Leading whitespace (e.g., `\t`) of a table in the MediaWiki mode
+- `[[]]` in a file link in the MediaWiki mode
+- Allow headers, horizontal rules and tables in a file link in the MediaWiki mode
 
 **Changed**
 
