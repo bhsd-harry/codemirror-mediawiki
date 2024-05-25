@@ -17685,11 +17685,7 @@
 				"name": "apostrophes"
 			},
 			{
-				"text": " ",
-				"name": "templatevariable"
-			},
-			{
-				"text": "{{",
+				"text": " {{",
 				"name": "template-ground template-bracket"
 			},
 			{
@@ -24407,11 +24403,7 @@
 				"name": "templatevariable-delimiter"
 			},
 			{
-				"text": " ",
-				"name": "comment"
-			},
-			{
-				"text": "{{",
+				"text": " {{",
 				"name": "template-ground template-bracket"
 			},
 			{
@@ -24483,10 +24475,6 @@
 			{
 				"text": "|",
 				"name": "templatevariable-delimiter"
-			},
-			{
-				"text": " ",
-				"name": "templatevariable"
 			},
 			{
 				"text": "<",
@@ -61949,8 +61937,28 @@
 				"name": "templatevariable-bracket"
 			},
 			{
-				"text": "bar 5===5===6 foo-{bar 6===6",
+				"text": "bar 5===",
 				"name": "templatevariable-name"
+			},
+			{
+				"text": "5",
+				"name": ""
+			},
+			{
+				"text": "===",
+				"name": "section-header section--3"
+			},
+			{
+				"text": "6 foo-{bar 6",
+				"name": "section"
+			},
+			{
+				"text": "===",
+				"name": "section-header"
+			},
+			{
+				"text": "6",
+				"name": ""
 			}
 		]
 	},

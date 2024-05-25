@@ -1188,12 +1188,24 @@ export class MediaWiki {
 				pos === 1 ? lookahead("{<~'_") : lookahead('{<', true)
 			})+`, 'iu'),
 			f: Tokenizer = (stream, state) => {
-				if (stream.eat('|')) {
+				const sol = stream.sol();
+				stream.eatSpace();
+				if (stream.eol()) {
+					return this.makeLocalStyle('', state);
+				} else if (stream.eat('|')) {
 					state.tokenize = this.inVariable(pos + 1);
 					return this.makeLocalTagStyle('templateVariableDelimiter', state);
 				} else if (stream.match('}}}')) {
 					pop(state);
 					return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
+				} else if (stream.match('<!--')) {
+					chain(state, this.inComment);
+					return this.makeLocalTagStyle('comment', state);
+				} else if (pos === 0 && sol) {
+					state.nVar--;
+					pop(state);
+					stream.pos = 0;
+					return '';
 				}
 				return pos === 1 && isSolSyntax(stream) || !stream.match(re)
 					? this.eatWikiText(tag)(stream, state)

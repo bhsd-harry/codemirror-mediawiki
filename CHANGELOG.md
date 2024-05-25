@@ -24,6 +24,7 @@
 **Changed**
 
 - Treat `onlyinclude`, `includeonly` and `noinclude` as extension tags in the MediaWiki mode
+- Break variable name syntax at SOL in the MediaWiki mode
 
 ## 2.13.1
 
