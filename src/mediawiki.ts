@@ -880,7 +880,7 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(/^'(?=')/u)) {
 				return this.eatApostrophes(linkState)(stream, state) || this.makeStyle(tmpstyle, state);
-			} else if (file && isSolSyntax(stream, true)) {
+			} else if (file && isSolSyntax(stream, true) || stream.sol() && stream.match('{', false)) {
 				return this.eatWikiText(tmpstyle)(stream, state);
 			}
 			const mt = stream.match(regex) as RegExpMatchArray | false;

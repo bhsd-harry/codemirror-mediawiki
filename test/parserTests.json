@@ -64212,8 +64212,20 @@
 				"name": "link-ground link-delimiter"
 			},
 			{
-				"text": "{||test|}",
-				"name": "link-ground link-text"
+				"text": "{|",
+				"name": "link-ground table-bracket"
+			},
+			{
+				"text": "|",
+				"name": "link-ground table-delimiter"
+			},
+			{
+				"text": "test",
+				"name": "link-ground"
+			},
+			{
+				"text": "|}",
+				"name": "link-ground table-bracket"
 			},
 			{
 				"text": "]]",
