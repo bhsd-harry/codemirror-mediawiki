@@ -200,6 +200,16 @@
 	font-weight: bold;
 }
 
+/* convert */
+.cm-mw-convert-bracket,
+.cm-mw-convert-delimiter {
+	color: #b68;
+	font-weight: bold;
+}
+.cm-mw-convert-flag {
+	color: #b68;
+}
+
 /* HTML entity */
 .cm-mw-entity {
 	color: #00a1a1;

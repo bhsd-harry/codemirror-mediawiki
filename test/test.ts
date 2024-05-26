@@ -17,7 +17,7 @@ for (const file of ['parserTests.txt', ...files]) {
 	const content = fs.readFileSync(fs.realpathSync(path.join(cwd, file)), 'utf8'),
 		cases = [...content.matchAll(/^!!\s*test\n.+?^!!\s*end$/gmsu)],
 		// eslint-disable-next-line @stylistic/max-len
-		re = /^!!\s*options(?:\n(?:parsoid=wt2html.*|(?:(?:subpage )?title|preprocessor|thumbsize)=.+|cat|subpage|showindicators|djvu))*\n!/mu;
+		re = /^!!\s*options(?:\n(?:parsoid=wt2html.*|(?:(?:subpage )?title|preprocessor|thumbsize)=.+|cat|subpage|showindicators|djvu|showmedia|showtocdata))*\n!/mu;
 	for (const [test] of cases) {
 		if (
 			/^!!\s*html(?:\/(?:php|\*))?$/mu.test(test)
@@ -42,8 +42,9 @@ for (const file of ['parserTests.txt', ...files]) {
 					}
 					tests.push({desc, wikitext, tokens});
 				}
-			} catch {
+			} catch (e) {
 				console.error(test);
+				throw e;
 			}
 		}
 	}

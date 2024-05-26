@@ -111,6 +111,9 @@ const modeConfig = {
 	tokens: {
 		apostrophes: 'mw-apostrophes',
 		comment: 'mw-comment',
+		convertBracket: 'mw-convert-bracket',
+		convertDelimiter: 'mw-convert-delimiter',
+		convertFlag: 'mw-convert-flag',
 		doubleUnderscore: 'mw-double-underscore',
 		em: 'mw-em',
 		error: 'mw-error',

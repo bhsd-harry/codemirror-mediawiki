@@ -8,6 +8,7 @@
 - Magic links (RFC, PMID and ISBN) and [openLinks](./mw/README.md#openlinks) support in the MediaWiki mode
 - Highlight image size in the MediaWiki mode
 - [Autocompletion](./README.md#autocompletion) for table cell attributes when explicitly triggered in the MediaWiki mode
+- Highlight language conversion in the MediaWiki mode
 
 **Fixed**
 
