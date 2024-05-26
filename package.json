@@ -30,18 +30,18 @@
 		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly",
 		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
 		"build:gh-page": "bash build.sh",
-		"build:test": "esbuild ./src/parser.ts --bundle --minify --platform=node --outfile=test/dist/parser.min.js && tsc --project test/tsconfig.json && node test/dist/test.js",
+		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
 		"build": "npm run build:core && npm run build:mw && npm run build:test",
 		"diff": "git diff --ignore-all-space --color-moved",
 		"diff:stat": "f() { git diff --stat --ignore-all-space --color=always $1 $2 -- . ':!dist/' ':!.github/'; }; f",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
-		"prof": "node --prof test/dist/prof.js && node --prof-process isolate-0x*-v8.log > test/prof.txt && gsed -i '0,/Bottom up/d' test/prof.txt && rm isolate-0x*-v8.log",
+		"prof": "node --prof test/dist/test/prof.js && node --prof-process isolate-0x*-v8.log > test/prof.txt && gsed -i '0,/Bottom up/d' test/prof.txt && rm isolate-0x*-v8.log",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",
 		"test": "npm run build:core && npm run build:gh-page && npm run server",
 		"test:end": "pkill -x http-server",
-		"test:real": "node test/dist/real.js"
+		"test:real": "node test/dist/test/real.js"
 	},
 	"engines": {
 		"node": "20.9.0"

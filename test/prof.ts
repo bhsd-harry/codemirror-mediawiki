@@ -1,5 +1,5 @@
 import {readFileSync} from 'fs';
-import parser from './parser.min.js';
+import parser from './parser';
 
 const content = readFileSync('test/page.wiki', 'utf8');
 console.time('parser');

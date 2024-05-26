@@ -1,4 +1,4 @@
-import parser from './parser.min.js';
+import parser from './parser';
 
 declare interface MediaWikiPage {
 	readonly title: string;

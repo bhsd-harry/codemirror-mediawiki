@@ -2,7 +2,7 @@ import {CDN} from '../src/util';
 import {getStaticMwConfig} from '../src/static';
 import {setObject, getObject} from './util';
 import type {Config} from 'wikiparser-node';
-import type {MwConfig} from '../src/mediawiki';
+import type {MwConfig} from '../src/token';
 
 declare interface MagicWord {
 	name: string;

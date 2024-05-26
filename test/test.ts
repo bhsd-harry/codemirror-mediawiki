@@ -1,7 +1,7 @@
 /* eslint-disable es-x/no-string-prototype-matchall */
 import * as fs from 'fs';
 import * as path from 'path';
-import parser from './parser.min.js';
+import parser from './parser';
 
 declare interface Token {
 	text: string;

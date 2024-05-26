@@ -36,7 +36,7 @@ import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
-import type {MwConfig} from './mediawiki';
+import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 
 export {CDN};

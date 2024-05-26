@@ -1,5 +1,5 @@
 import type {Config} from 'wikiparser-node';
-import type {MwConfig} from './mediawiki';
+import type {MwConfig} from './token';
 
 export const tagModes = {
 	onlyinclude: 'mediawiki',

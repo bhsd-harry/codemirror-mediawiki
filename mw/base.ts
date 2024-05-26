@@ -11,7 +11,7 @@ import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {LintSource, MwConfig} from '../src/codemirror';
-import type {ApiSuggest, ApiSuggestions} from '../src/mediawiki';
+import type {ApiSuggest, ApiSuggestions} from '../src/token';
 
 declare global {
 	const monaco: typeof Monaco;
