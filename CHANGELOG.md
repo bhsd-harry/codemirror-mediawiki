@@ -7,6 +7,7 @@
 - Extension modes for `<references>`, `<inputbox>` and `<gallery>` in the MediaWiki mode
 - Magic links (RFC, PMID and ISBN) and [openLinks](./mw/README.md#openlinks) support in the MediaWiki mode
 - Highlight image size in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for table cell attributes when explicitly triggered in the MediaWiki mode
 
 **Fixed**
 

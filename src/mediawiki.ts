@@ -1815,11 +1815,17 @@ export class MediaWiki {
 							: null;
 					}
 				}
-			} else if (
+			}
+			if (
 				hasTag(types, ['htmlTagAttribute', 'tableDefinition', 'mw-ext-pre', 'mw-ext-gallery', 'mw-ext-poem'])
+				|| explicit && hasTag(types, ['tableTd', 'tableTh', 'tableCaption'])
 			) {
-				const [, tagName] = /mw-(?:ext|html)-([a-z]+)/u.exec(node.name) as string[] as [string, string],
-					mt = context.matchBefore(hasTag(types, 'tableDefinition') ? /[\s|-][a-z]+$/iu : /\s[a-z]+$/iu);
+				let re = hasTag(types, ['htmlTagAttribute', 'extTagAttribute']) ? /\s[a-z]+$/iu : /[\s|-][a-z]+$/iu;
+				if (explicit) {
+					re = /[\s|!+-][a-z]+$/iu;
+				}
+				const [, tagName] = /mw-(?:ext|html|table)-([a-z]+)/u.exec(node.name) as string[] as [string, string],
+					mt = context.matchBefore(re);
 				if (mt) {
 					return mt.from >= from && /^[|-]/u.test(mt.text)
 						? null
