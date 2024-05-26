@@ -37,6 +37,7 @@
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
+		"prof": "node --prof test/dist/prof.js && node --prof-process isolate-0x*-v8.log > test/prof.txt && gsed -i '0,/Bottom up/d' test/prof.txt && rm isolate-0x*-v8.log",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",
 		"test": "npm run build:core && npm run build:gh-page && npm run server",
 		"test:end": "pkill -x http-server",

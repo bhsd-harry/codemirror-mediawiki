@@ -3,3 +3,5 @@ dist/
 !/dist/main.min.js
 /.markdownlint.json
 .eslintcache
+**/*.txt
+**/*.wiki
