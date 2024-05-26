@@ -25,6 +25,7 @@
 
 - Treat `onlyinclude`, `includeonly` and `noinclude` as extension tags in the MediaWiki mode
 - Break variable name syntax at SOL in the MediaWiki mode
+- New CSS class `cm-mw-table-th` for table header cells in the MediaWiki mode
 
 ## 2.13.1
 

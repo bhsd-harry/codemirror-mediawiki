@@ -80,12 +80,6 @@ export interface MwConfig {
 	paramSuggest?: ApiSuggest;
 }
 
-const enum TableCell {
-	Td,
-	Th,
-	Caption,
-}
-
 /**
  * 比较两个嵌套状态是否相同
  * @param a
@@ -850,7 +844,7 @@ export class MediaWiki {
 		};
 	}
 
-	inLinkText(file: boolean): Tokenizer {
+	inLinkText(file: boolean, gallery?: boolean): Tokenizer {
 		const linkState = {bold: false, italic: false},
 			chars = `]'{<${file ? '~' : '['}`,
 			regex = new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
@@ -861,7 +855,9 @@ export class MediaWiki {
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (closing || !file && stream.match('[[', false)) {
-				if (closing && !redirect && lbrack && stream.peek() === ']') {
+				if (gallery) {
+					return this.makeStyle(tmpstyle, state);
+				} else if (closing && !redirect && lbrack && stream.peek() === ']') {
 					stream.backUp(1);
 					state.lbrack = false;
 					return this.makeStyle(tmpstyle, state);
@@ -965,17 +961,17 @@ export class MediaWiki {
 						state.tokenize = this.inTableDefinition(true);
 						return this.makeLocalTagStyle('tableDelimiter', state);
 					} else if (stream.match(/^\+\s*/u)) {
-						state.tokenize = this.inTableCell(true, TableCell.Caption);
+						state.tokenize = this.inTableCell(true, tokens.tableCaption);
 						return this.makeLocalTagStyle('tableDelimiter', state);
 					} else if (stream.eat('}')) {
 						pop(state);
 						return this.makeLocalTagStyle('tableBracket', state);
 					}
 					stream.eatSpace();
-					state.tokenize = this.inTableCell(true, TableCell.Td);
+					state.tokenize = this.inTableCell(true, tokens.tableTd);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				} else if (stream.match(/^!\s*/u)) {
-					state.tokenize = this.inTableCell(true, TableCell.Th);
+					state.tokenize = this.inTableCell(true, tokens.tableTh);
 					return this.makeLocalTagStyle('tableDelimiter', state);
 				}
 			}
@@ -983,13 +979,7 @@ export class MediaWiki {
 		};
 	}
 
-	inTableCell(needAttr: boolean, type: TableCell, firstLine = true): Tokenizer {
-		let style = '';
-		if (type === TableCell.Caption) {
-			style = tokens.tableCaption;
-		} else if (type === TableCell.Th) {
-			style = tokens.strong;
-		}
+	inTableCell(needAttr: boolean, style: string, firstLine = true): Tokenizer {
 		const chars = "'<~_",
 			f: Tokenizer = (stream, state) => {
 				if (stream.sol()) {
@@ -997,7 +987,7 @@ export class MediaWiki {
 						state.tokenize = this.inTable;
 						return '';
 					} else if (firstLine) {
-						state.tokenize = this.inTableCell(false, type, false);
+						state.tokenize = this.inTableCell(false, style, false);
 						return '';
 					} else if (isSolSyntax(stream)) {
 						return this.eatWikiText(style)(stream, state);
@@ -1006,17 +996,17 @@ export class MediaWiki {
 				if (firstLine) {
 					if (
 						stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}\s*/u)
-						|| type === TableCell.Th && stream.match(/^!!\s*/u)
+						|| style === tokens.tableTh && stream.match(/^!!\s*/u)
 					) {
 						state.bold = false;
 						state.italic = false;
-						state.tokenize = this.inTableCell(true, type);
+						state.tokenize = this.inTableCell(true, style);
 						return this.makeLocalTagStyle('tableDelimiter', state);
 					} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
-						state.tokenize = this.inTableCell(false, type);
+						state.tokenize = this.inTableCell(false, style);
 						return this.makeLocalTagStyle('tableDelimiter2', state);
 					} else if (needAttr && stream.match('[[', false)) {
-						state.tokenize = this.inTableCell(false, type);
+						state.tokenize = this.inTableCell(false, style);
 					}
 				}
 				const t = state.stack[0]!,
@@ -1519,19 +1509,9 @@ export class MediaWiki {
 							if (cmpNesting(state, token.state, true)) {
 								const {style: s} = token,
 									local = typeof s === 'string',
-									type = !local && s[0].split(' ').find(t => t && !t.endsWith('-ground')),
-									isCaption = type === tokens.tableCaption,
-									isTh = type === tokens.strong;
-								if (isCaption) {
-									token.style = `${
-										s[0].replace(tokens.tableCaption, '')
-									} ${tokens.tableDefinition} mw-html-caption`;
-								} else if (isTh) {
-									token.style = `${
-										s[0].replace(tokens.strong, '')
-									} ${tokens.tableDefinition} mw-html-th`;
-								} else if (type === undefined) {
-									token.style = `${s[0]} ${tokens.tableDefinition} mw-html-td`;
+									type = !local && s[0].split(' ').find(t => t && !t.endsWith('-ground'));
+								if (type && type.startsWith('mw-table-')) {
+									token.style = `${s[0].replace('mw-table-', 'mw-html-')} ${tokens.tableDefinition}`;
 								} else if (local && s.includes(tokens.tableDelimiter)) {
 									break;
 								}
@@ -1664,7 +1644,7 @@ export class MediaWiki {
 				state.tokenize = this.inGallery(true);
 				return this.makeTagStyle('error', state);
 			} else if (stream.match(/^\|\s*/u)) {
-				state.tokenize = this.inLinkText(true);
+				state.tokenize = this.inLinkText(true, true);
 				this.toEatImageParameter(stream, state);
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(regex)) {

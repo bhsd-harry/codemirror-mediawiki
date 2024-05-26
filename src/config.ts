@@ -154,6 +154,8 @@ const modeConfig = {
 		tableDefinition: 'mw-table-definition',
 		tableDelimiter: 'mw-table-delimiter',
 		tableDelimiter2: 'mw-table-delimiter2',
+		tableTd: 'mw-table-td',
+		tableTh: 'mw-table-th',
 		template: 'mw-template',
 		templateArgumentName: 'mw-template-argument-name',
 		templateBracket: 'mw-template-bracket',
