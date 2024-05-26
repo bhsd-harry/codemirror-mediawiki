@@ -1,6 +1,6 @@
 import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
 (async () => {
-    const tests = await (await fetch('/wikiparser-node/test/parserTests.json')).json(), select = document.querySelector('select'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
+    const tests = await (await fetch('/codemirror-mediawiki/test/parserTests.json')).json(), select = document.querySelector('select'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
     Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
     const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config));
     Object.assign(window, { cm });
@@ -14,9 +14,6 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         if (wikitext === undefined) {
             optgroup = document.createElement('optgroup');
             optgroup.label = desc;
-            if (desc === 'legacyMedia') {
-                optgroup.hidden = true;
-            }
             select.append(optgroup);
         }
         else {

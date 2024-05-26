@@ -207,7 +207,7 @@ const lookahead = (chars: string, comment?: boolean | string[]): string => {
 		'[': '\\[(?!\\[)',
 		']': '\\](?!\\])',
 		'/': '/(?!>)',
-		'-': '-(?!\\{)',
+		'-': '-(?!\\{(?!\\{))',
 	};
 	if (Array.isArray(comment)) {
 		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.slice(0, -1).join('|')})(?:[\\s/>]|$))`;
@@ -707,7 +707,7 @@ export class MediaWiki {
 				case '&':
 					return this.makeStyle(this.eatEntity(stream, style), state);
 				case '-':
-					if (stream.match(/^\{\s*/u)) {
+					if (stream.match(/^\{(?!\{)\s*/u)) {
 						chain(state, this.inConvert(style, true));
 						return this.makeLocalTagStyle('convertBracket', state);
 					}
@@ -1363,11 +1363,20 @@ export class MediaWiki {
 				} else if (stream.match('}}')) {
 					pop(state);
 					return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
-				} else if (expectName && stream.match(re1)) {
+				} else if (stream.sol() && stream.peek() === '=') {
+					const style = this.eatWikiText('template')(stream, state);
+					if (style.includes(tokens.sectionHeader)) {
+						return style;
+					}
+					stream.pos = 0;
+				}
+				if (expectName && stream.match(re1)) {
 					state.tokenize = this.inTemplateArgument();
 					return this.makeLocalTagStyle('templateArgumentName', state);
+				} else if (isSolSyntax(stream) && stream.peek() !== '=') {
+					return this.eatWikiText('template')(stream, state);
 				}
-				return !isSolSyntax(stream) && stream.match(re2) || space
+				return stream.match(re2) || space
 					? this.makeLocalTagStyle('template', state)
 					: this.eatWikiText('template')(stream, state);
 			};

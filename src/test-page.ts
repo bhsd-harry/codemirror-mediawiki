@@ -7,7 +7,7 @@ declare interface Test {
 }
 
 (async () => {
-	const tests: Test[] = await (await fetch('/wikiparser-node/test/parserTests.json')).json(),
+	const tests: Test[] = await (await fetch('/codemirror-mediawiki/test/parserTests.json')).json(),
 		select = document.querySelector('select')!,
 		textarea = document.querySelector('textarea')!,
 		pre = document.querySelector('pre')!;
@@ -25,9 +25,6 @@ declare interface Test {
 		if (wikitext === undefined) {
 			optgroup = document.createElement('optgroup');
 			optgroup.label = desc;
-			if (desc === 'legacyMedia') {
-				optgroup.hidden = true;
-			}
 			select.append(optgroup);
 		} else {
 			const option = document.createElement('option');

@@ -1,6 +1,6 @@
 ## 2.14.0
 
-*2024-05-25*
+*2024-05-26*
 
 **Added**
 
@@ -21,7 +21,8 @@
 - `<!-->` in the MediaWiki mode
 - Leading whitespace (e.g., `\t`) of a table in the MediaWiki mode
 - `[[]]` in a file link in the MediaWiki mode
-- Allow headers, horizontal rules and tables in a file link in the MediaWiki mode
+- Allow section headers, horizontal rules and tables in a file link in the MediaWiki mode
+- Allow section headers in template arguments in the MediaWiki mode
 
 **Changed**
 
@@ -277,7 +278,7 @@
 
 **Added**
 
-- Support for `jquery.textSelection` with multiple selections, except for headings, when used in a MediaWiki site
+- Support for `jquery.textSelection` with multiple selections when used in a MediaWiki site
 
 **Fixed**
 

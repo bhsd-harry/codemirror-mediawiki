@@ -12,6 +12,7 @@ const tests: {desc: string, wikitext?: string, tokens?: Token[]}[] = [],
 	cwd = '../wikiparser-node/test/core',
 	files = new Set(fs.readdirSync(`${cwd}/`));
 files.delete('parserTests.txt');
+files.delete('indentPre.txt');
 for (const file of ['parserTests.txt', ...files]) {
 	tests.push({desc: file.slice(0, -4)});
 	const content = fs.readFileSync(fs.realpathSync(path.join(cwd, file)), 'utf8'),
