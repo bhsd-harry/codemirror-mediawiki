@@ -10,7 +10,13 @@ import type {StreamParser, StringStream} from '@codemirror/language';
 
 const {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} = modeConfig;
 
-declare type MimeTypes = 'mediawiki' | 'text/mediawiki';
+declare type MimeTypes = 'mediawiki'
+| 'text/nowiki'
+| 'text/references'
+| 'text/choose'
+| 'text/combobox'
+| 'text/inputbox'
+| 'text/gallery';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = (stream: StringStream, state: State) => T;
 declare type TagName = keyof typeof tokens;
@@ -29,6 +35,7 @@ declare interface State extends Nesting {
 	italic: boolean;
 	dt: Partial<Nesting> & {n: number};
 	redirect: boolean;
+	data: MediaWikiData;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
@@ -65,6 +72,32 @@ export interface MwConfig {
 	paramSuggest?: ApiSuggest;
 }
 
+class MediaWikiData {
+	/** 已解析的节点 */
+	declare readonly readyTokens: Token[];
+
+	/** 当前起始位置 */
+	declare oldToken: Token | null;
+
+	/** 可能需要回滚的`'''` */
+	declare mark: number | null;
+
+	declare firstSingleLetterWord: number | null;
+	declare firstMultiLetterWord: number | null;
+	declare firstSpace: number | null;
+	declare readonly tags;
+
+	constructor(tags: string[]) {
+		this.tags = tags;
+		this.firstSingleLetterWord = null;
+		this.firstMultiLetterWord = null;
+		this.firstSpace = null;
+		this.readyTokens = [];
+		this.oldToken = null;
+		this.mark = null;
+	}
+}
+
 /**
  * 比较两个嵌套状态是否相同
  * @param a
@@ -99,7 +132,7 @@ const simpleToken: Tokenizer<string> = (stream, state): string => {
 	return Array.isArray(style) ? style[0] : style;
 };
 
-const startState = (tokenize: Tokenizer): State => ({
+const startState = (tokenize: Tokenizer, tags: string[]): State => ({
 	tokenize,
 	stack: [],
 	inHtmlTag: [],
@@ -116,6 +149,7 @@ const startState = (tokenize: Tokenizer): State => ({
 	italic: false,
 	dt: {n: 0},
 	redirect: false,
+	data: new MediaWikiData(tags),
 });
 
 /**
@@ -130,7 +164,7 @@ const copyState = (state: State): State => {
 		} else if (key === 'extState') {
 			newState.extState = (state.extMode && state.extMode.copyState || copyState)(val as State);
 		} else {
-			Object.assign(newState, {[key]: typeof val === 'object' ? {...val} : val});
+			Object.assign(newState, {[key]: key !== 'data' && typeof val === 'object' ? {...val} : val});
 		}
 	}
 	return newState;
@@ -181,7 +215,7 @@ const isSolSyntax = (stream: StringStream, file?: boolean): boolean =>
  * @param chars
  * @param comment 是否仅排除注释
  */
-const lookahead = (chars: string, comment?: boolean | string[]): string => {
+const lookahead = (chars: string, comment?: boolean | State): string => {
 	const table = {
 		"'": "'(?!')",
 		'{': '\\{(?!\\{)',
@@ -194,8 +228,8 @@ const lookahead = (chars: string, comment?: boolean | string[]): string => {
 		'/': '/(?!>)',
 		'-': '-(?!\\{(?!\\{))',
 	};
-	if (Array.isArray(comment)) {
-		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.slice(0, -1).join('|')})(?:[\\s/>]|$))`;
+	if (typeof comment === 'object') {
+		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.data.tags.slice(0, -1).join('|')})(?:[\\s/>]|$))`;
 	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -227,19 +261,7 @@ const getFreeRegex = (lpar?: boolean): RegExp => {
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
-	/** 已解析的节点 */
-	declare readonly readyTokens: Token[];
-
-	/** 当前起始位置 */
-	declare oldToken: Token | null;
-
-	/** 可能需要回滚的`'''` */
-	declare mark: number | null;
-
 	declare readonly config;
-	declare firstSingleLetterWord: number | null;
-	declare firstMultiLetterWord: number | null;
-	declare firstSpace: number | null;
 	declare readonly tokenTable;
 	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
@@ -261,12 +283,6 @@ export class MediaWiki {
 			redirection = ['#REDIRECT'],
 		} = config;
 		this.config = config;
-		this.firstSingleLetterWord = null;
-		this.firstMultiLetterWord = null;
-		this.firstSpace = null;
-		this.readyTokens = [];
-		this.oldToken = null;
-		this.mark = null;
 		this.tokenTable = {...tokenTable};
 		this.hiddenTable = {};
 		this.permittedHtmlTags = new Set([
@@ -662,8 +678,8 @@ export class MediaWiki {
 				obj.italic = !obj.italic;
 				return this.makeLocalTagStyle('apostrophes', state);
 			} else if (stream.match("''")) { // bold
-				if (this.firstSingleLetterWord === null && obj === state) {
-					this.prepareItalicForCorrection(stream);
+				if (obj === state && state.data.firstSingleLetterWord === null) {
+					this.prepareItalicForCorrection(stream, state);
 				}
 				obj.bold = !obj.bold;
 				return this.makeLocalTagStyle('apostrophes', state);
@@ -991,10 +1007,9 @@ export class MediaWiki {
 
 	inHtmlTagAttribute(name: string): Tokenizer {
 		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
-			chars = '{/',
-			regex = new RegExp(`^${lookahead('<', this.tags)}`, 'iu');
+			chars = '{/';
 		return (stream, state) => {
-			if (stream.match(regex, false)) {
+			if (stream.match(new RegExp(`^${lookahead('<', state)}`, 'iu'), false)) {
 				pop(state);
 				return '';
 			}
@@ -1027,11 +1042,9 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (stream.eat('>')) {
 				state.extName = name;
-				const {config: {tagModes, tags}} = this;
+				const {config: {tagModes}, tags} = this;
 				if (name in tagModes) {
-					const innerTags = {...tags};
-					delete innerTags[name];
-					state.extMode = new MediaWiki({...this.config, tags: innerTags})[tagModes[name] as MimeTypes];
+					state.extMode = this[tagModes[name] as MimeTypes](tags.filter(tag => tag !== name));
 				}
 				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
@@ -1204,8 +1217,7 @@ export class MediaWiki {
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
 		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
 			chars = '{}<',
-			re1 = anchor ? new RegExp(`^(?:[^|${chars}]|${lookahead(chars, true)})+`, 'u') : /^[^|{}<>[\]#]+/u,
-			re2 = new RegExp(`^(?:[>[\\]]|${lookahead(chars, this.tags)})+`, 'u');
+			re = anchor ? new RegExp(`^(?:[^|${chars}]|${lookahead(chars, true)})+`, 'u') : /^[^|{}<>[\]#]+/u;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1228,14 +1240,14 @@ export class MediaWiki {
 			} else if (!anchor && stream.eat('#')) {
 				state.tokenize = this.inTemplatePageName(true, true);
 				return this.makeLocalTagStyle('error', state);
-			} else if (!anchor && stream.match(re2)) {
+			} else if (!anchor && stream.match(new RegExp(`^(?:[>[\\]]|${lookahead(chars, state)})+`, 'u'))) {
 				return this.makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.peek() === '<') {
 				pop(state);
 				return this.makeLocalStyle('', state, 'nTemplate');
 			} else if (space && !haveEaten) {
 				return this.makeLocalStyle('', state);
-			} else if (stream.match(re1)) {
+			} else if (stream.match(re)) {
 				state.tokenize = this.inTemplatePageName(true, anchor);
 				return this.makeLocalStyle(style, state);
 			}
@@ -1268,9 +1280,8 @@ export class MediaWiki {
 	}
 
 	inTemplateArgument(expectName?: boolean): Tokenizer {
-		const re1 = new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', this.tags)})*=`, 'iu'),
-			chars = "}{<~'_-",
-			re2 = new RegExp(`^(?:[^|[&:${chars}]|${lookahead(chars)})+`, 'iu'),
+		const chars = "}{<~'_-",
+			re = new RegExp(`^(?:[^|[&:${chars}]|${lookahead(chars)})+`, 'iu'),
 			f: Tokenizer = (stream, state) => {
 				const space = stream.eatSpace();
 				if (stream.eol()) {
@@ -1288,13 +1299,13 @@ export class MediaWiki {
 					}
 					stream.pos = 0;
 				}
-				if (expectName && stream.match(re1)) {
+				if (expectName && stream.match(new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', state)})*=`, 'iu'))) {
 					state.tokenize = this.inTemplateArgument();
 					return this.makeLocalTagStyle('templateArgumentName', state);
 				} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 					return this.eatWikiText('template')(stream, state);
 				}
-				return stream.match(re2) || space
+				return stream.match(re) || space
 					? this.makeLocalTagStyle('template', state)
 					: this.eatWikiText('template')(stream, state);
 			};
@@ -1342,8 +1353,10 @@ export class MediaWiki {
 	 *
 	 * @see https://phabricator.wikimedia.org/T108455
 	 * @param stream
+	 * @param state
 	 */
-	prepareItalicForCorrection(stream: StringStream): void {
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	prepareItalicForCorrection(stream: StringStream, state: State): void {
 		// See Parser::doQuotes() in MediaWiki Core, it works similarly.
 		// this.firstSingleLetterWord has maximum priority
 		// this.firstMultiLetterWord has medium priority
@@ -1351,39 +1364,43 @@ export class MediaWiki {
 		const end = stream.pos,
 			str = stream.string.slice(0, end - 3),
 			x1 = str.slice(-1),
-			x2 = str.slice(-2, -1);
+			x2 = str.slice(-2, -1),
+			{data} = state;
 		// this.firstSingleLetterWord always is undefined here
 		if (x1 === ' ') {
-			if (this.firstMultiLetterWord || this.firstSpace) {
+			if (data.firstMultiLetterWord || data.firstSpace) {
 				return;
 			}
-			this.firstSpace = end;
+			data.firstSpace = end;
 		} else if (x2 === ' ') {
-			this.firstSingleLetterWord = end;
-		} else if (this.firstMultiLetterWord) {
+			data.firstSingleLetterWord = end;
+		} else if (data.firstMultiLetterWord) {
 			return;
 		} else {
-			this.firstMultiLetterWord = end;
+			data.firstMultiLetterWord = end;
 		}
-		this.mark = end;
+		data.mark = end;
 	}
 
 	/**
 	 * main entry
 	 *
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser
+	 *
+	 * @param tags
 	 */
-	get mediawiki(): StreamParser<State> {
+	mediawiki(tags = this.tags): StreamParser<State> {
 		return {
 			name: 'mediawiki',
 
-			startState: () => startState(this.eatWikiText('')),
+			startState: () => startState(this.eatWikiText(''), tags),
 
 			copyState,
 
 			token: (stream, state): string => {
-				const {readyTokens} = this;
-				let {oldToken} = this;
+				const {data} = state,
+					{readyTokens} = data;
+				let {oldToken} = data;
 				while (
 					oldToken
 					&& (
@@ -1407,15 +1424,15 @@ export class MediaWiki {
 						!state.extMode && state.nLink === 0
 						&& typeof style === 'string' && style.includes(tokens.apostrophes)
 					) {
-						if (this.mark === pos) {
+						if (data.mark === pos) {
 							// rollback
-							this.mark = null;
+							data.mark = null;
 							// add one apostrophe, next token will be italic (two apostrophes)
 							stream.string = string.slice(0, pos - 2);
 							const s = state.tokenize(stream, state);
 							stream.string = string;
 							oldToken.pos++;
-							this.oldToken = oldToken;
+							data.oldToken = oldToken;
 							return this.makeFullStyle(s, state);
 						}
 						const length = pos - stream.pos;
@@ -1427,7 +1444,7 @@ export class MediaWiki {
 						}
 					}
 					// return first saved token
-					this.oldToken = readyTokens.shift()!;
+					data.oldToken = readyTokens.shift()!;
 					stream.pos = pos;
 					stream.string = string;
 					return this.makeFullStyle(style, state);
@@ -1436,13 +1453,13 @@ export class MediaWiki {
 					state.bold = false;
 					state.italic = false;
 					state.dt.n = 0;
-					this.firstSingleLetterWord = null;
-					this.firstMultiLetterWord = null;
-					this.firstSpace = null;
+					data.firstSingleLetterWord = null;
+					data.firstMultiLetterWord = null;
+					data.firstSpace = null;
 				}
 				readyTokens.length = 0;
-				this.mark = null;
-				this.oldToken = {pos: stream.pos, string: stream.string, state: copyState(state), style: ''};
+				data.mark = null;
+				data.oldToken = {pos: stream.pos, string: stream.string, state: copyState(state), style: ''};
 				let style: Style;
 				do {
 					// get token style
@@ -1481,11 +1498,11 @@ export class MediaWiki {
 				} while (!stream.eol());
 				if (!state.bold || !state.italic) {
 					// no need to rollback
-					this.mark = null;
+					data.mark = null;
 				}
-				stream.pos = this.oldToken.pos;
-				stream.string = this.oldToken.string;
-				Object.assign(state, this.oldToken.state);
+				stream.pos = data.oldToken.pos;
+				stream.string = data.oldToken.string;
+				Object.assign(state, data.oldToken.state);
 				return '';
 			},
 
@@ -1503,11 +1520,7 @@ export class MediaWiki {
 		};
 	}
 
-	get 'text/mediawiki'(): StreamParser<State> {
-		return this.mediawiki;
-	}
-
-	get 'text/nowiki'(): StreamParser<Record<string, never>> {
+	'text/nowiki'(): StreamParser<Record<string, never>> {
 		return {
 			startState: () => ({}),
 
@@ -1537,25 +1550,25 @@ export class MediaWiki {
 		};
 	}
 
-	get 'text/references'(): StreamParser<State> {
+	'text/references'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('ref', true)),
+			startState: () => startState(this.inReferences('ref', true), tags),
 
 			token: simpleToken,
 		};
 	}
 
-	get 'text/choose'(): StreamParser<State> {
+	'text/choose'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('option')),
+			startState: () => startState(this.inReferences('option'), tags),
 
 			token: simpleToken,
 		};
 	}
 
-	get 'text/combobox'(): StreamParser<State> {
+	'text/combobox'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('combooption')),
+			startState: () => startState(this.inReferences('combooption'), tags),
 
 			token: simpleToken,
 		};
@@ -1575,9 +1588,9 @@ export class MediaWiki {
 		};
 	}
 
-	get 'text/inputbox'(): StreamParser<State> {
+	'text/inputbox'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inInputbox),
+			startState: () => startState(this.inInputbox, tags),
 
 			token: simpleToken,
 		};
@@ -1608,13 +1621,13 @@ export class MediaWiki {
 		};
 	}
 
-	get 'text/gallery'(): StreamParser<State> {
+	'text/gallery'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inGallery()),
+			startState: () => startState(this.inGallery(), tags),
 
 			token: (stream, state): string => {
 				if (stream.sol()) {
-					Object.assign(state, startState(this.inGallery()));
+					Object.assign(state, startState(this.inGallery(), state.data.tags));
 				}
 				return simpleToken(stream, state);
 			},

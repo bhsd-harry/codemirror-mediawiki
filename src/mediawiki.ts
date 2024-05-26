@@ -104,8 +104,8 @@ export class FullMediaWiki extends MediaWiki {
 		}));
 	}
 
-	override get mediawiki(): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
-		const parser = super.mediawiki;
+	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+		const parser = super.mediawiki(tags);
 		parser.languageData = {
 			commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
 			closeBrackets: {brackets: ['(', '[', '{', '"']} as CloseBracketConfig,
@@ -378,7 +378,7 @@ for (const [language, parser] of Object.entries(plugins)) {
  */
 export const mediawiki = (config: MwConfig): LanguageSupport => {
 	const mode = new FullMediaWiki(config),
-		lang = StreamLanguage.define(mode.mediawiki),
+		lang = StreamLanguage.define(mode.mediawiki()),
 		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) as Highlighter);
 	return new LanguageSupport(lang, highlighter);
 };
