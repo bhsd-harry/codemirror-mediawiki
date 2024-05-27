@@ -114,6 +114,7 @@ const modeConfig = {
 		convertBracket: 'mw-convert-bracket',
 		convertDelimiter: 'mw-convert-delimiter',
 		convertFlag: 'mw-convert-flag',
+		convertLang: 'mw-convert-lang',
 		doubleUnderscore: 'mw-double-underscore',
 		em: 'mw-em',
 		error: 'mw-error',

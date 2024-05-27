@@ -206,7 +206,8 @@
 	color: #b68;
 	font-weight: bold;
 }
-.cm-mw-convert-flag {
+.cm-mw-convert-flag,
+.cm-mw-convert-lang {
 	color: #b68;
 }
 
