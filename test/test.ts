@@ -8,7 +8,8 @@ declare interface Token {
 	name: string;
 }
 
-const tests: {desc: string, wikitext?: string, tokens?: Token[]}[] = [],
+const tests: {desc: string, wikitext?: string, parsed?: string}[] = [],
+	entities = {'<': '&lt;', '>': '&gt', '&': '&amp;'},
 	cwd = '../wikiparser-node/test/core',
 	files = new Set(fs.readdirSync(`${cwd}/`));
 files.delete('parserTests.txt');
@@ -41,7 +42,13 @@ for (const file of ['parserTests.txt', ...files]) {
 						}
 						node = node.nextSibling;
 					}
-					tests.push({desc, wikitext, tokens});
+					tests.push({
+						desc,
+						wikitext,
+						parsed: tokens.map(({name, text}) => `<${name}>${
+							text.replace(/[<>&]/gu, m => entities[m as '<' | '>' | '&'])
+						}</>`).join(''),
+					});
 				}
 			} catch (e) {
 				console.error(test);
