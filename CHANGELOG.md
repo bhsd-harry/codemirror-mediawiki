@@ -1,3 +1,11 @@
+## 2.14.1
+
+*2024-05-28*
+
+**Added**
+
+- Highlight tag and table attribute values in the MediaWiki mode
+
 ## 2.14.0
 
 *2024-05-27*

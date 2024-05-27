@@ -183,6 +183,11 @@
 	color: #14866d;
 	font-weight: normal;
 }
+.cm-mw-exttag-attribute-value,
+.cm-mw-htmltag-attribute-value {
+	color: #179b1c;
+	font-weight: normal;
+}
 
 /* table */
 .cm-mw-table-bracket,
@@ -193,6 +198,10 @@
 .cm-mw-table-delimiter2,
 .cm-mw-table-definition {
 	color: #d08;
+	font-weight: normal;
+}
+.cm-mw-table-definition-value {
+	color: #f500d4;
 	font-weight: normal;
 }
 .cm-mw-table-th,

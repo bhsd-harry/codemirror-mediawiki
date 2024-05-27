@@ -511,8 +511,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"123\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "\"123\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -2135,8 +2139,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "lang=\"fr\"",
+				"text": "lang=",
 				"name": "htmltag-attribute html-rtc"
+			},
+			{
+				"text": "\"fr\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -2243,8 +2251,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "lang=\"fr\"",
+				"text": "lang=",
 				"name": "htmltag-attribute html-rtc"
+			},
+			{
+				"text": "\"fr\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -2351,8 +2363,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "lang=\"fr\"",
+				"text": "lang=",
 				"name": "htmltag-attribute html-rtc"
+			},
+			{
+				"text": "\"fr\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -2465,7 +2481,15 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"something\" ",
+				"text": "name=",
+				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"something\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "exttag-attribute ext-indicator"
 			},
 			{
@@ -4753,8 +4777,12 @@
 				"name": "template-ground htmltag-name"
 			},
 			{
-				"text": "class=\"hi",
+				"text": "class=",
 				"name": "template-ground htmltag-attribute html-div"
+			},
+			{
+				"text": "\"hi",
+				"name": "template-ground htmltag-attribute-value"
 			},
 			{
 				"text": "|",
@@ -7501,7 +7529,11 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "/ ",
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -7523,7 +7555,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"clear:both;\" ",
+				"text": "style=",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\"clear:both;\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -7545,8 +7585,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"clear: left;\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\"clear: left;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -7557,8 +7601,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"clear: right;\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\"clear: right;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -7569,8 +7617,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"clear: both;\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\"clear: both;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -7615,7 +7667,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title/ ",
+				"text": "title",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -7627,7 +7687,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar ",
+				"text": "title=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "bar",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -7639,8 +7707,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "bar",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "/><",
@@ -7651,7 +7723,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar/ ",
+				"text": "title=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "bar/",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -7673,8 +7753,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "cla/ss=\"123\"",
+				"text": "cla",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": "ss=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"123\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -7701,8 +7793,16 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "/ class=\"123\"",
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": " class=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"123\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -7729,7 +7829,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class= / \"123\"",
+				"text": "class= ",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "/",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " \"123\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -7791,7 +7899,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title/ ",
+				"text": "title",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -7803,7 +7919,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar ",
+				"text": "title=",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "bar",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -7815,8 +7939,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar",
+				"text": "title=",
 				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "bar",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "/><",
@@ -7827,7 +7955,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=bar/ ",
+				"text": "title=",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "bar/",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -7849,8 +7985,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"foo\"style=\"color:red\"",
+				"text": "class=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": "style=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"color:red\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -12929,8 +13077,12 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "=\"foo\"",
+				"text": "=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -12967,8 +13119,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "<",
@@ -13024,7 +13180,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -13141,8 +13297,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"color:",
+				"text": "style=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"color:",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "<",
@@ -13198,7 +13358,7 @@
 			},
 			{
 				"text": ";\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -14747,8 +14907,12 @@
 				"name": "template-ground template-bracket"
 			},
 			{
-				"text": "=\"color:red;\"",
+				"text": "=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"color:red;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -14921,8 +15085,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -14946,7 +15114,7 @@
 			},
 			{
 				"text": " with just one piece templated\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -14983,8 +15151,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"This is a long title with just ",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"This is a long title with just ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -15008,7 +15180,7 @@
 			},
 			{
 				"text": " templated\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -15045,8 +15217,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"This is a long title with just one piece ",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"This is a long title with just one piece ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -15070,7 +15246,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -15131,8 +15307,12 @@
 				"name": "template-ground template-bracket"
 			},
 			{
-				"text": "=\"color:red;\"",
+				"text": "=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"color:red;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -15549,7 +15729,15 @@
 				"name": "template-ground table-bracket"
 			},
 			{
-				"text": "class=\"123\" ",
+				"text": "class=",
+				"name": "template-ground table-definition html-table"
+			},
+			{
+				"text": "\"123\"",
+				"name": "template-ground table-definition-value"
+			},
+			{
+				"text": " ",
 				"name": "template-ground table-definition html-table"
 			},
 			{
@@ -20061,8 +20249,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"rock\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"rock\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20099,8 +20291,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id='rock'",
+				"text": "id=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "'rock'",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20137,8 +20333,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=rock",
+				"text": "id=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "rock",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20175,8 +20375,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"a\" id=\"b\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"a\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " id=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"b\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20251,8 +20463,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id= title=",
+				"text": "id= ",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "title=",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20285,8 +20501,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "title= id=",
+				"text": "title= ",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "id=",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -20315,8 +20535,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"{}\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"{}\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20391,8 +20615,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"error\" class=\"awesome\"",
+				"text": "class=",
 				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"error\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " class=",
+				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"awesome\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20459,8 +20695,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "ID=\"x\"",
+				"text": "ID=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"x\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20603,8 +20843,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "value=\"5\"",
+				"text": "value=",
 				"name": "htmltag-attribute html-data"
+			},
+			{
+				"text": "\"5\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20631,8 +20875,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "datetime=\"2000-01-01T00:00Z\"",
+				"text": "datetime=",
 				"name": "htmltag-attribute html-time"
+			},
+			{
+				"text": "\"2000-01-01T00:00Z\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -20703,7 +20951,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\" style=\"123\"",
+				"text": "style=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\" style=\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": "123\"",
 				"name": "htmltag-attribute html-div"
 			},
 			{
@@ -21325,8 +21581,12 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "style=display:none",
+				"text": "style=",
 				"name": "link-ground htmltag-attribute html-div"
+			},
+			{
+				"text": "display:none",
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -21547,8 +21807,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "color=\"\"",
+				"text": "color=",
 				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "\"\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -21585,8 +21849,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "color=''",
+				"text": "color=",
 				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "''",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -21661,8 +21929,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "color=x",
+				"text": "color=",
 				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "x",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -21699,8 +21971,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "color=#x",
+				"text": "color=",
 				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "#x",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -21853,8 +22129,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -21870,7 +22150,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -21899,8 +22179,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -21916,7 +22200,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -21945,8 +22229,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -21962,7 +22250,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22095,8 +22383,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"[[Main Page]]\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"[[Main Page]]\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22125,8 +22417,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"''foobar''\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"''foobar''\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22155,8 +22451,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"'''foobar'''\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"'''foobar'''\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22185,8 +22485,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"ISBN 1234567890\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"ISBN 1234567890\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22215,8 +22519,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"RFC 1234\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"RFC 1234\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22245,8 +22553,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"PMID 1234567890\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"PMID 1234567890\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22275,8 +22587,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"http://example.com/\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"http://example.com/\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22305,8 +22621,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"[http://example.com/ link]\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"[http://example.com/ link]\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22335,8 +22655,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "<",
@@ -22368,7 +22692,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22397,8 +22721,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "<",
@@ -22430,7 +22758,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22459,8 +22787,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image:u\\rl(javascript:alert('boo'))\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image:u\\rl(javascript:alert('boo'))\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22497,8 +22829,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image:u\\72l(javascript:alert('boo'))\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image:u\\72l(javascript:alert('boo'))\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22535,8 +22871,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image:u/**/rl(javascript:alert('boo'))\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image:u/**/rl(javascript:alert('boo'))\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22573,8 +22913,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image:expres/**/sion(alert('boo4'))\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image:expres/**/sion(alert('boo4'))\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22611,8 +22955,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"font-size: 100px; background-image:url\\b(https://www.google.com/images/srpr/logo6w.png)\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"font-size: 100px; background-image:url\\b(https://www.google.com/images/srpr/logo6w.png)\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22649,16 +22997,28 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&#100;&#97;&#116;&#97;&#58;&#116;&#101;&#120;&#116;&#47;&#104;&#116;&#109;&#108;&#44;&#60;&#105;&#109;&#103;&#32;&#115;&#114;&#99;&#61;&#49;&#32;&#111;&#110;&#101;&#114;&#114;&#111;&#114;&#61;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;&#62;",
 				"name": "entity"
 			},
 			{
-				"text": "\"style=\"-o-link:attr(title);-o-link-source:current\"",
+				"text": "\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"-o-link:attr(title);-o-link-source:current\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22819,8 +23179,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image: u\\",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image: u\\",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&#10;",
@@ -22828,7 +23192,7 @@
 			},
 			{
 				"text": "rl(test.jpg);\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22857,8 +23221,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background-image: u\\",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background-image: u\\",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&#13;",
@@ -22866,7 +23234,7 @@
 			},
 			{
 				"text": "rl(test.jpg); \"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -22895,8 +23263,60 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "aria-describedby=\"id1\" aria-flowto=\"id2\" aria-hidden=\"true\" aria-label=\"id3\" aria-labelledby=\"id4\" aria-level=\"3\" aria-owns=\"id5\"",
+				"text": "aria-describedby=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"id1\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-flowto=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"id2\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-hidden=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"true\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-label=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"id3\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-labelledby=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"id4\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-level=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"3\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " aria-owns=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"id5\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22923,8 +23343,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "aria-bogus=\"stripped\"",
+				"text": "aria-bogus=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"stripped\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -22961,8 +23385,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background: ",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background: ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -22986,7 +23414,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23023,8 +23451,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background:#00FF00\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background:#00FF00\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23061,8 +23493,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"background: ",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"background: ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&#10;",
@@ -23070,7 +23506,7 @@
 			},
 			{
 				"text": "#00FF00\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23111,7 +23547,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "property=\"mw:PageProp/toc\" ",
+				"text": "property=",
+				"name": "htmltag-attribute html-meta"
+			},
+			{
+				"text": "\"mw:PageProp/toc\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-meta"
 			},
 			{
@@ -23255,8 +23699,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"æ: v\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"æ: v\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23313,8 +23761,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"æ: v\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"æ: v\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23391,8 +23843,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "itemprop=\"hello\" content=\"world\"",
+				"text": "itemprop=",
 				"name": "htmltag-attribute html-meta"
+			},
+			{
+				"text": "\"hello\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " content=",
+				"name": "htmltag-attribute html-meta"
+			},
+			{
+				"text": "\"world\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23411,8 +23875,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "http-equiv=\"refresh\" content=\"5\"",
+				"text": "http-equiv=",
 				"name": "htmltag-attribute html-meta"
+			},
+			{
+				"text": "\"refresh\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " content=",
+				"name": "htmltag-attribute html-meta"
+			},
+			{
+				"text": "\"5\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23431,44 +23907,28 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "itemprop=\"hello\" http-equiv=\"refresh\" content=\"5\"",
+				"text": "itemprop=",
 				"name": "htmltag-attribute html-meta"
 			},
 			{
-				"text": ">",
-				"name": "htmltag-bracket"
+				"text": "\"hello\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
-				"text": "\t",
-				"name": ""
+				"text": " http-equiv=",
+				"name": "htmltag-attribute html-meta"
 			},
 			{
-				"text": "<",
-				"name": "htmltag-bracket"
+				"text": "\"refresh\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
-				"text": "link ",
-				"name": "htmltag-name"
+				"text": " content=",
+				"name": "htmltag-attribute html-meta"
 			},
 			{
-				"text": "itemprop=\"hello\" href=\"",
-				"name": "htmltag-attribute html-link"
-			},
-			{
-				"text": "{{",
-				"name": "ext-ground parserfunction-bracket"
-			},
-			{
-				"text": "SERVER",
-				"name": "ext-ground parserfunction-name"
-			},
-			{
-				"text": "}}",
-				"name": "ext-ground parserfunction-bracket"
-			},
-			{
-				"text": "\"",
-				"name": "htmltag-attribute html-link"
+				"text": "\"5\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23487,8 +23947,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "rel=\"stylesheet\" href=\"",
+				"text": "itemprop=",
 				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"hello\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " href=",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -23504,7 +23976,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-link"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23523,8 +23995,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "rel=\"stylesheet\" itemprop=\"hello\" href=\"",
+				"text": "rel=",
 				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"stylesheet\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " href=",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -23540,7 +24024,63 @@
 			},
 			{
 				"text": "\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": ">",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "\t",
+				"name": ""
+			},
+			{
+				"text": "<",
+				"name": "htmltag-bracket"
+			},
+			{
+				"text": "link ",
+				"name": "htmltag-name"
+			},
+			{
+				"text": "rel=",
 				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"stylesheet\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " itemprop=",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"hello\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " href=",
+				"name": "htmltag-attribute html-link"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": "{{",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "SERVER",
+				"name": "ext-ground parserfunction-name"
+			},
+			{
+				"text": "}}",
+				"name": "ext-ground parserfunction-bracket"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -23569,8 +24109,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"margin:/*negate mbox-text padding */-0.125em -0.45em; /*rainbow*/rgba(255, 0, 0, 0.3)\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"margin:/*negate mbox-text padding */-0.125em -0.45em; /*rainbow*/rgba(255, 0, 0, 0.3)\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23691,7 +24235,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"bug\" ",
+				"text": "id=",
+				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "\"bug\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-font"
 			},
 			{
@@ -23723,7 +24275,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"bug2\" ",
+				"text": "id=",
+				"name": "htmltag-attribute html-font"
+			},
+			{
+				"text": "\"bug2\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-font"
 			},
 			{
@@ -23763,8 +24323,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50% !important\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"width:50% !important\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -23801,8 +24365,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50% ! important\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"width:50% ! important\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -24551,8 +25119,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"fragment\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-li"
+			},
+			{
+				"text": "\"fragment\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -24905,7 +25477,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"onmouseover='alert(document.cookie);' \" ",
+				"text": "style=",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\"onmouseover='alert(document.cookie);' \"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -25115,8 +25695,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "dir=\"&#10;\"",
+				"text": "dir=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"&#10;\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -25145,8 +25729,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "dir=\"{{1x|ltr}}\"",
+				"text": "dir=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"{{1x|ltr}}\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -28725,8 +29313,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"_ref\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"_ref\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -28755,8 +29347,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50% !important\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"width:50% !important\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -28783,8 +29379,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50%",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"width:50%",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&nbsp;",
@@ -28792,7 +29392,7 @@
 			},
 			{
 				"text": "!important\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -28819,8 +29419,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"width:50%",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"width:50%",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&#160;",
@@ -28828,7 +29432,7 @@
 			},
 			{
 				"text": "!important\"",
-				"name": "htmltag-attribute html-div"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -28855,8 +29459,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"border : solid;\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"border : solid;\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -28925,7 +29533,15 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\" clear : both ; \" ",
+				"text": "style=",
+				"name": "htmltag-attribute html-br"
+			},
+			{
+				"text": "\" clear : both ; \"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "htmltag-attribute html-br"
 			},
 			{
@@ -28947,8 +29563,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "data-foo=\"bar\"",
+				"text": "data-foo=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"bar\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -28975,8 +29595,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "data-abc-def_hij=\"\"",
+				"text": "data-abc-def_hij=",
 				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -29013,8 +29637,60 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "data-mw=\"foo\" data-parsoid=\"bar\" data-mw-someext=\"baz\" data-ok=\"fred\" data-object-id=\"123\" data-ooui=\"xyzzy\" data-bad:ns=\"ns\"",
+				"text": "data-mw=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-parsoid=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"bar\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-mw-someext=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"baz\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-ok=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"fred\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-object-id=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"123\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-ooui=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"xyzzy\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-bad:ns=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"ns\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -29503,8 +30179,12 @@
 				"name": "ext-ground exttag-name"
 			},
 			{
-				"text": "id=\"one\"",
+				"text": "id=",
 				"name": "ext-ground exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"one\"",
+				"name": "ext-ground exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -29939,8 +30619,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "dir=\"rtl\" lang=\"he\"",
+				"text": "dir=",
 				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"rtl\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " lang=",
+				"name": "htmltag-attribute html-p"
+			},
+			{
+				"text": "\"he\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -29959,8 +30651,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "lang=\"ru\"",
+				"text": "lang=",
 				"name": "htmltag-attribute html-bdi"
+			},
+			{
+				"text": "\"ru\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -30021,8 +30717,20 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "id=foo | style='color: red'",
+				"text": "id=",
 				"name": "table-definition html-tr"
+			},
+			{
+				"text": "foo",
+				"name": "table-definition-value"
+			},
+			{
+				"text": " | style=",
+				"name": "table-definition html-tr"
+			},
+			{
+				"text": "'color: red'",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -30597,8 +31305,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&amp;",
@@ -30606,7 +31318,7 @@
 			},
 			{
 				"text": "amp;\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -30643,8 +31355,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"",
+				"text": "title=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&amp;",
@@ -30652,7 +31368,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -30689,8 +31405,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"Hello world",
+				"text": "title=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"Hello world",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -30727,8 +31447,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "title=\"Hello world ",
+				"text": "title=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"Hello world ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "/>",
@@ -30959,8 +31683,12 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "class=\"foo\"",
+				"text": "class=",
 				"name": "table-definition html-tr"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|-",
@@ -31409,8 +32137,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "xmlns:dct=\"http://purl.org/dc/terms/\" property=\"dct:title\"",
+				"text": "xmlns:dct=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"http://purl.org/dc/terms/\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " property=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"dct:title\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -31683,8 +32423,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"1&2",
+				"text": "class=",
 				"name": "htmltag-attribute html-table"
+			},
+			{
+				"text": "\"1&2",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&amp;",
@@ -31692,7 +32436,7 @@
 			},
 			{
 				"text": "3",
-				"name": "htmltag-attribute html-table"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&amp;",
@@ -31700,7 +32444,7 @@
 			},
 			{
 				"text": "amp;4",
-				"name": "htmltag-attribute html-table"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "&amp;",
@@ -31708,7 +32452,7 @@
 			},
 			{
 				"text": "amp;amp;5\"",
-				"name": "htmltag-attribute html-table"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "><",
@@ -31793,8 +32537,12 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with [brackets]\"",
+				"text": "title=",
 				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "\"title with [brackets]\"",
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -31841,8 +32589,12 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with ",
+				"text": "title=",
 				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "\"title with ",
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": "&#91;",
@@ -31850,7 +32602,7 @@
 			},
 			{
 				"text": "brackets",
-				"name": "link-ground htmltag-attribute html-span"
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": "&#93;",
@@ -31858,7 +32610,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "link-ground htmltag-attribute html-span"
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -31915,8 +32667,12 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with [[double brackets]]\"",
+				"text": "title=",
 				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "\"title with [[double brackets]]\"",
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -31963,8 +32719,12 @@
 				"name": "link-ground htmltag-name"
 			},
 			{
-				"text": "title=\"title with ",
+				"text": "title=",
 				"name": "link-ground htmltag-attribute html-span"
+			},
+			{
+				"text": "\"title with ",
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": "&#91;&#91;",
@@ -31972,7 +32732,7 @@
 			},
 			{
 				"text": "double brackets",
-				"name": "link-ground htmltag-attribute html-span"
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": "&#93;&#93;",
@@ -31980,7 +32740,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "link-ground htmltag-attribute html-span"
+				"name": "link-ground htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -32063,8 +32823,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -32088,7 +32852,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -32149,8 +32913,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "tabindex=\"0\"",
+				"text": "tabindex=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"0\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -32187,8 +32955,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "tabindex=\"-1\"",
+				"text": "tabindex=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"-1\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -32225,8 +32997,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "tabindex=\"3\"",
+				"text": "tabindex=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"3\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -33016,8 +33792,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"display: inline\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-b"
+			},
+			{
+				"text": "\"display: inline\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -38360,8 +39140,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"old-anchor\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"old-anchor\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -38936,8 +39720,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"in-h2\"",
+				"text": "class=",
 				"name": "htmltag-attribute html-sup"
+			},
+			{
+				"text": "\"in-h2\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -38976,8 +39764,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"a ",
+				"text": "class=",
 				"name": "htmltag-attribute html-sup"
+			},
+			{
+				"text": "\"a ",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -39026,8 +39818,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "dir=\"ltr\"",
+				"text": "dir=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"ltr\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -39066,8 +39862,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "dir=\"rtl\"",
+				"text": "dir=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"rtl\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -39106,8 +39906,28 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"font-style: italic\" dir=\"ltr\" title=\"hello\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"font-style: italic\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " dir=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"ltr\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " title=",
+				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"hello\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -40250,8 +41070,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "STYLE=__TOC__",
+				"text": "STYLE=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "__TOC__",
+				"name": "table-definition-value"
 			}
 		]
 	},
@@ -40664,8 +41488,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -40689,7 +41517,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -40922,8 +41750,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -40947,7 +41779,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -41180,8 +42012,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "id=\"",
+				"text": "id=",
 				"name": "htmltag-attribute html-span"
+			},
+			{
+				"text": "\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "{{",
@@ -41205,7 +42041,7 @@
 			},
 			{
 				"text": "\"",
-				"name": "htmltag-attribute html-span"
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -41307,8 +42143,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\" \"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\" \"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -41353,7 +42193,15 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"empty\" ",
+				"text": "name=",
+				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"empty\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "exttag-attribute ext-indicator"
 			},
 			{
@@ -41365,8 +42213,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"name\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"name\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": "></",
@@ -41395,8 +42247,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"01\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"01\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41423,8 +42279,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"02\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"02\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41459,8 +42319,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"03\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"03\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41511,8 +42375,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"04\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"04\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41555,8 +42423,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"05\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"05\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41591,8 +42463,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"06\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"06\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41643,8 +42519,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"07\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"07\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41671,8 +42551,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"08\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"08\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41711,8 +42595,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"09\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"09\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41739,8 +42627,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"10\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"10\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41777,8 +42669,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"1&2&amp;3&amp;amp;4&amp;amp;amp;5\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"1&2&amp;3&amp;amp;4&amp;amp;amp;5\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41815,8 +42711,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"1&2&3&amp;amp;4&amp;amp;amp;5\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"1&2&3&amp;amp;4&amp;amp;amp;5\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41853,8 +42753,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41881,8 +42785,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41935,8 +42843,12 @@
 				"name": "template-ground exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "template-ground exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "template-ground exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -41981,8 +42893,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -42025,8 +42941,12 @@
 				"name": "template-ground exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "template-ground exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "template-ground exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -42087,8 +43007,12 @@
 				"name": "template-ground exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "template-ground exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "template-ground exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -42133,8 +43057,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -42181,8 +43109,12 @@
 				"name": "template-ground exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "template-ground exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "template-ground exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -42223,8 +43155,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "name=\"x\"",
+				"text": "name=",
 				"name": "exttag-attribute ext-indicator"
+			},
+			{
+				"text": "\"x\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -49828,8 +50764,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "type=\"123\" summary=\"345\"",
+				"text": "type=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"123\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " summary=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"345\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -49900,8 +50848,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "widths=\"70\" heights=\"40\"",
+				"text": "widths=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"70\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " heights=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"40\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -49938,8 +50898,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "widths=\"70em\" heights=\"40em\"",
+				"text": "widths=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"70em\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " heights=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"40em\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -49976,8 +50948,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "caption=\"{{1x|hi}}\"",
+				"text": "caption=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"{{1x|hi}}\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50222,8 +51198,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "showfilename=\"\"",
+				"text": "showfilename=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50428,8 +51408,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "class=\"center\" style=\"text-align: center;\"",
+				"text": "class=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"center\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " style=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"text-align: center;\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50466,8 +51458,28 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "mode=\"nolines\" showfilenames=\"yes\" caption=\"No Lines!\"",
+				"text": "mode=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"nolines\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " showfilenames=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"yes\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " caption=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"No Lines!\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50512,8 +51524,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "mode=\"slideshow\" showthumbnails=\"\"",
+				"text": "mode=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"slideshow\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " showthumbnails=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50550,8 +51574,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "mode=\"packed\"",
+				"text": "mode=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"packed\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50588,8 +51616,28 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "mode=\"packed-overlay\" showfilenames=\"yes\" caption=\"Packed Overlay!\"",
+				"text": "mode=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"packed-overlay\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " showfilenames=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"yes\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " caption=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"Packed Overlay!\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -50634,8 +51682,28 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "mode=\"packed-hover\" showfilenames=\"yes\" caption=\"Packed Hover!\"",
+				"text": "mode=",
 				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"packed-hover\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " showfilenames=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"yes\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " caption=",
+				"name": "exttag-attribute ext-gallery"
+			},
+			{
+				"text": "\"Packed Hover!\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -51968,8 +53036,12 @@
 				"name": "link-ground exttag-name"
 			},
 			{
-				"text": "bogus=\"attri|bute\"",
+				"text": "bogus=",
 				"name": "link-ground exttag-attribute ext-nowiki"
+			},
+			{
+				"text": "\"attri|bute\"",
+				"name": "link-ground exttag-attribute-value"
 			},
 			{
 				"text": "/>",
@@ -52692,8 +53764,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "style=\"background: blue; color:white\"",
+				"text": "style=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"background: blue; color:white\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -52730,8 +53806,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "width=\"8\"",
+				"text": "width=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"8\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -52768,8 +53848,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "width=\"8\" onmouseover=\"alert(document.cookie)\"",
+				"text": "width=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"8\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " onmouseover=",
+				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"alert(document.cookie)\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -52840,8 +53932,20 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "width=\"8\" style=\"border-width: expression(alert(document.cookie))\"",
+				"text": "width=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"8\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " style=",
+				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"border-width: expression(alert(document.cookie))\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -53312,8 +54416,12 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "class=\"onetwo\"",
+				"text": "class=",
 				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"onetwo\"",
+				"name": "exttag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -53420,7 +54528,15 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "</table",
+				"text": "<",
+				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": "table",
 				"name": "exttag-attribute ext-pre"
 			},
 			{
@@ -53516,7 +54632,15 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "style=\"width:50%;\" ",
+				"text": "style=",
+				"name": "exttag-attribute ext-pre"
+			},
+			{
+				"text": "\"width:50%;\"",
+				"name": "exttag-attribute-value"
+			},
+			{
+				"text": " ",
 				"name": "exttag-attribute ext-pre"
 			},
 			{
@@ -54836,7 +55960,11 @@
 				"name": "exttag-name"
 			},
 			{
-				"text": "/ ",
+				"text": "/",
+				"name": "comment"
+			},
+			{
+				"text": " ",
 				"name": "exttag-attribute ext-nowiki"
 			},
 			{
@@ -57151,7 +58279,15 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "style=\"color: red;\"|}",
+				"text": "style=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"color: red;\"",
+				"name": "table-definition-value"
+			},
+			{
+				"text": "|}",
 				"name": "table-definition html-table"
 			},
 			{
@@ -57159,7 +58295,15 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "style=\"color: red;\" |}",
+				"text": "style=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"color: red;\"",
+				"name": "table-definition-value"
+			},
+			{
+				"text": " |}",
 				"name": "table-definition html-table"
 			},
 			{
@@ -57175,8 +58319,20 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "style=\"color: red;\"|} id=\"foo\"",
+				"text": "style=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"color: red;\"",
+				"name": "table-definition-value"
+			},
+			{
+				"text": "|} id=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -57191,8 +58347,20 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "style=\"color: red;\" |} id=\"foo\"",
+				"text": "style=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"color: red;\"",
+				"name": "table-definition-value"
+			},
+			{
+				"text": " |} id=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"foo\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -57485,8 +58653,20 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "border=\"1\" cellpadding=\"2\"",
+				"text": "border=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"1\"",
+				"name": "table-definition-value"
+			},
+			{
+				"text": " cellpadding=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"2\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|+",
@@ -58101,8 +59281,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "border=1",
+				"text": "border=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "1",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -58167,8 +59351,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "border=1",
+				"text": "border=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "1",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "| ",
@@ -58187,8 +59375,20 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "bgcolor=#ABCDEF border=2",
+				"text": "bgcolor=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "#ABCDEF",
+				"name": "table-definition-value"
+			},
+			{
+				"text": " border=",
+				"name": "table-definition html-table"
+			},
+			{
+				"text": "2",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -58505,8 +59705,12 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "class=\"!!\"",
+				"text": "class=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"!!\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -58559,8 +59763,20 @@
 				"name": "htmltag-name"
 			},
 			{
-				"text": "style=\"color: red !important;\" data-contrived=\"put this here ||\"",
+				"text": "style=",
 				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"color: red !important;\"",
+				"name": "htmltag-attribute-value"
+			},
+			{
+				"text": " data-contrived=",
+				"name": "htmltag-attribute html-div"
+			},
+			{
+				"text": "\"put this here ||\"",
+				"name": "htmltag-attribute-value"
 			},
 			{
 				"text": ">",
@@ -58663,8 +59879,12 @@
 				"name": "htmltag-bracket"
 			},
 			{
-				"text": " style='border:1px solid black'",
+				"text": " style=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "'border:1px solid black'",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|  ",
@@ -59305,8 +60525,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "class=\"wikitable\"",
+				"text": "class=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"wikitable\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "!",
@@ -59329,8 +60553,12 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "style=\"color:red;\"",
+				"text": "style=",
 				"name": "table-definition html-tr"
+			},
+			{
+				"text": "\"color:red;\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "{{!}}",
@@ -59371,8 +60599,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "class=\"wikitable\"",
+				"text": "class=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"wikitable\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "!",
@@ -59395,8 +60627,12 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "style=\"color:red;\"",
+				"text": "style=",
 				"name": "table-definition html-tr"
+			},
+			{
+				"text": "\"color:red;\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -59493,8 +60729,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "class=\"wikitable\"",
+				"text": "class=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"wikitable\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "!",
@@ -59517,8 +60757,12 @@
 				"name": "table-delimiter"
 			},
 			{
-				"text": "style=\"color:red;\"",
+				"text": "style=",
 				"name": "table-definition html-tr"
+			},
+			{
+				"text": "\"color:red;\"",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "|",
@@ -60301,8 +61545,12 @@
 				"name": "table-bracket"
 			},
 			{
-				"text": "class=\"foo",
+				"text": "class=",
 				"name": "table-definition html-table"
+			},
+			{
+				"text": "\"foo",
+				"name": "table-definition-value"
 			},
 			{
 				"text": "| ",

@@ -205,10 +205,15 @@ const pop = (state: State): void => {
 /**
  * 是否为行首语法
  * @param stream
+ * @param table 是否允许表格
  * @param file 是否为文件
  */
-const isSolSyntax = (stream: StringStream, file?: boolean): boolean =>
-	stream.sol() && (file ? /[-={]/u : /[-=*#;:]/u).test(stream.peek() || '');
+const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unknown =>
+	stream.sol() && (
+		table && stream.match('{|', false)
+		|| stream.match(/^(?:-{4}|=)/u, false)
+		|| !file && /[*#;:]/u.test(stream.peek() || '')
+	);
 
 /**
  * 获取负向先行断言
@@ -292,6 +297,7 @@ export class MediaWiki {
 	declare readonly convertLang;
 	declare readonly convertRegex;
 	declare readonly inputboxRegex;
+	declare readonly wikiRegex;
 	declare readonly tags;
 
 	constructor(config: MwConfig) {
@@ -336,7 +342,7 @@ export class MediaWiki {
 		);
 		this.headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu');
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
-		this.extAttrRegex = new RegExp(`^(?:[^>/]|${lookahead('/')})+`, 'u');
+		this.extAttrRegex = new RegExp(`^(?:[^>/\\s]|${lookahead('/')})+`, 'u');
 		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
 		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.convertSemicolon = new RegExp(
@@ -346,6 +352,7 @@ export class MediaWiki {
 		this.convertLang = new RegExp(`^(?:=>\\s*)?(?:${this.config.variants?.join('|')})\\s*:`, 'u');
 		this.convertRegex = new RegExp(`^(?:[^};&:='{[<~_-]|\\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
 		this.inputboxRegex = new RegExp(`^(?:[^{]|${lookahead('{')})+`, 'u');
+		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
 		this.registerGroundTokens();
 	}
 
@@ -751,13 +758,9 @@ export class MediaWiki {
 				isArgument = t.name === 'inTemplateArgument' && t.args![0],
 				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable', 'inTableCell']
 					.includes(t.name),
-				pipe = `${isNested ? '|' : ''}${isArgument ? '=' : ''}`;
-			if (
-				stream.sol()
-				|| stream.match(/^\p{Zs}*\]/u)
-				|| isNested && stream.match('|', false)
-				|| isArgument && stream.match('=', false)
-			) {
+				pipe = (isNested ? '|' : '') + (isArgument ? '=' : ''),
+				peek = stream.peek();
+			if (stream.sol() || stream.match(/^\p{Zs}*\]/u) || isNested && peek === '|' || isArgument && peek === '=') {
 				pop(state);
 				return this.makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
@@ -865,7 +868,7 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(/^'(?=')/u)) {
 				return this.eatApostrophes(linkState)(stream, state) || this.makeStyle(tmpstyle, state);
-			} else if (file && isSolSyntax(stream, true) || stream.sol() && stream.match('{', false)) {
+			} else if (file && isSolSyntax(stream, true, true) || stream.sol() && stream.match('{|', false)) {
 				return this.eatWikiText(tmpstyle)(stream, state);
 			}
 			const mt = stream.match(regex) as RegExpMatchArray | false;
@@ -921,7 +924,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inTableDefinition(tr?: boolean): Tokenizer {
+	inTableDefinition(tr?: boolean, quote?: string): Tokenizer {
 		const style = `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`,
 			chars = '{<';
 		return (stream, state) => {
@@ -931,13 +934,34 @@ export class MediaWiki {
 			}
 			const t = state.stack[0]!,
 				equal = t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
-			if (equal && stream.match('=', false)) {
+			if (equal && stream.peek() === '=') {
 				pop(state);
 				return '';
+			} else if (stream.match(/^(?:&|\{\{|<(?:!--|\/?[a-z]))/iu, false)) {
+				return this.eatWikiText(style)(stream, state);
+			} else if (quote) { // 有引号的属性值
+				if (stream.eat(quote[0]!)) {
+					state.tokenize = this.inTableDefinition(tr, quote.slice(1) || undefined);
+				} else {
+					stream.match(new RegExp(`^(?:[^&${chars}${equal}${quote[0]}]|${lookahead(chars)})+`, 'iu'));
+				}
+				return this.makeLocalTagStyle('tableDefinitionValue', state);
+			} else if (quote === '') { // 无引号的属性值
+				if (/\s/u.test(stream.peek() || '')) {
+					state.tokenize = this.inTableDefinition(tr);
+					return '';
+				}
+				stream.match(new RegExp(`^(?:[^\\s&${chars}${equal}]|${lookahead(chars)})+`, 'iu'));
+				return this.makeLocalTagStyle('tableDefinitionValue', state);
+			} else if (stream.match(/^=\s*/u)) {
+				const next = stream.peek();
+				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				return this.makeLocalStyle(style, state);
+			} else if (stream.eatWhile('/')) {
+				return this.makeLocalTagStyle('comment', state);
 			}
-			return stream.match(new RegExp(`^(?:[^&${chars}${equal}]|${lookahead(chars)})+`, 'iu'))
-				? this.makeLocalStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+			stream.match(new RegExp(`^(?:[^&/=${chars}]|${lookahead(chars)})+`, 'iu'));
+			return this.makeLocalStyle(style, state);
 		};
 	}
 
@@ -963,15 +987,19 @@ export class MediaWiki {
 				} else if (stream.match(/^!\s*/u)) {
 					state.tokenize = this.inTableCell(tokens.tableTh);
 					return this.makeLocalTagStyle('tableDelimiter', state);
+				} else if (isSolSyntax(stream, true)) {
+					return this.eatWikiText('error')(stream, state);
 				}
 			}
-			return this.eatWikiText('error')(stream, state);
+			return stream.match(this.wikiRegex)
+				? this.makeTagStyle('error', state)
+				: this.eatWikiText('error')(stream, state);
 		};
 	}
 
 	@getTokenizer
 	inTableCell(style: string, needAttr = true, firstLine = true): Tokenizer {
-		const chars = "'<~_-";
+		const chars = "'<~_-{";
 		return (stream, state) => {
 			if (stream.sol()) {
 				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
@@ -980,7 +1008,7 @@ export class MediaWiki {
 				} else if (firstLine) {
 					state.tokenize = this.inTableCell(style, false, false);
 					return '';
-				} else if (isSolSyntax(stream)) {
+				} else if (isSolSyntax(stream, true)) {
 					return this.eatWikiText(style)(stream, state);
 				}
 			}
@@ -1004,12 +1032,12 @@ export class MediaWiki {
 			}
 			const t = state.stack[0]!,
 				equal = t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
-			if (equal && stream.match('=', false)) {
+			if (equal && stream.peek() === '=') {
 				pop(state);
 				return '';
 			}
 			const re = new RegExp(
-				`^(?:[^[&{${firstLine ? '|!' : ':'}${equal}${chars}]|${lookahead(chars)})+`,
+				`^(?:[^[&${firstLine ? '|!' : ':'}${equal}${chars}]|${lookahead(chars)})+`,
 				'iu',
 			);
 			return stream.match(re) ? this.makeStyle(style, state) : this.eatWikiText(style)(stream, state);
@@ -1058,8 +1086,8 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inHtmlTagAttribute(name: string): Tokenizer {
-		const style = `${tokens.htmlTagAttribute} mw-html-${name}`,
+	inHtmlTagAttribute(name: string, quote?: string): Tokenizer {
+		const style = quote === undefined ? `${tokens.htmlTagAttribute} mw-html-${name}` : tokens.htmlTagAttributeValue,
 			chars = '{/';
 		return (stream, state) => {
 			if (stream.match(new RegExp(`^${lookahead('<', state)}`, 'iu'), false)) {
@@ -1075,21 +1103,41 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('htmlTagBracket', state);
 			}
 			const t = state.stack[0]!,
-				isArgument = t.name === 'inTemplateArgument' && t.args![0],
-				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name),
-				pipe = `${isNested ? '|' : ''}${isArgument ? '=' : ''}`;
+				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
+				+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
 			if (pipe.includes(stream.peek() || '')) {
 				pop(state);
 				return this.makeLocalTagStyle('htmlTagBracket', state);
+			} else if (stream.match(/^(?:[&<]|\{\{)/u, false)) {
+				return this.eatWikiText(style)(stream, state);
+			} else if (quote) { // 有引号的属性值
+				if (stream.eat(quote[0]!)) {
+					state.tokenize = this.inHtmlTagAttribute(name, quote.slice(1) || undefined);
+				} else {
+					stream.match(new RegExp(`^(?:[^<>&${chars}${pipe}${quote[0]}]|${lookahead(chars)})+`, 'u'));
+				}
+				return this.makeLocalTagStyle('htmlTagAttributeValue', state);
+			} else if (quote === '') { // 无引号的属性值
+				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
+					state.tokenize = this.inHtmlTagAttribute(name);
+					return '';
+				}
+				stream.match(new RegExp(`^(?:[^\\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
+				return this.makeLocalTagStyle('htmlTagAttributeValue', state);
+			} else if (stream.match(/^=\s*/u)) {
+				const next = stream.peek();
+				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				return this.makeLocalStyle(style, state);
+			} else if (stream.eatWhile('/')) {
+				return this.makeLocalTagStyle('comment', state);
 			}
-			return stream.match(new RegExp(`^(?:[^<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'))
-				? this.makeLocalStyle(style, state)
-				: this.eatWikiText(style)(stream, state);
+			stream.match(new RegExp(`^(?:[^<>&/={${pipe}]|${lookahead('{')})+`, 'u'));
+			return this.makeLocalStyle(style, state);
 		};
 	}
 
 	@getTokenizer
-	inExtTagAttribute(name: string): Tokenizer {
+	inExtTagAttribute(name: string, quote?: string): Tokenizer {
 		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
 		return (stream, state) => {
 			if (stream.eat('>')) {
@@ -1106,8 +1154,28 @@ export class MediaWiki {
 			} else if (stream.match('/>')) {
 				pop(state);
 				return this.makeLocalTagStyle('extTagBracket', state);
+			} else if (quote) { // 有引号的属性值
+				if (stream.eat(quote[0]!)) {
+					state.tokenize = this.inExtTagAttribute(name, quote.slice(1) || undefined);
+				} else {
+					stream.match(new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
+				}
+				return this.makeLocalTagStyle('extTagAttributeValue', state);
+			} else if (quote === '') { // 无引号的属性值
+				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
+					state.tokenize = this.inExtTagAttribute(name);
+					return '';
+				}
+				stream.match(this.extAttrRegex);
+				return this.makeLocalTagStyle('extTagAttributeValue', state);
+			} else if (stream.match(/^=\s*/u)) {
+				const next = stream.peek();
+				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				return this.makeLocalStyle(style, state);
+			} else if (stream.eatWhile('/')) {
+				return this.makeLocalTagStyle('comment', state);
 			}
-			stream.match(this.extAttrRegex);
+			stream.eatWhile(/[^>/=]/u);
 			return this.makeLocalStyle(style, state);
 		};
 	}
@@ -1287,7 +1355,7 @@ export class MediaWiki {
 				chain(state, this.inComment);
 				return this.makeLocalTagStyle('comment', state);
 			} else if (stream.eat('|')) {
-				state.tokenize = this.inTemplateArgument();
+				state.tokenize = this.inTemplateArgument(true);
 				return this.makeLocalTagStyle('templateDelimiter', state);
 			} else if (haveEaten && sol) {
 				state.nTemplate--;
@@ -1338,14 +1406,14 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inTemplateArgument(expectName = true): Tokenizer {
+	inTemplateArgument(expectName?: boolean): Tokenizer {
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (stream.eol()) {
 				return this.makeLocalTagStyle('template', state);
 			} else if (stream.eat('|')) {
 				if (!expectName) {
-					state.tokenize = this.inTemplateArgument();
+					state.tokenize = this.inTemplateArgument(true);
 				}
 				return this.makeLocalTagStyle('templateDelimiter', state);
 			} else if (stream.match('}}')) {
@@ -1359,7 +1427,7 @@ export class MediaWiki {
 				stream.pos = 0;
 			}
 			if (expectName && stream.match(new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', state)})*=`, 'iu'))) {
-				state.tokenize = this.inTemplateArgument(false);
+				state.tokenize = this.inTemplateArgument();
 				return this.makeLocalTagStyle('templateArgumentName', state);
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 				return this.eatWikiText('template')(stream, state);
@@ -1390,7 +1458,7 @@ export class MediaWiki {
 				state.tokenize = this.inConvert(style, false, false);
 				return this.makeLocalTagStyle('convertLang', state);
 			}
-			return !isSolSyntax(stream) && stream.match(this.convertRegex) || space
+			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space
 				? this.makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
