@@ -1,3 +1,4 @@
+import {performance} from 'perf_hooks';
 import parser from './parser';
 
 declare interface MediaWikiPage {
@@ -50,13 +51,19 @@ const getPages = async (url: string): Promise<SimplePage[]> => {
 	const failures = new Map<string, number>();
 	for (const [name, url] of apis) {
 		console.log(`开始检查${name}：`);
+		let worst: {title: string, duration: number} | undefined;
 		try {
 			/* eslint-disable no-await-in-loop */
 			let failed = 0;
 			for (const [i, {content, title}] of (await getPages(`${url}/api.php`)).entries()) {
 				process.stdout.write(`\x1B[K${i} ${title}\r`);
 				try {
+					const start = performance.now();
 					parser.parse(content);
+					const duration = performance.now() - start;
+					if (!worst || duration > worst.duration) {
+						worst = {title, duration};
+					}
 				} catch (e) {
 					console.error(`解析 ${title} 页面时出错！`, e);
 					failed++;
@@ -65,6 +72,7 @@ const getPages = async (url: string): Promise<SimplePage[]> => {
 			if (failed) {
 				failures.set(name, failed);
 			}
+			console.log(`最耗时页面：${worst!.title} (${worst!.duration.toFixed(3)}ms)`);
 			/* eslint-enable no-await-in-loop */
 		} catch (e) {
 			console.error(`访问${name}的API端口时出错！`, e);
