@@ -12265,24 +12265,8 @@
 				"name": "exttag-bracket"
 			},
 			{
-				"text": "x",
+				"text": "x<noinclude>y",
 				"name": "tag-noinclude"
-			},
-			{
-				"text": "<",
-				"name": "tag-noinclude exttag-bracket"
-			},
-			{
-				"text": "noinclude",
-				"name": "tag-noinclude exttag-name"
-			},
-			{
-				"text": ">",
-				"name": "tag-noinclude exttag-bracket"
-			},
-			{
-				"text": "y",
-				"name": "tag-noinclude tag-noinclude"
 			},
 			{
 				"text": "</",
