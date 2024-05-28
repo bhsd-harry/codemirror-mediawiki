@@ -19,7 +19,6 @@ declare type MimeTypes = 'mediawiki'
 | 'text/gallery';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
-declare type TagName = keyof typeof tokens;
 declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
 declare interface Nesting extends Record<NestCount, number> {
 	extName: string | false;
@@ -33,7 +32,7 @@ declare interface State extends Nesting {
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
-	dt: Partial<Nesting> & {n: number};
+	dt: Partial<Nesting> & {n: number, html: number};
 	redirect: boolean;
 	data: MediaWikiData;
 }
@@ -45,6 +44,7 @@ declare interface Token {
 	readonly state: State;
 }
 
+export type TagName = keyof typeof tokens;
 export type ApiSuggestions = [string, string?][];
 
 /**
@@ -147,7 +147,7 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
 	lbrack: false,
 	bold: false,
 	italic: false,
-	dt: {n: 0},
+	dt: {n: 0, html: 0},
 	redirect: false,
 	data: new MediaWikiData(tags),
 });
@@ -158,13 +158,16 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
  */
 const copyState = (state: State): State => {
 	const newState = {} as State;
-	for (const [key, val] of Object.entries(state)) {
+	for (const key in state) { // eslint-disable-line guard-for-in
+		const val = state[key as keyof State];
 		if (Array.isArray(val)) {
-			Object.assign(newState, {[key]: [...val]});
+			// @ts-expect-error readonly array
+			newState[key] = [...val];
 		} else if (key === 'extState') {
 			newState.extState = (state.extMode && state.extMode.copyState || copyState)(val as State);
 		} else {
-			Object.assign(newState, {[key]: key !== 'data' && typeof val === 'object' ? {...val} : val});
+			// @ts-expect-error keyof State
+			newState[key] = key !== 'data' && typeof val === 'object' ? {...val} : val;
 		}
 	}
 	return newState;
@@ -271,7 +274,7 @@ const getTokenizer = <T = Style>(
 	function(this: MediaWiki, ...args: any[]): Tokenizer<T> {
 		const tokenizer = method.apply(this, args);
 		Object.defineProperties(tokenizer, {name: {value: context.name}});
-		Object.assign(tokenizer, {args});
+		tokenizer.args = args;
 		return tokenizer;
 	};
 
@@ -346,7 +349,7 @@ export class MediaWiki {
 			'u',
 		);
 		this.convertLang = new RegExp(`^(?:=>\\s*)?(?:${this.config.variants?.join('|')})\\s*:`, 'u');
-		this.convertRegex = new RegExp(`^(?:[^};&:='{[<~_-]|\\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
+		this.convertRegex = new RegExp(`^(?:[^};&='{[<~_-]|\\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
 		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
 		this.tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu');
 		this.registerGroundTokens();
@@ -580,6 +583,7 @@ export class MediaWiki {
 				ch = stream.next()!;
 			}
 
+			const {dt} = state;
 			switch (ch) {
 				case '~':
 					if (stream.match(/^~{2,4}/u)) {
@@ -609,6 +613,9 @@ export class MediaWiki {
 						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag) {
+								if (dt.n && dt.html) {
+									dt.html--;
+								}
 								if (tagname === state.inHtmlTag[0]) {
 									state.inHtmlTag.shift();
 								} else {
@@ -681,15 +688,12 @@ export class MediaWiki {
 					}
 					break;
 				}
-				/** @todo consider the balance of HTML tags, including apostrophes */
-				case ':': {
-					const {dt} = state;
-					if (dt.n && cmpNesting(dt, state, true)) {
+				case ':':
+					if (dt.n && dt.html === 0 && !state.bold && !state.italic && cmpNesting(dt, state, true)) {
 						dt.n--;
 						return this.makeLocalTagStyle('list', state);
 					}
 					break;
-				}
 				case '&':
 					return this.makeStyle(this.eatEntity(stream, style), state);
 				case '-':
@@ -1096,6 +1100,7 @@ export class MediaWiki {
 			if (mt) {
 				if (!this.implicitlyClosedHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.unshift(name);
+					state.dt.html++;
 				}
 				pop(state);
 				return this.makeLocalTagStyle('htmlTagBracket', state);
@@ -1272,7 +1277,6 @@ export class MediaWiki {
 			const [, f, delimiter] = name as [string, string, string],
 				ff = delimiter === ':' ? f : f.trim(),
 				{config: {functionSynonyms}} = this;
-			/** @todo {{#name}} and {{uc}} are wrong, must have ':' */
 			if (
 				(!delimiter || delimiter === ':' || delimiter === '}')
 				&& (
@@ -1570,6 +1574,7 @@ export class MediaWiki {
 					state.bold = false;
 					state.italic = false;
 					state.dt.n = 0;
+					state.dt.html = 0;
 					data.firstSingleLetterWord = null;
 					data.firstMultiLetterWord = null;
 					data.firstSpace = null;

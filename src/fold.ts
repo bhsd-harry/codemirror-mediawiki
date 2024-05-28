@@ -19,6 +19,7 @@ import {matchTag} from './matchTag';
 import type {EditorView, Tooltip, ViewUpdate, BlockInfo} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
+import type {TagName} from './token';
 
 export interface DocRange {
 	from: number;
@@ -45,7 +46,7 @@ const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =
 	 * Check if a SyntaxNode is among the specified components
 	 * @param keys The keys of the tokens to check
 	 */
-	isComponent = (keys: (keyof typeof tokens)[]) =>
+	isComponent = (keys: TagName[]) =>
 		({name}: SyntaxNode): boolean => keys.some(key => name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */

@@ -517,10 +517,7 @@ export class CodeMirror6 {
 		}
 	}
 
-	/**
-	 * 支持的MediaWiki扩展标签
-	 * @todo 修正已有标签（`references`, `choose`, `combobox`, `gallery`），支持更多标签
-	 */
+	/** 支持的MediaWiki扩展标签 */
 	static mwTagModes = tagModes;
 
 	/**

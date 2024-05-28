@@ -1,3 +1,11 @@
+## 2.14.2
+
+*2024-05-28*
+
+**Fixed**
+
+- Ignore `:` inside HTML tags in the MediaWiki mode
+
 ## 2.14.1
 
 *2024-05-28*

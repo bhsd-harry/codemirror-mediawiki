@@ -22,7 +22,7 @@ import type {
 } from '@codemirror/autocomplete';
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
-import type {MwConfig} from './token';
+import type {MwConfig, TagName} from './token';
 
 const {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
 
@@ -32,7 +32,7 @@ const {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
  * @param names 指定类型
  */
 const hasTag = (types: Set<string>, names: string | string[]): boolean => (Array.isArray(names) ? names : [names])
-	.some(name => types.has(name in tokens ? tokens[name as keyof typeof tokens] : name));
+	.some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly nsRegex;
