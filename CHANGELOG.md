@@ -1,10 +1,15 @@
 ## 2.14.2
 
-*2024-05-28*
+*2024-05-29*
 
 **Fixed**
 
 - Ignore `:` inside HTML tags in the MediaWiki mode
+- Lines following a very long line containing extension tags in the MediaWiki mode
+
+**Changed**
+
+- Behavior changed for closing tags in a wrong order in the MediaWiki mode
 
 ## 2.14.1
 

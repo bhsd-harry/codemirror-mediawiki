@@ -1510,11 +1510,9 @@ export class MediaWiki {
 	 *
 	 * @param tags
 	 */
-	mediawiki(tags = this.tags): StreamParser<State> {
+	mediawiki(tags?: string[]): StreamParser<State> {
 		return {
-			name: 'mediawiki',
-
-			startState: () => startState(this.eatWikiText(''), tags),
+			startState: () => startState(this.eatWikiText(''), tags || this.tags),
 
 			copyState,
 
@@ -1578,6 +1576,9 @@ export class MediaWiki {
 					data.firstSingleLetterWord = null;
 					data.firstMultiLetterWord = null;
 					data.firstSpace = null;
+					if (state.tokenize.name === 'inExtTokens') {
+						pop(state);
+					}
 				}
 				readyTokens.length = 0;
 				data.mark = null;
@@ -1634,11 +1635,15 @@ export class MediaWiki {
 				}
 			},
 
-			tokenTable: {
-				...this.tokenTable,
-				...this.hiddenTable,
-				'': Tag.define(),
-			},
+			...tags
+				? undefined
+				: {
+					tokenTable: {
+						...this.tokenTable,
+						...this.hiddenTable,
+						'': Tag.define(),
+					},
+				},
 		};
 	}
 
