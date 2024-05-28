@@ -284,20 +284,18 @@ export class MediaWiki {
 	declare readonly implicitlyClosedHtmlTags;
 	declare readonly urlProtocols;
 	declare readonly linkRegex;
-	declare readonly inLinkRegex;
 	declare readonly fileRegex;
 	declare readonly redirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
 	declare readonly headerRegex;
-	declare readonly extAttrRegex;
 	declare readonly templateRegex;
 	declare readonly argumentRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
 	declare readonly convertRegex;
-	declare readonly inputboxRegex;
 	declare readonly wikiRegex;
+	declare readonly tableDefinitionRegex;
 	declare readonly tags;
 
 	constructor(config: MwConfig) {
@@ -322,7 +320,6 @@ export class MediaWiki {
 		]);
 		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\p{Zs}[\\]<>"])`, 'iu');
 		this.linkRegex = new RegExp(`^\\[(?!${config.urlProtocols})\\s*`, 'iu');
-		this.inLinkRegex = new RegExp(`^(?:[^|<[\\]{}]|${lookahead('<')})+`, 'iu');
 		this.fileRegex = new RegExp(
 			`^(?:${Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')})\\s*:`,
 			'iu',
@@ -342,7 +339,6 @@ export class MediaWiki {
 		);
 		this.headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu');
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
-		this.extAttrRegex = new RegExp(`^(?:[^>/\\s]|${lookahead('/')})+`, 'u');
 		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
 		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.convertSemicolon = new RegExp(
@@ -351,8 +347,8 @@ export class MediaWiki {
 		);
 		this.convertLang = new RegExp(`^(?:=>\\s*)?(?:${this.config.variants?.join('|')})\\s*:`, 'u');
 		this.convertRegex = new RegExp(`^(?:[^};&:='{[<~_-]|\\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
-		this.inputboxRegex = new RegExp(`^(?:[^{]|${lookahead('{')})+`, 'u');
 		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
+		this.tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu');
 		this.registerGroundTokens();
 	}
 
@@ -791,7 +787,7 @@ export class MediaWiki {
 	@getTokenizer
 	inLink(file: boolean, section?: boolean): Tokenizer {
 		const style = section ? tokens[file ? 'error' : 'linkToSection'] : `${tokens.linkPageName} ${tokens.pageName}`,
-			re = section ? this.inLinkRegex : /^[^#|<>[\]{}]+/u;
+			re = section ? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu : /^[^#|<>[\]{}]+/u;
 		let lt: number | undefined;
 		return (stream, state) => {
 			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
@@ -815,13 +811,13 @@ export class MediaWiki {
 			}
 			let regex;
 			if (redirect) {
-				regex = `^(?:[<>[{}]|${lookahead(']')})+`;
+				regex = /^(?:[<>[{}]|\](?!\]))+/u;
 			} else if (section) {
-				regex = `^(?:[[}]|${lookahead(']{')})+`;
+				regex = /^(?:[[}]|\](?!\])|\{(?!\{))+/u;
 			} else {
-				regex = `^(?:[>[}]|${lookahead(']{<')})+`;
+				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?!!--|\/?[a-z]))+/iu;
 			}
-			if (stream.match(new RegExp(regex, 'iu'))) {
+			if (stream.match(regex)) {
 				return this.makeTagStyle('error', state);
 			} else if (redirect) {
 				stream.eatWhile(/[^|\]]/u);
@@ -957,10 +953,8 @@ export class MediaWiki {
 				const next = stream.peek();
 				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next || '') ? next!.repeat(2) : '');
 				return this.makeLocalStyle(style, state);
-			} else if (stream.eatWhile('/')) {
-				return this.makeLocalTagStyle('comment', state);
 			}
-			stream.match(new RegExp(`^(?:[^&/=${chars}]|${lookahead(chars)})+`, 'iu'));
+			stream.match(this.tableDefinitionRegex);
 			return this.makeLocalStyle(style, state);
 		};
 	}
@@ -1128,10 +1122,8 @@ export class MediaWiki {
 				const next = stream.peek();
 				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
 				return this.makeLocalStyle(style, state);
-			} else if (stream.eatWhile('/')) {
-				return this.makeLocalTagStyle('comment', state);
 			}
-			stream.match(new RegExp(`^(?:[^<>&/={${pipe}]|${lookahead('{')})+`, 'u'));
+			stream.match(new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'));
 			return this.makeLocalStyle(style, state);
 		};
 	}
@@ -1166,16 +1158,14 @@ export class MediaWiki {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
-				stream.match(this.extAttrRegex);
+				stream.match(/^(?:[^>/\s]|\/(?!>))+/u);
 				return this.makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
 				return this.makeLocalStyle(style, state);
-			} else if (stream.eatWhile('/')) {
-				return this.makeLocalTagStyle('comment', state);
 			}
-			stream.eatWhile(/[^>/=]/u);
+			stream.match(/(?:[^>/=]|\/(?!>))+/u);
 			return this.makeLocalStyle(style, state);
 		};
 	}
@@ -1706,7 +1696,7 @@ export class MediaWiki {
 			} else if (stream.match(/^\{\{\s*/u)) {
 				return this.eatTransclusion(stream, state);
 			}
-			stream.match(this.inputboxRegex);
+			stream.match(/^(?:[^{]|\{(?!\{))+/u);
 			return '';
 		};
 	}
@@ -1722,11 +1712,8 @@ export class MediaWiki {
 	@getTokenizer
 	inGallery(section?: boolean): Tokenizer {
 		const style = section ? tokens.error : `${tokens.linkPageName} ${tokens.pageName}`,
-			regex = new RegExp(
-				section ? `^(?:[[}\\]]|${lookahead('{')})+` : `^(?:[>[}\\]]|${lookahead('{<', true)})+`,
-				'iu',
-			),
-			re = section ? new RegExp(`^(?:[^|<[\\]{}]|${lookahead('<', true)})+`, 'iu') : /^[^#|<>[\]{}]+/u;
+			regex = section ? /^(?:[[}\]]|\{(?!\{))+/u : /^(?:[>[}\]]|\{(?!\{)|<(?!!--))+/u,
+			re = section ? /^(?:[^|<[\]{}]|<(?!!--))+/u : /^[^#|<>[\]{}]+/u;
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (!section && stream.match(/^#\s*/u)) {

@@ -45,9 +45,10 @@ for (const file of ['parserTests.txt', ...files]) {
 					tests.push({
 						desc,
 						wikitext,
-						parsed: tokens.map(({name, text}) => `<${name}>${
-							text.replace(/[<>&]/gu, m => entities[m as '<' | '>' | '&'])
-						}</>`).join(''),
+						parsed: tokens.map(({name, text}) => {
+							const escaped = text.replace(/[<>&]/gu, m => entities[m as '<' | '>' | '&']);
+							return name ? `<${name}>${escaped}</>` : text;
+						}).join(''),
 					});
 				}
 			} catch (e) {
