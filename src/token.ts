@@ -613,6 +613,10 @@ export class MediaWiki {
 									state.inHtmlTag.shift();
 								} else {
 									chain(state, this.inStr('>', 'error'));
+									const i = state.inHtmlTag.lastIndexOf(tagname);
+									if (i !== -1) {
+										state.inHtmlTag.splice(i, 1);
+									}
 									return this.makeLocalTagStyle('error', state);
 								}
 							}
