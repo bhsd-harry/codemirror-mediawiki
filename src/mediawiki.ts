@@ -54,9 +54,9 @@ export class FullMediaWiki extends MediaWiki {
 			functionSynonyms,
 			doubleUnderscore,
 		} = config;
-		this.nsRegex = new RegExp(`^(${
+		this.nsRegex = new RegExp(String.raw`^(${
 			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
-		})\\s*:\\s*`, 'iu');
+		})\s*:\s*`, 'iu');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
 			type: i ? 'constant' : 'function',
 			label,
@@ -225,11 +225,11 @@ export class FullMediaWiki extends MediaWiki {
 					|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
 					this.tags.includes('templatedata')
-						&& (
-							isDelimiter
-							|| isArgument && !search.includes('=')
-							|| hasTag(types, 'template') && prevIsDelimiter
-						)
+					&& (
+						isDelimiter
+						|| isArgument && !search.includes('=')
+						|| hasTag(types, 'template') && prevIsDelimiter
+					)
 				) {
 					let stack = 1,
 						/** 可包含`_`、`:`等 */ page = '';

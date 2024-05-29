@@ -18,8 +18,8 @@ export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
 	await loadScript(`combine/${DIR}/base.min.js,${DIR}/lint.min.js`, 'wikiparse');
 	if (typeof lang === 'string') {
 		try {
-			const i18n: Record<string, string>
-				= await (await fetch(`${CDN}/${REPO}/i18n/${lang.toLowerCase()}.json`)).json();
+			const i18n: Record<string, string> =
+				await (await fetch(`${CDN}/${REPO}/i18n/${lang.toLowerCase()}.json`)).json();
 			wikiparse.setI18N(i18n);
 		} catch {}
 	}

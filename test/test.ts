@@ -1,4 +1,3 @@
-/* eslint-disable es-x/no-string-prototype-matchall */
 import * as fs from 'fs';
 import * as path from 'path';
 import parser from './parser';
@@ -17,8 +16,8 @@ files.delete('indentPre.txt');
 for (const file of ['parserTests.txt', ...files]) {
 	tests.push({desc: file.slice(0, -4)});
 	const content = fs.readFileSync(fs.realpathSync(path.join(cwd, file)), 'utf8'),
+		// eslint-disable-next-line es-x/no-string-prototype-matchall
 		cases = [...content.matchAll(/^!!\s*test\n.+?^!!\s*end$/gmsu)],
-		// eslint-disable-next-line @stylistic/max-len
 		re = /^!!\s*options(?:\n(?:parsoid=wt2html.*|(?:(?:subpage )?title|preprocessor|thumbsize)=.+|cat|subpage|showindicators|djvu|showmedia|showtocdata))*\n!/mu;
 	for (const [test] of cases) {
 		if (

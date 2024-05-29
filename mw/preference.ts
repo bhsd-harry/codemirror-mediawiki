@@ -171,7 +171,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			],
 			value: [...prefs] as unknown as string,
 		});
-		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: '\\t'});
+		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
 		const field = new OO.ui.FieldLayout(widget, {
 				label: msg('label'),
 				align: 'top',

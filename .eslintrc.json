@@ -139,10 +139,6 @@
 				"enforceForIfStatements": true
 			}
 		],
-		"multiline-comment-style": [
-			2,
-			"separate-lines"
-		],
 		"new-cap": 2,
 		"no-alert": 2,
 		"no-array-constructor": 2,
@@ -173,7 +169,6 @@
 				"enforceForLogicalOperands": true
 			}
 		],
-		"no-floating-decimal": 2,
 		"no-implicit-coercion": 2,
 		"no-implicit-globals": 2,
 		"no-implied-eval": 2,
@@ -262,7 +257,6 @@
 			}
 		],
 		"object-shorthand": 2,
-		"one-var-declaration-per-line": 2,
 		"operator-assignment": 2,
 		"prefer-arrow-callback": 2,
 		"prefer-const": 2,
@@ -291,17 +285,12 @@
 		"prefer-rest-params": 2,
 		"prefer-spread": 2,
 		"prefer-template": 2,
-		"quote-props": [
-			2,
-			"as-needed"
-		],
 		"radix": [
 			2,
 			"as-needed"
 		],
 		"require-await": 2,
 		"require-unicode-regexp": 2,
-		"spaced-comment": 2,
 		"strict": 2,
 		"symbol-description": 2,
 		"vars-on-top": 2,
@@ -339,11 +328,11 @@
 			"property"
 		],
 		"@stylistic/eol-last": 2,
-		"@stylistic/func-call-spacing": 2,
 		"@stylistic/function-call-argument-newline": [
 			2,
 			"consistent"
 		],
+		"@stylistic/function-call-spacing": 2,
 		"@stylistic/function-paren-newline": [
 			2,
 			"multiline-arguments"
@@ -379,8 +368,13 @@
 		"@stylistic/max-len": [
 			2,
 			{
+				"ignoreRegExpLiterals": true,
 				"code": 120
 			}
+		],
+		"@stylistic/multiline-comment-style": [
+			2,
+			"separate-lines"
 		],
 		"@stylistic/multiline-ternary": [
 			2,
@@ -400,6 +394,9 @@
 				"allowParensAfterCommentPattern": "@type"
 			}
 		],
+		"@stylistic/no-extra-semi": 2,
+		"@stylistic/no-floating-decimal": 2,
+		"@stylistic/no-mixed-spaces-and-tabs": 2,
 		"@stylistic/no-multi-spaces": [
 			2,
 			{
@@ -411,6 +408,12 @@
 			{
 				"max": 1,
 				"maxBOF": 0
+			}
+		],
+		"@stylistic/no-tabs": [
+			2,
+			{
+				"allowIndentationTabs": true
 			}
 		],
 		"@stylistic/no-trailing-spaces": 2,
@@ -429,13 +432,23 @@
 				"allowAllPropertiesOnSameLine": true
 			}
 		],
+		"@stylistic/one-var-declaration-per-line": 2,
 		"@stylistic/operator-linebreak": [
 			2,
-			"before"
+			"before",
+			{
+				"overrides": {
+					"=": "after"
+				}
+			}
 		],
 		"@stylistic/padded-blocks": [
 			2,
 			"never"
+		],
+		"@stylistic/quote-props": [
+			2,
+			"as-needed"
 		],
 		"@stylistic/quotes": [
 			2,
@@ -461,6 +474,7 @@
 		"@stylistic/space-in-parens": 2,
 		"@stylistic/space-infix-ops": 2,
 		"@stylistic/space-unary-ops": 2,
+		"@stylistic/spaced-comment": 2,
 		"@stylistic/switch-colon-spacing": 2,
 		"@stylistic/template-curly-spacing": 2,
 		"@stylistic/wrap-iife": [
@@ -605,6 +619,7 @@
 		"unicorn/prefer-optional-catch-binding": 2,
 		"unicorn/prefer-prototype-methods": 2,
 		"unicorn/prefer-spread": 2,
+		"unicorn/prefer-string-raw": 2,
 		"unicorn/prefer-string-starts-ends-with": 2,
 		"unicorn/prefer-switch": 2,
 		"unicorn/prefer-ternary": 2,
@@ -681,10 +696,7 @@
 					2,
 					"always"
 				],
-				"@stylistic/comma-dangle": [
-					2,
-					"never"
-				],
+				"@stylistic/comma-dangle": 0,
 				"@stylistic/max-len": 0,
 				"@stylistic/no-multiple-empty-lines": [
 					2,
@@ -704,16 +716,12 @@
 						"allowAllPropertiesOnSameLine": false
 					}
 				],
-				"@stylistic/quotes": [
-					2,
-					"double"
-				],
+				"@stylistic/quote-props": 0,
+				"@stylistic/quotes": 0,
 				"no-irregular-whitespace": 0,
-				"strict": [
-					2,
-					"never"
-				],
-				"unicorn/filename-case": 0
+				"strict": 0,
+				"unicorn/filename-case": 0,
+				"unicorn/prefer-string-raw": 0
 			}
 		},
 		{
@@ -918,6 +926,7 @@
 				],
 				"@typescript-eslint/unified-signatures": 2,
 				"@stylistic/type-generic-spacing": 2,
+				"@stylistic/type-named-tuple-spacing": 2,
 				"jsdoc/check-types": 0
 			}
 		},

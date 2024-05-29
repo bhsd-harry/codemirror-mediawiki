@@ -226,18 +226,18 @@ const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unk
 const lookahead = (chars: string, comment?: boolean | State): string => {
 	const table = {
 		"'": "'(?!')",
-		'{': '\\{(?!\\{)',
-		'}': '\\}(?!\\})',
+		'{': String.raw`\{(?!\{)`,
+		'}': String.raw`\}(?!\})`,
 		'<': comment ? '<(?!!--)' : '<(?!!--|/?[a-z])',
 		'~': '~~?(?!~)',
 		_: '_(?!_)',
-		'[': '\\[(?!\\[)',
-		']': '\\](?!\\])',
+		'[': String.raw`\[(?!\[)`,
+		']': String.raw`\](?!\])`,
 		'/': '/(?!>)',
-		'-': '-(?!\\{(?!\\{))',
+		'-': String.raw`-(?!\{(?!\{))`,
 	};
 	if (typeof comment === 'object') {
-		table['<'] = `<(?!!--|onlyinclude>|(?:${comment.data.tags.slice(0, -1).join('|')})(?:[\\s/>]|$))`;
+		table['<'] = String.raw`<(?!!--|onlyinclude>|(?:${comment.data.tags.slice(0, -1).join('|')})(?:[\s/>]|$))`;
 	}
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
@@ -248,14 +248,14 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
  */
 const getUrlRegex = (punctuations = ''): string => {
 	const chars = "~{'";
-	return `[^&${chars}\\p{Zs}[\\]<>"${punctuations}]|&(?![lg]t;)|${lookahead(chars)}`;
+	return String.raw`[^&${chars}\p{Zs}[\]<>"${punctuations}]|&(?![lg]t;)|${lookahead(chars)}`;
 };
 
 /**
  * 获取标点符号
  * @param lpar 是否包含左括号
  */
-const getPunctuations = (lpar?: boolean): string => `.,;:!?\\\\${lpar ? '' : ')'}`;
+const getPunctuations = (lpar?: boolean): string => String.raw`.,;:!?\\${lpar ? '' : ')'}`;
 
 /**
  * 获取自由外链正则表达式
@@ -321,23 +321,23 @@ export class MediaWiki {
 			...voidHtmlTags,
 			...implicitlyClosedHtmlTags || [],
 		]);
-		this.urlProtocols = new RegExp(`^(?:${urlProtocols})(?=[^\\p{Zs}[\\]<>"])`, 'iu');
-		this.linkRegex = new RegExp(`^\\[(?!${config.urlProtocols})\\s*`, 'iu');
+		this.urlProtocols = new RegExp(String.raw`^(?:${urlProtocols})(?=[^\p{Zs}[\]<>"])`, 'iu');
+		this.linkRegex = new RegExp(String.raw`^\[(?!${config.urlProtocols})\s*`, 'iu');
 		this.fileRegex = new RegExp(
-			`^(?:${Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')})\\s*:`,
+			String.raw`^(?:${Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')})\s*:`,
 			'iu',
 		);
 		this.redirectRegex = new RegExp(
-			`^(?:${redirection.map(s => s.slice(1)).join('|')})(?:\\s*:)?\\s*(?=\\[\\[)`,
+			String.raw`^(?:${redirection.map(s => s.slice(1)).join('|')})(?:\s*:)?\s*(?=\[\[)`,
 			'iu',
 		);
 		this.img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word));
 		this.imgRegex = new RegExp(
-			`^(?:${
+			String.raw`^(?:${
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
 			}|(?:${
 				this.img.filter(word => !word.endsWith('$1')).join('|')
-			}|(?:\\d+x?|\\d*x\\d+)(?:\\s*px)?px)\\s*(?=\\||\\]\\]|$))`,
+			}|(?:\d+x?|\d*x\d+)(?:\s*px)?px)\s*(?=\||\]\]|$))`,
 			'u',
 		);
 		this.headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu');
@@ -345,11 +345,11 @@ export class MediaWiki {
 		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
 		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.convertSemicolon = new RegExp(
-			`^;\\s*(?=(?:[^;]*?=>\\s*)?(?:${config.variants?.join('|')})\\s*:|(?:$|\\}-))`,
+			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${config.variants?.join('|')})\s*:|(?:$|\}-))`,
 			'u',
 		);
-		this.convertLang = new RegExp(`^(?:=>\\s*)?(?:${this.config.variants?.join('|')})\\s*:`, 'u');
-		this.convertRegex = new RegExp(`^(?:[^};&='{[<~_-]|\\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
+		this.convertLang = new RegExp(String.raw`^(?:=>\s*)?(?:${this.config.variants?.join('|')})\s*:`, 'u');
+		this.convertRegex = new RegExp(String.raw`^(?:[^};&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
 		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
 		this.tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu');
 		this.registerGroundTokens();
@@ -501,8 +501,8 @@ export class MediaWiki {
 		if (style in tokens) {
 			style = tokens[style as TagName]; // eslint-disable-line no-param-reassign
 		}
-		const regex
-			= /^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
+		const regex =
+			/^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
 		return (stream, state) => {
 			let ch: string;
 			if (stream.eol()) {
@@ -521,7 +521,7 @@ export class MediaWiki {
 				ch = stream.next()!;
 				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
 						.includes(state.tokenize.name),
-					pipe = `${isTemplate ? '' : '\\||'}\\{\\{\\s*!\\s*\\}\\}`;
+					pipe = String.raw`${isTemplate ? '' : String.raw`\||`}\{\{\s*!\s*\}\}`;
 				switch (ch) {
 					case '#':
 						if (stream.match(this.redirectRegex)) {
@@ -535,7 +535,7 @@ export class MediaWiki {
 						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
-						if (stream.match(new RegExp(`^:*\\s*(?=\\{(?:${pipe}))`, 'u'))) {
+						if (stream.match(new RegExp(String.raw`^:*\s*(?=\{(?:${pipe}))`, 'u'))) {
 							chain(state, this.eatStartTable);
 							return this.makeLocalTagStyle('list', state);
 						}
@@ -555,7 +555,7 @@ export class MediaWiki {
 						break;
 					}
 					case '{':
-						if (stream.match(new RegExp(`^(?:${pipe})\\s*`, 'u'))) {
+						if (stream.match(new RegExp(String.raw`^(?:${pipe})\s*`, 'u'))) {
 							chain(state, this.inTableDefinition());
 							return this.makeLocalTagStyle('tableBracket', state);
 						}
@@ -568,7 +568,7 @@ export class MediaWiki {
 					default:
 						if (/\s/u.test(ch)) {
 							// Leading spaces is valid syntax for tables, bug T108454
-							const re = new RegExp(`^\\s*(:+\\s*)?(?=\\{(?:${pipe}))`, 'u'),
+							const re = new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${pipe}))`, 'u'),
 								mt = stream.match(re) as RegExpMatchArray | false;
 							if (mt) {
 								chain(state, this.eatStartTable);
@@ -769,7 +769,7 @@ export class MediaWiki {
 				return this.makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
 				const chars = "[{'<-";
-				return stream.match(new RegExp(`^(?:[^\\]&${pipe}${chars}]|${lookahead(chars)})+`, 'iu'))
+				return stream.match(new RegExp(String.raw`^(?:[^\]&${pipe}${chars}]|${lookahead(chars)})+`, 'iu'))
 					? this.makeTagStyle('extLinkText', state)
 					: this.eatWikiText('extLinkText')(stream, state);
 			} else if (stream.match(new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u'))) {
@@ -955,7 +955,7 @@ export class MediaWiki {
 					state.tokenize = this.inTableDefinition(tr);
 					return '';
 				}
-				stream.match(new RegExp(`^(?:[^\\s&${chars}${equal}]|${lookahead(chars)})+`, 'iu'));
+				stream.match(new RegExp(String.raw`^(?:[^\s&${chars}${equal}]|${lookahead(chars)})+`, 'iu'));
 				return this.makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
@@ -1125,7 +1125,7 @@ export class MediaWiki {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
-				stream.match(new RegExp(`^(?:[^\\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
+				stream.match(new RegExp(String.raw`^(?:[^\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
 				return this.makeLocalTagStyle('htmlTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
@@ -1184,7 +1184,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			const {pos} = stream,
 				i = stream.string.slice(pos).search(
-					new RegExp(`</${name}${name === 'onlyinclude' ? '>' : '\\s*(?:>|$)'}`, 'iu'),
+					new RegExp(`</${name}${name === 'onlyinclude' ? '>' : String.raw`\s*(?:>|$)`}`, 'iu'),
 				);
 			if (i === 0) {
 				stream.match('</');
@@ -1233,7 +1233,7 @@ export class MediaWiki {
 		} else if (pos === 1) {
 			tag = 'templateVariable';
 		}
-		const re = new RegExp(`^(?:[^|{}<${pos === 1 ? "[&~'_:-" : ''}]|\\}(?!\\}\\})|${
+		const re = new RegExp(String.raw`^(?:[^|{}<${pos === 1 ? "[&~'_:-" : ''}]|\}(?!\}\})|${
 			pos === 1 ? lookahead("{<~'_-") : lookahead('{<', true)
 		})+`, 'iu');
 		return (stream, state) => {
@@ -1363,7 +1363,7 @@ export class MediaWiki {
 			} else if (!anchor && stream.eat('#')) {
 				state.tokenize = this.inTemplatePageName(true, true);
 				return this.makeLocalTagStyle('error', state);
-			} else if (!anchor && stream.match(new RegExp(`^(?:[>[\\]]|${lookahead(chars, state)})+`, 'u'))) {
+			} else if (!anchor && stream.match(new RegExp(String.raw`^(?:[>[\]]|${lookahead(chars, state)})+`, 'u'))) {
 				return this.makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.peek() === '<') {
 				pop(state);
@@ -1663,7 +1663,7 @@ export class MediaWiki {
 	}
 
 	inReferences(tag: string, comment?: boolean): Tokenizer<string> {
-		const re = new RegExp(`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\\s/>]|$)))+`, 'iu');
+		const re = new RegExp(String.raw`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\s/>]|$)))+`, 'iu');
 		return (stream, state) => {
 			if (comment && stream.match('<!--')) {
 				chain(state, this.inComment);
