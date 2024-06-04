@@ -1,3 +1,15 @@
+## 2.14.3
+
+*2024-06-04*
+
+**Added**
+
+- [CodeFolding](./README.md#codefolding) for tables in the MediaWiki mode
+
+**Fixed**
+
+- Nested tables led by `\t` in the MediaWiki mode
+
 ## 2.14.2
 
 *2024-05-29*

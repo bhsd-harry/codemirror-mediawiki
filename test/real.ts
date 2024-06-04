@@ -65,14 +65,14 @@ const getPages = async (url: string): Promise<SimplePage[]> => {
 						worst = {title, duration};
 					}
 				} catch (e) {
-					console.error(`解析 ${title} 页面时出错！`, e);
+					console.error(`\n解析 ${title} 页面时出错！`, e);
 					failed++;
 				}
 			}
 			if (failed) {
 				failures.set(name, failed);
 			}
-			console.log(`最耗时页面：${worst!.title} (${worst!.duration.toFixed(3)}ms)`);
+			console.log(`\n最耗时页面：${worst!.title} (${worst!.duration.toFixed(3)}ms)`);
 			/* eslint-enable no-await-in-loop */
 		} catch (e) {
 			console.error(`访问${name}的API端口时出错！`, e);

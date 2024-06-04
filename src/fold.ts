@@ -281,7 +281,7 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 };
 
 const foldableLine = (
-	{state, viewport: {to}, viewportLineBlocks}: EditorView,
+	{state, viewport: {to: end}, viewportLineBlocks}: EditorView,
 	{from: f, to: t}: BlockInfo,
 ): DocRange | false => {
 	const tree = syntaxTree(state);
@@ -291,20 +291,48 @@ const foldableLine = (
 	 * @param pos 行首位置
 	 */
 	const getLevel = (pos: number): number => {
-		const {name} = tree.resolve(pos, 1);
-		return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
-	};
+			const {name} = tree.resolve(pos, 1);
+			return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
+		},
+
+		/**
+		 * 获取表格语法
+		 * @param from 行首位置
+		 * @param to 行尾位置
+		 */
+		getTable = (from: number, to: number): 0 | 1 | -1 => {
+			const line = state.sliceDoc(from, to),
+				bracket = /^\s*(?:(?::+\s*)?\{\||\|\})/u.exec(line)?.[0];
+			if (bracket) {
+				const {name} = tree.resolve(from + bracket.length, -1);
+				if (name.includes(tokens.tableBracket)) {
+					return bracket.endsWith('|}') ? -1 : 1;
+				}
+			}
+			return 0;
+		};
 
 	const level = getLevel(f);
-	if (level > 6) {
-		return false;
-	}
-	for (const {from} of viewportLineBlocks) {
-		if (from > f && getLevel(from) <= level) {
-			return {from: t, to: from - 1};
+	if (level < 7) {
+		for (const {from} of viewportLineBlocks) {
+			if (from > f && getLevel(from) <= level) {
+				return {from: t, to: from - 1};
+			}
+		}
+		return end === state.doc.length && end > t && {from: t, to: end};
+	} else if (getTable(f, t) === 1) {
+		for (const {from, to} of viewportLineBlocks) {
+			if (from > f) {
+				const bracket = getTable(from, to);
+				if (bracket === -1) {
+					return {from: t, to};
+				} else if (bracket === 1 || getLevel(from) < 7) {
+					break;
+				}
+			}
 		}
 	}
-	return to === state.doc.length && to > t && {from: t, to};
+	return false;
 };
 
 const markers = ViewPlugin.fromClass(class {

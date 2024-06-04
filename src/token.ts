@@ -213,7 +213,7 @@ const pop = (state: State): void => {
  */
 const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unknown =>
 	stream.sol() && (
-		table && stream.match('{|', false)
+		table && stream.match(/^\s*(?::+\s*)?\{\|/u, false)
 		|| stream.match(/^(?:-{4}|=)/u, false)
 		|| !file && /[*#;:]/u.test(stream.peek() || '')
 	);
