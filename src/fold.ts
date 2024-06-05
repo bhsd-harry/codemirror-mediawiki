@@ -342,15 +342,15 @@ const markers = ViewPlugin.fromClass(class {
 		this.markers = this.buildMarkers(view);
 	}
 
-	update(update: ViewUpdate): void {
+	update({docChanged, viewportChanged, startState, state, view}: ViewUpdate): void {
 		if (
-			update.docChanged
-			|| update.viewportChanged
-			|| update.startState.facet(language) !== update.state.facet(language)
-			|| update.startState.field(foldState, false) !== update.state.field(foldState, false)
-			|| syntaxTree(update.startState) !== syntaxTree(update.state)
+			docChanged
+			|| viewportChanged
+			|| startState.facet(language) !== state.facet(language)
+			|| startState.field(foldState, false) !== state.field(foldState, false)
+			|| syntaxTree(startState) !== syntaxTree(state)
 		) {
-			this.markers = this.buildMarkers(update.view);
+			this.markers = this.buildMarkers(view);
 		}
 	}
 

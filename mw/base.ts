@@ -1,10 +1,10 @@
 import {CodeMirror6, CDN} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
-import {openLinks} from './openLinks';
+import openLinks from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
-import {wikiEditor} from './wikiEditor';
+import wikiEditor from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';

@@ -1,5 +1,5 @@
 /**
- * @author pastakhov, MusikAnimal and others
+ * @author pastakhov, MusikAnimal, Bhsd and others
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */

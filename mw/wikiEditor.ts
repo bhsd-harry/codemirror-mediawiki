@@ -2,7 +2,7 @@
  * 添加WikiEditor工具栏
  * @param $textarea 文本框
  */
-export const wikiEditor = async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => {
+export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => {
 	if (!mw.loader.getState('ext.wikiEditor')) {
 		throw new Error('no-wikiEditor');
 	}

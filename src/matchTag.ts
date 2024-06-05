@@ -138,14 +138,14 @@ export const tagMatchingState = StateField.define<DecorationSet>({
 	create() {
 		return Decoration.none;
 	},
-	update(deco, tr) {
-		if (!tr.docChanged && !tr.selection) {
+	update(deco, {docChanged, selection, state}) {
+		if (!docChanged && !selection) {
 			return deco;
 		}
 		const decorations: Range<Decoration>[] = [];
-		for (const range of tr.state.selection.ranges) {
+		for (const range of state.selection.ranges) {
 			if (range.empty) {
-				const match = matchTag(tr.state, range.head);
+				const match = matchTag(state, range.head);
 				if (match) {
 					const mark = match.matched ? matchingMark : nonmatchingMark,
 						{start: {from, to, closing}, end} = match;

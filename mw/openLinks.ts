@@ -98,7 +98,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
  * @param cm
  * @param on 是否添加
  */
-export const openLinks = (cm: CodeMirror, on?: boolean): void => {
+export default (cm: CodeMirror, on?: boolean): void => {
 	const {contentDOM} = cm.view!,
 		handler = getHandler(cm);
 	if (on) {
