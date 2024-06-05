@@ -48,7 +48,7 @@
 	},
 	"dependencies": {
 		"@codemirror/language": "^6.10.1",
-		"@codemirror/lint": "^6.5.0",
+		"@codemirror/lint": "^6.8.0",
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.24.1",
 		"@lezer/common": "^1.2.1",
@@ -82,7 +82,7 @@
 		"monaco-editor": "^0.49.0",
 		"stylelint": "^16.1.0",
 		"stylelint-config-recommended": "^14.0.0",
-		"types-mediawiki": "^1.6.0",
+		"types-mediawiki": "^1.8.0",
 		"typescript": "^5.4.5"
 	}
 }

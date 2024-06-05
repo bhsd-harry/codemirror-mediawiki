@@ -21,7 +21,7 @@ import {
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
-import {linter, lintGutter, openLintPanel, closeLintPanel, lintKeymap} from '@codemirror/lint';
+import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
@@ -250,7 +250,6 @@ export class CodeMirror6 {
 			};
 			HTMLUListElement.prototype.focus = lintPanelFocus;
 		}
-		(show ? openLintPanel : closeLintPanel)(this.#view!);
 		this.#minHeight(show);
 	}
 
@@ -283,7 +282,7 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(view => lintSource(view.state.doc)),
+				linter(view => lintSource(view.state.doc), {autoPanel: true}),
 				lintGutter(),
 			]
 			: [];

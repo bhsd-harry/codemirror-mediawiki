@@ -1,3 +1,11 @@
+## 2.14.4
+
+*2024-06-06*
+
+**Added**
+
+- Automatically close the lint panel when there are no errors
+
 ## 2.14.3
 
 *2024-06-04*
