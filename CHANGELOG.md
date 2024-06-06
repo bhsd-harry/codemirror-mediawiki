@@ -1,3 +1,15 @@
+## 2.14.5
+
+*2024-06-07*
+
+**Added**
+
+- Bidi isolation for HTML/extension tags and table attributes in the MediaWiki mode
+
+**Fixed**
+
+- `1 px` as a valid image size in the MediaWiki mode
+
 ## 2.14.4
 
 *2024-06-06*

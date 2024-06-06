@@ -60,7 +60,7 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
  * @param state
  * @param node 语法树节点
  */
-const getTag = (state: EditorState, node: SyntaxNode): Tag => {
+export const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 	const type = node.name.includes('exttag') ? 'ext' : 'html';
 	let {prevSibling} = node,
 		nextSibling = node,

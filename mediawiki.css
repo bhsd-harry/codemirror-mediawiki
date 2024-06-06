@@ -37,6 +37,11 @@
 .wikiEditor-ui-toolbar {
 	z-index: 7;
 }
+.cm-bidi-isolate {
+	direction: ltr;
+	unicode-bidi: isolate;
+	display: inline-block;
+}
 
 /**
  * @author pastakhov and others
@@ -112,6 +117,9 @@
 .cm-mw-template-bracket {
 	color: #80c;
 	font-weight: bold;
+}
+.cm-editor[dir="rtl"] .cm-mw-template-name {
+	unicode-bidi: isolate;
 }
 .cm-mw-template-argument-name {
 	color: #b0c;

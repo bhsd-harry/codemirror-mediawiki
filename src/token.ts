@@ -337,7 +337,7 @@ export class MediaWiki {
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
 			}|(?:${
 				this.img.filter(word => !word.endsWith('$1')).join('|')
-			}|(?:\d+x?|\d*x\d+)(?:\s*px)?px)\s*(?=\||\]\]|$))`,
+			}|(?:\d+x?|\d*x\d+)\s*(?:px)?px)\s*(?=\||\]\]|$))`,
 			'u',
 		);
 		this.headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu');

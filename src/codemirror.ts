@@ -30,6 +30,7 @@ import {tagMatchingState} from './matchTag';
 import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import {tagModes, getStaticMwConfig} from './static';
+import bidiIsolation from './bidi';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -51,7 +52,11 @@ const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'tru
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, (config?: any) => Extension> = {
 	plain,
-	mediawiki: (config: MwConfig) => [mediawiki(config), plain()],
+	mediawiki: (config: MwConfig) => [
+		mediawiki(config),
+		plain(),
+		bidiIsolation,
+	],
 	html,
 };
 for (const [language, parser] of Object.entries(plugins)) {

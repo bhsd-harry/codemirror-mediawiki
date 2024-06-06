@@ -7,8 +7,12 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		return;
 	}
 
-	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!,
-		languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
+	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!;
+	if (new URLSearchParams(location.search).has('rtl')) {
+		textarea.dir = 'rtl';
+	}
+
+	const languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
 		mediawikiOnly = ['escape', 'tagMatching'],
