@@ -16,7 +16,7 @@ import {
 } from '@codemirror/language';
 import modeConfig from './config';
 import {matchTag} from './matchTag';
-import type {EditorView, Tooltip, ViewUpdate, BlockInfo} from '@codemirror/view';
+import type {EditorView, Tooltip, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
@@ -335,11 +335,27 @@ const foldableLine = (
 	return false;
 };
 
-const markers = ViewPlugin.fromClass(class {
+const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
+	const builder = new RangeSetBuilder<FoldMarker>();
+	for (const line of view.viewportLineBlocks) {
+		let mark: FoldMarker | undefined;
+		if (findFold(view, line)) {
+			mark = canUnfold;
+		} else if (foldableLine(view, line)) {
+			mark = canFold;
+		}
+		if (mark) {
+			builder.add(line.from, line.from, mark);
+		}
+	}
+	return builder.finish();
+};
+
+const markers = ViewPlugin.fromClass(class implements PluginValue {
 	declare markers;
 
 	constructor(view: EditorView) {
-		this.markers = this.buildMarkers(view);
+		this.markers = buildMarkers(view);
 	}
 
 	update({docChanged, viewportChanged, startState, state, view}: ViewUpdate): void {
@@ -350,25 +366,8 @@ const markers = ViewPlugin.fromClass(class {
 			|| startState.field(foldState, false) !== state.field(foldState, false)
 			|| syntaxTree(startState) !== syntaxTree(state)
 		) {
-			this.markers = this.buildMarkers(view);
+			this.markers = buildMarkers(view);
 		}
-	}
-
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	buildMarkers(view: EditorView): RangeSet<FoldMarker> {
-		const builder = new RangeSetBuilder<FoldMarker>();
-		for (const line of view.viewportLineBlocks) {
-			let mark: FoldMarker | undefined;
-			if (findFold(view, line)) {
-				mark = canUnfold;
-			} else if (foldableLine(view, line)) {
-				mark = canFold;
-			}
-			if (mark) {
-				builder.add(line.from, line.from, mark);
-			}
-		}
-		return builder.finish();
 	}
 });
 

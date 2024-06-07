@@ -273,10 +273,98 @@ const getTokenizer = <T = Style>(
 ) =>
 	function(this: MediaWiki, ...args: any[]): Tokenizer<T> {
 		const tokenizer = method.apply(this, args);
-		Object.defineProperties(tokenizer, {name: {value: context.name}});
+		Object.defineProperty(tokenizer, 'name', {value: context.name});
 		tokenizer.args = args;
 		return tokenizer;
 	};
+
+const makeFullStyle = (style: Style, state: ExtState): string => typeof style === 'string'
+	? style
+	: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`;
+
+const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [string] =>
+	makeStyle(tokens[tag], state, endGround);
+
+const makeStyle = (style: string, state: ExtState, endGround?: NestCount): [string] =>
+	[makeLocalStyle(style, state, endGround)];
+
+const makeLocalTagStyle = (tag: TagName, state: State, endGround?: NestCount): string =>
+	makeLocalStyle(tokens[tag], state, endGround);
+
+const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
+	let ground = '';
+	switch (state.nTemplate) {
+		case 0:
+			break;
+		case 1:
+			ground += '-template';
+			break;
+		case 2:
+			ground += '-template2';
+			break;
+		default:
+			ground += '-template3';
+			break;
+	}
+	switch (state.nExt) {
+		case 0:
+			break;
+		case 1:
+			ground += '-ext';
+			break;
+		case 2:
+			ground += '-ext2';
+			break;
+		default:
+			ground += '-ext3';
+			break;
+	}
+	if (state.nLink || state.nExtLink) {
+		ground += '-link';
+	}
+	if (endGround) {
+		state[endGround]--;
+		const {dt} = state;
+		if (dt?.n && state[endGround] < dt[endGround]!) {
+			dt.n = 0;
+		}
+	}
+	return (ground && `mw${ground}-ground `) + style;
+};
+
+/**
+ * Remembers position and status for rollbacking.
+ * It is needed for changing from bold to italic with apostrophes before it, if required.
+ *
+ * @see https://phabricator.wikimedia.org/T108455
+ * @param stream
+ * @param state
+ */
+const prepareItalicForCorrection = (stream: StringStream, state: State): void => {
+	// See Parser::doQuotes() in MediaWiki Core, it works similarly.
+	// this.firstSingleLetterWord has maximum priority
+	// this.firstMultiLetterWord has medium priority
+	// this.firstSpace has low priority
+	const end = stream.pos,
+		str = stream.string.slice(0, end - 3),
+		x1 = str.slice(-1),
+		x2 = str.slice(-2, -1),
+		{data} = state;
+	// this.firstSingleLetterWord always is undefined here
+	if (x1 === ' ') {
+		if (data.firstMultiLetterWord || data.firstSpace) {
+			return;
+		}
+		data.firstSpace = end;
+	} else if (x2 === ' ') {
+		data.firstSingleLetterWord = end;
+	} else if (data.firstMultiLetterWord) {
+		return;
+	} else {
+		data.firstMultiLetterWord = end;
+	}
+	data.mark = end;
+};
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
@@ -371,7 +459,7 @@ export class MediaWiki {
 	/**
 	 * Register the ground tokens. These aren't referenced directly in the StreamParser, nor do
 	 * they have a parent Tag, so we don't need them as constants like we do for other tokens.
-	 * See this.makeLocalStyle() for how these tokens are used.
+	 * See makeLocalStyle() for how these tokens are used.
 	 */
 	registerGroundTokens(): void {
 		const grounds = [
@@ -422,77 +510,17 @@ export class MediaWiki {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	makeFullStyle(style: Style, state: ExtState): string {
-		return typeof style === 'string'
-			? style
-			: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`;
-	}
-
-	makeTagStyle(tag: TagName, state: State, endGround?: NestCount): [string] {
-		return this.makeStyle(tokens[tag], state, endGround);
-	}
-
-	makeStyle(style: string, state: ExtState, endGround?: NestCount): [string] {
-		return [this.makeLocalStyle(style, state, endGround)];
-	}
-
-	makeLocalTagStyle(tag: TagName, state: State, endGround?: NestCount): string {
-		return this.makeLocalStyle(tokens[tag], state, endGround);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	makeLocalStyle(style: string, state: ExtState, endGround?: NestCount): string {
-		let ground = '';
-		switch (state.nTemplate) {
-			case 0:
-				break;
-			case 1:
-				ground += '-template';
-				break;
-			case 2:
-				ground += '-template2';
-				break;
-			default:
-				ground += '-template3';
-				break;
-		}
-		switch (state.nExt) {
-			case 0:
-				break;
-			case 1:
-				ground += '-ext';
-				break;
-			case 2:
-				ground += '-ext2';
-				break;
-			default:
-				ground += '-ext3';
-				break;
-		}
-		if (state.nLink || state.nExtLink) {
-			ground += '-link';
-		}
-		if (endGround) {
-			state[endGround]--;
-			const {dt} = state;
-			if (dt?.n && state[endGround] < dt[endGround]!) {
-				dt.n = 0;
-			}
-		}
-		return (ground && `mw${ground}-ground `) + style;
-	}
-
 	@getTokenizer
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	inStr(str: string, tag: TagName | false, errorTag: TagName = 'error'): Tokenizer {
 		return (stream, state) => {
 			if (stream.match(str, Boolean(tag))) {
 				pop(state);
-				return tag ? this.makeLocalTagStyle(tag, state) : '';
+				return tag ? makeLocalTagStyle(tag, state) : '';
 			} else if (!stream.skipTo(str)) {
 				stream.skipToEnd();
 			}
-			return this.makeLocalTagStyle(errorTag, state);
+			return makeLocalTagStyle(errorTag, state);
 		};
 	}
 
@@ -509,9 +537,9 @@ export class MediaWiki {
 				return '';
 			} else if (stream.sol()) {
 				if (stream.match('//')) {
-					return this.makeStyle(style, state);
+					return makeStyle(style, state);
 				} else if (stream.match(regex)) {
-					return this.makeTagStyle('magicLink', state);
+					return makeTagStyle('magicLink', state);
 				}
 				const mtFree = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 				if (mtFree) {
@@ -537,7 +565,7 @@ export class MediaWiki {
 						// Highlight indented tables :{|, bug T108454
 						if (stream.match(new RegExp(String.raw`^:*\s*(?=\{(?:${pipe}))`, 'u'))) {
 							chain(state, this.eatStartTable);
-							return this.makeLocalTagStyle('list', state);
+							return makeLocalTagStyle('list', state);
 						}
 						return this.eatList(stream, state);
 					case '=': {
@@ -547,7 +575,7 @@ export class MediaWiki {
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
 							chain(state, this.inSectionHeader(tmp[3]!));
-							return this.makeLocalStyle(
+							return makeLocalStyle(
 								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
 								state,
 							);
@@ -557,7 +585,7 @@ export class MediaWiki {
 					case '{':
 						if (stream.match(new RegExp(String.raw`^(?:${pipe})\s*`, 'u'))) {
 							chain(state, this.inTableDefinition());
-							return this.makeLocalTagStyle('tableBracket', state);
+							return makeLocalTagStyle('tableBracket', state);
 						}
 						break;
 					case '-':
@@ -572,7 +600,7 @@ export class MediaWiki {
 								mt = stream.match(re) as RegExpMatchArray | false;
 							if (mt) {
 								chain(state, this.eatStartTable);
-								return this.makeLocalStyle(mt[1] ? tokens.list : '', state);
+								return makeLocalStyle(mt[1] ? tokens.list : '', state);
 							} else if (ch === ' ') {
 								/** @todo indent-pre is sometimes suppressed */
 								return tokens.skipFormatting;
@@ -593,7 +621,7 @@ export class MediaWiki {
 				case '<': {
 					if (stream.match('!--')) { // comment
 						chain(state, this.inComment);
-						return this.makeLocalTagStyle('comment', state);
+						return makeLocalTagStyle('comment', state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false) as RegExpMatchArray | false;
@@ -606,10 +634,10 @@ export class MediaWiki {
 							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inStr('>', 'error'));
-								return this.makeLocalTagStyle('error', state);
+								return makeLocalTagStyle('error', state);
 							}
 							chain(state, this.eatTagName(tagname));
-							return this.makeLocalTagStyle('extTagBracket', state);
+							return makeLocalTagStyle('extTagBracket', state);
 						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
 							if (isCloseTag) {
@@ -624,11 +652,11 @@ export class MediaWiki {
 									if (i !== -1) {
 										state.inHtmlTag.splice(i, 1);
 									}
-									return this.makeLocalTagStyle('error', state);
+									return makeLocalTagStyle('error', state);
 								}
 							}
 							chain(state, this.eatTagName(tagname, isCloseTag, true));
-							return this.makeLocalTagStyle('htmlTagBracket', state);
+							return makeLocalTagStyle('htmlTagBracket', state);
 						}
 					}
 					break;
@@ -639,7 +667,7 @@ export class MediaWiki {
 					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 						state.nVar++;
 						chain(state, this.inVariable());
-						return this.makeLocalTagStyle('templateVariableBracket', state);
+						return makeLocalTagStyle('templateVariableBracket', state);
 					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
 						return this.eatTransclusion(stream, state);
 					}
@@ -656,7 +684,7 @@ export class MediaWiki {
 							if (!stream.eol()) {
 								stream.backUp(2);
 							}
-							return this.makeStyle(style, state);
+							return makeStyle(style, state);
 					}
 					break;
 				}
@@ -668,16 +696,16 @@ export class MediaWiki {
 							state.nLink++;
 							state.lbrack = undefined;
 							chain(state, this.inLink(!redirect && Boolean(stream.match(this.fileRegex, false))));
-							return this.makeLocalTagStyle('linkBracket', state);
+							return makeLocalTagStyle('linkBracket', state);
 						} else if (stream.match(']]')) {
-							return this.makeStyle(style, state);
+							return makeStyle(style, state);
 						}
 					} else {
 						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 						if (mt) {
 							state.nExtLink++;
 							chain(state, this.eatExternalLinkProtocol(mt[0], false));
-							return this.makeLocalTagStyle('extLinkBracket', state);
+							return makeLocalTagStyle('extLinkBracket', state);
 						}
 					}
 					break;
@@ -691,15 +719,15 @@ export class MediaWiki {
 				case ':':
 					if (dt.n && dt.html === 0 && !state.bold && !state.italic && cmpNesting(dt, state, true)) {
 						dt.n--;
-						return this.makeLocalTagStyle('list', state);
+						return makeLocalTagStyle('list', state);
 					}
 					break;
 				case '&':
-					return this.makeStyle(this.eatEntity(stream, style), state);
+					return makeStyle(this.eatEntity(stream, style), state);
 				case '-':
 					if (this.config.variants?.length && stream.match(/^\{(?!\{)\s*/u)) {
 						chain(state, this.inConvert(style, true));
-						return this.makeLocalTagStyle('convertBracket', state);
+						return makeLocalTagStyle('convertBracket', state);
 					}
 				// no default
 			}
@@ -710,20 +738,21 @@ export class MediaWiki {
 					const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 					if (mt && !stream.match('//')) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
-						return this.makeStyle(style, state);
+						return makeStyle(style, state);
 					}
 					const mtMagic = stream.match(regex, false) as RegExpMatchArray | false;
 					if (mtMagic) {
 						chain(state, this.inStr(mtMagic[0], 'magicLink'));
-						return this.makeStyle(style, state);
+						return makeStyle(style, state);
 					}
 				}
 				stream.eatWhile(/[\p{L}\d]/u);
 			}
-			return this.makeStyle(style, state);
+			return makeStyle(style, state);
 		};
 	}
 
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
 			// skip the irrelevant apostrophes ( >5 or =4 )
@@ -732,16 +761,16 @@ export class MediaWiki {
 			} else if (stream.match("''''")) { // bold italic
 				obj.bold = !obj.bold;
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return makeLocalTagStyle('apostrophes', state);
 			} else if (stream.match("''")) { // bold
 				if (obj === state && state.data.firstSingleLetterWord === null) {
-					this.prepareItalicForCorrection(stream, state);
+					prepareItalicForCorrection(stream, state);
 				}
 				obj.bold = !obj.bold;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return makeLocalTagStyle('apostrophes', state);
 			} else if (stream.eat("'")) { // italic
 				obj.italic = !obj.italic;
-				return this.makeLocalTagStyle('apostrophes', state);
+				return makeLocalTagStyle('apostrophes', state);
 			}
 			return false;
 		};
@@ -751,7 +780,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			stream.match(chars);
 			state.tokenize = free ? this.eatFreeExternalLink : this.inExternalLink();
-			return this.makeLocalTagStyle(free ? 'freeExtLinkProtocol' : 'extLinkProtocol', state);
+			return makeLocalTagStyle(free ? 'freeExtLinkProtocol' : 'extLinkProtocol', state);
 		};
 	}
 
@@ -766,14 +795,14 @@ export class MediaWiki {
 				peek = stream.peek();
 			if (stream.sol() || stream.match(/^\p{Zs}*\]/u) || isNested && peek === '|' || isArgument && peek === '=') {
 				pop(state);
-				return this.makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
+				return makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
 				const chars = "[{'<-";
 				return stream.match(new RegExp(String.raw`^(?:[^\]&${pipe}${chars}]|${lookahead(chars)})+`, 'iu'))
-					? this.makeTagStyle('extLinkText', state)
+					? makeTagStyle('extLinkText', state)
 					: this.eatWikiText('extLinkText')(stream, state);
 			} else if (stream.match(new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u'))) {
-				return this.makeLocalTagStyle('extLink', state);
+				return makeLocalTagStyle('extLink', state);
 			}
 			state.tokenize = this.inExternalLink(true);
 			return '';
@@ -781,6 +810,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	get eatFreeExternalLink(): Tokenizer {
 		return (stream, state) => {
 			const mt = stream.match(getFreeRegex()) as RegExpMatchArray;
@@ -788,7 +818,7 @@ export class MediaWiki {
 				stream.match(getFreeRegex(true));
 			}
 			pop(state);
-			return this.makeTagStyle('freeExtLink', state);
+			return makeTagStyle('freeExtLink', state);
 		};
 	}
 
@@ -802,20 +832,20 @@ export class MediaWiki {
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+				return makeLocalTagStyle('linkBracket', state, 'nLink');
 			}
 			lt = undefined;
 			const space = stream.eatSpace(),
 				{redirect} = state;
 			if (!section && stream.match(/^#\s*/u)) {
 				state.tokenize = this.inLink(file, true);
-				return this.makeTagStyle(file ? 'error' : 'linkToSection', state);
+				return makeTagStyle(file ? 'error' : 'linkToSection', state);
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				if (file) {
 					this.toEatImageParameter(stream, state);
 				}
-				return this.makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
+				return makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
 			}
 			let regex;
 			if (redirect) {
@@ -826,12 +856,12 @@ export class MediaWiki {
 				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?!!--|\/?[a-z]))+/iu;
 			}
 			if (stream.match(regex)) {
-				return this.makeTagStyle('error', state);
+				return makeTagStyle('error', state);
 			} else if (redirect) {
 				stream.eatWhile(/[^|\]]/u);
-				return this.makeStyle(style, state);
+				return makeStyle(style, state);
 			} else if (stream.match(re) || space) {
-				return this.makeStyle(style, state);
+				return makeStyle(style, state);
 			} else if (stream.match(/^<[/a-z]/iu, false)) {
 				lt = stream.pos + 1;
 			}
@@ -852,26 +882,26 @@ export class MediaWiki {
 				closing = stream.match(']]');
 			if (closing || !file && stream.match('[[', false)) {
 				if (gallery) {
-					return this.makeStyle(tmpstyle, state);
+					return makeStyle(tmpstyle, state);
 				} else if (closing && !redirect && lbrack && stream.peek() === ']') {
 					stream.backUp(1);
 					state.lbrack = false;
-					return this.makeStyle(tmpstyle, state);
+					return makeStyle(tmpstyle, state);
 				}
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
-				return this.makeLocalTagStyle('linkBracket', state, 'nLink');
+				return makeLocalTagStyle('linkBracket', state, 'nLink');
 			} else if (redirect) {
 				if (!stream.skipTo(']]')) {
 					stream.skipToEnd();
 				}
-				return this.makeLocalTagStyle('error', state);
+				return makeLocalTagStyle('error', state);
 			} else if (file && stream.match(/^\|\s*/u)) {
 				this.toEatImageParameter(stream, state);
-				return this.makeLocalTagStyle('linkDelimiter', state);
+				return makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(/^'(?=')/u)) {
-				return this.eatApostrophes(linkState)(stream, state) || this.makeStyle(tmpstyle, state);
+				return this.eatApostrophes(linkState)(stream, state) || makeStyle(tmpstyle, state);
 			} else if (file && isSolSyntax(stream, true, true) || stream.sol() && stream.match('{|', false)) {
 				return this.eatWikiText(tmpstyle)(stream, state);
 			}
@@ -879,7 +909,7 @@ export class MediaWiki {
 			if (lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
-			return mt ? this.makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
+			return mt ? makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);
 		};
 	}
 
@@ -890,6 +920,7 @@ export class MediaWiki {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatList(stream: StringStream, state: State): string {
 		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray,
 			{dt} = state;
@@ -897,7 +928,7 @@ export class MediaWiki {
 			dt.n = mt[0].split(';').length - 1;
 			copyNesting(dt, state);
 		}
-		return this.makeLocalTagStyle('list', state);
+		return makeLocalTagStyle('list', state);
 	}
 
 	eatDoubleUnderscore(style: string, stream: StringStream, state: State): Style {
@@ -915,7 +946,7 @@ export class MediaWiki {
 				stream.backUp(2);
 			}
 		}
-		return this.makeStyle(style, state);
+		return makeStyle(style, state);
 	}
 
 	@getTokenizer
@@ -923,7 +954,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
 			state.tokenize = this.inTableDefinition();
-			return this.makeLocalTagStyle('tableBracket', state);
+			return makeLocalTagStyle('tableBracket', state);
 		};
 	}
 
@@ -949,21 +980,21 @@ export class MediaWiki {
 				} else {
 					stream.match(new RegExp(`^(?:[^&${chars}${equal}${quote[0]}]|${lookahead(chars)})+`, 'iu'));
 				}
-				return this.makeLocalTagStyle('tableDefinitionValue', state);
+				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (quote === '') { // 无引号的属性值
 				if (/\s/u.test(stream.peek() || '')) {
 					state.tokenize = this.inTableDefinition(tr);
 					return '';
 				}
 				stream.match(new RegExp(String.raw`^(?:[^\s&${chars}${equal}]|${lookahead(chars)})+`, 'iu'));
-				return this.makeLocalTagStyle('tableDefinitionValue', state);
+				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next || '') ? next!.repeat(2) : '');
-				return this.makeLocalStyle(style, state);
+				return makeLocalStyle(style, state);
 			}
 			stream.match(this.tableDefinitionRegex);
-			return this.makeLocalStyle(style, state);
+			return makeLocalStyle(style, state);
 		};
 	}
 
@@ -975,26 +1006,26 @@ export class MediaWiki {
 				if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
 					if (stream.match(/^-+\s*/u)) {
 						state.tokenize = this.inTableDefinition(true);
-						return this.makeLocalTagStyle('tableDelimiter', state);
+						return makeLocalTagStyle('tableDelimiter', state);
 					} else if (stream.match(/^\+\s*/u)) {
 						state.tokenize = this.inTableCell(tokens.tableCaption);
-						return this.makeLocalTagStyle('tableDelimiter', state);
+						return makeLocalTagStyle('tableDelimiter', state);
 					} else if (stream.eat('}')) {
 						pop(state);
-						return this.makeLocalTagStyle('tableBracket', state);
+						return makeLocalTagStyle('tableBracket', state);
 					}
 					stream.eatSpace();
 					state.tokenize = this.inTableCell(tokens.tableTd);
-					return this.makeLocalTagStyle('tableDelimiter', state);
+					return makeLocalTagStyle('tableDelimiter', state);
 				} else if (stream.match(/^!\s*/u)) {
 					state.tokenize = this.inTableCell(tokens.tableTh);
-					return this.makeLocalTagStyle('tableDelimiter', state);
+					return makeLocalTagStyle('tableDelimiter', state);
 				} else if (isSolSyntax(stream, true)) {
 					return this.eatWikiText('error')(stream, state);
 				}
 			}
 			return stream.match(this.wikiRegex)
-				? this.makeTagStyle('error', state)
+				? makeTagStyle('error', state)
 				: this.eatWikiText('error')(stream, state);
 		};
 	}
@@ -1024,10 +1055,10 @@ export class MediaWiki {
 					if (!needAttr) {
 						state.tokenize = this.inTableCell(style);
 					}
-					return this.makeLocalTagStyle('tableDelimiter', state);
+					return makeLocalTagStyle('tableDelimiter', state);
 				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
 					state.tokenize = this.inTableCell(style, false);
-					return this.makeLocalTagStyle('tableDelimiter2', state);
+					return makeLocalTagStyle('tableDelimiter2', state);
 				} else if (needAttr && stream.match('[[', false)) {
 					state.tokenize = this.inTableCell(style, false);
 				}
@@ -1042,7 +1073,7 @@ export class MediaWiki {
 				`^(?:[^[&${firstLine ? '|!' : ':'}${equal}${chars}]|${lookahead(chars)})+`,
 				'iu',
 			);
-			return stream.match(re) ? this.makeStyle(style, state) : this.eatWikiText(style)(stream, state);
+			return stream.match(re) ? makeStyle(style, state) : this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -1061,7 +1092,7 @@ export class MediaWiki {
 					stream.backUp(str.length);
 					state.tokenize = this.inStr('<!--', false, 'sectionHeader');
 				}
-				return this.makeLocalTagStyle('section', state);
+				return makeLocalTagStyle('section', state);
 			}
 			return this.eatWikiText('section')(stream, state);
 		};
@@ -1079,11 +1110,11 @@ export class MediaWiki {
 			stream.eatSpace();
 			if (isHtmlTag) {
 				state.tokenize = isCloseTag ? this.inStr('>', 'htmlTagBracket') : this.inHtmlTagAttribute(name);
-				return this.makeLocalTagStyle('htmlTagName', state);
+				return makeLocalTagStyle('htmlTagName', state);
 			}
 			// it is the extension tag
 			state.tokenize = isCloseTag ? this.inStr('>', 'extTagBracket') : this.inExtTagAttribute(name);
-			return this.makeLocalTagStyle('extTagName', state);
+			return makeLocalTagStyle('extTagName', state);
 		};
 	}
 
@@ -1103,14 +1134,14 @@ export class MediaWiki {
 					state.dt.html++;
 				}
 				pop(state);
-				return this.makeLocalTagStyle('htmlTagBracket', state);
+				return makeLocalTagStyle('htmlTagBracket', state);
 			}
 			const t = state.stack[0]!,
 				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
 				+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
 			if (pipe.includes(stream.peek() || '')) {
 				pop(state);
-				return this.makeLocalTagStyle('htmlTagBracket', state);
+				return makeLocalTagStyle('htmlTagBracket', state);
 			} else if (stream.match(/^(?:[&<]|\{\{)/u, false)) {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值
@@ -1119,21 +1150,21 @@ export class MediaWiki {
 				} else {
 					stream.match(new RegExp(`^(?:[^<>&${chars}${pipe}${quote[0]}]|${lookahead(chars)})+`, 'u'));
 				}
-				return this.makeLocalTagStyle('htmlTagAttributeValue', state);
+				return makeLocalTagStyle('htmlTagAttributeValue', state);
 			} else if (quote === '') { // 无引号的属性值
 				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
 				stream.match(new RegExp(String.raw`^(?:[^\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
-				return this.makeLocalTagStyle('htmlTagAttributeValue', state);
+				return makeLocalTagStyle('htmlTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
-				return this.makeLocalStyle(style, state);
+				return makeLocalStyle(style, state);
 			}
 			stream.match(new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'));
-			return this.makeLocalStyle(style, state);
+			return makeLocalStyle(style, state);
 		};
 	}
 
@@ -1151,31 +1182,31 @@ export class MediaWiki {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
-				return this.makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
 				pop(state);
-				return this.makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('extTagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
 					state.tokenize = this.inExtTagAttribute(name, quote.slice(1) || undefined);
 				} else {
 					stream.match(new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
 				}
-				return this.makeLocalTagStyle('extTagAttributeValue', state);
+				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (quote === '') { // 无引号的属性值
 				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
 				stream.match(/^(?:[^>/\s]|\/(?!>))+/u);
-				return this.makeLocalTagStyle('extTagAttributeValue', state);
+				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
-				return this.makeLocalStyle(style, state);
+				return makeLocalStyle(style, state);
 			}
 			stream.match(/(?:[^>/=]|\/(?!>))+/u);
-			return this.makeLocalStyle(style, state);
+			return makeLocalStyle(style, state);
 		};
 	}
 
@@ -1192,7 +1223,7 @@ export class MediaWiki {
 				state.extName = false;
 				state.extMode = false;
 				state.extState = false;
-				return this.makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('extTagBracket', state);
 			}
 			let origString = '';
 			if (i !== -1) {
@@ -1240,18 +1271,18 @@ export class MediaWiki {
 			const sol = stream.sol();
 			stream.eatSpace();
 			if (stream.eol()) {
-				return this.makeLocalStyle('', state);
+				return makeLocalStyle('', state);
 			} else if (stream.eat('|')) {
 				if (pos < 2) {
 					state.tokenize = this.inVariable(pos + 1);
 				}
-				return this.makeLocalTagStyle('templateVariableDelimiter', state);
+				return makeLocalTagStyle('templateVariableDelimiter', state);
 			} else if (stream.match('}}}')) {
 				pop(state);
-				return this.makeLocalTagStyle('templateVariableBracket', state, 'nVar');
+				return makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalTagStyle('comment', state);
+				return makeLocalTagStyle('comment', state);
 			} else if (pos === 0 && sol) {
 				state.nVar--;
 				pop(state);
@@ -1260,7 +1291,7 @@ export class MediaWiki {
 			}
 			return pos === 1 && isSolSyntax(stream) || !stream.match(re)
 				? this.eatWikiText(tag)(stream, state)
-				: this[pos === 1 ? 'makeTagStyle' : 'makeLocalTagStyle'](tag, state);
+				: (pos === 1 ? makeTagStyle : makeLocalTagStyle)(tag, state);
 		};
 	}
 
@@ -1269,7 +1300,7 @@ export class MediaWiki {
 		if (stream.peek() === '#') {
 			state.nExt++;
 			chain(state, this.inParserFunctionName());
-			return this.makeLocalTagStyle('parserFunctionBracket', state);
+			return makeLocalTagStyle('parserFunctionBracket', state);
 		}
 		// Check for parser function without '#'
 		const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
@@ -1286,13 +1317,13 @@ export class MediaWiki {
 			) {
 				state.nExt++;
 				chain(state, this.inParserFunctionName());
-				return this.makeLocalTagStyle('parserFunctionBracket', state);
+				return makeLocalTagStyle('parserFunctionBracket', state);
 			}
 		}
 		// Template
 		state.nTemplate++;
 		chain(state, this.inTemplatePageName());
-		return this.makeLocalTagStyle('templateBracket', state);
+		return makeLocalTagStyle('templateBracket', state);
 	}
 
 	@getTokenizer
@@ -1301,13 +1332,13 @@ export class MediaWiki {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
 			if (stream.eol()) {
-				return this.makeLocalStyle('', state);
+				return makeLocalStyle('', state);
 			} else if (stream.eat('}')) {
 				pop(state);
-				return this.makeLocalTagStyle(stream.eat('}') ? 'parserFunctionBracket' : 'error', state, 'nExt');
+				return makeLocalTagStyle(stream.eat('}') ? 'parserFunctionBracket' : 'error', state, 'nExt');
 			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalTagStyle('comment', state);
+				return makeLocalTagStyle('comment', state);
 			} else if (sol) {
 				state.nExt--;
 				pop(state);
@@ -1317,7 +1348,7 @@ export class MediaWiki {
 			const ch = stream.eat(/[:|]/u);
 			if (ch) {
 				state.tokenize = this.inParserFunctionArgument(invoke);
-				return this.makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
+				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u) as RegExpMatchArray | false;
 			if (mt) {
@@ -1329,10 +1360,10 @@ export class MediaWiki {
 				) {
 					state.tokenize = this.inParserFunctionName(true);
 				}
-				return this.makeLocalTagStyle('parserFunctionName', state);
+				return makeLocalTagStyle('parserFunctionName', state);
 			}
 			pop(state);
-			return this.makeLocalStyle('', state, 'nExt');
+			return makeLocalStyle('', state, 'nExt');
 		};
 	}
 
@@ -1345,16 +1376,16 @@ export class MediaWiki {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
 			if (stream.eol()) {
-				return this.makeLocalStyle('', state);
+				return makeLocalStyle('', state);
 			} else if (stream.match('}}')) {
 				pop(state);
-				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
+				return makeLocalTagStyle('templateBracket', state, 'nTemplate');
 			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalTagStyle('comment', state);
+				return makeLocalTagStyle('comment', state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);
-				return this.makeLocalTagStyle('templateDelimiter', state);
+				return makeLocalTagStyle('templateDelimiter', state);
 			} else if (haveEaten && sol) {
 				state.nTemplate--;
 				pop(state);
@@ -1362,22 +1393,22 @@ export class MediaWiki {
 				return '';
 			} else if (!anchor && stream.eat('#')) {
 				state.tokenize = this.inTemplatePageName(true, true);
-				return this.makeLocalTagStyle('error', state);
+				return makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.match(new RegExp(String.raw`^(?:[>[\]]|${lookahead(chars, state)})+`, 'u'))) {
-				return this.makeLocalTagStyle('error', state);
+				return makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.peek() === '<') {
 				pop(state);
-				return this.makeLocalStyle('', state, 'nTemplate');
+				return makeLocalStyle('', state, 'nTemplate');
 			} else if (space && !haveEaten) {
-				return this.makeLocalStyle('', state);
+				return makeLocalStyle('', state);
 			} else if (stream.match(re)) {
 				if (!haveEaten) {
 					state.tokenize = this.inTemplatePageName(true, anchor);
 				}
-				return this.makeLocalStyle(style, state);
+				return makeLocalStyle(style, state);
 			}
 			return space
-				? this.makeLocalStyle(style, state)
+				? makeLocalStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
 	}
@@ -1392,13 +1423,13 @@ export class MediaWiki {
 				if (module) {
 					state.tokenize = this.inParserFunctionArgument();
 				}
-				return this.makeLocalTagStyle('parserFunctionDelimiter', state);
+				return makeLocalTagStyle('parserFunctionDelimiter', state);
 			} else if (stream.match('}}')) {
 				pop(state);
-				return this.makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+				return makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 			}
 			return !isSolSyntax(stream) && stream.match(regex)
-				? this.makeLocalStyle(style, state)
+				? makeLocalStyle(style, state)
 				: this.eatWikiText('parserFunction')(stream, state);
 		};
 	}
@@ -1408,15 +1439,15 @@ export class MediaWiki {
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (stream.eol()) {
-				return this.makeLocalTagStyle('template', state);
+				return makeLocalTagStyle('template', state);
 			} else if (stream.eat('|')) {
 				if (!expectName) {
 					state.tokenize = this.inTemplateArgument(true);
 				}
-				return this.makeLocalTagStyle('templateDelimiter', state);
+				return makeLocalTagStyle('templateDelimiter', state);
 			} else if (stream.match('}}')) {
 				pop(state);
-				return this.makeLocalTagStyle('templateBracket', state, 'nTemplate');
+				return makeLocalTagStyle('templateBracket', state, 'nTemplate');
 			} else if (stream.sol() && stream.peek() === '=') {
 				const style = this.eatWikiText('template')(stream, state);
 				if (style.includes(tokens.sectionHeader)) {
@@ -1426,12 +1457,12 @@ export class MediaWiki {
 			}
 			if (expectName && stream.match(new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', state)})*=`, 'iu'))) {
 				state.tokenize = this.inTemplateArgument();
-				return this.makeLocalTagStyle('templateArgumentName', state);
+				return makeLocalTagStyle('templateArgumentName', state);
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 				return this.eatWikiText('template')(stream, state);
 			}
 			return stream.match(this.argumentRegex) || space
-				? this.makeLocalTagStyle('template', state)
+				? makeLocalTagStyle('template', state)
 				: this.eatWikiText('template')(stream, state);
 		};
 	}
@@ -1442,22 +1473,22 @@ export class MediaWiki {
 			const space = stream.eatSpace();
 			if (stream.match('}-')) {
 				pop(state);
-				return this.makeLocalTagStyle('convertBracket', state);
+				return makeLocalTagStyle('convertBracket', state);
 			} else if (needFlag && stream.match(/^[;\sa-z-]*(?=\|)/iu)) {
 				chain(state, this.inConvert(style));
 				state.tokenize = this.inStr('|', 'convertDelimiter');
-				return this.makeLocalTagStyle('convertFlag', state);
+				return makeLocalTagStyle('convertFlag', state);
 			} else if (stream.match(this.convertSemicolon)) {
 				if (needFlag || !needLang) {
 					state.tokenize = this.inConvert(style);
 				}
-				return this.makeLocalTagStyle('convertDelimiter', state);
+				return makeLocalTagStyle('convertDelimiter', state);
 			} else if (needLang && stream.match(this.convertLang)) {
 				state.tokenize = this.inConvert(style, false, false);
-				return this.makeLocalTagStyle('convertLang', state);
+				return makeLocalTagStyle('convertLang', state);
 			}
 			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space
-				? this.makeStyle(style, state)
+				? makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
 	}
@@ -1466,41 +1497,6 @@ export class MediaWiki {
 	eatEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
-	}
-
-	/**
-	 * Remembers position and status for rollbacking.
-	 * It is needed for changing from bold to italic with apostrophes before it, if required.
-	 *
-	 * @see https://phabricator.wikimedia.org/T108455
-	 * @param stream
-	 * @param state
-	 */
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	prepareItalicForCorrection(stream: StringStream, state: State): void {
-		// See Parser::doQuotes() in MediaWiki Core, it works similarly.
-		// this.firstSingleLetterWord has maximum priority
-		// this.firstMultiLetterWord has medium priority
-		// this.firstSpace has low priority
-		const end = stream.pos,
-			str = stream.string.slice(0, end - 3),
-			x1 = str.slice(-1),
-			x2 = str.slice(-2, -1),
-			{data} = state;
-		// this.firstSingleLetterWord always is undefined here
-		if (x1 === ' ') {
-			if (data.firstMultiLetterWord || data.firstSpace) {
-				return;
-			}
-			data.firstSpace = end;
-		} else if (x2 === ' ') {
-			data.firstSingleLetterWord = end;
-		} else if (data.firstMultiLetterWord) {
-			return;
-		} else {
-			data.firstMultiLetterWord = end;
-		}
-		data.mark = end;
 	}
 
 	/**
@@ -1552,7 +1548,7 @@ export class MediaWiki {
 							stream.string = string;
 							oldToken.pos++;
 							data.oldToken = oldToken;
-							return this.makeFullStyle(s, state);
+							return makeFullStyle(s, state);
 						}
 						const length = pos - stream.pos;
 						if (length !== 3) {
@@ -1566,7 +1562,7 @@ export class MediaWiki {
 					data.oldToken = readyTokens.shift()!;
 					stream.pos = pos;
 					stream.string = string;
-					return this.makeFullStyle(style, state);
+					return makeFullStyle(style, state);
 				} else if (stream.sol()) {
 					// reset bold and italic status in every new line
 					state.bold = false;
@@ -1667,7 +1663,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (comment && stream.match('<!--')) {
 				chain(state, this.inComment);
-				return this.makeLocalTagStyle('comment', state);
+				return makeLocalTagStyle('comment', state);
 			} else if (stream.match(re)) {
 				return tokens.comment;
 			}
@@ -1732,16 +1728,16 @@ export class MediaWiki {
 			const space = stream.eatSpace();
 			if (!section && stream.match(/^#\s*/u)) {
 				state.tokenize = this.inGallery(true);
-				return this.makeTagStyle('error', state);
+				return makeTagStyle('error', state);
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(true, true);
 				this.toEatImageParameter(stream, state);
-				return this.makeLocalTagStyle('linkDelimiter', state);
+				return makeLocalTagStyle('linkDelimiter', state);
 			} else if (stream.match(regex)) {
-				return this.makeTagStyle('error', state);
+				return makeTagStyle('error', state);
 			}
 			return stream.match(re) || space
-				? this.makeStyle(style, state)
+				? makeStyle(style, state)
 				: this.eatWikiText(section ? style : 'error')(stream, state);
 		};
 	}
