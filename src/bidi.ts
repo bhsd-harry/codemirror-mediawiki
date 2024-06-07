@@ -9,7 +9,7 @@ import {Prec, RangeSetBuilder} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getTag} from './matchTag';
 import modeConfig from './config';
-import type {ViewUpdate, DecorationSet} from '@codemirror/view';
+import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
 import type {SyntaxNode} from '@lezer/common';
 
 const {tokens} = modeConfig;
@@ -52,7 +52,7 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 };
 
 export default ViewPlugin.fromClass(
-	class {
+	class implements PluginValue {
 		declare isolates;
 		declare tree;
 		declare dir;
