@@ -48,7 +48,7 @@
 
 This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
 
-Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki).
+Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the URL.
 
 Nonetheless, this repository also provides a customized version with additional functionality for use in a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://github.com/bhsd-harry/Wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
 

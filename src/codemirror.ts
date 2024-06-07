@@ -122,6 +122,7 @@ export class CodeMirror6 {
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
 	readonly #extensions = new Compartment();
+	readonly #dir = new Compartment();
 	readonly #indent = new Compartment();
 	readonly #extraKeys = new Compartment();
 	readonly #phrases = new Compartment();
@@ -172,6 +173,7 @@ export class CodeMirror6 {
 				this.#language.of(languages[lang]!(config)),
 				this.#linter.of(linters[lang] || []),
 				this.#extensions.of([]),
+				this.#dir.of(EditorView.editorAttributes.of({dir: textarea.dir})),
 				this.#indent.of(indentUnit.of(this.#indentStr)),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
@@ -180,16 +182,22 @@ export class CodeMirror6 {
 					accesskey: textarea.accessKey,
 					tabindex: String(textarea.tabIndex),
 				}),
-				EditorView.editorAttributes.of({
-					dir: textarea.dir,
-					lang: textarea.lang,
-				}),
+				EditorView.editorAttributes.of({lang: textarea.lang}),
 				lineNumbers(),
 				EditorView.lineWrapping,
 				keymap.of([
 					...defaultKeymap,
 					...searchKeymap,
 					...lintKeymap,
+					{
+						key: 'Mod-Shift-x',
+						run: (): true => {
+							const dir = textarea.dir === 'rtl' ? 'ltr' : 'rtl';
+							textarea.dir = dir;
+							this.#effects(this.#dir.reconfigure(EditorView.editorAttributes.of({dir})));
+							return true;
+						},
+					},
 				]),
 				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
 					if (docChanged) {

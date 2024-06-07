@@ -5,6 +5,7 @@
 **Added**
 
 - Bidi isolation for HTML/extension tags and table attributes in the MediaWiki mode
+- New key binding `Mod-Shift-x` to toggle between LTR and RTL
 
 **Fixed**
 
