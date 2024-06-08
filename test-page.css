@@ -10,7 +10,6 @@ textarea {
 	vertical-align: baseline;
 	width: 100%;
 	max-height: 100vh;
-	direction: ltr;
 	padding: .4em;
 }
 textarea, .cm-editor {

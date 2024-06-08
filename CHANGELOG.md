@@ -1,10 +1,15 @@
 ## 2.14.6
 
-*2024-06-08*
+*2024-06-11*
+
+**Added**
+
+- Highlight CSS/JavaScipt/Lua code blocks in the MediaWiki mode
 
 **Fixed**
 
 - Text direction of the panels
+- Nested CSS and JavaScript modes in the mixed MediaWiki-HTML mode, since [v2.13.0](#2130)
 
 ## 2.14.5
 

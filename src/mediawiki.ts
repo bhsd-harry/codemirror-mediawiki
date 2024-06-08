@@ -366,7 +366,7 @@ for (const [language, parser] of Object.entries(plugins)) {
 	if (language === 'css' || language === 'javascript') {
 		Object.defineProperty(FullMediaWiki.prototype, language, {
 			get() {
-				return parser;
+				return (): StreamParser<object> => parser as StreamParser<object>;
 			},
 		});
 	}

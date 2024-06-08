@@ -4,6 +4,7 @@
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
+import {tags} from '@lezer/highlight';
 import {Tag} from '@lezer/highlight';
 
 /**
@@ -182,7 +183,20 @@ const modeConfig = {
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
 	 */
 	get tokenTable(): Record<string, Tag> {
-		const table: Record<string, Tag> = {};
+		const table: Record<string, Tag> = {
+			variable: tags.variableName,
+			'variable-2': tags.special(tags.variableName),
+			'string-2': tags.special(tags.string),
+			def: tags.definition(tags.variableName),
+			tag: tags.tagName,
+			attribute: tags.attributeName,
+			type: tags.typeName,
+			builtin: tags.standard(tags.variableName),
+			qualifier: tags.modifier,
+			error: tags.invalid,
+			header: tags.heading,
+			property: tags.propertyName,
+		};
 		for (const className of Object.values(this.tokens)) {
 			table[className] = Tag.define();
 		}

@@ -6,6 +6,7 @@
 
 import {Tag} from '@lezer/highlight';
 import modeConfig from './config';
+import * as plugins from './plugins';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
 const {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} = modeConfig;
@@ -164,10 +165,10 @@ const copyState = (state: State): State => {
 			// @ts-expect-error readonly array
 			newState[key] = [...val];
 		} else if (key === 'extState') {
-			newState.extState = (state.extMode && state.extMode.copyState || copyState)(val as State);
+			newState.extState = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
 		} else {
 			// @ts-expect-error keyof State
-			newState[key] = key !== 'data' && typeof val === 'object' ? {...val} : val;
+			newState[key] = key !== 'data' && val && typeof val === 'object' ? {...val} : val;
 		}
 	}
 	return newState;
@@ -365,6 +366,8 @@ const prepareItalicForCorrection = (stream: StringStream, state: State): void =>
 	}
 	data.mark = end;
 };
+
+const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']);
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
@@ -1169,28 +1172,40 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inExtTagAttribute(name: string, quote?: string): Tokenizer {
+	inExtTagAttribute(name: string, quote?: string, isLang?: boolean): Tokenizer {
+		isLang &&= syntaxHighlight.has(name); // eslint-disable-line no-param-reassign
 		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
+		const advance = (stream: StringStream, state: State, re: RegExp): void => {
+			const mt = stream.match(re) as RegExpMatchArray;
+			if (isLang) {
+				let lang = mt[0].trim().toLowerCase();
+				if (lang === 'js') {
+					lang = 'javascript';
+				}
+				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua')
+				&& plugins[lang] as StreamParser<object>;
+			}
+		};
 		return (stream, state) => {
 			if (stream.eat('>')) {
-				state.extName = name;
 				const {config: {tagModes}} = this;
-				if (name in tagModes) {
-					state.extMode = this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
-				}
+				state.extName = name;
+				state.extMode ||= name in tagModes
+				&& this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
 				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.match('/>')) {
+				state.extMode = false;
 				pop(state);
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
 					state.tokenize = this.inExtTagAttribute(name, quote.slice(1) || undefined);
 				} else {
-					stream.match(new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
+					advance(stream, state, new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
 				}
 				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (quote === '') { // 无引号的属性值
@@ -1198,14 +1213,17 @@ export class MediaWiki {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
-				stream.match(/^(?:[^>/\s]|\/(?!>))+/u);
+				advance(stream, state, /^(?:[^>/\s]|\/(?!>))+/u);
 				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
-				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '', isLang);
 				return makeLocalStyle(style, state);
 			}
-			stream.match(/(?:[^>/=]|\/(?!>))+/u);
+			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u) as RegExpMatchArray;
+			if (stream.peek() === '=') {
+				state.tokenize = this.inExtTagAttribute(name, undefined, /lang\s*$/iu.test(mt[0]));
+			}
 			return makeLocalStyle(style, state);
 		};
 	}
@@ -1244,7 +1262,7 @@ export class MediaWiki {
 				ret = `mw-tag-${state.extName} ${tokens.extTag}`;
 				stream.skipToEnd();
 			} else {
-				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as object)}`;
+				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as object) ?? ''}`;
 			}
 			if (stream.eol()) {
 				if (origString) {
@@ -1536,8 +1554,10 @@ export class MediaWiki {
 					// just send saved tokens till they exists
 					Object.assign(state, other);
 					if (
-						!state.extMode && state.nLink === 0
-						&& typeof style === 'string' && style.includes(tokens.apostrophes)
+						!(state.extName && state.extMode)
+						&& state.nLink === 0
+						&& typeof style === 'string'
+						&& style.includes(tokens.apostrophes)
 					) {
 						if (data.mark === pos) {
 							// rollback
@@ -1580,8 +1600,10 @@ export class MediaWiki {
 				data.mark = null;
 				data.oldToken = {pos: stream.pos, string: stream.string, state: copyState(state), style: ''};
 				let style: Style;
+				const {start} = stream;
 				do {
 					// get token style
+					stream.start = stream.pos;
 					style = state.tokenize(stream, state);
 					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
@@ -1619,6 +1641,7 @@ export class MediaWiki {
 					// no need to rollback
 					data.mark = null;
 				}
+				stream.start = start;
 				stream.pos = data.oldToken.pos;
 				stream.string = data.oldToken.string;
 				Object.assign(state, data.oldToken.state);
@@ -1626,7 +1649,7 @@ export class MediaWiki {
 			},
 
 			blankLine(state): void {
-				if (state.extMode && state.extMode.blankLine) {
+				if (state.extName && state.extMode && state.extMode.blankLine) {
 					state.extMode.blankLine(state.extState as State, 0);
 				}
 			},
