@@ -199,6 +199,9 @@ export class CodeMirror6 {
 						},
 					},
 				]),
+				EditorView.theme({
+					'.cm-panels': {direction: document.dir},
+				}),
 				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
 					if (docChanged) {
 						clearTimeout(timer);

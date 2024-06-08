@@ -1,3 +1,11 @@
+## 2.14.6
+
+*2024-06-08*
+
+**Fixed**
+
+- Text direction of the panels
+
 ## 2.14.5
 
 *2024-06-07*
