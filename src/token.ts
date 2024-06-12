@@ -1654,6 +1654,12 @@ export class MediaWiki {
 				}
 			},
 
+			indent(state, textAfter, context): number | null {
+				return state.extName && state.extMode && state.extMode.indent
+					? state.extMode.indent(state.extState as object, textAfter, context)
+					: null;
+			},
+
 			...tags
 				? undefined
 				: {

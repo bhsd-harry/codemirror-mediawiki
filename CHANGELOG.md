@@ -1,3 +1,15 @@
+## 2.14.7
+
+*2024-06-12*
+
+**Fixed**
+
+- Indentation of the nested CSS/JavaScript/Lua modes in the MediaWiki mode
+
+**Changed**
+
+- When the [escape](./README.md#escape) extension is enabled but there is no selection, [indentMore](https://codemirror.net/docs/ref/#commands.indentMore) and [indentLess](https://codemirror.net/docs/ref/#commands.indentLess) keyboard shortcuts will take effect
+
 ## 2.14.6
 
 *2024-06-11*
