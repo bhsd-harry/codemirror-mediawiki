@@ -5,6 +5,10 @@
 	cursor: pointer;
 	line-height: 1.2;
 	padding: 0 1px;
+	opacity: .6;
+}
+.cm-tooltip-fold:hover {
+	opacity: 1;
 }
 .cm-focused .cm-matchingTag {
 	background-color: rgba(50, 140, 130, .32);
