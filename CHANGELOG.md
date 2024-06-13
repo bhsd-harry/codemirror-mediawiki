@@ -13,7 +13,7 @@
 **Changed**
 
 - When the [escape](./README.md#escape) extension is enabled but there is no selection, [indentMore](https://codemirror.net/docs/ref/#commands.indentMore) and [indentLess](https://codemirror.net/docs/ref/#commands.indentLess) keyboard shortcuts will take effect
-- The tooltip of the [codeFolding](./README.md#codefolding) extension will be hidden when typing and semi-transparent before hovering
+- The tooltip of the [codeFolding](./README.md#codefolding) extension will be hidden when typing and semi-transparent unless hovered
 
 ## 2.14.6
 

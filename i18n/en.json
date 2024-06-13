@@ -1,5 +1,5 @@
 {
-	"version": "2.14.6",
+	"version": "2.14.7",
 	"lang": "en",
 	"i18n-failed": "Failed to fetch the translation file in $1.",
 	"title": "CodeMirror Addons",
