@@ -14,10 +14,11 @@ import type {SyntaxNode} from '@lezer/common';
 
 const {tokens} = modeConfig;
 
-const isolate = Decoration.mark({
-	class: 'cm-bidi-isolate',
-	bidiIsolate: Direction.LTR,
-});
+const isolateLTR = Decoration.mark({
+		class: 'cm-bidi-isolate cm-bidi-ltr',
+		bidiIsolate: Direction.LTR,
+	}),
+	isolate = Decoration.mark({class: 'cm-bidi-isolate'});
 
 const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
 	const set = new RangeSetBuilder<Decoration>();
@@ -25,24 +26,35 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 		for (const {from, to} of visibleRanges) {
 			let node: SyntaxNode | null = syntaxTree(state).resolve(from, 1),
 				td = 0,
-				table = 0;
+				table = 0,
+				parameter = 0;
 			while (node && node.to < to) {
-				const {name, from: f, nextSibling} = node;
+				const {name, from: f, to: t, nextSibling} = node;
 				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, f + 1) === '<') {
 					const tag = getTag(state, nextSibling!);
-					set.add(f, tag.to, isolate);
+					set.add(f, tag.to, isolateLTR);
 				} else if (!td && !table && name.includes(tokens.tableDefinition)) {
 					if (/-html-(?:table|tr)/u.test(name)) {
 						table = state.doc.lineAt(f).to;
-						set.add(f, table, isolate);
+						set.add(f, table, isolateLTR);
 					} else {
 						td = f;
 					}
 				} else if (table && f > table) {
 					table = 0;
 				} else if (td && name.includes(tokens.tableDelimiter2)) {
-					set.add(td, f, isolate);
+					set.add(td, f, isolateLTR);
 					td = 0;
+				} else if (/-(?:template|parserfunction)-delimiter/u.test(name)) {
+					if (parameter) {
+						set.add(parameter, f, isolate);
+					}
+					parameter = t;
+				} else if (parameter && /-(?:template|parserfunction)-bracket/u.test(name)) {
+					if (state.sliceDoc(t - 1, t) === '}') {
+						set.add(parameter, f, isolate);
+					}
+					parameter = 0;
 				}
 				node = node.nextSibling;
 			}

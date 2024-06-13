@@ -42,8 +42,10 @@
 	z-index: 7;
 }
 .cm-bidi-isolate {
-	direction: ltr;
 	unicode-bidi: isolate;
+}
+.cm-bidi-ltr {
+	direction: ltr;
 	display: inline-block;
 }
 

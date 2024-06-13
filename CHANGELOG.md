@@ -2,6 +2,10 @@
 
 *2024-06-13*
 
+**Added**
+
+- Bidi isolation for template parameters in the MediaWiki mode
+
 **Fixed**
 
 - Indentation of the nested CSS/JavaScript/Lua modes in the MediaWiki mode
