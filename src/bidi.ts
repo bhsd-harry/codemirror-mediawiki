@@ -28,7 +28,7 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 				td = 0,
 				table = 0,
 				parameter = 0;
-			while (node && node.to < to) {
+			while (node && node.to <= to) {
 				const {name, from: f, to: t, nextSibling} = node;
 				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, f + 1) === '<') {
 					const tag = getTag(state, nextSibling!);

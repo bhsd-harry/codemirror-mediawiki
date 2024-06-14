@@ -939,8 +939,8 @@ export class MediaWiki {
 			name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
 		if (name) {
 			if (
-				Object.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)
-				|| Object.hasOwnProperty.call(doubleUnderscore[1], `__${name[0]}`)
+				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)
+				|| Object.prototype.hasOwnProperty.call(doubleUnderscore[1], `__${name[0]}`)
 			) {
 				return tokens.doubleUnderscore;
 			} else if (!stream.eol()) {
@@ -1329,8 +1329,8 @@ export class MediaWiki {
 			if (
 				(!delimiter || delimiter === ':' || delimiter === '}')
 				&& (
-					Object.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
-					|| Object.hasOwnProperty.call(functionSynonyms[1], ff)
+					Object.prototype.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
+					|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
 				)
 			) {
 				state.nExt++;
