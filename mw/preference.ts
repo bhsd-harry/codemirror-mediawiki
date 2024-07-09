@@ -141,7 +141,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			widgets[label] = new OO.ui.MultilineTextInputWidget({
 				value: c ? JSON.stringify(c, null, indent || '\t') : '',
 			});
-			const codeField = new OO.ui.FieldLayout(widgets[label]!, {label: msg(`${label}-config`), align: 'top'}),
+			const codeField = new OO.ui.FieldLayout(widgets[label], {label: msg(`${label}-config`), align: 'top'}),
 				panel = new OO.ui.TabPanelLayout(label, {label, $content: codeField.$element});
 			panel.on('active', active => {
 				const [textarea] = panel.$element.find('textarea') as unknown as [HTMLTextAreaElement];
