@@ -1,10 +1,10 @@
-## 2.14.8
+## 2.14.9
 
 *2024-07-10*
 
 **Fixed**
 
-- Minor fix for bidi isolation in the MediaWiki mode
+- Fix highlighting of language conversion in the MediaWiki mode
 
 ## 2.14.7
 

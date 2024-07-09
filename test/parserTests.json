@@ -4765,6 +4765,16 @@
 		"parsed": "<section-header section--2>==</><section>Headline 1</><section-header>==</><section-header section--3>===</><section>Subheadline 1</><section-header>===</><section-header section--5>=====</><section>Skipping a level</><section-header>=====</><section-header section--6>======</><section>Skipping a level</><section-header>======</><section-header section--2>==</><section>Headline 2</><section-header>==</>Some text<section-header section--3>===</><section>Another headline</><section-header>===</>"
 	},
 	{
+		"desc": "Section headings with TOC and language conversion (T295187, T306862)",
+		"wikitext": "==Headline 1==\n===Subheadline 1===\n==Headline 2==\nSome text\n===Another headline===",
+		"parsed": "<section-header section--2>==</><section>Headline 1</><section-header>==</><section-header section--3>===</><section>Subheadline 1</><section-header>===</><section-header section--2>==</><section>Headline 2</><section-header>==</>Some text<section-header section--3>===</><section>Another headline</><section-header>===</>"
+	},
+	{
+		"desc": "Section headings with TOC and language conversion disabled (T295187)",
+		"wikitext": "==Headline 1==\n===Subheadline 1===\n==Headline 2==\nSome text\n===Another headline===\n__NOCONTENTCONVERT__",
+		"parsed": "<section-header section--2>==</><section>Headline 1</><section-header>==</><section-header section--3>===</><section>Subheadline 1</><section-header>===</><section-header section--2>==</><section>Headline 2</><section-header>==</>Some text<section-header section--3>===</><section>Another headline</><section-header>===</><double-underscore>__NOCONTENTCONVERT__</>"
+	},
+	{
 		"desc": "TOC anchors don't collide",
 		"wikitext": "__FORCETOC__\n==Headline 2==\n==Headline==\n==Headline 2==\n==Headline==",
 		"parsed": "<double-underscore>__FORCETOC__</><section-header section--2>==</><section>Headline 2</><section-header>==</><section-header section--2>==</><section>Headline</><section-header>==</><section-header section--2>==</><section>Headline 2</><section-header>==</><section-header section--2>==</><section>Headline</><section-header>==</>"
@@ -5277,6 +5287,216 @@
 		"desc": "Link to a section of a variant of this title should be parsed as mw-selflink-fragment",
 		"wikitext": "[[Dуна]] is a self-link while [[Duna#Foo]] and [[Dуна#Foo]] are mw-selflink-fragments.",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Dуна</><link-ground link-bracket>]]</> is a self-link while <link-ground link-bracket>[[</><link-ground link-pagename pagename>Duna</><link-ground link-tosection>#Foo</><link-ground link-bracket>]]</> and <link-ground link-bracket>[[</><link-ground link-pagename pagename>Dуна</><link-ground link-tosection>#Foo</><link-ground link-bracket>]]</> are mw-selflink-fragments."
+	},
+	{
+		"desc": "Explicit definition of language variant alternatives",
+		"wikitext": "-{zh:China;zh-tw:Taiwan}-, not China",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, not China"
+	},
+	{
+		"desc": "Explicit definition of language variant alternatives (BCP 47 codes)",
+		"wikitext": "-{zh:China;zh-Hant-TW:Taiwan}-, not China",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China;zh-Hant-TW:Taiwan<convert-bracket>}-</>, not China"
+	},
+	{
+		"desc": "Filter syntax for language variants",
+		"wikitext": "foo-{zh;zh-hans;zh-hant|blog, WEBJOURNAL, WEBLOG}-quux",
+		"parsed": "foo<convert-bracket>-{</><convert-flag>zh;zh-hans;zh-hant</><convert-delimiter>|</>blog, WEBJOURNAL, WEBLOG<convert-bracket>}-</>quux"
+	},
+	{
+		"desc": "Explicit session-wise two-way language variant mapping (A flag and - flag)",
+		"wikitext": "This is -{zh:China; zh-tw:Taiwan}-, but we'll forget that now.\n\nTaiwan is not China.\n\nBut -{A|zh:China; zh-tw:Taiwan}- is China,\n\n(This-{-|zh:China; zh-tw:Taiwan}- should be stripped!)\n\nand -{China}- is China.",
+		"parsed": "This is <convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.Taiwan is not China.But <convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> is China,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>China<convert-bracket>}-</> is China."
+	},
+	{
+		"desc": "Explicit session-wise one-way language variant mapping (A flag and - flag)",
+		"wikitext": "This is -{COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}-, but we'll forget that now.\n\nCOUNTRY is China or Taiwan.\n\nBut -{A|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- is COUNTRY,\n\n(This-{-|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- should be stripped!)\n\nand -{COUNTRY}- is COUNTRY.",
+		"parsed": "This is <convert-bracket>-{</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.COUNTRY is China or Taiwan.But <convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> is COUNTRY,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>COUNTRY<convert-bracket>}-</> is COUNTRY."
+	},
+	{
+		"desc": "Explicit session-wise two-way language variant mapping (H flag for hide)",
+		"wikitext": "(This-{H|zh:China;zh-tw:Taiwan}- should be stripped!)\n\nTaiwan is China.",
+		"parsed": "(This<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)Taiwan is China."
+	},
+	{
+		"desc": "Explicit session-wise one-way language variant mapping (H flag for hide)",
+		"wikitext": "(This-{H|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- should be stripped!)\n\nCOUNTRY is Taiwan or China.",
+		"parsed": "(This<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)COUNTRY is Taiwan or China."
+	},
+	{
+		"desc": "Adding explicit conversion rule for title (T flag)",
+		"wikitext": "Should be stripped-{T|zh:China;zh-tw:Taiwan}-!\n\nTaiwan is China.",
+		"parsed": "Should be stripped<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>!Taiwan is China."
+	},
+	{
+		"desc": "Code coverage: T combined with H flag",
+		"wikitext": "Should be stripped-{T;H|zh:China; zh-tw:Taiwan}-!\n\nTaiwan is China.",
+		"parsed": "Should be stripped<convert-bracket>-{</><convert-flag>T;H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>!Taiwan is China."
+	},
+	{
+		"desc": "Code coverage: T with no variants",
+		"wikitext": "-{H|zh:China; zh-tw:Taiwan}-\nTaiwan is China.-{T|Taiwan is China}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>Taiwan is China.<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>Taiwan is China<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Code coverage: rules with no variants",
+		"wikitext": "-{H|zh:China; zh-tw:Taiwan}-\nTaiwan is China.\n-{H|China}-\nTaiwan is China.",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>Taiwan is China.<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>China<convert-bracket>}-</>Taiwan is China."
+	},
+	{
+		"desc": "Code coverage: D flag for conversion rule",
+		"wikitext": "-{D|zh-cn:XA; zh-tw:YA}-\n-{A;D|zh-cn:XB; zh-tw:YB}-\n-{D;H|zh-cn:XC; zh-tw:YC}-\n\n-{D;H|FOO=>zh-tw:BAR;FOO=>zh-cn:BAT}-\n\n-{D|0=>zh-tw:1}-\n-{A;D|2=>zh-tw:3}-\n-{D;H|4=>zh-tw:5}-\n\nXA XB XC YA YB YC FOO BAR BAT 012345",
+		"parsed": "<convert-bracket>-{</><convert-flag>D</><convert-delimiter>|</><convert-lang>zh-cn:</>XA<convert-delimiter>; </><convert-lang>zh-tw:</>YA<convert-bracket>}--{</><convert-flag>A;D</><convert-delimiter>|</><convert-lang>zh-cn:</>XB<convert-delimiter>; </><convert-lang>zh-tw:</>YB<convert-bracket>}--{</><convert-flag>D;H</><convert-delimiter>|</><convert-lang>zh-cn:</>XC<convert-delimiter>; </><convert-lang>zh-tw:</>YC<convert-bracket>}--{</><convert-flag>D;H</><convert-delimiter>|</>FOO<convert-lang>=&gtzh-tw:</>BAR<convert-delimiter>;</>FOO<convert-lang>=&gtzh-cn:</>BAT<convert-bracket>}--{</><convert-flag>D</><convert-delimiter>|</>0<convert-lang>=&gtzh-tw:</>1<convert-bracket>}--{</><convert-flag>A;D</><convert-delimiter>|</>2<convert-lang>=&gtzh-tw:</>3<convert-bracket>}--{</><convert-flag>D;H</><convert-delimiter>|</>4<convert-lang>=&gtzh-tw:</>5<convert-bracket>}-</>XA XB XC YA YB YC FOO BAR BAT 012345"
+	},
+	{
+		"desc": "Code coverage: N flag for conversion rule",
+		"wikitext": "-{N|zh-cn}-\n\n-{N|zh-tw}-\n\n-{N|sr-ec}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>N</><convert-delimiter>|</>zh-cn<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>zh-tw<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>sr-ec<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Code coverage: N flag for conversion rule (wt2html only)",
+		"wikitext": "-{D;N|en}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>D;N</><convert-delimiter>|</>en<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Testing that changing the language variant here in the tests actually works",
+		"wikitext": "Should be stripped-{T|zh:China; zh-tw:Taiwan}-!",
+		"parsed": "Should be stripped<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>!"
+	},
+	{
+		"desc": "Title with HTML",
+		"wikitext": "-{T|zh:Title <i style=\"color:red\">with</i> HTML&amp;Entities}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>style=</><htmltag-attribute-value>\"color:red\"</><htmltag-bracket>&gt</>with<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> HTML<entity>&amp;amp;</>Entities<convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "Title with Wiki syntax",
+		"wikitext": "-{T|zh:Title ''with'' Wiki's s&uuml;ntax&copy}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <apostrophes>''</><em>with</><apostrophes>''</> Wiki's s<entity>&amp;uuml;</>ntax&copy<convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "Title with JavaScript injection",
+		"wikitext": "-{T|zh:Title <i onclick=\"alert(42)\">click me</i> <script>alert(43)</script>}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>onclick=</><htmltag-attribute-value>\"alert(42)\"</><htmltag-bracket>&gt</>click me<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> <script>alert(43)</script><convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "Test 1 from T298401/T67747",
+		"wikitext": "-{T|zh:Title <script>a</script>&amp;<i>b</i>}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <script>a</script><entity>&amp;amp;</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "Test 2 from T298401/T67747",
+		"wikitext": "-{T|zh:Title <code style=\"display:none\">}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>code </><htmltag-attribute html-code>style=</><htmltag-attribute-value>\"display:none\"</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "Test 3 from T298401/T67747",
+		"wikitext": "-{T|zh:Title <b>Foo bar<b>}-\nShould be stripped!",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>Foo bar<htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
+	},
+	{
+		"desc": "T26072: more test on conversion rule for title",
+		"wikitext": "This should be stripped-{T|zh:China; zh-tw:Taiwan}-!\n\nThis won't take interferes with the title rule-{H|zh:Beijing; zh-tw:Taipei}-.",
+		"parsed": "This should be stripped<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>!This won't take interferes with the title rule<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>Beijing<convert-delimiter>; </><convert-lang>zh-tw:</>Taipei<convert-bracket>}-</>."
+	},
+	{
+		"desc": "Partly disable title conversion if variant == main language code",
+		"wikitext": "-{T|zh-cn:CN;zh-tw:TW}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh-cn:</>CN<convert-delimiter>;</><convert-lang>zh-tw:</>TW<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Partly disable title conversion if variant == main language code, more",
+		"wikitext": "-{T|TW}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>TW<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Raw output of variant escape tags (R flag)",
+		"wikitext": "Raw: -{R|zh:China;zh-tw:Taiwan}-",
+		"parsed": "Raw: <convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Raw output of variant escape tags (R flag) (wt2html only)",
+		"wikitext": "-{Variant}- -{D|syntax}- -{D;R|options}-",
+		"parsed": "<convert-bracket>-{</>Variant<convert-bracket>}-</> <convert-bracket>-{</><convert-flag>D</><convert-delimiter>|</>syntax<convert-bracket>}-</> <convert-bracket>-{</><convert-flag>D;R</><convert-delimiter>|</>options<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Nested markup inside raw output of variant escape tags (R flag)",
+		"wikitext": "Nested raw: -{R|nested -{zh:China;zh-tw:Taiwan}- nested}-",
+		"parsed": "Nested raw: <convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</>nested <convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> nested<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Nested markup and spaces inside raw output of variant escape tags (R flag)",
+		"wikitext": "X-{ outer -{ inner }- outer }-X",
+		"parsed": "X<convert-bracket>-{ </>outer <convert-bracket>-{ </>inner <convert-bracket>}-</> outer <convert-bracket>}-</>X"
+	},
+	{
+		"desc": "Templates inside raw output of variant escape tags (R flag)",
+		"wikitext": "Nested raw: -{R|nested {{1x|hi}} templates}-",
+		"parsed": "Nested raw: <convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</>nested <template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>hi</><template-ground template-bracket>}}</> templates<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Strings evaluating false shouldn't be ignored by Language converter (T51072)",
+		"wikitext": "-{zh-cn:0;zh-sg:1;zh-tw:2;zh-hk:3}-",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh-cn:</>0<convert-delimiter>;</><convert-lang>zh-sg:</>1<convert-delimiter>;</><convert-lang>zh-tw:</>2<convert-delimiter>;</><convert-lang>zh-hk:</>3<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Conversion rules from [numeric-only string] to [something else] (T48634)",
+		"wikitext": "-{H|0=>zh-cn:B}--{H|0=>zh-cn:C;0=>zh-cn:D}--{H|0=>zh-hans:A}-012345-{A|zh-tw:0;zh-cn:E;}-012345",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>0<convert-lang>=&gtzh-cn:</>B<convert-bracket>}--{</><convert-flag>H</><convert-delimiter>|</>0<convert-lang>=&gtzh-cn:</>C<convert-delimiter>;</>0<convert-lang>=&gtzh-cn:</>D<convert-bracket>}--{</><convert-flag>H</><convert-delimiter>|</>0<convert-lang>=&gtzh-hans:</>A<convert-bracket>}-</>012345<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh-tw:</>0<convert-delimiter>;</><convert-lang>zh-cn:</>E<convert-delimiter>;</><convert-bracket>}-</>012345"
+	},
+	{
+		"desc": "Two-way converter rule entries with an empty value should be ignored (T53551)",
+		"wikitext": "-{H|zh-cn:foo;zh-tw:;}-foobar",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>foo<convert-delimiter>;</><convert-lang>zh-tw:</><convert-delimiter>;</><convert-bracket>}-</>foobar"
+	},
+	{
+		"desc": "One-way converter rule entries with an empty \"from\" string should be ignored (T53551)",
+		"wikitext": "-{H|=>zh-cn:foo;}-foobar",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>=&gtzh-cn:</>foo<convert-delimiter>;</><convert-bracket>}-</>foobar"
+	},
+	{
+		"desc": "Empty converter rule entries shouldn't be inserted into the conversion table (T53551)",
+		"wikitext": "-{H|}-foobar",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-bracket>}-</>foobar"
+	},
+	{
+		"desc": "Nested using of manual convert syntax",
+		"wikitext": "Nested: -{zh-hans:Hi -{zh-cn:China;zh-sg:Singapore;}-;zh-hant:Hello -{zh-tw:Taiwan;zh-hk:H-{ong}- K-{}-ong;}-;}-!",
+		"parsed": "Nested: <convert-bracket>-{</><convert-lang>zh-hans:</>Hi <convert-bracket>-{</><convert-lang>zh-cn:</>China<convert-delimiter>;</><convert-lang>zh-sg:</>Singapore<convert-delimiter>;</><convert-bracket>}-</><convert-delimiter>;</><convert-lang>zh-hant:</>Hello <convert-bracket>-{</><convert-lang>zh-tw:</>Taiwan<convert-delimiter>;</><convert-lang>zh-hk:</>H<convert-bracket>-{</>ong<convert-bracket>}-</> K<convert-bracket>-{}-</>ong<convert-delimiter>;</><convert-bracket>}-</><convert-delimiter>;</><convert-bracket>}-</>!"
+	},
+	{
+		"desc": "HTML markups with conversion syntax in attribs, nested in other conversion blocks",
+		"wikitext": "-{zh;zh-hans;zh-hant|<span title=\"-{X}-\">A</span>}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>zh;zh-hans;zh-hant</><convert-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>title=</><htmltag-attribute-value>\"-{X}-\"</><htmltag-bracket>&gt</>A<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><convert-bracket>}-</>"
+	},
+	{
+		"desc": "Language converter markup with block content",
+		"wikitext": "<span>a-{b<div>c}-d\n\n<span>a-{zh;zh-hans;zh-hant|b<div>c}-d\n\n<span>a-{H|0=>zh-cn:x<span>y;0=>zh-tw:b<div>c}-d",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</>a<convert-bracket>-{</>b<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>c<convert-bracket>}-</>d<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</>a<convert-bracket>-{</><convert-flag>zh;zh-hans;zh-hant</><convert-delimiter>|</>b<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>c<convert-bracket>}-</>d<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</>a<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>0<convert-lang>=&gtzh-cn:</>x<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</>y<convert-delimiter>;</>0<convert-lang>=&gtzh-tw:</>b<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>c<convert-bracket>}-</>d"
+	},
+	{
+		"desc": "T153135: Don't break list handling if language converter markup is in the item.",
+		"wikitext": ";-{zh-cn:AAA;zh-tw:BBB}-\n;-{R|foo:bar}-",
+		"parsed": "<list>;</><convert-bracket>-{</><convert-lang>zh-cn:</><strong>AAA</><convert-delimiter>;</><convert-lang>zh-tw:</><strong>BBB</><convert-bracket>}-</><list>;</><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</>"
+	},
+	{
+		"desc": "T153135: Unclosed markup in definition list (code coverage)",
+		"wikitext": ";<b>foo:bar\n;-{zh-cn:AAA",
+		"parsed": "<list>;</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><strong>foo:bar</><list>;</><convert-bracket>-{</><convert-lang>zh-cn:</><strong>AAA</>"
+	},
+	{
+		"desc": "T153135: Nested language converter markup in definition list (code coverage)",
+		"wikitext": ";-{|zh-cn:AAA -{zh-hans|foo:bar}- -{R|bat:baz}-}-:def",
+		"parsed": "<list>;</><convert-bracket>-{</><convert-delimiter>|</><convert-lang>zh-cn:</><strong>AAA </><convert-bracket>-{</><convert-flag>zh-hans</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</><strong> </><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>bat:baz</><convert-bracket>}-}-</><list>:</>def"
+	},
+	{
+		"desc": "T239806: Trailing garbage in language converter rules (1)",
+		"wikitext": "-{H|zh-cn:约翰·塞纳; zh-hk:莊·先拿; zh-tw:約翰·希南; ;}-\n-{H|zh-cn:泰瑞斯·吉布森; zh-hk:泰列斯·吉遜; zh-tw:泰瑞斯·吉布森; ;}-\n-{H|zh-cn:金·米尔福特; zh-tw:金·米爾福特; 真·米爾福特;}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>约翰·塞纳<convert-delimiter>; </><convert-lang>zh-hk:</>莊·先拿<convert-delimiter>; </><convert-lang>zh-tw:</>約翰·希南;<convert-delimiter> ;</><convert-bracket>}--{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>泰瑞斯·吉布森<convert-delimiter>; </><convert-lang>zh-hk:</>泰列斯·吉遜<convert-delimiter>; </><convert-lang>zh-tw:</>泰瑞斯·吉布森;<convert-delimiter> ;</><convert-bracket>}--{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>金·米尔福特<convert-delimiter>; </><convert-lang>zh-tw:</>金·米爾福特; 真·米爾福特<convert-delimiter>;</><convert-bracket>}-</>"
+	},
+	{
+		"desc": "T239806: Trailing garbage in language converter rules (2)",
+		"wikitext": "-{H|zh-cn:玛格特·罗比; zh-tw:瑪格·羅比; zh-hk:瑪歌·羅比; zh-sg:玛格·罗比; ;}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>玛格特·罗比<convert-delimiter>; </><convert-lang>zh-tw:</>瑪格·羅比<convert-delimiter>; </><convert-lang>zh-hk:</>瑪歌·羅比<convert-delimiter>; </><convert-lang>zh-sg:</>玛格·罗比;<convert-delimiter> ;</><convert-bracket>}-</>"
 	},
 	{
 		"desc": "Langconvert tag: crh-latn to crh-cyrl",
@@ -6191,6 +6411,11 @@
 		"desc": "Images with the \"|\" character in the comment",
 		"wikitext": "[[File:Foobar.jpg|thumb|An [http://test/?param1=|left|&param2=|x external] URL]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>An </><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>test/?param1=|left|&amp;param2=|x</><link-ground extlink-text> external</><link-ground extlink-bracket>]</><link-ground file-text> URL</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "T146305: Don't break image parsing if nested language converter markup is in the caption.",
+		"wikitext": "[[File:Foobar.jpg|thumb|-{|zh-cn:blog (hk: -{zh-hans|WEBJOURNAL}-, tw: -{zh-hans|WEBLOG}-)}-]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground convert-bracket>-{</><link-ground convert-delimiter>|</><link-ground convert-lang>zh-cn:</><link-ground file-text>blog (hk: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBJOURNAL</><link-ground convert-bracket>}-</><link-ground file-text>, tw: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBLOG</><link-ground convert-bracket>}-</><link-ground file-text>)</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Free external link invading image caption",

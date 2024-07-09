@@ -737,7 +737,7 @@ export class MediaWiki {
 			if (state.stack.length === 0) {
 				if (/[^\p{L}\d_]/u.test(ch || '')) {
 					// highlight free external links, bug T108448
-					stream.eatWhile(/[^\p{L}\d_&'{[<~:]/u);
+					stream.eatWhile(/[^\p{L}\d_&'{[<~:-]/u);
 					const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
 					if (mt && !stream.match('//')) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
