@@ -7,7 +7,7 @@ declare interface Test {
 }
 
 (async () => {
-	const tests: Test[] = await (await fetch('/codemirror-mediawiki/test/parserTests.json')).json(),
+	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
 		select = document.querySelector('select')!,
 		textarea = document.querySelector('textarea')!,
 		pre = document.querySelector('pre')!;
