@@ -12,7 +12,6 @@ const tests: {desc: string, wikitext?: string, parsed?: string}[] = [],
 	cwd = '../wikiparser-node/test/core',
 	files = new Set(fs.readdirSync(`${cwd}/`));
 files.delete('parserTests.txt');
-files.delete('indentPre.txt');
 for (const file of ['parserTests.txt', ...files]) {
 	tests.push({desc: file.slice(0, -4)});
 	const content = fs.readFileSync(fs.realpathSync(path.join(cwd, file)), 'utf8'),
@@ -26,8 +25,13 @@ for (const file of ['parserTests.txt', ...files]) {
 		) {
 			try {
 				const wikitext = /^!!\s*wikitext\n+((?!!!)[^\n].*?)^!!/msu.exec(test)?.[1]!.trimEnd(),
+					html = /^!!\s*html(?:\/(?:php|\*))?\n(.*?)^!!/msu.exec(test)![1]!.trim(),
 					desc = /^!!\s*test\n(.*?)\n!!/msu.exec(test)![1]!;
-				if (wikitext) {
+				if (
+					wikitext
+					&& !/\b(?:NULL\b|array\s*\()/u.test(html)
+					&& !/<(?:span|static|aside)tag\b/iu.test(wikitext)
+				) {
 					let node = parser.parse(wikitext).topNode.firstChild;
 					const tokens: Token[] = [];
 					while (node) {

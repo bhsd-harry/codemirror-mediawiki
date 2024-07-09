@@ -83,11 +83,6 @@
 		"parsed": "<blockquote|>a<error>&lt;/blockquote&gt</><b→> doesn't terminate </b→><bä> doesn't terminate </bä><boo> doesn't terminate </boo><s.foo> doesn't terminate </s.foo><sub-ID#1>"
 	},
 	{
-		"desc": "Non-word characters are valid in extension tags (T19663)",
-		"wikitext": "<tåg>tåg</tåg>",
-		"parsed": "<tåg>tåg</tåg>"
-	},
-	{
 		"desc": "Isolated close tags should be treated as literal text (T54760)",
 		"wikitext": "</b>\n\n<s.foo>s</s>",
 		"parsed": "<error>&lt;/b&gt</><s.foo>s<error>&lt;/s&gt</>"
@@ -796,11 +791,6 @@
 		"desc": "Nested lists 8 (multiple nesting transitions)",
 		"wikitext": "*foo\n***bar\n**baz\n*boo",
 		"parsed": "<list>*</>foo<list>***</>bar<list>**</>baz<list>*</>boo"
-	},
-	{
-		"desc": "Nested lists 9 (extension interaction)",
-		"wikitext": "*<tag />",
-		"parsed": "<list>*</><tag />"
 	},
 	{
 		"desc": "1. Lists and block-element interaction",
@@ -1618,11 +1608,6 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>uc</><ext-ground parserfunction-delimiter>:</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>lc</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>FOO</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "ParserTest <spantag> tag, using data-mw.body serialization shortcut",
-		"wikitext": "Hello <spantag>'''world'''!</spantag>",
-		"parsed": "Hello <spantag><apostrophes>'''</><strong>world</><apostrophes>'''</>!</spantag>"
-	},
-	{
 		"desc": "Parsoid: Recognize nowiki with odd capitalization",
 		"wikitext": "<noWikI ><div>[[foo]]</Nowiki >",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>noWikI </><exttag-bracket>&gt</><tag-nowiki>&lt;div&gt[[foo]]</><exttag-bracket>&lt;/</><exttag-name>Nowiki </><exttag-bracket>&gt</>"
@@ -2198,84 +2183,9 @@
 		"parsed": "<mw:editsection><script>alert();</script></mw:editsection><htmltag-bracket>&lt;</><htmltag-name>meta </><htmltag-attribute html-meta>property=</><htmltag-attribute-value>\"mw:PageProp/toc\"</><htmltag-attribute html-meta> </><htmltag-bracket>/&gt</>"
 	},
 	{
-		"desc": "Parser hook: empty input",
-		"wikitext": "<tag></tag>",
-		"parsed": "<tag></tag>"
-	},
-	{
-		"desc": "Parser hook: empty input using terminated empty elements",
-		"wikitext": "<tag/>",
-		"parsed": "<tag/>"
-	},
-	{
-		"desc": "Parser hook: empty input using terminated empty elements (space before)",
-		"wikitext": "<tag />",
-		"parsed": "<tag />"
-	},
-	{
-		"desc": "Parser hook: basic input",
-		"wikitext": "<tag>input</tag>",
-		"parsed": "<tag>input</tag>"
-	},
-	{
-		"desc": "Parser hook: case insensitive",
-		"wikitext": "<TAG>input</TAG>",
-		"parsed": "<TAG>input</TAG>"
-	},
-	{
-		"desc": "Parser hook: case insensitive, redux",
-		"wikitext": "<TaG>input</TAg>",
-		"parsed": "<TaG>input</TAg>"
-	},
-	{
-		"desc": "Parser hook: nested tags",
-		"wikitext": "<tag><tag></tag></tag>",
-		"parsed": "<tag><tag></tag></tag>"
-	},
-	{
-		"desc": "Parser hook: basic arguments",
-		"wikitext": "<tag width=\"200\" height=\"100\" depth=\"50\" square=\"\"></tag>",
-		"parsed": "<tag width=\"200\" height=\"100\" depth=\"50\" square=\"\"></tag>"
-	},
-	{
-		"desc": "Parser hook: basic arguments, variations",
-		"wikitext": "<tag width=200 height = \"100\" depth = '50' square></tag>",
-		"parsed": "<tag width=200 height = \"100\" depth = '50' square></tag>"
-	},
-	{
-		"desc": "Parser hook: argument containing a forward slash (T7344)",
-		"wikitext": "<tag filename=\"/tmp/bla\"></tag>",
-		"parsed": "<tag filename=\"/tmp/bla\"></tag>"
-	},
-	{
-		"desc": "Parser hook: empty input using terminated empty elements (T4374)",
-		"wikitext": "<tag foo=bar/>text",
-		"parsed": "<tag foo=bar/>text"
-	},
-	{
-		"desc": "Parser hook: basic arguments using terminated empty elements (T4374)",
-		"wikitext": "<tag width=200 height = \"100\" depth = '50' square/>\nother stuff\n</tag>",
-		"parsed": "<tag width=200 height = \"100\" depth = '50' square/>other stuff</tag>"
-	},
-	{
 		"desc": "Parser hook: Don't allow unclosed extension tags",
 		"wikitext": "test <tag>123\n\nthis is a '''test'''",
 		"parsed": "test <tag>123this is a <apostrophes>'''</><strong>test</><apostrophes>'''</>"
-	},
-	{
-		"desc": "Parser hook: horizontal rule inside extension tag that outputs <pre>",
-		"wikitext": "<tag>\nHello\n<hr/>\nGoodbye\n</tag>",
-		"parsed": "<tag>Hello<htmltag-bracket>&lt;</><htmltag-name>hr</><htmltag-bracket>/&gt</>Goodbye</tag>"
-	},
-	{
-		"desc": "Parser hook: static parser hook not inside a comment",
-		"wikitext": "<statictag>hello, world</statictag>\n\n<statictag action=\"flush\" />",
-		"parsed": "<statictag>hello, world</statictag><statictag action=\"flush\" />"
-	},
-	{
-		"desc": "Parser hook: static parser hook inside a comment",
-		"wikitext": "<!-- <statictag>hello, world</statictag> -->\n<statictag action=\"flush\" />",
-		"parsed": "<comment>&lt;!-- &lt;statictag&gthello, world&lt;/statictag&gt --&gt</><statictag action=\"flush\" />"
 	},
 	{
 		"desc": "Nested template calls",
@@ -3291,11 +3201,6 @@
 		"desc": "Don't Allow tabindex > 0",
 		"wikitext": "<div tabindex=\"3\">A</div>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>tabindex=</><htmltag-attribute-value>\"3\"</><htmltag-bracket>&gt</>A<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
-	},
-	{
-		"desc": "aside tag in extension HTML is not p-wrapped (T278565)",
-		"wikitext": "<asidetag></asidetag>This is some article content.",
-		"parsed": "<asidetag></asidetag>This is some article content."
 	},
 	{
 		"desc": "aside tag is not allowed directly in wikitext (T278565)",
@@ -5085,6 +4990,219 @@
 		"parsed": "<section-header section--2>==</><section>Foo</><entity>&amp;nbsp;</><section>bar</><section-header>==</><link-ground link-bracket>[[</><link-ground link-tosection>#Foo&amp;nbsp;bar</><link-ground link-bracket>]]</>"
 	},
 	{
+		"desc": "indentPre"
+	},
+	{
+		"desc": "Preformatted text",
+		"wikitext": " This is some\n Preformatted text\n With ''italic''\n And '''bold'''\n And a [[Main Page|link]]",
+		"parsed": "<skipformatting> </>This is some<skipformatting> </>Preformatted text<skipformatting> </>With <apostrophes>''</><em>italic</><apostrophes>''</><skipformatting> </>And <apostrophes>'''</><strong>bold</><apostrophes>'''</><skipformatting> </>And a <link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>link</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Tabs don't trigger preformatted text",
+		"wikitext": "\tThis is not\n\t preformatted text.\n This is preformatted text.\n \tSo is this.",
+		"parsed": "\tThis is not\t preformatted text.<skipformatting> </>This is preformatted text.<skipformatting> </>\tSo is this."
+	},
+	{
+		"desc": "Indent preformatting with inline content",
+		"wikitext": " a\n ''b''",
+		"parsed": "<skipformatting> </>a<skipformatting> </><apostrophes>''</><em>b</><apostrophes>''</>"
+	},
+	{
+		"desc": "<pre> with <nowiki> inside (compatibility with 1.6 and earlier)",
+		"wikitext": "<pre><nowiki>\n<b>\n<cite>\n<em>\n</nowiki></pre>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt&lt;b&gt&lt;cite&gt&lt;em&gt&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Regression with preformatted in <center>",
+		"wikitext": "<center>\n Blah\n</center>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>center</><htmltag-bracket>&gt</><skipformatting> </>Blah<htmltag-bracket>&lt;/</><htmltag-name>center</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "T54763: Preformatted in <blockquote>",
+		"wikitext": "<blockquote>\n Blah\n{|\n|\n indented cell (no pre-wrapping!)\n|}\n</blockquote>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><skipformatting> </>Blah<table-bracket>{|</><table-delimiter>|</><table-td> indented cell (no pre-wrapping!)</><table-bracket>|}</><htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1a. Templates that break a line should suppress <pre>",
+		"wikitext": " {{1x|}}",
+		"parsed": "<skipformatting> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1b. Templates that break a line should suppress <pre>",
+		"wikitext": " {{1x|\nfoo}}",
+		"parsed": "<skipformatting> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1c: Wrapping should be based on expanded content",
+		"wikitext": " {{1x|a\nb}}",
+		"parsed": "<skipformatting> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>ab</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1d: Wrapping should be based on expanded content",
+		"wikitext": " {{1x|a\nb\nc\n d\ne\n}}",
+		"parsed": "<skipformatting> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>abc de</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1e. Wrapping should be based on expanded content",
+		"wikitext": "{{1x| foo}}\n\n{{1x| foo}}{{1x| bar}}\n\n{{1x| foo}}\n{{1x| bar}}\n\n{{1x|<!--cmt--> foo}}\n\n<!--cmt-->{{1x| foo}}\n\n{{1x|{{1x| }}bar}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> bar</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> bar</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground comment>&lt;!--cmt--&gt</><template-ground template> foo</><template-ground template-bracket>}}</><comment>&lt;!--cmt--&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template-bracket> }}</><template-ground template>bar</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Templates: Indent-Pre: 1f: Wrapping should be based on expanded content",
+		"wikitext": "{{1x| }}a\n\n{{1x|\n }}a\n\n{{1x|\n b}}\n\n{{1x|a\n }}b\n\n{{1x|a\n}} b",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-bracket> }}</>a<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-bracket> }}</>a<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> b</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a</><template-ground template-bracket> }}</>b<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a</><template-ground template-bracket>}}</> b"
+	},
+	{
+		"desc": "Off-by-1 DSR values: Regression test for indent-pre usages",
+		"wikitext": " {{1x|\n}} ''{{1x|\n}} X'' {{1x|<span></span>\n}} Y",
+		"parsed": "<skipformatting> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-bracket>}}</> <apostrophes>''</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-bracket>}}</> X<apostrophes>''</><em> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>span</><template-ground htmltag-bracket>&gt&lt;/</><template-ground htmltag-name>span</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</> Y"
+	},
+	{
+		"desc": "Ensure DSR values for mw:DisplaySpace spans are computed correctly",
+		"wikitext": " x\n y :)",
+		"parsed": "<skipformatting> </>x<skipformatting> </>y :)"
+	},
+	{
+		"desc": "1a. Indent-Pre and Comments",
+		"wikitext": " a\n<!--a-->\nc",
+		"parsed": "<skipformatting> </>a<comment>&lt;!--a--&gt</>c"
+	},
+	{
+		"desc": "1b. Indent-Pre and Comments",
+		"wikitext": " a\n <!--a-->\nc",
+		"parsed": "<skipformatting> </>a<skipformatting> </><comment>&lt;!--a--&gt</>c"
+	},
+	{
+		"desc": "1c. Indent-Pre and Comments",
+		"wikitext": "<!--a-->  a\n\n <!--a--> a",
+		"parsed": "<comment>&lt;!--a--&gt</>  a<skipformatting> </><comment>&lt;!--a--&gt</> a"
+	},
+	{
+		"desc": "1d. Indent-Pre and Comments\n(Pre-handler currently cannot distinguish between comment/ws order and normalizes them to [comment,ws] order)",
+		"wikitext": "<!--a--> a\n\n <!--b-->b",
+		"parsed": "<comment>&lt;!--a--&gt</> a<skipformatting> </><comment>&lt;!--b--&gt</>b"
+	},
+	{
+		"desc": "2a. Indent-Pre and tables",
+		"wikitext": " {|\n |-\n !h1!!h2\n |foo||bar\n |}",
+		"parsed": "<table-bracket>{|</><table-delimiter> |- !</><table-th>h1</><table-delimiter>!!</><table-th>h2</><table-delimiter> |</><table-td>foo</><table-delimiter>||</><table-td>bar</><table-bracket> |}</>"
+	},
+	{
+		"desc": "2b. Indent-Pre and tables",
+		"wikitext": "  {|\n |-\n|foo\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter> |-|</><table-td>foo</><table-bracket>|}</>"
+	},
+	{
+		"desc": "2c. Indent-Pre and tables (T44252)",
+		"wikitext": "{|\n |+foo\n !  |bar\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter> |+</><table-caption>foo</><table-delimiter> !  </><table-delimiter2>|</><table-th>bar</><table-bracket>|}</>"
+	},
+	{
+		"desc": "2d. Indent-Pre and tables",
+		"wikitext": " a\n {|\n |b\n |}",
+		"parsed": "<skipformatting> </>a<table-bracket>{|</><table-delimiter> |</><table-td>b</><table-bracket> |}</>"
+	},
+	{
+		"desc": "2e. Indent-Pre and table-line syntax",
+		"wikitext": " a\n | b\n | c",
+		"parsed": "<skipformatting> </>a<skipformatting> </>| b<skipformatting> </>| c"
+	},
+	{
+		"desc": "2f. Indent-pre started by table-line syntax",
+		"wikitext": "a\n | b\n | c",
+		"parsed": "a<skipformatting> </>| b<skipformatting> </>| c"
+	},
+	{
+		"desc": "2g. Indented table markup mixed with indented pre content (proposed in T8200)",
+		"wikitext": " <table>\n <tr>\n <td>\n Text that should be rendered preformatted\n </td>\n </tr>\n </table>",
+		"parsed": "<skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>table</><htmltag-bracket>&gt</><skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>tr</><htmltag-bracket>&gt</><skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>td</><htmltag-bracket>&gt</><skipformatting> </>Text that should be rendered preformatted<skipformatting> </><htmltag-bracket>&lt;/</><htmltag-name>td</><htmltag-bracket>&gt</><skipformatting> </><htmltag-bracket>&lt;/</><htmltag-name>tr</><htmltag-bracket>&gt</><skipformatting> </><htmltag-bracket>&lt;/</><htmltag-name>table</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "2h. Indent pre in tables",
+		"wikitext": "{|\n !\n foo\n !\n bar\n |-\n |\n baz\n {{!}}\n bam\n |}",
+		"parsed": "<table-bracket>{|</><table-delimiter> !</><table-th> foo</><table-delimiter> !</><table-th> bar</><table-delimiter> |- |</><table-td> baz</><table-delimiter> {{!}}</><table-td> bam</><table-bracket> |}</>"
+	},
+	{
+		"desc": "3a. Indent-Pre and block tags (single-line html)",
+		"wikitext": " a <p> foo </p>\n b <div> foo </div>\n c <blockquote> foo </blockquote>\n <span> foo </span>",
+		"parsed": "<skipformatting> </>a <htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</><skipformatting> </>b <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><skipformatting> </>c <htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</><skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "3b. Indent-Pre and block tags (multi-line html)",
+		"wikitext": " a <span>foo</span>\n<!-- comment --> b <div> foo </div>",
+		"parsed": "<skipformatting> </>a <htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><comment>&lt;!-- comment --&gt</> b <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "3c. Indent-Pre and block tags (pre-content on separate line)",
+		"wikitext": "<p>\n foo\n</p>\n\n<div>\n foo\n</div>\n\n<center>\n foo\n</center>\n\n<blockquote>\n foo\n</blockquote>\n\n<blockquote>\n<pre>\nfoo\n</pre>\n</blockquote>\n\n<table><tr><td>\n foo\n</td></tr></table>\n\n<ul><li>\n  foo\n</li></ul>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</><skipformatting> </>foo<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</><skipformatting> </>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>center</><htmltag-bracket>&gt</><skipformatting> </>foo<htmltag-bracket>&lt;/</><htmltag-name>center</><htmltag-bracket>&gt&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><skipformatting> </>foo<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>foo</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</><htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt&lt;</><htmltag-name>table</><htmltag-bracket>&gt&lt;</><htmltag-name>tr</><htmltag-bracket>&gt&lt;</><htmltag-name>td</><htmltag-bracket>&gt</><skipformatting> </>foo<htmltag-bracket>&lt;/</><htmltag-name>td</><htmltag-bracket>&gt&lt;/</><htmltag-name>tr</><htmltag-bracket>&gt&lt;/</><htmltag-name>table</><htmltag-bracket>&gt&lt;</><htmltag-name>ul</><htmltag-bracket>&gt&lt;</><htmltag-name>li</><htmltag-bracket>&gt</><skipformatting> </> foo<htmltag-bracket>&lt;/</><htmltag-name>li</><htmltag-bracket>&gt&lt;/</><htmltag-name>ul</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "5. Indent-Pre and html pre",
+		"wikitext": " <pre class=\"123\">hi</pre>",
+		"parsed": "<skipformatting> </><exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>class=</><exttag-attribute-value>\"123\"</><exttag-bracket>&gt</><tag-pre>hi</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Serializing indent pre at sol",
+		"wikitext": " hi",
+		"parsed": "<skipformatting> </>hi"
+	},
+	{
+		"desc": "Render paragraphs when indent-pre is suppressed in blocklevels",
+		"wikitext": "<blockquote>\n foo\n\n bar\n</blockquote>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><skipformatting> </>foo<skipformatting> </>bar<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "4. Multiple spaces at start-of-line",
+		"wikitext": "    <p> foo </p>\n    foo\n\t{|\n|foo\n|}",
+		"parsed": "<skipformatting> </>   <htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</><skipformatting> </>   foo<table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-bracket>|}</>"
+	},
+	{
+		"desc": "5a. White-space in indent-pre",
+		"wikitext": " a<br />\n \n b",
+		"parsed": "<skipformatting> </>a<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-bracket>/&gt</><skipformatting>  </>b"
+	},
+	{
+		"desc": "5b. White-space in indent-pre",
+		"wikitext": " a\n \n b\n \n \n c",
+		"parsed": "<skipformatting> </>a<skipformatting>  </>b<skipformatting>   </>c"
+	},
+	{
+		"desc": "5c. White-space in indent-pre",
+		"wikitext": " ''a''\n  ''b''\n   ''c''",
+		"parsed": "<skipformatting> </><apostrophes>''</><em>a</><apostrophes>''</><skipformatting> </> <apostrophes>''</><em>b</><apostrophes>''</><skipformatting> </>  <apostrophes>''</><em>c</><apostrophes>''</>"
+	},
+	{
+		"desc": "6. Pre-blocks should extend across lines with leading WS even when there is no wrappable content",
+		"wikitext": " a\n \n <!-- continue -->\n b\n\n c\n \nd",
+		"parsed": "<skipformatting> </>a<skipformatting>  </><comment>&lt;!-- continue --&gt</><skipformatting> </>b<skipformatting> </>c<skipformatting> </>d"
+	},
+	{
+		"desc": "7a. Indent-pre and category links",
+		"wikitext": " [[Category:foo]] <!-- No pre-wrapping -->\n{{1x| [[Category:foo]]}} <!-- No pre-wrapping -->",
+		"parsed": "<skipformatting> </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:foo</><link-ground link-bracket>]]</> <comment>&lt;!-- No pre-wrapping --&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template> </><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</> <comment>&lt;!-- No pre-wrapping --&gt</>"
+	},
+	{
+		"desc": "Indent-Pre: Newlines in comments shouldn't affect sol state",
+		"wikitext": "a <!--\nfoo\n--> b",
+		"parsed": "a <comment>&lt;!--foo--&gt</> b"
+	},
+	{
+		"desc": "Indent pre with leading colon",
+		"wikitext": " :foo",
+		"parsed": "<skipformatting> </>:foo"
+	},
+	{
+		"desc": "Indent-Pre regression test: Trailing whitespace after sol-transparent content",
+		"wikitext": "[[Category:Foo]]   \n[[Category:Bar]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>   <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Preserving leading whitespace in indent-pre suppressing contexts",
+		"wikitext": "<ol>\n<li>\n foo\n bar\n</li>\n</ol>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>ol</><htmltag-bracket>&gt&lt;</><htmltag-name>li</><htmltag-bracket>&gt</><skipformatting> </>foo<skipformatting> </>bar<htmltag-bracket>&lt;/</><htmltag-name>li</><htmltag-bracket>&gt&lt;/</><htmltag-name>ol</><htmltag-bracket>&gt</>"
+	},
+	{
 		"desc": "indicators"
 	},
 	{
@@ -6468,11 +6586,6 @@
 		"desc": "Preprocessor precedence 11: found during visual diff testing",
 		"wikitext": "{{#tag:span|-{{#tag:span|-{{1x|x}}}}}}\n\n{{1x|-{{1x|-{{1x|x}}}}}}\n\n{{1x|-{{1x|x}}}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>span</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>-</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#tag</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>span</><ext2-ground parserfunction-delimiter>|</><ext2-ground parserfunction>-</><template-ext2-ground template-bracket>{{</><template-ext2-ground template-name pagename>1x</><template-ext2-ground template-delimiter>|</><template-ext2-ground template>x</><template-ext2-ground template-bracket>}}</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>-</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>-</><template3-ground template-bracket>{{</><template3-ground template-name pagename>1x</><template3-ground template-delimiter>|</><template3-ground template>x</><template3-ground template-bracket>}}</><template2-ground template-bracket>}}</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>-</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>x</><template2-ground template-bracket>}}</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Preprocessor precedence 12: broken language converter closed by brace.",
-		"wikitext": "This form breaks the template, which is unfortunate:\n*{{1x|foo-{bar}bat}}\n\nBut if the broken language converter markup is inside an extension\ntag, nothing bad happens:\n*<nowiki>foo-{bar}bat</nowiki>\n*{{1x|<nowiki>foo-{bar}bat</nowiki>}}\n*<pre>foo-{bar}bat</pre>\n*{{1x|<pre>foo-{bar}bat</pre>}}\n\n<tag>foo-{bar}bat</tag>\n{{1x|<tag>foo-{bar}bat</tag>}}",
-		"parsed": "This form breaks the template, which is unfortunate:<list>*</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground convert-bracket>-{</><template-ground template>bar}bat}}But if the broken language converter markup is inside an extensiontag, nothing bad happens:</><template-ground list>*</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>nowiki</><template-ground exttag-bracket>&gt</><tag-nowiki>foo-{bar}bat</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>nowiki</><template-ground exttag-bracket>&gt</><template-ground list>*</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground exttag-bracket>&lt;</><template2-ground exttag-name>nowiki</><template2-ground exttag-bracket>&gt</><tag-nowiki>foo-{bar}bat</><template2-ground exttag-bracket>&lt;/</><template2-ground exttag-name>nowiki</><template2-ground exttag-bracket>&gt</><template2-ground template-bracket>}}</><template-ground list>*</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>pre</><template-ground exttag-bracket>&gt</><tag-pre>foo-{bar}bat</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>pre</><template-ground exttag-bracket>&gt</><template-ground list>*</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground exttag-bracket>&lt;</><template2-ground exttag-name>pre</><template2-ground exttag-bracket>&gt</><tag-pre>foo-{bar}bat</><template2-ground exttag-bracket>&lt;/</><template2-ground exttag-name>pre</><template2-ground exttag-bracket>&gt</><template2-ground template-bracket>}}</><template-ground template>&lt;tag&gtfoo</><template-ground convert-bracket>-{</><template-ground template>bar}bat&lt;/tag&gt</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>&lt;tag&gtfoo</><template2-ground convert-bracket>-{</><template2-ground template>bar}bat&lt;/tag&gt}}</>"
 	},
 	{
 		"desc": "Preprocessor precedence 13: broken language converter in external link",
