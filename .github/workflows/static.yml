@@ -6,8 +6,8 @@ on:
   push:
     branches: ["npm"]
     paths:
-      - 'index.html'
-      - 'gh-page.js'
+      - '*.html'
+      - '*.js'
       - '*.css'
       - 'dist/main.min.js'
 
