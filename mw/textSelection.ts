@@ -1,4 +1,5 @@
 import {CodeMirror} from './base';
+import type {editor} from 'monaco-editor';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
@@ -178,12 +179,14 @@ export const monacoTextSelection: TextSelection = {
 			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd!});
 		}
 		const {model, editor} = getInstance(this),
-			range = editor!.getSelection()!,
-			selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
-			text = `${ownline && range.startColumn > 1 ? '\n' : ''}${
-				split(selText, {splitlines, pre, post})
-			}${ownline && range.endColumn <= model!.getLineLength(range.endLineNumber) ? '\n' : ''}`;
-		editor!.executeEdits('encapsulateSelection', [{range, text, forceMoveMarkers: true}]);
+			edits = editor!.getSelections()!.map(range => {
+				const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
+					text = `${ownline && range.startColumn > 1 ? '\n' : ''}${
+						split(selText, {splitlines, pre, post})
+					}${ownline && range.endColumn <= model!.getLineLength(range.endLineNumber) ? '\n' : ''}`;
+				return {range, text, forceMoveMarkers: true};
+			});
+		editor!.executeEdits('encapsulateSelection', edits);
 		return this;
 	},
 	getCaretPosition(option) {

@@ -5,6 +5,7 @@
 **Added**
 
 - [`prefer`](./README.md#prefer) now partially works with the Monaco editor
+- Support for `jquery.textSelection` with multiple selections of a Monaco editor when used in a MediaWiki site
 
 ## 2.14.9
 
