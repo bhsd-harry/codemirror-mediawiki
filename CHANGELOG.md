@@ -1,3 +1,11 @@
+## 2.14.10
+
+*2024-07-11*
+
+**Added**
+
+- [`prefer`](./README.md#prefer) now partially works with the Monaco editor
+
 ## 2.14.9
 
 *2024-07-10*

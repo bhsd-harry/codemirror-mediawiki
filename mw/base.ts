@@ -22,6 +22,10 @@ declare interface TemplateParam {
 	aliases: string[];
 }
 
+declare interface IWikitextModel extends Monaco.editor.ITextModel {
+	lint?: (this: IWikitextModel, on: boolean) => void; // eslint-disable-line @typescript-eslint/method-signature-style
+}
+
 // 每次新增插件都需要修改这里
 const baseVersion = '2.13',
 	addons = ['codeFolding'];
@@ -58,7 +62,16 @@ const linters: Record<string, LintSource | undefined> = {},
 		template: 'wikitext',
 		gadget: 'javascript',
 		plain: 'plaintext',
-	};
+	},
+	avail: [string, string | string[], unknown, unknown][] = [
+		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
+		['bracketMatching', 'matchBrackets', 'never', 'always'],
+		['closeBrackets', ['autoClosingBrackets', 'autoClosingQuotes'], 'never', 'always'],
+		['codeFolding', 'folding', false, true],
+		['highlightActiveLine', 'renderLineHighlight', 'none', 'all'],
+		['highlightSpecialChars', 'renderControlCharacters', false, true],
+		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
+	];
 
 /**
  * 判断是否为普通编辑器
@@ -134,7 +147,7 @@ export class CodeMirror extends CodeMirror6 {
 	declare ns;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
-	#model: Monaco.editor.ITextModel | undefined;
+	#model: IWikitextModel | undefined;
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
 	#init;
 	#indentStr = '\t';
@@ -143,7 +156,7 @@ export class CodeMirror extends CodeMirror6 {
 		return this.#visible;
 	}
 
-	get model(): Monaco.editor.ITextModel | undefined {
+	get model(): IWikitextModel | undefined {
 		return this.#model;
 	}
 
@@ -202,9 +215,10 @@ export class CodeMirror extends CodeMirror6 {
 		// eslint-disable-next-line @typescript-eslint/await-thenable
 		this.#model = (await monaco).editor.createModel(textarea.value, language);
 		this.#container = document.createElement('div');
+		this.#container.className = 'monaco-container';
 		this.#refresh();
 		this.#container.style.minHeight = '2em';
-		textarea.after(this.#container);
+		textarea.before(this.#container);
 		textarea.style.display = 'none';
 		this.#editor = monaco.editor.create(this.#container, {
 			model: this.#model,
@@ -220,6 +234,7 @@ export class CodeMirror extends CodeMirror6 {
 			unicodeHighlight: {
 				ambiguousCharacters: language !== 'wikitext' && language !== 'html' && language !== 'plaintext',
 			},
+			multiCursorModifier: 'ctrlCmd',
 		});
 		let timer: number;
 		this.#model.onDidChangeContent(() => {
@@ -357,17 +372,36 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {
+		const hasExtension = Array.isArray(extensions)
+				? (ext: string): boolean => extensions.includes(ext)
+				: (ext: string): boolean | undefined => extensions[ext],
+			hasLint = hasExtension('lint');
 		if (this.view) {
 			super.prefer(extensions);
-			const hasExtension = Array.isArray(extensions)
-					? (ext: string): boolean => extensions.includes(ext)
-					: (ext: string): boolean | undefined => extensions[ext],
-				hasLint = hasExtension('lint');
 			if (hasLint !== undefined) {
 				void this.defaultLint(hasLint);
 			}
 			openLinks(this, hasExtension('openLinks'));
+			return;
+		} else if (!this.#editor || !this.#model) {
+			throw new Error('The editor is not initialized!');
+		} else if (hasLint !== undefined && this.#model.lint) {
+			this.#model.lint(hasLint);
 		}
+		const options: Record<string, unknown> = {};
+		for (const [key, opts, off, on] of avail) {
+			const has = hasExtension(key);
+			if (has !== undefined) {
+				if (typeof opts === 'string') {
+					options[opts] = has ? on : off;
+				} else {
+					for (const opt of opts) {
+						options[opt] = has ? on : off;
+					}
+				}
+			}
+		}
+		this.#editor.updateOptions(options);
 	}
 
 	/**
@@ -443,7 +477,8 @@ document.body.addEventListener('click', e => {
 		'cm-settings',
 	)!.addEventListener('click', e => {
 		e.preventDefault();
-		const textareas = [...document.querySelectorAll<HTMLTextAreaElement>('.cm-editor + textarea')];
+		const selector = '.cm-editor + textarea, .monaco-container + textarea',
+			textareas = [...document.querySelectorAll<HTMLTextAreaElement>(selector)];
 		void openPreference(textareas.map(textarea => instances.get(textarea)));
 	});
 	void welcome(baseVersion, addons);
