@@ -4,6 +4,7 @@ import openLinks from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
+import {actions} from './escape';
 import wikiEditor from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
@@ -27,8 +28,8 @@ declare interface IWikitextModel extends Monaco.editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.13',
-	addons = ['codeFolding'];
+const baseVersion = '2.15',
+	addons = ['useMonaco'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -63,8 +64,9 @@ const linters: Record<string, LintSource | undefined> = {},
 		gadget: 'javascript',
 		plain: 'plaintext',
 	},
-	avail: [string, string | string[], unknown, unknown][] = [
+	avail: [string, keyof Monaco.editor.IEditorOptions | (keyof Monaco.editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
+		['autocompletion', 'quickSuggestions', false, true],
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
 		['closeBrackets', ['autoClosingBrackets', 'autoClosingQuotes'], 'never', 'always'],
 		['codeFolding', 'folding', false, true],
@@ -151,6 +153,7 @@ export class CodeMirror extends CodeMirror6 {
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
 	#init;
 	#indentStr = '\t';
+	#escapeActions: Monaco.IDisposable[] = [];
 
 	override get visible(): boolean {
 		return this.#visible;
@@ -387,6 +390,21 @@ export class CodeMirror extends CodeMirror6 {
 			throw new Error('The editor is not initialized!');
 		} else if (hasLint !== undefined && this.#model.lint) {
 			this.#model.lint(hasLint);
+		}
+		if (this.lang === 'mediawiki') {
+			const hasEscape = hasExtension('escape');
+			if (hasEscape === false) {
+				let action = this.#escapeActions.pop();
+				while (action) {
+					action.dispose();
+					action = this.#escapeActions.pop();
+				}
+			} else if (hasEscape && this.#escapeActions.length === 0) {
+				this.#escapeActions.push(
+					this.#editor.addAction(actions[0]),
+					this.#editor.addAction(actions[1]),
+				);
+			}
 		}
 		const options: Record<string, unknown> = {};
 		for (const [key, opts, off, on] of avail) {

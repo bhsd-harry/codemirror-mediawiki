@@ -1,5 +1,4 @@
 import {CodeMirror} from './base';
-import type {editor} from 'monaco-editor';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
