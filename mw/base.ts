@@ -29,7 +29,7 @@ declare interface IWikitextModel extends Monaco.editor.ITextModel {
 
 // 每次新增插件都需要修改这里
 const baseVersion = '2.15',
-	addons = ['useMonaco'];
+	addons = ['highlightSelectionMatches', 'scrollPastEnd', 'useMonaco'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -70,9 +70,11 @@ const linters: Record<string, LintSource | undefined> = {},
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
 		['closeBrackets', ['autoClosingBrackets', 'autoClosingQuotes'], 'never', 'always'],
 		['codeFolding', 'folding', false, true],
-		['highlightActiveLine', 'renderLineHighlight', 'none', 'all'],
+		['highlightActiveLine', 'renderLineHighlight', 'gutter', 'all'],
+		['highlightSelectionMatches', 'occurrencesHighlight', 'off', 'singleFile'],
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
+		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
 
 /**
@@ -210,7 +212,7 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		if (!('monaco' in window)) {
-			await $.ajax(`${CDN}/npm/monaco-wiki@1.2/dist/all.min.js`, {dataType: 'script', cache: true});
+			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
 		}
 		const {textarea, lang} = this,
 			language = monacoLangs[lang] || lang,

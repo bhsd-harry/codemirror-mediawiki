@@ -7,6 +7,7 @@ import {
 	highlightWhitespace,
 	highlightTrailingWhitespace,
 	drawSelection,
+	scrollPastEnd,
 } from '@codemirror/view';
 import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
 import {
@@ -20,7 +21,7 @@ import {
 	ensureSyntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
-import {searchKeymap} from '@codemirror/search';
+import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
@@ -78,8 +79,10 @@ const avail: Record<string, Addon<any>> = {
 	highlightActiveLine: [highlightActiveLine, {}],
 	highlightWhitespace: [highlightWhitespace, {}],
 	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
+	highlightSelectionMatches: [highlightSelectionMatches, {}],
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
 	closeBrackets: [closeBrackets, {}],
+	scrollPastEnd: [scrollPastEnd, {}],
 	allowMultipleSelections: [
 		(): Extension => [
 			EditorState.allowMultipleSelections.of(true),

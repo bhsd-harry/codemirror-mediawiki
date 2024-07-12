@@ -38,8 +38,10 @@
 	- [highlightSpecialChars](#highlightspecialchars)
 	- [highlightWhitespace](#highlightwhitespace)
 	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
+	- [highlightSelectionMatches](#highlightselectionmatches)
 	- [escape](#escape)
 	- [codeFolding](#codefolding)
+	- [scrollPastEnd](#scrollpastend)
 	- [tagMatching](#tagmatching)
 
 </details>
@@ -486,6 +488,12 @@ Show spaces and tabs as dots and arrows.
 
 Highlight trailing whitespace in a red-orange color.
 
+## highlightSelectionMatches
+
+*version added: 2.15.1*
+
+Highlight texts that match the selection in light green.
+
 ## escape
 
 *version added: 2.2.2*
@@ -507,6 +515,12 @@ Key bindings:
 - `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold at the selected text
 - `Ctrl` + `Alt` + `[`: Fold all
 - `Ctrl` + `Alt` + `]`: Unfold all
+
+## scrollPastEnd
+
+*version added: 2.15.1*
+
+Allow the editor to be scrolled down past the end of the document.
 
 ## tagMatching
 

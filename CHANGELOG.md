@@ -1,3 +1,11 @@
+## 2.15.1
+
+*2024-07-12*
+
+**Added**
+
+- New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
+
 ## 2.15.0
 
 *2024-07-12*
