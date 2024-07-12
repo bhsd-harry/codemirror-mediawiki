@@ -133,27 +133,32 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 		const {lineNumber: startLineNumber, column: startColumn} = model.getPositionAt(from),
 			{lineNumber: endLineNumber, column: endColumn} = model.getPositionAt(to),
 			range = {startLineNumber, startColumn, endLineNumber, endColumn};
-		let url = model.getValueInRange(range);
-		if (type === 'magic-link') {
-			url = parseMagicLink(url);
-		} else {
-			let ns = 0;
-			if (type === 'template-name') {
-				ns = 10;
-			} else if (type === 'invoke-module') {
-				ns = 828;
+		let url = model.getValueInRange(range).trim();
+		try {
+			if (type === 'magic-link') {
+				url = parseMagicLink(url);
+			} else {
+				let ns = 0;
+				if (type === 'template-name') {
+					ns = 10;
+				} else if (type === 'invoke-module') {
+					ns = 828;
+				}
+				if (url.startsWith('/')) {
+					url = `:${mw.config.get('wgPageName')}${url}`;
+				}
+				url = new mw.Title(url, ns).getUrl(undefined);
 			}
-			if (url.startsWith('/')) {
-				url = `:${mw.config.get('wgPageName')}${url}`;
+			if (url.startsWith('//')) {
+				url = location.protocol + url;
+			} else if (url.startsWith('/')) {
+				url = location.origin + url;
 			}
-			url = new mw.Title(url, ns).getUrl(undefined);
+			return [{range, url}];
+		} catch {
+			console.debug(`Unable to parse title: ${url}`);
+			return [];
 		}
-		if (url.startsWith('//')) {
-			url = location.protocol + url;
-		} else if (url.startsWith('/')) {
-			url = location.origin + url;
-		}
-		return [{range, url}];
 	}
 	return childNodes?.flatMap(node => generateLinks(model, node)) || [];
 };
