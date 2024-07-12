@@ -490,7 +490,7 @@ Highlight trailing whitespace in a red-orange color.
 
 ## highlightSelectionMatches
 
-*version added: 2.15.2*
+*version added: 2.15.3*
 
 Highlight texts that match the selection in light green.
 
@@ -518,7 +518,7 @@ Key bindings:
 
 ## scrollPastEnd
 
-*version added: 2.15.2*
+*version added: 2.15.3*
 
 Allow the editor to be scrolled down past the end of the document.
 

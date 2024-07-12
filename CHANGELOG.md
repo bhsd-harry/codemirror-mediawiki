@@ -9,6 +9,10 @@
 - New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
 - When used in a MediaWiki site, the [useMonaco](./mw/README.md#usemonaco) preference can be set for individual languages
 
+**Fixed**
+
+- Multiple Monaco editors in a MediaWiki site
+
 ## 2.14.9
 
 *2024-07-10*

@@ -218,10 +218,17 @@ export class CodeMirror extends CodeMirror6 {
 			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
 		}
 		const {textarea, lang} = this,
+			{readOnly} = textarea,
 			language = monacoLangs[lang] || lang,
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
-		this.#model = (await monaco).editor.createModel(textarea.value, language);
+		await monaco;
+		if (!readOnly) {
+			for (const editor of monaco.editor.getEditors()) {
+				editor.dispose();
+			}
+		}
+		this.#model = monaco.editor.createModel(textarea.value, language);
 		this.#container = document.createElement('div');
 		this.#container.className = 'monaco-container';
 		this.#refresh();
@@ -232,7 +239,7 @@ export class CodeMirror extends CodeMirror6 {
 			model: this.#model,
 			automaticLayout: true,
 			theme: 'monokai',
-			readOnly: textarea.readOnly,
+			readOnly,
 			wordWrap: language === 'wikitext' || language === 'html' || language === 'plaintext' ? 'on' : 'off',
 			wordBreak: 'keepAll',
 			tabSize: tab ? 4 : Number(this.#indentStr),
