@@ -1,6 +1,8 @@
 import {isMac} from './msg';
 import modeConfig from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
+import type {languages, editor} from 'monaco-editor';
+import type {AST, TokenTypes} from 'wikiparser-node/base';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
@@ -30,6 +32,20 @@ const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling'): SyntaxNod
 		node = node[dir]!; // eslint-disable-line no-param-reassign
 	}
 	return node;
+};
+
+/**
+ * 解析MagicLink
+ * @param link 原链接文本
+ */
+const parseMagicLink = (link: string): string => {
+	if (link.startsWith('RFC')) {
+		return `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`;
+	} else if (link.startsWith('PMID')) {
+		return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
+	}
+	return new mw.Title(`Special:Booksources/${link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')}`)
+		.getUrl(undefined);
 };
 
 /**
@@ -79,14 +95,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			open(state.sliceDoc(prev.from, next.to), '_blank');
 		} else if (node.name.includes(tokens.magicLink)) {
 			e.preventDefault();
-			const link = state.sliceDoc(node.from, node.to).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X');
-			if (link.startsWith('RFC')) {
-				open(`https://tools.ietf.org/html/rfc${link.slice(3)}`, '_blank');
-			} else if (link.startsWith('PMID')) {
-				open(`https://pubmed.ncbi.nlm.nih.gov/${link.slice(4)}`, '_blank');
-			} else {
-				open(new mw.Title(`Special:Booksources/${link.slice(4)}`).getUrl(undefined), '_blank');
-			}
+			open(parseMagicLink(state.sliceDoc(node.from, node.to)), '_blank');
 		}
 	};
 	handlers.set(cm, handler);
@@ -98,7 +107,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
  * @param cm
  * @param on 是否添加
  */
-export default (cm: CodeMirror, on?: boolean): void => {
+export const openLinks = (cm: CodeMirror, on?: boolean): void => {
 	const {contentDOM} = cm.view!,
 		handler = getHandler(cm);
 	if (on) {
@@ -109,4 +118,52 @@ export default (cm: CodeMirror, on?: boolean): void => {
 		contentDOM.removeEventListener('mousedown', handler, {capture: true});
 		contentDOM.style.removeProperty('--codemirror-cursor');
 	}
+};
+
+const linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']);
+
+/**
+ * 生成Monaco编辑器的链接
+ * @param model
+ * @param tree 语法树
+ */
+const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] => {
+	const {type, childNodes, range: [from, to]} = tree;
+	if (linkTypes.has(type)) {
+		const {lineNumber: startLineNumber, column: startColumn} = model.getPositionAt(from),
+			{lineNumber: endLineNumber, column: endColumn} = model.getPositionAt(to),
+			range = {startLineNumber, startColumn, endLineNumber, endColumn};
+		let url = model.getValueInRange(range);
+		if (type === 'magic-link') {
+			url = parseMagicLink(url);
+		} else {
+			let ns = 0;
+			if (type === 'template-name') {
+				ns = 10;
+			} else if (type === 'invoke-module') {
+				ns = 828;
+			}
+			if (url.startsWith('/')) {
+				url = `:${mw.config.get('wgPageName')}${url}`;
+			}
+			url = new mw.Title(url, ns).getUrl(undefined);
+		}
+		if (url.startsWith('//')) {
+			url = location.protocol + url;
+		} else if (url.startsWith('/')) {
+			url = location.origin + url;
+		}
+		return [{range, url}];
+	}
+	return childNodes?.flatMap(node => generateLinks(model, node)) || [];
+};
+
+export const linkProvider: languages.LinkProvider = {
+	async provideLinks(model) {
+		return {
+			links: 'wikiparse' in window
+				? generateLinks(model, await wikiparse.json(model.getValue(), true, -4))
+				: [],
+		};
+	},
 };

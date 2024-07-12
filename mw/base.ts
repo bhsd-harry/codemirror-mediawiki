@@ -1,6 +1,6 @@
 import {CodeMirror6, CDN} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
-import openLinks from './openLinks';
+import {openLinks, linkProvider} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
@@ -76,7 +76,8 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
-let escapeActions: readonly [Monaco.editor.IActionDescriptor, Monaco.editor.IActionDescriptor] | undefined;
+let escapeActions: readonly [Monaco.editor.IActionDescriptor, Monaco.editor.IActionDescriptor] | undefined,
+	wikilinkProvider: Monaco.IDisposable | undefined;
 
 /**
  * 判断是否为普通编辑器
@@ -379,22 +380,24 @@ export class CodeMirror extends CodeMirror6 {
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {
 		const hasExtension = Array.isArray(extensions)
-				? (ext: string): boolean => extensions.includes(ext)
-				: (ext: string): boolean | undefined => extensions[ext],
-			hasLint = hasExtension('lint');
+			? (ext: string): boolean => extensions.includes(ext)
+			: (ext: string): boolean | undefined => extensions[ext];
+		const hasLint = hasExtension('lint'),
+			hasOpenLinks = hasExtension('openLinks'),
+			isWiki = this.lang === 'mediawiki';
 		if (this.view) {
 			super.prefer(extensions);
 			if (hasLint !== undefined) {
 				void this.defaultLint(hasLint);
 			}
-			openLinks(this, hasExtension('openLinks'));
+			openLinks(this, isWiki && hasOpenLinks);
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
 		} else if (hasLint !== undefined && this.#model.lint) {
 			this.#model.lint(hasLint);
 		}
-		if (this.lang === 'mediawiki') {
+		if (isWiki) {
 			const hasEscape = hasExtension('escape');
 			if (hasEscape === false) {
 				let action = this.#escapeActions.pop();
@@ -408,6 +411,11 @@ export class CodeMirror extends CodeMirror6 {
 					this.#editor.addAction(escapeActions[0]),
 					this.#editor.addAction(escapeActions[1]),
 				);
+			}
+			if (hasOpenLinks === false) {
+				wikilinkProvider?.dispose();
+			} else if (hasOpenLinks) {
+				wikilinkProvider ||= monaco.languages.registerLinkProvider('wikitext', linkProvider);
 			}
 		}
 		const options: Record<string, unknown> = {};
