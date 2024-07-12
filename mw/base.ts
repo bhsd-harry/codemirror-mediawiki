@@ -395,8 +395,6 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
-		} else if (hasLint !== undefined && this.#model.lint) {
-			this.#model.lint(hasLint);
 		}
 		if (isWiki) {
 			const hasEscape = hasExtension('escape');
