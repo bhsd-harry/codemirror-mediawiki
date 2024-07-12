@@ -4,16 +4,9 @@
 
 **Added**
 
-- New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
-
-## 2.15.0
-
-*2024-07-12*
-
-**Added**
-
 - [`prefer`](./README.md#prefer) now partially works with the Monaco editor
 - Support for `jquery.textSelection` with multiple selections of a Monaco editor when used in a MediaWiki site
+- New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
 
 ## 2.14.9
 

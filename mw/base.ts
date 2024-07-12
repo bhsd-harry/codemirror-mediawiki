@@ -4,7 +4,7 @@ import openLinks from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
-import {actions} from './escape';
+import {getEscapeActions} from './escape';
 import wikiEditor from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
@@ -76,6 +76,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
+let escapeActions: readonly [Monaco.editor.IActionDescriptor, Monaco.editor.IActionDescriptor] | undefined;
 
 /**
  * 判断是否为普通编辑器
@@ -402,9 +403,10 @@ export class CodeMirror extends CodeMirror6 {
 					action = this.#escapeActions.pop();
 				}
 			} else if (hasEscape && this.#escapeActions.length === 0) {
+				escapeActions ||= getEscapeActions();
 				this.#escapeActions.push(
-					this.#editor.addAction(actions[0]),
-					this.#editor.addAction(actions[1]),
+					this.#editor.addAction(escapeActions[0]),
+					this.#editor.addAction(escapeActions[1]),
 				);
 			}
 		}

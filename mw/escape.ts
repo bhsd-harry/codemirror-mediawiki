@@ -27,7 +27,7 @@ const createAction = (
 	},
 });
 
-export const actions = [
+export const getEscapeActions = () => [
 	createAction('escape.html', 'Escape HTML Entity', 'BracketLeft', 'editor.action.indentLines', escapeHTML),
 	createAction('escape.uri', 'URI Encode/Decode', 'BracketRight', 'editor.action.outdentLines', escapeURI),
 ] as const;
