@@ -7,6 +7,9 @@ import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';
 
 const storageKey = 'codemirror-mediawiki-addons',
+	monacoKey = 'codemirror-mediawiki-monaco',
+	langs = ['wiki', 'javascript', 'css', 'lua', 'json'],
+	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint'] as const,
 	user = mw.config.get('wgUserName'),
@@ -15,9 +18,10 @@ const storageKey = 'codemirror-mediawiki-addons',
 declare type codeKey = typeof codeKeys[number];
 
 declare type Preferences = {
-	addons?: string[];
-	indent?: string;
-	wikilint?: Record<LintError.Rule, RuleState>;
+	addons: string[];
+	useMonaco: string[];
+	indent: string;
+	wikilint: Record<LintError.Rule, RuleState>;
 } & Record<codeKey, unknown>;
 
 declare interface MediaWikiPage {
@@ -39,6 +43,7 @@ const enum RuleState {
 
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set(getObject(storageKey) as string[] | null),
+	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
 	wikilint = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
@@ -46,6 +51,7 @@ export const indentKey = 'codemirror-mediawiki-indent',
 let dialog: OO.ui.MessageDialog | undefined,
 	layout: OO.ui.IndexLayout,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
+	monacoWidget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
 	indent = localStorage.getItem(indentKey) || '';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
@@ -87,13 +93,17 @@ export const loadJSON = (async () => {
 		res => {
 			const {query: {pages: [page]}} = res as MediaWikiResponse;
 			if (page?.revisions) {
-				const json: Preferences = JSON.parse(page.revisions[0]!.content);
+				const json: Partial<Preferences> = JSON.parse(page.revisions[0]!.content);
 				if (!json.addons?.includes('save')) {
 					return;
 				}
 				prefs.clear();
 				for (const option of json.addons) {
 					prefs.add(option);
+				}
+				useMonaco.clear();
+				for (const option of json.useMonaco ?? (prefs.has('useMonaco') ? langs : [])) {
+					useMonaco.add(option);
 				}
 				if (json.indent) {
 					localStorage.setItem(indentKey, json.indent);
@@ -126,6 +136,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 	await loadJSON;
 	if (dialog) {
 		widget.setValue([...prefs] as unknown as string);
+		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: 'cm-preference'});
@@ -161,7 +172,13 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			options: [
 				{disabled: true},
 				...Object.keys(i18n)
-					.filter(k => k !== 'addon-indent' && k.startsWith('addon-') && !k.endsWith('-mac'))
+					.filter(
+						k =>
+							k !== 'addon-indent'
+							&& k !== 'addon-useMonaco'
+							&& k.startsWith('addon-')
+							&& !k.endsWith('-mac'),
+					)
 					.map(k => ({
 						data: k.slice(6),
 						label: parseMsg(k),
@@ -171,14 +188,23 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			],
 			value: [...prefs] as unknown as string,
 		});
+		monacoWidget = new OO.ui.CheckboxMultiselectInputWidget({
+			options: langs.map((lang, i) => ({data: lang, label: labels[i]!})),
+			value: [...useMonaco] as unknown as string,
+		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
 		const field = new OO.ui.FieldLayout(widget, {
 				label: msg('label'),
 				align: 'top',
 			}),
+			monacoField = new OO.ui.FieldLayout(monacoWidget, {
+				label: msg('addon-useMonaco'),
+				align: 'top',
+			}),
 			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
 		panelMain.$element.append(
 			field.$element,
+			monacoField.$element,
 			indentField.$element,
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
@@ -247,8 +273,20 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			void OO.ui.alert(msg('json-error', jsonErrors.join(msg('and'))));
 		}
 
+		// Monaco
+		let value = monacoWidget.getValue() as unknown as string[];
+		if (value.length !== useMonaco.size || !value.every(option => useMonaco.has(option))) {
+			changed = true;
+			useMonaco.clear();
+			for (const option of value) {
+				useMonaco.add(option);
+			}
+			setObject(monacoKey, value);
+		}
+
 		// 插件
-		const value = widget.getValue() as unknown as string[];
+		prefs.delete('useMonaco');
+		value = widget.getValue() as unknown as string[];
 		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
 			changed = true;
 			prefs.clear();
@@ -258,8 +296,12 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			for (const cm of editors) {
 				cm?.prefer(value);
 			}
-			setObject(storageKey, value);
 		}
+		if (useMonaco.size > 0) {
+			prefs.add('useMonaco');
+		}
+		value = [...prefs];
+		setObject(storageKey, value);
 
 		// 保存至用户子页面
 		if (changed && user && (save || prefs.has('save'))) {
@@ -267,7 +309,8 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				action: 'edit',
 				title: userPage!,
 				text: JSON.stringify({
-					addons: [...prefs],
+					addons: value,
+					useMonaco: [...useMonaco],
 					indent,
 					wikilint,
 					ESLint: codeConfigs.get('ESLint'),

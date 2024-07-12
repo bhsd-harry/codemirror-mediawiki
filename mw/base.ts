@@ -2,7 +2,7 @@ import {CodeMirror6, CDN} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks, linkProvider} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {openPreference, prefs, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
+import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
 import {getEscapeActions} from './escape';
 import wikiEditor from './wikiEditor';
@@ -52,6 +52,7 @@ $.valHooks['textarea'] = {
 };
 
 const linters: Record<string, LintSource | undefined> = {},
+	langs = new Set(['javascript', 'css', 'lua', 'json']),
 	langMap: Record<string, string> = {
 		'sanitized-css': 'css',
 		js: 'javascript',
@@ -466,7 +467,7 @@ export class CodeMirror extends CodeMirror6 {
 			lang = langMap[lang];
 		}
 		/* eslint-enable no-param-reassign */
-		const isCM = !prefs.has('useMonaco'),
+		const isCM = !useMonaco.has(langs.has(lang!) ? lang! : 'wiki'),
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM);
 		if (isWiki) {

@@ -7,6 +7,7 @@
 - [`prefer`](./README.md#prefer) now partially works with the Monaco editor
 - Support for `jquery.textSelection` with multiple selections of a Monaco editor when used in a MediaWiki site
 - New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
+- When used in a MediaWiki site, the [useMonaco](./mw/README.md#usemonaco) preference can be set for individual languages
 
 ## 2.14.9
 
