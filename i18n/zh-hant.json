@@ -1,5 +1,5 @@
 {
-	"version": "2.15.0",
+	"version": "2.15.1",
 	"lang": "zh-hant",
 	"i18n-failed": "取得 $1 的語言檔案失敗。",
 	"title": "CodeMirror外掛程式",
