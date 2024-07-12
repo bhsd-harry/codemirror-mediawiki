@@ -22,16 +22,16 @@ const createAction = (
 	contextMenuGroupId: '1_modification',
 	run(editor): void {
 		const model = editor.getModel()!,
-			ranges = editor.getSelections()!;
-		if (ranges.every(range => range.isEmpty())) {
+			ranges = editor.getSelections()!.filter(range => !range.isEmpty());
+		if (ranges.length === 0) {
 			editor.trigger(id, command, undefined);
-			return;
+		} else {
+			const edits = ranges.map(range => ({
+				range,
+				text: f(model.getValueInRange(range)),
+			}));
+			editor.executeEdits(id, edits);
 		}
-		const edits = editor.getSelections()!.map(range => ({
-			range,
-			text: f(model.getValueInRange(range)),
-		}));
-		editor.executeEdits(id, edits);
 	},
 });
 
