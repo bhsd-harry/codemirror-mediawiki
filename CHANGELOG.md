@@ -1,6 +1,6 @@
 ## 2.15.3
 
-*2024-07-12*
+*2024-07-13*
 
 **Added**
 
@@ -11,7 +11,7 @@
 
 **Fixed**
 
-- Multiple Monaco editors in a MediaWiki site
+- Unreachable Monaco editors will be disposed in a MediaWiki site
 
 ## 2.14.9
 

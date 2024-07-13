@@ -218,13 +218,12 @@ export class CodeMirror extends CodeMirror6 {
 			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
 		}
 		const {textarea, lang} = this,
-			{readOnly} = textarea,
 			language = monacoLangs[lang] || lang,
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
 		await monaco;
-		if (!readOnly) {
-			for (const editor of monaco.editor.getEditors()) {
+		for (const editor of monaco.editor.getEditors()) {
+			if (!editor.getDomNode()?.isConnected) {
 				editor.dispose();
 			}
 		}
@@ -239,7 +238,7 @@ export class CodeMirror extends CodeMirror6 {
 			model: this.#model,
 			automaticLayout: true,
 			theme: 'monokai',
-			readOnly,
+			readOnly: textarea.readOnly,
 			wordWrap: language === 'wikitext' || language === 'html' || language === 'plaintext' ? 'on' : 'off',
 			wordBreak: 'keepAll',
 			tabSize: tab ? 4 : Number(this.#indentStr),
