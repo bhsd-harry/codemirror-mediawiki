@@ -1,3 +1,11 @@
+## 2.15.4
+
+*2024-07-14*
+
+**Fixed**
+
+- Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./mw/README.md#openlinks) extension for a Monaco editor used in a MediaWiki site
+
 ## 2.15.3
 
 *2024-07-13*
