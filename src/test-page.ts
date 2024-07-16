@@ -8,7 +8,10 @@ declare interface Test {
 
 (async () => {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
+		key = 'codemirror-mediawiki-done',
+		dones = new Set<string>(JSON.parse(localStorage.getItem(key)!) as string[]),
 		select = document.querySelector('select')!,
+		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,
 		pre = document.querySelector('pre')!;
 	Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
@@ -20,13 +23,14 @@ declare interface Test {
 		return Promise.resolve([[stage ?? Infinity, wikitext, printed]]);
 	};
 	void wikiparse.highlight!(pre, false, true);
+	btn.disabled = !select.value;
 	let optgroup: HTMLOptGroupElement;
 	for (const [i, {desc, wikitext}] of tests.entries()) {
 		if (wikitext === undefined) {
 			optgroup = document.createElement('optgroup');
 			optgroup.label = desc;
 			select.append(optgroup);
-		} else {
+		} else if (!dones.has(desc)) {
 			const option = document.createElement('option');
 			option.value = String(i);
 			option.textContent = desc;
@@ -41,5 +45,12 @@ declare interface Test {
 		pre.classList.remove('wikiparser');
 		void wikiparse.highlight!(pre, false, true);
 		select.selectedOptions[0]!.disabled = true;
+		btn.disabled = false;
+	});
+	btn.addEventListener('click', () => {
+		dones.add(tests[Number(select.value)]!.desc);
+		localStorage.setItem(key, JSON.stringify([...dones]));
+		select.selectedIndex++;
+		select.dispatchEvent(new Event('change'));
 	});
 })();
