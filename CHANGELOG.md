@@ -1,6 +1,6 @@
 ## 2.15.4
 
-*2024-07-21*
+*2024-07-22*
 
 **Added**
 
@@ -9,6 +9,7 @@
 **Fixed**
 
 - Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./mw/README.md#openlinks) extension for a Monaco editor used in a MediaWiki site
+- Redirection syntax can have leading whitespace in the MediaWiki mode
 
 ## 2.15.3
 

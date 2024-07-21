@@ -600,10 +600,14 @@ export class MediaWiki {
 						if (/\s/u.test(ch)) {
 							// Leading spaces is valid syntax for tables, bug T108454
 							const re = new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${pipe}))`, 'u'),
+								re2 = new RegExp(String.raw`^\s*#${this.redirectRegex.source.slice(1)}`, 'iu'),
 								mt = stream.match(re) as RegExpMatchArray | false;
 							if (mt) {
 								chain(state, this.eatStartTable);
 								return makeLocalStyle(mt[1] ? tokens.list : '', state);
+							} else if (stream.match(re2)) {
+								state.redirect = true;
+								return tokens.redirect;
 							} else if (ch === ' ') {
 								/** @todo indent-pre is sometimes suppressed */
 								return tokens.skipFormatting;

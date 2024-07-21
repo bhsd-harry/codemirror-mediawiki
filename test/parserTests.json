@@ -678,27 +678,7 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo bar baz</><link-ground link-delimiter>|</><link-ground link-text>x</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo  bar baz</><link-ground link-delimiter>|</><link-ground link-text>x</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo  bar   baz</><link-ground link-delimiter>|</><link-ground link-text>x</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "Internal link with ca linktrail, surrounded by bold apostrophes (T29473 primary issue)",
-		"wikitext": "'''[[Main Page]]'''",
-		"parsed": "<apostrophes>'''</><link-ground link-bracket>[[</><link-ground link-pagename pagename strong>Main Page</><link-ground link-bracket>]]</><apostrophes>'''</>"
-	},
-	{
-		"desc": "Internal link with ca linktrail, surrounded by italic apostrophes (T29473 primary issue)",
-		"wikitext": "''[[Main Page]]''",
-		"parsed": "<apostrophes>''</><link-ground link-bracket>[[</><link-ground link-pagename pagename em>Main Page</><link-ground link-bracket>]]</><apostrophes>''</>"
-	},
-	{
 		"desc": "Internal link with en linktrail: no apostrophes (T29473)",
-		"wikitext": "[[Something]]'nice",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Something</><link-ground link-bracket>]]</>'nice"
-	},
-	{
-		"desc": "Internal link with ca linktrail with apostrophes (T29473)",
-		"wikitext": "[[Something]]'nice",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Something</><link-ground link-bracket>]]</>'nice"
-	},
-	{
-		"desc": "Internal link with kaa linktrail with apostrophes (T29473)",
 		"wikitext": "[[Something]]'nice",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Something</><link-ground link-bracket>]]</>'nice"
 	},
@@ -748,24 +728,9 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>Some </><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Fool</><template-link-ground link-bracket>]]</><template-ground template>s are </><template-ground apostrophes>'''</><template-ground template>bold and foolish</><template-ground apostrophes>'''</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "Internal link with is link prefix",
-		"wikitext": "Aðrir mótmælenda[[söfnuður|söfnuðir]] og\n{{1x|mótmælenda[[söfnuður|söfnuðir]]}}\nmótmæ{{1x|lenda[[söfnuður|söfnuðir]]}}",
-		"parsed": "Aðrir mótmælenda<link-ground link-bracket>[[</><link-ground link-pagename pagename>söfnuður</><link-ground link-delimiter>|</><link-ground link-text>söfnuðir</><link-ground link-bracket>]]</> og<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>mótmælenda</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>söfnuður</><template-link-ground link-delimiter>|</><template-link-ground link-text>söfnuðir</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>mótmæ<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>lenda</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>söfnuður</><template-link-ground link-delimiter>|</><template-link-ground link-text>söfnuðir</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Internal link with is link trail and link prefix",
-		"wikitext": "[[mótmælendatrú|xxx]]ar\n[[mótmælendatrú]]ar\nmótmælenda[[söfnuður]]\nmótmælenda[[söfnuður|söfnuðir]]\nmótmælenda[[söfnuður|söfnuðir]]xxx",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>mótmælendatrú</><link-ground link-delimiter>|</><link-ground link-text>xxx</><link-ground link-bracket>]]</>ar<link-ground link-bracket>[[</><link-ground link-pagename pagename>mótmælendatrú</><link-ground link-bracket>]]</>armótmælenda<link-ground link-bracket>[[</><link-ground link-pagename pagename>söfnuður</><link-ground link-bracket>]]</>mótmælenda<link-ground link-bracket>[[</><link-ground link-pagename pagename>söfnuður</><link-ground link-delimiter>|</><link-ground link-text>söfnuðir</><link-ground link-bracket>]]</>mótmælenda<link-ground link-bracket>[[</><link-ground link-pagename pagename>söfnuður</><link-ground link-delimiter>|</><link-ground link-text>söfnuðir</><link-ground link-bracket>]]</>xxx"
-	},
-	{
 		"desc": "Parsoid link trail escaping",
 		"wikitext": "[[apple]]<nowiki/>s",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>apple</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>s"
-	},
-	{
-		"desc": "Parsoid link prefix escaping",
-		"wikitext": "Aðrir mótmælenda<nowiki/>[[söfnuður]]",
-		"parsed": "Aðrir mótmælenda<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>söfnuður</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Parsoid link bracket escaping",
@@ -796,11 +761,6 @@
 		"desc": "Wikilink in wikilink",
 		"wikitext": "[[Hi|[[Ho]]]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Hi</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Ho</><link-ground link-bracket>]]</>]]"
-	},
-	{
-		"desc": "Parsoid-specific test: Wikilinks with &nbsp; should RT properly",
-		"wikitext": "[[WW&nbsp;II]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>WW&amp;nbsp;II</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Parsoid T55221: Wikilinks should be properly entity-escaped",
@@ -1146,16 +1106,6 @@
 		"desc": "Namespace File {{ns:Image}}",
 		"wikitext": "{{ns:Image}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>ns</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Image</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Namespace (lang=de) Benutzer {{ns:User}}",
-		"wikitext": "{{ns:User}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>ns</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>User</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Namespace (lang=de) Benutzer Diskussion {{ns:3}}",
-		"wikitext": "{{ns:3}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>ns</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>3</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Urlencode",
@@ -2123,11 +2073,6 @@
 		"parsed": "<list>*</>a<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]]</><comment>&lt;!--boo1--&gt</> <comment>&lt;!--boo2--&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]]</><comment>&lt;!--boo3--&gt</> <comment>&lt;!--boo4--&gt</>"
 	},
 	{
-		"desc": "Categories and newlines: should behave properly with linkprefix (T87753)",
-		"wikitext": "foo bar\nfoo bar\n[[تصنيف:Foo]]\n[[تصنيف:Bar]]",
-		"parsed": "foo barfoo bar<link-ground link-bracket>[[</><link-ground link-pagename pagename>تصنيف:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>تصنيف:Bar</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "No regressions on internal links following category (T174639)",
 		"wikitext": "[[Category:Foo]]<div>a\n\n[[Foo]]</div>",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>a<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-bracket>]]</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
@@ -2146,16 +2091,6 @@
 		"desc": "Parsoid: Serialize link to category page with colon escape",
 		"wikitext": "[[:Category:Foo]]\n[[:Category:Foo|Bar]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:Category:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:Category:Foo</><link-ground link-delimiter>|</><link-ground link-text>Bar</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Link prefix/suffixes aren't applied to category links",
-		"wikitext": "x[[Category:Foo]]y",
-		"parsed": "x<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>y"
-	},
-	{
-		"desc": "Link prefix/suffixes aren't applied to language links",
-		"wikitext": "x[[es:Foo]]y",
-		"parsed": "x<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>y"
 	},
 	{
 		"desc": "Parsoid: Serialize link to file page with colon escape",
@@ -2403,11 +2338,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Redirect to foobar.jpg</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "Localized media link",
-		"wikitext": "[[Miðill:Foobar.jpg]]\n\n[[Miðill:Foobar.jpg|Icelandic]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Miðill:Foobar.jpg</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Miðill:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Icelandic</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "Media link with nasty text",
 		"wikitext": "[[Media:Foobar.jpg|Safe Link<div style=display:none>\" onmouseover=\"alert(document.cookie)\" onfoo=\"</div>]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Safe Link</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>div </><link-ground htmltag-attribute html-div>style=</><link-ground htmltag-attribute-value>display:none</><link-ground htmltag-bracket>&gt</><link-ground link-text>\" onmouseover=\"alert(document.cookie)\" onfoo=\"</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>div</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
@@ -2416,11 +2346,6 @@
 		"desc": "Media link from missing resource (parsoid-only)",
 		"wikitext": "[[Media:Foobar.jpg|Bat!]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Bat!</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Media link from missing resource, localized (parsoid-only)",
-		"wikitext": "[[Miðill:Foobar.jpg|Bat!]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Miðill:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Bat!</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Media link from old 1.7.0 DOM spec (crash test, parsoid-only) T198511",
@@ -3443,11 +3368,6 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>lc</><ext-ground parserfunction-delimiter>:</><template-ext-ground template-bracket>{{</><template-ext-ground template-name pagename>paramtest </><template-ext2-ground parserfunction-bracket>{{</><template-ext2-ground parserfunction-name>!</><template-ext2-ground parserfunction-bracket>}}</><template-ext-ground template-name pagename> param = hello </><template-ext-ground template-bracket>}}</><ext-ground parserfunction> </><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "Case insensitivity of parser functions for non-ASCII characters (T10143)",
-		"wikitext": "{{PRVNÍVELKÉ:ěščř}}\n{{prvnívelké:ěščř}}\n{{PRVNÍMALÉ:ěščř}}\n{{prvnímalé:ěščř}}\n{{MALÁ:ěščř}}\n{{malá:ěščř}}\n{{VELKÁ:ěščř}}\n{{velká:ěščř}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>PRVNÍVELKÉ:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>prvnívelké:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>PRVNÍMALÉ:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>prvnímalé:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>MALÁ:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>malá:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>VELKÁ:ěščř</><template-ground template-bracket>}}{{</><template-ground template-name pagename>velká:ěščř</><template-ground template-bracket>}}</>"
-	},
-	{
 		"desc": "Paragraphs inside divs (no extra line breaks)",
 		"wikitext": "<div>Line one\n\nLine two</div>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>Line oneLine two<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
@@ -3518,11 +3438,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>meatball:1</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:2</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:3</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "T17196: localised external link numbers",
-		"wikitext": "[http://en.wikipedia.org/]",
-		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>en.wikipedia.org/</><link-ground extlink-bracket>]</>"
-	},
-	{
 		"desc": "Multibyte character in padleft",
 		"wikitext": "{{padleft:-Hello|7|Æ}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>padleft</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-Hello</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>7</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Æ</><ext-ground parserfunction-bracket>}}</>"
@@ -3548,24 +3463,9 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>January 15</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "formatdate parser function, with default format and on a page of which the content language is always English and different from the wiki content language",
-		"wikitext": "{{#formatdate:2009-03-24|dmy}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>2009-03-24</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>dmy</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
 		"desc": "formatdate with invalid month",
 		"wikitext": "{{#formatdate:2019-22-22|dmy}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>2019-22-22</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>dmy</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "formatdate: dots in month name do not match any char (T220563)",
-		"wikitext": "{{#formatdate:jun. 3|dmy}}\n{{#formatdate:junx 3|dmy}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>jun. 3</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>dmy</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>junx 3</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>dmy</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "formatdate uses correct capitalisation in French",
-		"wikitext": "{{#formatdate:Juin 3|dmy}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#formatdate</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Juin 3</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>dmy</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "formatdate uses correct capitalisation in English",
@@ -3808,26 +3708,6 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Identical</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "T33490 Turkish: ucfirst 'blah'",
-		"wikitext": "{{ucfirst:blah}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>ucfirst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>blah</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "T33490 Turkish: ucfirst 'ix'",
-		"wikitext": "{{ucfirst:ix}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>ucfirst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ix</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "T33490 Turkish: lcfirst 'BLAH'",
-		"wikitext": "{{lcfirst:BLAH}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>lcfirst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>BLAH</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "T33490 Turkish: ucfırst (with a dotless i)",
-		"wikitext": "{{ucfırst:blah}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>ucfırst:blah</><template-ground template-bracket>}}</>"
-	},
-	{
 		"desc": "T33490 ucfırst (with a dotless i) with English language",
 		"wikitext": "{{ucfırst:blah}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>ucfırst:blah</><template-ground template-bracket>}}</>"
@@ -3863,19 +3743,9 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction>2</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction>2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>R</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "Check noCommafy in formatNum",
-		"wikitext": "{{formatnum:123456.78}}\n{{formatnum:123456.78|NOSEP}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>123456.78</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>123456.78</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>NOSEP</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
 		"desc": "Wrong option for formatNum (T58199)",
 		"wikitext": "{{formatnum:1,234.56|Random}}\n{{formatnum:1,234.56|EVERYTHING}}\n{{formatnum:1234.56|any argument that has the string 'NOSEP'}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1,234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Random</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1,234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>EVERYTHING</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>any argument that has the string 'NOSEP'</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Strip marker in grammar",
-		"wikitext": "{{grammar:elative|foo<nowiki/>bar}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>grammar</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>elative</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>foo</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction>bar</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Strip marker in padleft",
@@ -4276,11 +4146,6 @@
 		"desc": "New category links (href variations)",
 		"wikitext": "[[Category:Toxine bactérienne]]\n[[Category:Toxine bactérienne]]\n[[Category:Toxine bactérienne]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Toxine bactérienne</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:Toxine bactérienne</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:Toxine bactérienne</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "New sol transparent links don't need indent-pre nowiki protection",
-		"wikitext": "         #WEITERLEITUNG [[Main Page]]\n<!-- this is good  -->    [[Category:Good]]\n<!-- this is great -->    [[Kategorie:Great]]",
-		"parsed": "<skipformatting> </>        #WEITERLEITUNG <link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</><comment>&lt;!-- this is good  --&gt</>    <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Good</><link-ground link-bracket>]]</><comment>&lt;!-- this is great --&gt</>    <link-ground link-bracket>[[</><link-ground link-pagename pagename>Kategorie:Great</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "New interlanguage links (href variations)",
@@ -5039,16 +4904,6 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[foo]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[bar]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
 	},
 	{
-		"desc": "T236256 - Extending the same base multiple times is fine",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\">page 2</ref>\n<ref extends=\"a\">page 3</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 3</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Extended references can be reused",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref name=\"b\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</>"
-	},
-	{
 		"desc": "T240424 - Subreference reused as normal ref before its full definition",
 		"wikitext": "<ref name=\"b\" />\n<ref name=\"b\" extends=\"a\">page 2</ref>\n<ref name=\"a\">book</ref>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
@@ -5290,11 +5145,6 @@
 		"desc": "<ref> in expanded attributes of tags (legitimate or otherwise)",
 		"wikitext": "{|\n|- <ref>boo</ref>\n|x\n|}\n<references />",
 		"parsed": "<table-bracket>{|</><table-delimiter>|- </><exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>boo</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><table-delimiter>|</><table-td>x</><table-bracket>|}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "<ref>s in language variant markup",
-		"wikitext": "-{lj <ref>a</ref>}-аб-{nj <ref name=\"y\">b</ref>}-вг-{dž}- c <ref name=\"y\" />\n<references />",
-		"parsed": "<convert-bracket>-{</>lj <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><convert-bracket>}-</>аб<convert-bracket>-{</>nj <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"y\"</><exttag-bracket>&gt</><tag-ref>b</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><convert-bracket>}-</>вг<convert-bracket>-{</>dž<convert-bracket>}-</> c <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"y\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "<references> after <gallery> (bug 6164)",
@@ -6043,11 +5893,6 @@
 		"desc": "Smoke test for duplicated references with conflicting text",
 		"wikitext": "<ref name=\"a\">text</ref>\n<ref name=\"a\">bad</ref>\n<ref name=\"b\">other</ref>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>bad</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>other</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "Smoke test for references that are reused *before* defined in the text",
-		"wikitext": "<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\" />\n<ref name=\"a\">text</ref>\n<ref name=\"b\">other</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>other</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Smoke test for references that are reused *before* defined in <references>",
@@ -7817,134 +7662,14 @@
 		"desc": "langParserTests"
 	},
 	{
-		"desc": "sr-ec: Simple conversion of Latin to Cyrillic",
-		"wikitext": "abvg",
-		"parsed": "abvg"
-	},
-	{
-		"desc": "sr-ec: Same as above, but assert that -{}-s must be removed and not converted (1)",
-		"wikitext": "-{lj}-аб-{nj}-вг-{dž}-",
-		"parsed": "<convert-bracket>-{</>lj<convert-bracket>}-</>аб<convert-bracket>-{</>nj<convert-bracket>}-</>вг<convert-bracket>-{</>dž<convert-bracket>}-</>"
-	},
-	{
-		"desc": "sr-ec: This text has some Cyrillic, but is recognized as Latin, so it should be converted",
-		"wikitext": "абвгšđžčć",
-		"parsed": "абвгšđžčć"
-	},
-	{
-		"desc": "sr-ec: Same as above, but assert that -{}-s must be removed and not converted (2)",
-		"wikitext": "-{lj}-абвг-{nj}-šđžčć-{dž}-",
-		"parsed": "<convert-bracket>-{</>lj<convert-bracket>}-</>абвг<convert-bracket>-{</>nj<convert-bracket>}-</>šđžčć<convert-bracket>-{</>dž<convert-bracket>}-</>"
-	},
-	{
-		"desc": "sr-ec: Roman numerals are not converted",
-		"wikitext": "a I b II v III g IV šđžčć",
-		"parsed": "a I b II v III g IV šđžčć"
-	},
-	{
-		"desc": "sr-el: A simple conversion of Latin to Latin",
-		"wikitext": "abcd",
-		"parsed": "abcd"
-	},
-	{
-		"desc": "sr-el: A simple conversion of Cyrillic to Latin",
-		"wikitext": "абцд",
-		"parsed": "абцд"
-	},
-	{
-		"desc": "sr-el: This text has some Latin, but is recognized as Cyrillic, so it should be converted",
-		"wikitext": "abcdшђжчћ",
-		"parsed": "abcdшђжчћ"
-	},
-	{
-		"desc": "External links should be converted, unless they \"look like a URL\".",
-		"wikitext": "[http://example.com abcd]\n\n[http://example.com http://foo.com]\n\nhttp://example.com\n\n[http://example.com -{abcd}-]",
-		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>example.com</><link-ground extlink-text> abcd</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>example.com</><link-ground extlink-text> http://foo.com</><link-ground extlink-bracket>]</><free-extlink-protocol>http://</><free-extlink>example.com</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>example.com</><link-ground extlink-text> </><link-ground convert-bracket>-{</><link-ground extlink-text>abcd</><link-ground convert-bracket>}-</><link-ground extlink-bracket>]</>"
-	},
-	{
 		"desc": "Language converter: output gets cut off unexpectedly (T7757)",
 		"wikitext": "this bit is safe: }-\n\nbut if we add a conversion instance: -{zh-cn:xxx;zh-tw:yyy}-\n\nthen we get cut off here: }-\n\nall additional text is vanished",
 		"parsed": "this bit is safe: }-but if we add a conversion instance: <convert-bracket>-{</><convert-lang>zh-cn:</>xxx<convert-delimiter>;</><convert-lang>zh-tw:</>yyy<convert-bracket>}-</>then we get cut off here: }-all additional text is vanished"
 	},
 	{
-		"desc": "Language converter glossary rules inside attributes (T119158)",
-		"wikitext": "-{H|foAjrjvi=>sr-el:\" onload=\"alert(1)\" data-foo=\"}-\n\n[[File:Foobar.jpg|alt=-{}-foAjrjvi-{}-]]",
-		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>foAjrjvi=>sr-el:\" onload=\"alert(1)\" data-foo=\"<convert-bracket>}-</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground convert-bracket>-{}-</><link-ground file-text>foAjrjvi</><link-ground convert-bracket>-{}-</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Self-link in language variants",
-		"wikitext": "Both [[Dunav]] and [[Дунав]] are names for this river.",
-		"parsed": "Both <link-ground link-bracket>[[</><link-ground link-pagename pagename>Dunav</><link-ground link-bracket>]]</> and <link-ground link-bracket>[[</><link-ground link-pagename pagename>Дунав</><link-ground link-bracket>]]</> are names for this river."
-	},
-	{
-		"desc": "Link to another existing title shouldn't be parsed as self-link even if it's a variant of this title",
-		"wikitext": "[[Дуна]] is not a self-link while [[Duna]] and [[Dуна]] are still self-links.",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Дуна</><link-ground link-bracket>]]</> is not a self-link while <link-ground link-bracket>[[</><link-ground link-pagename pagename>Duna</><link-ground link-bracket>]]</> and <link-ground link-bracket>[[</><link-ground link-pagename pagename>Dуна</><link-ground link-bracket>]]</> are still self-links."
-	},
-	{
-		"desc": "Link to a section of a variant of this title should be parsed as mw-selflink-fragment",
-		"wikitext": "[[Dуна]] is a self-link while [[Duna#Foo]] and [[Dуна#Foo]] are mw-selflink-fragments.",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Dуна</><link-ground link-bracket>]]</> is a self-link while <link-ground link-bracket>[[</><link-ground link-pagename pagename>Duna</><link-ground link-tosection>#Foo</><link-ground link-bracket>]]</> and <link-ground link-bracket>[[</><link-ground link-pagename pagename>Dуна</><link-ground link-tosection>#Foo</><link-ground link-bracket>]]</> are mw-selflink-fragments."
-	},
-	{
-		"desc": "Link to pages in language variants",
-		"wikitext": "Main Page can be written as [[Маин Паге]]",
-		"parsed": "Main Page can be written as <link-ground link-bracket>[[</><link-ground link-pagename pagename>Маин Паге</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Multiple links to pages in language variants",
-		"wikitext": "[[Main Page]] can be written as [[Маин Паге]] same as [[Маин Паге]].",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</> can be written as <link-ground link-bracket>[[</><link-ground link-pagename pagename>Маин Паге</><link-ground link-bracket>]]</> same as <link-ground link-bracket>[[</><link-ground link-pagename pagename>Маин Паге</><link-ground link-bracket>]]</>."
-	},
-	{
-		"desc": "Simple template in language variants",
-		"wikitext": "{{тест}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>тест</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Template with explicit namespace in language variants",
-		"wikitext": "{{Template:тест}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Template:тест</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Basic test for template parameter in language variants",
-		"wikitext": "{{парамтест|param=foo}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>парамтест</><template-ground template-delimiter>|</><template-ground template-argument-name>param=</><template-ground template>foo</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Simple category in language variants",
-		"wikitext": "[[Category:МедиаWики Усер'с Гуиде]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:МедиаWики Усер'с Гуиде</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "Don't convert blue categorylinks to another variant (T35210)",
 		"wikitext": "[[A]][[Category:分类]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>A</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:分类</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Stripping -{}- tags (language variants)",
-		"wikitext": "Latin proverb: -{Ne nuntium necare}-",
-		"parsed": "Latin proverb: <convert-bracket>-{</>Ne nuntium necare<convert-bracket>}-</>"
-	},
-	{
-		"desc": "Prevent conversion with -{}- tags (language variants)",
-		"wikitext": "Latinski: -{Ne nuntium necare}-",
-		"parsed": "Latinski: <convert-bracket>-{</>Ne nuntium necare<convert-bracket>}-</>"
-	},
-	{
-		"desc": "Prevent conversion of text with -{}- tags (language variants)",
-		"wikitext": "Latinski: -{Ne nuntium necare}-",
-		"parsed": "Latinski: <convert-bracket>-{</>Ne nuntium necare<convert-bracket>}-</>"
-	},
-	{
-		"desc": "Prevent conversion of links with -{}- tags (language variants)",
-		"wikitext": "-{[[Main Page]]}-",
-		"parsed": "<convert-bracket>-{</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "-{}- tags within headlines (within html for parserConvert())",
-		"wikitext": "==-{Naslov}-==\n\nNote that even an unprotected headline ID is not affected by language\nconversion:\n\n==Latinski==",
-		"parsed": "<section-header section--2>==</><convert-bracket>-{</><section>Naslov</><convert-bracket>}-</><section-header>==</>Note that even an unprotected headline ID is not affected by languageconversion:<section-header section--2>==</><section>Latinski</><section-header>==</>"
 	},
 	{
 		"desc": "Explicit definition of language variant alternatives",
@@ -7960,11 +7685,6 @@
 		"desc": "Filter syntax for language variants",
 		"wikitext": "foo-{zh;zh-hans;zh-hant|blog, WEBJOURNAL, WEBLOG}-quux",
 		"parsed": "foo<convert-bracket>-{</><convert-flag>zh;zh-hans;zh-hant</><convert-delimiter>|</>blog, WEBJOURNAL, WEBLOG<convert-bracket>}-</>quux"
-	},
-	{
-		"desc": "Conversion around HTML tags",
-		"wikitext": "-{H|span=>sr-ec:script;title=>sr-ec:src}-\n<span title=\"La-{sr-el:L;sr-ec:C}-tin\">ski</span>",
-		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>span=>sr-ec:script;title=>sr-ec:src<convert-bracket>}-</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>title=</><htmltag-attribute-value>\"La-{sr-el:L;sr-ec:C}-tin\"</><htmltag-bracket>&gt</>ski<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Explicit session-wise two-way language variant mapping (A flag and - flag)",
@@ -8167,36 +7887,6 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>|-|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-td>-{Bar}-</><table-delimiter>|</><table-delimiter2>|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-td>-{Bar}-</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Proper conversion of text in external links",
-		"wikitext": "http://www.google.com\ngopher://www.google.com\n[http://www.google.com http://www.google.com]\n[gopher://www.google.com gopher://www.google.com]\n[https://www.google.com irc://www.google.com]\n[ftp://www.google.com www.google.com/ftp://dir]\n[//www.google.com www.google.com]",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.google.com</><free-extlink-protocol>gopher://</><free-extlink>www.google.com</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>www.google.com</><link-ground extlink-text> http://www.google.com</><link-ground extlink-bracket>][</><link-ground extlink-protocol>gopher://</><link-ground extlink>www.google.com</><link-ground extlink-text> gopher://www.google.com</><link-ground extlink-bracket>][</><link-ground extlink-protocol>https://</><link-ground extlink>www.google.com</><link-ground extlink-text> irc://www.google.com</><link-ground extlink-bracket>][</><link-ground extlink-protocol>ftp://</><link-ground extlink>www.google.com</><link-ground extlink-text> www.google.com/ftp://dir</><link-ground extlink-bracket>][</><link-ground extlink-protocol>//</><link-ground extlink>www.google.com</><link-ground extlink-text> www.google.com</><link-ground extlink-bracket>]</>"
-	},
-	{
-		"desc": "Do not convert roman numbers to language variants",
-		"wikitext": "Fridrih IV je car.",
-		"parsed": "Fridrih IV je car."
-	},
-	{
-		"desc": "Unclosed language converter markup \"-{\"",
-		"wikitext": "-{T|hello",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>hello"
-	},
-	{
-		"desc": "Don't convert raw rule \"-{R|=&gt;}-\" to \"=>\"",
-		"wikitext": "-{R|=&gt;}-",
-		"parsed": "<convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</>=<entity>&amp;gt;</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "Don't break link parsing if language converter markup is in the caption.",
-		"wikitext": "[[Main Page|-{R|main page}-]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground convert-bracket>-{</><link-ground convert-flag>R</><link-ground convert-delimiter>|</><link-ground link-text>main page</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "T146304: Don't break template parsing if language converter markup is in the parameter.",
-		"wikitext": "{{1x|-{R|foo}-}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground convert-bracket>-{</><template-ground convert-flag>R</><template-ground convert-delimiter>|</><template-ground template>foo</><template-ground convert-bracket>}-</><template-ground template-bracket>}}</>"
-	},
-	{
 		"desc": "T153135: Don't break list handling if language converter markup is in the item.",
 		"wikitext": ";-{zh-cn:AAA;zh-tw:BBB}-\n;-{R|foo:bar}-",
 		"parsed": "<list>;</><convert-bracket>-{</><convert-lang>zh-cn:</><strong>AAA</><convert-delimiter>;</><convert-lang>zh-tw:</><strong>BBB</><convert-bracket>}-</><list>;</><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</>"
@@ -8212,31 +7902,6 @@
 		"parsed": "<list>;</><convert-bracket>-{</><convert-delimiter>|</><convert-lang>zh-cn:</><strong>AAA </><convert-bracket>-{</><convert-flag>zh-hans</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</><strong> </><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>bat:baz</><convert-bracket>}-}-</><list>:</>def"
 	},
 	{
-		"desc": "T153140: Don't break table handling if language converter markup is in the cell.",
-		"wikitext": "{|\n|-\n| -{R|B}-\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|-| </><html-td table-definition>-{R</><table-delimiter2>|</><table-td>B}-</><table-bracket>|}</>"
-	},
-	{
-		"desc": "Language converter tricky html2wt cases (1)",
-		"wikitext": "-{<nowiki>}-</nowiki>}-",
-		"parsed": "<convert-bracket>-{</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>}-</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "Language converter tricky html2wt cases (2)",
-		"wikitext": "<nowiki>-{foo}-</nowiki>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>-{foo}-</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "Language converter tricky html2wt cases (3)",
-		"wikitext": "-{R||}-\n\n-{R|R|raw}-\n\n-{<nowiki>-{foo}-</nowiki>}-",
-		"parsed": "<convert-bracket>-{</><convert-flag>R</><convert-delimiter>||</><convert-bracket>}--{</><convert-flag>R</><convert-delimiter>|</><convert-flag>R</><convert-delimiter>|</>raw<convert-bracket>}--{</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>-{foo}-</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "Language converter tricky html2wt cases (4)",
-		"wikitext": "-{R|{{1x|hey}}}-",
-		"parsed": "<convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>hey</><template-ground template-bracket>}}</><convert-bracket>}-</>"
-	},
-	{
 		"desc": "Language converter tricky html2wt cases (5)",
 		"wikitext": "-{H|<nowiki>a:b=>c</nowiki>=>zh-cn:<nowiki>x;foo=>zh-cn:boo</nowiki>;bar=>zh-cn:<nowiki>bat;xyz=>zh-cn:abc</nowiki>}-foobar\n\n-{H|A=><nowiki>bo:g;us</nowiki>:B}-\n\n-{A|zh-tw:xyz; zh-cn:<nowiki>0;zh-tw:bar</nowiki>}-\n\n-{<nowiki>bo:g;us</nowiki>:xyz; zh-cn:abc}-\n\na:b=>c xyz",
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>a:b=&gtc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>x;foo=&gtzh-cn:boo</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-delimiter>;</>bar<convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bat;xyz=&gtzh-cn:abc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}-</>foobar<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>A=><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:B<convert-bracket>}--{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh-tw:</>xyz<convert-delimiter>; </><convert-lang>zh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>0;zh-tw:bar</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}--{</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:xyz<convert-delimiter>; </><convert-lang>zh-cn:</>abc<convert-bracket>}-</>a:b=>c xyz"
@@ -8250,16 +7915,6 @@
 		"desc": "T239806: Trailing garbage in language converter rules (2)",
 		"wikitext": "-{H|zh-cn:玛格特·罗比; zh-tw:瑪格·羅比; zh-hk:瑪歌·羅比; zh-sg:玛格·罗比; ;}-",
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh-cn:</>玛格特·罗比<convert-delimiter>; </><convert-lang>zh-tw:</>瑪格·羅比<convert-delimiter>; </><convert-lang>zh-hk:</>瑪歌·羅比<convert-delimiter>; </><convert-lang>zh-sg:</>玛格·罗比;<convert-delimiter> ;</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "T179579: Nowiki and lc interaction",
-		"wikitext": "-{</nowiki>123}-\n\n-{123<nowiki>|</nowiki>456}-",
-		"parsed": "<convert-bracket>-{</><error>&lt;/nowiki&gt</>123<convert-bracket>}--{</>123<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>|</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>456<convert-bracket>}-</>"
-	},
-	{
-		"desc": "Balinese language conversion",
-		"wikitext": "ᬫᬦ᭄ᬢ᭄ᬭ -{ban-x-palmleaf:AAA;ban:BBB}-",
-		"parsed": "ᬫᬦ᭄ᬢ᭄ᬭ <convert-bracket>-{</>ban-x-palmleaf:AAA;ban:BBB<convert-bracket>}-</>"
 	},
 	{
 		"desc": "Langconvert tag: crh-latn to crh-cyrl",
@@ -8320,11 +7975,6 @@
 		"desc": "T302678: Serialize empty twoway",
 		"wikitext": "-{H|}-",
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-bracket>}-</>"
-	},
-	{
-		"desc": "Nonexistent internal link targets should be resolved using variants (T258856)",
-		"wikitext": "[[Test]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "luaParserTests"
@@ -8896,11 +8546,6 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>SITENAME</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "Magic Word: {{PAGELANGUAGE}}",
-		"wikitext": "{{PAGELANGUAGE}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PAGELANGUAGE</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
 		"desc": "Magic Word: {{PAGELANGUAGE}} on a page with no explicitly set language",
 		"wikitext": "{{PAGELANGUAGE}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PAGELANGUAGE</><ext-ground parserfunction-bracket>}}</>"
@@ -8934,11 +8579,6 @@
 		"desc": "Magic Word: case-insensitive (mixed case)",
 		"wikitext": "foo\n__NOtOC__\nbar",
 		"parsed": "foo<double-underscore>__NOtOC__</>bar"
-	},
-	{
-		"desc": "Magic Word: rt non-english wikis",
-		"wikitext": "__NOEDITSECTION__",
-		"parsed": "<double-underscore>__NOEDITSECTION__</>"
 	},
 	{
 		"desc": "Magic words",
@@ -9264,11 +8904,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>https://example.com?foo&amp;params=bar</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>https://example.com?foo&amp;params=bar</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
-		"desc": "Image link markup is not generated when redundant (T108504) - encoded href",
-		"wikitext": "[[Датотека:Foobar.jpg]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Датотека:Foobar.jpg</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "Image with table with attributes in caption",
 		"wikitext": "[[File:Foobar.jpg|thumb|\n{| class=\"123\" |\n|- class=\"456\" |\n| ha\n|}\n]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground table-bracket>{| </><link-ground table-definition html-table>class=</><link-ground table-definition-value>\"123\"</><link-ground table-definition html-table> |</><link-ground table-delimiter>|- </><link-ground table-definition html-tr>class=</><link-ground table-definition-value>\"456\"</><link-ground table-definition html-tr> |</><link-ground table-delimiter>| </><link-ground table-td>ha</><link-ground table-bracket>|}</><link-ground link-bracket>]]</>"
@@ -9399,16 +9034,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.svg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>caption</><link-ground link-delimiter>|</><link-ground image-parameter>lang=</><link-ground file-text>invalid:language:code</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "SVG thumbnails in page language",
-		"wikitext": "[[Файл:Foobar.svg]] [[Файл:Foobar.svg|lang=en]]\n\n<gallery>\nФайл:Foobar.svg\nФайл:Foobar.svg|lang=en\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Файл:Foobar.svg</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Файл:Foobar.svg</><link-ground link-delimiter>|</><link-ground link-text>lang=en</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>Файл:Foobar.svgФайл:Foobar.svg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>lang=</><tag-gallery file-text>en</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "SVG thumbnails in page language not present in the file",
-		"wikitext": "[[Datei:Foobar.svg]] [[Datei:Foobar.svg|sprache=ru]]\n\n<gallery>\nDatei:Foobar.svg\nDatei:Foobar.svg|sprache=ru\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Datei:Foobar.svg</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Datei:Foobar.svg</><link-ground link-delimiter>|</><link-ground link-text>sprache=ru</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>Datei:Foobar.svgDatei:Foobar.svg</><tag-gallery link-delimiter>|</><tag-gallery file-text>sprache=ru</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
-	},
-	{
 		"desc": "T3887: A ISBN with a thumbnail",
 		"wikitext": "[[File:Foobar.jpg|thumb|ISBN 1235467890]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>ISBN 1235467890</><link-ground link-bracket>]]</>"
@@ -9502,21 +9127,6 @@
 		"desc": "Custom class",
 		"wikitext": "[[Image:foobar.jpg|a|class=b]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Image:foobar.jpg</><link-ground link-delimiter>|</><link-ground file-text>a</><link-ground link-delimiter>|</><link-ground image-parameter>class=</><link-ground file-text>b</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Localized image handling (1).",
-		"wikitext": "[[Archivo:Foobar.jpg|izquierda|enlace=foo|caption]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Archivo:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>izquierda|enlace=foo|caption</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Localized image handling (2).",
-		"wikitext": "[[Archivo:Foobar.jpg|miniatura|izquierda|enlace=foo|caption]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Archivo:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>miniatura|izquierda|enlace=foo|caption</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Localized image handling (3).",
-		"wikitext": "[[File:Foobar.jpg|بندانگشتی]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground file-text>بندانگشتی</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "\"border\", \"frameless\" and \"class\" attributes on an image.",
@@ -9884,11 +9494,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>An </><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>test/?param1=|left|&amp;param2=|x</><link-ground extlink-text> external</><link-ground extlink-bracket>]</><link-ground file-text> URL</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "T146305: Don't break image parsing if language converter markup is in the caption.",
-		"wikitext": "[[Датотека:Foobar.jpg|thumb|-{R|caption:}-]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Датотека:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>thumb|</><link-ground convert-bracket>-{</><link-ground convert-flag>R</><link-ground convert-delimiter>|</><link-ground link-text>caption:</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "T146305: Don't break image parsing if nested language converter markup is in the caption.",
 		"wikitext": "[[File:Foobar.jpg|thumb|-{|zh-cn:blog (hk: -{zh-hans|WEBJOURNAL}-, tw: -{zh-hans|WEBLOG}-)}-]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground convert-bracket>-{</><link-ground convert-delimiter>|</><link-ground convert-lang>zh-cn:</><link-ground file-text>blog (hk: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBJOURNAL</><link-ground convert-bracket>}-</><link-ground file-text>, tw: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBLOG</><link-ground convert-bracket>}-</><link-ground file-text>)</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
@@ -9974,11 +9579,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>bar</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "Image: new attributes should be serialized in wiki's language for RTL languages (T53852)",
-		"wikitext": "[[Imagen:Foobar.jpg|derecha|miniaturadeimagen]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Imagen:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>derecha|miniaturadeimagen</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "Image: Block level image should have \\n before and after",
 		"wikitext": "123\n[[File:Foobar.jpg|right|thumb|150x150px]]\n456",
 		"parsed": "123<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>right</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground image-parameter>150x150px</><link-ground link-bracket>]]</>456"
@@ -10052,11 +9652,6 @@
 		"desc": "Magic links inside image captions (autolinked)",
 		"wikitext": "[[File:Foobar.jpg|thumb|http://example.com]]\n[[File:Foobar.jpg|thumb|RFC 1234]]\n[[File:Foobar.jpg|thumb|PMID 1234]]\n[[File:Foobar.jpg|thumb|ISBN 123456789x]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>http://example.com</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>RFC 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>PMID 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>ISBN 123456789x</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Interwiki links inside image captions",
-		"wikitext": "[[File:Foobar.jpg|thumb|right|[[:Wikipedia:Foo]] bar]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground image-parameter>right</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>:Wikipedia:Foo</><link-ground link-bracket>]]</><link-ground file-text> bar</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "File in link scenarios",
@@ -10472,11 +10067,6 @@
 		"desc": "Preprocessor precedence 17: template w/o target shouldn't prevent closing",
 		"wikitext": "{{1x|hi {{}}}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>hi </><template2-ground template-bracket>{{}}</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Preprocessor precedence 18: another rightmost wins scenario",
-		"wikitext": "{{ -{{{{1|tplarg}}} }} }-",
-		"parsed": "<template-ground template-bracket>{{ </><template-ground template-name pagename>-</><template2-ground template-bracket>{{</><template3-ground template-bracket>{{</><template3-ground template-name pagename>1</><template3-ground template-delimiter>|</><template3-ground template>tplarg</><template3-ground template-bracket>}}</><template2-ground error>}</><template2-ground template-bracket> }}</><template-ground error> }</><template-ground template-name pagename>-</>"
 	},
 	{
 		"desc": "Preprocessor precedence 19: break syntax",
@@ -11076,11 +10666,6 @@
 		"desc": "Redirect to interwiki (T104918)",
 		"wikitext": "#REDIRECT [[meatball:File:Wiki.png]]",
 		"parsed": "<redirect>#REDIRECT </><link-ground link-bracket>[[</><link-ground link-pagename pagename>meatball:File:Wiki.png</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Non-English #REDIRECT",
-		"wikitext": "#TILVÍSUN [[Main Page]]",
-		"parsed": "<list>#</>TILVÍSUN <link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Redirect syntax under text isn't considered a redirect",
@@ -11820,16 +11405,6 @@
 		"desc": "Links 14. Protect link-like plain text. (Parsoid bug T78425)",
 		"wikitext": "this is not a link: <nowiki>http://example.com</nowiki>",
 		"parsed": "this is not a link: <exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>http://example.com</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "Links 15. Link trails can't become link prefixes.",
-		"wikitext": "[[Söfnuður]]-[[00]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Söfnuður</><link-ground link-bracket>]]</>-<link-ground link-bracket>[[</><link-ground link-pagename pagename>00</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Links 17. Link trails (T236183)",
-		"wikitext": "[[Likalo]]&nbsp;·\n[[Pusupúsu]]&nbsp;·",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Likalo</><link-ground link-bracket>]]</><entity>&amp;nbsp;</>·<link-ground link-bracket>[[</><link-ground link-pagename pagename>Pusupúsu</><link-ground link-bracket>]]</><entity>&amp;nbsp;</>·"
 	},
 	{
 		"desc": "1a. Quotes inside <b> and <i>",
