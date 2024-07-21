@@ -1,6 +1,10 @@
 ## 2.15.4
 
-*2024-07-14*
+*2024-07-21*
+
+**Added**
+
+- Highlight parameter names for parser functions `#tag` and `#switch` in the MediaWiki mode
 
 **Fixed**
 
