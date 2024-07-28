@@ -1,4 +1,4 @@
-import type {Config} from 'wikiparser-node';
+import type {JsonConfig} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
 export const tagModes = {
@@ -34,24 +34,30 @@ const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, s
 	}
 };
 
-export const getStaticMwConfig = (config: Config): MwConfig => {
+export const getStaticMwConfig = (
+	{parserFunction, protocol, nsid, variants, redirection, ext, doubleUnderscore, img}: JsonConfig,
+): MwConfig => {
 	const mwConfig: MwConfig = {
-		tags: {},
-		tagModes,
-		doubleUnderscore: [{}, {}],
-		functionSynonyms: [config.parserFunction[0], {}],
-		urlProtocols: `${config.protocol}|//`,
-		nsid: config.nsid,
-		img: {},
-		variants: config.variants,
-		redirection: config.redirection,
-	};
-	fromEntries(config.ext, mwConfig.tags);
-	fromEntries(config.doubleUnderscore[0].map(s => `__${s}__`), mwConfig.doubleUnderscore[0]);
-	fromEntries(config.doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
-	fromEntries((config.parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
-	fromEntries(config.parserFunction[1], mwConfig.functionSynonyms[1]);
-	for (const [key, val] of Object.entries(config.img)) {
+			tags: {},
+			tagModes,
+			doubleUnderscore: [{}, {}],
+			functionSynonyms: [parserFunction[0], {}],
+			urlProtocols: `${protocol}|//`,
+			nsid,
+			img: {},
+			variants,
+			redirection,
+		},
+		[insensitive] = doubleUnderscore;
+	fromEntries(ext, mwConfig.tags);
+	fromEntries(
+		(Array.isArray(insensitive) ? insensitive : Object.keys(insensitive)).map(s => `__${s}__`),
+		mwConfig.doubleUnderscore[0],
+	);
+	fromEntries(doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
+	fromEntries((parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
+	fromEntries(parserFunction[1], mwConfig.functionSynonyms[1]);
+	for (const [key, val] of Object.entries(img)) {
 		mwConfig.img![key] = `img_${val}`;
 	}
 	return mwConfig;

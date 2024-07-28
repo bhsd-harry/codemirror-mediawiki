@@ -1,5 +1,5 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
-import type {Config} from 'wikiparser-node';
+import type {JsonConfig} from 'wikiparser-node';
 
 declare interface Test {
 	desc: string;
@@ -15,7 +15,7 @@ declare interface Test {
 		textarea = document.querySelector('textarea')!,
 		pre = document.querySelector('pre')!;
 	Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
-	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config as Config));
+	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config as JsonConfig));
 	Object.assign(window, {cm});
 	/** @implements */
 	wikiparse.print = (wikitext, include, stage): Promise<[number, string, string][]> => {
