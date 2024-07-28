@@ -133,7 +133,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 		const {lineNumber: startLineNumber, column: startColumn} = model.getPositionAt(from),
 			{lineNumber: endLineNumber, column: endColumn} = model.getPositionAt(to),
 			range = {startLineNumber, startColumn, endLineNumber, endColumn};
-		let url = model.getValueInRange(range).replace(/<!--.*?-->/gu, '').trim();
+		let url = model.getValueInRange(range).replace(/<!--.*?-->/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];
 		}
