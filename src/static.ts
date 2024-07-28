@@ -1,4 +1,4 @@
-import type {JsonConfig} from 'wikiparser-node';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
 export const tagModes = {
@@ -35,7 +35,7 @@ const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, s
 };
 
 export const getStaticMwConfig = (
-	{parserFunction, protocol, nsid, variants, redirection, ext, doubleUnderscore, img}: JsonConfig,
+	{parserFunction, protocol, nsid, variants, redirection, ext, doubleUnderscore, img}: Config,
 ): MwConfig => {
 	const mwConfig: MwConfig = {
 			tags: {},
@@ -51,7 +51,7 @@ export const getStaticMwConfig = (
 		[insensitive] = doubleUnderscore;
 	fromEntries(ext, mwConfig.tags);
 	fromEntries(
-		(Array.isArray(insensitive) ? insensitive : Object.keys(insensitive)).map(s => `__${s}__`),
+		(insensitive.length === 0 ? Object.keys(doubleUnderscore[2]!) : insensitive).map(s => `__${s}__`),
 		mwConfig.doubleUnderscore[0],
 	);
 	fromEntries(doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);

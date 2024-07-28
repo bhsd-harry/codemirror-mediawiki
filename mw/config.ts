@@ -1,7 +1,7 @@
 import {CDN} from '../src/util';
 import {getStaticMwConfig} from '../src/static';
 import {setObject, getObject} from './util';
-import type {Config, JsonConfig} from 'wikiparser-node';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 
 declare interface MagicWord {
@@ -72,7 +72,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
-		const parserConfig: JsonConfig = await (await fetch(
+		const parserConfig: Config = await (await fetch(
 			`${CDN}/npm/wikiparser-node@browser/config/moegirl.json`,
 		)).json();
 		setObject('wikilintConfig', parserConfig);
@@ -146,8 +146,8 @@ export const getMwConfig = async (): Promise<MwConfig> => {
  * @param minConfig 基础Config
  * @param mwConfig
  */
-export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): JsonConfig => {
-	let config: JsonConfig | null = getObject('wikilintConfig');
+export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
+	let config: Config | null = getObject('wikilintConfig');
 	if (config) {
 		return config;
 	}

@@ -1,5 +1,5 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
-import type {JsonConfig} from 'wikiparser-node';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 
 (() => {
@@ -19,7 +19,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
-		parserConfig: JsonConfig | undefined;
+		parserConfig: Config | undefined;
 
 	/**
 	 * 设置语言
