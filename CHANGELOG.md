@@ -1,3 +1,11 @@
+## 2.15.6
+
+*2024-07-29*
+
+**Fixed**
+
+- The background color of specific tokens in the MediaWiki mode is now semi-transparent
+
 ## 2.15.5
 
 *2024-07-29*

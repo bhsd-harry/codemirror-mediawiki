@@ -92,7 +92,7 @@
 
 /* miscellaneous */
 .cm-mw-skipformatting {
-	background-color: #adf;
+	background-color: rgba(134, 206, 255, .3);
 }
 .cm-mw-redirect,
 .cm-mw-list {
@@ -104,7 +104,7 @@
 .cm-mw-hr {
 	color: #0076dd;
 	font-weight: bold;
-	background-color: #eee;
+	background-color: rgba(0, 0, 0, .07);
 }
 .cm-mw-comment {
 	color: #7b8c8f;
