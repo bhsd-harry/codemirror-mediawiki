@@ -75,7 +75,7 @@ const blankTarget = ($dom: JQuery<HTMLElement>): JQuery<HTMLElement> => {
  */
 function parseMsg(key: string): JQuery<HTMLElement>;
 function parseMsg(key: string, text: true): string;
-function parseMsg(key: string, text?: boolean): string | JQuery<HTMLElement> {
+function parseMsg(key: string, text?: true): string | JQuery<HTMLElement> {
 	const message = mw.message(`cm-mw-${key}`);
 	return text ? message.parse() : blankTarget(message.parseDom());
 }

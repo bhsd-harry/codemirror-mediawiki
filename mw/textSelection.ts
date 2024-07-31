@@ -151,9 +151,9 @@ export const monacoTextSelection: TextSelection = {
 	},
 	setSelection({start, end = start}) {
 		const {model, editor} = getInstance(this),
-			{lineNumber: startLineNumber, column: startColumn} = model!.getPositionAt(start),
-			{lineNumber: endLineNumber, column: endColumn} = model!.getPositionAt(end);
-		editor!.setSelection({startLineNumber, startColumn, endLineNumber, endColumn});
+			startPos = model!.getPositionAt(start),
+			endPos = model!.getPositionAt(end);
+		editor!.setSelection(new monaco.Range(startPos.lineNumber, startPos.column, endPos.lineNumber, endPos.column));
 		return this;
 	},
 	replaceSelection(text) {

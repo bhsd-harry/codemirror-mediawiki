@@ -130,9 +130,9 @@ const linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name
 const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] => {
 	const {type, childNodes, range: [from, to]} = tree;
 	if (linkTypes.has(type)) {
-		const {lineNumber: startLineNumber, column: startColumn} = model.getPositionAt(from),
-			{lineNumber: endLineNumber, column: endColumn} = model.getPositionAt(to),
-			range = {startLineNumber, startColumn, endLineNumber, endColumn};
+		const fromPos = model.getPositionAt(from),
+			toPos = model.getPositionAt(to),
+			range = new monaco.Range(fromPos.lineNumber, fromPos.column, toPos.lineNumber, toPos.column);
 		let url = model.getValueInRange(range).replace(/<!--.*?-->/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];

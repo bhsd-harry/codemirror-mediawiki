@@ -81,13 +81,10 @@ const includes = (state: EditorState, node: SyntaxNode, text: string): boolean =
 /**
  * 寻找可折叠的范围
  * @param state
- * @param pos 字符位置
- * @param node 语法树节点
+ * @param posOrNode 字符位置或语法树节点
  * @param tree 语法树
  */
-function foldable(state: EditorState, pos: number): DocRange | false;
-function foldable(state: EditorState, node: SyntaxNode, tree: Tree): DocRange | false;
-function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false {
+const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false => {
 	if (typeof posOrNode === 'number') {
 		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
 	}
@@ -154,7 +151,7 @@ function foldable(state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 	const /** The end of the first delimiter */ from = delimiter?.to,
 		/** The start of the closing bracket */ to = nextSibling.from;
 	return from && from < to ? {from, to} : false;
-}
+};
 
 /**
  * 创建折叠提示
