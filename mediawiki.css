@@ -1,6 +1,11 @@
 .cm-editor {
 	background-color: #fff;
 }
+.cm-search .cm-textfield,
+.cm-search .cm-button,
+.cm-panels > .cm-search.cm-panel label {
+	font-size: inherit;
+}
 .cm-tooltip-fold {
 	cursor: pointer;
 	line-height: 1.2;
