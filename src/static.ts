@@ -48,10 +48,10 @@ export const getStaticMwConfig = (
 			variants,
 			redirection,
 		},
-		[insensitive] = doubleUnderscore;
+		[insensitive,, obj] = doubleUnderscore;
 	fromEntries(ext, mwConfig.tags);
 	fromEntries(
-		(insensitive.length === 0 ? Object.keys(doubleUnderscore[2]!) : insensitive).map(s => `__${s}__`),
+		(obj && insensitive.length === 0 ? Object.keys(obj) : insensitive).map(s => `__${s}__`),
 		mwConfig.doubleUnderscore[0],
 	);
 	fromEntries(doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);

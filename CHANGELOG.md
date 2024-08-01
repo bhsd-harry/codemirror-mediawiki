@@ -6,6 +6,10 @@
 
 - The background color of specific tokens in the MediaWiki mode is now semi-transparent
 
+**Changed**
+
+- [Autocompletion](./README.md#autocompletion) that requires MediaWiki api is now triggered by `Shift` + `Enter`
+
 ## 2.15.5
 
 *2024-07-29*
@@ -79,7 +83,7 @@
 **Added**
 
 - Bidi isolation for HTML/extension tags and table attributes in the MediaWiki mode
-- New key binding `Mod-Shift-x` to toggle between LTR and RTL
+- New key binding `Mod` + `Shift` + `X` to toggle between LTR and RTL
 
 **Fixed**
 

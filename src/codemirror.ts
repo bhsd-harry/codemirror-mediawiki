@@ -23,7 +23,13 @@ import {
 import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
 import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
-import {closeBrackets, autocompletion, acceptCompletion} from '@codemirror/autocomplete';
+import {
+	closeBrackets,
+	autocompletion,
+	acceptCompletion,
+	completionKeymap,
+	startCompletion,
+} from '@codemirror/autocomplete';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
@@ -92,8 +98,12 @@ const avail: Record<string, Addon<any>> = {
 	],
 	autocompletion: [
 		(): Extension => [
-			autocompletion({defaultKeymap: true}),
-			keymap.of([{key: 'Tab', run: acceptCompletion}]),
+			autocompletion({defaultKeymap: false}),
+			keymap.of([
+				...completionKeymap.filter(({run}) => run !== startCompletion),
+				{key: 'Shift-Enter', run: startCompletion},
+				{key: 'Tab', run: acceptCompletion},
+			]),
 		],
 		{},
 	],

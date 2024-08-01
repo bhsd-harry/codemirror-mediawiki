@@ -7,7 +7,7 @@
 	"feedback": "欢迎将错误报告或是改进建议提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\">GitHub</a> ！",
 	"contentmodel": "请输入内容模型：",
 	"addon-allowMultipleSelections": "允许选择多个片段",
-	"addon-autocompletion": "<span title=\"Ctrl-Space\">自动填充</span>",
+	"addon-autocompletion": "<span title=\"Shift-Enter\">自动填充</span>",
 	"addon-bracketMatching": "高亮显示匹配和未匹配的括号",
 	"addon-closeBrackets": "自动闭合括号和引号",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : 折叠\nCtrl-Shift-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
