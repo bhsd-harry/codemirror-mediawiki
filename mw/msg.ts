@@ -113,7 +113,9 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 		if (major < baseMajor || major === baseMajor && minor < baseMinor) {
 			notification = await notify(
 				'welcome-addons',
-				curVersion,
+				`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
+					curVersion.replace(/\./gu, '')
+				}" target="_blank">${curVersion}</a>`,
 				String(addons.length),
 				addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
 			);
