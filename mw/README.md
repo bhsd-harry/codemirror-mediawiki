@@ -64,7 +64,8 @@ The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) cla
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
 **param**: `unknown` the optional language configuration  
-**param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror
+**param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror  
+**param**: `string` the optional page title, default as the current page title  
 
 ```js
 const cm = new CodeMirror6(textarea); // plain text
@@ -170,6 +171,7 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
+**param**: `string` the optional page title, default as the current page title  
 Replace the textarea with a CodeMirror or Monaco editor.
 
 ```js

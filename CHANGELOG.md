@@ -1,6 +1,10 @@
-## 2.15.6
+## 2.16.0
 
-*2024-07-29*
+*2024-08-02*
+
+**Added**
+
+- [`CodeMirror` constructor](./mw/README.md#constructor) now takes an optional string argument for the page title in a MediaWiki site
 
 **Fixed**
 

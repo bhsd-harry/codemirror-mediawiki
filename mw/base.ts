@@ -28,8 +28,8 @@ declare interface IWikitextModel extends Monaco.editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.15',
-	addons = ['highlightSelectionMatches', 'scrollPastEnd', 'useMonaco'];
+const baseVersion = '2.16',
+	addons = ['autocompletion'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -147,11 +147,25 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 	}
 };
 
+/**
+ * 准备建议
+ * @param page 页面标题
+ */
+const prepareSuggest = async (page: string): Promise<Record<string, ApiSuggest>> => {
+	await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
+	const api = new mw.Api({parameters: {formatversion: 2}});
+	return {
+		linkSuggest: linkSuggestFactory(api, page),
+		paramSuggest: paramSuggestFactory(api, page),
+	};
+};
+
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	static version = curVersion;
 
 	declare ns;
+	declare page;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
@@ -178,13 +192,22 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param ns 命名空间
 	 * @param config 语言设置
 	 * @param isCM 是否使用 CodeMirror
+	 * @param page 页面标题
 	 */
-	constructor(textarea: HTMLTextAreaElement, lang?: string, ns?: number, config?: unknown, isCM = true) {
+	constructor(
+		textarea: HTMLTextAreaElement,
+		lang?: string,
+		ns?: number,
+		config?: unknown,
+		isCM = true,
+		page = mw.config.get('wgPageName'),
+	) {
 		if (instances.get(textarea)?.visible) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
 		super(textarea, lang, config, false);
 		this.ns = ns;
+		this.page = page;
 		instances.set(textarea, this);
 		if (isCM) {
 			super.initialize(config);
@@ -219,6 +242,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		const {textarea, lang} = this,
 			language = monacoLangs[lang] || lang,
+			isWiki = language === 'wikitext',
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
 		await monaco;
@@ -239,14 +263,14 @@ export class CodeMirror extends CodeMirror6 {
 			automaticLayout: true,
 			theme: 'monokai',
 			readOnly: textarea.readOnly,
-			wordWrap: language === 'wikitext' || language === 'html' || language === 'plaintext' ? 'on' : 'off',
+			wordWrap: isWiki || language === 'html' || language === 'plaintext' ? 'on' : 'off',
 			wordBreak: 'keepAll',
 			tabSize: tab ? 4 : Number(this.#indentStr),
 			insertSpaces: !tab,
 			glyphMargin: true,
 			fontSize: parseFloat(getComputedStyle(textarea).fontSize),
 			unicodeHighlight: {
-				ambiguousCharacters: language !== 'wikitext' && language !== 'html' && language !== 'plaintext',
+				ambiguousCharacters: !isWiki && language !== 'html' && language !== 'plaintext',
 			},
 			multiCursorModifier: 'ctrlCmd',
 		});
@@ -288,13 +312,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (this.#model) {
 			throw new Error('Cannot change the language of a Monaco editor!');
 		} else if (lang === 'mediawiki' || lang === 'html') {
-			await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
-			const api = new mw.Api({parameters: {formatversion: 2}}),
-				page = mw.config.get('wgPageName');
-			Object.assign(config as MwConfig, {
-				linkSuggest: linkSuggestFactory(api, page),
-				paramSuggest: paramSuggestFactory(api, page),
-			});
+			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		super.setLanguage(lang, config);
 	}
@@ -446,8 +464,14 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param textarea textarea 元素
 	 * @param lang 语言
 	 * @param ns 命名空间
+	 * @param page 页面标题
 	 */
-	static async fromTextArea(textarea: HTMLTextAreaElement, lang?: string, ns?: number): Promise<CodeMirror> {
+	static async fromTextArea(
+		textarea: HTMLTextAreaElement,
+		lang?: string,
+		ns?: number,
+		page?: string,
+	): Promise<CodeMirror> {
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
 			try {
 				await wikiEditor($(textarea));
@@ -475,7 +499,7 @@ export class CodeMirror extends CodeMirror6 {
 		/* eslint-enable no-param-reassign */
 		const isCM = !useMonaco.has(langs.has(lang!) ? lang! : 'wiki'),
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM);
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
 		if (isWiki) {
 			await cm.setLanguage(lang, {...await getMwConfig(), tagModes: CodeMirror.mwTagModes});
 		}
