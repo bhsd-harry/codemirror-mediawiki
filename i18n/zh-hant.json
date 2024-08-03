@@ -26,6 +26,7 @@
 	"addon-save": "將設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]",
 	"addon-scrollPastEnd": "允許向下滾動超過文件末尾",
 	"addon-tagMatching": "突出顯示匹配和未匹配的標籤",
+	"addon-refHover": "懸停在預定義的參考上可查看其內容（CodeMirror）或轉到其定義（Monaco）",
 	"addon-useMonaco": "新增的編輯區使用Monaco編輯器",
 	"addon-wikiEditor": "載入WikiEditor工具列",
 	"no-wikiEditor": "未找到WikiEditor擴展。",
@@ -53,5 +54,6 @@
 	"phrase-unfold": "展開",
 	"phrase-Fold-line": "摺疊行",
 	"phrase-Unfold-line": "展開行",
-	"phrase-Fold-template-or-extension-tag": "摺疊模板、解析器函數或擴展標籤"
+	"phrase-Fold-template-or-extension-tag": "摺疊模板、解析器函數或擴展標籤",
+	"phrase-No-definition-found": "未找到定義："
 }

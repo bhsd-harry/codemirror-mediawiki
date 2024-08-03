@@ -39,10 +39,11 @@
 	- [highlightWhitespace](#highlightwhitespace)
 	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
 	- [highlightSelectionMatches](#highlightselectionmatches)
-	- [escape](#escape)
 	- [codeFolding](#codefolding)
 	- [scrollPastEnd](#scrollpastend)
+	- [escape](#escape)
 	- [tagMatching](#tagmatching)
+	- [refHover](#refhover)
 
 </details>
 
@@ -279,32 +280,39 @@ Set the preferred CodeMirror extensions. Available extensions are introduced [la
 ```js
 cm.prefer([
 	'allowMultipleSelections',
+	'autocompletion',
 	'bracketMatching',
 	'closeBrackets',
 	'highlightActiveLine',
 	'highlightSpecialChars',
 	'highlightWhitespace',
 	'highlightTrailingWhitespace',
+	'highlightSelectionMatches',
+	'codeFolding',
+	'scrollPastEnd',
 
 	// only available in MediaWiki mode
 	'escape',
-	'codeFolding',
 	'tagMatching',
+	'refHover',
 ]);
 cm.prefer({
 	allowMultipleSelections: false,
 	autocompletion: false,
 	bracketMatching: false,
 	closeBrackets: false,
-	codeFolding: false,
 	highlightActiveLine: false,
 	highlightSpecialChars: false,
 	highlightWhitespace: false,
 	highlightTrailingWhitespace: false,
+	highlightSelectionMatches: false,
+	codeFolding: false,
+	scrollPastEnd: false,
 
 	// only available in MediaWiki mode
 	escape: false,
 	tagMatching: false,
+	refHover: false,
 });
 ```
 
@@ -494,15 +502,6 @@ Highlight trailing whitespace in a red-orange color.
 
 Highlight texts that match the selection in light green.
 
-## escape
-
-*version added: 2.2.2*
-
-Key bindings:
-
-- `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
-- `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
-
 ## codeFolding
 
 *version added: 2.3.0*
@@ -522,8 +521,23 @@ Key bindings:
 
 Allow the editor to be scrolled down past the end of the document.
 
+## escape
+
+*version added: 2.2.2*
+
+Key bindings:
+
+- `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
+- `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
+
 ## tagMatching
 
 *version added: 2.4.1*
 
 Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
+
+## refHover
+
+*version added: 2.17.0*
+
+Show the content of the `<ref>` tag defined elsewhere when hovering.

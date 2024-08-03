@@ -1,6 +1,7 @@
 import {CodeMirror6, CDN} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks, linkProvider} from './openLinks';
+import {refDefinitionProvider, refReferenceProvider, refListener} from './ref';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
@@ -28,8 +29,8 @@ declare interface IWikitextModel extends Monaco.editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.16',
-	addons = ['autocompletion'];
+const baseVersion = '2.17',
+	addons = ['refHover'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -78,7 +79,9 @@ const linters: Record<string, LintSource | undefined> = {},
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
 let escapeActions: readonly [Monaco.editor.IActionDescriptor, Monaco.editor.IActionDescriptor] | undefined,
-	wikilinkProvider: Monaco.IDisposable | undefined;
+	wikilinkProvider: Monaco.IDisposable | undefined,
+	refProvider: Monaco.IDisposable | undefined,
+	refProvider2: Monaco.IDisposable | undefined;
 
 /**
  * 判断是否为普通编辑器
@@ -173,6 +176,7 @@ export class CodeMirror extends CodeMirror6 {
 	#init;
 	#indentStr = '\t';
 	#escapeActions: Monaco.IDisposable[] = [];
+	#refListener: Monaco.IDisposable | undefined;
 
 	override get visible(): boolean {
 		return this.#visible;
@@ -409,6 +413,7 @@ export class CodeMirror extends CodeMirror6 {
 			: (ext: string): boolean | undefined => extensions[ext];
 		const hasLint = hasExtension('lint'),
 			hasOpenLinks = hasExtension('openLinks'),
+			hasRefHover = hasExtension('refHover'),
 			isWiki = this.lang === 'mediawiki';
 		if (this.view) {
 			super.prefer(extensions);
@@ -441,6 +446,15 @@ export class CodeMirror extends CodeMirror6 {
 				wikilinkProvider?.dispose();
 			} else if (hasOpenLinks) {
 				wikilinkProvider ||= monaco.languages.registerLinkProvider('wikitext', linkProvider);
+			}
+			if (hasRefHover === false) {
+				refProvider?.dispose();
+				refProvider2?.dispose();
+				this.#refListener?.dispose();
+			} else if (hasRefHover) {
+				refProvider ||= monaco.languages.registerDefinitionProvider('wikitext', refDefinitionProvider);
+				refProvider2 ||= monaco.languages.registerReferenceProvider('wikitext', refReferenceProvider);
+				this.#refListener ||= refListener(this.#model);
 			}
 		}
 		const options: Record<string, unknown> = {};

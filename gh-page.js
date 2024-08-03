@@ -7,7 +7,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     if (new URLSearchParams(location.search).has('rtl')) {
         textarea.dir = 'rtl';
     }
-    const languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), mediawikiOnly = ['escape', 'tagMatching'], cm = new CodeMirror6(textarea), linters = {};
+    const languages = document.querySelectorAll('input[name="language"]'), extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector('#indent'), mediawikiOnly = ['escape', 'tagMatching', 'refHover'], cm = new CodeMirror6(textarea), linters = {};
     let config, parserConfig;
     const init = async (lang) => {
         const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none';

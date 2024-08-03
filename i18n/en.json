@@ -26,6 +26,7 @@
 	"addon-save": "Save your preferences on a [[special:mypage/codemirror-mediawiki.json|user subpage]]",
 	"addon-scrollPastEnd": "Scroll down past the end of the document",
 	"addon-tagMatching": "Highlight matching/non-matching tags",
+	"addon-refHover": "Hover over a predefined reference to see its content (CodeMirror) or go to its difinition (Monaco)",
 	"addon-useMonaco": "Use Monaco Editor for new editors",
 	"addon-wikiEditor": "Load WikiEditor toolbar",
 	"no-wikiEditor": "WikiEditor is not available.",
@@ -40,5 +41,6 @@
 	"Stylelint-config": "Stylelint configuration as JSON:",
 	"and": " and ",
 	"json-error": "Invalid JSON: $1",
-	"phrase-Fold-template-or-extension-tag": "Fold template, parser function or extension tag"
+	"phrase-Fold-template-or-extension-tag": "Fold template, parser function or extension tag",
+	"phrase-No-definition-found": "No definition found: "
 }

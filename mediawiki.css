@@ -15,6 +15,13 @@
 .cm-tooltip-fold:hover {
 	opacity: 1;
 }
+.cm-tooltip-ref {
+	cursor: pointer;
+	padding: 2px 5px;
+	white-space: pre-wrap;
+	width: max-content;
+	max-width: 60vw;
+}
 .cm-focused .cm-matchingTag {
 	background-color: rgba(50, 140, 130, .32);
 }

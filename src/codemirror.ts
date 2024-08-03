@@ -34,6 +34,7 @@ import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
 import {tagMatchingState} from './matchTag';
+import {refHover} from './ref';
 import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import {tagModes, getStaticMwConfig} from './static';
@@ -116,6 +117,7 @@ const avail: Record<string, Addon<any>> = {
 	],
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
+	refHover: mediawikiOnly(refHover),
 };
 
 const linters: Record<string, Extension> = {};

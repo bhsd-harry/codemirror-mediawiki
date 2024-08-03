@@ -153,7 +153,7 @@ export const monacoTextSelection: TextSelection = {
 		const {model, editor} = getInstance(this),
 			startPos = model!.getPositionAt(start),
 			endPos = model!.getPositionAt(end);
-		editor!.setSelection(new monaco.Range(startPos.lineNumber, startPos.column, endPos.lineNumber, endPos.column));
+		editor!.setSelection(monaco.Range.fromPositions(startPos, endPos));
 		return this;
 	},
 	replaceSelection(text) {

@@ -131,7 +131,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 	if (linkTypes.has(type)) {
 		const fromPos = model.getPositionAt(from),
 			toPos = model.getPositionAt(to),
-			range = new monaco.Range(fromPos.lineNumber, fromPos.column, toPos.lineNumber, toPos.column);
+			range = monaco.Range.fromPositions(fromPos, toPos);
 		let url = model.getValueInRange(range).replace(/<!--.*?-->/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];
@@ -169,7 +169,7 @@ export const linkProvider: languages.LinkProvider = {
 	async provideLinks(model) {
 		return {
 			links: 'wikiparse' in window
-				? generateLinks(model, await wikiparse.json(model.getValue(), true, -4))
+				? generateLinks(model, await wikiparse.json(model.getValue(), true, -4, 9))
 				: [],
 		};
 	},

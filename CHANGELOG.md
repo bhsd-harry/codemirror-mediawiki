@@ -1,6 +1,10 @@
 ## 2.17.0
 
-*2024-08-03*
+*2024-08-04*
+
+**Added**
+
+- New extension option: [refHover](./README.md#refhover)
 
 **Fixed**
 

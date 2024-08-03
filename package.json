@@ -29,6 +29,7 @@
 	"scripts": {
 		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly",
 		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
+		"build:wiki": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=iife --sourcemap --outfile=dist/mw.min.js",
 		"build:gh-page": "bash build.sh",
 		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
 		"build": "npm run build:core && npm run build:mw",
@@ -39,7 +40,7 @@
 		"lint": "npm run lint:ts && npm run lint:css",
 		"prof": "node --prof test/dist/test/prof.js && node --prof-process isolate-0x*-v8.log > test/prof.txt && gsed -i '0,/Bottom up/d' test/prof.txt && rm isolate-0x*-v8.log",
 		"server": "npm run test:end; http-server .. -c-1 --cors &",
-		"test": "npm run build:core && npm run build:gh-page && npm run server",
+		"test": "npm run build:core && npm run build:wiki && npm run build:gh-page && npm run server",
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/test/real.js"
 	},
