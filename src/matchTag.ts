@@ -52,8 +52,17 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
 	isClosing = (node: SyntaxNode, type: TagType): boolean => isBracket(node, type) && node.to - node.from > 1,
 	isNested = ({name}: SyntaxNode, type: TagType, tag: string): boolean =>
 		type === 'ext' && new RegExp(`-tag-${tag}(?![a-z])`, 'u').test(name),
-	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim(),
 	stackUpdate = ({closing}: Tag): 1 | -1 => closing ? -1 : 1;
+
+/**
+ * 获取节点内容
+ * @param state
+ * @param node 语法树节点
+ * @param node.from 起始位置
+ * @param node.to 结束位置
+ */
+export const getName = (state: EditorState, {from, to}: SyntaxNode): string =>
+	state.sliceDoc(from, to).trim().toLowerCase();
 
 /**
  * 获取标签信息

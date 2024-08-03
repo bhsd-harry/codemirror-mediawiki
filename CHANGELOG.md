@@ -1,3 +1,11 @@
+## 2.17.0
+
+*2024-08-03*
+
+**Fixed**
+
+- The [tagMatching](./README.md#tagmatching) extension now ignores the case of the tag name
+
 ## 2.16.0
 
 *2024-08-02*
