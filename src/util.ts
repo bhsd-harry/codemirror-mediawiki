@@ -1,6 +1,6 @@
 export const CDN = 'https://testingcf.jsdelivr.net';
 
-interface Require {
+declare interface Require {
 	config(config: {paths?: Record<string, string>}): void;
 
 	(modules: string[], ready: (exports: unknown) => unknown): void;

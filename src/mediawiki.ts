@@ -12,7 +12,7 @@ import {
 	syntaxTree,
 } from '@codemirror/language';
 import {MediaWiki} from './token';
-import modeConfig from './config';
+import {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} from './config';
 import * as plugins from './plugins';
 import type {StreamParser, TagStyle} from '@codemirror/language';
 import type {
@@ -23,8 +23,6 @@ import type {
 import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig, TagName} from './token';
-
-const {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} = modeConfig;
 
 /**
  * 判断节点是否包含指定类型

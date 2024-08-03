@@ -14,7 +14,7 @@ import {
 	foldState,
 	language,
 } from '@codemirror/language';
-import modeConfig from './config';
+import {tokens} from './config';
 import {matchTag} from './matchTag';
 import type {EditorView, Tooltip, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
@@ -30,8 +30,6 @@ declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 
 const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
 	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
-
-const {tokens} = modeConfig;
 
 /**
  * Check if a SyntaxNode includes the specified text

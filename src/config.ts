@@ -1,4 +1,5 @@
 /**
+ * @file Configuration for the MediaWiki highlighting mode for CodeMirror.
  * @author MusikAnimal and others
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
@@ -8,16 +9,11 @@ import {tags} from '@lezer/highlight';
 import {Tag} from '@lezer/highlight';
 
 /**
- * Configuration for the MediaWiki highlighting mode for CodeMirror.
+ * All HTML/XML tags permitted in MediaWiki Core.
+ *
+ * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
  */
-const modeConfig = {
-
-	/**
-	 * All HTML/XML tags permitted in MediaWiki Core.
-	 *
-	 * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
-	 */
-	htmlTags: [
+export const htmlTags = [
 		'b',
 		'bdi',
 		'bdo',
@@ -82,10 +78,8 @@ const modeConfig = {
 		'link',
 	],
 
-	/**
-	 * HTML tags that are only self-closing.
-	 */
-	voidHtmlTags: [
+	/** HTML tags that are only self-closing. */
+	voidHtmlTags = [
 		'br',
 		'hr',
 		'wbr',
@@ -94,7 +88,8 @@ const modeConfig = {
 		'link',
 	],
 
-	selfClosingTags: [
+	/** HTML tags that can be self-closing. */
+	selfClosingTags = [
 		'li',
 		'dt',
 		'dd',
@@ -109,7 +104,7 @@ const modeConfig = {
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
 	 * @internal
 	 */
-	tokens: {
+	tokens = {
 		apostrophes: 'mw-apostrophes',
 		comment: 'mw-comment',
 		convertBracket: 'mw-convert-bracket',
@@ -182,7 +177,7 @@ const modeConfig = {
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
 	 */
-	get tokenTable(): Record<string, Tag> {
+	tokenTable = (() => {
 		const table: Record<string, Tag> = {
 			variable: tags.variableName,
 			'variable-2': tags.special(tags.variableName),
@@ -197,13 +192,14 @@ const modeConfig = {
 			header: tags.heading,
 			property: tags.propertyName,
 		};
-		for (const className of Object.values(this.tokens)) {
+		for (const className of Object.values(tokens)) {
 			table[className] = Tag.define();
 		}
 		return table;
-	},
+	})(),
 
-	htmlAttrs: [
+	/** Common HTML attributes permitted in MediaWiki Core. */
+	htmlAttrs = [
 		'id',
 		'class',
 		'style',
@@ -230,7 +226,8 @@ const modeConfig = {
 		'itemtype',
 	],
 
-	elementAttrs: {
+	/** HTML attributes that are only permitted on certain HTML tags. */
+	elementAttrs = {
 		table: ['border'],
 		td: ['abbr', 'headers', 'rowspan', 'colspan'],
 		th: ['abbr', 'headers', 'rowspan', 'colspan', 'scope'],
@@ -250,14 +247,12 @@ const modeConfig = {
 		poem: ['compact', 'align'],
 	},
 
-	extAttrs: {
+	/** HTML attributes that are only permitted on certain extension tags. */
+	extAttrs = {
 		indicator: ['name'],
 		langconvert: ['from', 'to'],
 		ref: ['group', 'name', 'extends', 'follow', 'dir'],
 		references: ['group', 'responsive'],
 		charinsert: ['label'],
 		templatestyles: ['src', 'wrapper'],
-	},
-};
-
-export default modeConfig;
+	};

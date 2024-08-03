@@ -5,11 +5,9 @@
  */
 
 import {Tag} from '@lezer/highlight';
-import modeConfig from './config';
+import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
 import type {StreamParser, StringStream} from '@codemirror/language';
-
-const {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} = modeConfig;
 
 declare type MimeTypes = 'mediawiki'
 | 'text/nowiki'

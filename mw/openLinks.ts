@@ -1,5 +1,5 @@
 import {isMac} from './msg';
-import modeConfig from '../src/config';
+import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor} from 'monaco-editor';
 import type {AST, TokenTypes} from 'wikiparser-node/base';
@@ -8,8 +8,7 @@ import type {CodeMirror} from './base';
 declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
-	{tokens} = modeConfig;
+	handlers = new WeakMap<CodeMirror, MouseEventListener>();
 
 /**
  * 获取节点的名称

@@ -8,11 +8,9 @@ import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec, RangeSetBuilder} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getTag} from './matchTag';
-import modeConfig from './config';
+import {tokens} from './config';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
 import type {SyntaxNode} from '@lezer/common';
-
-const {tokens} = modeConfig;
 
 const isolateLTR = Decoration.mark({
 		class: 'cm-bidi-isolate cm-bidi-ltr',

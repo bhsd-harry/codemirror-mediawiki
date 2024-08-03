@@ -1,7 +1,7 @@
 import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import modeConfig from './config';
+import {voidHtmlTags} from './config';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
@@ -24,8 +24,7 @@ class Tag {
 	}
 
 	get selfClosing(): boolean {
-		return modeConfig.voidHtmlTags.includes(this.name)
-			|| this.type === 'ext' && isClosing(this.last, this.type);
+		return voidHtmlTags.includes(this.name) || this.type === 'ext' && isClosing(this.last, this.type);
 	}
 
 	get from(): number {
