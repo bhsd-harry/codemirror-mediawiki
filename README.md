@@ -538,6 +538,6 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 ## refHover
 
-*version added: 2.17.0*
+*version added: 2.17.1*
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
