@@ -38,7 +38,7 @@ const provideRef = async (
 		before = getValueInRange(model, lineNumber, 1, lineNumber, column),
 		after = getValueInRange(model, lineNumber, column, lineNumber + 1, 1),
 		mt1 = /<ref\s[^>]*$/imu.exec(before),
-		mt2 = /^[^>]*(?=>|$)/u.exec(after);
+		mt2 = /^[^>]*(?:>|$)/u.exec(after);
 	if (!mt1 || !mt2) {
 		return null;
 	}
