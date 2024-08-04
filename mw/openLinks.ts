@@ -48,6 +48,17 @@ const parseMagicLink = (link: string): string => {
 };
 
 /**
+ * 阻止默认行为并在新页面打开链接
+ * @param url 链接
+ * @param e 点击事件
+ */
+const modClick = (url: string, e: MouseEvent): void => {
+	e.preventDefault();
+	e.stopPropagation();
+	open(url, '_blank');
+};
+
+/**
  * 点击时在新页面打开链接、模板等
  * @param cm
  * @param e 点击事件
@@ -61,13 +72,14 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			return;
 		}
 		const {view} = cm,
-			{state} = view!,
-			node = cm.getNodeAt(view!.posAtCoords(e)!);
+			{state} = view!;
+		let node: SyntaxNode | null | undefined = cm.getNodeAt(view!.posAtCoords(e)!);
+		if (node?.name.includes(tokens.linkToSection)) {
+			node = search(node, 'prevSibling').prevSibling;
+		}
 		if (!node) {
 			// pass
 		} else if (node.name.includes(tokens.pageName)) {
-			e.preventDefault();
-			e.stopPropagation();
 			const name = getName(node),
 				last = search(node, 'nextSibling'),
 				{nextSibling} = last;
@@ -83,18 +95,15 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
-			open(new mw.Title(page, ns).getUrl(undefined), '_blank');
+			modClick(new mw.Title(page, ns).getUrl(undefined), e);
 		} else if (/-extlink-protocol/u.test(node.name)) {
-			e.preventDefault();
-			open(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), '_blank');
+			modClick(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), e);
 		} else if (/-extlink(?:_|$)/u.test(node.name)) {
-			e.preventDefault();
 			const prev = search(node, 'prevSibling').prevSibling!,
 				next = search(node, 'nextSibling');
-			open(state.sliceDoc(prev.from, next.to), '_blank');
+			modClick(state.sliceDoc(prev.from, next.to), e);
 		} else if (node.name.includes(tokens.magicLink)) {
-			e.preventDefault();
-			open(parseMagicLink(state.sliceDoc(node.from, node.to)), '_blank');
+			modClick(parseMagicLink(state.sliceDoc(node.from, node.to)), e);
 		}
 	};
 	handlers.set(cm, handler);
@@ -107,15 +116,15 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
  * @param on 是否添加
  */
 export const openLinks = (cm: CodeMirror, on?: boolean): void => {
-	const {contentDOM} = cm.view!,
+	const {scrollDOM} = cm.view!,
 		handler = getHandler(cm);
 	if (on) {
 		mw.loader.load('mediawiki.Title');
-		contentDOM.addEventListener('mousedown', handler, {capture: true});
-		contentDOM.style.setProperty('--codemirror-cursor', 'pointer');
+		scrollDOM.addEventListener('mousedown', handler, {capture: true});
+		scrollDOM.style.setProperty('--codemirror-cursor', 'pointer');
 	} else if (on === false) {
-		contentDOM.removeEventListener('mousedown', handler, {capture: true});
-		contentDOM.style.removeProperty('--codemirror-cursor');
+		scrollDOM.removeEventListener('mousedown', handler, {capture: true});
+		scrollDOM.style.removeProperty('--codemirror-cursor');
 	}
 };
 

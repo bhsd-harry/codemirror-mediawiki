@@ -1,3 +1,15 @@
+## 2.17.2
+
+*2024-08-04*
+
+**Added**
+
+- The [openLinks](./mw/README.md#openlinks) extension can now be triggered by clicking on the link fragment
+
+**Fixed**
+
+- The [openLinks](./mw/README.md#openlinks) extension during editing in a MediaWiki site
+
 ## 2.17.1
 
 *2024-08-04*
