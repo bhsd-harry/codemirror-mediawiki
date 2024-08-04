@@ -42,8 +42,9 @@ const provideRef = async (
 	if (!mt1 || !mt2) {
 		return null;
 	}
-	const tag = getValueInRange(model, lineNumber, mt1.index + 5, lineNumber, column + mt2[0].length),
-		attr = /\sname\s*=\s*(?:(["'])(.*?)(?:\1|\/>|$)|(\S+))/iu.exec(tag);
+	const [{length}] = /\/?>$/u.exec(mt2[0]) || [''],
+		tag = getValueInRange(model, lineNumber, mt1.index + 5, lineNumber, column + mt2[0].length - length),
+		attr = /\sname\s*=\s*(?:(["'])(.*?)(?:\1|$)|(\S+))/iu.exec(tag);
 	if (!attr || attr[2] === '') {
 		return null;
 	}
