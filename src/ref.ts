@@ -14,9 +14,10 @@ declare type ExtToken = AST & {
 	selfClosing?: boolean;
 };
 declare type Ranges = [number, number][];
+declare type Tree = Promise<AST> & {docChanged?: boolean};
 declare const monaco: typeof Monaco;
 
-export const trees = new WeakMap<EditorView | editor.ITextModel, Promise<AST> & {docChanged?: boolean}>();
+export const trees = new WeakMap<EditorView | editor.ITextModel, Tree>();
 
 /**
  * 获取节点内容
@@ -40,7 +41,7 @@ const findRefImmediate = (
 	target: string,
 	all: boolean,
 ): Ranges => {
-	const sliceDoc = (from: number, to: number): string => view instanceof EditorView
+	const sliceDoc = (from: number, to: number): string => 'state' in view
 		? view.state.sliceDoc(from, to)
 		: view.getValueInRange(monaco.Range.fromPositions(view.getPositionAt(from), view.getPositionAt(to)));
 	const {childNodes, type, name, selfClosing} = tree,
@@ -51,7 +52,11 @@ const findRefImmediate = (
 		if (all || !selfClosing) {
 			const attrs = childNodes[0]!.childNodes!.filter(({type: t, name: n}) => t === 'ext-attr' && n === 'name'),
 				attr = attrs[attrs.length - 1]?.childNodes![1];
-			if (attr && sliceDoc(...attr.range).trim() === target) {
+			if (!attr) {
+				// pass
+			} else if (all && !target) {
+				return [attr.range];
+			} else if (sliceDoc(...attr.range).trim() === target) {
 				return [(all ? tree : childNodes[1]!).range];
 			}
 		}
@@ -77,8 +82,12 @@ const findRefImmediate = (
 export const findRef = async (view: EditorView | editor.ITextModel, target: string, all = false): Promise<Ranges> => {
 	const tree = trees.get(view);
 	if (!tree || tree.docChanged) {
-		const wikitext = view instanceof EditorView ? view.state.doc.toString() : view.getValue();
-		trees.set(view, wikiparse.json(wikitext, true, -5, 1));
+		const wikitext = 'state' in view ? view.state.doc.toString() : view.getValue(),
+			newTree = wikiparse.json(wikitext, true, -5, 1) as Tree;
+		trees.set(view, newTree);
+		if (all && !target) {
+			newTree.docChanged = true;
+		}
 	}
 	return findRefImmediate(view, await (tree || trees.get(view)!), target, all);
 };

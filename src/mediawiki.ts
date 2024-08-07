@@ -14,6 +14,8 @@ import {
 import {MediaWiki} from './token';
 import {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} from './config';
 import * as plugins from './plugins';
+import {findRef} from './ref';
+import type {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
 import type {
 	CloseBracketConfig,
@@ -291,6 +293,31 @@ export class FullMediaWiki extends MediaWiki {
 						validFor: /^[a-z]*$/iu,
 					}
 					: null;
+			} else if (explicit && hasTag(types, 'extTagAttributeValue') && search !== '"' && search !== "'") {
+				const quote = prevSibling?.name.includes(tokens.extTagAttributeValue)
+					? state.sliceDoc(prevSibling.from, prevSibling.to)
+					: '';
+				while (prevSibling && prevSibling.name.includes(tokens.extTagAttributeValue)) {
+					({prevSibling} = prevSibling);
+				}
+				prevSibling &&= prevSibling.prevSibling;
+				if (
+					prevSibling?.name.includes('mw-ext-ref')
+					&& state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase() === 'name'
+				) {
+					Object.assign(this, {state});
+					const refs = await findRef(this as unknown as EditorView, '', true);
+					return refs.length > 0
+						? {
+							from: from + /^\s*/u.exec(search)![0].length,
+							options: refs.filter(([f]) => f < from || f > to).map(range => ({
+								type: 'text',
+								label: state.sliceDoc(...range).trim(),
+							})),
+							validFor: new RegExp(`^[^>${quote || String.raw`\s`}]*$`, 'u'),
+						}
+						: null;
+				}
 			} else if (!hasTag(types, [
 				'comment',
 				'templateVariableName',
