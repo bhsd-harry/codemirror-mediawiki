@@ -4,18 +4,16 @@ import type {languages, editor, IDisposable, Position} from 'monaco-editor';
 /**
  * 获取指定范围的文本
  * @param model
- * @param startLineNumber 起点行号
+ * @param lineNumber 行号
  * @param startColumn 起点列号
- * @param endLineNumber 终点行号
  * @param endColumn 终点列号
  */
 const getValueInRange = (
 	model: editor.ITextModel,
-	startLineNumber: number,
+	lineNumber: number,
 	startColumn: number,
-	endLineNumber: number,
 	endColumn: number,
-): string => model.getValueInRange(new monaco.Range(startLineNumber, startColumn, endLineNumber, endColumn));
+): string => model.getValueInRange(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
 
 /**
  * 查找同名注释
@@ -28,23 +26,18 @@ const provideRef = async (
 	pos: Position,
 	all?: boolean,
 ): Promise<languages.Location[] | null> => {
-	const word = model.getWordAtPosition(pos),
-		{lineNumber} = pos,
-		offset = word?.word.toLowerCase() === 'ref'
-		&& getValueInRange(model, lineNumber, word.startColumn - 1, lineNumber, word.startColumn) === '<'
-			? 1
-			: 0,
-		column = word ? word.endColumn + offset : pos.column,
-		before = getValueInRange(model, lineNumber, 1, lineNumber, column),
-		after = getValueInRange(model, lineNumber, column, lineNumber + 1, 1),
-		mt1 = /<ref\s[^>]*$/imu.exec(before),
+	const {lineNumber} = pos,
+		column = model.getWordAtPosition(pos)?.endColumn ?? pos.column,
+		before = getValueInRange(model, lineNumber, 1, column),
+		after = getValueInRange(model, lineNumber, column, Infinity),
+		mt1 = /(<ref\s(?:[^>]*\s)?name\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu.exec(before),
 		mt2 = /^[^>]*(?:>|$)/u.exec(after);
 	if (!mt1 || !mt2) {
 		return null;
 	}
 	const [{length}] = /\/?>$/u.exec(mt2[0]) || [''],
-		tag = getValueInRange(model, lineNumber, mt1.index + 5, lineNumber, column + mt2[0].length - length),
-		attr = /\sname\s*=\s*(?:(["'])(.*?)(?:\1|$)|(\S+))/iu.exec(tag);
+		tag = getValueInRange(model, lineNumber, mt1.index + mt1[1]!.length + 1, column + mt2[0].length - length),
+		attr = /^\s*=\s*(?:(["'])(.*?)(?:\1|$)|(\S+))/u.exec(tag);
 	if (!attr || attr[2] === '') {
 		return null;
 	}

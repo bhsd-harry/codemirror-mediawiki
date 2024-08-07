@@ -80,16 +80,15 @@ const findRefImmediate = (
  * @param all 是否查找所有
  */
 export const findRef = async (view: EditorView | editor.ITextModel, target: string, all = false): Promise<Ranges> => {
-	const tree = trees.get(view);
+	let tree = trees.get(view);
 	if (!tree || tree.docChanged) {
-		const wikitext = 'state' in view ? view.state.doc.toString() : view.getValue(),
-			newTree = wikiparse.json(wikitext, true, -5, 1) as Tree;
-		trees.set(view, newTree);
+		tree = wikiparse.json('state' in view ? view.state.doc.toString() : view.getValue(), true, -5, 1) as Tree;
+		trees.set(view, tree);
 		if (all && !target) {
-			newTree.docChanged = true;
+			tree.docChanged = true;
 		}
 	}
-	return findRefImmediate(view, await (tree || trees.get(view)!), target, all);
+	return findRefImmediate(view, await tree, target, all);
 };
 
 export const refHover = [
