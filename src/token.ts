@@ -404,11 +404,11 @@ export class MediaWiki {
 		this.hiddenTable = {};
 		this.permittedHtmlTags = new Set([
 			...htmlTags,
-			...permittedHtmlTags || [],
+			...permittedHtmlTags ?? [],
 		]);
 		this.implicitlyClosedHtmlTags = new Set([
 			...voidHtmlTags,
-			...implicitlyClosedHtmlTags || [],
+			...implicitlyClosedHtmlTags ?? [],
 		]);
 		this.urlProtocols = new RegExp(String.raw`^(?:${urlProtocols})(?=[^\p{Zs}[\]<>"])`, 'iu');
 		this.linkRegex = new RegExp(String.raw`^\[(?!${config.urlProtocols})\s*`, 'iu');
@@ -420,7 +420,7 @@ export class MediaWiki {
 			String.raw`^(?:${redirection.map(s => s.slice(1)).join('|')})(?:\s*:)?\s*(?=\[\[)`,
 			'iu',
 		);
-		this.img = Object.keys(config.img || {}).filter(word => !/\$1./u.test(word));
+		this.img = Object.keys(config.img ?? {}).filter(word => !/\$1./u.test(word));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
@@ -454,7 +454,7 @@ export class MediaWiki {
 	 */
 	addToken(token: string, hidden = false, parent?: Tag): void {
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-		this[hidden ? 'hiddenTable' : 'tokenTable'][`mw-${token}`] ||= Tag.define(parent);
+		this[hidden ? 'hiddenTable' : 'tokenTable'][`mw-${token}`] ??= Tag.define(parent);
 	}
 
 	/**
@@ -987,7 +987,7 @@ export class MediaWiki {
 				}
 				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (quote === '') { // 无引号的属性值
-				if (/\s/u.test(stream.peek() || '')) {
+				if (/\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inTableDefinition(tr);
 					return '';
 				}
@@ -995,7 +995,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
-				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
 				return makeLocalStyle(style, state);
 			}
 			stream.match(this.tableDefinitionRegex);
@@ -1144,7 +1144,7 @@ export class MediaWiki {
 			const t = state.stack[0]!,
 				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
 				+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
-			if (pipe.includes(stream.peek() || '')) {
+			if (pipe.includes(stream.peek() ?? '')) {
 				pop(state);
 				return makeLocalTagStyle('htmlTagBracket', state);
 			} else if (stream.match(/^(?:[&<]|\{\{)/u, false)) {
@@ -1157,7 +1157,7 @@ export class MediaWiki {
 				}
 				return makeLocalTagStyle('htmlTagAttributeValue', state);
 			} else if (quote === '') { // 无引号的属性值
-				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
+				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
@@ -1165,7 +1165,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('htmlTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
-				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '');
+				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
 				return makeLocalStyle(style, state);
 			}
 			stream.match(new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'));
@@ -1211,7 +1211,7 @@ export class MediaWiki {
 				}
 				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (quote === '') { // 无引号的属性值
-				if (stream.sol() || /\s/u.test(stream.peek() || '')) {
+				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
@@ -1219,7 +1219,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('extTagAttributeValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
-				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next || '') ? next!.repeat(2) : '', isLang);
+				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '', isLang);
 				return makeLocalStyle(style, state);
 			}
 			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u) as RegExpMatchArray;
@@ -1540,7 +1540,7 @@ export class MediaWiki {
 	 */
 	mediawiki(tags?: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.eatWikiText(''), tags || this.tags),
+			startState: () => startState(this.eatWikiText(''), tags ?? this.tags),
 
 			copyState,
 

@@ -171,7 +171,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 			return [];
 		}
 	}
-	return childNodes?.flatMap(node => generateLinks(model, node)) || [];
+	return childNodes?.flatMap(node => generateLinks(model, node)) ?? [];
 };
 
 export const linkProvider: languages.LinkProvider = {

@@ -35,7 +35,7 @@ const provideRef = async (
 	if (!mt1 || !mt2) {
 		return null;
 	}
-	const [{length}] = /\/?>$/u.exec(mt2[0]) || [''],
+	const [{length}] = /\/?>$/u.exec(mt2[0]) ?? [''],
 		tag = getValueInRange(model, lineNumber, mt1.index + mt1[1]!.length + 1, column + mt2[0].length - length),
 		attr = /^\s*=\s*(?:(["'])(.*?)(?:\1|$)|(\S+))/u.exec(tag);
 	if (!attr || attr[2] === '') {

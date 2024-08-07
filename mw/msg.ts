@@ -22,10 +22,10 @@ export const languages: Record<string, string> = {
 };
 
 const storageKey = 'codemirror-mediawiki-i18n',
-	lang = languages[mw.config.get('wgUserLanguage')] || 'en';
+	lang = languages[mw.config.get('wgUserLanguage')] ?? 'en';
 
 /** 预存的I18N，可以用于判断是否是首次安装 */
-export const i18n: Record<string, string> = getObject(storageKey) || {};
+export const i18n: Record<string, string> = getObject(storageKey) ?? {};
 
 const {version} = i18n;
 

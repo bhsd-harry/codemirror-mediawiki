@@ -44,7 +44,7 @@ const enum RuleState {
 export const indentKey = 'codemirror-mediawiki-indent',
 	prefs = new Set(getObject(storageKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
-	wikilint = (getObject(wikilintKey) || {}) as Record<LintError.Rule, RuleState | undefined>,
+	wikilint = (getObject(wikilintKey) ?? {}) as Record<LintError.Rule, RuleState | undefined>,
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
@@ -53,7 +53,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	monacoWidget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
-	indent = localStorage.getItem(indentKey) || '';
+	indent = localStorage.getItem(indentKey) ?? '';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
 	wikilintWidgets = new Map<LintError.Rule, OO.ui.DropdownInputWidget>();
 
@@ -217,11 +217,11 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 							{data: RuleState.error, label: msg('wikilint-error')},
 							{data: RuleState.on, label: msg('wikilint-on')},
 						],
-						value: wikilint[label] || state,
+						value: wikilint[label] ?? state,
 					}),
 					f = new OO.ui.FieldLayout(dropdown, {label});
 				wikilintWidgets.set(label, dropdown);
-				wikilint[label] ||= state;
+				wikilint[label] ??= state;
 				return f.$element;
 			}),
 			$('<p>', {html: msg('feedback', 'wikiparser-node')}),

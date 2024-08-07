@@ -14,7 +14,7 @@ declare type MagicRule = (word: MagicWord) => boolean;
 
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
-		getObject('InPageEditMwConfig') || {},
+		getObject('InPageEditMwConfig') ?? {},
 	SITE_ID = typeof mw === 'object' ? mw.config.get('wgServerName') + mw.config.get('wgScriptPath') : location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
@@ -161,7 +161,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		) as [string[], string[]],
 		variants: mwConfig.variants!,
 		protocol: mwConfig.urlProtocols.replace(/\|\\?\/\\?\//u, ''),
-		redirection: mwConfig.redirection || minConfig.redirection,
+		redirection: mwConfig.redirection ?? minConfig.redirection,
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');

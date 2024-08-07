@@ -473,7 +473,7 @@ export const foldExtension: Extension = [
 	gutter({
 		class: 'cm-foldGutter',
 		markers(view) {
-			return view.plugin(markers)?.markers || RangeSet.empty;
+			return view.plugin(markers)?.markers ?? RangeSet.empty;
 		},
 		initialSpacer() {
 			return new FoldMarker(false);

@@ -186,7 +186,7 @@ export class CodeMirror6 {
 		const {textarea, lang} = this,
 			extensions = [
 				this.#language.of(languages[lang]!(config)),
-				this.#linter.of(linters[lang] || []),
+				this.#linter.of(linters[lang] ?? []),
 				this.#extensions.of([]),
 				this.#dir.of(EditorView.editorAttributes.of({dir: textarea.dir})),
 				this.#indent.of(indentUnit.of(this.#indentStr)),
@@ -299,7 +299,7 @@ export class CodeMirror6 {
 		if (this.#view) {
 			this.#effects([
 				this.#language.reconfigure(languages[lang]!(config)),
-				this.#linter.reconfigure(linters[lang] || []),
+				this.#linter.reconfigure(linters[lang] ?? []),
 			]);
 			this.#toggleLintPanel(Boolean(linters[lang]));
 			this.prefer({});

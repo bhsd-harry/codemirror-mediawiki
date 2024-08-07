@@ -138,10 +138,10 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			} as TemplateDataApiTemplateDataParams as Record<string, string>) as {
 				pages: Record<number, {params: Record<string, TemplateParam>}>;
 			},
-			params = Object.entries(Object.values(pages)[0]?.params || {}),
+			params = Object.entries(Object.values(pages)[0]?.params ?? {}),
 			result: ApiSuggestions = [];
 		for (const [key, {aliases, label}] of params) {
-			const detail = label || '';
+			const detail = label ?? '';
 			result.push([key, detail], ...aliases.map(alias => [alias, detail] as [string, string]));
 		}
 		return result;
@@ -245,7 +245,7 @@ export class CodeMirror extends CodeMirror6 {
 			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
 		}
 		const {textarea, lang} = this,
-			language = monacoLangs[lang] || lang,
+			language = monacoLangs[lang] ?? lang,
 			isWiki = language === 'wikitext',
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
@@ -436,7 +436,7 @@ export class CodeMirror extends CodeMirror6 {
 					action = this.#escapeActions.pop();
 				}
 			} else if (hasEscape && this.#escapeActions.length === 0) {
-				escapeActions ||= getEscapeActions();
+				escapeActions ??= getEscapeActions();
 				this.#escapeActions.push(
 					this.#editor.addAction(escapeActions[0]),
 					this.#editor.addAction(escapeActions[1]),
@@ -445,16 +445,16 @@ export class CodeMirror extends CodeMirror6 {
 			if (hasOpenLinks === false) {
 				wikilinkProvider?.dispose();
 			} else if (hasOpenLinks) {
-				wikilinkProvider ||= monaco.languages.registerLinkProvider('wikitext', linkProvider);
+				wikilinkProvider ??= monaco.languages.registerLinkProvider('wikitext', linkProvider);
 			}
 			if (hasRefHover === false) {
 				refProvider?.dispose();
 				refProvider2?.dispose();
 				this.#refListener?.dispose();
 			} else if (hasRefHover) {
-				refProvider ||= monaco.languages.registerDefinitionProvider('wikitext', refDefinitionProvider);
-				refProvider2 ||= monaco.languages.registerReferenceProvider('wikitext', refReferenceProvider);
-				this.#refListener ||= refListener(this.#model);
+				refProvider ??= monaco.languages.registerDefinitionProvider('wikitext', refDefinitionProvider);
+				refProvider2 ??= monaco.languages.registerReferenceProvider('wikitext', refReferenceProvider);
+				this.#refListener ??= refListener(this.#model);
 			}
 		}
 		const options: Record<string, unknown> = {};
@@ -546,7 +546,7 @@ document.body.addEventListener('click', e => {
 	]);
 	mw.hook('wiki-codemirror6').add(localize);
 	mw.util.addPortletLink(
-		portletContainer[mw.config.get('skin')] || 'p-cactions',
+		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
 		'#',
 		msg('title'),
 		'cm-settings',

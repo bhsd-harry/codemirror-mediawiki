@@ -198,7 +198,7 @@ export class FullMediaWiki extends MediaWiki {
 				const validFor = /^[^|{}<>[\]#]*$/u;
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
-						suggestions = await this.#linkSuggest(search, 10) || {offset: 0, options: []};
+						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
 					options.push(...suggestions.options);
 					return options.length === 0
 						? null
@@ -278,7 +278,7 @@ export class FullMediaWiki extends MediaWiki {
 							from: mt.from + 1,
 							options: [
 								...tagName === 'meta' || tagName === 'link' ? [] : this.htmlAttrs,
-								...this.elementAttrs.get(tagName) || [],
+								...this.elementAttrs.get(tagName) ?? [],
 							],
 							validFor: /^[a-z]*$/iu,
 						};
@@ -340,7 +340,7 @@ export class FullMediaWiki extends MediaWiki {
 					const validFor = /^[a-z\d]*$/iu;
 					if (mt.text[1] === '/') {
 						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
-							target = /^<([a-z\d]+)/iu.exec(mt2?.text || '')?.[1]!.toLowerCase(),
+							target = /^<([a-z\d]+)/iu.exec(mt2?.text ?? '')?.[1]!.toLowerCase(),
 							extTag = extTags[extTags.length - 1],
 							options = [
 								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),

@@ -85,7 +85,7 @@ export default ViewPlugin.fromClass(
 	},
 	{
 		provide(plugin) {
-			const access = (view: EditorView): DecorationSet => view.plugin(plugin)?.isolates || Decoration.none;
+			const access = (view: EditorView): DecorationSet => view.plugin(plugin)?.isolates ?? Decoration.none;
 			return Prec.lowest([
 				EditorView.decorations.of(access),
 				EditorView.bidiIsolatedRanges.of(access),

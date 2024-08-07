@@ -71,7 +71,7 @@ export const getTag = (state: EditorState, node: SyntaxNode): Tag => {
 		nextSibling = nextSibling.prevSibling!;
 	}
 	while (prevSibling && !isBracket(prevSibling, type)) {
-		nameNode ||= isName(prevSibling, type) ? prevSibling : null;
+		nameNode ??= isName(prevSibling, type) ? prevSibling : null;
 		({prevSibling} = prevSibling);
 	}
 	const name = getName(state, nameNode!);

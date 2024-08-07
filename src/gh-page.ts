@@ -33,8 +33,8 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		}
 		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
-			parserConfig ||= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ||= CodeMirror6.getMwConfig(parserConfig!);
+			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
+			config ??= CodeMirror6.getMwConfig(parserConfig!);
 		}
 		cm.setLanguage(lang, config);
 		if (!(lang in linters)) {
