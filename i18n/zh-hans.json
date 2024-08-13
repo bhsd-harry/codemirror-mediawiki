@@ -41,6 +41,8 @@
 	"Stylelint-config": "JSON格式的Stylelint设置：",
 	"and": "和",
 	"json-error": "JSON格式错误：$1",
+	"phrase-Go-to-line": "跳转到行",
+	"phrase-go": "跳转",
 	"phrase-Find": "查找",
 	"phrase-next": "下一个",
 	"phrase-previous": "上一个",

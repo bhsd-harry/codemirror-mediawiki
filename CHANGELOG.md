@@ -1,6 +1,6 @@
 ## 2.17.2
 
-*2024-08-07*
+*2024-08-14*
 
 **Added**
 
@@ -10,6 +10,7 @@
 **Fixed**
 
 - The [openLinks](./mw/README.md#openlinks) extension during editing in a MediaWiki site
+- Font size of the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
 
 ## 2.17.1
 

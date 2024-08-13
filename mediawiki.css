@@ -1,9 +1,10 @@
 .cm-editor {
 	background-color: #fff;
 }
-.cm-search .cm-textfield,
-.cm-search .cm-button,
-.cm-panels > .cm-search.cm-panel label {
+.cm-panel .cm-textfield,
+.cm-panel .cm-button,
+.cm-panels > .cm-search.cm-panel label,
+.cm-panels > .cm-gotoLine.cm-panel label {
 	font-size: inherit;
 }
 .cm-tooltip-fold {
