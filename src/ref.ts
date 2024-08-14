@@ -80,6 +80,9 @@ const findRefImmediate = (
  * @param all 是否查找所有
  */
 export const findRef = async (view: EditorView | editor.ITextModel, target: string, all = false): Promise<Ranges> => {
+	if (!('wikiparse' in window)) {
+		return [];
+	}
 	let tree = trees.get(view);
 	if (!tree || tree.docChanged) {
 		tree = wikiparse.json('state' in view ? view.state.doc.toString() : view.getValue(), true, -5, 1) as Tree;
