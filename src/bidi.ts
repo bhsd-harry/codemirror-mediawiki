@@ -61,7 +61,7 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 	return set.finish();
 };
 
-export default ViewPlugin.fromClass(
+export const bidiIsolation = ViewPlugin.fromClass(
 	class implements PluginValue {
 		declare isolates;
 		declare tree;
