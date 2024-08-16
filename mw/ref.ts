@@ -30,7 +30,8 @@ const provideRef = async (
 		column = model.getWordAtPosition(pos)?.endColumn ?? pos.column,
 		before = getValueInRange(model, lineNumber, 1, column),
 		after = getValueInRange(model, lineNumber, column, Infinity),
-		mt1 = /(<ref\s(?:[^>]*\s)?name\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu.exec(before),
+		mt1 = /(<ref\s(?:[^>]*\s)?(?:name|follow|extends)\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu
+			.exec(before),
 		mt2 = /^[^>]*(?:>|$)/u.exec(after);
 	if (!mt1 || !mt2) {
 		return null;

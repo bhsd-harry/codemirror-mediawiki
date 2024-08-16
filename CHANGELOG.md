@@ -1,3 +1,11 @@
+## 2.17.3
+
+*2024-08-17*
+
+**Added**
+
+- The [refHover](./README.md#refhover) extension now also supports `follow` and `extends` attributes of the `<ref>` tag
+
 ## 2.17.2
 
 *2024-08-16*

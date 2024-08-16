@@ -186,6 +186,7 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
+		const refAttrs = new Set(['name', 'follow', 'extends']);
 		return async context => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
@@ -303,7 +304,7 @@ export class FullMediaWiki extends MediaWiki {
 				prevSibling &&= prevSibling.prevSibling;
 				if (
 					prevSibling?.name.includes('mw-ext-ref')
-					&& state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase() === 'name'
+					&& refAttrs.has(state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase())
 				) {
 					Object.assign(this, {state});
 					const refs = await findRef(this as unknown as EditorView, '', true);

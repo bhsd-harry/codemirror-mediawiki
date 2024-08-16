@@ -28,6 +28,8 @@ export const trees = new WeakMap<EditorView | editor.ITextModel, Tree>();
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
 
+const attributes = new Set<string | undefined>(['follow', 'extends']);
+
 /**
  * 查找注释的内容
  * @param view
@@ -44,33 +46,24 @@ const findRefImmediate = (
 	const sliceDoc = (from: number, to: number): string => 'state' in view
 		? view.state.sliceDoc(from, to)
 		: view.getValueInRange(monaco.Range.fromPositions(view.getPositionAt(from), view.getPositionAt(to)));
-	const {childNodes, type, name, selfClosing} = tree,
-		refs: Ranges = [];
+	const {childNodes, type, name, selfClosing} = tree;
 	if (!childNodes) {
 		return [];
-	} else if (type === 'ext' && name === 'ref') {
-		if (all || !selfClosing) {
-			const attrs = childNodes[0]!.childNodes!.filter(({type: t, name: n}) => t === 'ext-attr' && n === 'name'),
-				attr = attrs[attrs.length - 1]?.childNodes![1];
-			if (!attr) {
-				// pass
-			} else if (all && !target) {
-				return [attr.range];
-			} else if (sliceDoc(...attr.range).trim() === target) {
-				return [(all ? tree : childNodes[1]!).range];
-			}
-		}
-		return [];
-	}
-	for (const child of childNodes) {
-		const ref = findRefImmediate(view, child, target, all);
-		if (all) {
-			refs.push(...ref);
-		} else if (ref.length > 0) {
-			return ref;
+	} else if (type !== 'ext' || name !== 'ref') {
+		return childNodes.flatMap(child => findRefImmediate(view, child, target, all));
+	} else if (all || !selfClosing) {
+		const attrs = (childNodes[0]!.childNodes as ExtToken[])
+				.filter(({type: t, name: n}) => t === 'ext-attr' && (n === 'name' || all && attributes.has(n))),
+			attr = attrs[attrs.length - 1]?.childNodes![1];
+		if (!attr) {
+			// pass
+		} else if (all && !target) {
+			return [attr.range];
+		} else if (sliceDoc(...attr.range).trim() === target) {
+			return [(all ? tree : childNodes[1]!).range];
 		}
 	}
-	return refs;
+	return [];
 };
 
 /**
