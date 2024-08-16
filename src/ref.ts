@@ -9,10 +9,6 @@ import type {AST} from 'wikiparser-node/base';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 
-declare type ExtToken = AST & {
-	name?: string;
-	selfClosing?: boolean;
-};
 declare type Ranges = [number, number][];
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 declare const monaco: typeof Monaco;
@@ -39,7 +35,7 @@ const attributes = new Set<string | undefined>(['follow', 'extends']);
  */
 const findRefImmediate = (
 	view: EditorView | editor.ITextModel,
-	tree: ExtToken,
+	tree: AST & {selfClosing?: boolean},
 	target: string,
 	all: boolean,
 ): Ranges => {
@@ -52,7 +48,7 @@ const findRefImmediate = (
 	} else if (type !== 'ext' || name !== 'ref') {
 		return childNodes.flatMap(child => findRefImmediate(view, child, target, all));
 	} else if (all || !selfClosing) {
-		const attrs = (childNodes[0]!.childNodes as ExtToken[])
+		const attrs = childNodes[0]!.childNodes!
 				.filter(({type: t, name: n}) => t === 'ext-attr' && (n === 'name' || all && attributes.has(n))),
 			attr = attrs[attrs.length - 1]?.childNodes![1];
 		if (!attr) {

@@ -1176,10 +1176,9 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inExtTagAttribute(name: string, quote?: string, isLang?: boolean): Tokenizer {
-		isLang &&= syntaxHighlight.has(name); // eslint-disable-line no-param-reassign
+	inExtTagAttribute(name: string, quote?: string, isLang?: boolean, isPage?: boolean): Tokenizer {
 		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
-		const advance = (stream: StringStream, state: State, re: RegExp): void => {
+		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re) as RegExpMatchArray;
 			if (isLang) {
 				let lang = mt[0].trim().toLowerCase();
@@ -1189,6 +1188,7 @@ export class MediaWiki {
 				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua')
 				&& plugins[lang] as StreamParser<object>;
 			}
+			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
 		};
 		return (stream, state) => {
 			if (stream.eat('>')) {
@@ -1207,26 +1207,40 @@ export class MediaWiki {
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					state.tokenize = this.inExtTagAttribute(name, quote.slice(1) || undefined);
-				} else {
-					advance(stream, state, new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
+					const remains = quote.slice(1) || undefined;
+					state.tokenize = this.inExtTagAttribute(
+						name,
+						remains,
+						isLang && Boolean(remains),
+						isPage && Boolean(remains),
+					);
+					return makeLocalTagStyle('extTagAttributeValue', state);
 				}
-				return makeLocalTagStyle('extTagAttributeValue', state);
+				return advance(stream, state, new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'));
 			} else if (quote === '') { // 无引号的属性值
 				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
-				advance(stream, state, /^(?:[^>/\s]|\/(?!>))+/u);
-				return makeLocalTagStyle('extTagAttributeValue', state);
+				return advance(stream, state, /^(?:[^>/\s]|\/(?!>))+/u);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
-				state.tokenize = this.inExtTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '', isLang);
+				state.tokenize = this.inExtTagAttribute(
+					name,
+					/['"]/u.test(next ?? '') ? next!.repeat(2) : '',
+					isLang,
+					isPage,
+				);
 				return makeLocalStyle(style, state);
 			}
 			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u) as RegExpMatchArray;
 			if (stream.peek() === '=') {
-				state.tokenize = this.inExtTagAttribute(name, undefined, /lang\s*$/iu.test(mt[0]));
+				state.tokenize = this.inExtTagAttribute(
+					name,
+					undefined,
+					syntaxHighlight.has(name) && /(?:^|\s)lang\s*$/iu.test(mt[0]),
+					name === 'templatestyles' && /(?:^|\s)src\s*$/iu.test(mt[0]),
+				);
 			}
 			return makeLocalStyle(style, state);
 		};

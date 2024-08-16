@@ -6,7 +6,6 @@ import type {AST, TokenTypes} from 'wikiparser-node/base';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
-declare type Token = AST & {name?: string};
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	handlers = new WeakMap<CodeMirror, MouseEventListener>();
@@ -90,7 +89,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
 			let ns = 0;
-			if (name.includes(tokens.templateName)) {
+			if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
 				ns = 10;
 			} else if (name.includes(tokens.parserFunction)) {
 				ns = 828;
@@ -106,20 +105,6 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			modClick(state.sliceDoc(prev.from, next.to), e);
 		} else if (name.includes(tokens.magicLink)) {
 			modClick(parseMagicLink(state.sliceDoc(node.from, node.to)), e);
-		} else if (name.includes(tokens.extTagAttributeValue)) {
-			const start = search(node, 'prevSibling'),
-				{prevSibling} = start.prevSibling!;
-			if (
-				prevSibling?.name.includes(tokens.extTagAttribute)
-				&& prevSibling.name.includes('mw-ext-templatestyles')
-				&& state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase() === 'src'
-			) {
-				const page = /^(["']?)(.+?)\1?$/u
-					.exec(state.sliceDoc(start.from, search(node, 'nextSibling').to).trim())?.[2];
-				if (page) {
-					modClick(new mw.Title(page, 10).getUrl(undefined), e);
-				}
-			}
 		}
 	};
 	handlers.set(cm, handler);
@@ -153,7 +138,7 @@ const linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name
  * @param parent 父节点
  * @param grandparent 祖父节点
  */
-const generateLinks = (model: editor.ITextModel, tree: AST, parent?: Token, grandparent?: Token): languages.ILink[] => {
+const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandparent?: AST): languages.ILink[] => {
 	const {type, childNodes, range: [from, to]} = tree;
 	if (
 		linkTypes.has(type)
