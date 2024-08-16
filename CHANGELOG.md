@@ -5,6 +5,7 @@
 **Added**
 
 - The [refHover](./README.md#refhover) extension now also supports `follow` and `extends` attributes of the `<ref>` tag
+- The [openLinks](./mw/README.md#openlinks) extension now also supports the `src` attribute of the `<templatestyles>` tag
 
 ## 2.17.2
 

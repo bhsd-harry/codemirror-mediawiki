@@ -6,6 +6,7 @@ import type {AST, TokenTypes} from 'wikiparser-node/base';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
+declare type Token = AST & {name?: string};
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	handlers = new WeakMap<CodeMirror, MouseEventListener>();
@@ -78,10 +79,11 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			node = search(node, 'prevSibling').prevSibling;
 		}
 		if (!node) {
-			// pass
-		} else if (node.name.includes(tokens.pageName)) {
-			const name = getName(node),
-				last = search(node, 'nextSibling'),
+			return;
+		}
+		const {name} = node;
+		if (name.includes(tokens.pageName)) {
+			const last = search(node, 'nextSibling'),
 				{nextSibling} = last;
 			let page = state.sliceDoc(search(node, 'prevSibling').from, last.to).trim();
 			if (page.startsWith('/')) {
@@ -96,14 +98,28 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
 			modClick(new mw.Title(page, ns).getUrl(undefined), e);
-		} else if (/-extlink-protocol/u.test(node.name)) {
+		} else if (/-extlink-protocol/u.test(name)) {
 			modClick(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), e);
-		} else if (/-extlink(?:_|$)/u.test(node.name)) {
+		} else if (/-extlink(?:_|$)/u.test(name)) {
 			const prev = search(node, 'prevSibling').prevSibling!,
 				next = search(node, 'nextSibling');
 			modClick(state.sliceDoc(prev.from, next.to), e);
-		} else if (node.name.includes(tokens.magicLink)) {
+		} else if (name.includes(tokens.magicLink)) {
 			modClick(parseMagicLink(state.sliceDoc(node.from, node.to)), e);
+		} else if (name.includes(tokens.extTagAttributeValue)) {
+			const start = search(node, 'prevSibling'),
+				{prevSibling} = start.prevSibling!;
+			if (
+				prevSibling?.name.includes(tokens.extTagAttribute)
+				&& prevSibling.name.includes('mw-ext-templatestyles')
+				&& state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase() === 'src'
+			) {
+				const page = /^(["']?)(.+?)\1?$/u
+					.exec(state.sliceDoc(start.from, search(node, 'nextSibling').to).trim())?.[2];
+				if (page) {
+					modClick(new mw.Title(page, 10).getUrl(undefined), e);
+				}
+			}
 		}
 	};
 	handlers.set(cm, handler);
@@ -134,10 +150,15 @@ const linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name
  * 生成Monaco编辑器的链接
  * @param model
  * @param tree 语法树
+ * @param parent 父节点
+ * @param grandparent 祖父节点
  */
-const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] => {
+const generateLinks = (model: editor.ITextModel, tree: AST, parent?: Token, grandparent?: Token): languages.ILink[] => {
 	const {type, childNodes, range: [from, to]} = tree;
-	if (linkTypes.has(type)) {
+	if (
+		linkTypes.has(type)
+		|| type === 'attr-value' && grandparent?.name === 'templatestyles' && parent?.name === 'src'
+	) {
 		const fromPos = model.getPositionAt(from),
 			toPos = model.getPositionAt(to),
 			range = monaco.Range.fromPositions(fromPos, toPos);
@@ -150,7 +171,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 				url = parseMagicLink(url);
 			} else {
 				let ns = 0;
-				if (type === 'template-name') {
+				if (type === 'template-name' || type === 'attr-value') {
 					ns = 10;
 				} else if (type === 'invoke-module') {
 					ns = 828;
@@ -171,7 +192,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST): languages.ILink[] =
 			return [];
 		}
 	}
-	return childNodes?.flatMap(node => generateLinks(model, node)) ?? [];
+	return childNodes?.flatMap(node => generateLinks(model, node, tree, parent)) ?? [];
 };
 
 export const linkProvider: languages.LinkProvider = {
