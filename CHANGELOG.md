@@ -1,11 +1,12 @@
 ## 2.17.2
 
-*2024-08-14*
+*2024-08-16*
 
 **Added**
 
 - The [openLinks](./mw/README.md#openlinks) extension can now be triggered by clicking on the link fragment
 - [Autocompletion](./README.md#autocompletion) for `<ref>` names in the MediaWiki mode
+- Table syntax using templates `{{(!}}`, `{{!)}}`, `{{!-}}`, `{{!+}}` and `{{!!}}` in the MediaWiki mode
 
 **Fixed**
 

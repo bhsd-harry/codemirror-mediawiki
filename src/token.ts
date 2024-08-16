@@ -550,7 +550,7 @@ export class MediaWiki {
 				ch = stream.next()!;
 				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
 						.includes(state.tokenize.name),
-					pipe = String.raw`${isTemplate ? '' : String.raw`\||`}\{\{\s*!\s*\}\}`;
+					pipe = String.raw`${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\}`;
 				switch (ch) {
 					case '#':
 						if (stream.match(this.redirectRegex)) {
@@ -957,7 +957,7 @@ export class MediaWiki {
 	@getTokenizer
 	get eatStartTable(): Tokenizer {
 		return (stream, state) => {
-			stream.match(/^(?:\{\||\{{3}\s*!\s*\}\})\s*/u);
+			stream.match(/^(?:\{\||\{\{(?:\{\s*|\s*\()!\s*\}\})\s*/u);
 			state.tokenize = this.inTableDefinition();
 			return makeLocalTagStyle('tableBracket', state);
 		};
@@ -1008,19 +1008,21 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				stream.eatSpace();
-				if (stream.match(/^(?:\||\{\{\s*!\s*\}\})/u)) {
-					if (stream.match(/^-+\s*/u)) {
+				const mt = stream.match(/^(?:\||\{\{\s*!([!)+-])?\s*\}\})/u) as RegExpMatchArray | false;
+				if (mt) {
+					if (mt[1] === '-' || !mt[1] && stream.eat('-')) {
+						stream.match(/^-*\s*/u);
 						state.tokenize = this.inTableDefinition(true);
 						return makeLocalTagStyle('tableDelimiter', state);
-					} else if (stream.match(/^\+\s*/u)) {
+					} else if (mt[1] === '+' || !mt[1] && stream.match(/^\+\s*/u)) {
 						state.tokenize = this.inTableCell(tokens.tableCaption);
 						return makeLocalTagStyle('tableDelimiter', state);
-					} else if (stream.eat('}')) {
+					} else if (mt[1] === ')' || !mt[1] && stream.eat('}')) {
 						pop(state);
 						return makeLocalTagStyle('tableBracket', state);
 					}
 					stream.eatSpace();
-					state.tokenize = this.inTableCell(tokens.tableTd);
+					state.tokenize = this.inTableCell(tokens.tableTd, mt[1] !== '!');
 					return makeLocalTagStyle('tableDelimiter', state);
 				} else if (stream.match(/^!\s*/u)) {
 					state.tokenize = this.inTableCell(tokens.tableTh);
@@ -1040,7 +1042,7 @@ export class MediaWiki {
 		const chars = "'<~_-{";
 		return (stream, state) => {
 			if (stream.sol()) {
-				if (stream.match(/^\s*(?:[|!]|\{\{\s*!\s*\}\})/u, false)) {
+				if (stream.match(/^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u, false)) {
 					state.tokenize = this.inTable;
 					return '';
 				} else if (firstLine) {
@@ -1052,7 +1054,7 @@ export class MediaWiki {
 			}
 			if (firstLine) {
 				if (
-					stream.match(/^(?:\||\{\{\s*!\s*\}\}){2}\s*/u)
+					stream.match(/^(?:(?:\||\{\{\s*!\s*\}\}){2}|\{\{\s*!!\s*\}\})\s*/u)
 					|| style === tokens.tableTh && stream.match(/^!!\s*/u)
 				) {
 					state.bold = false;
