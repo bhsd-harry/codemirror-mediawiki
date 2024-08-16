@@ -6,6 +6,10 @@ declare interface Require {
 	(modules: string[], ready: (exports: unknown) => unknown): void;
 }
 
+declare interface Obj {
+	[x: string]: Obj | undefined;
+}
+
 declare global {
 	const define: unknown;
 }
@@ -18,7 +22,11 @@ declare global {
  */
 export const loadScript = (src: string, globalConst: string, amd?: boolean): Promise<void> => new Promise(resolve => {
 	const path = `${CDN}/${src}`;
-	if (globalConst in window) {
+	let obj: Obj | undefined = window as unknown as Obj;
+	for (const prop of globalConst.split('.')) {
+		obj = obj?.[prop];
+	}
+	if (obj) {
 		resolve();
 	} else if (amd && typeof define === 'function' && 'amd' in define) {
 		const requirejs = window.require as unknown as Require;

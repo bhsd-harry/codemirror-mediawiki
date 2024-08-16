@@ -15,7 +15,8 @@ export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
 	const REPO = 'npm/wikiparser-node@browser',
 		DIR = `${REPO}/extensions/dist`,
 		lang = opt?.['i18n'];
-	await loadScript(`combine/${DIR}/base.min.js,${DIR}/lint.min.js`, 'wikiparse');
+	await loadScript(`${DIR}/base.min.js`, 'wikiparse');
+	await loadScript(`${DIR}/lint.min.js`, 'wikiparse.Linter');
 	if (typeof lang === 'string') {
 		try {
 			const i18n: Record<string, string> =
