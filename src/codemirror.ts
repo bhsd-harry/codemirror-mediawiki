@@ -35,7 +35,6 @@ import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
 import {tagMatchingState} from './matchTag';
 import {refHover} from './ref';
-import {CDN} from './util';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import {tagModes, getStaticMwConfig} from './static';
 import {bidiIsolation} from './bidi';
@@ -48,7 +47,6 @@ import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 
-export {CDN};
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
 

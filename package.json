@@ -56,7 +56,7 @@
 		"wikiparser-node": "^1.10.0"
 	},
 	"devDependencies": {
-		"@bhsd/common": "^0.0.0",
+		"@bhsd/common": "^0.1.0",
 		"@codemirror/autocomplete": "^6.12.0",
 		"@codemirror/commands": "^6.3.3",
 		"@codemirror/lang-css": "^6.2.1",

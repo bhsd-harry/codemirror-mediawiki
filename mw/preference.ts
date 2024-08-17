@@ -1,6 +1,6 @@
 import {rules} from 'wikiparser-node/base';
+import {getObject, setObject} from '@bhsd/common';
 import {CodeMirror} from './base';
-import {getObject, setObject} from './util';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
 import type {LintError} from 'wikiparser-node';

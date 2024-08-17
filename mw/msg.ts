@@ -1,4 +1,4 @@
-import {getObject, setObject} from './util';
+import {getObject, setObject} from '@bhsd/common';
 import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.17.2',

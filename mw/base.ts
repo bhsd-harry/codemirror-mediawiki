@@ -1,4 +1,5 @@
-import {CodeMirror6, CDN} from '../src/codemirror';
+import {CDN} from '@bhsd/common';
+import {CodeMirror6} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
 import {openLinks, linkProvider} from './openLinks';
 import {refDefinitionProvider, refReferenceProvider, refListener} from './ref';

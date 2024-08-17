@@ -1,4 +1,4 @@
-import {CDN, loadScript} from './util';
+import {CDN, loadScript} from '@bhsd/common';
 import type {LinterBase} from 'wikiparser-node/extensions/typings';
 import type {Linter} from 'eslint';
 import type {Warning} from 'stylelint';
