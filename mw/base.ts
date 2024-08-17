@@ -1,12 +1,12 @@
 import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
 import {getMwConfig, getParserConfig} from './config';
-import {openLinks, linkProvider} from './openLinks';
-import {refDefinitionProvider, refReferenceProvider, refListener} from './ref';
+import openLinks from './openLinks';
+import refHover from './ref';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
-import {getEscapeActions} from './escape';
+import escape from './escape';
 import wikiEditor from './wikiEditor';
 import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
@@ -79,10 +79,6 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
-let escapeActions: readonly [Monaco.editor.IActionDescriptor, Monaco.editor.IActionDescriptor] | undefined,
-	wikilinkProvider: Monaco.IDisposable | undefined,
-	refProvider: Monaco.IDisposable | undefined,
-	refProvider2: Monaco.IDisposable | undefined;
 
 /**
  * 判断是否为普通编辑器
@@ -176,8 +172,6 @@ export class CodeMirror extends CodeMirror6 {
 	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
 	#init;
 	#indentStr = '\t';
-	#escapeActions: Monaco.IDisposable[] = [];
-	#refListener: Monaco.IDisposable | undefined;
 
 	override get visible(): boolean {
 		return this.#visible;
@@ -413,15 +407,13 @@ export class CodeMirror extends CodeMirror6 {
 			? (ext: string): boolean => extensions.includes(ext)
 			: (ext: string): boolean | undefined => extensions[ext];
 		const hasLint = hasExtension('lint'),
-			hasOpenLinks = hasExtension('openLinks'),
-			hasRefHover = hasExtension('refHover'),
 			isWiki = this.lang === 'mediawiki';
+		openLinks(this, hasExtension('openLinks'), isWiki);
 		if (this.view) {
 			super.prefer(extensions);
 			if (hasLint !== undefined) {
 				void this.defaultLint(hasLint);
 			}
-			openLinks(this, isWiki && hasOpenLinks);
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
@@ -429,34 +421,8 @@ export class CodeMirror extends CodeMirror6 {
 			this.#model.lint(hasLint);
 		}
 		if (isWiki) {
-			const hasEscape = hasExtension('escape');
-			if (hasEscape === false) {
-				let action = this.#escapeActions.pop();
-				while (action) {
-					action.dispose();
-					action = this.#escapeActions.pop();
-				}
-			} else if (hasEscape && this.#escapeActions.length === 0) {
-				escapeActions ??= getEscapeActions();
-				this.#escapeActions.push(
-					this.#editor.addAction(escapeActions[0]),
-					this.#editor.addAction(escapeActions[1]),
-				);
-			}
-			if (hasOpenLinks === false) {
-				wikilinkProvider?.dispose();
-			} else if (hasOpenLinks) {
-				wikilinkProvider ??= monaco.languages.registerLinkProvider('wikitext', linkProvider);
-			}
-			if (hasRefHover === false) {
-				refProvider?.dispose();
-				refProvider2?.dispose();
-				this.#refListener?.dispose();
-			} else if (hasRefHover) {
-				refProvider ??= monaco.languages.registerDefinitionProvider('wikitext', refDefinitionProvider);
-				refProvider2 ??= monaco.languages.registerReferenceProvider('wikitext', refReferenceProvider);
-				this.#refListener ??= refListener(this.#model);
-			}
+			escape(this.#editor, hasExtension('escape'));
+			refHover(this.#model, hasExtension('refHover'));
 		}
 		const options: Record<string, unknown> = {};
 		for (const [key, opts, off, on] of avail) {

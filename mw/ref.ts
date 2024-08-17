@@ -49,21 +49,47 @@ const provideRef = async (
 	}));
 };
 
-export const refDefinitionProvider: languages.DefinitionProvider = {
+const refDefinitionProvider: languages.DefinitionProvider = {
 	async provideDefinition(model, pos) {
 		return (await provideRef(model, pos))?.[0];
 	},
 };
 
-export const refReferenceProvider: languages.ReferenceProvider = {
+const refReferenceProvider: languages.ReferenceProvider = {
 	async provideReferences(model, pos) {
 		return provideRef(model, pos, true);
 	},
 };
 
-export const refListener = (model: editor.ITextModel): IDisposable => model.onDidChangeContent(() => {
+const refListener = (model: editor.ITextModel): IDisposable => model.onDidChangeContent(() => {
 	const tree = trees.get(model);
 	if (tree) {
 		tree.docChanged = true;
 	}
 });
+
+const map = new WeakMap<editor.ITextModel, IDisposable>();
+let definition: IDisposable | undefined,
+	reference: IDisposable | undefined;
+
+/**
+ * 添加或移除注释服务
+ * @param model
+ * @param on 是否添加
+ */
+export default (model: editor.ITextModel, on: boolean | undefined): void => {
+	if (on) {
+		definition ??= monaco.languages.registerDefinitionProvider('wikitext', refDefinitionProvider);
+		reference ??= monaco.languages.registerReferenceProvider('wikitext', refReferenceProvider);
+		if (!map.has(model)) {
+			map.set(model, refListener(model));
+		}
+	} else if (on === false) {
+		definition?.dispose();
+		definition = undefined;
+		reference?.dispose();
+		reference = undefined;
+		map.get(model)?.dispose();
+		map.delete(model);
+	}
+};

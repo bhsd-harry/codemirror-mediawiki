@@ -1,14 +1,15 @@
 import {isMac} from './msg';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
-import type {languages, editor} from 'monaco-editor';
+import type {languages, editor, IDisposable} from 'monaco-editor';
 import type {AST, TokenTypes} from 'wikiparser-node/base';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	handlers = new WeakMap<CodeMirror, MouseEventListener>();
+	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
+	linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']);
 
 /**
  * 获取节点的名称
@@ -112,26 +113,6 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 };
 
 /**
- * 添加或移除打开链接的事件
- * @param cm
- * @param on 是否添加
- */
-export const openLinks = (cm: CodeMirror, on?: boolean): void => {
-	const {scrollDOM} = cm.view!,
-		handler = getHandler(cm);
-	if (on) {
-		mw.loader.load('mediawiki.Title');
-		scrollDOM.addEventListener('mousedown', handler, {capture: true});
-		scrollDOM.style.setProperty('--codemirror-cursor', 'pointer');
-	} else if (on === false) {
-		scrollDOM.removeEventListener('mousedown', handler, {capture: true});
-		scrollDOM.style.removeProperty('--codemirror-cursor');
-	}
-};
-
-const linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']);
-
-/**
  * 生成Monaco编辑器的链接
  * @param model
  * @param tree 语法树
@@ -180,7 +161,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 	return childNodes?.flatMap(node => generateLinks(model, node, tree, parent)) ?? [];
 };
 
-export const linkProvider: languages.LinkProvider = {
+const linkProvider: languages.LinkProvider = {
 	async provideLinks(model) {
 		return {
 			links: 'wikiparse' in window
@@ -188,4 +169,36 @@ export const linkProvider: languages.LinkProvider = {
 				: [],
 		};
 	},
+};
+
+let disposable: IDisposable | undefined;
+
+/**
+ * 添加或移除打开链接的事件
+ * @param cm
+ * @param on 是否添加
+ * @param isWiki 是否为Wikitext
+ */
+export default (cm: CodeMirror, on: boolean | undefined, isWiki: boolean): void => {
+	const {view, model} = cm;
+	if (view) {
+		on = isWiki && on; // eslint-disable-line no-param-reassign
+		const {scrollDOM} = view,
+			handler = getHandler(cm);
+		if (on) {
+			mw.loader.load('mediawiki.Title');
+			scrollDOM.addEventListener('mousedown', handler, {capture: true});
+			scrollDOM.style.setProperty('--codemirror-cursor', 'pointer');
+		} else if (on === false) {
+			scrollDOM.removeEventListener('mousedown', handler, {capture: true});
+			scrollDOM.style.removeProperty('--codemirror-cursor');
+		}
+	} else if (!isWiki || !model) {
+		// pass
+	} else if (on) {
+		disposable ??= monaco.languages.registerLinkProvider('wikitext', linkProvider);
+	} else if (on === false) {
+		disposable?.dispose();
+		disposable = undefined;
+	}
 };

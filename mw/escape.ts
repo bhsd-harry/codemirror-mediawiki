@@ -1,5 +1,5 @@
 import {escapeHTML, escapeURI} from '../src/escape';
-import type {editor, KeyCode} from 'monaco-editor';
+import type {editor, KeyCode, IDisposable} from 'monaco-editor';
 
 /**
  * 创建单个Monaco编辑器动作
@@ -35,8 +35,28 @@ const createAction = (
 	},
 });
 
-/** 创建Monaco编辑器的转义动作 */
-export const getEscapeActions = () => [
+/** 创建Monaco编辑器的转义动作，需要等待Monaco加载 */
+const getEscapeActions = (): editor.IActionDescriptor[] => [
 	createAction('escape.html', 'Escape HTML Entity', 'BracketLeft', 'editor.action.indentLines', escapeHTML),
 	createAction('escape.uri', 'URI Encode/Decode', 'BracketRight', 'editor.action.outdentLines', escapeURI),
-] as const;
+];
+
+const actionMap = new WeakMap<editor.IStandaloneCodeEditor, IDisposable[]>();
+let actions: editor.IActionDescriptor[] | undefined;
+
+/**
+ * 添加或移除转义动作
+ * @param editor
+ * @param on 是否添加
+ */
+export default (editor: editor.IStandaloneCodeEditor, on: boolean | undefined): void => {
+	if (on && !actionMap.has(editor)) {
+		actions ??= getEscapeActions();
+		actionMap.set(editor, actions.map(action => editor.addAction(action)));
+	} else if (on === false && actionMap.has(editor)) {
+		for (const disposable of actionMap.get(editor)!) {
+			disposable.dispose();
+		}
+		actionMap.delete(editor);
+	}
+};
