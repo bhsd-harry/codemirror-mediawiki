@@ -82,9 +82,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		// 情形3：新加载的 ext.CodeMirror.data
 		// 情形4：`config === null`
 		await mw.loader.using('mediawiki.api');
-		const {
-			query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
-		}: {
+		const {query: {general: {variants}, magicwords, extensiontags, functionhooks, variables}}: {
 			query: {
 				general: {variants?: {code: string}[]};
 				magicwords: MagicWord[];

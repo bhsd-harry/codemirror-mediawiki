@@ -29,10 +29,10 @@
 	"scripts": {
 		"build:core": "esbuild ./src/codemirror.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly",
 		"build:mw": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=esm --sourcemap --outfile=dist/mw.min.js",
-		"build:wiki": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=iife --sourcemap --outfile=dist/mw.min.js",
+		"build:wiki": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
 		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
-		"build": "npm run build:core && npm run build:mw",
+		"build": "npm run build:core && npm run build:mw && npm run build:wiki",
 		"diff": "git diff --ignore-all-space --color-moved",
 		"diff:stat": "f() { git diff --stat --ignore-all-space --color=always $1 $2 -- . ':!dist/' ':!.github/'; }; f",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",

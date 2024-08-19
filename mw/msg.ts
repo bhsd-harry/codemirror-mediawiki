@@ -1,4 +1,4 @@
-import {getObject, setObject} from '@bhsd/common';
+import {getObject, setObject, parseVersion} from '@bhsd/common';
 import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.17.3',
@@ -80,12 +80,6 @@ function parseMsg(key: string, text?: true): string | JQuery<HTMLElement> {
 	return text ? message.parse() : blankTarget(message.parseDom());
 }
 export {parseMsg};
-
-/**
- * 解析版本号
- * @param v 版本号
- */
-const parseVersion = (v: string): [number, number] => v.split('.', 2).map(Number) as [number, number];
 
 /**
  * 创建气泡提示消息
