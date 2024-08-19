@@ -1,10 +1,18 @@
+## 2.17.4
+
+*2024-08-20*
+
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for the `group` attribute of `<ref>` and `<references>` in the MediaWiki mode
+
 ## 2.17.3
 
 *2024-08-17*
 
 **Added**
 
-- The [refHover](./README.md#refhover) extension now also supports `follow` and `extends` attributes of the `<ref>` tag
+- [Autocompletion](./README.md#autocompletion) for the `follow` and `extends` attributes of `<ref>` in the MediaWiki mode
 - The [openLinks](./mw/README.md#openlinks) extension now also supports the `src` attribute of the `<templatestyles>` tag
 
 ## 2.17.2
@@ -14,7 +22,7 @@
 **Added**
 
 - The [openLinks](./mw/README.md#openlinks) extension can now be triggered by clicking on the link fragment
-- [Autocompletion](./README.md#autocompletion) for `<ref>` names in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for the `name` attribute of `<ref>` in the MediaWiki mode
 - Table syntax using templates `{{(!}}`, `{{!)}}`, `{{!-}}`, `{{!+}}` and `{{!!}}` in the MediaWiki mode
 
 **Fixed**

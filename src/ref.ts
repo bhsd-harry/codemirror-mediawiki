@@ -24,7 +24,7 @@ export const trees = new WeakMap<EditorView | editor.ITextModel, Tree>();
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
 
-const attributes = new Set<string | undefined>(['follow', 'extends']);
+const attributes = new Set(['follow', 'extends']);
 
 /**
  * 查找注释的内容
@@ -32,12 +32,14 @@ const attributes = new Set<string | undefined>(['follow', 'extends']);
  * @param tree 语法树
  * @param target 目标名称
  * @param all 是否查找所有
+ * @param group 是否group属性
  */
 const findRefImmediate = (
 	view: EditorView | editor.ITextModel,
 	tree: AST & {selfClosing?: boolean},
 	target: string,
-	all: boolean,
+	all?: boolean,
+	group?: boolean,
 ): Ranges => {
 	const sliceDoc = (from: number, to: number): string => 'state' in view
 		? view.state.sliceDoc(from, to)
@@ -45,11 +47,13 @@ const findRefImmediate = (
 	const {childNodes, type, name, selfClosing} = tree;
 	if (!childNodes) {
 		return [];
-	} else if (type !== 'ext' || name !== 'ref') {
-		return childNodes.flatMap(child => findRefImmediate(view, child, target, all));
+	} else if (type !== 'ext' || !(name === 'ref' || group && name === 'references')) {
+		return childNodes.flatMap(child => findRefImmediate(view, child, target, all, group));
 	} else if (all || !selfClosing) {
-		const attrs = childNodes[0]!.childNodes!
-				.filter(({type: t, name: n}) => t === 'ext-attr' && (n === 'name' || all && attributes.has(n))),
+		const attrs = childNodes[0]!.childNodes!.filter(
+				({type: t, name: n}) =>
+					t === 'ext-attr' && (group ? n === 'group' : n === 'name' || all && attributes.has(n!)),
+			),
 			attr = attrs[attrs.length - 1]?.childNodes![1];
 		if (!attr) {
 			// pass
@@ -67,8 +71,14 @@ const findRefImmediate = (
  * @param view
  * @param target 目标名称
  * @param all 是否查找所有
+ * @param group 是否group属性
  */
-export const findRef = async (view: EditorView | editor.ITextModel, target: string, all = false): Promise<Ranges> => {
+export const findRef = async (
+	view: EditorView | editor.ITextModel,
+	target: string,
+	all?: boolean,
+	group?: boolean,
+): Promise<Ranges> => {
 	if (!('wikiparse' in window)) {
 		return [];
 	}
@@ -80,7 +90,7 @@ export const findRef = async (view: EditorView | editor.ITextModel, target: stri
 			tree.docChanged = true;
 		}
 	}
-	return findRefImmediate(view, await tree, target, all);
+	return findRefImmediate(view, await tree, target, all, group);
 };
 
 export const refHover = [

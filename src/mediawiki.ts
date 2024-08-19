@@ -302,22 +302,27 @@ export class FullMediaWiki extends MediaWiki {
 					({prevSibling} = prevSibling);
 				}
 				prevSibling &&= prevSibling.prevSibling;
-				if (
-					prevSibling?.name.includes('mw-ext-ref')
-					&& refAttrs.has(state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase())
-				) {
-					Object.assign(this, {state});
-					const refs = await findRef(this as unknown as EditorView, '', true);
-					return refs.length > 0
-						? {
-							from: from + /^\s*/u.exec(search)![0].length,
-							options: refs.filter(([f]) => f < from || f > to).map(range => ({
-								type: 'text',
-								label: state.sliceDoc(...range).trim(),
-							})),
-							validFor: new RegExp(`^[^>${quote || String.raw`\s`}]*$`, 'u'),
-						}
-						: null;
+				if (prevSibling) {
+					const names = prevSibling.name.split('_'),
+						isRef = names.includes('mw-ext-ref'),
+						key = state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase();
+					if (
+						isRef && refAttrs.has(key)
+						|| key === 'group' && (isRef || names.includes('mw-ext-references'))
+					) {
+						Object.assign(this, {state});
+						const refs = await findRef(this as unknown as EditorView, '', true, key === 'group');
+						return refs.length > 0
+							? {
+								from: from + /^\s*/u.exec(search)![0].length,
+								options: refs.filter(([f]) => f < from || f > to).map(range => ({
+									type: 'text',
+									label: state.sliceDoc(...range).trim(),
+								})),
+								validFor: new RegExp(`^[^>${quote || String.raw`\s`}]*$`, 'u'),
+							}
+							: null;
+					}
 				}
 			} else if (!hasTag(types, [
 				'comment',

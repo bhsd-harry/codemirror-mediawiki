@@ -9,7 +9,7 @@ declare interface Test {
 (async () => {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
 		key = 'codemirror-mediawiki-done',
-		dones = new Set<string>(JSON.parse(localStorage.getItem(key)!) as string[]),
+		dones = new Set(JSON.parse(localStorage.getItem(key)!) as string[]),
 		select = document.querySelector('select')!,
 		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,

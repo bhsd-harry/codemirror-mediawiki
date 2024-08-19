@@ -15,6 +15,9 @@ const getValueInRange = (
 	endColumn: number,
 ): string => model.getValueInRange(new monaco.Range(lineNumber, startColumn, lineNumber, endColumn));
 
+const re = /(<ref\s(?:[^>]*\s)?(?:name|follow|extends)\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu,
+	reAll = /(<ref(?:erences)?\s(?:[^>]*\s)?group\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu;
+
 /**
  * 查找同名注释
  * @param model
@@ -30,8 +33,8 @@ const provideRef = async (
 		column = model.getWordAtPosition(pos)?.endColumn ?? pos.column,
 		before = getValueInRange(model, lineNumber, 1, column),
 		after = getValueInRange(model, lineNumber, column, Infinity),
-		mt1 = /(<ref\s(?:[^>]*\s)?(?:name|follow|extends)\s*)(?:=\s*(?:(["'])(?:(?!\2|>).)*|[^\s>"'][^\s>]*)?)?$/iu
-			.exec(before),
+		mt = re.exec(before),
+		mt1 = mt || all && reAll.exec(before),
 		mt2 = /^[^>]*(?:>|$)/u.exec(after);
 	if (!mt1 || !mt2) {
 		return null;
@@ -42,7 +45,7 @@ const provideRef = async (
 	if (!attr || attr[2] === '') {
 		return null;
 	}
-	const refs = await findRef(model, attr[2] ?? attr[3]!, all);
+	const refs = await findRef(model, attr[2] ?? attr[3]!, all, !mt);
 	return refs.map(ref => ({
 		range: monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]),
 		uri: model.uri,
