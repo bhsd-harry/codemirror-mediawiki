@@ -830,7 +830,7 @@ export class MediaWiki {
 	@getTokenizer
 	inLink(file: boolean, section?: boolean): Tokenizer {
 		const style = section ? tokens[file ? 'error' : 'linkToSection'] : `${tokens.linkPageName} ${tokens.pageName}`,
-			re = section ? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu : /^[^#|<>[\]{}]+/u;
+			re = section ? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu : /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}])+/iu;
 		let lt: number | undefined;
 		return (stream, state) => {
 			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
@@ -1410,7 +1410,7 @@ export class MediaWiki {
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
 		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
 			chars = '{}<',
-			re = anchor ? this.templateRegex : /^[^|{}<>[\]#]+/u;
+			re = anchor ? this.templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#])+/iu;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1782,7 +1782,7 @@ export class MediaWiki {
 	inGallery(section?: boolean): Tokenizer {
 		const style = section ? tokens.error : `${tokens.linkPageName} ${tokens.pageName}`,
 			regex = section ? /^(?:[[}\]]|\{(?!\{))+/u : /^(?:[>[}\]]|\{(?!\{)|<(?!!--))+/u,
-			re = section ? /^(?:[^|<[\]{}]|<(?!!--))+/u : /^[^#|<>[\]{}]+/u;
+			re = section ? /^(?:[^|<[\]{}]|<(?!!--))+/u : /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}])+/u;
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (!section && stream.match(/^#\s*/u)) {

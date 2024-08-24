@@ -635,7 +635,7 @@
 	{
 		"desc": "T2337: Escaped self-links should be bold",
 		"wikitext": "[[Bu&#103;462]] [[Bug462]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Bu&amp;</><link-ground link-tosection>#103;462</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Bug462</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Bu&amp;#103;462</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Bug462</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Self-link to section should not be bold",
@@ -2375,7 +2375,7 @@
 	{
 		"desc": "(T21451) Links should refer to the normalized form.",
 		"wikitext": "[[&#xFB2E;]]\n[[&#x5d0;&#x5b7;]]\n[[&#x5d0;ַ]]\n[[א&#x5b7;]]\n[[אַ]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>&amp;</><link-ground link-tosection>#xFB2E;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>&amp;</><link-ground link-tosection>#x5d0;&amp;#x5b7;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>&amp;</><link-ground link-tosection>#x5d0;ַ</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>א&amp;</><link-ground link-tosection>#x5b7;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>אַ</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>&amp;#xFB2E;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>&amp;#x5d0;&amp;#x5b7;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>&amp;#x5d0;ַ</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>א&amp;#x5b7;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>אַ</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Empty attribute crash test (T4067)",
@@ -9771,7 +9771,7 @@
 	{
 		"desc": "Entities in media filenames",
 		"wikitext": "[[File:Hi&#45;ho.jpg|thumb]]\n\n<gallery>\nHi&#45;ho.jpg\nFile:Hi&#45;ho.jpg\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Hi&amp;</><link-ground error>#45;ho.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>Hi&amp;</><tag-gallery error>#45;ho.jpg</><tag-gallery link-pagename pagename>File:Hi&amp;</><tag-gallery error>#45;ho.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Hi&amp;#45;ho.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>Hi&amp;#45;ho.jpgFile:Hi&amp;#45;ho.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Inline gallery attributes are appended to the defaults",

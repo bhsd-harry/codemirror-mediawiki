@@ -1,10 +1,14 @@
 ## 2.17.4
 
-*2024-08-20*
+*2024-08-24*
 
 **Added**
 
 - [Autocompletion](./README.md#autocompletion) for the `group` attribute of `<ref>` and `<references>` in the MediaWiki mode
+
+**Fixed**
+
+- `#` in an HTML entity should not be regarded as link fragment in the MediaWiki mode
 
 ## 2.17.3
 
