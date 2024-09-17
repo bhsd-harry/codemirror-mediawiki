@@ -32,7 +32,7 @@
 		"build:wiki": "esbuild ./mw/base.ts --bundle --minify --target=es2018 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
 		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
-		"build": "npm run build:core && npm run build:mw && npm run build:wiki",
+		"build": "npm run build:core && npm run build:mw && npm run build:wiki && eslint --no-eslintrc -c .eslintrc.dist.cjs dist/*.js",
 		"diff": "git diff --ignore-all-space --color-moved",
 		"diff:stat": "f() { git diff --stat --ignore-all-space --color=always $1 $2 -- . ':!dist/' ':!.github/'; }; f",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
@@ -44,19 +44,16 @@
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/test/real.js"
 	},
-	"engines": {
-		"node": "^20.9.0"
-	},
 	"dependencies": {
 		"@codemirror/language": "^6.10.1",
 		"@codemirror/lint": "^6.8.0",
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.26.4",
 		"@lezer/common": "^1.2.1",
-		"wikiparser-node": "^1.10.0"
+		"wikiparser-node": "^1.12.7"
 	},
 	"devDependencies": {
-		"@bhsd/common": "^0.1.0",
+		"@bhsd/common": "^0.1.1",
 		"@codemirror/autocomplete": "^6.12.0",
 		"@codemirror/commands": "^6.3.3",
 		"@codemirror/lang-css": "^6.2.1",
