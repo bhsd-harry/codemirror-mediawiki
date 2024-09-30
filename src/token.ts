@@ -1039,7 +1039,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inTableCell(style: string, needAttr = true, firstLine = true): Tokenizer {
-		const chars = "'<~_-{";
+		const chars = "'<~_{-";
 		return (stream, state) => {
 			if (stream.sol()) {
 				if (stream.match(/^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u, false)) {
