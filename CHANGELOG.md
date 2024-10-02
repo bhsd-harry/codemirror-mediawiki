@@ -1,3 +1,12 @@
+## 2.17.5
+
+*2024-10-02*
+
+**Fixed**
+
+- The [openLinks](./mw/README.md#openlinks) extension now correctly detects page names with HTML/URL encoding in the MediaWiki mode
+- Language conversion in table cells in the MediaWiki mode
+
 ## 2.17.4
 
 *2024-08-24*
