@@ -15,8 +15,8 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
             document.getElementById(id).closest('.fieldLayout').style.display = display;
         }
         if (isMediaWiki || lang === 'html') {
-            parserConfig || (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
-            config || (config = CodeMirror6.getMwConfig(parserConfig));
+            parserConfig !== null && parserConfig !== void 0 ? parserConfig : (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
+            config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
         }
         cm.setLanguage(lang, config);
         if (!(lang in linters)) {

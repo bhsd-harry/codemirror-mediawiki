@@ -7884,7 +7884,7 @@
 	{
 		"desc": "LanguageConverter selser (4)",
 		"wikitext": "{|\n|-\n|<span class=\"x\">Foo</span>-{Bar}-\n||<span class=\"x\">Foo</span>-{Bar}-\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|-|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-td>-{Bar}-</><table-delimiter>|</><table-delimiter2>|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-td>-{Bar}-</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-delimiter>|-|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><convert-bracket>-{</><table-td>Bar</><convert-bracket>}-</><table-delimiter>|</><table-delimiter2>|</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><table-td>Foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><convert-bracket>-{</><table-td>Bar</><convert-bracket>}-</><table-bracket>|}</>"
 	},
 	{
 		"desc": "T153135: Don't break list handling if language converter markup is in the item.",
