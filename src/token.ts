@@ -1185,7 +1185,7 @@ export class MediaWiki {
 				if (lang === 'js') {
 					lang = 'javascript';
 				}
-				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua')
+				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua' || lang === 'json')
 				&& plugins[lang] as StreamParser<object>;
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
