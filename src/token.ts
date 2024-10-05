@@ -1814,3 +1814,11 @@ export class MediaWiki {
 		};
 	}
 }
+
+for (const [language, parser] of Object.entries(plugins)) {
+	if (!language.endsWith('LR')) {
+		Object.defineProperty(MediaWiki.prototype, language, {
+			value: (): StreamParser<object> => parser as StreamParser<object>,
+		});
+	}
+}
