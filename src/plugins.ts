@@ -5,7 +5,7 @@ import type {Extension} from '@codemirror/state';
 import type {CompletionContext, CompletionResult} from '@codemirror/autocomplete';
 export {json as jsonLR} from '@codemirror/lang-json';
 export {css} from '@codemirror/legacy-modes/mode/css';
-export {javascript} from '@codemirror/legacy-modes/mode/javascript';
+export {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
 export {lua} from '@codemirror/legacy-modes/mode/lua';
 
 export const javascriptLR = (): Extension => [
