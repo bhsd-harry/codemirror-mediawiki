@@ -1,6 +1,10 @@
 ## 2.17.5
 
-*2024-10-02*
+*2024-10-21*
+
+**Added**
+
+- Highlight JSON code blocks in the MediaWiki mode
 
 **Fixed**
 

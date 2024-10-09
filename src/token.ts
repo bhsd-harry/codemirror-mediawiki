@@ -1185,7 +1185,7 @@ export class MediaWiki {
 				if (lang === 'js') {
 					lang = 'javascript';
 				}
-				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua')
+				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua' || lang === 'json')
 				&& plugins[lang] as StreamParser<object>;
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
@@ -1812,5 +1812,13 @@ export class MediaWiki {
 				return simpleToken(stream, state);
 			},
 		};
+	}
+}
+
+for (const [language, parser] of Object.entries(plugins)) {
+	if (!language.endsWith('LR')) {
+		Object.defineProperty(MediaWiki.prototype, language, {
+			value: (): StreamParser<object> => parser as StreamParser<object>,
+		});
 	}
 }

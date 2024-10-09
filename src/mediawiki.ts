@@ -13,7 +13,6 @@ import {
 } from '@codemirror/language';
 import {MediaWiki} from './token';
 import {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} from './config';
-import * as plugins from './plugins';
 import {findRef} from './ref';
 import type {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
@@ -390,14 +389,6 @@ export class FullMediaWiki extends MediaWiki {
 			}
 			return null;
 		};
-	}
-}
-
-for (const [language, parser] of Object.entries(plugins)) {
-	if (language === 'css' || language === 'javascript') {
-		Object.defineProperty(FullMediaWiki.prototype, language, {
-			value: (): StreamParser<object> => parser as StreamParser<object>,
-		});
 	}
 }
 
