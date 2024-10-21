@@ -387,7 +387,7 @@
 **Added**
 
 - [Autocompletion](./README.md#autocompletion) for JavaScript now includes the [scopeCompletionSource](https://github.com/codemirror/lang-javascript#user-content-scopecompletionsource)
-- New extension option: [useMonaco](./README.md#usemonaco)
+- New extension option: [useMonaco](./mw/README.md#usemonaco)
 
 **Changed**
 
