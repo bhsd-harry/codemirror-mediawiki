@@ -1,3 +1,4 @@
+import {normalizeTitle} from '@bhsd/common';
 import {isMac} from './msg';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
@@ -9,8 +10,7 @@ declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
-	linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']),
-	span = document.createElement('span');
+	linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']);
 
 /**
  * 获取节点的名称
@@ -61,19 +61,6 @@ const modClick = (url: string, e: MouseEvent): void => {
 };
 
 /**
- * 解码标题
- * @param title 标题
- */
-const normalize = (title: string): string => {
-	const decoded = decodeURIComponent(title.replace(/%(?![\da-f]{2})/giu, '%25'));
-	if (/[<>[\]|{}]/u.test(decoded)) {
-		return decoded;
-	}
-	span.innerHTML = decoded;
-	return span.textContent!;
-};
-
-/**
  * 点击时在新页面打开链接、模板等
  * @param cm
  * @param e 点击事件
@@ -111,7 +98,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
-			modClick(new mw.Title(normalize(page), ns).getUrl(undefined), e);
+			modClick(new mw.Title(normalizeTitle(page), ns).getUrl(undefined), e);
 		} else if (/-extlink-protocol/u.test(name)) {
 			modClick(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), e);
 		} else if (/-extlink(?:_|$)/u.test(name)) {
@@ -159,7 +146,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 				if (url.startsWith('/')) {
 					url = `:${mw.config.get('wgPageName')}${url}`;
 				}
-				url = new mw.Title(normalize(url), ns).getUrl(undefined);
+				url = new mw.Title(normalizeTitle(url), ns).getUrl(undefined);
 			}
 			if (url.startsWith('//')) {
 				url = location.protocol + url;
