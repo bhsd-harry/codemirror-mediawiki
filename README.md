@@ -521,6 +521,12 @@ Key bindings:
 
 Allow the editor to be scrolled down past the end of the document.
 
+## colorPicker
+
+*version added: 2.18.0*
+
+Provide color pickers for CSS and MediaWiki modes.
+
 ## escape
 
 *version added: 2.2.2*

@@ -1,3 +1,11 @@
+## 2.18.0
+
+*2024-10-26*
+
+**Added**
+
+- New extension option: [colorPicker](./README.md#colorpicker)
+
 ## 2.17.5
 
 *2024-10-21*

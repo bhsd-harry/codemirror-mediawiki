@@ -12,6 +12,7 @@
 	"addon-closeBrackets": "自动闭合括号和引号",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : 折叠\nCtrl-Shift-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
 	"addon-codeFolding-mac": "<span title=\"Cmd-Alt-[ : 折叠\nCmd-Alt-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
+	"addon-colorPicker": "颜色选择器",
 	"addon-escape": "<span title=\"Ctrl-[ : HTML编码\nCtrl-] : URL解码或编码\">添加HTML和URL编码快捷键</span>",
 	"addon-escape-mac": "<span title=\"Cmd-[ : HTML编码\nCmd-] : URL解码或编码\">添加HTML和URL编码快捷键</span>",
 	"addon-highlightActiveLine": "高亮显示光标所在行",

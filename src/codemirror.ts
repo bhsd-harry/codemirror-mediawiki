@@ -30,6 +30,7 @@ import {
 	completionKeymap,
 	startCompletion,
 } from '@codemirror/autocomplete';
+import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
 import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
@@ -49,9 +50,9 @@ import type {DocRange} from './fold';
 
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
+export type Addon<T> = [(config?: T) => Extension, Record<string, T>];
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
-declare type Addon<T> = [(config?: T) => Extension, Record<string, T>];
 
 const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
 
@@ -113,6 +114,7 @@ const avail: Record<string, Addon<any>> = {
 			lua: [defaultFoldExtension, foldOnIndent],
 		},
 	],
+	colorPicker,
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),

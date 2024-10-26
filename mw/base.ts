@@ -30,8 +30,8 @@ declare interface IWikitextModel extends Monaco.editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.17',
-	addons = ['refHover'];
+const baseVersion = '2.18',
+	addons = ['colorPicker'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 
@@ -78,6 +78,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
+		['colorPicker', 'colorDecorators', false, true],
 	];
 
 /**
