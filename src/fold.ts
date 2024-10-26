@@ -20,6 +20,7 @@ import type {EditorView, Tooltip, ViewUpdate, BlockInfo, PluginValue} from '@cod
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
+import type {Addon} from './codemirror';
 
 export interface DocRange {
 	from: number;
@@ -366,135 +367,167 @@ const markers = ViewPlugin.fromClass(class implements PluginValue {
 	}
 });
 
-export const foldExtension: Extension = [
-	codeFolding({
-		placeholderDOM(view) {
-			const element = document.createElement('span');
-			element.textContent = '…';
-			element.setAttribute('aria-label', 'folded code');
-			element.title = view.state.phrase('unfold');
-			element.className = 'cm-foldPlaceholder';
-			element.addEventListener('click', ({target}) => {
-				const pos = view.posAtDOM(target as Node),
-					{state} = view,
-					{selection} = state;
-				foldedRanges(state).between(pos, pos, (from, to) => {
-					if (from === pos) {
-						// Unfold the template and redraw the selections
-						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
-					}
-				});
-			});
-			return element;
-		},
-	}),
-	/** @see https://codemirror.net/examples/tooltip/ */
-	StateField.define<Tooltip | null>({
-		create,
-		update(tooltip, {state, docChanged, selection}) {
-			if (docChanged) {
-				return null;
-			}
-			return selection ? create(state) : tooltip;
-		},
-		provide(f) {
-			return showTooltip.from(f);
-		},
-	}),
-	keymap.of([
-		{
-			// Fold the template at the selection/cursor
-			key: 'Ctrl-Shift-[',
-			mac: 'Cmd-Alt-[',
-			run(view): boolean {
-				const {state} = view,
-					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [];
-				let anchor = getAnchor(state);
-				for (const {from, to, empty} of state.selection.ranges) {
-					let node: SyntaxNode | null | undefined;
-					if (empty) {
-						// No selection, try both sides of the cursor position
-						node = tree.resolve(from, -1);
-					}
-					if (!node || node.name === 'Document') {
-						node = tree.resolve(from, 1);
-					}
-					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
+
+export default [
+	(e = defaultFoldExtension): Extension => e,
+	{
+		lua: [
+			defaultFoldExtension,
+			foldService.of(({doc, tabSize}, start, from) => {
+				const {text, number} = doc.lineAt(start);
+				if (!text.trim()) {
+					return null;
 				}
-				return execute(view, effects, anchor);
-			},
-		},
-		{
-			// Fold all templates in the document
-			key: 'Ctrl-Alt-[',
-			run(view): boolean {
-				const {state} = view,
-					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [],
-					anchor = traverse(
-						state,
-						tree,
-						effects,
-						tree.topNode.firstChild,
-						Infinity,
-						getAnchor(state),
-						updateAll,
-					);
-				return execute(view, effects, anchor);
-			},
-		},
-		{
-			// Unfold the template at the selection/cursor
-			key: 'Ctrl-Shift-]',
-			mac: 'Cmd-Alt-]',
-			run(view): boolean {
-				const {state} = view,
-					{selection} = state,
-					effects: StateEffect<DocRange>[] = [],
-					folded = foldedRanges(state);
-				for (const {from, to} of selection.ranges) {
-					// Unfold any folded range at the selection
-					folded.between(from, to, (i, j) => {
-						effects.push(unfoldEffect.of({from: i, to: j}));
+				const getIndent = (line: string): number =>
+					/^\s*/u.exec(line)![0].replace(/\t/gu, ' '.repeat(tabSize)).length;
+				const indent = getIndent(text);
+				let j = number,
+					empty = true;
+				for (; j < doc.lines; j++) {
+					const {text: next} = doc.line(j + 1);
+					if (next.trim()) {
+						empty = false;
+						const nextIndent = getIndent(next);
+						if (indent >= nextIndent) {
+							break;
+						}
+					}
+				}
+				return empty || j === number ? null : {from, to: doc.line(j).to};
+			}),
+		],
+		mediawiki: [
+			codeFolding({
+				placeholderDOM(view) {
+					const element = document.createElement('span');
+					element.textContent = '…';
+					element.setAttribute('aria-label', 'folded code');
+					element.title = view.state.phrase('unfold');
+					element.className = 'cm-foldPlaceholder';
+					element.addEventListener('click', ({target}) => {
+						const pos = view.posAtDOM(target as Node),
+							{state} = view,
+							{selection} = state;
+						foldedRanges(state).between(pos, pos, (from, to) => {
+							if (from === pos) {
+								// Unfold the template and redraw the selections
+								view.dispatch({effects: unfoldEffect.of({from, to}), selection});
+							}
+						});
 					});
-				}
-				if (effects.length > 0) {
-					// Unfold the template(s) and redraw the selections
-					view.dispatch({effects, selection});
-					return true;
-				}
-				return false;
-			},
-		},
-		{key: 'Ctrl-Alt-]', run: unfoldAll},
-	]),
-	markers,
-	gutter({
-		class: 'cm-foldGutter',
-		markers(view) {
-			return view.plugin(markers)?.markers ?? RangeSet.empty;
-		},
-		initialSpacer() {
-			return new FoldMarker(false);
-		},
-		domEventHandlers: {
-			click(view, line) {
-				const folded = findFold(view, line);
-				if (folded) {
-					view.dispatch({effects: unfoldEffect.of(folded)});
-					return true;
-				}
-				const range = foldableLine(view, line);
-				if (range) {
-					view.dispatch({effects: foldEffect.of(range)});
-					return true;
-				}
-				return false;
-			},
-		},
-	}),
-];
+					return element;
+				},
+			}),
+			/** @see https://codemirror.net/examples/tooltip/ */
+			StateField.define<Tooltip | null>({
+				create,
+				update(tooltip, {state, docChanged, selection}) {
+					if (docChanged) {
+						return null;
+					}
+					return selection ? create(state) : tooltip;
+				},
+				provide(f) {
+					return showTooltip.from(f);
+				},
+			}),
+			keymap.of([
+				{
+					// Fold the template at the selection/cursor
+					key: 'Ctrl-Shift-[',
+					mac: 'Cmd-Alt-[',
+					run(view): boolean {
+						const {state} = view,
+							tree = syntaxTree(state),
+							effects: StateEffect<DocRange>[] = [];
+						let anchor = getAnchor(state);
+						for (const {from, to, empty} of state.selection.ranges) {
+							let node: SyntaxNode | null | undefined;
+							if (empty) {
+								// No selection, try both sides of the cursor position
+								node = tree.resolve(from, -1);
+							}
+							if (!node || node.name === 'Document') {
+								node = tree.resolve(from, 1);
+							}
+							anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+						}
+						return execute(view, effects, anchor);
+					},
+				},
+				{
+					// Fold all templates in the document
+					key: 'Ctrl-Alt-[',
+					run(view): boolean {
+						const {state} = view,
+							tree = syntaxTree(state),
+							effects: StateEffect<DocRange>[] = [],
+							anchor = traverse(
+								state,
+								tree,
+								effects,
+								tree.topNode.firstChild,
+								Infinity,
+								getAnchor(state),
+								updateAll,
+							);
+						return execute(view, effects, anchor);
+					},
+				},
+				{
+					// Unfold the template at the selection/cursor
+					key: 'Ctrl-Shift-]',
+					mac: 'Cmd-Alt-]',
+					run(view): boolean {
+						const {state} = view,
+							{selection} = state,
+							effects: StateEffect<DocRange>[] = [],
+							folded = foldedRanges(state);
+						for (const {from, to} of selection.ranges) {
+							// Unfold any folded range at the selection
+							folded.between(from, to, (i, j) => {
+								effects.push(unfoldEffect.of({from: i, to: j}));
+							});
+						}
+						if (effects.length > 0) {
+							// Unfold the template(s) and redraw the selections
+							view.dispatch({effects, selection});
+							return true;
+						}
+						return false;
+					},
+				},
+				{key: 'Ctrl-Alt-]', run: unfoldAll},
+			]),
+			markers,
+			gutter({
+				class: 'cm-foldGutter',
+				markers(view) {
+					return view.plugin(markers)?.markers ?? RangeSet.empty;
+				},
+				initialSpacer() {
+					return new FoldMarker(false);
+				},
+				domEventHandlers: {
+					click(view, line) {
+						const folded = findFold(view, line);
+						if (folded) {
+							view.dispatch({effects: unfoldEffect.of(folded)});
+							return true;
+						}
+						const range = foldableLine(view, line);
+						if (range) {
+							view.dispatch({effects: foldEffect.of(range)});
+							return true;
+						}
+						return false;
+					},
+				},
+			}),
+		],
+	},
+] as Addon<Extension>;
 
 /**
  * 点击提示折叠模板参数
@@ -514,27 +547,3 @@ export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
 		dom.remove();
 	}
 };
-
-export const foldOnIndent: Extension = foldService.of(({doc, tabSize}, start, from) => {
-	const {text, number} = doc.lineAt(start);
-	if (!text.trim()) {
-		return null;
-	}
-	const getIndent = (line: string): number => /^\s*/u.exec(line)![0].replace(/\t/gu, ' '.repeat(tabSize)).length;
-	const indent = getIndent(text);
-	let j = number,
-		empty = true;
-	for (; j < doc.lines; j++) {
-		const {text: next} = doc.line(j + 1);
-		if (next.trim()) {
-			empty = false;
-			const nextIndent = getIndent(next);
-			if (indent >= nextIndent) {
-				break;
-			}
-		}
-	}
-	return empty || j === number ? null : {from, to: doc.line(j).to};
-});
-
-export const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];

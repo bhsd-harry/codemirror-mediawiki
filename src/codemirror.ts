@@ -33,7 +33,7 @@ import {
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
 import {escapeKeymap} from './escape';
-import {foldExtension, foldHandler, foldOnIndent, defaultFoldExtension} from './fold';
+import codeFolding, {foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
 import {refHover} from './ref';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
@@ -107,13 +107,7 @@ const avail: Record<string, Addon<any>> = {
 		],
 		{},
 	],
-	codeFolding: [
-		(e = defaultFoldExtension): Extension => e,
-		{
-			mediawiki: foldExtension,
-			lua: [defaultFoldExtension, foldOnIndent],
-		},
-	],
+	codeFolding,
 	colorPicker,
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
