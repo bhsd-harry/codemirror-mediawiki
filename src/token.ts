@@ -242,6 +242,15 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
 };
 
 /**
+ * 是否需要检查冒号
+ * @param state
+ */
+const needColon = (state: State): boolean => {
+	const {dt} = state;
+	return Boolean(dt.n) && dt.html === 0 && !state.bold && !state.italic && cmpNesting(dt, state, true);
+};
+
+/**
  * 获取外部链接正则表达式
  * @param punctuations 标点符号
  */
@@ -383,6 +392,7 @@ export class MediaWiki {
 	declare readonly headerRegex;
 	declare readonly templateRegex;
 	declare readonly argumentRegex;
+	declare readonly styleRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
 	declare readonly convertRegex;
@@ -433,6 +443,7 @@ export class MediaWiki {
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
 		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
+		this.styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.convertSemicolon = new RegExp(
 			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${config.variants?.join('|')})\s*:|(?:$|\}-))`,
 			'u',
@@ -722,7 +733,7 @@ export class MediaWiki {
 					break;
 				}
 				case ':':
-					if (dt.n && dt.html === 0 && !state.bold && !state.italic && cmpNesting(dt, state, true)) {
+					if (needColon(state)) {
 						dt.n--;
 						return makeLocalTagStyle('list', state);
 					}
@@ -1456,7 +1467,8 @@ export class MediaWiki {
 	inParserFunctionArgument(module?: boolean, n = module ? 2 : Infinity): Tokenizer {
 		const style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`,
 			chars = n === 2 ? '}{<' : "}{<~'_-", // `#invoke`/`#tag`
-			regex = new RegExp(`^(?:[^|${module ? '' : '[&:'}${chars}]|${lookahead(chars)})+`, 'iu');
+			regex = new RegExp(`^(?:[^|${module ? '' : '[&:'}${chars}]|${lookahead(chars)})+`, 'iu'),
+			regex2 = new RegExp(`^(?:[^|${module ? '' : '[&'}${chars}]|${lookahead(chars)})+`, 'iu');
 		return (stream, state) => {
 			if (stream.eat('|')) {
 				if (module) {
@@ -1471,7 +1483,7 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 			}
-			return !isSolSyntax(stream) && stream.match(regex)
+			return !isSolSyntax(stream) && stream.match(needColon(state) ? regex : regex2)
 				? makeLocalStyle(style, state)
 				: this.eatWikiText('parserFunction')(stream, state);
 		};
@@ -1509,7 +1521,7 @@ export class MediaWiki {
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 				return this.eatWikiText(tag)(stream, state);
 			}
-			return stream.match(this.argumentRegex) || space
+			return stream.match(needColon(state) ? this.argumentRegex : this.styleRegex) || space
 				? makeLocalTagStyle(tag, state)
 				: this.eatWikiText(tag)(stream, state);
 		};
