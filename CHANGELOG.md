@@ -1,3 +1,11 @@
+## 2.18.1
+
+*2024-10-28*
+
+**Changed**
+
+- The [colorPicker](./README.md#colorpicker) extension now works for parameter values in the MediaWiki mode
+
 ## 2.18.0
 
 *2024-10-26*

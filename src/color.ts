@@ -15,7 +15,14 @@ import type {WidgetOptions} from '@replit/codemirror-css-color-picker';
 import type {Addon} from './codemirror';
 
 const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
-	if (!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)) {
+	if (
+		!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)
+		&& (
+			!/mw-(?:template|parserfunction)(?:$|_)/u.test(type)
+			|| !/[|=]/u.test(doc.sliceString(from - 1, from))
+			|| !/[|\n]/u.test(doc.sliceString(to, to + 1)) && doc.sliceString(to, to + 2) !== '}}'
+		)
+	) {
 		return null;
 	}
 	return splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor).map(([s, start, end]) => {
