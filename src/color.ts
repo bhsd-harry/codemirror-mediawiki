@@ -58,6 +58,9 @@ export default [
 					outline: 'none',
 					...e[1],
 				},
+				[`.${wrapperClassName} input[type="color"]`]: {
+					outline: '1px solid #eee',
+				},
 			}),
 		];
 	},

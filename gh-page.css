@@ -123,11 +123,6 @@ textarea, .cm-editor {
 	margin-top: .5em;
 }
 
-/* 临时测试outline */
-.ͼ1 .cm-css-color-picker-wrapper input[type="color"] {
-	outline: 1px solid #eee;
-}
-
 @media screen and (max-width: 720px) {
 	main {
 		width: 100%;

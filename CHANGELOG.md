@@ -1,3 +1,11 @@
+## 2.18.3
+
+*2024-10-30*
+
+**Fixed**
+
+- The [colorPicker](./README.md#colorpicker) extension now shows a gray outline for the color picker
+
 ## 2.18.2
 
 *2024-10-28*
