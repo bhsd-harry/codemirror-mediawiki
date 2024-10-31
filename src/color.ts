@@ -22,6 +22,11 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 			|| !/[|=]/u.test(doc.sliceString(from - 1, from))
 			|| !/[|\n]/u.test(doc.sliceString(to, to + 1)) && doc.sliceString(to, to + 2) !== '}}'
 		)
+		&& (
+			!/mw-templatevariable(?:$|_)/u.test(type)
+			|| doc.sliceString(from - 1, from) !== '|'
+			|| doc.sliceString(to, to + 1) !== '|' && doc.sliceString(to, to + 3) !== '}}}'
+		)
 	) {
 		return null;
 	}
