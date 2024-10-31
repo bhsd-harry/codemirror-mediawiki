@@ -4,6 +4,7 @@ import {
 	keymap,
 	highlightSpecialChars,
 	highlightActiveLine,
+	highlightActiveLineGutter,
 	highlightWhitespace,
 	highlightTrailingWhitespace,
 	drawSelection,
@@ -194,6 +195,7 @@ export class CodeMirror6 {
 				EditorView.editorAttributes.of({lang: textarea.lang}),
 				lineNumbers(),
 				EditorView.lineWrapping,
+				highlightActiveLineGutter(),
 				keymap.of([
 					...defaultKeymap,
 					...searchKeymap,

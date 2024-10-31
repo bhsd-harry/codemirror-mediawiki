@@ -1,3 +1,11 @@
+## 2.18.4
+
+*2024-10-31*
+
+**Added**
+
+- Always highlight the active line gutters
+
 ## 2.18.3
 
 *2024-10-30*
