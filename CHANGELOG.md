@@ -10,6 +10,7 @@
 **Changed**
 
 - The [colorPicker](./README.md#colorpicker) extension now works for argument default values in the MediaWiki mode
+- HTML comments instead of braces are now highlighted inside `<inputbox>` in the MediaWiki mode
 
 ## 2.18.3
 

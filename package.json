@@ -51,7 +51,7 @@
 		"@codemirror/view": "^6.26.4",
 		"@lezer/common": "^1.2.1",
 		"style-mod": "^4.1.0",
-		"wikiparser-node": "^1.12.7"
+		"wikiparser-node": "^1.13.0"
 	},
 	"devDependencies": {
 		"@bhsd/common": "^0.3.0",

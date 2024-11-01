@@ -1807,13 +1807,12 @@ export class MediaWiki {
 	@getTokenizer<string>
 	get inInputbox(): Tokenizer<string> {
 		return (stream, state) => {
-			if (stream.match(/^\{{3}(?!\{)\s*/u)) {
-				chain(state, this.inVariable());
-				return tokens.templateVariableBracket;
-			} else if (stream.match(/^\{\{\s*/u)) {
-				return this.eatTransclusion(stream, state);
+			if (stream.match('<!--')) {
+				chain(state, this.inComment);
+				return tokens.comment;
 			}
-			stream.match(/^(?:[^{]|\{(?!\{))+/u);
+			/** @todo braces should also be parsed */
+			stream.match(/^(?:[^<]|<(?!!--))+/u);
 			return '';
 		};
 	}
