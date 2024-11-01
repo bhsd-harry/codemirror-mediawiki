@@ -11,6 +11,7 @@ import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare type MimeTypes = 'mediawiki'
 | 'text/nowiki'
+| 'text/pre'
 | 'text/references'
 | 'text/choose'
 | 'text/combobox'
@@ -290,15 +291,6 @@ const makeFullStyle = (style: Style, state: ExtState): string => typeof style ==
 	? style
 	: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`;
 
-const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [string] =>
-	makeStyle(tokens[tag], state, endGround);
-
-const makeStyle = (style: string, state: ExtState, endGround?: NestCount): [string] =>
-	[makeLocalStyle(style, state, endGround)];
-
-const makeLocalTagStyle = (tag: TagName, state: State, endGround?: NestCount): string =>
-	makeLocalStyle(tokens[tag], state, endGround);
-
 const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	let ground = '';
 	switch (state.nTemplate) {
@@ -339,6 +331,15 @@ const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): 
 	}
 	return (ground && `mw${ground}-ground `) + style;
 };
+
+const makeLocalTagStyle = (tag: TagName, state: State, endGround?: NestCount): string =>
+	makeLocalStyle(tokens[tag], state, endGround);
+
+const makeStyle = (style: string, state: ExtState, endGround?: NestCount): [string] =>
+	[makeLocalStyle(style, state, endGround)];
+
+const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [string] =>
+	makeStyle(tokens[tag], state, endGround);
 
 /**
  * Remembers position and status for rollbacking.
@@ -768,6 +769,7 @@ export class MediaWiki {
 		};
 	}
 
+	@getTokenizer
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
@@ -792,6 +794,7 @@ export class MediaWiki {
 		};
 	}
 
+	@getTokenizer
 	eatExternalLinkProtocol(chars: string, free = true): Tokenizer {
 		return (stream, state) => {
 			stream.match(chars);
@@ -1528,7 +1531,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inConvert(style: string, needFlag?: boolean, needLang = true): Tokenizer {
+	inConvert(style: string, needFlag?: boolean, needLang = true, plain?: boolean): Tokenizer {
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (stream.match('}-')) {
@@ -1546,6 +1549,12 @@ export class MediaWiki {
 			} else if (needLang && stream.match(this.convertLang)) {
 				state.tokenize = this.inConvert(style, false, false);
 				return makeLocalTagStyle('convertLang', state);
+			} else if (plain) {
+				if (stream.match('-{', false)) {
+					return this.eatWikiText(style)(stream, state);
+				}
+				stream.match(/^(?:(?:[^};=-]|\}(?!-)|=(?!>)|-(?!\{))+|;|=>)/u);
+				return makeStyle(style, state);
 			}
 			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space
 				? makeStyle(style, state)
@@ -1729,6 +1738,33 @@ export class MediaWiki {
 		};
 	}
 
+	@getTokenizer
+	inPre(begin?: boolean): Tokenizer<string> {
+		const re = new RegExp(String.raw`^(?:[^<&-]|-(?!\{)|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu');
+		return (stream, state) => {
+			if (stream.match(begin ? /^<\/nowiki>/iu : /^<nowiki>/iu)) {
+				state.tokenize = this.inPre(!begin);
+				return tokens.comment;
+			} else if (stream.match('-{')) {
+				chain(state, this.inConvert('', true, true, true));
+				return tokens.convertBracket;
+			} else if (stream.eat('&')) {
+				return this.eatEntity(stream, '');
+			}
+			stream.match(re);
+			return '';
+		};
+	}
+
+	'text/pre'(): StreamParser<State> {
+		return {
+			startState: () => startState(this.inPre(), []),
+
+			token: simpleToken,
+		};
+	}
+
+	@getTokenizer
 	inReferences(tag: string, comment?: boolean): Tokenizer<string> {
 		const re = new RegExp(String.raw`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\s/>]|$)))+`, 'iu');
 		return (stream, state) => {
@@ -1782,9 +1818,9 @@ export class MediaWiki {
 		};
 	}
 
-	'text/inputbox'(tags: string[]): StreamParser<State> {
+	'text/inputbox'(): StreamParser<State> {
 		return {
-			startState: () => startState(this.inInputbox, tags),
+			startState: () => startState(this.inInputbox, []),
 
 			token: simpleToken,
 		};

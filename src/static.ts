@@ -5,7 +5,7 @@ export const tagModes = {
 	onlyinclude: 'mediawiki',
 	includeonly: 'mediawiki',
 	noinclude: 'mediawiki',
-	pre: 'text/nowiki',
+	pre: 'text/pre',
 	nowiki: 'text/nowiki',
 	indicator: 'mediawiki',
 	poem: 'mediawiki',

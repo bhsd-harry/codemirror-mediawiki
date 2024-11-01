@@ -1,18 +1,15 @@
-## 2.18.5
-
-*2024-10-31*
-
-**Changed**
-
-- The [colorPicker](./README.md#colorpicker) extension now works for argument default values in the MediaWiki mode
-
 ## 2.18.4
 
-*2024-10-31*
+*2024-11-01*
 
 **Added**
 
 - Always highlight the active line gutters
+- Improved highlighting of `<pre>` in the MediaWiki mode
+
+**Changed**
+
+- The [colorPicker](./README.md#colorpicker) extension now works for argument default values in the MediaWiki mode
 
 ## 2.18.3
 

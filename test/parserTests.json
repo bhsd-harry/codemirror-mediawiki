@@ -7393,7 +7393,7 @@
 	{
 		"desc": "<pre> with <nowiki> inside (compatibility with 1.6 and earlier)",
 		"wikitext": "<pre><nowiki>\n<b>\n<cite>\n<em>\n</nowiki></pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt&lt;b&gt&lt;cite&gt&lt;em&gt&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre comment>&lt;nowiki&gt</><tag-pre>&lt;b&gt&lt;cite&gt&lt;em&gt</><tag-pre comment>&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Regression with preformatted in <center>",
@@ -9903,7 +9903,7 @@
 	{
 		"desc": "<nowiki> inside <pre> (T15238)",
 		"wikitext": "<pre>\n<nowiki>\n</pre>\n<pre>\n<nowiki></nowiki>\n</pre>\n<pre><nowiki><nowiki></nowiki>Foo<nowiki></nowiki></nowiki></pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt&lt;nowiki&gt&lt;/nowiki&gtFoo&lt;nowiki&gt&lt;/nowiki&gt&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre comment>&lt;nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre comment>&lt;nowiki&gt&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre comment>&lt;nowiki&gt</><tag-pre>&lt;nowiki&gt</><tag-pre comment>&lt;/nowiki&gt</><tag-pre>Foo</><tag-pre comment>&lt;nowiki&gt&lt;/nowiki&gt</><tag-pre>&lt;/nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "<nowiki> inside of #tag:pre",
@@ -9913,7 +9913,7 @@
 	{
 		"desc": "<nowiki> and <pre> preference (first one wins)",
 		"wikitext": "<pre>\n<nowiki>\n</pre>\n</nowiki>\n</pre>\n\n<nowiki>\n<pre>\n<nowiki>\n</pre>\n</nowiki>\n</pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>&lt;nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</><error>&lt;/nowiki&gt&lt;/pre&gt</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>&lt;pre&gt&lt;nowiki&gt&lt;/pre&gt</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><error>&lt;/pre&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre comment>&lt;nowiki&gt</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</><error>&lt;/nowiki&gt&lt;/pre&gt</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>&lt;pre&gt&lt;nowiki&gt&lt;/pre&gt</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><error>&lt;/pre&gt</>"
 	},
 	{
 		"desc": "</pre> inside nowiki",
