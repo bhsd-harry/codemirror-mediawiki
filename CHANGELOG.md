@@ -1,3 +1,12 @@
+## 2.18.6
+
+*2024-11-02*
+
+**Fixed**
+
+- Language conversion inside `<pre>` in the MediaWiki mode
+- Braces are now highlighted inside `<references>` in the MediaWiki mode
+
 ## 2.18.5
 
 *2024-11-02*

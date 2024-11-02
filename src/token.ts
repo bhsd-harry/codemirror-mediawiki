@@ -1538,16 +1538,16 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('convertBracket', state);
 			} else if (needFlag && stream.match(/^[;\sa-z-]*(?=\|)/iu)) {
-				chain(state, this.inConvert(style));
+				chain(state, this.inConvert(style, false, true, plain));
 				state.tokenize = this.inStr('|', 'convertDelimiter');
 				return makeLocalTagStyle('convertFlag', state);
 			} else if (stream.match(this.convertSemicolon)) {
 				if (needFlag || !needLang) {
-					state.tokenize = this.inConvert(style);
+					state.tokenize = this.inConvert(style, false, true, plain);
 				}
 				return makeLocalTagStyle('convertDelimiter', state);
 			} else if (needLang && stream.match(this.convertLang)) {
-				state.tokenize = this.inConvert(style, false, false);
+				state.tokenize = this.inConvert(style, false, false, plain);
 				return makeLocalTagStyle('convertLang', state);
 			} else if (plain) {
 				if (stream.match('-{', false)) {
@@ -1765,13 +1765,23 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inReferences(tag: string, comment?: boolean): Tokenizer<string> {
-		const re = new RegExp(String.raw`^(?:[^<]|<(?!${comment ? '!--|' : ''}${tag}(?:[\s/>]|$)))+`, 'iu');
+	inNested(tag: string): Tokenizer<string> {
+		const re = tag === 'ref'
+			? /^(?:\{|(?:[^<{]|\{(?!\{)|<(?!!--|ref(?:[\s/>]|$)))+)/iu
+			: new RegExp(String.raw`^(?:[^<]|<(?!${tag}(?:[\s/>]|$)))+`, 'iu');
 		return (stream, state) => {
-			if (comment && stream.match('<!--')) {
-				chain(state, this.inComment);
-				return makeLocalTagStyle('comment', state);
-			} else if (stream.match(re)) {
+			if (tag === 'ref') {
+				if (stream.match('<!--')) {
+					chain(state, this.inComment);
+					return makeLocalTagStyle('comment', state);
+				} else if (stream.match(/^\{{3}(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
+					chain(state, this.inVariable());
+					return tokens.templateVariableBracket;
+				} else if (stream.match(/^\{\{(?!\{(?!\{))\s*/u)) {
+					return this.eatTransclusion(stream, state);
+				}
+			}
+			if (stream.match(re)) {
 				return tokens.comment;
 			}
 			stream.eat('<');
@@ -1782,7 +1792,7 @@ export class MediaWiki {
 
 	'text/references'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('ref', true), tags),
+			startState: () => startState(this.inNested('ref'), tags),
 
 			token: simpleToken,
 		};
@@ -1790,7 +1800,7 @@ export class MediaWiki {
 
 	'text/choose'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('option'), tags),
+			startState: () => startState(this.inNested('option'), tags),
 
 			token: simpleToken,
 		};
@@ -1798,7 +1808,7 @@ export class MediaWiki {
 
 	'text/combobox'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inReferences('combooption'), tags),
+			startState: () => startState(this.inNested('combooption'), tags),
 
 			token: simpleToken,
 		};
