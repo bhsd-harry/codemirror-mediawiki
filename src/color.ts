@@ -5,6 +5,7 @@ import {
 	parseColorLiteral,
 	ColorType,
 	colorPicker,
+	colorPickerTheme,
 	makeColorPicker,
 	wrapperClassName,
 } from '@replit/codemirror-css-color-picker';
@@ -34,7 +35,7 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 		const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
 		let alpha = color?.alpha;
 		if (color?.colorType === ColorType.rgb) {
-			alpha &&= Math.round(parseFloat(alpha) / (alpha.endsWith('%') ? 100 : 1) * 255)
+			alpha &&= Math.round(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1) * 255)
 				.toString(16).padStart(2, '0');
 		}
 		return color && {
@@ -48,31 +49,24 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 };
 
 export default [
-	(e?: [Extension, StyleSpec?]): Extension => {
-		if (!e) {
-			return [];
-		}
-		const extension = [...colorPicker as Extension[]];
-		if (e.length > 0) {
-			[extension[0]] = e;
-		}
-		return [
-			extension,
+	([e, style]: [Extension?, StyleSpec?] = []): Extension => e
+		? [
+			e,
 			EditorView.theme({
 				[`.${wrapperClassName}`]: {
 					outline: 'none',
-					...e[1],
+					...style,
 				},
 				[`.${wrapperClassName} input[type="color"]`]: {
 					outline: '1px solid #eee',
 				},
 			}),
-		];
-	},
+		]
+		: [],
 	{
-		css: [],
+		css: [colorPicker],
 		mediawiki: [
-			makeColorPicker({discoverColors}),
+			[makeColorPicker({discoverColors}), colorPickerTheme],
 			{marginLeft: '0.6ch'},
 		],
 	},

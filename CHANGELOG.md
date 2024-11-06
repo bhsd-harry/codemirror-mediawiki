@@ -1,3 +1,11 @@
+## 2.18.7
+
+*2024-11-07*
+
+**Fixed**
+
+- The [colorPicker](./README.md#colorpicker) extension for RGB and HSL colors
+
 ## 2.18.6
 
 *2024-11-02*
