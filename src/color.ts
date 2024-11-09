@@ -34,7 +34,7 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 	return splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor).map(([s, start, end]) => {
 		const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
 		let alpha = color?.alpha;
-		if (color?.colorType === ColorType.rgb) {
+		if (color?.colorType !== ColorType.hex) {
 			alpha &&= Math.round(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1) * 255)
 				.toString(16).padStart(2, '0');
 		}
