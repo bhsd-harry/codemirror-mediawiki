@@ -1,4 +1,5 @@
 import {normalizeTitle} from '@bhsd/common';
+import {getTree, listen} from 'monaco-wiki/src/tree';
 import {isMac} from './msg';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
@@ -164,15 +165,12 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 
 const linkProvider: languages.LinkProvider = {
 	async provideLinks(model) {
-		return {
-			links: 'wikiparse' in window
-				? generateLinks(model, await wikiparse.json(model.getValue(), true, -4, 9))
-				: [],
-		};
+		return {links: 'wikiparse' in window ? generateLinks(model, await getTree(model, 9)) : []};
 	},
 };
 
-let disposable: IDisposable | undefined;
+let disposable: IDisposable | undefined,
+	listener: IDisposable | undefined;
 
 /**
  * 添加或移除打开链接的事件
@@ -198,8 +196,11 @@ export default (cm: CodeMirror, on: boolean | undefined, isWiki: boolean): void 
 		// pass
 	} else if (on) {
 		disposable ??= monaco.languages.registerLinkProvider('wikitext', linkProvider);
+		listener = listen(model);
 	} else if (on === false) {
 		disposable?.dispose();
 		disposable = undefined;
+		listener?.dispose();
+		listener = undefined;
 	}
 };

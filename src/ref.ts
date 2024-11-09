@@ -86,7 +86,7 @@ export const findRef = async (
 	if (!tree || tree.docChanged) {
 		tree = wikiparse.json('state' in view ? view.state.doc.toString() : view.getValue(), true, -5, 1) as Tree;
 		trees.set(view, tree);
-		if (all && !target) {
+		if (all && !target) { // 只用于CodeMirror autocompletion
 			tree.docChanged = true;
 		}
 	}
