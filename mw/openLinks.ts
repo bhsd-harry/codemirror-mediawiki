@@ -11,6 +11,8 @@ declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
+	srcTags = new Set<string | undefined>(['templatestyles', 'img']),
+	citeTags = new Set<string | undefined>(['blockquote', 'del', 'ins', 'q']),
 	linkTypes = new Set<TokenTypes | undefined>([
 		'link-target',
 		'template-name',
@@ -48,13 +50,13 @@ const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling'): SyntaxNod
  * @param link 原链接文本
  */
 const parseMagicLink = (link: string): string => {
-	if (link.startsWith('RFC')) {
-		return `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`;
-	} else if (link.startsWith('PMID')) {
-		return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
+	if (link.startsWith('ISBN')) {
+		return new mw.Title(`Special:Booksources/${link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')}`)
+			.getUrl(undefined);
 	}
-	return new mw.Title(`Special:Booksources/${link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')}`)
-		.getUrl(undefined);
+	return link.startsWith('RFC')
+		? `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`
+		: `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
 };
 
 /**
@@ -132,7 +134,10 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 	const {type, childNodes, range: [from, to]} = tree;
 	if (
 		linkTypes.has(type)
-		|| type === 'attr-value' && grandparent?.name === 'templatestyles' && parent?.name === 'src'
+		|| type === 'attr-value' && (
+			parent?.name === 'src' && srcTags.has(grandparent?.name)
+			|| parent?.name === 'cite' && citeTags.has(grandparent?.name)
+		)
 	) {
 		const fromPos = model.getPositionAt(from),
 			toPos = model.getPositionAt(to),
@@ -144,7 +149,10 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 		try {
 			if (type === 'magic-link') {
 				url = parseMagicLink(url);
-			} else if (type !== 'ext-link-url' && type !== 'free-ext-link') {
+			} else if (
+				type === 'link-target' || type === 'template-name' || type === 'invoke-module'
+				|| type === 'attr-value' && parent?.name === 'src' && grandparent?.name === 'templatestyles'
+			) {
 				let ns = 0;
 				if (type === 'template-name' || type === 'attr-value') {
 					ns = 10;
