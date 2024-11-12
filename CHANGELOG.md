@@ -1,3 +1,11 @@
+## 2.18.8
+
+*2024-11-12*
+
+**Changed**
+
+- The [openLinks](./mw/README.md#openlinks) extension for a Monaco editor now also supports MediaWiki-style external links
+
 ## 2.18.7
 
 *2024-11-09*

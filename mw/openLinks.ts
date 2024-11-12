@@ -11,7 +11,14 @@ declare type MouseEventListener = (e: MouseEvent) => void;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
-	linkTypes = new Set<TokenTypes | undefined>(['link-target', 'template-name', 'invoke-module', 'magic-link']);
+	linkTypes = new Set<TokenTypes | undefined>([
+		'link-target',
+		'template-name',
+		'invoke-module',
+		'magic-link',
+		'ext-link-url',
+		'free-ext-link',
+	]);
 
 /**
  * 获取节点的名称
@@ -130,14 +137,14 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 		const fromPos = model.getPositionAt(from),
 			toPos = model.getPositionAt(to),
 			range = monaco.Range.fromPositions(fromPos, toPos);
-		let url = model.getValueInRange(range).replace(/<!--.*?-->/gsu, '').trim();
+		let url = model.getValueInRange(range).replace(/<!--.*?(?:-->|$)/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];
 		}
 		try {
 			if (type === 'magic-link') {
 				url = parseMagicLink(url);
-			} else {
+			} else if (type !== 'ext-link-url' && type !== 'free-ext-link') {
 				let ns = 0;
 				if (type === 'template-name' || type === 'attr-value') {
 					ns = 10;
