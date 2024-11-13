@@ -7,93 +7,20 @@
 
 import {tags} from '@lezer/highlight';
 import {Tag} from '@lezer/highlight';
+import {html} from 'wikiparser-node/config/default.json';
 
 /**
  * All HTML/XML tags permitted in MediaWiki Core.
  *
  * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
  */
-export const htmlTags = [
-		'b',
-		'bdi',
-		'bdo',
-		'del',
-		'i',
-		'ins',
-		'u',
-		'font',
-		'big',
-		'small',
-		'sub',
-		'sup',
-		'h1',
-		'h2',
-		'h3',
-		'h4',
-		'h5',
-		'h6',
-		'cite',
-		'code',
-		'em',
-		's',
-		'strike',
-		'strong',
-		'tt',
-		'var',
-		'div',
-		'center',
-		'blockquote',
-		'q',
-		'ol',
-		'ul',
-		'dl',
-		'table',
-		'caption',
-		'pre',
-		'ruby',
-		'rb',
-		'rp',
-		'rt',
-		'rtc',
-		'p',
-		'span',
-		'abbr',
-		'dfn',
-		'kbd',
-		'samp',
-		'data',
-		'time',
-		'mark',
-		'br',
-		'wbr',
-		'hr',
-		'li',
-		'dt',
-		'dd',
-		'td',
-		'th',
-		'tr',
-		'img',
-		'meta',
-		'link',
-	],
+export const htmlTags = html.flat(),
 
 	/** HTML tags that are only self-closing. */
-	voidHtmlTags = [
-		'br',
-		'hr',
-		'wbr',
-		'img',
-		'meta',
-		'link',
-	],
+	voidHtmlTags = html[2]!,
 
 	/** HTML tags that can be self-closing. */
-	selfClosingTags = [
-		'li',
-		'dt',
-		'dd',
-	],
+	selfClosingTags = html[1]!,
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
@@ -196,63 +123,4 @@ export const htmlTags = [
 			table[className] = Tag.define();
 		}
 		return table;
-	})(),
-
-	/** Common HTML attributes permitted in MediaWiki Core. */
-	htmlAttrs = [
-		'id',
-		'class',
-		'style',
-		'lang',
-		'dir',
-		'title',
-		'aria-describedby',
-		'aria-flowto',
-		'aria-hidden',
-		'aria-label',
-		'aria-labelledby',
-		'aria-level',
-		'aria-owns',
-		'role',
-		'about',
-		'property',
-		'resource',
-		'datatype',
-		'typeof',
-		'itemid',
-		'itemprop',
-		'itemref',
-		'itemscope',
-		'itemtype',
-	],
-
-	/** HTML attributes that are only permitted on certain HTML tags. */
-	elementAttrs = {
-		table: ['border'],
-		td: ['abbr', 'headers', 'rowspan', 'colspan'],
-		th: ['abbr', 'headers', 'rowspan', 'colspan', 'scope'],
-		blockquote: ['cite'],
-		q: ['cite'],
-		ins: ['cite', 'datetime'],
-		del: ['cite', 'datetime'],
-		time: ['datetime'],
-		ol: ['start', 'reversed', 'type'],
-		li: ['value'],
-		img: ['src', 'alt', 'width', 'height', 'srcset'],
-		rt: ['rbspan'],
-		data: ['value'],
-		meta: ['itemprop', 'content'],
-		link: ['itemprop', 'href', 'title'],
-		gallery: ['mode', 'showfilename', 'caption', 'perrow', 'widths', 'heights', 'showthumbnails', 'type'],
-		poem: ['compact', 'align'],
-	},
-
-	/** HTML attributes that are only permitted on certain extension tags. */
-	extAttrs = {
-		indicator: ['name'],
-		langconvert: ['from', 'to'],
-		ref: ['group', 'name', 'extends', 'follow', 'dir'],
-		references: ['group', 'responsive'],
-		charinsert: ['label'],
-		templatestyles: ['src', 'wrapper'],
-	};
+	})();

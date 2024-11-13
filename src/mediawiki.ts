@@ -11,8 +11,9 @@ import {
 	syntaxHighlighting,
 	syntaxTree,
 } from '@codemirror/language';
+import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/util/sharable';
 import {MediaWiki} from './token';
-import {htmlTags, tokens, htmlAttrs, elementAttrs, extAttrs} from './config';
+import {htmlTags, tokens} from './config';
 import {findRef} from './ref';
 import type {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
@@ -77,18 +78,18 @@ export class FullMediaWiki extends MediaWiki {
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
 		this.htmlAttrs = [
-			...htmlAttrs.map(label => ({type: 'property', label})),
+			...[...commonHtmlAttrs].map(label => ({type: 'property', label})),
 			{type: 'variable', label: 'data-', detail: '*'},
 			{type: 'namespace', label: 'xmlns:', detail: '*'},
 		];
-		this.elementAttrs = new Map();
-		for (const [key, value] of Object.entries(elementAttrs)) {
-			this.elementAttrs.set(key, value.map(label => ({type: 'property', label})));
-		}
-		this.extAttrs = new Map();
-		for (const [key, value] of Object.entries(extAttrs)) {
-			this.extAttrs.set(key, value.map(label => ({type: 'property', label})));
-		}
+		this.elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
+			key,
+			[...value].map(label => ({type: 'property', label})),
+		]));
+		this.extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
+			key,
+			[...value].map(label => ({type: 'property', label})),
+		]));
 	}
 
 	/**
@@ -185,7 +186,8 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		const refAttrs = new Set(['name', 'follow', 'extends']);
+		const refAttrs = new Set(['name', 'follow', 'extends']),
+			htmlExt = Object.keys(this.config.tags).filter(tag => tag in htmlAttrs).map(tag => `mw-ext-${tag}`);
 		return async context => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
@@ -262,7 +264,7 @@ export class FullMediaWiki extends MediaWiki {
 				}
 			}
 			if (
-				hasTag(types, ['htmlTagAttribute', 'tableDefinition', 'mw-ext-pre', 'mw-ext-gallery', 'mw-ext-poem'])
+				hasTag(types, ['htmlTagAttribute', 'tableDefinition', ...htmlExt])
 				|| explicit && hasTag(types, ['tableTd', 'tableTh', 'tableCaption'])
 			) {
 				let re = hasTag(types, ['htmlTagAttribute', 'extTagAttribute']) ? /\s[a-z]+$/iu : /[\s|-][a-z]+$/iu;
@@ -279,6 +281,7 @@ export class FullMediaWiki extends MediaWiki {
 							options: [
 								...tagName === 'meta' || tagName === 'link' ? [] : this.htmlAttrs,
 								...this.elementAttrs.get(tagName) ?? [],
+								...this.extAttrs.get(tagName) ?? [],
 							],
 							validFor: /^[a-z]*$/iu,
 						};
