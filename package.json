@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.18.7",
+	"version": "2.18.8",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -54,7 +54,7 @@
 		"wikiparser-node": "^1.13.2"
 	},
 	"devDependencies": {
-		"@bhsd/common": "^0.4.2",
+		"@bhsd/common": "^0.4.3",
 		"@codemirror/autocomplete": "^6.12.0",
 		"@codemirror/commands": "^6.3.3",
 		"@codemirror/lang-css": "^6.2.1",
