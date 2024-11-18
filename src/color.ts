@@ -1,4 +1,4 @@
-import {splitColors} from '@bhsd/common';
+import {splitColors, numToHex} from '@bhsd/common';
 import {EditorView} from '@codemirror/view';
 import {
 	parseCallExpression,
@@ -35,8 +35,7 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 		const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
 		let alpha = color?.alpha;
 		if (color?.colorType !== ColorType.hex) {
-			alpha &&= Math.round(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1) * 255)
-				.toString(16).padStart(2, '0');
+			alpha &&= numToHex(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1));
 		}
 		return color && {
 			...color,
