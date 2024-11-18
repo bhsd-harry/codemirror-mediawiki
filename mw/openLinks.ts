@@ -92,7 +92,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 		if (!node) {
 			return;
 		}
-		const {name} = node;
+		const {name, from, to} = node;
 		if (name.includes(tokens.pageName)) {
 			const last = search(node, 'nextSibling'),
 				{nextSibling} = last;
@@ -104,19 +104,19 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
 				ns = 10;
 			} else if (name.includes(tokens.parserFunction)) {
-				ns = 828;
+				ns = name.includes('mw-widget') ? 274 : 828;
 			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
 			}
 			modClick(new mw.Title(normalizeTitle(page), ns).getUrl(undefined), e);
 		} else if (/-extlink-protocol/u.test(name)) {
-			modClick(state.sliceDoc(node.from, search(node.nextSibling!, 'nextSibling').to), e);
+			modClick(state.sliceDoc(from, search(node.nextSibling!, 'nextSibling').to), e);
 		} else if (/-extlink(?:_|$)/u.test(name)) {
 			const prev = search(node, 'prevSibling').prevSibling!,
 				next = search(node, 'nextSibling');
 			modClick(state.sliceDoc(prev.from, next.to), e);
 		} else if (name.includes(tokens.magicLink)) {
-			modClick(parseMagicLink(state.sliceDoc(node.from, node.to)), e);
+			modClick(parseMagicLink(state.sliceDoc(from, to)), e);
 		}
 	};
 	handlers.set(cm, handler);

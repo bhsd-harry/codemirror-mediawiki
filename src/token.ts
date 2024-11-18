@@ -521,6 +521,7 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
+		this.addToken('widget', true);
 	}
 
 	@getTokenizer
@@ -1377,7 +1378,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionName(invoke?: boolean, n?: number): Tokenizer {
+	inParserFunctionName(invoke?: number, n?: number): Tokenizer {
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1406,11 +1407,13 @@ export class MediaWiki {
 					{config: {functionSynonyms: [insensitive]}} = this;
 				if (name.startsWith('#')) {
 					if (insensitive[name] === 'invoke' || insensitive[name.slice(1)] === 'invoke') {
-						state.tokenize = this.inParserFunctionName(true);
+						state.tokenize = this.inParserFunctionName(2);
+					} else if (insensitive[name] === 'widget' || insensitive[name.slice(1)] === 'widget') {
+						state.tokenize = this.inParserFunctionName(1);
 					} else if (insensitive[name] === 'switch' || insensitive[name.slice(1)] === 'switch') {
-						state.tokenize = this.inParserFunctionName(false, 1);
+						state.tokenize = this.inParserFunctionName(undefined, 1);
 					} else if (insensitive[name] === 'tag' || insensitive[name.slice(1)] === 'tag') {
-						state.tokenize = this.inParserFunctionName(false, 2);
+						state.tokenize = this.inParserFunctionName(undefined, 2);
 					}
 				}
 				return makeLocalTagStyle('parserFunctionName', state);
@@ -1467,19 +1470,20 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionArgument(module?: boolean, n = module ? 2 : Infinity): Tokenizer {
-		const style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`,
+	inParserFunctionArgument(module?: number, n = module ?? Infinity): Tokenizer {
+		if (n === 0) {
+			return this.inTemplateArgument(true, true);
+		}
+		const style = `${tokens.parserFunction} ${module ? tokens.pageName : ''} ${module === 1 ? 'mw-widget' : ''}`,
 			chars = n === 2 ? '}{<' : "}{<~'_-", // `#invoke`/`#tag`
 			regex = new RegExp(`^(?:[^|${module ? '' : '[&:'}${chars}]|${lookahead(chars)})+`, 'iu'),
 			regex2 = new RegExp(`^(?:[^|${module ? '' : '[&'}${chars}]|${lookahead(chars)})+`, 'iu');
 		return (stream, state) => {
 			if (stream.eat('|')) {
 				if (module) {
-					state.tokenize = this.inParserFunctionArgument(false, 1);
+					state.tokenize = this.inParserFunctionArgument(undefined, module - 1);
 				} else if (n !== Infinity) {
-					state.tokenize = n === 1
-						? this.inTemplateArgument(true, true)
-						: this.inParserFunctionArgument(false, n - 1);
+					state.tokenize = this.inParserFunctionArgument(undefined, n - 1);
 				}
 				return makeLocalTagStyle('parserFunctionDelimiter', state);
 			} else if (stream.match('}}')) {

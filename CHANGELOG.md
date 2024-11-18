@@ -1,3 +1,11 @@
+## 2.18.9
+
+*2024-11-18*
+
+**Changed**
+
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./mw/README.md#openlinks) extensions now also support widget pages when used in a MediaWiki site
+
 ## 2.18.8
 
 *2024-11-13*

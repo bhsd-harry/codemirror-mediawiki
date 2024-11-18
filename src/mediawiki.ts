@@ -211,8 +211,12 @@ export class FullMediaWiki extends MediaWiki {
 						};
 				}
 				const isModule = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
+				let prefix = '';
+				if (isModule) {
+					prefix = hasTag(types, 'mw-widget') ? 'Widget:' : 'Module:';
+				}
 				if (isModule && search.trim() || hasTag(types, 'linkPageName')) {
-					const suggestions = await this.#linkSuggest((isModule ? 'Module:' : '') + search, isModule && 828);
+					const suggestions = await this.#linkSuggest(prefix + search);
 					return suggestions
 						? {
 							from: from + suggestions.offset - (isModule && 7),
