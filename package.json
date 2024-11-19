@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.18.8",
+	"version": "2.18.9",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -33,8 +33,6 @@
 		"build:gh-page": "bash build.sh",
 		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
 		"build": "npm run build:core && npm run build:mw && npm run build:wiki && eslint --no-eslintrc -c .eslintrc.dist.cjs dist/*.js",
-		"diff": "git diff --ignore-all-space --color-moved",
-		"diff:stat": "f() { git diff --stat --ignore-all-space --color=always $1 $2 -- . ':!dist/' ':!.github/'; }; f",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
 		"lint": "npm run lint:ts && npm run lint:css",
