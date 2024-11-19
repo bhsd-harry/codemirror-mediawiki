@@ -1,10 +1,11 @@
 ## 2.18.9
 
-*2024-11-18*
+*2024-11-19*
 
 **Changed**
 
 - The [autocompletion](./README.md#autocompletion) and [openLinks](./mw/README.md#openlinks) extensions now also support widget pages when used in a MediaWiki site
+- The Lua linter now warns about the use of global variables
 
 ## 2.18.8
 

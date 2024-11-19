@@ -107,14 +107,56 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 	return async code => (await stylelint.lint({code, config})).results.flatMap(({warnings}) => warnings);
 };
 
+/** @see https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual */
+const defined = new Set([
+	'_G',
+	'_VERSION',
+	'assert',
+	'error',
+	'getfenv',
+	'getmetatable',
+	'ipairs',
+	'next',
+	'pairs',
+	'pcall',
+	'rawequal',
+	'rawget',
+	'rawset',
+	'select',
+	'setmetatable',
+	'tonumber',
+	'tostring',
+	'type',
+	'unpack',
+	'xpcall',
+	'debug',
+	'math',
+	'os',
+	'require',
+	'package',
+	'string',
+	'table',
+	'mw',
+]);
+
 /** 获取 luaparse */
 export const getLuaLinter: getAsyncLinter<(text: string) => Diagnostic[]> = async () => {
 	await loadScript('npm/luaparse/luaparse.min.js', 'luaparse', true);
 	/** @see https://github.com/ajaxorg/ace/pull/4954 */
-	luaparse.defaultOptions.luaVersion = '5.3';
-	return doc => {
+	Object.assign(luaparse.defaultOptions, {luaVersion: '5.3', comments: false, ranges: true, scope: true});
+	return text => {
 		try {
-			luaparse.parse(doc.toString());
+			const {globals} = luaparse.parse(text);
+			return globals.filter(({name}) => !defined.has(name)).map(({range: [from, to]}) => {
+				const assignment = /\bfunction\s+$/u.test(text.slice(0, from)) || /^\s*=(?!=)/u.test(text.slice(to));
+				return {
+					source: 'luaparse',
+					message: `${assignment ? 'Setting' : 'Accessing'} an undefined global variable`,
+					severity: assignment ? 'warning' : 'error',
+					from,
+					to,
+				};
+			});
 		} catch (e) {
 			if (e instanceof luaparse.SyntaxError) {
 				return [

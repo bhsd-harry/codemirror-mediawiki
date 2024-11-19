@@ -5,9 +5,13 @@ import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
 import type {MwConfig, LintSource} from './codemirror';
 
+interface LuaNode {
+	name: string;
+	range: [number, number];
+}
 interface luaparse {
 	defaultOptions: {luaVersion: string};
-	parse(s: string): void;
+	parse(s: string): {globals: LuaNode[]};
 	SyntaxError: new () => {message: string, index: number};
 }
 
