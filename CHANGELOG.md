@@ -1,3 +1,11 @@
+## 2.18.10
+
+*2024-11-20*
+
+**Changed**
+
+- The Lua linter is now based on [Luacheck](https://github.com/mpeterv/luacheck) instead of luaparse
+
 ## 2.18.9
 
 *2024-11-19*

@@ -423,7 +423,14 @@ export class CodeMirror6 {
 			}
 			case 'lua': {
 				const luaLint = await getLuaLinter();
-				return doc => luaLint(doc.toString());
+				return async doc => (await luaLint(doc.toString()))
+					.map(({line, column, end_column: endColumn, msg: message, severity}) => ({
+						source: 'Luacheck',
+						message,
+						severity: severity === 1 ? 'warning' : 'error',
+						from: pos(doc, line, column),
+						to: pos(doc, line, endColumn + 1),
+					}));
 			}
 			case 'json': {
 				const jsonLint = getJsonLinter();

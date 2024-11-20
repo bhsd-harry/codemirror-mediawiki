@@ -2,7 +2,6 @@ import {CDN, loadScript} from '@bhsd/common';
 import type {LinterBase} from 'wikiparser-node/extensions/typings';
 import type {Linter} from 'eslint';
 import type {Warning} from 'stylelint';
-import type {Diagnostic} from '@codemirror/lint';
 
 declare type getLinter<T> = (opt?: Record<string, unknown>) => T;
 declare type getAsyncLinter<T> = (opt?: Record<string, unknown>) => Promise<T>;
@@ -107,71 +106,10 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 	return async code => (await stylelint.lint({code, config})).results.flatMap(({warnings}) => warnings);
 };
 
-/** @see https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual */
-const defined = new Set([
-	'_G',
-	'_VERSION',
-	'assert',
-	'error',
-	'getfenv',
-	'getmetatable',
-	'ipairs',
-	'next',
-	'pairs',
-	'pcall',
-	'rawequal',
-	'rawget',
-	'rawset',
-	'select',
-	'setmetatable',
-	'tonumber',
-	'tostring',
-	'type',
-	'unpack',
-	'xpcall',
-	'debug',
-	'math',
-	'os',
-	'require',
-	'package',
-	'string',
-	'table',
-	'mw',
-]);
-
-/** 获取 luaparse */
-export const getLuaLinter: getAsyncLinter<(text: string) => Diagnostic[]> = async () => {
-	await loadScript('npm/luaparse/luaparse.min.js', 'luaparse', true);
-	/** @see https://github.com/ajaxorg/ace/pull/4954 */
-	Object.assign(luaparse.defaultOptions, {luaVersion: '5.3', comments: false, ranges: true, scope: true});
-	return text => {
-		try {
-			const {globals} = luaparse.parse(text);
-			return globals.filter(({name}) => !defined.has(name)).map(({range: [from, to]}) => {
-				const assignment = /\bfunction\s+$/u.test(text.slice(0, from)) || /^\s*=(?!=)/u.test(text.slice(to));
-				return {
-					source: 'luaparse',
-					message: `${assignment ? 'Setting' : 'Accessing'} an undefined global variable`,
-					severity: assignment ? 'warning' : 'error',
-					from,
-					to,
-				};
-			});
-		} catch (e) {
-			if (e instanceof luaparse.SyntaxError) {
-				return [
-					{
-						source: 'luaparse',
-						message: e.message.replace(/^\[\d+:\d+\]\s*/u, ''),
-						severity: 'error',
-						from: e.index,
-						to: e.index,
-					},
-				];
-			}
-		}
-		return [];
-	};
+/** 获取 Luacheck */
+export const getLuaLinter: getAsyncLinter<(text: string) => Promise<LuaReport[]>> = async () => {
+	await loadScript('gh/bhsd-harry/luacheck@0.0.1/dist/index.min.js', 'luacheck');
+	return text => luacheck.queue(text);
 };
 
 declare interface JsonError {
