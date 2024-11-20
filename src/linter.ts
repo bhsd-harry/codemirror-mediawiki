@@ -108,8 +108,8 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 
 /** 获取 Luacheck */
 export const getLuaLinter: getAsyncLinter<(text: string) => Promise<LuaReport[]>> = async () => {
-	await loadScript('gh/bhsd-harry/luacheck@0.0.2/dist/index.min.js', 'luacheck');
-	return text => luacheck.queue(text);
+	await loadScript('gh/bhsd-harry/luacheck@0.0.3/dist/index.min.js', 'luacheck');
+	return async text => (await luacheck).queue(text);
 };
 
 declare interface JsonError {

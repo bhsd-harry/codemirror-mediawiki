@@ -23,6 +23,6 @@ declare global {
 		Linter: new () => Linter;
 	};
 	const stylelint: PublicApi;
-	const luacheck: {queue(s: string): Promise<LuaReport[]>};
+	const luacheck: Promise<{queue(s: string): Promise<LuaReport[]>}>;
 	const Parser: Parser;
 }
