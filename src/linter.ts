@@ -53,7 +53,7 @@ export const getJsLinter: getAsyncLinter<(text: string) => Linter.LintMessage[]>
  * @param opt 选项
  */
 export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> = async opt => {
-	await loadScript('gh/openstyles/stylelint-bundle/dist/stylelint-bundle.min.js', 'stylelint');
+	await loadScript('npm/stylelint-bundle', 'stylelint');
 	/** @see https://www.npmjs.com/package/stylelint-config-recommended */
 	const config = {
 		rules: {
