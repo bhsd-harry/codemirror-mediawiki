@@ -50,4 +50,22 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     indent.addEventListener('change', indentChange);
     indentChange();
     Object.assign(window, { cm });
+    const hashMap = new Map([
+        ['wiki', 'mediawiki'],
+        ['wikitext', 'mediawiki'],
+        ['mediawiki', 'mediawiki'],
+        ['javascript', 'javascript'],
+        ['js', 'javascript'],
+        ['css', 'css'],
+        ['lua', 'lua'],
+        ['json', 'json'],
+    ]);
+    window.addEventListener('hashchange', () => {
+        const element = document.getElementById(hashMap.get(location.hash.slice(1).toLowerCase()));
+        if (element) {
+            element.checked = true;
+            element.dispatchEvent(new Event('change'));
+        }
+    });
+    window.dispatchEvent(new Event('hashchange'));
 })();
