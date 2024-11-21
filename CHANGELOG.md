@@ -713,7 +713,7 @@
 
 **Fixed**
 
-- In the MediaWiki mode, a valid tag name now must end with `/[>/\s]/`.
+- In the MediaWiki mode, a valid tag name now must end with `/[>/\s]/`
 
 ## v2.6.1
 
@@ -807,7 +807,7 @@
 
 **Fixed**
 
-- The keyboard shortcut for template folding now closes the tooltip.
+- The keyboard shortcut for template folding now closes the tooltip
 
 ## v2.3.0
 

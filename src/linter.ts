@@ -2,6 +2,7 @@ import {CDN, loadScript} from '@bhsd/common';
 import type {LinterBase} from 'wikiparser-node/extensions/typings';
 import type {Linter} from 'eslint';
 import type {Warning} from 'stylelint';
+import type {Diagnostic} from 'luacheck-browserify';
 
 declare type getLinter<T> = (opt?: Record<string, unknown>) => T;
 declare type getAsyncLinter<T> = (opt?: Record<string, unknown>) => Promise<T>;
@@ -107,9 +108,10 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 };
 
 /** 获取 Luacheck */
-export const getLuaLinter: getAsyncLinter<(text: string) => Promise<LuaReport[]>> = async () => {
-	await loadScript('gh/bhsd-harry/luacheck@0.0.3/dist/index.min.js', 'luacheck');
-	return async text => (await luacheck).queue(text);
+export const getLuaLinter: getAsyncLinter<(text: string) => Promise<Diagnostic[]>> = async () => {
+	await loadScript('npm/luacheck-browserify@0.1.0/dist/index.min.js', 'luacheck');
+	const luachecker = await luacheck(undefined as unknown as string);
+	return async text => luachecker.queue(text);
 };
 
 declare interface JsonError {
