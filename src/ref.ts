@@ -36,7 +36,7 @@ const attributes = new Set(['follow', 'extends']);
  */
 const findRefImmediate = (
 	view: EditorView | editor.ITextModel,
-	tree: AST & {selfClosing?: boolean},
+	tree: AST,
 	target: string,
 	all?: boolean,
 	group?: boolean,
@@ -44,12 +44,14 @@ const findRefImmediate = (
 	const sliceDoc = (from: number, to: number): string => 'state' in view
 		? view.state.sliceDoc(from, to)
 		: view.getValueInRange(monaco.Range.fromPositions(view.getPositionAt(from), view.getPositionAt(to)));
-	const {childNodes, type, name, selfClosing} = tree;
+	const {childNodes, type, name} = tree;
 	if (!childNodes) {
 		return [];
 	} else if (type !== 'ext' || !(name === 'ref' || group && name === 'references')) {
 		return childNodes.flatMap(child => findRefImmediate(view, child, target, all, group));
-	} else if (all || !selfClosing) {
+	}
+	const {range} = childNodes[1]!;
+	if (all || range[0] < range[1]) {
 		const attrs = childNodes[0]!.childNodes!.filter(
 				({type: t, name: n}) =>
 					t === 'ext-attr' && (group ? n === 'group' : n === 'name' || all && attributes.has(n!)),

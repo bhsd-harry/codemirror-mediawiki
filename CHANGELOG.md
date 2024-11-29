@@ -1,3 +1,11 @@
+## 2.18.13
+
+*2024-11-30*
+
+**Fixed**
+
+- Detection of `<ref>` definitions with non-empty content for a Monaco editor
+
 ## 2.18.12
 
 *2024-11-20*
