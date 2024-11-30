@@ -81,7 +81,7 @@ export const findRef = async (
 	all?: boolean,
 	group?: boolean,
 ): Promise<Ranges> => {
-	if (!('wikiparse' in window)) {
+	if (!('wikiparse' in globalThis)) {
 		return [];
 	}
 	let tree = trees.get(view);
@@ -97,7 +97,7 @@ export const findRef = async (
 
 export const refHover = [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
-		if (!('wikiparse' in window)) {
+		if (!('wikiparse' in globalThis)) {
 			return null;
 		}
 		const {state} = view,

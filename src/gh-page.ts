@@ -36,7 +36,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
 			config ??= CodeMirror6.getMwConfig(parserConfig!);
 		}
-		cm.setLanguage(lang, config);
+		await cm.setLanguage(lang, config);
 		if (!(lang in linters)) {
 			linters[lang] = await cm.getLinter();
 			if (isMediaWiki) {
@@ -73,7 +73,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	indent.addEventListener('change', indentChange);
 	indentChange();
 
-	Object.assign(window, {cm});
+	Object.assign(globalThis, {cm});
 
 	/** 切换语言 */
 	const hashMap = new Map<string, string>([
@@ -86,7 +86,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		['lua', 'lua'],
 		['json', 'json'],
 	]);
-	window.addEventListener('hashchange', () => {
+	addEventListener('hashchange', () => {
 		const element = document.getElementById(
 			hashMap.get(location.hash.slice(1).toLowerCase())!,
 		) as HTMLInputElement | null;
@@ -95,5 +95,5 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			element.dispatchEvent(new Event('change'));
 		}
 	});
-	window.dispatchEvent(new Event('hashchange'));
+	dispatchEvent(new Event('hashchange'));
 })();

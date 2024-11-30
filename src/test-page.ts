@@ -16,7 +16,7 @@ declare interface Test {
 		pre = document.querySelector('pre')!;
 	Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
 	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config as Config));
-	Object.assign(window, {cm});
+	Object.assign(globalThis, {cm});
 	/** @implements */
 	wikiparse.print = (wikitext, include, stage): Promise<[number, string, string][]> => {
 		const printed = Parser.parse(wikitext, include, stage).print();

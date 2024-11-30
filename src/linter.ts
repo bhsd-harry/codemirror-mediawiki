@@ -109,7 +109,7 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 
 /** 获取 Luacheck */
 export const getLuaLinter: getAsyncLinter<(text: string) => Promise<Diagnostic[]>> = async () => {
-	await loadScript('npm/luacheck-browserify@0.1.0/dist/index.min.js', 'luacheck');
+	await loadScript('npm/luacheck-browserify/dist/index.min.js', 'luacheck');
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => luachecker.queue(text);
 };

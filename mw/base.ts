@@ -237,7 +237,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
-		if (!('monaco' in window)) {
+		if (!('monaco' in globalThis)) {
 			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
 		}
 		const {textarea, lang} = this,
@@ -274,10 +274,10 @@ export class CodeMirror extends CodeMirror6 {
 			},
 			multiCursorModifier: 'ctrlCmd',
 		});
-		let timer: number;
+		let timer: NodeJS.Timeout;
 		this.#model.onDidChangeContent(() => {
 			clearTimeout(timer);
-			timer = window.setTimeout(() => {
+			timer = setTimeout(() => {
 				textarea.value = this.#model!.getValue();
 			}, 400);
 		});
@@ -314,7 +314,7 @@ export class CodeMirror extends CodeMirror6 {
 		} else if (lang === 'mediawiki' || lang === 'html') {
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
-		super.setLanguage(lang, config);
+		void super.setLanguage(lang, config);
 	}
 
 	override setContent(content: string): void {
@@ -527,4 +527,4 @@ document.body.addEventListener('click', e => {
 	void welcome(baseVersion, addons);
 })();
 
-Object.assign(window, {CodeMirror6: CodeMirror});
+Object.assign(globalThis, {CodeMirror6: CodeMirror});

@@ -180,7 +180,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 
 const linkProvider: languages.LinkProvider = {
 	async provideLinks(model) {
-		return {links: 'wikiparse' in window ? generateLinks(model, await getTree(model, 9)) : []};
+		return {links: 'wikiparse' in globalThis ? generateLinks(model, await getTree(model, 9)) : []};
 	},
 };
 

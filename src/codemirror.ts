@@ -177,7 +177,7 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	initialize(config?: unknown): void {
-		let timer: number | undefined;
+		let timer: NodeJS.Timeout | undefined;
 		const {textarea, lang} = this,
 			extensions = [
 				this.#language.of(languages[lang]!(config)),
@@ -216,7 +216,7 @@ export class CodeMirror6 {
 				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
 					if (docChanged) {
 						clearTimeout(timer);
-						timer = window.setTimeout(() => {
+						timer = setTimeout(() => {
 							textarea.value = doc.toString();
 							textarea.dispatchEvent(new Event('input'));
 						}, 400);
@@ -290,7 +290,7 @@ export class CodeMirror6 {
 	 * @param lang 语言
 	 * @param config 语言设置
 	 */
-	setLanguage(lang = 'plain', config?: unknown): void {
+	setLanguage(lang = 'plain', config?: unknown): void | Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
 			this.#effects([

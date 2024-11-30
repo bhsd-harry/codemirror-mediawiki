@@ -18,7 +18,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
             parserConfig !== null && parserConfig !== void 0 ? parserConfig : (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
         }
-        cm.setLanguage(lang, config);
+        await cm.setLanguage(lang, config);
         if (!(lang in linters)) {
             linters[lang] = await cm.getLinter();
             if (isMediaWiki) {

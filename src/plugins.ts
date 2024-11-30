@@ -10,7 +10,7 @@ export {lua} from '@codemirror/legacy-modes/mode/lua';
 
 export const javascriptLR = (): Extension => [
 	js(),
-	javascriptLanguage.data.of({autocomplete: scopeCompletionSource(window)}),
+	javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)}),
 ];
 
 export const cssLR = (): Extension => new LanguageSupport(cssLanguage, cssLanguage.data.of({

@@ -183,7 +183,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 						data: k.slice(6),
 						label: parseMsg(k),
 						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor')
-						|| k === 'addon-save' && !user,
+							|| k === 'addon-save' && !user,
 					})),
 			],
 			value: [...prefs] as unknown as string,
