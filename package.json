@@ -1,9 +1,10 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.18.13",
+	"version": "2.18.14",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
+		"wikitext",
 		"codemirror"
 	],
 	"homepage": "https://github.com/bhsd-harry/codemirror-mediawiki#readme",
@@ -49,7 +50,7 @@
 		"@codemirror/view": "^6.35.0",
 		"@lezer/common": "^1.2.3",
 		"style-mod": "^4.1.0",
-		"wikiparser-node": "^1.13.2"
+		"wikiparser-node": "^1.13.8"
 	},
 	"devDependencies": {
 		"@bhsd/common": "^0.4.6",

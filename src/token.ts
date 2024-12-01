@@ -351,15 +351,15 @@ const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [strin
  */
 const prepareItalicForCorrection = (stream: StringStream, state: State): void => {
 	// See Parser::doQuotes() in MediaWiki Core, it works similarly.
-	// this.firstSingleLetterWord has maximum priority
-	// this.firstMultiLetterWord has medium priority
-	// this.firstSpace has low priority
+	// firstSingleLetterWord has maximum priority
+	// firstMultiLetterWord has medium priority
+	// firstSpace has low priority
 	const end = stream.pos,
 		str = stream.string.slice(0, end - 3),
 		x1 = str.slice(-1),
 		x2 = str.slice(-2, -1),
 		{data} = state;
-	// this.firstSingleLetterWord always is undefined here
+	// firstSingleLetterWord always is undefined here
 	if (x1 === ' ') {
 		if (data.firstMultiLetterWord || data.firstSpace) {
 			return;
@@ -961,8 +961,7 @@ export class MediaWiki {
 			) {
 				return tokens.doubleUnderscore;
 			} else if (!stream.eol()) {
-				// Two underscore symbols at the end can be the
-				// beginning of another double underscored Magic Word
+				// Two underscore symbols at the end can be the beginning of another double underscored Magic Word
 				stream.backUp(2);
 			}
 		}
@@ -1606,7 +1605,6 @@ export class MediaWiki {
 					&& cmpNesting(state, oldToken.state)
 				) {
 					const {pos, string, state: {bold, italic, ...other}, style} = readyTokens[0]!;
-					// just send saved tokens till they exists
 					Object.assign(state, other);
 					if (
 						!(state.extName && state.extMode)
@@ -1654,12 +1652,11 @@ export class MediaWiki {
 				readyTokens.length = 0;
 				data.mark = null;
 				data.oldToken = {pos: stream.pos, string: stream.string, state: copyState(state), style: ''};
-				let style: Style;
 				const {start} = stream;
 				do {
 					// get token style
 					stream.start = stream.pos;
-					style = state.tokenize(stream, state);
+					const style = state.tokenize(stream, state);
 					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
