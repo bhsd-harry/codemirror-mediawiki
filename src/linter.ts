@@ -111,7 +111,7 @@ export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> 
 export const getLuaLinter: getAsyncLinter<(text: string) => Promise<Diagnostic[]>> = async () => {
 	await loadScript('npm/luacheck-browserify/dist/index.min.js', 'luacheck');
 	const luachecker = await luacheck(undefined as unknown as string);
-	return async text => luachecker.queue(text);
+	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
 };
 
 declare interface JsonError {

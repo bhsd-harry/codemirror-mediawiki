@@ -80,7 +80,7 @@
 		"eslint-plugin-regexp": "^2.6.0",
 		"eslint-plugin-unicorn": "^56.0.1",
 		"http-server": "^14.1.0",
-		"luacheck-browserify": "^0.1.1",
+		"luacheck-browserify": "^0.2.0",
 		"monaco-editor": "^0.52.0",
 		"monaco-wiki": "^1.4.2",
 		"stylelint": "^16.11.0",
