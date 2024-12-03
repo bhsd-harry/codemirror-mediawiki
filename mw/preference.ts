@@ -12,8 +12,8 @@ const storageKey = 'codemirror-mediawiki-addons',
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint'] as const,
-	user = mw.config.get('wgUserName'),
-	userPage = user && `User:${user}/codemirror-mediawiki.json`;
+	user = mw.config.get('wgUserGroups')?.includes('user') && mw.config.get('wgUserName'),
+	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
 declare type codeKey = typeof codeKeys[number];
 

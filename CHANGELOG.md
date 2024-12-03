@@ -1,3 +1,11 @@
+## 2.18.15
+
+*2024-12-03*
+
+**Fixed**
+
+- Fix for the incoming [temporary accounts](https://www.mediawiki.org/wiki/Trust_and_Safety_Product/Temporary_Accounts) on a MediaWiki site
+
 ## 2.18.13
 
 *2024-11-30*
@@ -20,7 +28,7 @@
 
 **Changed**
 
-- The [autocompletion](./README.md#autocompletion) and [openLinks](./mw/README.md#openlinks) extensions now also support widget pages when used in a MediaWiki site
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./mw/README.md#openlinks) extensions now also support widget pages when used on a MediaWiki site
 - The Lua linter now warns about the use of global variables
 
 ## 2.18.8
@@ -132,7 +140,7 @@
 
 **Fixed**
 
-- The [openLinks](./mw/README.md#openlinks) extension during editing in a MediaWiki site
+- The [openLinks](./mw/README.md#openlinks) extension during editing on a MediaWiki site
 - Font size of the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
 
 ## 2.17.1
@@ -153,7 +161,7 @@
 
 **Added**
 
-- [`CodeMirror` constructor](./mw/README.md#constructor) now takes an optional string argument for the page title in a MediaWiki site
+- [`CodeMirror` constructor](./mw/README.md#constructor) now takes an optional string argument for the page title on a MediaWiki site
 
 **Fixed**
 
@@ -173,7 +181,7 @@
 
 **Fixed**
 
-- Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./mw/README.md#openlinks) extension for a Monaco editor used in a MediaWiki site
+- Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./mw/README.md#openlinks) extension for a Monaco editor used on a MediaWiki site
 - Redirection syntax can have leading whitespace in the MediaWiki mode
 
 ## 2.15.3
@@ -183,13 +191,13 @@
 **Added**
 
 - [`prefer`](./README.md#prefer) now partially works with the Monaco editor
-- Support for `jquery.textSelection` with multiple selections of a Monaco editor when used in a MediaWiki site
+- Support for `jquery.textSelection` with multiple selections of a Monaco editor when used on a MediaWiki site
 - New extension options: [highlightSelectionMatches](./README.md#highlightselectionmatches) and [scrollPastEnd](./README.md#scrollpastend)
-- When used in a MediaWiki site, the [useMonaco](./mw/README.md#usemonaco) preference can be set for individual languages
+- When used on a MediaWiki site, the [useMonaco](./mw/README.md#usemonaco) preference can be set for individual languages
 
 **Fixed**
 
-- Unreachable Monaco editors will be disposed in a MediaWiki site
+- Unreachable Monaco editors will be disposed on a MediaWiki site
 
 ## 2.14.9
 
@@ -372,7 +380,7 @@
 
 **Fixed**
 
-- Fix the [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration when used in a MediaWiki site
+- Fix the [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration when used on a MediaWiki site
 
 ## v2.12.4
 
@@ -436,7 +444,7 @@
 
 - Highlight the module page name in the MediaWiki mode
 - Wikilink, template and module [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [opensearch API](https://www.mediawiki.org/wiki/API:Opensearch)
-- When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens module pages
+- When used on a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens module pages
 - [CodeFolding](./README.md#codefolding) now also supports folding of parser functions and extension tags in the MediaWiki mode
 
 **Fixed**
@@ -466,7 +474,7 @@
 
 **Fixed**
 
-- In a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now returns a `Promise` that resolves when the editor is initialized
+- On a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now returns a `Promise` that resolves when the editor is initialized
 
 ## 2.11.1
 
@@ -563,7 +571,7 @@
 
 **Added**
 
-- Support for `jquery.textSelection` with multiple selections when used in a MediaWiki site
+- Support for `jquery.textSelection` with multiple selections when used on a MediaWiki site
 
 **Fixed**
 
@@ -585,7 +593,7 @@
 **Added**
 
 - New keyboard shortcut for [codeFolding](./README.md#codefolding): `Ctrl` + `Alt` + `[`
-- When used in a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
+- When used on a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
 
 **Fixed**
 
@@ -596,7 +604,7 @@
 
 **Changed**
 
-- When used in a MediaWiki site, wikilinks in messages are now opened in a new tab
+- When used on a MediaWiki site, wikilinks in messages are now opened in a new tab
 
 ## v2.7.2
 
@@ -616,7 +624,7 @@
 
 **Fixed**
 
-- Now [`fromTextArea`](./mw/README.md#fromtextarea) will wait to load preference settings from the user's subpage before creating the editor in a MediaWiki site
+- Now [`fromTextArea`](./mw/README.md#fromtextarea) will wait to load preference settings from the user's subpage before creating the editor on a MediaWiki site
 
 ## v2.7.0
 
@@ -624,11 +632,11 @@
 
 **Added**
 
-- When used in a MediaWiki site, users can now save their preference settings on a user subpage
+- When used on a MediaWiki site, users can now save their preference settings on a user subpage
 
 **Fixed**
 
-- When used in a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
+- When used on a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
 
 ## v2.6.8
 
@@ -640,7 +648,7 @@
 
 **Fixed**
 
-- When used in a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
+- When used on a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
 - Syntax at SOL in a table cell in the MediaWiki mode, since [v2.6.7](#v267)
 
 ## v2.6.7
@@ -708,7 +716,7 @@
 
 **Changed**
 
-- When used in a MediaWiki site, ESLint now treats `mw`, `$` and `OO` as global variables
+- When used on a MediaWiki site, ESLint now treats `mw`, `$` and `OO` as global variables
 
 ## v2.6.2
 
@@ -717,7 +725,7 @@
 **Added**
 
 - New method: [`scrollTo`](./README.md#scrollto)
-- The preference dialog in a MediaWiki site adds new tabs for ESLint and Stylelint configurations
+- The preference dialog on a MediaWiki site adds new tabs for ESLint and Stylelint configurations
 
 **Fixed**
 
@@ -737,7 +745,7 @@
 
 **Added**
 
-- The preference dialog in a MediaWiki site adds a new tab for WikiLint configurations
+- The preference dialog on a MediaWiki site adds a new tab for WikiLint configurations
 
 ## v2.5.1
 
@@ -811,7 +819,7 @@
 **Added**
 
 - New method: [`localize`](./README.md#localize)
-- The search dialog is now localized when used in a MediaWiki site
+- The search dialog is now localized when used on a MediaWiki site
 
 **Fixed**
 
@@ -824,7 +832,7 @@
 **Added**
 
 - New extension option for the MediaWiki mode: [codeFolding](./README.md#codefolding)
-- When used in a MediaWiki site, a welcome message will be sent
+- When used on a MediaWiki site, a welcome message will be sent
 
 ## v2.2.3
 
@@ -833,7 +841,7 @@
 **Added**
 
 - The MediaWiki mode now has a comment syntax: `<!--` + `-->`
-- The preference dialog in a MediaWiki site now allows for full-HTML labels
+- The preference dialog on a MediaWiki site now allows for full-HTML labels
 
 ## v2.2.2
 
@@ -844,7 +852,7 @@
 - New extension option for the MediaWiki mode: [escape](./README.md#escape)
 - New method: [`extraKeys`](./README.md#extrakeys)
 - New static method: [`replaceSelections`](./README.md#replaceselections)
-- Now in a MediaWiki site, a user can toggle extensions on and off with a dialog
+- Now on a MediaWiki site, a user can toggle extensions on and off with a dialog
 
 **Changed**
 

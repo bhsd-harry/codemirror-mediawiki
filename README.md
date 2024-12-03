@@ -53,7 +53,7 @@ This repository contains a modified version of the frontend scripts and styles f
 
 Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the URL.
 
-Nonetheless, this repository also provides a customized version with additional functionality for use in a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://github.com/bhsd-harry/Wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
+Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://github.com/bhsd-harry/Wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
 
 # Usage
 
