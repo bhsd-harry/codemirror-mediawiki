@@ -16,6 +16,8 @@ on:
     paths:
       - '**/*.ts'
       - '!**/*.d.ts'
+    tags-ignore:
+      - '*'
   pull_request:
     paths:
       - '**/*.ts'
