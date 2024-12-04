@@ -1,3 +1,12 @@
+## 2.19.2
+
+*2024-12-05*
+
+**Changed**
+
+- The preference dialog on a MediaWiki site is now styled as `z-index: 801`
+- The preferences button from the [WikiEditor](./mw/README.md#wikieditor) toolbar is now hidden when the CodeMirror editor is off
+
 ## 2.19.1
 
 *2024-12-04*

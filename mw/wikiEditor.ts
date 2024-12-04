@@ -7,8 +7,15 @@ declare interface WikiEditorContext {
 	};
 }
 
-const setActive = ({modules: {toolbar: {$toolbar}}}: WikiEditorContext): void => {
-	$toolbar.find('.group-codemirror6>[rel=CodeMirror]').children().addBack().toggleClass('tool-active');
+/**
+ * 设置工具栏按钮状态
+ * @param context WikiEditor context
+ * @param active 是否激活
+ */
+const setActive = (context: WikiEditorContext, active?: true): void => {
+	const $group = context.modules.toolbar.$toolbar.find('.group-codemirror6');
+	$group.children('[rel=toggle]').children().addBack().toggleClass('tool-active', active);
+	$group.children('[rel=preferences]').toggle(active);
 };
 
 /**
@@ -26,7 +33,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => 
 				groups: {
 					codemirror6: {
 						tools: {
-							CodeMirror: {
+							toggle: {
 								type: 'button',
 								oouiIcon: 'highlight',
 								action: {
@@ -37,7 +44,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => 
 									},
 								},
 							},
-							CodeMirrorPreferences: {
+							preferences: {
 								type: 'button',
 								oouiIcon: 'settings',
 								label: msg('title'),
@@ -52,7 +59,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => 
 					},
 				},
 			});
-			setActive($textarea.data('wikiEditorContext') as WikiEditorContext);
+			setActive($textarea.data('wikiEditorContext') as WikiEditorContext, true);
 			resolve();
 		});
 	});

@@ -140,6 +140,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		indentWidget.setValue(indent);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: 'cm-preference'});
+		dialog.$element.css('z-index', '801');
 		const windowManager = new OO.ui.WindowManager();
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
