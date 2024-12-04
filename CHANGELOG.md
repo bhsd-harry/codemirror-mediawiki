@@ -2,6 +2,10 @@
 
 *2024-12-04*
 
+**Added**
+
+- `Ctrl-Shift-z` now triggers the redo command on Windows
+
 **Fixed**
 
 - Fix for the incoming [temporary accounts](https://www.mediawiki.org/wiki/Trust_and_Safety_Product/Temporary_Accounts) on a MediaWiki site

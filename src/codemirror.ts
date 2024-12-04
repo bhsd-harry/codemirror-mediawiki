@@ -21,7 +21,7 @@ import {
 	indentUnit,
 	ensureSyntaxTree,
 } from '@codemirror/language';
-import {defaultKeymap, historyKeymap, history} from '@codemirror/commands';
+import {defaultKeymap, historyKeymap, history, redo} from '@codemirror/commands';
 import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {
@@ -230,7 +230,10 @@ export class CodeMirror6 {
 					: [
 						history(),
 						indentOnInput(),
-						keymap.of(historyKeymap),
+						keymap.of([
+							...historyKeymap,
+							{win: 'Ctrl-Shift-z', run: redo, preventDefault: true},
+						]),
 					],
 			];
 		this.#view = new EditorView({
