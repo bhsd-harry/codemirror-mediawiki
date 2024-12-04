@@ -13,6 +13,7 @@
 **Changed**
 
 - The font preference on a MediaWiki site now applies to the CodeMirror editor
+- The [bracketMatching](./README.md#bracketmatching) extension now also applies to CJK full-width brackets in the MediaWiki mode
 
 ## 2.18.13
 

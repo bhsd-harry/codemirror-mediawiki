@@ -87,7 +87,7 @@ const avail: Record<string, Addon<any>> = {
 	highlightWhitespace: [highlightWhitespace, {}],
 	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
 	highlightSelectionMatches: [highlightSelectionMatches, {}],
-	bracketMatching: [bracketMatching, {mediawiki: {brackets: '[]{}'}}],
+	bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
 	closeBrackets: [closeBrackets, {}],
 	scrollPastEnd: [scrollPastEnd, {}],
 	allowMultipleSelections: [
