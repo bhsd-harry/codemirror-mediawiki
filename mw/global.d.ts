@@ -24,6 +24,6 @@ declare global {
 	}
 
 	interface JQuery {
-		wikiEditor(method: 'addModule', config: object): JQuery;
+		wikiEditor(method: 'addModule' | 'addToToolbar', config: object): JQuery;
 	}
 }

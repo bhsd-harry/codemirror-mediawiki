@@ -458,9 +458,10 @@ export class CodeMirror extends CodeMirror6 {
 		ns?: number,
 		page?: string,
 	): Promise<CodeMirror> {
+		const $textarea = $(textarea);
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
 			try {
-				await wikiEditor($(textarea));
+				await wikiEditor($textarea);
 			} catch (e) {
 				if (e instanceof Error && e.message === 'no-wikiEditor') {
 					void mw.notify(msg(e.message), {type: 'error'});
@@ -486,6 +487,7 @@ export class CodeMirror extends CodeMirror6 {
 		const isCM = !useMonaco.has(langs.has(lang!) ? lang! : 'wiki'),
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
+		$textarea.data('CodeMirror6', cm);
 		if (isWiki) {
 			await cm.setLanguage(lang, {...await getMwConfig(), tagModes: CodeMirror.mwTagModes});
 		}

@@ -1,10 +1,11 @@
-## 2.18.15
+## 2.19.0
 
 *2024-12-04*
 
 **Added**
 
 - `Ctrl-Shift-z` now triggers the redo command on Windows
+- When the [wikiEditor](./mw/README.md#wikieditor) extension is enabled, a button is added to the toolbar to switch on/off the CodeMirror/Monaco editor
 
 **Fixed**
 
