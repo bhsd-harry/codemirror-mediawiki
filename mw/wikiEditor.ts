@@ -56,7 +56,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => 
 			resolve();
 		});
 	});
-	await mw.loader.using('ext.wikiEditor');
+	await mw.loader.using(['ext.wikiEditor', 'oojs-ui.styles.icons-interactions']);
 	if ($textarea.data('wikiEditorContext')) {
 		return;
 	} else if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
