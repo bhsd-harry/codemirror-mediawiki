@@ -1,10 +1,14 @@
 ## 2.18.15
 
-*2024-12-03*
+*2024-12-04*
 
 **Fixed**
 
 - Fix for the incoming [temporary accounts](https://www.mediawiki.org/wiki/Trust_and_Safety_Product/Temporary_Accounts) on a MediaWiki site
+
+**Changed**
+
+- The font preference on a MediaWiki site now applies to the CodeMirror editor
 
 ## 2.18.13
 

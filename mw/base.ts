@@ -210,7 +210,7 @@ export class CodeMirror extends CodeMirror6 {
 		this.page = page;
 		instances.set(textarea, this);
 		if (isCM) {
-			super.initialize(config);
+			this.initialize(config);
 		} else {
 			this.#init = this.#initMonaco();
 			$(textarea).data('jquery.textSelection', monacoTextSelection);
@@ -233,6 +233,10 @@ export class CodeMirror extends CodeMirror6 {
 			throw new Error('A Monaco editor is already initialized!');
 		}
 		super.initialize(config);
+		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
+		if (font) {
+			this.view!.contentDOM.classList.add(font);
+		}
 	}
 
 	/** 初始化 Monaco 编辑器 */
