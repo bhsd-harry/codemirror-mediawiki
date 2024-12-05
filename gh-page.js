@@ -49,7 +49,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     cm.prefer(extensions.filter(({ checked }) => checked).map(({ id }) => id));
     indent.addEventListener('change', indentChange);
     indentChange();
-    Object.assign(window, { cm });
+    Object.assign(globalThis, { cm });
     const hashMap = new Map([
         ['wiki', 'mediawiki'],
         ['wikitext', 'mediawiki'],
@@ -60,12 +60,12 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         ['lua', 'lua'],
         ['json', 'json'],
     ]);
-    window.addEventListener('hashchange', () => {
+    addEventListener('hashchange', () => {
         const element = document.getElementById(hashMap.get(location.hash.slice(1).toLowerCase()));
         if (element) {
             element.checked = true;
             element.dispatchEvent(new Event('change'));
         }
     });
-    window.dispatchEvent(new Event('hashchange'));
+    dispatchEvent(new Event('hashchange'));
 })();

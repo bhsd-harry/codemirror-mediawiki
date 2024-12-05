@@ -3,7 +3,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     const tests = await (await fetch('./test/parserTests.json')).json(), key = 'codemirror-mediawiki-done', dones = new Set(JSON.parse(localStorage.getItem(key))), select = document.querySelector('select'), btn = document.querySelector('button'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
     Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
     const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config));
-    Object.assign(window, { cm });
+    Object.assign(globalThis, { cm });
     wikiparse.print = (wikitext, include, stage) => {
         const printed = Parser.parse(wikitext, include, stage).print();
         return Promise.resolve([[stage !== null && stage !== void 0 ? stage : Infinity, wikitext, printed]]);

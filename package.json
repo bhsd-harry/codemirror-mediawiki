@@ -28,6 +28,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
+		"prepublishOnly": "npm run build",
 		"build:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly",
 		"build:mw": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/mw.min.js",
 		"build:wiki": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
