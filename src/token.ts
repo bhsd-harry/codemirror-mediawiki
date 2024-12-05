@@ -1078,6 +1078,8 @@ export class MediaWiki {
 					}
 					return makeLocalTagStyle('tableDelimiter', state);
 				} else if (needAttr && stream.match(/^(?:\||\{\{\s*!\s*\}\})\s*/u)) {
+					state.bold = false;
+					state.italic = false;
 					state.tokenize = this.inTableCell(style, false);
 					return makeLocalTagStyle('tableDelimiter2', state);
 				} else if (needAttr && stream.match('[[', false)) {
@@ -1630,6 +1632,9 @@ export class MediaWiki {
 						if (length !== 2) {
 							state.bold = !state.bold;
 						}
+					} else if (typeof style === 'string' && style.includes(tokens.tableDelimiter)) {
+						state.bold = false;
+						state.italic = false;
 					}
 					// return first saved token
 					data.oldToken = readyTokens.shift()!;
@@ -1688,7 +1693,7 @@ export class MediaWiki {
 					}
 					// save token
 					readyTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
-				} while (!stream.eol());
+				} while (/** @todo should end at table delimiter as well */ !stream.eol());
 				if (!state.bold || !state.italic) {
 					// no need to rollback
 					data.mark = null;

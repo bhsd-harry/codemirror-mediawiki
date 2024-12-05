@@ -2,6 +2,10 @@
 
 *2024-12-05*
 
+**Fixed**
+
+- Highlighting of apostrophes in different table cells in one line in the MediaWiki mode
+
 **Changed**
 
 - The preference dialog on a MediaWiki site is now styled as `z-index: 801`

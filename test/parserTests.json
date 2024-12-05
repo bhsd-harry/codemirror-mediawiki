@@ -10577,7 +10577,7 @@
 	{
 		"desc": "Quote balancing context should be restricted to td/th cells on the same wikitext line",
 		"wikitext": "{|\n!''a!!''b\n|''a||''b\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>!</><apostrophes>''</><table-th em>a</><table-delimiter>!!</><apostrophes>''</><table-th>b</><table-delimiter>|</><apostrophes>''</><table-td em>a</><table-delimiter>||</><apostrophes>''</><table-td>b</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-delimiter>!</><apostrophes>''</><table-th em>a</><table-delimiter>!!</><apostrophes>''</><table-th em>b</><table-delimiter>|</><apostrophes>''</><table-td em>a</><table-delimiter>||</><apostrophes>''</><table-td em>b</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Bold conversion test",
