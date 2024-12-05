@@ -5,6 +5,7 @@
 **Fixed**
 
 - Highlighting of apostrophes in different table cells in one line in the MediaWiki mode
+- Incompatibility with the [wikiEditor](./mw/README.md#wikieditor) heading tool when using the Monaco editor on a MediaWiki site
 
 **Changed**
 

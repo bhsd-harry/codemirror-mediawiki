@@ -1,4 +1,5 @@
 import {CodeMirror} from './base';
+import type {Selection} from 'monaco-editor';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
@@ -174,17 +175,28 @@ export const monacoTextSelection: TextSelection = {
 		selectionStart,
 		selectionEnd = selectionStart,
 	}) {
+		const {model, editor} = getInstance(this);
+		const handleOwnline = ({startColumn, endColumn, endLineNumber}: Selection, text: string): string =>
+			`${ownline && startColumn > 1 ? '\n' : ''}${text}${
+				ownline && endColumn <= model!.getLineLength(endLineNumber) ? '\n' : ''
+			}`;
+		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
+			// 单独处理改变标题层级
+			const range = editor!.getSelection()!;
+			editor!.executeEdits(
+				'encapsulateSelection',
+				[{range, text: handleOwnline(range, peri), forceMoveMarkers: true}],
+			);
+			return this;
+		}
 		if (selectionStart !== undefined) {
 			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd!});
 		}
-		const {model, editor} = getInstance(this),
-			edits = editor!.getSelections()!.map(range => {
-				const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
-					text = `${ownline && range.startColumn > 1 ? '\n' : ''}${
-						split(selText, {splitlines, pre, post})
-					}${ownline && range.endColumn <= model!.getLineLength(range.endLineNumber) ? '\n' : ''}`;
-				return {range, text, forceMoveMarkers: true};
-			});
+		const edits = editor!.getSelections()!.map(range => {
+			const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
+				text = handleOwnline(range, split(selText, {splitlines, pre, post}));
+			return {range, text, forceMoveMarkers: true};
+		});
 		editor!.executeEdits('encapsulateSelection', edits);
 		return this;
 	},
