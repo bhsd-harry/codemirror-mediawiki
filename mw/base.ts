@@ -511,7 +511,7 @@ document.body.addEventListener('click', e => {
 (async () => {
 	const portletContainer: Record<string, string> = {
 		minerva: 'page-actions-overflow',
-		moeskin: 'ca-more-actions',
+		moeskin: 'moe-global-toolbar:visible #p-tb,#moe-mobile-toolbar:visible',
 		citizen: 'p-tb',
 	};
 	await Promise.all([
