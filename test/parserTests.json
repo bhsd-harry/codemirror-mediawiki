@@ -2755,7 +2755,7 @@
 	{
 		"desc": "Fuzz testing: Parser25 (T8055)",
 		"wikitext": "{{{\n| \n<LI CLASS=||\n >\n}}}blah\" onmouseover=\"alert('hello world');\" align=\"left\"'''MOVE MOUSE CURSOR OVER HERE",
-		"parsed": "<templatevariable-bracket>{{{</><templatevariable-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>LI </><htmltag-attribute html-li>CLASS=</><templatevariable-delimiter>||</><comment> &gt</><templatevariable-bracket>}}}</>blah\" onmouseover=\"alert('hello world');\" align=\"left\"<apostrophes>'''</><strong>MOVE MOUSE CURSOR OVER HERE</>"
+		"parsed": "<templatevariable-bracket>{{{</><templatevariable-delimiter>|</> <htmltag-bracket>&lt;</><htmltag-name>LI </><htmltag-attribute html-li>CLASS=</><templatevariable-delimiter>||</><comment> &gt</><templatevariable-bracket>}}}</>blah\" onmouseover=\"alert('hello world');\" align=\"left\"<apostrophes>'''</><strong>MOVE MOUSE CURSOR OVER HERE</>"
 	},
 	{
 		"desc": "Fuzz testing: URL adjacent extension (with space, clean)",
@@ -3940,17 +3940,17 @@
 	{
 		"desc": "Indented table with an empty td",
 		"wikitext": " {|\n |-\n |\n |foo\n |}",
-		"parsed": "<table-bracket>{|</><table-delimiter> |- | |</><table-td>foo</><table-bracket> |}</>"
+		"parsed": " <table-bracket>{|</><table-delimiter> |- | |</><table-td>foo</><table-bracket> |}</>"
 	},
 	{
 		"desc": "Indented table with blank lines in between (T85627)",
 		"wikitext": " {|\n |foo\n \n \n |}",
-		"parsed": "<table-bracket>{|</><table-delimiter> |</><table-td>foo  </><table-bracket> |}</>"
+		"parsed": " <table-bracket>{|</><table-delimiter> |</><table-td>foo  </><table-bracket> |}</>"
 	},
 	{
 		"desc": "Indented block & table",
 		"wikitext": " <div>foo</div>\n {|\n |foo\n |}",
-		"parsed": "<skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><table-bracket>{|</><table-delimiter> |</><table-td>foo</><table-bracket> |}</>"
+		"parsed": "<skipformatting> </><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</> <table-bracket>{|</><table-delimiter> |</><table-td>foo</><table-bracket> |}</>"
 	},
 	{
 		"desc": "Indent and comment before table row",
@@ -7473,12 +7473,12 @@
 	{
 		"desc": "2a. Indent-Pre and tables",
 		"wikitext": " {|\n |-\n !h1!!h2\n |foo||bar\n |}",
-		"parsed": "<table-bracket>{|</><table-delimiter> |- !</><table-th>h1</><table-delimiter>!!</><table-th>h2</><table-delimiter> |</><table-td>foo</><table-delimiter>||</><table-td>bar</><table-bracket> |}</>"
+		"parsed": " <table-bracket>{|</><table-delimiter> |- !</><table-th>h1</><table-delimiter>!!</><table-th>h2</><table-delimiter> |</><table-td>foo</><table-delimiter>||</><table-td>bar</><table-bracket> |}</>"
 	},
 	{
 		"desc": "2b. Indent-Pre and tables",
 		"wikitext": "  {|\n |-\n|foo\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter> |-|</><table-td>foo</><table-bracket>|}</>"
+		"parsed": "  <table-bracket>{|</><table-delimiter> |-|</><table-td>foo</><table-bracket>|}</>"
 	},
 	{
 		"desc": "2c. Indent-Pre and tables (T44252)",
@@ -7488,7 +7488,7 @@
 	{
 		"desc": "2d. Indent-Pre and tables",
 		"wikitext": " a\n {|\n |b\n |}",
-		"parsed": "<skipformatting> </>a<table-bracket>{|</><table-delimiter> |</><table-td>b</><table-bracket> |}</>"
+		"parsed": "<skipformatting> </>a <table-bracket>{|</><table-delimiter> |</><table-td>b</><table-bracket> |}</>"
 	},
 	{
 		"desc": "2e. Indent-Pre and table-line syntax",
@@ -7543,7 +7543,7 @@
 	{
 		"desc": "4. Multiple spaces at start-of-line",
 		"wikitext": "    <p> foo </p>\n    foo\n\t{|\n|foo\n|}",
-		"parsed": "<skipformatting> </>   <htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</><skipformatting> </>   foo<table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-bracket>|}</>"
+		"parsed": "<skipformatting> </>   <htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</> foo <htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</><skipformatting> </>   foo\t<table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-bracket>|}</>"
 	},
 	{
 		"desc": "5a. White-space in indent-pre",
