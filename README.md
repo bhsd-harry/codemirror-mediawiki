@@ -41,9 +41,11 @@
 	- [highlightSelectionMatches](#highlightselectionmatches)
 	- [codeFolding](#codefolding)
 	- [scrollPastEnd](#scrollpastend)
+	- [colorPicker](#colorpicker)
 	- [escape](#escape)
 	- [tagMatching](#tagmatching)
 	- [refHover](#refhover)
+	- [openExtLinks](#openextlinks)
 
 </details>
 
