@@ -1,13 +1,9 @@
 import {getObject, setObject, parseVersion} from '@bhsd/common';
+import {isMac} from '../src/openExtLinks';
 import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.19.2',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
-
-const {vendor, userAgent, maxTouchPoints, platform} = navigator;
-
-export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
-	|| platform.includes('Mac');
 
 export const languages: Record<string, string> = {
 	zh: 'zh-hans',

@@ -2,6 +2,10 @@
 
 *2024-12-07*
 
+**Added**
+
+- New extension option for the MediaWiki mode: [openExtLinks](./README.md#openextlinks)
+
 **Changed**
 
 - The `Tab` key now indents the current line

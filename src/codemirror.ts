@@ -38,6 +38,7 @@ import codeFolding, {foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
 import {refHover} from './ref';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
+import {openExtLinks} from './openExtLinks';
 import {tagModes, getStaticMwConfig} from './static';
 import {bidiIsolation} from './bidi';
 import * as plugins from './plugins';
@@ -113,6 +114,7 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),
+	openExtLinks: mediawikiOnly(openExtLinks),
 };
 
 const linters: Record<string, Extension> = {};

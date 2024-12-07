@@ -1,6 +1,6 @@
 import {normalizeTitle} from '@bhsd/common';
 import {getTree, listen} from 'monaco-wiki/src/tree';
-import {isMac} from './msg';
+import {isMac, search} from '../src/openExtLinks';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
@@ -21,29 +21,6 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		'ext-link-url',
 		'free-ext-link',
 	]);
-
-/**
- * 获取节点的名称
- * @param node 语法树节点
- */
-function getName(node: SyntaxNode): string;
-function getName(node: null): undefined;
-function getName(node: SyntaxNode | null): string | undefined {
-	return node?.name.replace(/_+/gu, ' ').trim();
-}
-
-/**
- * 查找连续同名节点
- * @param node 起始节点
- * @param dir 方向
- */
-const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling'): SyntaxNode => {
-	const name = getName(node);
-	while (getName(node[dir]!) === name) {
-		node = node[dir]!; // eslint-disable-line no-param-reassign
-	}
-	return node;
-};
 
 /**
  * 解析MagicLink

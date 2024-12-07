@@ -547,3 +547,9 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 *version added: 2.17.1*
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
+
+## openExtLinks
+
+*version added: 2.19.3*
+
+CTRL/CMD-click opens an external link in a new tab. This extension should be replaced by the [openLinks](./mw/README.md#openlinks) extension on a MediaWiki site.
