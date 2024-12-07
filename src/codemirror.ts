@@ -21,7 +21,7 @@ import {
 	indentUnit,
 	ensureSyntaxTree,
 } from '@codemirror/language';
-import {defaultKeymap, historyKeymap, history, redo} from '@codemirror/commands';
+import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {
@@ -200,6 +200,7 @@ export class CodeMirror6 {
 					...defaultKeymap,
 					...searchKeymap,
 					...lintKeymap,
+					indentWithTab,
 					{
 						key: 'Mod-Shift-x',
 						run: (): true => {

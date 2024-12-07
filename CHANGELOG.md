@@ -1,3 +1,11 @@
+## 2.19.3
+
+*2024-12-07*
+
+**Changed**
+
+- The `Tab` key now indents the current line
+
 ## 2.19.2
 
 *2024-12-05*
