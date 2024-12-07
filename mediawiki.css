@@ -36,7 +36,8 @@
 .cm-mw-extlink-protocol,
 .cm-mw-extlink,
 .cm-mw-free-extlink-protocol,
-.cm-mw-free-extlink {
+.cm-mw-free-extlink,
+.cm-mw-magic-link {
 	cursor: var(--codemirror-cursor);
 }
 #cm-preference > .oo-ui-window-frame {
