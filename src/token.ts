@@ -1331,7 +1331,7 @@ export class MediaWiki {
 					state.tokenize = this.inVariable(pos + 1);
 				}
 				return makeLocalTagStyle('templateVariableDelimiter', state);
-			} else if (stream.match('}}}')) {
+			} else if (stream.match(/^\}{2,3}/u)) {
 				pop(state);
 				return makeLocalTagStyle('templateVariableBracket', state, 'nVar');
 			} else if (stream.match('<!--')) {
