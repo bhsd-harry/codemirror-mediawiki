@@ -1,10 +1,15 @@
 ## 2.19.3
 
-*2024-12-07*
+*2024-12-11*
 
 **Added**
 
 - New extension option for the MediaWiki mode: [openExtLinks](./README.md#openextlinks)
+
+**Fixed**
+
+- `jquery.textSelection` implementation for the Monaco editor on a MediaWiki site
+- Cursor style for magic links in the MediaWiki mode when the [openLinks](./mw/README.md#openlinks) extension is enabled on a MediaWiki site
 
 **Changed**
 

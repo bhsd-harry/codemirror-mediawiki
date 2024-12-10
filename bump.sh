@@ -4,7 +4,7 @@ then
 	npm publish --tag ${3-latest}
 else
 	sed -i '' -E "s|codemirror-mediawiki@[^/']+|codemirror-mediawiki@$1|g" mw/msg.ts
-	npm run lint && npm run build:test && npm run test:real && npm run build && npm run build gh-page
+	npm run lint && npm run build:test && npm run test:real && npm run build && npm run build:gh-page
 	if [[ $? -eq 0 ]]
 	then
 		for x in i18n/* package.json

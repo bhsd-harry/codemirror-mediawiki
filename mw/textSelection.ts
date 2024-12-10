@@ -27,7 +27,7 @@ declare interface TextSelection {
 	getSelection(this: JQuery<HTMLTextAreaElement>): string;
 	setSelection(
 		this: JQuery<HTMLTextAreaElement>,
-		{start, end}: {start: number, end?: number},
+		{start, end}: {start: number, end?: number | undefined},
 	): JQuery<HTMLTextAreaElement>;
 	replaceSelection(this: JQuery<HTMLTextAreaElement>, value: string): JQuery<HTMLTextAreaElement>;
 	encapsulateSelection(this: JQuery<HTMLTextAreaElement>, opt: EncapsulateOptions): JQuery<HTMLTextAreaElement>;
@@ -75,7 +75,7 @@ export const textSelection: TextSelection = {
 		selectPeri = true,
 		splitlines,
 		selectionStart,
-		selectionEnd = selectionStart,
+		selectionEnd,
 	}) {
 		const {view} = getInstance(this),
 			{state} = view!;
@@ -94,7 +94,9 @@ export const textSelection: TextSelection = {
 			}
 			return [text, start, end];
 		};
-		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
+		if (selectionStart !== undefined) {
+			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd});
+		} else if (ownline && replace && !pre && !post && /^\s*=.*=\s*$/u.test(peri)) {
 			// 单独处理改变标题层级
 			const {selection: {main: {from, to}}} = state,
 				[insert] = handleOwnline(from, to, peri);
@@ -105,12 +107,6 @@ export const textSelection: TextSelection = {
 			return this;
 		}
 		CodeMirror.replaceSelections(view!, (_, {from, to}) => {
-			if (selectionStart !== undefined) {
-				/* eslint-disable no-param-reassign */
-				from = selectionStart;
-				to = selectionEnd!;
-				/* eslint-enable no-param-reassign */
-			}
 			const isSample = selectPeri && from === to,
 				selText = replace || from === to ? peri : state.sliceDoc(from, to),
 				[insertText, start, end] = handleOwnline(
@@ -165,22 +161,15 @@ export const monacoTextSelection: TextSelection = {
 		);
 		return this;
 	},
-	encapsulateSelection({
-		pre = '',
-		peri = '',
-		post = '',
-		ownline,
-		replace,
-		splitlines,
-		selectionStart,
-		selectionEnd = selectionStart,
-	}) {
+	encapsulateSelection({pre = '', peri = '', post = '', ownline, replace, splitlines, selectionStart, selectionEnd}) {
 		const {model, editor} = getInstance(this);
 		const handleOwnline = ({startColumn, endColumn, endLineNumber}: Selection, text: string): string =>
 			`${ownline && startColumn > 1 ? '\n' : ''}${text}${
 				ownline && endColumn <= model!.getLineLength(endLineNumber) ? '\n' : ''
 			}`;
-		if (ownline && replace && !pre && !post && selectionStart === undefined && /^\s*=.*=\s*$/u.test(peri)) {
+		if (selectionStart !== undefined) {
+			monacoTextSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd});
+		} else if (ownline && replace && !pre && !post && /^\s*=.*=\s*$/u.test(peri)) {
 			// 单独处理改变标题层级
 			const range = editor!.getSelection()!;
 			editor!.executeEdits(
@@ -188,9 +177,6 @@ export const monacoTextSelection: TextSelection = {
 				[{range, text: handleOwnline(range, peri), forceMoveMarkers: true}],
 			);
 			return this;
-		}
-		if (selectionStart !== undefined) {
-			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd!});
 		}
 		const edits = editor!.getSelections()!.map(range => {
 			const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
