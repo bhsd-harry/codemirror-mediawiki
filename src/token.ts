@@ -291,7 +291,7 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 	typeof style === 'string'
 		? style
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
-).replace(/\s{2,}/gu, ' ').trim() || ' ';
+).trim().replace(/\s{2,}/gu, ' ') || ' ';
 
 const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	let ground = '';

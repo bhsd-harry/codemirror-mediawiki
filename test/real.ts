@@ -1,5 +1,5 @@
 import {performance} from 'perf_hooks';
-import parser from './parser';
+import parser, {checkNode} from './parser';
 
 declare interface MediaWikiPage {
 	readonly title: string;
@@ -69,10 +69,14 @@ const getPages = async (url: string): Promise<SimplePage[]> => {
 					process.stdout.write(`\x1B[K${i} ${title}\r`);
 					try {
 						const start = performance.now();
-						parser.parse(content);
+						let node = parser.parse(content).topNode.firstChild;
 						const duration = performance.now() - start;
 						if (!worst || duration > worst.duration) {
 							worst = {title, duration};
+						}
+						while (node) {
+							checkNode(node);
+							node = node.nextSibling;
 						}
 					} catch (e) {
 						console.error(`\n解析 ${title} 页面时出错！`, e);

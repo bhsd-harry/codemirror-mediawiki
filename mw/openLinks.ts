@@ -1,6 +1,6 @@
 import {normalizeTitle} from '@bhsd/common';
 import {getTree, listen} from 'monaco-wiki/src/tree';
-import {isMac, search} from '../src/openExtLinks';
+import {isMac} from '../src/openExtLinks';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
@@ -64,16 +64,16 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			{state} = view!;
 		let node: SyntaxNode | null | undefined = cm.getNodeAt(view!.posAtCoords(e)!);
 		if (node?.name.includes(tokens.linkToSection)) {
-			node = search(node, 'prevSibling').prevSibling;
+			node = node.prevSibling;
 		}
 		if (!node) {
 			return;
 		}
 		const {name, from, to} = node;
 		if (name.includes(tokens.pageName)) {
-			const last = search(node, 'nextSibling'),
+			const last = node,
 				{nextSibling} = last;
-			let page = state.sliceDoc(search(node, 'prevSibling').from, last.to).trim();
+			let page = state.sliceDoc(node.from, last.to).trim();
 			if (page.startsWith('/')) {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
@@ -83,14 +83,14 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			} else if (name.includes(tokens.parserFunction)) {
 				ns = name.includes('mw-widget') ? 274 : 828;
 			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
-				page += state.sliceDoc(nextSibling.from, search(nextSibling, 'nextSibling').to).trim();
+				page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
 			}
 			modClick(new mw.Title(normalizeTitle(page), ns).getUrl(undefined), e);
 		} else if (/-extlink-protocol/u.test(name)) {
-			modClick(state.sliceDoc(from, search(node.nextSibling!, 'nextSibling').to), e);
+			modClick(state.sliceDoc(from, node.nextSibling!.to), e);
 		} else if (/-extlink(?:_|$)/u.test(name)) {
-			const prev = search(node, 'prevSibling').prevSibling!,
-				next = search(node, 'nextSibling');
+			const prev = node.prevSibling!,
+				next = node;
 			modClick(state.sliceDoc(prev.from, next.to), e);
 		} else if (name.includes(tokens.magicLink)) {
 			modClick(parseMagicLink(state.sliceDoc(from, to)), e);

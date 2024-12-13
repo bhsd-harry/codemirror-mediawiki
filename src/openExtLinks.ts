@@ -11,29 +11,6 @@ export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('M
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'];
 
-/**
- * 获取节点的名称
- * @param node 语法树节点
- */
-function getName(node: SyntaxNode): string;
-function getName(node: null): undefined;
-function getName(node: SyntaxNode | null): string | undefined {
-	return node?.name.replace(/_+/gu, ' ').trim();
-}
-
-/**
- * 查找连续同名节点
- * @param node 起始节点
- * @param dir 方向
- */
-export const search = (node: SyntaxNode, dir: 'prevSibling' | 'nextSibling'): SyntaxNode => {
-	const name = getName(node);
-	while (getName(node[dir]!) === name) {
-		node = node[dir]!; // eslint-disable-line no-param-reassign
-	}
-	return node;
-};
-
 export const openExtLinks = [
 	EditorView.domEventHandlers({
 		click(e, view) {
@@ -51,12 +28,10 @@ export const openExtLinks = [
 			}
 			const {name, from, to} = node;
 			if (/-extlink-protocol/u.test(name)) {
-				open(state.sliceDoc(from, search(node.nextSibling!, 'nextSibling').to), '_blank');
+				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
 				return true;
 			} else if (/-extlink(?:_|$)/u.test(name)) {
-				const prev = search(node, 'prevSibling').prevSibling!,
-					next = search(node, 'nextSibling');
-				open(state.sliceDoc(prev.from, next.to), '_blank');
+				open(state.sliceDoc(node.prevSibling!.from, node.to), '_blank');
 				return true;
 			} else if (name.includes(tokens.magicLink)) {
 				const link = state.sliceDoc(from, to);
