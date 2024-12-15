@@ -39,13 +39,14 @@ declare interface Test {
 		}
 	}
 	select.addEventListener('change', () => {
-		const {wikitext} = tests[Number(select.value)]!;
+		const {wikitext, desc} = tests[Number(select.value)]!;
 		cm.setContent(wikitext!);
 		pre.textContent = wikitext!;
 		pre.classList.remove('wikiparser');
 		void wikiparse.highlight!(pre, false, true);
 		select.selectedOptions[0]!.disabled = true;
 		btn.disabled = false;
+		location.hash = `#${encodeURIComponent(desc)}`;
 	});
 	btn.addEventListener('click', () => {
 		dones.add(tests[Number(select.value)]!.desc);
@@ -53,4 +54,13 @@ declare interface Test {
 		select.selectedIndex++;
 		select.dispatchEvent(new Event('change'));
 	});
+	addEventListener('hashchange', () => {
+		const hash = decodeURIComponent(location.hash.slice(1)),
+			i = tests.findIndex(({desc}) => desc === hash);
+		if (i !== -1) {
+			select.value = String(i);
+			select.dispatchEvent(new Event('change'));
+		}
+	});
+	dispatchEvent(new Event('hashchange'));
 })();
