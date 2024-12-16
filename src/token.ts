@@ -1588,7 +1588,7 @@ export class MediaWiki {
 
 			copyState,
 
-			token: (stream, state): string => {
+			token(stream, state): string {
 				const {data} = state,
 					{readyTokens} = data;
 				let {oldToken} = data;
@@ -1733,7 +1733,9 @@ export class MediaWiki {
 
 	'text/nowiki'(): StreamParser<Record<string, never>> {
 		return {
-			startState: () => ({}),
+			startState(): Record<string, never> {
+				return {};
+			},
 
 			token: (stream): string => {
 				if (stream.eatWhile(/[^&]/u)) {
@@ -1883,7 +1885,9 @@ export class MediaWiki {
 for (const [language, parser] of Object.entries(plugins)) {
 	if (!language.endsWith('LR')) {
 		Object.defineProperty(MediaWiki.prototype, language, {
-			value: (): StreamParser<object> => parser as StreamParser<object>,
+			value(): StreamParser<object> {
+				return parser as StreamParser<object>;
+			},
 		});
 	}
 }

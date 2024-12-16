@@ -16,7 +16,7 @@ import {
 } from '@codemirror/language';
 import {tokens} from './config';
 import {matchTag} from './matchTag';
-import type {EditorView, Tooltip, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
+import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
@@ -172,7 +172,7 @@ const create = (state: EditorState): Tooltip | null => {
 			: {
 				pos: head,
 				above: true,
-				create: (): {dom: HTMLElement} => {
+				create(): TooltipView {
 					const dom = document.createElement('div');
 					dom.className = 'cm-tooltip-fold';
 					dom.textContent = '\uff0d';

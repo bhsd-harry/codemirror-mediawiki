@@ -61,11 +61,13 @@ const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'tru
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const languages: Record<string, (config?: any) => Extension> = {
 	plain,
-	mediawiki: (config: MwConfig) => [
-		mediawiki(config),
-		plain(),
-		bidiIsolation,
-	],
+	mediawiki(config: MwConfig) {
+		return [
+			mediawiki(config),
+			plain(),
+			bidiIsolation,
+		];
+	},
 	html,
 };
 for (const [language, parser] of Object.entries(plugins)) {
