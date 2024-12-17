@@ -389,7 +389,10 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			await this.getLinter(opt);
 			if (lang === 'mediawiki') {
-				const [mwConfig, minConfig] = await Promise.all([getMwConfig(), wikiparse.getConfig()]);
+				const [mwConfig, minConfig] = await Promise.all([
+					getMwConfig(CodeMirror.mwTagModes),
+					wikiparse.getConfig(),
+				]);
 				wikiparse.setConfig(getParserConfig(minConfig, mwConfig));
 			}
 		} else if (opt) {
@@ -489,7 +492,7 @@ export class CodeMirror extends CodeMirror6 {
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
 		$textarea.data('CodeMirror6', cm);
 		if (isWiki) {
-			await cm.setLanguage(lang, {...await getMwConfig(), tagModes: CodeMirror.mwTagModes});
+			await cm.setLanguage(lang, await getMwConfig(CodeMirror.mwTagModes));
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);

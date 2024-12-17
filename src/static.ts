@@ -40,10 +40,11 @@ const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, s
 
 export const getStaticMwConfig = (
 	{parserFunction, protocol, nsid, variants, redirection, ext, doubleUnderscore, img}: Config,
+	modes: Record<string, string>,
 ): MwConfig => {
 	const mwConfig: MwConfig = {
 			tags: {},
-			tagModes,
+			tagModes: modes,
 			doubleUnderscore: [{}, {}],
 			functionSynonyms: [parserFunction[0], {}],
 			urlProtocols: `${protocol}|//`,

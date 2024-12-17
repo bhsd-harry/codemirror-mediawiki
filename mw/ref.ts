@@ -1,4 +1,5 @@
-import {trees, findRef} from '../src/ref';
+import {trees, fromPositions} from 'monaco-wiki/src/tree';
+import {findRef} from '../src/ref';
 import type {languages, editor, IDisposable, Position} from 'monaco-editor';
 
 /**
@@ -46,10 +47,7 @@ const provideRef = async (
 		return null;
 	}
 	const refs = await findRef(model, attr[2] ?? attr[3]!, all, !mt);
-	return refs.map(ref => ({
-		range: monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]),
-		uri: model.uri,
-	}));
+	return refs.map(ref => ({range: fromPositions(monaco, model, ref), uri: model.uri}));
 };
 
 const refDefinitionProvider: languages.DefinitionProvider = {

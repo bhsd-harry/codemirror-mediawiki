@@ -1,5 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
+import {trees, getTree, fromPositions} from 'monaco-wiki/src/tree';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import type {Tooltip} from '@codemirror/view';
@@ -10,10 +11,7 @@ import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 
 declare type Ranges = [number, number][];
-declare type Tree = Promise<AST> & {docChanged?: boolean};
 declare const monaco: typeof Monaco;
-
-export const trees = new WeakMap<EditorView | editor.ITextModel, Tree>();
 
 /**
  * 获取节点内容
@@ -43,7 +41,7 @@ const findRefImmediate = (
 ): Ranges => {
 	const sliceDoc = (from: number, to: number): string => 'state' in view
 		? view.state.sliceDoc(from, to)
-		: view.getValueInRange(monaco.Range.fromPositions(view.getPositionAt(from), view.getPositionAt(to)));
+		: view.getValueInRange(fromPositions(monaco, view, [from, to]));
 	const {childNodes, type, name} = tree;
 	if (!childNodes) {
 		return [];
@@ -84,13 +82,9 @@ export const findRef = async (
 	if (!('wikiparse' in globalThis)) {
 		return [];
 	}
-	let tree = trees.get(view);
-	if (!tree || tree.docChanged) {
-		tree = wikiparse.json('state' in view ? view.state.doc.toString() : view.getValue(), true, -5, 1) as Tree;
-		trees.set(view, tree);
-		if (all && !target) { // 只用于CodeMirror autocompletion
-			tree.docChanged = true;
-		}
+	const tree = getTree(view, 1);
+	if (all && !target) { // 只用于CodeMirror autocompletion
+		tree.docChanged = true;
 	}
 	return findRefImmediate(view, await tree, target, all, group);
 };

@@ -1,10 +1,10 @@
 import {normalizeTitle} from '@bhsd/common';
-import {getTree, listen} from 'monaco-wiki/src/tree';
+import {getTree, listen, fromPositions} from 'monaco-wiki/src/tree';
 import {isMac} from '../src/openExtLinks';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
-import type {AST, TokenTypes} from 'wikiparser-node/base';
+import type {AST, TokenTypes} from 'wikiparser-node';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
@@ -113,9 +113,7 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 			|| parent?.name === 'cite' && citeTags.has(grandparent?.name)
 		)
 	) {
-		const fromPos = model.getPositionAt(from),
-			toPos = model.getPositionAt(to),
-			range = monaco.Range.fromPositions(fromPos, toPos);
+		const range = fromPositions(monaco, model, [from, to]);
 		let url = model.getValueInRange(range).replace(/<!--.*?(?:-->|$)/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];

@@ -23,30 +23,16 @@
 
 # Usage
 
-You can download the code via CDN, for example:
+You can download the code via CDN on a MediaWiki site, for example:
 
 ```js
-// static import
-import {CodeMirror} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/mw.min.js';
+mw.loader.load('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
 or
 
 ```js
-import {CodeMirror} from 'https://unpkg.com/@bhsd/codemirror-mediawiki/dist/mw.min.js';
-```
-
-or
-
-```js
-// dynamic import
-const {CodeMirror} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/mw.min.js');
-```
-
-or
-
-```js
-const {CodeMirror} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/mw.min.js');
+mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
 The script also loads the [styles](../mediawiki.css), adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.

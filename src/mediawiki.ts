@@ -11,7 +11,7 @@ import {
 	syntaxHighlighting,
 	syntaxTree,
 } from '@codemirror/language';
-import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/util/sharable';
+import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
 import {findRef} from './ref';

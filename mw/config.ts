@@ -53,8 +53,11 @@ const setConfig = (config: MwConfig): void => {
 	mw.config.set('extCodeMirrorConfig', config);
 };
 
-/** 加载CodeMirror的mediawiki模块需要的设置 */
-export const getMwConfig = async (): Promise<MwConfig> => {
+/**
+ * 加载CodeMirror的mediawiki模块需要的设置
+ * @param modes tagModes
+ */
+export const getMwConfig = async (modes: Record<string, string>): Promise<MwConfig> => {
 	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
 		await mw.loader.using(mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror');
 	}
@@ -75,7 +78,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 			`${CDN}/npm/wikiparser-node@browser/config/moegirl.json`,
 		)).json();
 		setObject('wikilintConfig', parserConfig);
-		config = getStaticMwConfig(parserConfig);
+		config = getStaticMwConfig(parserConfig, modes);
 	} else {
 		// 以下情形均需要发送API请求
 		// 情形2：localStorage未过期但不包含新设置
@@ -110,7 +113,7 @@ export const getMwConfig = async (): Promise<MwConfig> => {
 		} else { // 情形4：`config === null`
 			// @ts-expect-error incomplete properties
 			config = {
-				tagModes: {},
+				tagModes: modes,
 				tags: {},
 			};
 			for (const tag of extensiontags) {

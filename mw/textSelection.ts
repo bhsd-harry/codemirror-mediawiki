@@ -1,3 +1,4 @@
+import {fromPositions} from 'monaco-wiki/src/tree';
 import {CodeMirror} from './base';
 import type {Selection} from 'monaco-editor';
 
@@ -147,10 +148,8 @@ export const monacoTextSelection: TextSelection = {
 		return model!.getValueInRange(editor!.getSelection()!);
 	},
 	setSelection({start, end = start}) {
-		const {model, editor} = getInstance(this),
-			startPos = model!.getPositionAt(start),
-			endPos = model!.getPositionAt(end);
-		editor!.setSelection(monaco.Range.fromPositions(startPos, endPos));
+		const {model, editor} = getInstance(this);
+		editor!.setSelection(fromPositions(monaco, model!, [start, end]));
 		return this;
 	},
 	replaceSelection(text) {

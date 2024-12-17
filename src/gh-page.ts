@@ -34,7 +34,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ??= CodeMirror6.getMwConfig(parserConfig!);
+			config ??= CodeMirror6.getMwConfig(parserConfig!, CodeMirror6.mwTagModes);
 		}
 		await cm.setLanguage(lang, config);
 		if (!(lang in linters)) {

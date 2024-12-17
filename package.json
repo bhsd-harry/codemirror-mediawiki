@@ -16,8 +16,12 @@
 		"/i18n/",
 		"/dist/*.js",
 		"/dist/*.d.ts",
+		"/dist/*.mjs",
 		"!/dist/*-page.d.ts",
 		"!/dist/parser.*",
+		"/src/linter.ts",
+		"/src/static.ts",
+		"/mw/config.ts",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
@@ -29,8 +33,8 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"build:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc --emitDeclarationOnly",
-		"build:mw": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/mw.min.js",
+		"build:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && esbuild ./src/linter.ts --charset=utf8 --target=es2019 --format=esm --outfile=dist/linter.mjs && tsc --emitDeclarationOnly",
+		"build:mw": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.mjs",
 		"build:wiki": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
 		"build:test": "tsc --project test/tsconfig.json && node test/dist/test/test.js",
@@ -45,6 +49,7 @@
 		"test:real": "node test/dist/test/real.js"
 	},
 	"dependencies": {
+		"@bhsd/common": "^0.5.0",
 		"@codemirror/language": "^6.10.6",
 		"@codemirror/lint": "^6.8.4",
 		"@codemirror/state": "^6.4.1",
@@ -54,7 +59,6 @@
 		"wikiparser-node": "^1.14.0"
 	},
 	"devDependencies": {
-		"@bhsd/common": "^0.4.6",
 		"@codemirror/autocomplete": "^6.18.3",
 		"@codemirror/commands": "^6.7.1",
 		"@codemirror/lang-css": "^6.3.1",
@@ -66,7 +70,9 @@
 		"@replit/codemirror-css-color-picker": "^6.3.0",
 		"@stylistic/eslint-plugin": "^2.11.0",
 		"@stylistic/stylelint-plugin": "^3.1.1",
+		"@types/eslint": "^8.56.10",
 		"@types/jquery": "^3.5.32",
+		"@types/node": "^22.10.1",
 		"@types/oojs-ui": "^0.49.0",
 		"@typescript-eslint/eslint-plugin": "^8.16.0",
 		"@typescript-eslint/parser": "^8.16.0",
