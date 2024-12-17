@@ -1,3 +1,12 @@
+## 2.19.4
+
+*2024-12-17*
+
+**Fixed**
+
+- The [openLinks](./mw/README.md#openlinks) extension should only be triggered by a main button click on a MediaWiki site
+- Conflict between the [openExtLinks](./README.md#openextlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
+
 ## 2.19.3
 
 *2024-12-11*

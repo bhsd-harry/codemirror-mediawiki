@@ -57,7 +57,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 		return handlers.get(cm)!;
 	}
 	const handler: MouseEventListener = (e): void => {
-		if (!e[modKey]) {
+		if (!e[modKey] || e.button !== 0) {
 			return;
 		}
 		const {view} = cm,
@@ -71,9 +71,8 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 		}
 		const {name, from, to} = node;
 		if (name.includes(tokens.pageName)) {
-			const last = node,
-				{nextSibling} = last;
-			let page = state.sliceDoc(node.from, last.to).trim();
+			const {nextSibling} = node;
+			let page = state.sliceDoc(from, to).trim();
 			if (page.startsWith('/')) {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
@@ -89,9 +88,7 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 		} else if (/-extlink-protocol/u.test(name)) {
 			modClick(state.sliceDoc(from, node.nextSibling!.to), e);
 		} else if (/-extlink(?:_|$)/u.test(name)) {
-			const prev = node.prevSibling!,
-				next = node;
-			modClick(state.sliceDoc(prev.from, next.to), e);
+			modClick(state.sliceDoc(node.prevSibling!.from, to), e);
 		} else if (name.includes(tokens.magicLink)) {
 			modClick(parseMagicLink(state.sliceDoc(from, to)), e);
 		}

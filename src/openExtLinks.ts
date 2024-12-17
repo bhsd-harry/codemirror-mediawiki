@@ -13,8 +13,8 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 
 export const openExtLinks = [
 	EditorView.domEventHandlers({
-		click(e, view) {
-			if (!e[modKey]) {
+		mousedown(e, view) {
+			if (!e[modKey] || e.button !== 0) {
 				return undefined;
 			}
 			const position = view.posAtCoords(e);
@@ -31,7 +31,7 @@ export const openExtLinks = [
 				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
 				return true;
 			} else if (/-extlink(?:_|$)/u.test(name)) {
-				open(state.sliceDoc(node.prevSibling!.from, node.to), '_blank');
+				open(state.sliceDoc(node.prevSibling!.from, to), '_blank');
 				return true;
 			} else if (name.includes(tokens.magicLink)) {
 				const link = state.sliceDoc(from, to);
