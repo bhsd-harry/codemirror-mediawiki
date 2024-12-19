@@ -238,7 +238,7 @@ export class FullMediaWiki extends MediaWiki {
 						|| hasTag(types, 'template') && prevIsDelimiter
 					)
 				) {
-					let stack = -2,
+					let stack = -1,
 						/** 可包含`_`、`:`等 */ page = '';
 					while (prevSibling) {
 						const {name, from, to} = prevSibling;
@@ -249,7 +249,7 @@ export class FullMediaWiki extends MediaWiki {
 								break;
 							}
 							stack += rbrace;
-						} else if (stack === -2 && name.includes(tokens.templateName)) {
+						} else if (stack === -1 && name.includes(tokens.templateName)) {
 							page = state.sliceDoc(from, to) + page;
 						} else if (page && !name.includes(tokens.comment)) {
 							prevSibling = null;

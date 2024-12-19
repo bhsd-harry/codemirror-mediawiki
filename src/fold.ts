@@ -68,7 +68,7 @@ const isComponent = (keys: TagName[]) =>
  */
 export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
 	const brackets = state.sliceDoc(node.from, node.to);
-	return [brackets.split('{').length - 1, 1 - brackets.split('}').length];
+	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
 };
 
 /**
@@ -90,11 +90,9 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		const left = tree.resolve(posOrNode, -1);
 		if (isTemplate(left)) {
 			node = left;
-		} else if (isExt(left)) {
-			const right = tree.resolve(posOrNode, 1);
-			node = left.name.split('mw-tag-').length > right.name.split('mw-tag-').length ? left : right;
 		} else {
-			node = tree.resolve(posOrNode, 1);
+			const right = tree.resolve(posOrNode, 1);
+			node = isExt(left) && left.name.split('mw-tag-').length > right.name.split('mw-tag-').length ? left : right;
 		}
 	} else {
 		node = posOrNode;
@@ -116,7 +114,7 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		return false;
 	}
 	let {prevSibling, nextSibling} = node,
-		/** The stack of opening (+) or closing (-) brackets */ stack = 2,
+		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
 		/** The first delimiter */ delimiter: SyntaxNode | null = isDelimiter(node) ? node : null,
 		/** The start of the closing bracket */ to = 0;
 	while (nextSibling) {
@@ -126,11 +124,11 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 			if (stack <= 0) {
 				// The closing bracket of the current template
 				to = nextSibling.from
-				+ state.sliceDoc(nextSibling.from, nextSibling.to).split('}').slice(0, stack - 2).join('}').length;
+				+ state.sliceDoc(nextSibling.from, nextSibling.to).split('}}').slice(0, stack - 1).join('}}').length;
 				break;
 			}
 			stack += lbrace;
-		} else if (!delimiter && stack === 2 && isDelimiter(nextSibling)) {
+		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = nextSibling;
 		}
@@ -140,7 +138,7 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		// The closing bracket of the current template is missing
 		return false;
 	}
-	stack = -2;
+	stack = -1;
 	while (prevSibling) {
 		if (isTemplateBracket(prevSibling)) {
 			const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
@@ -150,7 +148,7 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 				break;
 			}
 			stack += rbrace;
-		} else if (stack === -2 && isDelimiter(prevSibling)) {
+		} else if (stack === -1 && isDelimiter(prevSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = prevSibling;
 		}
