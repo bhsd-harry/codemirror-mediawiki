@@ -28,9 +28,11 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 				parameter = 0;
 			while (node && node.to <= to) {
 				const {name, from: f, to: t, nextSibling} = node;
-				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, f + 1) === '<') {
+				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, t).includes('<')) {
 					const tag = getTag(state, nextSibling!);
-					set.add(f, tag.to, isolateLTR);
+					if (tag) {
+						set.add(tag.from, tag.to, isolateLTR);
+					}
 				} else if (!td && !table && name.includes(tokens.tableDefinition)) {
 					if (/-html-(?:table|tr)/u.test(name)) {
 						table = state.doc.lineAt(f).to;
@@ -49,7 +51,7 @@ const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): Dec
 					}
 					parameter = t;
 				} else if (parameter && /-(?:template|parserfunction)-bracket/u.test(name)) {
-					if (state.sliceDoc(t - 1, t) === '}') {
+					if (state.sliceDoc(f, f + 1) === '}') {
 						set.add(parameter, f, isolate);
 					}
 					parameter = 0;

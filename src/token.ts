@@ -7,7 +7,7 @@
 import {Tag} from '@lezer/highlight';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
-import type {StreamParser, StringStream} from '@codemirror/language';
+import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 
 declare type MimeTypes = 'mediawiki'
 | 'text/nowiki'
@@ -42,6 +42,10 @@ declare interface Token {
 	readonly string: string;
 	style: Style;
 	readonly state: State;
+}
+declare interface StringStream extends StringStreamBase {
+	match(pattern: string, consume?: boolean, caseInsensitive?: boolean): true | null;
+	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
 
 export type TagName = keyof typeof tokens;
@@ -528,6 +532,16 @@ export class MediaWiki {
 
 	@getTokenizer
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	inChars({length}: string, tag: TagName): Tokenizer {
+		return (stream, state) => {
+			stream.pos += length;
+			pop(state);
+			return makeLocalTagStyle(tag, state);
+		};
+	}
+
+	@getTokenizer
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	inStr(str: string, tag: TagName | false, errorTag: TagName = 'error'): Tokenizer {
 		return (stream, state) => {
 			if (stream.match(str, Boolean(tag))) {
@@ -557,7 +571,7 @@ export class MediaWiki {
 				} else if (stream.match(regex)) {
 					return makeTagStyle('magicLink', state);
 				}
-				const mtFree = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+				const mtFree = stream.match(this.urlProtocols, false);
 				if (mtFree) {
 					chain(state, this.eatExternalLinkProtocol(mtFree[0]));
 					return '';
@@ -586,7 +600,7 @@ export class MediaWiki {
 						return this.eatList(stream, state);
 					case '=': {
 						const tmp = stream
-							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u) as RegExpMatchArray | false;
+							.match(/^(={0,5})(.+?(=\1\s*)(?:<!--(?!.*-->\s*\S).*)?)$/u);
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
@@ -614,7 +628,7 @@ export class MediaWiki {
 							// Leading spaces is valid syntax for tables, bug T108454
 							const re = new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${pipe}))`, 'u'),
 								re2 = new RegExp(String.raw`^\s*#${this.redirectRegex.source.slice(1)}`, 'iu'),
-								mt = stream.match(re) as RegExpMatchArray | false;
+								mt = stream.match(re);
 							if (mt) {
 								chain(state, this.eatStartTable);
 								return makeLocalStyle(mt[1] ? tokens.list : '', state);
@@ -644,7 +658,7 @@ export class MediaWiki {
 						return makeLocalTagStyle('comment', state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
-						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false) as RegExpMatchArray | false;
+						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false);
 					if (mt) {
 						const tagname = mt[1]!.toLowerCase();
 						if (
@@ -681,17 +695,20 @@ export class MediaWiki {
 					}
 					break;
 				}
-				case '{':
+				case '{': {
 					// Can't be a variable when it starts with more than 3 brackets (T108450) or
 					// a single { followed by a template. E.g. {{{!}} starts a table (T292967).
 					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 						state.nVar++;
 						chain(state, this.inVariable());
 						return makeLocalTagStyle('templateVariableBracket', state);
-					} else if (stream.match(/^\{(?!\{(?!\{))\s*/u)) {
-						return this.eatTransclusion(stream, state);
+					}
+					const mt = stream.match(/^\{(?!\{(?!\{))(\s*)/u);
+					if (mt) {
+						return this.eatTransclusion(stream, state, mt[1]!) ?? makeStyle(style, state);
 					}
 					break;
+				}
 				case '_': {
 					const {pos} = stream;
 					stream.eatWhile('_');
@@ -721,7 +738,7 @@ export class MediaWiki {
 							return makeStyle(style, state);
 						}
 					} else {
-						const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+						const mt = stream.match(this.urlProtocols, false);
 						if (mt) {
 							state.nExtLink++;
 							chain(state, this.eatExternalLinkProtocol(mt[0], false));
@@ -755,14 +772,14 @@ export class MediaWiki {
 				if (/[^\p{L}\d_]/u.test(ch || '')) {
 					// highlight free external links, bug T108448
 					stream.eatWhile(/[^\p{L}\d_&'{[<~:-]/u);
-					const mt = stream.match(this.urlProtocols, false) as RegExpMatchArray | false;
+					const mt = stream.match(this.urlProtocols, false);
 					if (mt && !stream.match('//')) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
 						return makeStyle(style, state);
 					}
-					const mtMagic = stream.match(regex, false) as RegExpMatchArray | false;
+					const mtMagic = stream.match(regex, false);
 					if (mtMagic) {
-						chain(state, this.inStr(mtMagic[0], 'magicLink'));
+						chain(state, this.inChars(mtMagic[0], 'magicLink'));
 						return makeStyle(style, state);
 					}
 				}
@@ -798,9 +815,9 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	eatExternalLinkProtocol(chars: string, free = true): Tokenizer {
+	eatExternalLinkProtocol({length}: string, free = true): Tokenizer {
 		return (stream, state) => {
-			stream.match(chars);
+			stream.pos += length;
 			state.tokenize = free ? this.eatFreeExternalLink : this.inExternalLink();
 			return makeLocalTagStyle(free ? 'freeExtLinkProtocol' : 'extLinkProtocol', state);
 		};
@@ -835,7 +852,7 @@ export class MediaWiki {
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	get eatFreeExternalLink(): Tokenizer {
 		return (stream, state) => {
-			const mt = stream.match(getFreeRegex()) as RegExpMatchArray;
+			const mt = stream.match(getFreeRegex())!;
 			if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
 				stream.match(getFreeRegex(true));
 			}
@@ -927,7 +944,7 @@ export class MediaWiki {
 			} else if (file && isSolSyntax(stream, true, true) || stream.sol() && stream.match('{|', false)) {
 				return this.eatWikiText(tmpstyle)(stream, state);
 			}
-			const mt = stream.match(regex) as RegExpMatchArray | false;
+			const mt = stream.match(regex);
 			if (lbrack === undefined && mt && mt[0].includes('[')) {
 				state.lbrack = true;
 			}
@@ -936,15 +953,15 @@ export class MediaWiki {
 	}
 
 	toEatImageParameter(stream: StringStream, state: State): void {
-		const mt = stream.match(this.imgRegex, false) as RegExpMatchArray | false;
+		const mt = stream.match(this.imgRegex, false);
 		if (mt) {
-			chain(state, this.inStr(mt[0], 'imageParameter'));
+			chain(state, this.inChars(mt[0], 'imageParameter'));
 		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatList(stream: StringStream, state: State): string {
-		const mt = stream.match(/^[*#;:]*/u) as RegExpMatchArray,
+		const mt = stream.match(/^[*#;:]*/u)!,
 			{dt} = state;
 		if (mt[0].includes(';')) {
 			dt.n = mt[0].split(';').length - 1;
@@ -955,7 +972,7 @@ export class MediaWiki {
 
 	eatDoubleUnderscore(style: string, stream: StringStream, state: State): Style {
 		const {config: {doubleUnderscore}} = this,
-			name = stream.match(/^[\p{L}\d_]+?__/u) as RegExpMatchArray | false;
+			name = stream.match(/^[\p{L}\d_]+?__/u);
 		if (name) {
 			if (
 				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)
@@ -1024,7 +1041,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				stream.eatSpace();
-				const mt = stream.match(/^(?:\||\{\{\s*!([!)+-])?\s*\}\})/u) as RegExpMatchArray | false;
+				const mt = stream.match(/^(?:\||\{\{\s*!([!)+-])?\s*\}\})/u);
 				if (mt) {
 					if (mt[1] === '-' || !mt[1] && stream.eat('-')) {
 						stream.match(/^-*\s*/u);
@@ -1152,7 +1169,7 @@ export class MediaWiki {
 				pop(state);
 				return '';
 			}
-			const mt = stream.match(/^\/?>/u) as RegExpMatchArray | false;
+			const mt = stream.match(/^\/?>/u);
 			if (mt) {
 				if (!this.implicitlyClosedHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.unshift(name);
@@ -1197,7 +1214,7 @@ export class MediaWiki {
 	inExtTagAttribute(name: string, quote?: string, isLang?: boolean, isPage?: boolean): Tokenizer {
 		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
-			const mt = stream.match(re) as RegExpMatchArray;
+			const mt = stream.match(re)!;
 			if (isLang) {
 				let lang = mt[0].trim().toLowerCase();
 				if (lang === 'js') {
@@ -1251,7 +1268,7 @@ export class MediaWiki {
 				);
 				return makeLocalStyle(style, state);
 			}
-			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u) as RegExpMatchArray;
+			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u)!;
 			if (stream.peek() === '=') {
 				state.tokenize = this.inExtTagAttribute(
 					name,
@@ -1349,15 +1366,16 @@ export class MediaWiki {
 		};
 	}
 
-	eatTransclusion(stream: StringStream, state: State): string {
+	eatTransclusion(stream: StringStream, state: State, {length}: string): string | undefined {
 		// Parser function
 		if (stream.peek() === '#') {
+			stream.backUp(length);
 			state.nExt++;
 			chain(state, this.inParserFunctionName());
 			return makeLocalTagStyle('parserFunctionBracket', state);
 		}
 		// Check for parser function without '#'
-		const name = stream.match(/^([^}<{|:]+)(.?)/u, false) as RegExpMatchArray | false;
+		const name = stream.match(/^([^}<{|:]+)(.?)/u, false);
 		if (name) {
 			const [, f, delimiter] = name as [string, string, string],
 				ff = delimiter === ':' ? f : f.trim(),
@@ -1369,12 +1387,17 @@ export class MediaWiki {
 					|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
 				)
 			) {
+				stream.backUp(length);
 				state.nExt++;
 				chain(state, this.inParserFunctionName());
 				return makeLocalTagStyle('parserFunctionBracket', state);
 			}
 		}
+		if (stream.match('}}')) {
+			return undefined;
+		}
 		// Template
+		stream.backUp(length);
 		state.nTemplate++;
 		chain(state, this.inTemplatePageName());
 		return makeLocalTagStyle('templateBracket', state);
@@ -1404,7 +1427,7 @@ export class MediaWiki {
 				state.tokenize = this.inParserFunctionArgument(invoke, n);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
-			const mt = stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u) as RegExpMatchArray | false;
+			const mt = stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u);
 			if (mt) {
 				const name = mt[0].trim().toLowerCase(),
 					{config: {functionSynonyms: [insensitive]}} = this;
@@ -1511,7 +1534,11 @@ export class MediaWiki {
 					state.tokenize = this.inTemplateArgument(true, parserFunction);
 				}
 				return makeLocalTagStyle(parserFunction ? 'parserFunctionDelimiter' : 'templateDelimiter', state);
-			} else if (stream.match('}}')) {
+			} else if (stream.match('}}', false)) {
+				if (space) {
+					return makeLocalTagStyle(tag, state);
+				}
+				stream.pos += 2;
 				pop(state);
 				return makeLocalTagStyle(
 					parserFunction ? 'parserFunctionBracket' : 'templateBracket',
@@ -1571,7 +1598,7 @@ export class MediaWiki {
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatEntity(stream: StringStream, style: string): string {
-		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu) as RegExpMatchArray | false;
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu);
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
 	}
 
@@ -1588,7 +1615,7 @@ export class MediaWiki {
 
 			copyState,
 
-			token(stream, state): string {
+			token(stream: StringStream, state): string {
 				const {data} = state,
 					{readyTokens} = data;
 				let {oldToken} = data;
@@ -1737,7 +1764,7 @@ export class MediaWiki {
 				return {};
 			},
 
-			token: (stream): string => {
+			token: (stream: StringStream): string => {
 				if (stream.eatWhile(/[^&]/u)) {
 					return '';
 				}
@@ -1787,8 +1814,10 @@ export class MediaWiki {
 				} else if (stream.match(/^\{{3}(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 					chain(state, this.inVariable());
 					return tokens.templateVariableBracket;
-				} else if (stream.match(/^\{\{(?!\{(?!\{))\s*/u)) {
-					return this.eatTransclusion(stream, state);
+				}
+				const mt = stream.match(/^\{\{(?!\{(?!\{))(\s*)/u);
+				if (mt) {
+					return this.eatTransclusion(stream, state, mt[1]!) ?? tokens.comment;
 				}
 			}
 			if (stream.match(re)) {
@@ -1872,7 +1901,7 @@ export class MediaWiki {
 		return {
 			startState: () => startState(this.inGallery(), tags),
 
-			token: (stream, state): string => {
+			token: (stream: StringStream, state): string => {
 				if (stream.sol()) {
 					Object.assign(state, startState(this.inGallery(), state.data.tags));
 				}

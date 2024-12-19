@@ -34,7 +34,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		if (isMediaWiki || lang === 'html') {
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ??= CodeMirror6.getMwConfig(parserConfig!, CodeMirror6.mwTagModes);
+			config ??= CodeMirror6.getMwConfig(parserConfig!);
 		}
 		await cm.setLanguage(lang, config);
 		if (!(lang in linters)) {
@@ -61,6 +61,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	for (const input of languages) {
 		input.addEventListener('change', () => {
 			void init(input.id);
+			location.hash = `#${input.id.slice(0, 1).toUpperCase()}${input.id.slice(1)}`;
 		});
 		if (input.checked) {
 			void init(input.id);

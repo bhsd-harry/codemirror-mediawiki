@@ -47,6 +47,7 @@ import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
+import type {Config} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 
@@ -558,9 +559,6 @@ export class CodeMirror6 {
 		}
 	}
 
-	/** 支持的MediaWiki扩展标签 */
-	static mwTagModes = tagModes;
-
 	/**
 	 * 替换选中内容
 	 * @param view
@@ -591,5 +589,7 @@ export class CodeMirror6 {
 	 * 将wikiparser-node设置转换为codemirror-mediawiki设置
 	 * @param config
 	 */
-	static getMwConfig = getStaticMwConfig;
+	static getMwConfig(config: Config): MwConfig {
+		return getStaticMwConfig(config, tagModes);
+	}
 }

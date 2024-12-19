@@ -15,6 +15,7 @@ import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sh
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
 import {findRef} from './ref';
+import {braceStackUpdate} from './fold';
 import type {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
 import type {
@@ -193,8 +194,8 @@ export class FullMediaWiki extends MediaWiki {
 				node = syntaxTree(state).resolve(pos, -1),
 				types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
-				{from, to} = node,
-				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(from, pos);
+				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
+				start = pos - search.length;
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
@@ -205,7 +206,7 @@ export class FullMediaWiki extends MediaWiki {
 					return options.length === 0
 						? null
 						: {
-							from: from + suggestions.offset,
+							from: start + suggestions.offset,
 							options,
 							validFor,
 						};
@@ -219,7 +220,7 @@ export class FullMediaWiki extends MediaWiki {
 					const suggestions = await this.#linkSuggest(prefix + search);
 					return suggestions
 						? {
-							from: from + suggestions.offset - (isModule && 7),
+							from: start + suggestions.offset - (isModule && 7),
 							options: suggestions.options,
 							validFor,
 						}
@@ -237,29 +238,31 @@ export class FullMediaWiki extends MediaWiki {
 						|| hasTag(types, 'template') && prevIsDelimiter
 					)
 				) {
-					let stack = 1,
+					let stack = -2,
 						/** 可包含`_`、`:`等 */ page = '';
 					while (prevSibling) {
-						const {name, from: f, to: t} = prevSibling;
+						const {name, from, to} = prevSibling;
 						if (name.includes(tokens.templateBracket)) {
-							stack += state.sliceDoc(f, t).includes('{{') ? -1 : 1;
-							if (stack === 0) {
+							const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
+							stack += lbrace;
+							if (stack >= 0) {
 								break;
 							}
-						} else if (stack === 1 && name.includes(tokens.templateName)) {
-							page = state.sliceDoc(f, t) + page;
+							stack += rbrace;
+						} else if (stack === -2 && name.includes(tokens.templateName)) {
+							page = state.sliceDoc(from, to) + page;
 						} else if (page && !name.includes(tokens.comment)) {
 							prevSibling = null;
 							break;
 						}
 						({prevSibling} = prevSibling);
 					}
-					if (prevSibling) {
-						const equal = isArgument && state.sliceDoc(pos, to).trim() === '=' ? '' : '=',
+					if (prevSibling && page) {
+						const equal = isArgument && state.sliceDoc(pos, node.to).trim() === '=' ? '' : '=',
 							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
 						return suggestions && suggestions.options.length > 0
 							? {
-								from: isDelimiter ? pos : from + suggestions.offset,
+								from: isDelimiter ? pos : start + suggestions.offset,
 								options: suggestions.options,
 								validFor: /^[^|{}=]*$/u,
 							}
@@ -278,7 +281,7 @@ export class FullMediaWiki extends MediaWiki {
 				const [, tagName] = /mw-(?:ext|html|table)-([a-z]+)/u.exec(node.name) as string[] as [string, string],
 					mt = context.matchBefore(re);
 				if (mt) {
-					return mt.from >= from && /^[|-]/u.test(mt.text)
+					return mt.from >= start && /^[|-]/u.test(mt.text)
 						? null
 						: {
 							from: mt.from + 1,
@@ -320,8 +323,8 @@ export class FullMediaWiki extends MediaWiki {
 						const refs = await findRef(this as unknown as EditorView, '', true, key === 'group');
 						return refs.length > 0
 							? {
-								from: from + /^\s*/u.exec(search)![0].length,
-								options: refs.filter(([f]) => f < from || f > to).map(range => ({
+								from: start + /^\s*/u.exec(search)![0].length,
+								options: refs.filter(([f]) => f < start || f > node.to).map(range => ({
 									type: 'text',
 									label: state.sliceDoc(...range).trim(),
 								})),

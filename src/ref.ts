@@ -6,7 +6,7 @@ import {tokens} from './config';
 import type {Tooltip} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
-import type {AST} from 'wikiparser-node/base';
+import type {AST} from 'wikiparser-node';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 
@@ -97,33 +97,39 @@ export const refHover = [
 		const {state} = view,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
 		if (node && /-exttag-(?!bracket)/u.test(node.name)) {
-			const {name, selfClosing, first: {to}, last, to: end} = getTag(state, node);
-			if (name === 'ref' && (selfClosing || !last.name.includes(tokens.extTagBracket))) {
+			const tag = getTag(state, node);
+			Object.assign(globalThis, {tag});
+			if (!tag) {
+				return null;
+			}
+			const {name, selfClosing, first, last, to} = tag;
+			if (name === 'ref' && selfClosing) {
 				let prevSibling: SyntaxNode | null = last,
 					nextSibling: SyntaxNode | null = null;
-				while (prevSibling && prevSibling.from > to) {
+				while (prevSibling && prevSibling.from > first.to) {
+					const key = getName(state, prevSibling);
 					if (
 						prevSibling.name.split('_').includes(tokens.extTagAttribute)
-						&& getName(state, prevSibling).toLowerCase() === 'name'
+						&& /(?:^|\s)name(?:$|[\s=])/iu.test(key)
 					) {
-						({nextSibling} = prevSibling);
+						if (/(?:^|\s)name\s*=/iu.test(key)) {
+							({nextSibling} = prevSibling);
+						}
 						break;
 					}
 					({prevSibling} = prevSibling);
 				}
-				if (nextSibling && getName(state, nextSibling) === '=') {
-					({nextSibling} = nextSibling);
-					const quote = nextSibling && getName(state, nextSibling);
+				if (nextSibling?.name.includes(tokens.extTagAttributeValue)) {
+					let target = getName(state, nextSibling);
+					const quote = target.slice(0, 1);
 					if (quote === '"' || quote === "'") {
-						({nextSibling} = nextSibling!);
+						target = target.slice(1, target.slice(-1) === quote ? -1 : undefined).trim();
 					}
-					const target = nextSibling?.name.includes(tokens.extTagAttributeValue)
-						&& getName(state, nextSibling);
 					if (target) {
 						const [ref] = await findRef(view, target);
 						return {
 							pos,
-							end,
+							end: to,
 							above: true,
 							create() {
 								const dom = document.createElement('div');

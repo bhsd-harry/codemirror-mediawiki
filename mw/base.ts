@@ -1,5 +1,6 @@
 import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
+import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
 import openLinks from './openLinks';
 import refHover from './ref';
@@ -389,10 +390,7 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			await this.getLinter(opt);
 			if (lang === 'mediawiki') {
-				const [mwConfig, minConfig] = await Promise.all([
-					getMwConfig(CodeMirror.mwTagModes),
-					wikiparse.getConfig(),
-				]);
+				const [mwConfig, minConfig] = await Promise.all([getMwConfig(tagModes), wikiparse.getConfig()]);
 				wikiparse.setConfig(getParserConfig(minConfig, mwConfig));
 			}
 		} else if (opt) {
@@ -492,7 +490,7 @@ export class CodeMirror extends CodeMirror6 {
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
 		$textarea.data('CodeMirror6', cm);
 		if (isWiki) {
-			await cm.setLanguage(lang, await getMwConfig(CodeMirror.mwTagModes));
+			await cm.setLanguage(lang, await getMwConfig(tagModes));
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);

@@ -18,28 +18,32 @@ class Tag {
 	declare readonly name;
 	declare readonly first;
 	declare readonly last;
+	declare readonly state;
 
 	get closing(): boolean {
-		return isClosing(this.first, this.type);
+		return isClosing(this.first, this.type, this.state, true);
 	}
 
 	get selfClosing(): boolean {
-		return voidHtmlTags.includes(this.name) || this.type === 'ext' && isClosing(this.last, this.type);
+		return voidHtmlTags.includes(this.name) || this.type === 'ext' && isClosing(this.last, this.type, this.state);
 	}
 
 	get from(): number {
-		return this.first.from;
+		const {first: {from, to}, state} = this;
+		return from + state.sliceDoc(from, to).lastIndexOf('<');
 	}
 
 	get to(): number {
-		return this.last.to;
+		const {last: {from, to}, state} = this;
+		return from + state.sliceDoc(from, to).indexOf('>') + 1;
 	}
 
-	constructor(type: TagType, name: string, first: SyntaxNode, last: SyntaxNode) {
+	constructor(type: TagType, name: string, first: SyntaxNode, last: SyntaxNode, state: EditorState) {
 		this.type = type;
 		this.name = name;
 		this.first = first;
 		this.last = last;
+		this.state = state;
 	}
 }
 
@@ -48,34 +52,34 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
 		new RegExp(`-${type}tag-${s}`, 'u').test(name),
 	isBracket = isTagComponent('bracket'),
 	isName = isTagComponent('name'),
-	isClosing = (node: SyntaxNode, type: TagType): boolean => isBracket(node, type) && node.to - node.from > 1,
-	isNested = ({name}: SyntaxNode, type: TagType, tag: string): boolean =>
-		type === 'ext' && new RegExp(`-tag-${tag}(?![a-z])`, 'u').test(name),
-	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim().toLowerCase(),
-	stackUpdate = ({closing}: Tag): 1 | -1 => closing ? -1 : 1;
+	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean =>
+		isBracket(node, type) && state.sliceDoc(node.from, node.to)[first ? 'endsWith' : 'startsWith']('/'),
+	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim().toLowerCase();
 
 /**
- * 获取标签信息
+ * 获取标签信息，破损的HTML标签会返回`null`
  * @param state
  * @param node 语法树节点
  */
-export const getTag = (state: EditorState, node: SyntaxNode): Tag => {
+export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
 	const type = node.name.includes('exttag') ? 'ext' : 'html';
-	let {prevSibling} = node,
-		nextSibling = node,
+	let {nextSibling, prevSibling} = node,
 		nameNode = isName(node, type) ? node : null;
-	while (nextSibling.nextSibling && !isBracket(nextSibling, type)) {
+	while (nextSibling && !isBracket(nextSibling, type)) {
 		({nextSibling} = nextSibling);
 	}
-	if (isBracket(nextSibling, type) && getName(state, nextSibling) === '<') {
-		nextSibling = nextSibling.prevSibling!;
+	if (
+		!nextSibling
+		|| isBracket(nextSibling, type) && state.sliceDoc(nextSibling.from, nextSibling.from + 1) === '<'
+	) {
+		return null;
 	}
 	while (prevSibling && !isBracket(prevSibling, type)) {
 		nameNode ??= isName(prevSibling, type) ? prevSibling : null;
 		({prevSibling} = prevSibling);
 	}
 	const name = getName(state, nameNode!);
-	return new Tag(type, name, prevSibling!, nextSibling);
+	return new Tag(type, name, prevSibling!, nextSibling, state);
 };
 
 /**
@@ -90,13 +94,15 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 	let stack = closing ? -1 : 1,
 		sibling = origin[endGetter][siblingGetter];
 	while (sibling) {
-		if (isName(sibling, type) && getName(state, sibling) === name && !isNested(sibling, type, name)) {
+		if (isName(sibling, type) && getName(state, sibling) === name) {
 			const tag = getTag(state, sibling);
-			stack += stackUpdate(tag);
-			if (stack === 0) {
-				return tag;
+			if (tag) {
+				stack += tag.closing ? -1 : 1;
+				if (stack === 0) {
+					return tag;
+				}
+				sibling = tag[endGetter];
 			}
-			sibling = tag[endGetter];
 		}
 		sibling = sibling[siblingGetter];
 	}
@@ -121,8 +127,8 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 		}
 	}
 	const start = getTag(state, node);
-	if (isNested(node, start.type, start.name)) {
-		return {matched: false, start};
+	if (!start) {
+		return null;
 	} else if (start.selfClosing) {
 		return {matched: true, start};
 	}
