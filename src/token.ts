@@ -34,6 +34,7 @@ declare interface State extends Nesting {
 	italic: boolean;
 	dt: Partial<Nesting> & {n: number, html: number};
 	redirect: boolean;
+	imgLink: boolean;
 	data: MediaWikiData;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
@@ -153,6 +154,7 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
 	italic: false,
 	dt: {n: 0, html: 0},
 	redirect: false,
+	imgLink: false,
 	data: new MediaWikiData(tags),
 });
 
@@ -916,7 +918,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			const tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
-				}`,
+				} ${file && state.imgLink ? tokens.pageName : ''}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (closing || !file && stream.match('[[', false)) {
@@ -953,8 +955,12 @@ export class MediaWiki {
 	}
 
 	toEatImageParameter(stream: StringStream, state: State): void {
+		state.imgLink = false;
 		const mt = stream.match(this.imgRegex, false);
 		if (mt) {
+			if (this.config.img![`${mt[0]}$1`] === 'img_link') {
+				state.imgLink = true;
+			}
 			chain(state, this.inChars(mt[0], 'imageParameter'));
 		}
 	}

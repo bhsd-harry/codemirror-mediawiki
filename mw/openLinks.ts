@@ -5,6 +5,7 @@ import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
 import type {AST, TokenTypes} from 'wikiparser-node';
+import type {MwConfig} from '../src/codemirror';
 import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
@@ -73,6 +74,12 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 		if (name.includes(tokens.pageName)) {
 			const {nextSibling} = node;
 			let page = state.sliceDoc(from, to).trim();
+			if (
+				name.includes(tokens.fileText)
+				&& new RegExp(`^(?:${(cm.langConfig as MwConfig).urlProtocols})`, 'iu').test(page)
+			) {
+				modClick(page, e);
+			}
 			if (page.startsWith('/')) {
 				page = `:${mw.config.get('wgPageName')}${page}`;
 			}
@@ -84,7 +91,10 @@ const getHandler = (cm: CodeMirror): MouseEventListener => {
 			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 				page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
 			}
-			modClick(new mw.Title(normalizeTitle(page), ns).getUrl(undefined), e);
+			const url = mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
+			if (url) {
+				modClick(url, e);
+			}
 		} else if (/-extlink-protocol/u.test(name)) {
 			modClick(state.sliceDoc(from, node.nextSibling!.to), e);
 		} else if (/-extlink(?:_|$)/u.test(name)) {
@@ -112,18 +122,22 @@ const generateLinks = (model: editor.ITextModel, tree: AST, parent?: AST, grandp
 			parent?.name === 'src' && srcTags.has(grandparent?.name)
 			|| parent?.name === 'cite' && citeTags.has(grandparent?.name)
 		)
+		|| parent?.type === 'image-parameter' && parent.name === 'link' && parent.childNodes!.length === 1
 	) {
 		const range = fromPositions(monaco, model, [from, to]);
 		let url = model.getValueInRange(range).replace(/<!--.*?(?:-->|$)/gsu, '').trim();
 		if (/[<>[\]|{}]/u.test(url)) {
 			return [];
 		}
+		const {urlProtocols} = mw.config.get('extCodeMirrorConfig') as MwConfig,
+			protocolRegex = new RegExp(`^(?:${urlProtocols})`, 'iu');
 		try {
 			if (type === 'magic-link') {
 				url = parseMagicLink(url);
 			} else if (
 				type === 'link-target' || type === 'template-name' || type === 'invoke-module'
 				|| type === 'attr-value' && parent?.name === 'src' && grandparent?.name === 'templatestyles'
+				|| parent?.type === 'image-parameter' && !protocolRegex.test(url)
 			) {
 				let ns = 0;
 				if (type === 'template-name' || type === 'attr-value') {

@@ -1,3 +1,12 @@
+## 2.19.6
+
+*2024-12-21*
+
+**Added**
+
+- The link parameter of an image is now highlighted with underline in the MediaWiki mode
+- The [openLinks](./mw/README.md#openlinks) extension now also supports the link parameter of an image in the MediaWiki mode on a MediaWiki site
+
 ## 2.19.5
 
 *2024-12-20*

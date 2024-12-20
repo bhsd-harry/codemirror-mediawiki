@@ -168,6 +168,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	declare ns;
 	declare page;
+	declare langConfig: unknown;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
@@ -234,6 +235,7 @@ export class CodeMirror extends CodeMirror6 {
 			throw new Error('A Monaco editor is already initialized!');
 		}
 		super.initialize(config);
+		this.langConfig = $.extend(true, {}, config);
 		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
 		if (font) {
 			this.view!.contentDOM.classList.add(font);
@@ -320,6 +322,7 @@ export class CodeMirror extends CodeMirror6 {
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		void super.setLanguage(lang, config);
+		this.langConfig = $.extend(true, {}, config);
 	}
 
 	override setContent(content: string): void {
