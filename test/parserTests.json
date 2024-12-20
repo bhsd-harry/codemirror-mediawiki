@@ -8746,22 +8746,22 @@
 	{
 		"desc": "Image with link parameter, wiki target",
 		"wikitext": "[[File:Foobar.jpg|link=Main Page]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main Page</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main Page</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "File with link to page section",
 		"wikitext": "[[Main Page#section]]\n[[File:Foobar.jpg|link=Main Page#section]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-tosection>#section</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main Page#section</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-tosection>#section</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main Page#section</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter, URL target",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter, protocol-less URL target",
 		"wikitext": "[[File:Foobar.jpg|link=//example.com/]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>//example.com/</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>//example.com/</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Escaping non-block captions (T107435)",
@@ -8771,27 +8771,27 @@
 	{
 		"desc": "Image with link parameter, wgExternalLinkTarget",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Thumb with link parameter, wgExternalLinkTarget",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/|thumb]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter, wgNoFollowLinks set to false",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter, wgNoFollowDomainExceptions",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter, wgExternalLinkTarget, unnamed parameter",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with empty link parameter",
@@ -8801,17 +8801,17 @@
 	{
 		"desc": "Image with link parameter (wiki target) and unnamed parameter",
 		"wikitext": "[[File:Foobar.jpg|link=Main_Page|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main_Page</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main_Page</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with link parameter (URL target) and unnamed parameter",
 		"wikitext": "[[File:Foobar.jpg|link=http://example.com/|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Thumbnail image with link parameter",
 		"wikitext": "[[File:Foobar.jpg|thumb|link=http://example.com/|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com/</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Manually-specified thumbnail image",
@@ -8826,12 +8826,12 @@
 	{
 		"desc": "Manually-specified thumbnail image with explicit link to wiki page",
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main_Page</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main_Page</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Manually-specified thumbnail image with explicit link to url",
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=http://example.com|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>http://example.com</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>http://example.com</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Manually-specified thumbnail image with explicit no link",
@@ -8841,7 +8841,7 @@
 	{
 		"desc": "Manually-specified thumbnail image with explicit link and alt text",
 		"wikitext": "[[File:Foobar.jpg|thumb=Thumb.png|link=Main_Page|alt=alttext|Title]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main_Page</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground file-text>alttext</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb=</><link-ground file-text>Thumb.png</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main_Page</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground file-text>alttext</><link-ground link-delimiter>|</><link-ground file-text>Title</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with frame and link",
@@ -8886,22 +8886,22 @@
 	{
 		"desc": "Ampersand in link attribute (edited html, no data-parsoid) (T206940)",
 		"wikitext": "[[File:Foobar.jpg|link=Foo_&_bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo_&_bar\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Foo_&amp;_bar</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Foo_&amp;_bar</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Foo_&amp;_bar</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Foo_&amp;_bar</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Italics markup in link attribute (T206940)",
 		"wikitext": "[[Foo''s bar''s]]\n\n<!-- Note that \"italics\" are stripped, even though this is a valid page title -->\n[[File:Foobar.jpg|link=Foo''s bar''s|caption1]]\n\n[[File:Foobar.jpg|link=''Main Page''|caption2]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo''s bar''s|caption1\nFile:Foobar.jpg|link=''Main Page''|caption2\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo''s bar''s</><link-ground link-bracket>]]</><comment>&lt;!-- Note that \"italics\" are stripped, even though this is a valid page title --&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Foo</><link-ground apostrophes>''</><link-ground file-text em>s bar</><link-ground apostrophes>''</><link-ground file-text>s</><link-ground link-delimiter>|</><link-ground file-text>caption1</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground apostrophes>''</><link-ground file-text em>Main Page</><link-ground apostrophes>''</><link-ground link-delimiter>|</><link-ground file-text>caption2</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Foo</><tag-gallery apostrophes>''</><tag-gallery file-text em>s bar</><tag-gallery apostrophes>''</><tag-gallery file-text>s</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption1</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery apostrophes>''</><tag-gallery file-text em>Main Page</><tag-gallery apostrophes>''</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption2</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo''s bar''s</><link-ground link-bracket>]]</><comment>&lt;!-- Note that \"italics\" are stripped, even though this is a valid page title --&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Foo</><link-ground apostrophes>''</><link-ground file-text em pagename>s bar</><link-ground apostrophes>''</><link-ground file-text pagename>s</><link-ground link-delimiter>|</><link-ground file-text>caption1</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground apostrophes>''</><link-ground file-text em pagename>Main Page</><link-ground apostrophes>''</><link-ground link-delimiter>|</><link-ground file-text>caption2</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Foo</><tag-gallery apostrophes>''</><tag-gallery file-text em pagename>s bar</><tag-gallery apostrophes>''</><tag-gallery file-text pagename>s</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption1</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery apostrophes>''</><tag-gallery file-text em pagename>Main Page</><tag-gallery apostrophes>''</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption2</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Nowiki markup in link attribute (edited html, no data-parsoid) (T206940)",
 		"wikitext": "[[File:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=Foo<nowiki>''s_bar''</nowiki>s|caption\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Foo</><link-ground exttag-bracket>&lt;</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><tag-nowiki>''s_bar''</><link-ground exttag-bracket>&lt;/</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><link-ground file-text>s</><link-ground link-delimiter>|</><link-ground file-text>caption</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Foo</><tag-gallery exttag-bracket>&lt;</><tag-gallery exttag-name>nowiki</><tag-gallery exttag-bracket>&gt</><tag-gallery tag-nowiki>''s_bar''</><tag-gallery exttag-bracket>&lt;/</><tag-gallery exttag-name>nowiki</><tag-gallery exttag-bracket>&gt</><tag-gallery file-text>s</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Foo</><link-ground exttag-bracket>&lt;</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><tag-nowiki>''s_bar''</><link-ground exttag-bracket>&lt;/</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><link-ground file-text pagename>s</><link-ground link-delimiter>|</><link-ground file-text>caption</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Foo</><tag-gallery exttag-bracket>&lt;</><tag-gallery exttag-name>nowiki</><tag-gallery exttag-bracket>&gt</><tag-gallery tag-nowiki>''s_bar''</><tag-gallery exttag-bracket>&lt;/</><tag-gallery exttag-name>nowiki</><tag-gallery exttag-bracket>&gt</><tag-gallery file-text pagename>s</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "HTML entity prefix in link markup (T209236)",
 		"wikitext": "[[File:Foobar.jpg|link=https://example.com?foo&params=bar]]\n\n<!-- consistency with gallery extension -->\n<gallery>\nFile:Foobar.jpg|link=https://example.com?foo&params=bar\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>https://example.com?foo&amp;params=bar</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>https://example.com?foo&amp;params=bar</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>https://example.com?foo&amp;params=bar</><link-ground link-bracket>]]</><comment>&lt;!-- consistency with gallery extension --&gt</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>https://example.com?foo&amp;params=bar</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Image with table with attributes in caption",
@@ -9086,7 +9086,7 @@
 	{
 		"desc": "Entities in file name and attributes",
 		"wikitext": "[[File:7%25 solution.gif|manualthumb=7%25 solution.gif|link=7%25 solution|[[7%25 solution]]]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:7%25 solution.gif</><link-ground link-delimiter>|</><link-ground file-text>manualthumb=7%25 solution.gif</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>7%25 solution</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>7%25 solution</><link-ground link-bracket>]]]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:7%25 solution.gif</><link-ground link-delimiter>|</><link-ground file-text>manualthumb=7%25 solution.gif</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>7%25 solution</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>7%25 solution</><link-ground link-bracket>]]]]</>"
 	},
 	{
 		"desc": "T2499: Alt text should have &#1234;, not &amp;1234;",
@@ -9331,7 +9331,7 @@
 	{
 		"desc": "Gallery with link that has fragment",
 		"wikitext": "<gallery>\nimage:foobar.jpg|link=Main_Page\nimage:foobar.jpg|link=Main_Page#section\nimage:foobar.jpg|link=Main Page#section|caption\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Main_Page</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Main_Page#section</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Main Page#section</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Main_Page</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Main_Page#section</><tag-gallery link-pagename pagename>image:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Main Page#section</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery with template inside caption",
@@ -9366,27 +9366,27 @@
 	{
 		"desc": "Gallery override link with wikilink (T36852)",
 		"wikitext": "<gallery>\nFile:Foobar.jpg|link=Wikilink|alt=galleryalt\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Wikilink</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Wikilink</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery override link with absolute external link (T36852)",
 		"wikitext": "<gallery>\nFile:Foobar.jpg|alt=galleryalt|link=http://www.example.org\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>http://www.example.org</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>http://www.example.org</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery override link with absolute external link with LanguageConverter",
 		"wikitext": "<gallery>\nFile:foobar.jpg|caption|alt=galleryalt|link=http://www.example.org\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>http://www.example.org</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery file-text>caption</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>http://www.example.org</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery override link with malicious javascript (T36852)",
 		"wikitext": "<gallery>\nFile:Foobar.jpg|alt=galleryalt|link=\" onclick=\"alert('malicious javascript code!');\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>\" onclick=\"alert('malicious javascript code!');</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>alt=</><tag-gallery file-text>galleryalt</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>\" onclick=\"alert('malicious javascript code!');</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery with invalid title as link (T45964)",
 		"wikitext": "<gallery>\nFile:Foobar.jpg|link=<\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>&lt;</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>&lt;</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Serialize gallery without attrs in data-mw",
@@ -9466,7 +9466,7 @@
 	{
 		"desc": "Image with page parameter and link",
 		"wikitext": "[[File:LoremIpsum.djvu|link=https://google.com|page=2]]\n[[File:LoremIpsum.djvu|link=https://google.com?page=4|page=2]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>https://google.com</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>https://google.com?page=4</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>https://google.com</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>https://google.com?page=4</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with page parameter and manualthumb",
@@ -9616,7 +9616,7 @@
 	{
 		"desc": "Image: from basic HTML (3)",
 		"wikitext": "[[File:Foobar.jpg|link=Main|alt=Alt|100x100px]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Main</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground file-text>Alt</><link-ground link-delimiter>|</><link-ground image-parameter>100x100px</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Main</><link-ground link-delimiter>|</><link-ground image-parameter>alt=</><link-ground file-text>Alt</><link-ground link-delimiter>|</><link-ground image-parameter>100x100px</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image: from basic HTML (4)",
@@ -9626,22 +9626,22 @@
 	{
 		"desc": "Image: Invalid title as link",
 		"wikitext": "[[File:Foobar.jpg|link=<]]\n[[File:Foobar.jpg|link=<|thumb]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>&lt;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>&lt;</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>&lt;</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>&lt;</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Image with page parameter and invalid link",
 		"wikitext": "[[File:LoremIpsum.djvu|link=<|page=2]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>&lt;</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>&lt;</><link-ground link-delimiter>|</><link-ground image-parameter>page=</><link-ground file-text>2</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Percent decode titles in the link option (T216003#7836261)",
 		"wikitext": "[[Test%22123]]\n[[File:Foobar.jpg|link=Test%22123]]\n[[File:Foobar.jpg|link=[[Test%22123]]]]\n\n<gallery>\nFile:Foobar.jpg|link=Test%22123\nFile:Foobar.jpg|link=[[Test%22123]]\n</gallery>",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%22123</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Test%22123</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%22123</><link-ground link-bracket>]]]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text>Test%22123</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery link-ground link-bracket>[[</><tag-gallery link-ground link-pagename pagename>Test%22123</><tag-gallery link-ground link-bracket>]]</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%22123</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Test%22123</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%22123</><link-ground link-bracket>]]]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery file-text pagename>Test%22123</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery image-parameter>link=</><tag-gallery link-ground link-bracket>[[</><tag-gallery link-ground link-pagename pagename>Test%22123</><tag-gallery link-ground link-bracket>]]</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Should not double decode the link option",
 		"wikitext": "[[Test%2522]]\n[[File:Foobar.jpg|link=Test%2522]]\n[[File:Foobar.jpg|link=[[Test%2522]]]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%2522</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text>Test%2522</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%2522</><link-ground link-bracket>]]]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%2522</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>Test%2522</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>link=</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Test%2522</><link-ground link-bracket>]]]]</>"
 	},
 	{
 		"desc": "Various link types in alt and link options",
