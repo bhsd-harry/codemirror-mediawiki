@@ -11,8 +11,6 @@ export const checkNode = ({name}: SyntaxNode): void | never => {
 	}
 };
 
-const {parser} = StreamLanguage.define(
+export default StreamLanguage.define(
 	new MediaWiki(getStaticMwConfig(config as unknown as Config, tagModes)).mediawiki(),
-);
-
-export default parser;
+).parser;

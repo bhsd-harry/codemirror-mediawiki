@@ -1,6 +1,9 @@
 .cm-editor {
 	background-color: #fff;
 }
+.cm-content {
+	--codemirror-cursor: text;
+}
 .cm-panel .cm-textfield,
 .cm-panel .cm-button,
 .cm-panels > .cm-search.cm-panel label,

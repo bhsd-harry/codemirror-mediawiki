@@ -6,10 +6,26 @@ import type {SyntaxNode} from '@lezer/common';
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
 export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
-	|| platform.includes('Mac');
+	|| platform.includes('Mac'),
+	modKey = isMac ? 'metaKey' : 'ctrlKey',
+	key = isMac ? 'Meta' : 'Control';
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'];
+const links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'];
+
+document.addEventListener('keydown', e => {
+	if (e.key === key) {
+		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+			ele.style.setProperty('--codemirror6-cursor', 'pointer');
+		}
+	}
+});
+document.addEventListener('keyup', e => {
+	if (e.key === key) {
+		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+			ele.style.removeProperty('--codemirror6-cursor');
+		}
+	}
+});
 
 export const openExtLinks = [
 	EditorView.domEventHandlers({
@@ -48,7 +64,7 @@ export const openExtLinks = [
 	}),
 	EditorView.theme({
 		[links.map(type => `.cm-mw-${type}`).join()]: {
-			cursor: 'pointer',
+			cursor: 'var(--codemirror6-cursor)',
 		},
 	}),
 ];

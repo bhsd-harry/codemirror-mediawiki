@@ -16,6 +16,7 @@
 **Changed**
 
 - `{{}}` without a non-whitespace character inside is now highlighted as plain text in the MediaWiki mode
+- When the [openExtLinks](./README.md#openextlinks) extension or the [openLinks](./mw/README.md#openlinks) extension is enabled, the MediaWiki-style links will have a `cursor: pointer` style only when the `Ctrl`/`Cmd` key is pressed
 
 ## 2.19.4
 

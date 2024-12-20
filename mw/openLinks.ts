@@ -1,6 +1,6 @@
 import {normalizeTitle} from '@bhsd/common';
 import {getTree, listen, fromPositions} from 'monaco-wiki/src/tree';
-import {isMac} from '../src/openExtLinks';
+import {modKey, key} from '../src/openExtLinks';
 import {tokens} from '../src/config';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
@@ -10,8 +10,7 @@ import type {CodeMirror} from './base';
 
 declare type MouseEventListener = (e: MouseEvent) => void;
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	handlers = new WeakMap<CodeMirror, MouseEventListener>(),
+const handlers = new WeakMap<CodeMirror, MouseEventListener>(),
 	srcTags = new Set<string | undefined>(['templatestyles', 'img']),
 	citeTags = new Set<string | undefined>(['blockquote', 'del', 'ins', 'q']),
 	linkTypes = new Set<TokenTypes | undefined>([
@@ -172,6 +171,21 @@ const linkProvider: languages.LinkProvider = {
 
 let disposable: IDisposable | undefined,
 	listener: IDisposable | undefined;
+
+document.addEventListener('keydown', e => {
+	if (e.key === key) {
+		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+			ele.style.setProperty('--codemirror-cursor', 'inherit');
+		}
+	}
+});
+document.addEventListener('keyup', e => {
+	if (e.key === key) {
+		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+			ele.style.setProperty('--codemirror-cursor', 'text');
+		}
+	}
+});
 
 /**
  * 添加或移除打开链接的事件
