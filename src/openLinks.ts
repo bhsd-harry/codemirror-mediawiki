@@ -1,33 +1,42 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config';
+import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
+import type {CodeMirror6} from './codemirror';
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
 export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
-	|| platform.includes('Mac'),
-	modKey = isMac ? 'metaKey' : 'ctrlKey',
-	key = isMac ? 'Meta' : 'Control';
+	|| platform.includes('Mac');
 
-const links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'];
+const modKey = isMac ? 'metaKey' : 'ctrlKey',
+	key = isMac ? 'Meta' : 'Control',
+	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
+	wikiLinks = [
+		'template-name',
+		'link-pagename',
+		'parserfunction.cm-mw-pagename',
+		'exttag-attribute-value.cm-mw-pagename',
+		'file-text.cm-mw-pagename',
+	];
 
 document.addEventListener('keydown', e => {
 	if (e.key === key) {
 		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
-			ele.style.setProperty('--codemirror6-cursor', 'pointer');
+			ele.style.setProperty('--codemirror-cursor', 'pointer');
 		}
 	}
 });
 document.addEventListener('keyup', e => {
 	if (e.key === key) {
 		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
-			ele.style.removeProperty('--codemirror6-cursor');
+			ele.style.removeProperty('--codemirror-cursor');
 		}
 	}
 });
 
-export const openExtLinks = [
+export const openLinks = ({langConfig}: CodeMirror6): Extension => [
 	EditorView.domEventHandlers({
 		mousedown(e, view) {
 			if (!e[modKey] || e.button !== 0) {
@@ -37,13 +46,18 @@ export const openExtLinks = [
 			if (!position) {
 				return undefined;
 			}
-			const {state} = view,
-				node: SyntaxNode | null | undefined = ensureSyntaxTree(state, position)?.resolve(position, 1);
+			const {state} = view;
+			let node: SyntaxNode | null | undefined = ensureSyntaxTree(state, position)?.resolve(position, 1);
+			if (node?.name.includes(tokens.linkToSection)) {
+				node = node.prevSibling;
+			}
 			if (!node) {
 				return undefined;
 			}
 			const {name, from, to} = node;
-			if (/-extlink-protocol/u.test(name)) {
+			if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
+				return langConfig.titleParser(state, node, langConfig.urlProtocols);
+			} else if (/-extlink-protocol/u.test(name)) {
 				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
 				return true;
 			} else if (/-extlink(?:_|$)/u.test(name)) {
@@ -57,14 +71,16 @@ export const openExtLinks = [
 				} else if (link.startsWith('PMID')) {
 					open(`https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`, '_blank');
 					return true;
+				} else if (typeof langConfig?.isbnParser === 'function') {
+					return langConfig.isbnParser(link);
 				}
 			}
 			return undefined;
 		},
 	}),
 	EditorView.theme({
-		[links.map(type => `.cm-mw-${type}`).join()]: {
-			cursor: 'var(--codemirror6-cursor)',
+		[[...links, ...langConfig?.titleParser ? wikiLinks : []].map(type => `.cm-mw-${type}`).join()]: {
+			cursor: 'var(--codemirror-cursor)',
 		},
 	}),
 ];

@@ -2,7 +2,7 @@ import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
-import openLinks from './openLinks';
+import {openLinks, titleParser, isbnParser} from './openLinks';
 import refHover from './ref';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
@@ -168,7 +168,6 @@ export class CodeMirror extends CodeMirror6 {
 
 	declare ns;
 	declare page;
-	declare langConfig: unknown;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
@@ -235,7 +234,9 @@ export class CodeMirror extends CodeMirror6 {
 			throw new Error('A Monaco editor is already initialized!');
 		}
 		super.initialize(config);
-		this.langConfig = $.extend(true, {}, config);
+		if (this.lang === 'mediawiki') {
+			this.langConfig = $.extend(true, {titleParser, isbnParser}, config as MwConfig);
+		}
 		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
 		if (font) {
 			this.view!.contentDOM.classList.add(font);
@@ -322,7 +323,9 @@ export class CodeMirror extends CodeMirror6 {
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		void super.setLanguage(lang, config);
-		this.langConfig = $.extend(true, {}, config);
+		if (lang === 'mediawiki') {
+			this.langConfig = $.extend(true, {titleParser, isbnParser}, config as MwConfig);
+		}
 	}
 
 	override setContent(content: string): void {
@@ -417,7 +420,6 @@ export class CodeMirror extends CodeMirror6 {
 			: (ext: string): boolean | undefined => extensions[ext];
 		const hasLint = hasExtension('lint'),
 			isWiki = this.lang === 'mediawiki';
-		openLinks(this, hasExtension('openLinks'), isWiki);
 		if (this.view) {
 			super.prefer(extensions);
 			if (hasLint !== undefined) {
@@ -426,8 +428,13 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
-		} else if (hasLint !== undefined && this.#model.lint) {
-			this.#model.lint(hasLint);
+		} else {
+			if (isWiki) {
+				openLinks(this, hasExtension('openLinks'));
+			}
+			if (hasLint !== undefined && this.#model.lint) {
+				this.#model.lint(hasLint);
+			}
 		}
 		if (isWiki) {
 			escape(this.#editor, hasExtension('escape'));

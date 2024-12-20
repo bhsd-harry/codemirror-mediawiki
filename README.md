@@ -46,7 +46,7 @@
 	- [escape](#escape)
 	- [tagMatching](#tagmatching)
 	- [refHover](#refhover)
-	- [openExtLinks](#openextlinks)
+	- [openLinks](#openlinks)
 
 </details>
 
@@ -551,8 +551,8 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
 
-## openExtLinks
+## openLinks
 
-*version added: 2.19.3*
+*version added: 2.19.6*
 
-CTRL/CMD-click opens an external link in a new tab. This extension should be replaced by the [openLinks](./mw/README.md#openlinks) extension on a MediaWiki site.
+CTRL/CMD-click opens a link in a new tab.

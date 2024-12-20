@@ -1,9 +1,6 @@
 .cm-editor {
 	background-color: #fff;
 }
-.cm-content {
-	--codemirror-cursor: text;
-}
 .cm-panel .cm-textfield,
 .cm-panel .cm-button,
 .cm-panels > .cm-search.cm-panel label,
@@ -31,18 +28,6 @@
 }
 .cm-focused .cm-nonmatchingTag {
 	background-color: rgba(187, 85, 85, .27);
-}
-.cm-mw-template-name,
-.cm-mw-link-pagename,
-.cm-mw-parserfunction.cm-mw-pagename,
-.cm-mw-exttag-attribute-value.cm-mw-pagename,
-.cm-mw-file-text.cm-mw-pagename,
-.cm-mw-extlink-protocol,
-.cm-mw-extlink,
-.cm-mw-free-extlink-protocol,
-.cm-mw-free-extlink,
-.cm-mw-magic-link {
-	cursor: var(--codemirror-cursor);
 }
 #cm-preference > .oo-ui-window-frame {
 	height: 100% !important;

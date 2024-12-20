@@ -38,9 +38,9 @@ import codeFolding, {foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
 import {refHover} from './ref';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
-import {openExtLinks} from './openExtLinks';
+import {openLinks} from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
-import {bidiIsolation} from './bidi';
+import bidiIsolation from './bidi';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -53,7 +53,7 @@ import type {DocRange} from './fold';
 
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
-export type Addon<T> = [(config?: T) => Extension, Record<string, T>];
+export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>];
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
 
@@ -117,7 +117,7 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),
-	openExtLinks: mediawikiOnly(openExtLinks),
+	openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
 };
 
 const linters: Record<string, Extension> = {};
@@ -133,6 +133,7 @@ const pos = (doc: Text, line: number, column: number): number => doc.line(line).
 
 /** CodeMirror 6 编辑器 */
 export class CodeMirror6 {
+	declare langConfig: MwConfig | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -365,7 +366,7 @@ export class CodeMirror6 {
 			this.#effects(
 				this.#extensions.reconfigure([...this.#preferred].map(name => {
 					const [extension, configs] = avail[name]!;
-					return extension(configs[this.#lang]);
+					return extension(configs[this.#lang], this);
 				})),
 			);
 		}

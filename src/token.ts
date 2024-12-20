@@ -7,7 +7,9 @@
 import {Tag} from '@lezer/highlight';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
+import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
+import type {SyntaxNode} from '@lezer/common';
 
 declare type MimeTypes = 'mediawiki'
 | 'text/nowiki'
@@ -75,6 +77,10 @@ export interface MwConfig {
 	implicitlyClosedHtmlTags?: string[];
 	linkSuggest?: ApiSuggest;
 	paramSuggest?: ApiSuggest;
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	titleParser?: (state: EditorState, node: SyntaxNode, urlProtocols: string) => true | undefined;
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	isbnParser?: (link: string) => true;
 }
 
 class MediaWikiData {

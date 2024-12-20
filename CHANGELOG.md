@@ -5,7 +5,7 @@
 **Added**
 
 - The link parameter of an image is now highlighted with underline in the MediaWiki mode
-- The [openLinks](./mw/README.md#openlinks) extension now also supports the link parameter of an image in the MediaWiki mode on a MediaWiki site
+- The [openLinks](./README.md#openlinks) extension now also supports the link parameter of an image in the MediaWiki mode on a MediaWiki site
 
 **Fixed**
 
@@ -16,7 +16,8 @@
 **Changed**
 
 - `{{}}` without a non-whitespace character inside is now highlighted as plain text in the MediaWiki mode
-- When the [openExtLinks](./README.md#openextlinks) extension or the [openLinks](./mw/README.md#openlinks) extension is enabled, the MediaWiki-style links will have a `cursor: pointer` style only when the `Ctrl`/`Cmd` key is pressed
+- The openExtLinks extension for the MediaWiki mode is now renamed to [openLinks](./README.md#openlinks)
+- When the [openLinks](./README.md#openlinks) extension is enabled, the MediaWiki-style links will have a `cursor: pointer` style only when the `Ctrl`/`Cmd` key is pressed
 
 ## 2.19.4
 
@@ -24,8 +25,8 @@
 
 **Fixed**
 
-- The [openLinks](./mw/README.md#openlinks) extension should only be triggered by a main button click on a MediaWiki site
-- Conflict between the [openExtLinks](./README.md#openextlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
+- The [openLinks](./README.md#openlinks) extension should only be triggered by a main button click
+- Conflict between the [openExtLinks](./README.md#openlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
 
 ## 2.19.3
 
@@ -33,12 +34,12 @@
 
 **Added**
 
-- New extension option for the MediaWiki mode: [openExtLinks](./README.md#openextlinks)
+- New extension option for the MediaWiki mode: [openExtLinks](./README.md#openlinks)
 
 **Fixed**
 
 - `jquery.textSelection` implementation for the Monaco editor on a MediaWiki site
-- Cursor style for magic links in the MediaWiki mode when the [openLinks](./mw/README.md#openlinks) extension is enabled on a MediaWiki site
+- Cursor style for magic links in the MediaWiki mode when the [openLinks](./README.md#openlinks) extension is enabled on a MediaWiki site
 
 **Changed**
 
@@ -98,7 +99,7 @@
 
 **Changed**
 
-- The [autocompletion](./README.md#autocompletion) and [openLinks](./mw/README.md#openlinks) extensions now also support widget pages when used on a MediaWiki site
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./README.md#openlinks) extensions now also support widget pages when used on a MediaWiki site
 - The Lua linter now warns about the use of global variables
 
 ## 2.18.8
@@ -107,7 +108,7 @@
 
 **Changed**
 
-- The [openLinks](./mw/README.md#openlinks) extension for a Monaco editor now also supports the `cite` HTML attribute and MediaWiki-style external links
+- The [openLinks](./README.md#openlinks) extension for a Monaco editor now also supports the `cite` HTML attribute and MediaWiki-style external links
 
 ## 2.18.7
 
@@ -174,7 +175,7 @@
 
 **Fixed**
 
-- The [openLinks](./mw/README.md#openlinks) extension now correctly detects page names with HTML/URL encoding in the MediaWiki mode
+- The [openLinks](./README.md#openlinks) extension now correctly detects page names with HTML/URL encoding in the MediaWiki mode
 - Language conversion in table cells in the MediaWiki mode
 
 ## 2.17.4
@@ -196,7 +197,7 @@
 **Added**
 
 - [Autocompletion](./README.md#autocompletion) for the `follow` and `extends` attributes of `<ref>` in the MediaWiki mode
-- The [openLinks](./mw/README.md#openlinks) extension now also supports the `src` attribute of the `<templatestyles>` tag
+- The [openLinks](./README.md#openlinks) extension now also supports the `src` attribute of the `<templatestyles>` tag
 
 ## 2.17.2
 
@@ -204,13 +205,13 @@
 
 **Added**
 
-- The [openLinks](./mw/README.md#openlinks) extension can now be triggered by clicking on the link fragment
+- The [openLinks](./README.md#openlinks) extension can now be triggered by clicking on the link fragment
 - [Autocompletion](./README.md#autocompletion) for the `name` attribute of `<ref>` in the MediaWiki mode
 - Table syntax using templates `{{(!}}`, `{{!)}}`, `{{!-}}`, `{{!+}}` and `{{!!}}` in the MediaWiki mode
 
 **Fixed**
 
-- The [openLinks](./mw/README.md#openlinks) extension during editing on a MediaWiki site
+- The [openLinks](./README.md#openlinks) extension during editing on a MediaWiki site
 - Font size of the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
 
 ## 2.17.1
@@ -251,7 +252,7 @@
 
 **Fixed**
 
-- Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./mw/README.md#openlinks) extension for a Monaco editor used on a MediaWiki site
+- Remove comments and ignore [invalid page names](https://www.mediawiki.org/wiki/Manual:Page_title#Naming_restrictions) in the [openLinks](./README.md#openlinks) extension for a Monaco editor used on a MediaWiki site
 - Redirection syntax can have leading whitespace in the MediaWiki mode
 
 ## 2.15.3
@@ -368,7 +369,7 @@
 **Added**
 
 - Extension modes for `<references>`, `<inputbox>` and `<gallery>` in the MediaWiki mode
-- Magic links (RFC, PMID and ISBN) and [openLinks](./mw/README.md#openlinks) support in the MediaWiki mode
+- Magic links (RFC, PMID and ISBN) and [openLinks](./README.md#openlinks) support in the MediaWiki mode
 - Highlight image size in the MediaWiki mode
 - [Autocompletion](./README.md#autocompletion) for table cell attributes when explicitly triggered in the MediaWiki mode
 - Highlight language conversion in the MediaWiki mode
@@ -434,7 +435,7 @@
 
 **Added**
 
-- [OpenLinks](./mw/README.md#openlinks) now also includes fragment of wikilinks in the MediaWiki mode
+- [OpenLinks](./README.md#openlinks) now also includes fragment of wikilinks in the MediaWiki mode
 
 **Fixed**
 
@@ -514,7 +515,7 @@
 
 - Highlight the module page name in the MediaWiki mode
 - Wikilink, template and module [autocompletion](./README.md#autocompletion) in the MediaWiki mode based on the [opensearch API](https://www.mediawiki.org/wiki/API:Opensearch)
-- When used on a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens module pages
+- When used on a MediaWiki site, the [openLinks](./README.md#openlinks) extension now also opens module pages
 - [CodeFolding](./README.md#codefolding) now also supports folding of parser functions and extension tags in the MediaWiki mode
 
 **Fixed**
@@ -648,7 +649,7 @@
 - Improved tag [autocompletion](./README.md#autocompletion) in the MediaWiki mode
 - Links and behavior switches are now ignored in table attributes in the MediaWiki mode
 - Allow HTML comments in wikilinks in the MediaWiki mode
-- Conflict between the [openLinks](./mw/README.md#openlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
+- Conflict between the [openLinks](./README.md#openlinks) extension and the [allowMultipleSelections](./README.md#allowmultipleselections) extension
 
 **Changed**
 
@@ -663,7 +664,7 @@
 **Added**
 
 - New keyboard shortcut for [codeFolding](./README.md#codefolding): `Ctrl` + `Alt` + `[`
-- When used on a MediaWiki site, the [openLinks](./mw/README.md#openlinks) extension now also opens external links
+- When used on a MediaWiki site, the [openLinks](./README.md#openlinks) extension now also opens external links
 
 **Fixed**
 
@@ -836,7 +837,7 @@
 
 **Fixed**
 
-- The [openLinks](./mw/README.md#openlinks) extension now correctly detects page names with `&`
+- The [openLinks](./README.md#openlinks) extension now correctly detects page names with `&`
 
 **Changed**
 
@@ -860,7 +861,7 @@
 
 **Changed**
 
-- The [openLinks](./mw/README.md#openlinks) extension now utilizes the syntax tree to detect page names
+- The [openLinks](./README.md#openlinks) extension now utilizes the syntax tree to detect page names
 
 ## v2.4.1
 
@@ -934,7 +935,7 @@
 
 **Added**
 
-- New extension option for the MediaWiki mode: [openLinks](./mw/README.md#openlinks)
+- New extension option for the MediaWiki mode: [openLinks](./README.md#openlinks)
 
 **Changed**
 

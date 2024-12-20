@@ -14,7 +14,6 @@
 - [Static methods](#static-methods)
 	- [fromTextArea](#fromtextarea)
 - [Extensions](#extensions)
-	- [openLinks](#openlinks)
 	- [wikiEditor](#wikieditor)
 	- [save](#save)
 	- [useMonaco](#usemonaco)
@@ -169,12 +168,6 @@ CodeMirror6.fromTextArea(textarea, 'mediawiki');
 # Extensions
 
 The `CodeMirror` class inherits all the [extensions](../README.md#extensions) from the `CodeMirror6` class and addes more.
-
-## openLinks
-
-*version added: 2.1.15*
-
-CTRL/CMD-click opens a link or a transcluded page in a new tab.
 
 ## wikiEditor
 

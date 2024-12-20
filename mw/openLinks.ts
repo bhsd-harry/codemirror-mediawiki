@@ -1,17 +1,49 @@
 import {normalizeTitle} from '@bhsd/common';
 import {getTree, listen, fromPositions} from 'monaco-wiki/src/tree';
-import {modKey, key} from '../src/openExtLinks';
 import {tokens} from '../src/config';
+import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {languages, editor, IDisposable} from 'monaco-editor';
 import type {AST, TokenTypes} from 'wikiparser-node';
 import type {MwConfig} from '../src/codemirror';
 import type {CodeMirror} from './base';
 
-declare type MouseEventListener = (e: MouseEvent) => void;
+export const titleParser = (state: EditorState, node: SyntaxNode, urlProtocols: string): true | undefined => {
+	const {from, to, name, nextSibling} = node;
+	let page = state.sliceDoc(from, to).trim();
+	if (name.includes(tokens.fileText) && new RegExp(`^(?:${urlProtocols})`, 'iu').test(page)) {
+		open(page, '_blank');
+		return true;
+	}
+	if (page.startsWith('/')) {
+		page = `:${mw.config.get('wgPageName')}${page}`;
+	}
+	let ns = 0;
+	if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
+		ns = 10;
+	} else if (name.includes(tokens.parserFunction)) {
+		ns = name.includes('mw-widget') ? 274 : 828;
+	} else if (nextSibling?.name.includes(tokens.linkToSection)) {
+		page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
+	}
+	const url = mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
+	if (url) {
+		open(url, '_blank');
+		return true;
+	}
+	return undefined;
+};
 
-const handlers = new WeakMap<CodeMirror, MouseEventListener>(),
-	srcTags = new Set<string | undefined>(['templatestyles', 'img']),
+export const isbnParser = (link: string): true => {
+	const url = new mw.Title(`Special:Booksources/${link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')}`)
+		.getUrl(undefined);
+	open(url, '_blank');
+	return true;
+};
+
+/** @todo The rest part for Monaco has no dependence on CodeMirror now, so they should be moved to monaco-wiki */
+
+const srcTags = new Set<string | undefined>(['templatestyles', 'img']),
 	citeTags = new Set<string | undefined>(['blockquote', 'del', 'ins', 'q']),
 	linkTypes = new Set<TokenTypes | undefined>([
 		'link-target',
@@ -34,76 +66,6 @@ const parseMagicLink = (link: string): string => {
 	return link.startsWith('RFC')
 		? `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`
 		: `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
-};
-
-/**
- * 阻止默认行为并在新页面打开链接
- * @param url 链接
- * @param e 点击事件
- */
-const modClick = (url: string, e: MouseEvent): void => {
-	e.preventDefault();
-	e.stopPropagation();
-	open(url, '_blank');
-};
-
-/**
- * 点击时在新页面打开链接、模板等
- * @param cm
- * @param e 点击事件
- */
-const getHandler = (cm: CodeMirror): MouseEventListener => {
-	if (handlers.has(cm)) {
-		return handlers.get(cm)!;
-	}
-	const handler: MouseEventListener = (e): void => {
-		if (!e[modKey] || e.button !== 0) {
-			return;
-		}
-		const {view} = cm,
-			{state} = view!;
-		let node: SyntaxNode | null | undefined = cm.getNodeAt(view!.posAtCoords(e)!);
-		if (node?.name.includes(tokens.linkToSection)) {
-			node = node.prevSibling;
-		}
-		if (!node) {
-			return;
-		}
-		const {name, from, to} = node;
-		if (name.includes(tokens.pageName)) {
-			const {nextSibling} = node;
-			let page = state.sliceDoc(from, to).trim();
-			if (
-				name.includes(tokens.fileText)
-				&& new RegExp(`^(?:${(cm.langConfig as MwConfig).urlProtocols})`, 'iu').test(page)
-			) {
-				modClick(page, e);
-			}
-			if (page.startsWith('/')) {
-				page = `:${mw.config.get('wgPageName')}${page}`;
-			}
-			let ns = 0;
-			if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
-				ns = 10;
-			} else if (name.includes(tokens.parserFunction)) {
-				ns = name.includes('mw-widget') ? 274 : 828;
-			} else if (nextSibling?.name.includes(tokens.linkToSection)) {
-				page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
-			}
-			const url = mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
-			if (url) {
-				modClick(url, e);
-			}
-		} else if (/-extlink-protocol/u.test(name)) {
-			modClick(state.sliceDoc(from, node.nextSibling!.to), e);
-		} else if (/-extlink(?:_|$)/u.test(name)) {
-			modClick(state.sliceDoc(node.prevSibling!.from, to), e);
-		} else if (name.includes(tokens.magicLink)) {
-			modClick(parseMagicLink(state.sliceDoc(from, to)), e);
-		}
-	};
-	handlers.set(cm, handler);
-	return handler;
 };
 
 /**
@@ -172,46 +134,15 @@ const linkProvider: languages.LinkProvider = {
 let disposable: IDisposable | undefined,
 	listener: IDisposable | undefined;
 
-document.addEventListener('keydown', e => {
-	if (e.key === key) {
-		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
-			ele.style.setProperty('--codemirror-cursor', 'inherit');
-		}
-	}
-});
-document.addEventListener('keyup', e => {
-	if (e.key === key) {
-		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
-			ele.style.setProperty('--codemirror-cursor', 'text');
-		}
-	}
-});
-
 /**
  * 添加或移除打开链接的事件
  * @param cm
  * @param on 是否添加
- * @param isWiki 是否为Wikitext
  */
-export default (cm: CodeMirror, on: boolean | undefined, isWiki: boolean): void => {
-	const {view, model} = cm;
-	if (view) {
-		on = isWiki && on; // eslint-disable-line no-param-reassign
-		const {scrollDOM} = view,
-			handler = getHandler(cm);
-		if (on) {
-			mw.loader.load('mediawiki.Title');
-			scrollDOM.addEventListener('mousedown', handler, {capture: true});
-			scrollDOM.style.setProperty('--codemirror-cursor', 'pointer');
-		} else if (on === false) {
-			scrollDOM.removeEventListener('mousedown', handler, {capture: true});
-			scrollDOM.style.removeProperty('--codemirror-cursor');
-		}
-	} else if (!isWiki || !model) {
-		// pass
-	} else if (on) {
+export const openLinks = (cm: CodeMirror, on: boolean | undefined): void => {
+	if (on) {
 		disposable ??= monaco.languages.registerLinkProvider('wikitext', linkProvider);
-		listener = listen(model);
+		listener = listen(cm.model!);
 	} else if (on === false) {
 		disposable?.dispose();
 		disposable = undefined;

@@ -1,5 +1,5 @@
 import {getObject, setObject, parseVersion} from '@bhsd/common';
-import {isMac} from '../src/openExtLinks';
+import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './base';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.19.5',
