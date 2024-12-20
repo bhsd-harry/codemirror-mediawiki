@@ -63,7 +63,7 @@ export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean)
 
 export interface MwConfig {
 	readonly tags: Record<string, true>;
-	readonly tagModes: Record<string, string>;
+	tagModes: Record<string, string>;
 	urlProtocols: string;
 	functionSynonyms: [Record<string, string>, Record<string, unknown>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
@@ -162,22 +162,14 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
  * 复制 StreamParser 状态
  * @param state
  */
-const copyState = (state: State): State => {
-	const newState = {} as State;
-	for (const key in state) { // eslint-disable-line guard-for-in
-		const val = state[key as keyof State];
-		if (Array.isArray(val)) {
-			// @ts-expect-error readonly array
-			newState[key] = [...val];
-		} else if (key === 'extState') {
-			newState.extState = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
-		} else {
-			// @ts-expect-error keyof State
-			newState[key] = key !== 'data' && val && typeof val === 'object' ? {...val} : val;
-		}
+const copyState = (state: State): State => Object.fromEntries(Object.entries(state).map(([key, val]) => {
+	if (Array.isArray(val)) {
+		return [key, [...val]];
+	} else if (key === 'extState') {
+		return [key, (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State)];
 	}
-	return newState;
-};
+	return [key, key !== 'data' && val && typeof val === 'object' ? {...val} : val];
+})) as State;
 
 const span = typeof document === 'object' && document.createElement('span'); // used for isHtmlEntity()
 
@@ -416,7 +408,9 @@ export class MediaWiki {
 			implicitlyClosedHtmlTags,
 			tags,
 			nsid,
+			variants,
 			redirection = ['#REDIRECT'],
+			img = {},
 		} = config;
 		this.config = config;
 		this.tokenTable = {...tokenTable};
@@ -430,7 +424,7 @@ export class MediaWiki {
 			...implicitlyClosedHtmlTags ?? [],
 		]);
 		this.urlProtocols = new RegExp(String.raw`^(?:${urlProtocols})(?=[^\p{Zs}[\]<>"])`, 'iu');
-		this.linkRegex = new RegExp(String.raw`^\[(?!${config.urlProtocols})\s*`, 'iu');
+		this.linkRegex = new RegExp(String.raw`^\[(?!${urlProtocols})\s*`, 'iu');
 		this.fileRegex = new RegExp(
 			String.raw`^(?:${Object.entries(nsid).filter(([, id]) => id === 6).map(([ns]) => ns).join('|')})\s*:`,
 			'iu',
@@ -439,7 +433,7 @@ export class MediaWiki {
 			String.raw`^(?:${redirection.map(s => s.slice(1)).join('|')})(?:\s*:)?\s*(?=\[\[)`,
 			'iu',
 		);
-		this.img = Object.keys(config.img ?? {}).filter(word => !/\$1./u.test(word));
+		this.img = Object.keys(img).filter(word => !/\$1./u.test(word));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2)).join('|')
@@ -453,11 +447,11 @@ export class MediaWiki {
 		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
 		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
-		this.convertSemicolon = new RegExp(
-			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${config.variants?.join('|')})\s*:|(?:$|\}-))`,
+		this.convertSemicolon = variants && new RegExp(
+			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${variants.join('|')})\s*:|(?:$|\}-))`,
 			'u',
 		);
-		this.convertLang = new RegExp(String.raw`^(?:=>\s*)?(?:${this.config.variants?.join('|')})\s*:`, 'u');
+		this.convertLang = variants && new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'u');
 		this.convertRegex = new RegExp(String.raw`^(?:[^};&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`, 'u');
 		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
 		this.tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu');
@@ -958,7 +952,7 @@ export class MediaWiki {
 		state.imgLink = false;
 		const mt = stream.match(this.imgRegex, false);
 		if (mt) {
-			if (this.config.img![`${mt[0]}$1`] === 'img_link') {
+			if (this.config.img?.[`${mt[0]}$1`] === 'img_link') {
 				state.imgLink = true;
 			}
 			chain(state, this.inChars(mt[0], 'imageParameter'));
@@ -1581,12 +1575,12 @@ export class MediaWiki {
 				chain(state, this.inConvert(style, false, true, plain));
 				state.tokenize = this.inStr('|', 'convertDelimiter');
 				return makeLocalTagStyle('convertFlag', state);
-			} else if (stream.match(this.convertSemicolon)) {
+			} else if (stream.match(this.convertSemicolon!)) {
 				if (needFlag || !needLang) {
 					state.tokenize = this.inConvert(style, false, true, plain);
 				}
 				return makeLocalTagStyle('convertDelimiter', state);
-			} else if (needLang && stream.match(this.convertLang)) {
+			} else if (needLang && stream.match(this.convertLang!)) {
 				state.tokenize = this.inConvert(style, false, false, plain);
 				return makeLocalTagStyle('convertLang', state);
 			} else if (plain) {
@@ -1764,6 +1758,10 @@ export class MediaWiki {
 		};
 	}
 
+	'text/mediawiki'(): StreamParser<State> {
+		return this.mediawiki();
+	}
+
 	'text/nowiki'(): StreamParser<Record<string, never>> {
 		return {
 			startState(): Record<string, never> {
@@ -1783,12 +1781,15 @@ export class MediaWiki {
 
 	@getTokenizer
 	inPre(begin?: boolean): Tokenizer<string> {
-		const re = new RegExp(String.raw`^(?:[^<&-]|-(?!\{)|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu');
+		const hasVariants = this.config.variants?.length,
+			re = new RegExp(String.raw`^(?:[^<&-]|-${
+				hasVariants ? String.raw`(?!\{)` : ''
+			}|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu');
 		return (stream, state) => {
 			if (stream.match(begin ? /^<\/nowiki>/iu : /^<nowiki>/iu)) {
 				state.tokenize = this.inPre(!begin);
 				return tokens.comment;
-			} else if (stream.match('-{')) {
+			} else if (hasVariants && stream.match('-{')) {
 				chain(state, this.inConvert('', true, true, true));
 				return tokens.convertBracket;
 			} else if (stream.eat('&')) {

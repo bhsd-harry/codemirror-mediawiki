@@ -1,20 +1,17 @@
 ## 2.19.6
 
-*2024-12-21*
+*2024-12-20*
 
 **Added**
 
 - The link parameter of an image is now highlighted with underline in the MediaWiki mode
 - The [openLinks](./mw/README.md#openlinks) extension now also supports the link parameter of an image in the MediaWiki mode on a MediaWiki site
 
-## 2.19.5
-
-*2024-12-20*
-
 **Fixed**
 
 - Extensions including [tagMatching](./README.md#tagmatching), [codeFolding](./README.md#codefolding) and [refHover](./README.md#refhover) when there are neighboring tags in the MediaWiki mode, since [v2.18.13](#21813)
 - Extensions including [codeFolding](./README.md#codefolding) and [autocompletion](./README.md#autocompletion) when there are neighboring template brackets in the MediaWiki mode, since [v2.18.13](#21813)
+- Language conversion syntax inside `<pre>` should not be highlighted if no language variants are specified in the MediaWiki mode
 
 **Changed**
 

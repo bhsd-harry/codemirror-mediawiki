@@ -122,11 +122,8 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
  * @param cm
  */
 export const localize = (cm: CodeMirror): void => {
-	const obj: Record<string, string> = {};
-	for (const [k, v] of Object.entries(i18n)) {
-		if (k.startsWith('phrase-')) {
-			obj[k.slice(7).replace(/-/gu, ' ')] = v;
-		}
-	}
-	cm.localize(obj);
+	cm.localize(Object.fromEntries(
+		Object.entries(i18n).filter(([k]) => k.startsWith('phrase-'))
+			.map(([k, v]) => [k.slice(7).replace(/-/gu, ' '), v]),
+	));
 };

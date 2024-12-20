@@ -98,7 +98,6 @@ export const refHover = [
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
 		if (node && /-exttag-(?!bracket)/u.test(node.name)) {
 			const tag = getTag(state, node);
-			Object.assign(globalThis, {tag});
 			if (!tag) {
 				return null;
 			}

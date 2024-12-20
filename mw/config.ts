@@ -24,18 +24,15 @@ const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
  * @param rule 过滤函数
  * @param flip 是否反向筛选对大小写敏感的魔术字
  */
-const getConfig = (magicWords: MagicWord[], rule: MagicRule, flip?: boolean): Record<string, string> => {
-	const words = magicWords.filter(rule).filter(({'case-sensitive': i}) => i !== flip)
+const getConfig = (magicWords: MagicWord[], rule: MagicRule, flip?: boolean): Record<string, string> =>
+	Object.fromEntries(
+		magicWords.filter(rule).filter(({'case-sensitive': i}) => i !== flip)
 			.flatMap(({aliases, name, 'case-sensitive': i}) => aliases.map(alias => ({
 				alias: (i ? alias : alias.toLowerCase()).replace(/:$/u, ''),
 				name,
-			}))),
-		obj: Record<string, string> = {};
-	for (const {alias, name} of words) {
-		obj[alias] = name;
-	}
-	return obj;
-};
+			})))
+			.map(({alias, name}) => [alias, name]),
+	);
 
 /**
  * 将魔术字信息转换为CodeMirror接受的设置
@@ -72,6 +69,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.redirection && config.variants && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
+		config.tagModes = modes;
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: Config = await (await fetch(
@@ -111,25 +109,22 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 				Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));
 			}
 		} else { // 情形4：`config === null`
-			// @ts-expect-error incomplete properties
-			config = {
-				tagModes: modes,
-				tags: {},
-			};
-			for (const tag of extensiontags) {
-				config!.tags[tag.slice(1, -1)] = true;
-			}
 			const functions = new Set([
 				...functionhooks,
 				...variables,
 				...others,
 			]);
-			config!.functionSynonyms = getConfigPair(magicwords, ({name}) => functions.has(name));
-			config!.doubleUnderscore = getConfigPair(
-				magicwords,
-				({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
-			);
+			// @ts-expect-error incomplete properties
+			config = {
+				tags: Object.fromEntries(extensiontags.map(tag => [tag.slice(1, -1), true])),
+				functionSynonyms: getConfigPair(magicwords, ({name}) => functions.has(name)),
+				doubleUnderscore: getConfigPair(
+					magicwords,
+					({aliases}) => aliases.some(alias => /^__.+__$/u.test(alias)),
+				),
+			};
 		}
+		config!.tagModes = modes;
 		config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 		config!.variants = variants ? variants.map(({code}) => code) : [];
 		config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;

@@ -49,7 +49,7 @@ export const getStaticMwConfig = (
 			functionSynonyms: [parserFunction[0], {}],
 			urlProtocols: `${protocol}|//`,
 			nsid,
-			img: {},
+			img: Object.fromEntries(Object.entries(img).map(([key, val]) => [key, `img_${val}`])),
 			variants,
 			redirection,
 		},
@@ -62,8 +62,5 @@ export const getStaticMwConfig = (
 	fromEntries(doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
 	fromEntries((parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
 	fromEntries(parserFunction[1], mwConfig.functionSynonyms[1]);
-	for (const [key, val] of Object.entries(img)) {
-		mwConfig.img![key] = `img_${val}`;
-	}
 	return mwConfig;
 };
