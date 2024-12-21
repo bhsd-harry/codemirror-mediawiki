@@ -1,3 +1,12 @@
+## 2.19.7
+
+*2024-12-21*
+
+**Fixed**
+
+- The [codeFolding](./README.md#codefolding) extension for zero-line sections in the MediaWiki mode, since [v2.13.0](#2130)
+- The [codeFolding](./README.md#codefolding) extension now will not hide the line of table end in the MediaWiki mode
+
 ## 2.19.6
 
 *2024-12-20*

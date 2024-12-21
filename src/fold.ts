@@ -318,7 +318,7 @@ const foldableLine = (
 	if (level < 7) {
 		for (const {from} of viewportLineBlocks) {
 			if (from > f && getLevel(from) <= level) {
-				return {from: t, to: from - 1};
+				return t < from - 1 && {from: t, to: from - 1};
 			}
 		}
 		return end === state.doc.length && end > t && {from: t, to: end};
@@ -327,7 +327,7 @@ const foldableLine = (
 			if (from > f) {
 				const bracket = getTable(from, to);
 				if (bracket === -1) {
-					return {from: t, to};
+					return t < from - 1 && {from: t, to: from - 1};
 				} else if (bracket === 1 || getLevel(from) < 7) {
 					break;
 				}
