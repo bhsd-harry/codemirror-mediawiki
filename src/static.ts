@@ -26,41 +26,35 @@ export const tagModes = {
 	graph: 'json',
 };
 
-/**
- * Object.fromEntries polyfill
- * @param entries
- * @param obj
- * @param string 是否为字符串
- */
-const fromEntries = (entries: readonly string[], obj: Record<string, unknown>, string?: boolean): void => {
-	for (const entry of entries) {
-		obj[entry] = string ? entry : true;
-	}
-};
-
 export const getStaticMwConfig = (
-	{parserFunction, protocol, nsid, variants, redirection, ext, doubleUnderscore, img}: Config,
+	{
+		parserFunction: [p0, p1, ...p2],
+		protocol,
+		nsid,
+		variants,
+		redirection,
+		ext,
+		doubleUnderscore: [d0, d1, d2],
+		img,
+	}: Config,
 	modes: Record<string, string>,
-): MwConfig => {
-	const mwConfig: MwConfig = {
-			tags: {},
-			tagModes: modes,
-			doubleUnderscore: [{}, {}],
-			functionSynonyms: [parserFunction[0], {}],
-			urlProtocols: `${protocol}|//`,
-			nsid,
-			img: Object.fromEntries(Object.entries(img).map(([key, val]) => [key, `img_${val}`])),
-			variants,
-			redirection,
+): MwConfig => ({
+	tags: Object.fromEntries(ext.map(s => [s, true])),
+	tagModes: modes,
+	doubleUnderscore: [
+		Object.fromEntries((d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [`__${s}__`, true])),
+		Object.fromEntries(d1.map(s => [`__${s}__`, true])),
+	],
+	functionSynonyms: [
+		{
+			...p0,
+			...Object.fromEntries(p2.flat().map(s => [s, s])),
 		},
-		[insensitive,, obj] = doubleUnderscore;
-	fromEntries(ext, mwConfig.tags);
-	fromEntries(
-		(obj && insensitive.length === 0 ? Object.keys(obj) : insensitive).map(s => `__${s}__`),
-		mwConfig.doubleUnderscore[0],
-	);
-	fromEntries(doubleUnderscore[1].map(s => `__${s}__`), mwConfig.doubleUnderscore[1]);
-	fromEntries((parserFunction.slice(2) as string[][]).flat(), mwConfig.functionSynonyms[0], true);
-	fromEntries(parserFunction[1], mwConfig.functionSynonyms[1]);
-	return mwConfig;
-};
+		Object.fromEntries(p1.map(s => [s, true])),
+	],
+	urlProtocols: `${protocol}|//`,
+	nsid,
+	img: Object.fromEntries(Object.entries(img).map(([k, v]) => [k, `img_${v}`])),
+	variants,
+	redirection,
+});

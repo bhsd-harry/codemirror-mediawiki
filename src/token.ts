@@ -12,6 +12,7 @@ import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/l
 import type {SyntaxNode} from '@lezer/common';
 
 declare type MimeTypes = 'mediawiki'
+| 'text/mediawiki'
 | 'text/nowiki'
 | 'text/pre'
 | 'text/references'
