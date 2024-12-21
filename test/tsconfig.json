@@ -4,6 +4,7 @@
 		"*.ts"
 	],
 	"compilerOptions": {
+		"target": "ES2023",
 		"declaration": false,
 		"outDir": "dist"
 	}

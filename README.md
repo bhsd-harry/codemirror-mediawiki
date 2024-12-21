@@ -1,6 +1,7 @@
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-mediawiki.svg)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
+[![codebeat badge](https://codebeat.co/badges/fd9f2c17-3d49-41ef-9922-314dea1ca46a)](https://codebeat.co/projects/github-com-bhsd-harry-codemirror-mediawiki-npm)
 
 <details>
 	<summary>Expand</summary>
