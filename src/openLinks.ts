@@ -1,9 +1,11 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config';
+import {hasTag} from './mediawiki';
 import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {CodeMirror6} from './codemirror';
+import type {TagName} from './token';
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
@@ -12,6 +14,7 @@ export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('M
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
+	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	wikiLinks = [
 		'template-name',
@@ -46,18 +49,21 @@ export const openLinks = ({langConfig}: CodeMirror6): Extension => [
 			if (!position) {
 				return undefined;
 			}
-			const {state} = view;
-			let node: SyntaxNode | null | undefined = ensureSyntaxTree(state, position)?.resolve(position, 1);
-			if (node?.name.includes(tokens.linkToSection)) {
-				node = node.prevSibling;
-			}
-			if (!node) {
+			const {state} = view,
+				tree = ensureSyntaxTree(state, position);
+			if (!tree) {
 				return undefined;
+			}
+			let node: SyntaxNode = tree.resolve(position, -1);
+			if (node.name.includes(tokens.linkToSection)) {
+				node = node.prevSibling!;
+			} else if (!hasTag(new Set(node.name.split('_')), tags)) {
+				node = tree.resolve(position, 1);
 			}
 			const {name, from, to} = node;
 			if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
 				return langConfig.titleParser(state, node, langConfig.urlProtocols);
-			} else if (/-extlink-protocol/u.test(name)) {
+			} else if (name.includes('-extlink-protocol')) {
 				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
 				return true;
 			} else if (/-extlink(?:_|$)/u.test(name)) {

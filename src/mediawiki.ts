@@ -32,8 +32,8 @@ import type {MwConfig, TagName} from './token';
  * @param types 节点类型
  * @param names 指定类型
  */
-const hasTag = (types: Set<string>, names: string | string[]): boolean => (Array.isArray(names) ? names : [names])
-	.some(name => types.has(name in tokens ? tokens[name as TagName] : name));
+export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly nsRegex;
