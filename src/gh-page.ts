@@ -7,15 +7,23 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		return;
 	}
 
-	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!;
-	if (new URLSearchParams(location.search).has('rtl')) {
-		textarea.dir = 'rtl';
-	}
-
-	const languages = document.querySelectorAll<HTMLInputElement>('input[name="language"]'),
+	// 初始化DOM元素
+	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!,
+		languages = [...document.querySelectorAll<HTMLInputElement>('input[name="language"]')],
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
-		mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'openLinks'],
+		search = new URLSearchParams(location.search);
+	if (search.has('rtl')) {
+		textarea.dir = 'rtl';
+	}
+	if (search.has('indent')) {
+		indent.value = search.get('indent')!;
+	}
+	for (const extension of extensions) {
+		extension.checked = search.has(extension.id);
+	}
+
+	const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'openLinks'],
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
@@ -37,7 +45,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			config ??= CodeMirror6.getMwConfig(parserConfig!);
 		}
 		await cm.setLanguage(lang, config);
-		if (!(lang in linters)) {
+		if (search.get('lint') !== '0' && !(lang in linters)) {
 			linters[lang] = await cm.getLinter();
 			if (isMediaWiki) {
 				wikiparse.setConfig(parserConfig!);
@@ -48,16 +56,35 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		}
 	};
 
+	/**
+	 * 更新search
+	 * @param key 键
+	 * @param value 值
+	 */
+	const updateSearch = (key: string, value: string | number): void => {
+		const url = new URL(location.href);
+		if (value) {
+			url.searchParams.set(key, String(value));
+		} else {
+			url.searchParams.delete(key);
+		}
+		history.replaceState(null, '', url.toString()); // eslint-disable-line no-restricted-globals
+	};
+
 	/** 设置扩展 */
 	const prefer = function(this: HTMLInputElement): void {
 		cm.prefer({[this.id]: this.checked});
+		updateSearch(this.id, Number(this.checked));
 	};
 
 	/** 设置缩进 */
 	const indentChange = (): void => {
-		cm.setIndent(indent.value || '\t');
+		const {value} = indent;
+		cm.setIndent(value || '\t');
+		updateSearch('indent', value);
 	};
 
+	// 初始化语言
 	for (const input of languages) {
 		input.addEventListener('change', () => {
 			void init(input.id);
@@ -67,16 +94,6 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			void init(input.id);
 		}
 	}
-	for (const extension of extensions) {
-		extension.addEventListener('change', prefer);
-	}
-	cm.prefer(extensions.filter(({checked}) => checked).map(({id}) => id));
-	indent.addEventListener('change', indentChange);
-	indentChange();
-
-	Object.assign(globalThis, {cm});
-
-	/** 切换语言 */
 	const hashMap = new Map<string, string>([
 		['wiki', 'mediawiki'],
 		['wikitext', 'mediawiki'],
@@ -88,13 +105,24 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		['json', 'json'],
 	]);
 	addEventListener('hashchange', () => {
-		const element = document.getElementById(
-			hashMap.get(location.hash.slice(1).toLowerCase())!,
-		) as HTMLInputElement | null;
+		const target = hashMap.get(location.hash.slice(1).toLowerCase()),
+			element = languages.find(({id}) => id === target);
 		if (element) {
 			element.checked = true;
 			element.dispatchEvent(new Event('change'));
 		}
 	});
 	dispatchEvent(new Event('hashchange'));
+
+	// 初始化扩展
+	for (const extension of extensions) {
+		extension.addEventListener('change', prefer);
+	}
+	cm.prefer(extensions.filter(({checked}) => checked).map(({id}) => id));
+
+	// 初始化缩进
+	indent.addEventListener('change', indentChange);
+	indentChange();
+
+	Object.assign(globalThis, {cm});
 })();
