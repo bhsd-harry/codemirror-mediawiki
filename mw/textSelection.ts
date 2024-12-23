@@ -36,7 +36,7 @@ declare interface TextSelection {
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement>;
 }
 
-const split = (selText: string, {splitlines, pre, post}: EncapsulateOptions): string =>
+const split = (selText: string, pre: string, post: string, splitlines?: boolean): string =>
 	splitlines ? selText.split('\n').map(line => pre + line + post).join('\n') : pre + selText + post;
 
 /**
@@ -113,7 +113,7 @@ export const textSelection: TextSelection = {
 				[insertText, start, end] = handleOwnline(
 					from,
 					to,
-					split(selText, {splitlines, pre, post}),
+					split(selText, pre, post, splitlines),
 				),
 				head = from + insertText.length;
 			return isSample ? [insertText, from + pre.length + start, head - post.length - end] : [insertText, head];
@@ -179,7 +179,7 @@ export const monacoTextSelection: TextSelection = {
 		}
 		const edits = editor!.getSelections()!.map(range => {
 			const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
-				text = handleOwnline(range, split(selText, {splitlines, pre, post}));
+				text = handleOwnline(range, split(selText, pre, post, splitlines));
 			return {range, text, forceMoveMarkers: true};
 		});
 		editor!.executeEdits('encapsulateSelection', edits);

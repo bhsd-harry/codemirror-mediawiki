@@ -69,4 +69,4 @@ export default [
 			{marginLeft: '0.6ch'},
 		],
 	},
-] as Addon<[Extension?, StyleSpec?]>;
+] satisfies Addon<[Extension?, StyleSpec?]>;

@@ -41,6 +41,7 @@ import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} f
 import {openLinks} from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
+import toolKeymap from './keymap';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -67,6 +68,7 @@ const languages: Record<string, (config?: any) => Extension> = {
 			mediawiki(config),
 			plain(),
 			bidiIsolation,
+			toolKeymap,
 		];
 	},
 	html,
@@ -193,7 +195,7 @@ export class CodeMirror6 {
 				this.#indent.of(indentUnit.of(this.#indentStr)),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
-				syntaxHighlighting(defaultHighlightStyle as Highlighter),
+				syntaxHighlighting(defaultHighlightStyle satisfies Highlighter),
 				EditorView.contentAttributes.of({
 					accesskey: textarea.accessKey,
 					tabindex: String(textarea.tabIndex),
@@ -415,7 +417,7 @@ export class CodeMirror6 {
 								apply(view): void {
 									view.dispatch({changes: {from, to, insert: text}});
 								},
-							} as Action));
+							} satisfies Action));
 						}
 						return diagnostic;
 					});

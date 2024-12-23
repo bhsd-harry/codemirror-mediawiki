@@ -23,7 +23,6 @@ import type {
 	CompletionSource,
 	Completion,
 } from '@codemirror/autocomplete';
-import type {CommentTokens} from '@codemirror/commands';
 import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig, TagName} from './token';
 
@@ -108,8 +107,7 @@ export class FullMediaWiki extends MediaWiki {
 	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
 		const parser = super.mediawiki(tags);
 		parser.languageData = {
-			commentTokens: {block: {open: '<!--', close: '-->'}} as CommentTokens,
-			closeBrackets: {brackets: ['(', '[', '{', '"']} as CloseBracketConfig,
+			closeBrackets: {brackets: ['(', '[', '{', '"']} satisfies CloseBracketConfig,
 			autocomplete: this.completionSource,
 		};
 		return parser;
@@ -409,7 +407,7 @@ export class FullMediaWiki extends MediaWiki {
 export const mediawiki = (config: MwConfig): LanguageSupport => {
 	const mode = new FullMediaWiki(config),
 		lang = StreamLanguage.define(mode.mediawiki()),
-		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) as Highlighter);
+		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) satisfies Highlighter);
 	return new LanguageSupport(lang, highlighter);
 };
 

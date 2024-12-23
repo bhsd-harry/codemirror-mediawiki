@@ -141,7 +141,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			result: ApiSuggestions = [];
 		for (const [key, {aliases, label}] of params) {
 			const detail = label ?? '';
-			result.push([key, detail], ...aliases.map(alias => [alias, detail] as [string, string]));
+			result.push([key, detail], ...aliases.map(alias => [alias, detail] satisfies [string, string]));
 		}
 		return result;
 	} catch {
@@ -383,7 +383,7 @@ export class CodeMirror extends CodeMirror6 {
 					globals: {mw: 'readonly', mediaWiki: 'readonly', OO: 'readonly'},
 					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
 					...eslint,
-				} as Linter.Config as Record<string, unknown>;
+				} satisfies Linter.Config;
 			} else if (lang === 'css' && stylelint) {
 				opt = stylelint;
 			}

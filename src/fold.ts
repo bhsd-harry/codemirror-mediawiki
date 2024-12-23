@@ -533,7 +533,7 @@ export default [
 			}),
 		],
 	},
-] as Addon<Extension>;
+] satisfies Addon<Extension>;
 
 /**
  * 点击提示折叠模板参数

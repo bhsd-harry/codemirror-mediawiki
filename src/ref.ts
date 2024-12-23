@@ -3,7 +3,7 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {trees, getTree, fromPositions} from 'monaco-wiki/src/tree';
 import {getTag} from './matchTag';
 import {tokens} from './config';
-import type {Tooltip} from '@codemirror/view';
+import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
@@ -130,7 +130,7 @@ export const refHover = [
 							pos,
 							end: to,
 							above: true,
-							create() {
+							create(): TooltipView {
 								const dom = document.createElement('div');
 								dom.className = 'cm-tooltip-ref';
 								dom.style.font = getComputedStyle(view.contentDOM).font;
@@ -147,7 +147,7 @@ export const refHover = [
 								}
 								return {dom};
 							},
-						} as Tooltip;
+						} satisfies Tooltip;
 					}
 				}
 			}

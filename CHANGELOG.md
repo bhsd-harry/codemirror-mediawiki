@@ -1,6 +1,10 @@
 ## 2.19.7
 
-*2024-12-21*
+*2024-12-24*
+
+**Added**
+
+- Formatting keyboard shortcuts for the MediaWiki mode
 
 **Fixed**
 
