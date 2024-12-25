@@ -1,20 +1,20 @@
 /* eslint-env node */
 
 const config = require('@bhsd/common/eslintrc.browser.cjs');
-const {overrides: [json, ts]} = config;
+const {parserOptions, ignorePatterns, rules, overrides: [json, ts]} = config;
 
 module.exports = {
 	...config,
 	parserOptions: {
-		...config.parserOptions,
+		...parserOptions,
 		sourceType: 'module',
 	},
 	ignorePatterns: [
-		...config.ignorePatterns,
+		...ignorePatterns,
 		'*-page.js',
 	],
 	rules: {
-		...config.rules,
+		...rules,
 		'no-await-in-loop': 2,
 		'no-restricted-globals': [
 			2,

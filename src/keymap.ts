@@ -26,7 +26,10 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 				const start = state.doc.lineAt(from).from,
 					end = state.doc.lineAt(to).to,
 					insert = state.sliceDoc(start, end).split('\n')
-						.map(line => pre + (/^(={1,6})(.+)\1$/u.exec(line)?.[2] ?? line).trim() + post)
+						.map(line => {
+							const str = (/^(={1,6})(.+)\1$/u.exec(line)?.[2] ?? line).trim();
+							return pre === ' ' || line.trim() ? pre + str + post : str;
+						})
 						.join('\n');
 				return {
 					range: EditorSelection.range(start, start + insert.length),

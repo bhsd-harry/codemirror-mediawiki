@@ -1,3 +1,11 @@
+## 2.19.8
+
+*2024-12-26*
+
+**Fixed**
+
+- Keyboard shortcuts for headings should ignore empty lines in the MediaWiki mode
+
 ## 2.19.7
 
 *2024-12-24*
