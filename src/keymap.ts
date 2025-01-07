@@ -52,10 +52,10 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 
 export default keymap.of(([
 	{key: 'Ctrl-8', pre: '<blockquote>', post: '</blockquote>'},
-	{key: 'Mod-.', pre: '<super>', post: '</super>'},
+	{key: 'Mod-.', pre: '<sup>', post: '</sup>'},
 	{key: 'Mod-,', pre: '<sub>', post: '</sub>'},
 	{key: 'Mod-Shift-6', pre: '<code>', post: '</code>'},
-	{key: 'Mod-Shift-5', pre: '<s>', post: '</s>'},
+	{key: 'Ctrl-Shift-5', pre: '<s>', post: '</s>'},
 	{key: 'Mod-u', pre: '<u>', post: '</u>'},
 	{key: 'Mod-k', pre: '[[', post: ']]'},
 	{key: 'Mod-i', pre: "''", post: "''"},

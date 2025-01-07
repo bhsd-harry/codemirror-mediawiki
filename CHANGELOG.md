@@ -1,10 +1,16 @@
 ## 2.19.8
 
-*2024-12-26*
+*2025-01-07*
 
 **Fixed**
 
 - Keyboard shortcuts for headings should ignore empty lines in the MediaWiki mode
+- Keyboard shortcuts for `<sup>` in the MediaWiki mode
+
+**Changed**
+
+- Keyboard shortcuts for `<s>` is now `Ctrl-Shift-5` on Mac in the MediaWiki mode
+- The [closeBrackets](./README.md#closebrackets) extension no longer automatically closes brackets before `:` and `;` in the MediaWiki mode
 
 ## 2.19.7
 
