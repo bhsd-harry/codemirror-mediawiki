@@ -2,6 +2,10 @@
 
 *2025-01-08*
 
+**Fixed**
+
+- A very long line containing extension tags in the MediaWiki mode
+
 **Changed**
 
 - Keyboard shortcuts for headings now work for a single empty line in the MediaWiki mode

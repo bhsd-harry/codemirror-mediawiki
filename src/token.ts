@@ -169,14 +169,24 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
  * 复制 StreamParser 状态
  * @param state
  */
-const copyState = (state: State): State => Object.fromEntries(Object.entries(state).map(([key, val]) => {
-	if (Array.isArray(val)) {
-		return [key, [...val]];
-	} else if (key === 'extState') {
-		return [key, (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State)];
+const copyState = (state: State): State => {
+	const result = {...state};
+	for (const key in state) {
+		if (Object.prototype.hasOwnProperty.call(state, key)) {
+			const val = state[key as keyof State];
+			if (Array.isArray(val)) {
+				// @ts-expect-error initial value
+				result[key] = [...val];
+			} else if (key === 'extState') {
+				result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
+			} else if (key !== 'data' && val && typeof val === 'object') {
+				// @ts-expect-error initial value
+				result[key] = {...val};
+			}
+		}
 	}
-	return [key, key !== 'data' && val && typeof val === 'object' ? {...val} : val];
-})) as State;
+	return result;
+};
 
 const span = typeof document === 'object' && document.createElement('span'); // used for isHtmlEntity()
 
@@ -1687,7 +1697,11 @@ export class MediaWiki {
 					data.firstMultiLetterWord = null;
 					data.firstSpace = null;
 					if (state.tokenize.name === 'inExtTokens') {
-						pop(state);
+						pop(state); // inExtTokens
+						pop(state); // eatExtTagArea
+						state.extName = false;
+						state.extMode = false;
+						state.extState = false;
 					}
 				}
 				readyTokens.length = 0;
