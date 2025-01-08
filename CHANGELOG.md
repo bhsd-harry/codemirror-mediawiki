@@ -1,3 +1,11 @@
+## 2.19.9
+
+*2025-01-08*
+
+**Changed**
+
+- Keyboard shortcuts for headings now work for a single empty line in the MediaWiki mode
+
 ## 2.19.8
 
 *2025-01-07*
