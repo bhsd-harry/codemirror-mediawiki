@@ -36,6 +36,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>): Promise<void> => 
 							toggle: {
 								type: 'button',
 								oouiIcon: 'highlight',
+								label: 'CodeMirror 6',
 								action: {
 									type: 'callback',
 									execute(context: WikiEditorContext) {
