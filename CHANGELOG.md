@@ -2,13 +2,10 @@
 
 *2025-01-08*
 
-**Fixed**
-
-- A very long line containing extension tags in the MediaWiki mode
-
 **Changed**
 
 - Keyboard shortcuts for headings now work for a single empty line in the MediaWiki mode
+- When a very long line contains an unclosed extension tag in the MediaWiki mode, the tag is assumed to be closed on the same line
 
 ## 2.19.8
 

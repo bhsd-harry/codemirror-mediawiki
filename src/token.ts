@@ -1697,8 +1697,8 @@ export class MediaWiki {
 					data.firstMultiLetterWord = null;
 					data.firstSpace = null;
 					if (state.tokenize.name === 'inExtTokens') {
-						pop(state); // inExtTokens
-						pop(state); // eatExtTagArea
+						pop(state); // dispose inExtTokens
+						pop(state); // dispose eatExtTagArea
 						state.extName = false;
 						state.extMode = false;
 						state.extState = false;
