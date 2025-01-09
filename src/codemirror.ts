@@ -9,6 +9,8 @@ import {
 	highlightTrailingWhitespace,
 	drawSelection,
 	scrollPastEnd,
+	rectangularSelection,
+	crosshairCursor,
 } from '@codemirror/view';
 import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
 import {
@@ -96,10 +98,13 @@ const avail: Record<string, Addon<any>> = {
 	bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
 	closeBrackets: [closeBrackets, {}],
 	scrollPastEnd: [scrollPastEnd, {}],
+	openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
 	allowMultipleSelections: [
 		(): Extension => [
 			EditorState.allowMultipleSelections.of(true),
 			drawSelection(),
+			rectangularSelection(),
+			crosshairCursor(),
 		],
 		{},
 	],
@@ -119,7 +124,6 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),
-	openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
 };
 
 const linters: Record<string, Extension> = {};
@@ -403,7 +407,7 @@ export class CodeMirror6 {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
 								source: 'ESLint',
-								message: `${message}${ruleId ? ` (${ruleId})` : ''}`,
+								message: message + (ruleId ? ` (${ruleId})` : ''),
 								severity: severity === 1 ? 'warning' : 'error',
 								from: start,
 								to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),

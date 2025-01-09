@@ -460,7 +460,7 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 
 *version added: 2.1.11*
 
-Allow multiple selections.
+Allow multiple selections. This extension also enables rectangular selections by holding down the `Alt` key.
 
 ## autocompletion
 

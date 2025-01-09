@@ -120,7 +120,7 @@ export const refHover = [
 				}
 				if (nextSibling?.name.includes(tokens.extTagAttributeValue)) {
 					let target = getName(state, nextSibling);
-					const quote = target.slice(0, 1);
+					const quote = target.charAt(0);
 					if (quote === '"' || quote === "'") {
 						target = target.slice(1, target.slice(-1) === quote ? -1 : undefined).trim();
 					}

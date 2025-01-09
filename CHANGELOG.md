@@ -1,3 +1,11 @@
+## 2.19.10
+
+*2025-01-09*
+
+**Added**
+
+- The [allowMultipleSelections](./README.md#allowmultipleselections) extension now also enables rectangular selections by holding the `Alt` key
+
 ## 2.19.9
 
 *2025-01-08*

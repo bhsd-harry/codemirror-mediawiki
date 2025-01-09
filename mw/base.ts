@@ -74,12 +74,12 @@ const linters: Record<string, LintSource | undefined> = {},
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
 		['closeBrackets', ['autoClosingBrackets', 'autoClosingQuotes'], 'never', 'always'],
 		['codeFolding', 'folding', false, true],
+		['colorPicker', 'colorDecorators', false, true],
 		['highlightActiveLine', 'renderLineHighlight', 'gutter', 'all'],
 		['highlightSelectionMatches', 'occurrencesHighlight', 'off', 'singleFile'],
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
-		['colorPicker', 'colorDecorators', false, true],
 	];
 
 /**

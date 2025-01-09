@@ -163,9 +163,9 @@ export const monacoTextSelection: TextSelection = {
 	encapsulateSelection({pre = '', peri = '', post = '', ownline, replace, splitlines, selectionStart, selectionEnd}) {
 		const {model, editor} = getInstance(this);
 		const handleOwnline = ({startColumn, endColumn, endLineNumber}: Selection, text: string): string =>
-			`${ownline && startColumn > 1 ? '\n' : ''}${text}${
-				ownline && endColumn <= model!.getLineLength(endLineNumber) ? '\n' : ''
-			}`;
+			(ownline && startColumn > 1 ? '\n' : '')
+			+ text
+			+ (ownline && endColumn <= model!.getLineLength(endLineNumber) ? '\n' : '');
 		if (selectionStart !== undefined) {
 			monacoTextSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd});
 		} else if (ownline && replace && !pre && !post && /^\s*=.*=\s*$/u.test(peri)) {
