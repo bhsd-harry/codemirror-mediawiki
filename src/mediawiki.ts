@@ -11,6 +11,7 @@ import {
 	syntaxHighlighting,
 	syntaxTree,
 } from '@codemirror/language';
+import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
@@ -25,6 +26,25 @@ import type {
 } from '@codemirror/autocomplete';
 import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig, TagName} from './token';
+
+/**
+ * 检查首字母大小写并插入正确的自动填充内容
+ * @param view
+ * @param completion 自动填充内容
+ * @param from 起始位置
+ * @param to 结束位置
+ */
+const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
+	let {label} = completion;
+	const initial = label.charAt(0).toLowerCase();
+	if (view.state.sliceDoc(from, from + 1) === initial) {
+		label = initial + label.slice(1);
+	}
+	view.dispatch({
+		...insertCompletionText(view.state, label, from, to),
+		annotations: pickedCompletion.of(completion),
+	});
+};
 
 /**
  * 判断节点是否包含指定类型
@@ -219,7 +239,9 @@ export class FullMediaWiki extends MediaWiki {
 					return suggestions
 						? {
 							from: start + suggestions.offset - (isModule && 7),
-							options: suggestions.options,
+							options: isModule
+								? suggestions.options
+								: suggestions.options.map(option => ({...option, apply})),
 							validFor,
 						}
 						: null;

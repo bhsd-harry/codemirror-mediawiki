@@ -61,6 +61,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		js: 'javascript',
 		scribunto: 'lua',
 		wikitext: 'mediawiki',
+		'proofread-page': 'mediawiki',
 	},
 	monacoLangs: Record<string, string> = {
 		mediawiki: 'wikitext',

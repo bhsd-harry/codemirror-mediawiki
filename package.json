@@ -56,7 +56,7 @@
 		"@codemirror/view": "^6.35.0",
 		"@lezer/common": "^1.2.3",
 		"style-mod": "^4.1.0",
-		"wikiparser-node": "^1.14.0"
+		"wikiparser-node": "^1.14.1"
 	},
 	"devDependencies": {
 		"@codemirror/autocomplete": "^6.18.3",

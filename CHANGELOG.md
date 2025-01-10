@@ -1,10 +1,14 @@
 ## 2.19.10
 
-*2025-01-09*
+*2025-01-11*
 
 **Added**
 
 - The [allowMultipleSelections](./README.md#allowmultipleselections) extension now also enables rectangular selections by holding the `Alt` key
+
+**Fixed**
+
+- The [autocompletion](./README.md#autocompletion) extension will now keep the case of the first letter of wikilink suggestions in the MediaWiki mode
 
 ## 2.19.9
 
