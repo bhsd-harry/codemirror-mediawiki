@@ -22,7 +22,13 @@ export const titleParser = (state: EditorState, node: SyntaxNode, urlProtocols: 
 	if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
 		ns = 10;
 	} else if (name.includes(tokens.parserFunction)) {
-		ns = name.includes('mw-widget') ? 274 : 828;
+		if (name.includes('mw-widget')) {
+			ns = 274;
+		} else if (name.includes('mw-invoke')) {
+			ns = 828;
+		} else {
+			ns = 6;
+		}
 	} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 		page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
 	}

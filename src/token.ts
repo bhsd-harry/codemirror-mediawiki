@@ -540,6 +540,7 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
+		this.addToken('invoke', true);
 		this.addToken('widget', true);
 	}
 
@@ -1449,15 +1450,22 @@ export class MediaWiki {
 				const name = mt[0].trim().toLowerCase(),
 					{config: {functionSynonyms: [insensitive]}} = this;
 				if (name.startsWith('#')) {
-					if (insensitive[name] === 'invoke' || insensitive[name.slice(1)] === 'invoke') {
-						state.tokenize = this.inParserFunctionName(2);
-					} else if (insensitive[name] === 'widget' || insensitive[name.slice(1)] === 'widget') {
-						state.tokenize = this.inParserFunctionName(1);
-					} else if (insensitive[name] === 'switch' || insensitive[name.slice(1)] === 'switch') {
-						state.tokenize = this.inParserFunctionName(undefined, 1);
-					} else if (insensitive[name] === 'tag' || insensitive[name.slice(1)] === 'tag') {
-						state.tokenize = this.inParserFunctionName(undefined, 2);
+					switch (insensitive[name] ?? insensitive[name.slice(1)]!) {
+						case 'invoke':
+							state.tokenize = this.inParserFunctionName(2);
+							break;
+						case 'widget':
+							state.tokenize = this.inParserFunctionName(1);
+							break;
+						case 'switch':
+							state.tokenize = this.inParserFunctionName(undefined, 1);
+							break;
+						case 'tag':
+							state.tokenize = this.inParserFunctionName(undefined, 2);
+						// no default
 					}
+				} else if (insensitive[name] === 'filepath') {
+					state.tokenize = this.inParserFunctionName(Infinity);
 				}
 				return makeLocalTagStyle('parserFunctionName', state);
 			}
@@ -1517,10 +1525,15 @@ export class MediaWiki {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}
-		const style = `${tokens.parserFunction} ${module ? tokens.pageName : ''} ${module === 1 ? 'mw-widget' : ''}`,
-			chars = n === 2 ? '}{<' : "}{<~'_-", // `#invoke`/`#tag`
+		const chars = n === 2 ? '}{<' : "}{<~'_-", // `#invoke`/`#tag`
 			regex = new RegExp(`^(?:[^|${module ? '' : '[&:'}${chars}]|${lookahead(chars)})+`, 'iu'),
 			regex2 = new RegExp(`^(?:[^|${module ? '' : '[&'}${chars}]|${lookahead(chars)})+`, 'iu');
+		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
+		if (module === 1) {
+			style += ' mw-widget';
+		} else if (module === 2) {
+			style += ' mw-invoke';
+		}
 		return (stream, state) => {
 			if (stream.eat('|')) {
 				if (module) {

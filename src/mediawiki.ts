@@ -215,7 +215,7 @@ export class FullMediaWiki extends MediaWiki {
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
 				start = pos - search.length;
 			let {prevSibling} = node;
-			if (explicit || isParserFunction && search.includes('#')) {
+			if (explicit || isParserFunction && search.includes('#') || location.hostname.endsWith('.wikipedia.org')) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
@@ -229,17 +229,24 @@ export class FullMediaWiki extends MediaWiki {
 							validFor,
 						};
 				}
-				const isModule = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
+				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
 				let prefix = '';
-				if (isModule) {
-					prefix = hasTag(types, 'mw-widget') ? 'Widget:' : 'Module:';
+				if (isPage) {
+					if (hasTag(types, 'mw-widget')) {
+						prefix = 'Widget:';
+					} else if (hasTag(types, 'mw-invoke')) {
+						prefix = 'Module:';
+					} else {
+						prefix = 'File:';
+					}
 				}
-				if (isModule && search.trim() || hasTag(types, 'linkPageName')) {
+				if (isPage && search.trim() || hasTag(types, 'linkPageName')) {
 					const suggestions = await this.#linkSuggest(prefix + search);
 					return suggestions
 						? {
-							from: start + suggestions.offset - (isModule && 7),
-							options: isModule
+							// eslint-disable-next-line unicorn/explicit-length-check
+							from: start + suggestions.offset - (isPage && prefix.length),
+							options: isPage
 								? suggestions.options
 								: suggestions.options.map(option => ({...option, apply})),
 							validFor,

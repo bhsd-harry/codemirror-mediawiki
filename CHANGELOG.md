@@ -1,10 +1,11 @@
 ## 2.19.10
 
-*2025-01-11*
+*2025-01-13*
 
 **Added**
 
 - The [allowMultipleSelections](./README.md#allowmultipleselections) extension now also enables rectangular selections by holding the `Alt` key
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./README.md#openlinks) extensions now also support the parser function `{{filepath:}}` when used on a MediaWiki site
 
 **Fixed**
 
