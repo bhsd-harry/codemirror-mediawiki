@@ -1,10 +1,11 @@
-## 2.19.11
+## 2.20.0
 
-*2025-01-14*
+*2025-01-15*
 
 **Fixed**
 
 - Alignment of the line number gutter for RTL text
+- Parser functions without a leading `#` now require at least one argument in the MediaWiki mode
 
 ## 2.19.10
 

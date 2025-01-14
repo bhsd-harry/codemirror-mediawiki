@@ -68,9 +68,10 @@ export interface MwConfig {
 	readonly tags: Record<string, true>;
 	tagModes: Record<string, string>;
 	urlProtocols: string;
-	functionSynonyms: [Record<string, string>, Record<string, unknown>];
+	functionSynonyms: [Record<string, string>, Record<string, string>];
 	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
 	nsid: Record<string, number>;
+	variableIDs?: string[];
 	variants?: string[];
 	img?: Record<string, string>;
 	redirection?: string[];
@@ -1397,13 +1398,16 @@ export class MediaWiki {
 		if (name) {
 			const [, f, delimiter] = name as [string, string, string],
 				ff = delimiter === ':' ? f : f.trim(),
-				{config: {functionSynonyms}} = this;
+				ffLower = ff.toLowerCase(),
+				{config: {functionSynonyms, variableIDs}} = this,
+				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
+				&& functionSynonyms[0][ffLower]
+				|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
+				&& functionSynonyms[1][ff];
 			if (
 				(!delimiter || delimiter === ':' || delimiter === '}')
-				&& (
-					Object.prototype.hasOwnProperty.call(functionSynonyms[0], ff.toLowerCase())
-					|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
-				)
+				&& canonicalName
+				&& (delimiter === ':' || !variableIDs || variableIDs.includes(canonicalName))
 			) {
 				stream.backUp(length);
 				state.nExt++;

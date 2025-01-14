@@ -43,6 +43,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			// eslint-disable-next-line require-atomic-updates
 			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
 			config ??= CodeMirror6.getMwConfig(parserConfig!);
+			Object.assign(cm, {config});
 		}
 		await cm.setLanguage(lang, config);
 		if (search.get('lint') !== '0' && !(lang in linters)) {

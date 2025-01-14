@@ -28,13 +28,14 @@ export const tagModes = {
 
 export const getStaticMwConfig = (
 	{
+		variable,
 		parserFunction: [p0, p1, ...p2],
 		protocol,
 		nsid,
 		variants,
 		redirection,
 		ext,
-		doubleUnderscore: [d0, d1, d2],
+		doubleUnderscore: [d0, d1, d2, d3],
 		img,
 	}: Config,
 	modes: Record<string, string>,
@@ -43,14 +44,15 @@ export const getStaticMwConfig = (
 	tagModes: modes,
 	doubleUnderscore: [
 		Object.fromEntries((d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [`__${s}__`, true])),
-		Object.fromEntries(d1.map(s => [`__${s}__`, true])),
+		Object.fromEntries((d3 && d1.length === 0 ? Object.keys(d3) : d1).map(s => [`__${s}__`, true])),
 	],
+	variableIDs: variable,
 	functionSynonyms: [
 		{
 			...p0,
 			...Object.fromEntries(p2.flat().map(s => [s, s])),
 		},
-		Object.fromEntries(p1.map(s => [s, true])),
+		Array.isArray(p1) ? Object.fromEntries(p1.map(s => [s, s.toLowerCase()])) : {...p1},
 	],
 	urlProtocols: `${protocol}|//`,
 	nsid,

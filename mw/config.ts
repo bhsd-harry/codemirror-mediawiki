@@ -67,7 +67,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
-	if (config?.img && config.redirection && config.variants && !isIPE) {
+	if (config?.img && config.redirection && config.variants && config.variableIDs && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		config.tagModes = modes;
 		return {...config, nsid};
@@ -96,7 +96,8 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 			siprop: [
 				'general',
 				'magicwords',
-				...config && !isIPE ? [] : ['extensiontags', 'functionhooks', 'variables'],
+				...config && !isIPE ? [] : ['extensiontags', 'functionhooks'],
+				...config?.variableIDs && !isIPE ? [] : ['variables'],
 			],
 			formatversion: '2',
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -129,6 +130,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 		config!.variants = variants ? variants.map(({code}) => code) : [];
 		config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
 		config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
+		config!.variableIDs ??= variables;
 	}
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
