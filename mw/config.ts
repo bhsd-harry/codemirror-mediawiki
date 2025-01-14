@@ -73,7 +73,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: Config = await (await fetch(
-			`${CDN}/npm/wikiparser-node@browser/config/moegirl.json`,
+			`${CDN}/npm/wikiparser-node/config/moegirl.json`,
 		)).json();
 		setObject('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig, modes);

@@ -12,7 +12,7 @@ declare type getAsyncLinter<T> = (opt?: Record<string, unknown>) => Promise<T>;
  * @param opt 选项
  */
 export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
-	const REPO = 'npm/wikiparser-node@browser',
+	const REPO = 'npm/wikiparser-node',
 		DIR = `${REPO}/extensions/dist`,
 		lang = opt?.['i18n'];
 	await loadScript(`${DIR}/base.min.js`, 'wikiparse');

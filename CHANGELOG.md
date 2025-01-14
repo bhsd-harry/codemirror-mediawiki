@@ -1,3 +1,11 @@
+## 2.19.11
+
+*2025-01-14*
+
+**Fixed**
+
+- Alignment of the line number gutter for RTL text
+
 ## 2.19.10
 
 *2025-01-13*
