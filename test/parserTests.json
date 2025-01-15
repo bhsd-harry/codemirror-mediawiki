@@ -2120,7 +2120,7 @@
 	{
 		"desc": "Parsoid: Defaultsort variations (T236846)",
 		"wikitext": "{{DEFAULTSORT}}\n\n{{DEFAULTSORT:}}\n{{DEFAULTSORT:DOGGIE}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>DOGGIE</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>DEFAULTSORT</><template-ground template-bracket>}}</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>DOGGIE</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Parsoid html2wt b/c check: Defaultsort with key content being added (T236846)",

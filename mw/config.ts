@@ -148,34 +148,35 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 	if (config) {
 		return config;
 	}
+	const {tags, nsid, doubleUnderscore, variants, urlProtocols, redirection, functionSynonyms, img} = mwConfig,
+		[insensitive, sensitive] = functionSynonyms;
 	config = {
 		...minConfig,
-		ext: Object.keys(mwConfig.tags),
+		ext: Object.keys(tags),
 		namespaces: mw.config.get('wgFormattedNamespaces'),
-		nsid: mwConfig.nsid,
-		doubleUnderscore: mwConfig.doubleUnderscore.map(
+		nsid,
+		doubleUnderscore: doubleUnderscore.map(
 			obj => Object.keys(obj).map(s => s.slice(2, -2)),
 		) as [string[], string[]],
-		variants: mwConfig.variants!,
-		protocol: mwConfig.urlProtocols.replace(/\|\\?\/\\?\//u, ''),
-		redirection: mwConfig.redirection ?? minConfig.redirection,
+		variants: variants!,
+		protocol: urlProtocols.replace(/\|\\?\/\\?\//u, ''),
+		redirection: redirection ?? minConfig.redirection,
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');
 	}
-	[config.parserFunction[0]] = mwConfig.functionSynonyms;
+	config.parserFunction[0] = insensitive;
 	if (mw.loader.getState('ext.CodeMirror') === null) {
-		for (const [key, val] of Object.entries(mwConfig.functionSynonyms[0])) {
+		for (const [key, val] of Object.entries(insensitive)) {
 			if (!key.startsWith('#')) {
 				config.parserFunction[0][`#${key}`] = val;
 			}
 		}
 	}
-	config.parserFunction[1] = [
-		...Object.keys(mwConfig.functionSynonyms[1]),
-		'=',
-	];
-	for (const [key, val] of Object.entries(mwConfig.img!)) {
+	config.parserFunction[1] = Object.values(sensitive as Record<string, unknown>).includes(true)
+		? [...Object.keys(sensitive), '=']
+		: {...sensitive, '=': '='};
+	for (const [key, val] of Object.entries(img!)) {
 		config.img[key] = val.slice(4);
 	}
 	return config;
