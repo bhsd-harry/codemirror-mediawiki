@@ -6,6 +6,7 @@
 
 - Alignment of the line number gutter for RTL text
 - Parser functions without a leading `#` now require at least one argument in the MediaWiki mode
+- The CodeMirror editor now inherits the border of the textarea element
 
 ## 2.19.10
 

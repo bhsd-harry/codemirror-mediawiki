@@ -483,10 +483,13 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
-			const {wgAction, wgNamespaceNumber, wgPageContentModel} = mw.config.get();
+			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
 				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
+			} else if (wgCanonicalSpecialPageName === 'Upload') {
+				ns = 6;
+				lang = 'wikitext';
 			} else {
 				await mw.loader.using('oojs-ui-windows');
 				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();

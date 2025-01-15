@@ -253,9 +253,10 @@ export class CodeMirror6 {
 			extensions,
 			doc: textarea.value,
 		});
-		const {fontSize, lineHeight} = getComputedStyle(textarea);
+		const {fontSize, lineHeight, border} = getComputedStyle(textarea);
 		textarea.before(this.#view.dom);
 		this.#minHeight();
+		this.#view.dom.style.border = border;
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
