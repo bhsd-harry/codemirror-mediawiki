@@ -1,8 +1,8 @@
-import {getObject, setObject, parseVersion} from '@bhsd/common';
+import {getObject, setObject, compareVersion} from '@bhsd/common';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.20.0',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.20.1',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 export const languages: Record<string, string> = {
@@ -97,19 +97,15 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 	let notification: JQuery | undefined;
 	if (!version) { // 首次安装
 		notification = await notify('welcome');
-	} else if (addons.length > 0) { // 更新版本
-		const [baseMajor, baseMinor] = parseVersion(baseVersion),
-			[major, minor] = parseVersion(version);
-		if (major < baseMajor || major === baseMajor && minor < baseMinor) {
-			notification = await notify(
-				'welcome-addons',
-				`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
-					curVersion.replace(/\./gu, '')
-				}" target="_blank">${curVersion}</a>`,
-				String(addons.length),
-				addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
-			);
-		}
+	} else if (addons.length > 0 && !compareVersion(version, baseVersion)) { // 更新版本
+		notification = await notify(
+			'welcome-addons',
+			`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
+				curVersion.replace(/\./gu, '')
+			}" target="_blank">${curVersion}</a>`,
+			String(addons.length),
+			addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
+		);
 	}
 	notification?.find('#settings').click(e => {
 		e.preventDefault();

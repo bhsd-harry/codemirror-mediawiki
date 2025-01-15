@@ -1,4 +1,4 @@
-import {CDN, setObject, getObject} from '@bhsd/common';
+import {CDN, setObject, getObject, compareVersion} from '@bhsd/common';
 import {getStaticMwConfig} from '../src/static';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
@@ -173,9 +173,11 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 			}
 		}
 	}
-	config.parserFunction[1] = Object.values(sensitive as Record<string, unknown>).includes(true)
-		? [...Object.keys(sensitive), '=']
-		: {...sensitive, '=': '='};
+	config.parserFunction[1] = 'wikiparser' in globalThis
+	&& compareVersion(wikiparse.version, '1.15')
+	&& !Object.values(sensitive as Record<string, unknown>).includes(true)
+		? {...sensitive, '=': '='}
+		: [...Object.keys(sensitive), '='];
 	for (const [key, val] of Object.entries(img!)) {
 		config.img[key] = val.slice(4);
 	}
