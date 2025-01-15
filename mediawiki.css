@@ -331,3 +331,7 @@
 .cm-mw-tag-nowiki {
 	background-color: rgba(0, 0, 0, .04);
 }
+
+span.mtku {
+	text-decoration: none;
+}
