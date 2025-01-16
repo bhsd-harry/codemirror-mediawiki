@@ -48,6 +48,8 @@
 	- [tagMatching](#tagmatching)
 	- [refHover](#refhover)
 	- [openLinks](#openlinks)
+- [Known issues](#known-issues)
+	- [Syntax Highlighting](#syntax-highlighting)
 
 </details>
 
@@ -557,3 +559,11 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 *version added: 2.19.6*
 
 CTRL/CMD-click opens a link in a new tab.
+
+# Known issues
+
+## Syntax Highlighting
+
+1. Preformatted text with a leading space may have false positives.
+1. Template parameter name followed by a newline ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
+1. Wikitext in template parameter names ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
