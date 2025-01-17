@@ -10,6 +10,7 @@ declare interface Test {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
 		key = 'codemirror-mediawiki-done',
 		dones = new Set(JSON.parse(localStorage.getItem(key)!) as string[]),
+		isGH = location.hostname.endsWith('.github.io'),
 		select = document.querySelector('select')!,
 		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,
@@ -24,13 +25,16 @@ declare interface Test {
 	};
 	void wikiparse.highlight!(pre, false, true);
 	btn.disabled = !select.value;
+	if (isGH) {
+		btn.style.display = 'none';
+	}
 	let optgroup: HTMLOptGroupElement;
 	for (const [i, {desc, wikitext}] of tests.entries()) {
 		if (wikitext === undefined) {
 			optgroup = document.createElement('optgroup');
 			optgroup.label = desc;
 			select.append(optgroup);
-		} else if (!dones.has(desc)) {
+		} else if (isGH || !dones.has(desc)) {
 			const option = document.createElement('option');
 			option.value = String(i);
 			option.textContent = desc;

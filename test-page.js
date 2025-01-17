@@ -1,6 +1,6 @@
 import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
 (async () => {
-    const tests = await (await fetch('./test/parserTests.json')).json(), key = 'codemirror-mediawiki-done', dones = new Set(JSON.parse(localStorage.getItem(key))), select = document.querySelector('select'), btn = document.querySelector('button'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
+    const tests = await (await fetch('./test/parserTests.json')).json(), key = 'codemirror-mediawiki-done', dones = new Set(JSON.parse(localStorage.getItem(key))), isGH = location.hostname.endsWith('.github.io'), select = document.querySelector('select'), btn = document.querySelector('button'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
     Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
     const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config));
     Object.assign(globalThis, { cm });
@@ -10,6 +10,9 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     };
     void wikiparse.highlight(pre, false, true);
     btn.disabled = !select.value;
+    if (isGH) {
+        btn.style.display = 'none';
+    }
     let optgroup;
     for (const [i, { desc, wikitext }] of tests.entries()) {
         if (wikitext === undefined) {
@@ -17,7 +20,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
             optgroup.label = desc;
             select.append(optgroup);
         }
-        else if (!dones.has(desc)) {
+        else if (isGH || !dones.has(desc)) {
             const option = document.createElement('option');
             option.value = String(i);
             option.textContent = desc;
