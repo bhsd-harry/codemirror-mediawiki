@@ -58,7 +58,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     for (const input of languages) {
         input.addEventListener('change', () => {
             void init(input.id);
-            location.hash = `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`;
+            history.replaceState(null, '', `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`);
         });
         if (input.checked) {
             void init(input.id);

@@ -89,7 +89,8 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	for (const input of languages) {
 		input.addEventListener('change', () => {
 			void init(input.id);
-			location.hash = `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`;
+			// eslint-disable-next-line no-restricted-globals
+			history.replaceState(null, '', `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`);
 		});
 		if (input.checked) {
 			void init(input.id);
