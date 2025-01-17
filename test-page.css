@@ -57,10 +57,13 @@ textarea, .cm-editor {
 	#compare {
 		column-count: 2;
 		column-gap: 1rem;
+		padding-top: .5rem;
 	}
 	#compare > div {
-		display: inline-block;
 		width: 100%;
+	}
+	#compare h2 {
+		margin-top: 0;
 	}
 }
 @media screen and (max-width: 720px) {

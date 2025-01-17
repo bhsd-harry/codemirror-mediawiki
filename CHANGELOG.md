@@ -1,3 +1,12 @@
+## 2.20.2
+
+*2025-01-17*
+
+**Fixed**
+
+- URI-encoded illegal characters in link targets in the MediaWiki mode
+- Warn URI encoding in template names in the MediaWiki mode
+
 ## 2.20.1
 
 *2025-01-15*

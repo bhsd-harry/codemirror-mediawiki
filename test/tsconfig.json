@@ -6,6 +6,7 @@
 	"compilerOptions": {
 		"target": "ES2023",
 		"declaration": false,
+		"removeComments": true,
 		"outDir": "dist"
 	}
 }

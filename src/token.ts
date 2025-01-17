@@ -879,7 +879,9 @@ export class MediaWiki {
 	@getTokenizer
 	inLink(file: boolean, section?: boolean): Tokenizer {
 		const style = section ? tokens[file ? 'error' : 'linkToSection'] : `${tokens.linkPageName} ${tokens.pageName}`,
-			re = section ? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu : /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}])+/iu;
+			re = section
+				? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu
+				: /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}%]|%(?!3[ce]|[57][bd]))+/iu;
 		let lt: number | undefined;
 		return (stream, state) => {
 			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
@@ -903,16 +905,16 @@ export class MediaWiki {
 			}
 			let regex;
 			if (redirect) {
-				regex = /^(?:[<>[{}]|\](?!\]))+/u;
+				regex = /^(?:[<>[{}]|\](?!\])|%(?:3[ce]|[57][bd]))+/iu;
 			} else if (section) {
 				regex = /^(?:[[}]|\](?!\])|\{(?!\{))+/u;
 			} else {
-				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?!!--|\/?[a-z]))+/iu;
+				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?!!--|\/?[a-z])|%(?:3[ce]|[57][bd]))+/iu;
 			}
 			if (stream.match(regex)) {
 				return makeTagStyle('error', state);
 			} else if (redirect) {
-				stream.eatWhile(/[^|\]]/u);
+				stream.match(/^(?:[^|<>[\]{}%]|%(?!3[ce]|[57][bd]))+/iu);
 				return makeStyle(style, state);
 			} else if (stream.match(re) || space) {
 				return makeStyle(style, state);
@@ -1482,7 +1484,7 @@ export class MediaWiki {
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
 		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
 			chars = '{}<',
-			re = anchor ? this.templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#])+/iu;
+			re = anchor ? this.templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#%]|%(?![\da-f]{2}))+/iu;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1505,7 +1507,10 @@ export class MediaWiki {
 			} else if (!anchor && stream.eat('#')) {
 				state.tokenize = this.inTemplatePageName(true, true);
 				return makeLocalTagStyle('error', state);
-			} else if (!anchor && stream.match(new RegExp(String.raw`^(?:[>[\]]|${lookahead(chars, state)})+`, 'u'))) {
+			} else if (
+				!anchor
+				&& stream.match(new RegExp(String.raw`^(?:[>[\]]|%[\da-f]{2}|${lookahead(chars, state)})+`, 'iu'))
+			) {
 				return makeLocalTagStyle('error', state);
 			} else if (!anchor && stream.peek() === '<') {
 				pop(state);

@@ -530,17 +530,17 @@
 	{
 		"desc": "Link containing \"#<\" and \"#>\" % as a hex sequences- these are valid section anchors",
 		"wikitext": "[[%23%3c]][[%23%3e]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>%23%3c</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>%23%3e</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>%23</><link-ground error>%3c</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>%23</><link-ground error>%3e</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Link containing \"#<\" and \"#>\" % as a hex sequences- these are valid section anchors (legacy)",
 		"wikitext": "[[%23%3c]][[%23%3e]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>%23%3c</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>%23%3e</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>%23</><link-ground error>%3c</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>%23</><link-ground error>%3e</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Link containing \"<#\" and \">#\" as a hex sequences",
 		"wikitext": "[[%3c%23]][[%3e%23]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>%3c%23</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>%3e%23</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground error>%3c</><link-ground link-pagename pagename>%23</><link-ground link-bracket>]][[</><link-ground error>%3e</><link-ground link-pagename pagename>%23</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Link containing an equals sign",
@@ -700,7 +700,7 @@
 	{
 		"desc": "Ensure that transclusion titles are not url-decoded",
 		"wikitext": "{{Bar%C3%A9}} {{/Bar%C3%A9}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Bar%C3%A9</><template-ground template-bracket>}}</> <template-ground template-bracket>{{</><template-ground template-name pagename>/Bar%C3%A9</><template-ground template-bracket>}}</>"
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Bar</><template-ground error>%C3%A9</><template-ground template-bracket>}}</> <template-ground template-bracket>{{</><template-ground template-name pagename>/Bar</><template-ground error>%C3%A9</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Purely hash wikilink",
@@ -10600,7 +10600,7 @@
 	{
 		"desc": "3. Other redirect variants",
 		"wikitext": "#REDIRECT [[<nowiki>[[Bar]]</nowiki>]]",
-		"parsed": "<redirect>#REDIRECT </><link-ground link-bracket>[[</><link-ground error>&lt;</><link-ground link-pagename pagename>nowiki&gt[[Bar</><link-ground link-bracket>]]</><error>&lt;/nowiki&gt</>]]"
+		"parsed": "<redirect>#REDIRECT </><link-ground link-bracket>[[</><link-ground error>&lt;</><link-ground link-pagename pagename>nowiki</><link-ground error>&gt[[</><link-ground link-pagename pagename>Bar</><link-ground link-bracket>]]</><error>&lt;/nowiki&gt</>]]"
 	},
 	{
 		"desc": "4. Redirect to a templated destination",
