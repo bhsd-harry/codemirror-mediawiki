@@ -1,7 +1,6 @@
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-mediawiki.svg)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
-[![codebeat badge](https://codebeat.co/badges/fd9f2c17-3d49-41ef-9922-314dea1ca46a)](https://codebeat.co/projects/github-com-bhsd-harry-codemirror-mediawiki-npm)
 
 <details>
 	<summary>Expand</summary>
@@ -569,3 +568,4 @@ CTRL/CMD-click opens a link in a new tab.
 1. Wikitext in template parameter names ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Double URI encoding in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).
 1. Double HTML escaping in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20an%20ampersand)).
+1. Comments at the start of a line ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).

@@ -5,6 +5,7 @@
  */
 
 import {Tag} from '@lezer/highlight';
+import {decodeHTML} from '@bhsd/common';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
 import type {EditorState} from '@codemirror/state';
@@ -189,19 +190,12 @@ const copyState = (state: State): State => {
 	return result;
 };
 
-const span = typeof document === 'object' && document.createElement('span'); // used for isHtmlEntity()
-
 /**
  * 判断字符串是否为 HTML 实体
  * @param str 字符串
  */
-const isHtmlEntity = (str: string): boolean => {
-	if (!span || str.startsWith('#')) {
-		return true;
-	}
-	span.innerHTML = `&${str}`;
-	return [...span.textContent!].length === 1;
-};
+const isHtmlEntity = (str: string): boolean =>
+	typeof document !== 'object' || str.startsWith('#') || [...decodeHTML(`&${str}`)].length === 1;
 
 /**
  * 更新内部 Tokenizer

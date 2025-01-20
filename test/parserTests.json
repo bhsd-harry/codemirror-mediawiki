@@ -4858,6 +4858,44 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>width=</><htmltag-attribute-value>\"95%\"</><htmltag-attribute html-div> style=</><htmltag-attribute-value>\"border: 3px solid darkblue\"</><htmltag-bracket>&gt</>hi"
 	},
 	{
+		"desc": "additionalTests"
+	},
+	{
+		"desc": "Multiple <onlyinclude> being included",
+		"wikitext": "{{Includes4}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Includes4</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "#vardefine at SOL",
+		"wikitext": "{{#vardefine:test|heading}}==Heading==\n{{#vardefine:test|hr}}----\n{{#vardefine:test|list}};dt:dd\n{{#vardefine:test|table}}{|\n|-\n! !!\n|}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#vardefine</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>heading</><ext-ground parserfunction-bracket>}}</>==Heading==<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#vardefine</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>hr</><ext-ground parserfunction-bracket>}}</>----<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#vardefine</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>list</><ext-ground parserfunction-bracket>}}</>;dt:dd<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#vardefine</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>table</><ext-ground parserfunction-bracket>}}</>{||-! !!|}"
+	},
+	{
+		"desc": "Case-sensitive behavior switches in lower cases",
+		"wikitext": "__index__",
+		"parsed": "__index__"
+	},
+	{
+		"desc": "Category / whitespace (newline and non-newline) interactions",
+		"wikitext": "x\n[[Category:A]] [[Category:B]]\ny",
+		"parsed": "x<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:A</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:B</><link-ground link-bracket>]]</>y"
+	},
+	{
+		"desc": "Nested file links",
+		"wikitext": "[[file:thumb.jpg|[[file:thumb.png|Thumb|thumb]]|thumb]]\n[[file:thumb.jpg|[[file:thumb.png|[[T]]humb|thumb]]|thumb]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>file:thumb.jpg</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>file:thumb.png</><link-ground link-delimiter>|</><link-ground file-text>Thumb</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>file:thumb.jpg</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>file:thumb.png</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>T</><link-ground link-bracket>]]</><link-ground file-text>humb</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "&lt; in an external link",
+		"wikitext": "[https://mediawiki.org/&LT;&lt;text]\n[https://mediawiki.org/&GT;&gt;text]",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>mediawiki.org/&amp;LT;</><link-ground entity>&amp;lt;</><link-ground extlink-text>text</><link-ground extlink-bracket>][</><link-ground extlink-protocol>https://</><link-ground extlink>mediawiki.org/&amp;GT;</><link-ground entity>&amp;gt;</><link-ground extlink-text>text</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Magic links in lower cases",
+		"wikitext": "pmid 1 PMID 1\nrfc 1 RFC 1\nisbn 1234567890 ISBN 1234567890",
+		"parsed": "pmid 1 <magic-link>PMID 1</>rfc 1 <magic-link>RFC 1</>isbn 1234567890 <magic-link>ISBN 1234567890</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
