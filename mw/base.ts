@@ -13,6 +13,7 @@ import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
+import type {editor} from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {LintSource, MwConfig} from '../src/codemirror';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
@@ -26,7 +27,7 @@ declare interface TemplateParam {
 	aliases: string[];
 }
 
-declare interface IWikitextModel extends Monaco.editor.ITextModel {
+declare interface IWikitextModel extends editor.ITextModel {
 	lint?: (this: IWikitextModel, on: boolean) => void; // eslint-disable-line @typescript-eslint/method-signature-style
 }
 
@@ -69,7 +70,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		gadget: 'javascript',
 		plain: 'plaintext',
 	},
-	avail: [string, keyof Monaco.editor.IEditorOptions | (keyof Monaco.editor.IEditorOptions)[], unknown, unknown][] = [
+	avail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
 		['autocompletion', 'quickSuggestions', false, true],
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
@@ -165,15 +166,15 @@ const prepareSuggest = async (page: string): Promise<Record<string, ApiSuggest>>
 
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
-	static version = curVersion;
+	static readonly version = curVersion;
 
 	declare ns;
 	declare page;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
-	#editor: Monaco.editor.IStandaloneCodeEditor | undefined;
-	#init;
+	#editor: editor.IStandaloneCodeEditor | undefined;
+	readonly #init;
 	#indentStr = '\t';
 
 	override get visible(): boolean {
@@ -184,7 +185,7 @@ export class CodeMirror extends CodeMirror6 {
 		return this.#model;
 	}
 
-	get editor(): Monaco.editor.IStandaloneCodeEditor | undefined {
+	get editor(): editor.IStandaloneCodeEditor | undefined {
 		return this.#editor;
 	}
 

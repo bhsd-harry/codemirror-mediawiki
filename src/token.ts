@@ -956,7 +956,7 @@ export class MediaWiki {
 				return this.eatWikiText(tmpstyle)(stream, state);
 			}
 			const mt = stream.match(regex);
-			if (lbrack === undefined && mt && mt[0].includes('[')) {
+			if (lbrack === undefined && mt?.[0].includes('[')) {
 				state.lbrack = true;
 			}
 			return mt ? makeStyle(tmpstyle, state) : this.eatWikiText(tmpstyle)(stream, state);

@@ -334,7 +334,7 @@ export class FullMediaWiki extends MediaWiki {
 				const quote = prevSibling?.name.includes(tokens.extTagAttributeValue)
 					? state.sliceDoc(prevSibling.from, prevSibling.to)
 					: '';
-				while (prevSibling && prevSibling.name.includes(tokens.extTagAttributeValue)) {
+				while (prevSibling?.name.includes(tokens.extTagAttributeValue)) {
 					({prevSibling} = prevSibling);
 				}
 				prevSibling &&= prevSibling.prevSibling;

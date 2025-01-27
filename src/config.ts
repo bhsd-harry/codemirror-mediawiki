@@ -5,8 +5,7 @@
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import {tags} from '@lezer/highlight';
-import {Tag} from '@lezer/highlight';
+import {tags, Tag} from '@lezer/highlight';
 import {html} from 'wikiparser-node/config/default.json';
 
 /**
