@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.20.1",
+	"version": "2.20.2",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -56,7 +56,7 @@
 		"@codemirror/view": "^6.35.0",
 		"@lezer/common": "^1.2.3",
 		"style-mod": "^4.1.0",
-		"wikiparser-node": "^1.15.0"
+		"wikiparser-node": "^1.15.1"
 	},
 	"devDependencies": {
 		"@codemirror/autocomplete": "^6.18.3",
@@ -89,10 +89,10 @@
 		"eslint-plugin-regexp": "^2.6.0",
 		"eslint-plugin-unicorn": "^56.0.1",
 		"http-server": "^14.1.0",
-		"luacheck-browserify": "^0.2.1",
+		"luacheck-browserify": "^0.2.2",
 		"mocha": "^10.8.2",
 		"monaco-editor": "^0.52.0",
-		"monaco-wiki": "^1.5.0",
+		"monaco-wiki": "^1.6.0",
 		"stylelint": "^16.11.0",
 		"stylelint-config-recommended": "^14.0.0",
 		"types-mediawiki": "^1.9.0",
