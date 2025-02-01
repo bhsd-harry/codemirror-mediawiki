@@ -8,11 +8,11 @@ import {
 	colorPickerTheme,
 	makeColorPicker,
 	wrapperClassName,
-} from '@replit/codemirror-css-color-picker';
+} from '@bhsd/codemirror-css-color-picker';
 import type {Text, Extension} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {StyleSpec} from 'style-mod';
-import type {WidgetOptions} from '@replit/codemirror-css-color-picker';
+import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 import type {Addon} from './codemirror';
 
 const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
