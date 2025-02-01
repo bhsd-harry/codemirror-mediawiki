@@ -248,7 +248,12 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		if (!('monaco' in globalThis)) {
-			await $.ajax(`${CDN}/npm/monaco-wiki/dist/all.min.js`, {dataType: 'script', cache: true});
+			await $.ajax(
+				`${CDN}/npm/monaco-wiki@${
+					(mw.libs as {wphl?: {monacoVersion?: string}}).wphl?.monacoVersion ?? 'latest'
+				}/dist/all.min.js`,
+				{dataType: 'script', cache: true},
+			);
 		}
 		const {textarea, lang} = this,
 			language = monacoLangs[lang] ?? lang,
