@@ -256,7 +256,7 @@ export class FullMediaWiki extends MediaWiki {
 				const isArgument = hasTag(types, 'templateArgumentName'),
 					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
 					isDelimiter = hasTag(types, 'templateDelimiter')
-					|| hasTag(types, 'templateBracket') && prevIsDelimiter;
+						|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
 					this.tags.includes('templatedata')
 					&& (

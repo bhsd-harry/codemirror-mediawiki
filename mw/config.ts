@@ -174,8 +174,8 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		}
 	}
 	config.parserFunction[1] = 'wikiparser' in globalThis
-	&& compareVersion(wikiparse.version, '1.15')
-	&& !Object.values(sensitive as Record<string, unknown>).includes(true)
+		&& compareVersion(wikiparse.version, '1.15')
+		&& !Object.values(sensitive as Record<string, unknown>).includes(true)
 		? {...sensitive, '=': '='}
 		: [...Object.keys(sensitive), '='];
 	for (const [key, val] of Object.entries(img!)) {

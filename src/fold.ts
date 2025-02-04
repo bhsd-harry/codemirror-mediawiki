@@ -124,7 +124,8 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 			if (stack <= 0) {
 				// The closing bracket of the current template
 				to = nextSibling.from
-				+ state.sliceDoc(nextSibling.from, nextSibling.to).split('}}').slice(0, stack - 1).join('}}').length;
+					+ state.sliceDoc(nextSibling.from, nextSibling.to)
+						.split('}}').slice(0, stack - 1).join('}}').length;
 				break;
 			}
 			stack += lbrace;

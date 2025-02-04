@@ -2,8 +2,7 @@ import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
-import {openLinks, titleParser, isbnParser} from './openLinks';
-import refHover from './ref';
+import {titleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
@@ -81,6 +80,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightSelectionMatches', 'occurrencesHighlight', 'off', 'singleFile'],
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
+		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 	];
 
@@ -435,17 +435,11 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
-		} else {
-			if (isWiki) {
-				openLinks(this, hasExtension('openLinks'));
-			}
-			if (hasLint !== undefined && this.#model.lint) {
-				this.#model.lint(hasLint);
-			}
+		} else if (hasLint !== undefined && this.#model.lint) {
+			this.#model.lint(hasLint);
 		}
 		if (isWiki) {
 			escape(this.#editor, hasExtension('escape'));
-			refHover(this.#model, hasExtension('refHover'));
 		}
 		const options: Record<string, unknown> = {};
 		for (const [key, opts, off, on] of avail) {

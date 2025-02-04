@@ -1,4 +1,4 @@
-import {fromPositions} from 'monaco-wiki/src/tree';
+import {fromPositions} from '../src/tree';
 import {CodeMirror} from './base';
 import type {Selection} from 'monaco-editor';
 

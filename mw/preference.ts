@@ -1,4 +1,4 @@
-import {rules} from 'wikiparser-node/dist/base';
+import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/common';
 import {CodeMirror} from './base';
 import {msg, parseMsg, i18n} from './msg';

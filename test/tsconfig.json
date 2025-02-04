@@ -4,7 +4,7 @@
 		"*.ts"
 	],
 	"compilerOptions": {
-		"target": "ES2023",
+		"target": "ES2024",
 		"declaration": false,
 		"removeComments": true,
 		"outDir": "dist"

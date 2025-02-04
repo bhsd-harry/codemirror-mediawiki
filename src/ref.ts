@@ -1,6 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {trees, getTree, fromPositions} from 'monaco-wiki/src/tree';
+import {trees, getTree, fromPositions} from './tree';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import type {Tooltip, TooltipView} from '@codemirror/view';

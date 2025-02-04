@@ -13,14 +13,14 @@ import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/l
 import type {SyntaxNode} from '@lezer/common';
 
 declare type MimeTypes = 'mediawiki'
-| 'text/mediawiki'
-| 'text/nowiki'
-| 'text/pre'
-| 'text/references'
-| 'text/choose'
-| 'text/combobox'
-| 'text/inputbox'
-| 'text/gallery';
+	| 'text/mediawiki'
+	| 'text/nowiki'
+	| 'text/pre'
+	| 'text/references'
+	| 'text/choose'
+	| 'text/combobox'
+	| 'text/inputbox'
+	| 'text/gallery';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
 declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
@@ -183,7 +183,7 @@ const copyState = (state: State): State => {
 				result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
 			} else if (key !== 'data' && val && typeof val === 'object') {
 				// @ts-expect-error initial value
-				result[key] = {...val};
+				result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
 			}
 		}
 	}
@@ -195,6 +195,7 @@ const copyState = (state: State): State => {
  * @param str 字符串
  */
 const isHtmlEntity = (str: string): boolean =>
+	// eslint-disable-next-line @typescript-eslint/no-misused-spread
 	typeof document !== 'object' || str.startsWith('#') || [...decodeHTML(`&${str}`)].length === 1;
 
 /**
@@ -249,6 +250,7 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
 	if (typeof comment === 'object') {
 		table['<'] = String.raw`<(?!!--|onlyinclude>|(?:${comment.data.tags.slice(0, -1).join('|')})(?:[\s/>]|$))`;
 	}
+	// eslint-disable-next-line @typescript-eslint/no-misused-spread
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
 
@@ -1195,7 +1197,7 @@ export class MediaWiki {
 			}
 			const t = state.stack[0]!,
 				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
-				+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
+					+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
 			if (pipe.includes(stream.peek() ?? '')) {
 				pop(state);
 				return makeLocalTagStyle('htmlTagBracket', state);
@@ -1236,7 +1238,7 @@ export class MediaWiki {
 					lang = 'javascript';
 				}
 				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua' || lang === 'json')
-				&& plugins[lang] as StreamParser<object>;
+					&& plugins[lang] as StreamParser<object>;
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
 		};
@@ -1245,7 +1247,7 @@ export class MediaWiki {
 				const {config: {tagModes}} = this;
 				state.extName = name;
 				state.extMode ||= name in tagModes
-				&& this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
+					&& this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
 				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
 				}
@@ -1397,9 +1399,9 @@ export class MediaWiki {
 				ffLower = ff.toLowerCase(),
 				{config: {functionSynonyms, variableIDs}} = this,
 				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
-				&& functionSynonyms[0][ffLower]
-				|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
-				&& functionSynonyms[1][ff];
+					&& functionSynonyms[0][ffLower]
+					|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
+					&& functionSynonyms[1][ff];
 			if (
 				(!delimiter || delimiter === ':' || delimiter === '}')
 				&& canonicalName
