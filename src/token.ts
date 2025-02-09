@@ -1398,10 +1398,10 @@ export class MediaWiki {
 				ff = delimiter === ':' ? f : f.trim(),
 				ffLower = ff.toLowerCase(),
 				{config: {functionSynonyms, variableIDs}} = this,
-				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
-					&& functionSynonyms[0][ffLower]
-					|| Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
-					&& functionSynonyms[1][ff];
+				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
+					&& functionSynonyms[1][ff]
+					|| Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
+					&& functionSynonyms[0][ffLower];
 			if (
 				(!delimiter || delimiter === ':' || delimiter === '}')
 				&& canonicalName

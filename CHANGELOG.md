@@ -1,3 +1,15 @@
+## 2.21.0
+
+*2025-02-10*
+
+**Fixed**
+
+- `{{名字空间}}` and `{{命名空間}}` are now correctly highlighted as `{{NAMESPACE}}` in the MediaWiki mode
+
+**Changed**
+
+- The Wikitext language service for the Monaco editor on a MediaWiki site is now provided by [Monaco-Wiki](https://github.com/bhsd-harry/monaco-wiki)
+
 ## 2.20.3
 
 *2025-02-01*

@@ -1,6 +1,6 @@
-import {fromPositions} from '../src/tree';
 import {CodeMirror} from './base';
-import type {Selection} from 'monaco-editor';
+import type * as Monaco from 'monaco-editor';
+import type {editor, Range as R, Position, Selection} from 'monaco-editor';
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
@@ -9,6 +9,9 @@ export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
  * @param $ele textarea元素的jQuery对象
  */
 const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
+
+const fromPositions = (monaco: typeof Monaco, model: editor.ITextModel, ref: [number, number]): R =>
+	monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]);
 
 declare interface EncapsulateOptions {
 	pre?: string;

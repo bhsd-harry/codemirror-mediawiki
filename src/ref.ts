@@ -1,17 +1,16 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {trees, getTree, fromPositions} from './tree';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
-import type * as Monaco from 'monaco-editor';
-import type {editor} from 'monaco-editor';
 
 declare type Ranges = [number, number][];
-declare const monaco: typeof Monaco;
+declare type Tree = Promise<AST> & {docChanged?: boolean};
+
+const trees = new WeakMap<EditorView, Tree>();
 
 /**
  * 获取节点内容
@@ -33,15 +32,13 @@ const attributes = new Set(['follow', 'extends']);
  * @param group 是否group属性
  */
 const findRefImmediate = (
-	view: EditorView | editor.ITextModel,
+	view: EditorView,
 	tree: AST,
 	target: string,
 	all?: boolean,
 	group?: boolean,
 ): Ranges => {
-	const sliceDoc = (from: number, to: number): string => 'state' in view
-		? view.state.sliceDoc(from, to)
-		: view.getValueInRange(fromPositions(monaco, view, [from, to]));
+	const sliceDoc = (from: number, to: number): string => view.state.sliceDoc(from, to);
 	const {childNodes, type, name} = tree;
 	if (!childNodes) {
 		return [];
@@ -73,16 +70,15 @@ const findRefImmediate = (
  * @param all 是否查找所有
  * @param group 是否group属性
  */
-export const findRef = async (
-	view: EditorView | editor.ITextModel,
-	target: string,
-	all?: boolean,
-	group?: boolean,
-): Promise<Ranges> => {
+export const findRef = async (view: EditorView, target: string, all?: boolean, group?: boolean): Promise<Ranges> => {
 	if (!('wikiparse' in globalThis)) {
 		return [];
 	}
-	const tree = getTree(view, 1);
+	let tree = trees.get(view);
+	if (!tree || tree.docChanged) {
+		tree = wikiparse.json(view.state.doc.toString(), true, -5, 1);
+		trees.set(view, tree);
+	}
 	if (all && !target) { // 只用于CodeMirror autocompletion
 		tree.docChanged = true;
 	}
