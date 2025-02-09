@@ -19,9 +19,6 @@
 		"/dist/*.mjs",
 		"!/dist/*-page.d.ts",
 		"!/dist/parser.*",
-		"/src/linter.ts",
-		"/src/static.ts",
-		"/mw/config.ts",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
@@ -56,6 +53,7 @@
 		"@codemirror/state": "^6.5.1",
 		"@codemirror/view": "^6.36.2",
 		"@lezer/common": "^1.2.3",
+		"@lezer/highlight": "^1.2.1",
 		"style-mod": "^4.1.2",
 		"wikiparser-node": "^1.16.0"
 	},
@@ -68,7 +66,6 @@
 		"@codemirror/lang-json": "^6.0.1",
 		"@codemirror/legacy-modes": "^6.4.2",
 		"@codemirror/search": "^6.5.8",
-		"@lezer/highlight": "^1.2.1",
 		"@stylistic/eslint-plugin": "^3.1.0",
 		"@stylistic/stylelint-plugin": "^3.1.2",
 		"@types/eslint": "^8.56.10",
@@ -93,7 +90,6 @@
 		"luacheck-browserify": "^0.2.2",
 		"mocha": "^11.1.0",
 		"monaco-editor": "^0.52.2",
-		"monaco-wiki": "^1.6.0",
 		"stylelint": "^16.14.1",
 		"stylelint-config-recommended": "^15.0.0",
 		"types-mediawiki": "^1.9.1",

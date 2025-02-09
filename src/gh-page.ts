@@ -96,7 +96,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 			void init(input.id);
 		}
 	}
-	const hashMap = new Map<string, string>([
+	const hashMap = new Map([
 		['wiki', 'mediawiki'],
 		['wikitext', 'mediawiki'],
 		['mediawiki', 'mediawiki'],
