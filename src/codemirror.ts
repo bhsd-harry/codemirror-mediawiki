@@ -35,13 +35,13 @@ import {
 } from '@codemirror/autocomplete';
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
-import {escapeKeymap} from './escape';
+import escapeKeymap from './escape';
 import codeFolding, {foldHandler} from './fold';
-import {tagMatchingState} from './matchTag';
-import {refHover} from './ref';
+import tagMatchingState from './matchTag';
+import refHover from './ref';
 import magicWordHover from './hover';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
-import {openLinks} from './openLinks';
+import openLinks from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';

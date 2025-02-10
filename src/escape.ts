@@ -33,7 +33,7 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		return encodeURIComponent(str);
 	};
 
-export const escapeKeymap: KeyBinding[] = [
+export default [
 	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
 	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
-];
+] as KeyBinding[];

@@ -3,7 +3,7 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import type {Tooltip, TooltipView} from '@codemirror/view';
-import type {EditorState} from '@codemirror/state';
+import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
 
@@ -85,7 +85,7 @@ export const findRef = async (view: EditorView, target: string, all?: boolean, g
 	return findRefImmediate(view, await tree, target, all, group);
 };
 
-export const refHover = [
+export default [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 		if (!('wikiparse' in globalThis)) {
 			return null;
@@ -158,4 +158,4 @@ export const refHover = [
 			}
 		}
 	}),
-];
+] as Extension;

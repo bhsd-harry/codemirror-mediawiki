@@ -82,6 +82,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
 		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
+		['hover', 'hover', {enabled: false}, undefined],
 	];
 
 /**

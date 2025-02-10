@@ -39,7 +39,7 @@ document.addEventListener('keyup', e => {
 	}
 });
 
-export const openLinks = ({langConfig}: CodeMirror6): Extension => [
+export default ({langConfig}: CodeMirror6): Extension => [
 	EditorView.domEventHandlers({
 		mousedown(e, view) {
 			if (!e[modKey] || e.button !== 0) {

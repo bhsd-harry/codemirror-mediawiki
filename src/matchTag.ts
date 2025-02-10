@@ -139,7 +139,7 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 const matchingMark = Decoration.mark({class: 'cm-matchingTag'}),
 	nonmatchingMark = Decoration.mark({class: 'cm-nonmatchingTag'});
 
-export const tagMatchingState = StateField.define<DecorationSet>({
+export default StateField.define<DecorationSet>({
 	create() {
 		return Decoration.none;
 	},

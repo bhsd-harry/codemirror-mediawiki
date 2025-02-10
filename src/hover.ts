@@ -10,18 +10,26 @@ declare const markdownit: () => MarkdownIt;
 const lsps = new WeakMap<EditorView, LanguageServiceBase>();
 let md: MarkdownIt | undefined;
 
-export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
+/**
+ * 获取当前编辑器的语言服务
+ * @param view EditorView 实例
+ */
+const getLSP = (view: EditorView): LanguageServiceBase | undefined => {
 	if (!('wikiparse' in globalThis && wikiparse.LanguageService)) {
-		return null;
+		return undefined;
+	} else if (lsps.has(view)) {
+		return lsps.get(view);
 	}
-	let lsp = lsps.get(view);
-	if (!lsp) {
-		lsp = new wikiparse.LanguageService();
-		lsps.set(view, lsp);
-	}
+	const lsp = new wikiparse.LanguageService();
+	lsps.set(view, lsp);
+	return lsp;
+};
+
+export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 	const {state: {doc}} = view,
 		line = doc.lineAt(pos),
-		hover = await lsp.provideHover(view.state.doc.toString(), {line: line.number - 1, character: pos - line.from});
+		hover = await getLSP(view)
+			?.provideHover(view.state.doc.toString(), {line: line.number - 1, character: pos - line.from});
 	if (hover) {
 		await loadScript('npm/markdown-it/dist/markdown-it.min.js', 'markdownit', true);
 		md ??= markdownit();
@@ -34,7 +42,7 @@ export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 				const dom = document.createElement('div'),
 					inner = document.createElement('div');
 				dom.append(inner);
-				dom.className = 'cm-tooltip-ref';
+				dom.className = 'cm-tooltip-hover';
 				dom.style.font = getComputedStyle(view.contentDOM).font;
 				inner.innerHTML = md!.render((hover.contents as MarkupContent).value);
 				return {dom};
