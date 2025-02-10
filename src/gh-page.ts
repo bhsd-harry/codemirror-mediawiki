@@ -23,7 +23,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		extension.checked = search.has(extension.id);
 	}
 
-	const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'openLinks'],
+	const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'openLinks'],
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,

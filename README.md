@@ -47,6 +47,7 @@
 	- [escape](#escape)
 	- [tagMatching](#tagmatching)
 	- [refHover](#refhover)
+	- [hover](#hover)
 	- [openLinks](#openlinks)
 - [Known issues](#known-issues)
 	- [Syntax Highlighting](#syntax-highlighting)
@@ -553,6 +554,12 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 *version added: 2.17.1*
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
+
+## hover
+
+*version added: 2.21.0*
+
+Show the help information of a magic word when hovering.
 
 ## openLinks
 

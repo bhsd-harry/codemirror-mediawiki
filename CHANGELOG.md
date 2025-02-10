@@ -2,6 +2,10 @@
 
 *2025-02-10*
 
+**Added**
+
+- New extension option for the MediaWiki mode: [hover](./README.md#hover)
+
 **Fixed**
 
 - `{{名字空间}}` and `{{命名空間}}` are now correctly highlighted as `{{NAMESPACE}}` in the MediaWiki mode

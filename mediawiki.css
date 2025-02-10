@@ -26,6 +26,19 @@
 	width: max-content;
 	max-width: 60vw;
 }
+.cm-tooltip-ref * {
+	margin: 0 !important;
+}
+.cm-tooltip-ref > div {
+	font-size: 90%;
+	line-height: 1.4;
+	white-space: normal;
+}
+.cm-tooltip-ref code {
+	background-color: #e0e6eb;
+	padding: .2em .4em;
+	border-radius: .4em;
+}
 .cm-focused .cm-matchingTag {
 	background-color: rgba(50, 140, 130, .32);
 }

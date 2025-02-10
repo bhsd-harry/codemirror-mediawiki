@@ -39,6 +39,7 @@ import {escapeKeymap} from './escape';
 import codeFolding, {foldHandler} from './fold';
 import {tagMatchingState} from './matchTag';
 import {refHover} from './ref';
+import magicWordHover from './hover';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import {openLinks} from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
@@ -124,6 +125,7 @@ const avail: Record<string, Addon<any>> = {
 	escape: mediawikiOnly(keymap.of(escapeKeymap)),
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),
+	hover: mediawikiOnly(magicWordHover),
 };
 
 const linters: Record<string, Extension> = {};
