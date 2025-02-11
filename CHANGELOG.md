@@ -1,10 +1,10 @@
 ## 2.21.0
 
-*2025-02-10*
+*2025-02-11*
 
 **Added**
 
-- New extension option for the MediaWiki mode: [hover](./README.md#hover)
+- New extension options for the MediaWiki mode: [hover](./README.md#hover) and [signatureHelp](./README.md#signaturehelp)
 
 **Fixed**
 

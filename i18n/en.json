@@ -28,6 +28,7 @@
 	"addon-refHover": "Hover over a predefined reference to see its content (CodeMirror)",
 	"addon-save": "Save your preferences on a [[special:mypage/codemirror-mediawiki.json|user subpage]]",
 	"addon-scrollPastEnd": "Scroll down past the end of the document",
+	"addon-signatureHelp": "Show parser function signatures",
 	"addon-tagMatching": "Highlight matching/non-matching tags",
 	"addon-useMonaco": "Use Monaco Editor for new editors",
 	"addon-wikiEditor": "Load WikiEditor toolbar",

@@ -40,6 +40,7 @@ import codeFolding, {foldHandler} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
 import magicWordHover from './hover';
+import signatureHelp from './signature';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import openLinks from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
@@ -126,6 +127,7 @@ const avail: Record<string, Addon<any>> = {
 	tagMatching: mediawikiOnly(tagMatchingState),
 	refHover: mediawikiOnly(refHover),
 	hover: mediawikiOnly(magicWordHover),
+	signatureHelp: mediawikiOnly(signatureHelp),
 };
 
 const linters: Record<string, Extension> = {};

@@ -32,7 +32,7 @@ declare interface IWikitextModel extends editor.ITextModel {
 
 // 每次新增插件都需要修改这里
 const baseVersion = '2.21',
-	addons = ['hover'];
+	addons = ['hover', 'signatureHelp'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
 

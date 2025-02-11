@@ -1,5 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
+import {loadScript} from '@bhsd/common';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import type {Tooltip, TooltipView} from '@codemirror/view';
@@ -71,9 +72,7 @@ const findRefImmediate = (
  * @param group 是否group属性
  */
 export const findRef = async (view: EditorView, target: string, all?: boolean, group?: boolean): Promise<Ranges> => {
-	if (!('wikiparse' in globalThis)) {
-		return [];
-	}
+	await loadScript('npm/wikiparser-node/extensions/dist/base.min.js', 'wikiparse');
 	let tree = trees.get(view);
 	if (!tree || tree.docChanged) {
 		tree = wikiparse.json(view.state.doc.toString(), true, -5, 1);
@@ -87,9 +86,6 @@ export const findRef = async (view: EditorView, target: string, all?: boolean, g
 
 export default [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
-		if (!('wikiparse' in globalThis)) {
-			return null;
-		}
 		const {state} = view,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
 		if (node && /-exttag-(?!bracket)/u.test(node.name)) {

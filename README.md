@@ -561,6 +561,12 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 
 Show the help information of a magic word when hovering.
 
+## signatureHelp
+
+*version added: 2.21.0*
+
+Show the parser function signature when typing.
+
 ## openLinks
 
 *version added: 2.19.6*
