@@ -38,10 +38,10 @@ export const indexToPos = (doc: Text, index: number): Position => {
 	return {line: line.number - 1, character: index - line.from};
 };
 
-export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
+export default hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 	const {state: {doc}} = view,
 		hover = await getLSP(view)
-			?.provideHover(doc.toString(), indexToPos(doc, pos));
+			?.provideHover(doc.toString(), indexToPos(doc, pos + Math.max(0, side)));
 	if (hover) {
 		await loadScript('npm/markdown-it/dist/markdown-it.min.js', 'markdownit', true);
 		md ??= markdownit();
