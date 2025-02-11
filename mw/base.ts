@@ -83,6 +83,7 @@ const linters: Record<string, LintSource | undefined> = {},
 		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 		['hover', 'hover', {enabled: false}, undefined],
+		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
 	];
 
 /**
