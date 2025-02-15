@@ -62,7 +62,7 @@ export default keymap.of(([
 	{key: 'Mod-Shift-k', pre: '<ref>', post: '</ref>'},
 	{key: 'Mod-/', pre: '<!-- ', post: ' -->'},
 	{key: 'Ctrl-0', splitlines: true},
-	...new Array(6).fill(0).map((_, i) => ({
+	...new Array(6).fill(0).map((_, i): KeymapConfig => ({
 		key: `Ctrl-${i + 1}`,
 		pre: `${'='.repeat(i + 1)} `,
 		post: ` ${'='.repeat(i + 1)}`,

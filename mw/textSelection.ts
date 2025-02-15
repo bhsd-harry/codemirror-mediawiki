@@ -180,7 +180,7 @@ export const monacoTextSelection: TextSelection = {
 			);
 			return this;
 		}
-		const edits = editor!.getSelections()!.map(range => {
+		const edits = editor!.getSelections()!.map((range): editor.ISingleEditOperation => {
 			const selText = replace || range.isEmpty() ? peri : model!.getValueInRange(range),
 				text = handleOwnline(range, split(selText, pre, post, splitlines));
 			return {range, text, forceMoveMarkers: true};

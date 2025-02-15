@@ -23,6 +23,7 @@ import type {
 	CloseBracketConfig,
 	CompletionSource,
 	Completion,
+	CompletionResult,
 } from '@codemirror/autocomplete';
 import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig, TagName} from './token';
@@ -77,38 +78,38 @@ export class FullMediaWiki extends MediaWiki {
 		this.nsRegex = new RegExp(String.raw`^(${
 			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
 		})\s*:\s*`, 'iu');
-		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map(label => ({
+		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
 			type: i ? 'constant' : 'function',
 			label,
 		})));
-		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).map(label => ({
+		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).map((label): Completion => ({
 			type: 'constant',
 			label,
 		}));
-		this.extTags = this.tags.map(label => ({type: 'type', label}));
-		this.htmlTags = htmlTags.filter(tag => !this.tags.includes(tag)).map(label => ({
+		this.extTags = this.tags.map((label): Completion => ({type: 'type', label}));
+		this.htmlTags = htmlTags.filter(tag => !this.tags.includes(tag)).map((label): Completion => ({
 			type: 'type',
 			label,
 		}));
-		this.protocols = urlProtocols.split('|').map(label => ({
+		this.protocols = urlProtocols.split('|').map((label): Completion => ({
 			type: 'namespace',
 			label: label.replace(/\\\//gu, '/'),
 		}));
-		this.imgKeys = this.img.map(label => label.endsWith('$1')
+		this.imgKeys = this.img.map((label): Completion => label.endsWith('$1')
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
 		this.htmlAttrs = [
-			...[...commonHtmlAttrs].map(label => ({type: 'property', label})),
+			...[...commonHtmlAttrs].map((label): Completion => ({type: 'property', label})),
 			{type: 'variable', label: 'data-', detail: '*'},
 			{type: 'namespace', label: 'xmlns:', detail: '*'},
 		];
 		this.elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
 			key,
-			[...value].map(label => ({type: 'property', label})),
+			[...value].map((label): Completion => ({type: 'property', label})),
 		]));
 		this.extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
 			key,
-			[...value].map(label => ({type: 'property', label})),
+			[...value].map((label): Completion => ({type: 'property', label})),
 		]));
 	}
 
@@ -118,7 +119,7 @@ export class FullMediaWiki extends MediaWiki {
 	 * @see https://codemirror.net/docs/ref/#language.TagStyle
 	 */
 	getTagStyles(): TagStyle[] {
-		return Object.keys(this.tokenTable).map(className => ({
+		return Object.keys(this.tokenTable).map((className): TagStyle => ({
 			tag: this.tokenTable[className]!,
 			class: `cm-${className}`,
 		}));
@@ -176,7 +177,7 @@ export class FullMediaWiki extends MediaWiki {
 		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,
-			options: (await linkSuggest(search, ns, subpage)).map(([label]) => ({
+			options: (await linkSuggest(search, ns, subpage)).map(([label]): Completion => ({
 				type: 'text',
 				label: underscore ? label.replace(/ /gu, '_') : label,
 			})),
@@ -207,7 +208,7 @@ export class FullMediaWiki extends MediaWiki {
 	get completionSource(): CompletionSource {
 		const refAttrs = new Set(['name', 'follow', 'extends']),
 			htmlExt = Object.keys(this.config.tags).filter(tag => tag in htmlAttrs).map(tag => `mw-ext-${tag}`);
-		return async context => {
+		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
 				types = new Set(node.name.split('_')),
@@ -248,7 +249,7 @@ export class FullMediaWiki extends MediaWiki {
 							from: start + suggestions.offset - (isPage && prefix.length),
 							options: isPage
 								? suggestions.options
-								: suggestions.options.map(option => ({...option, apply})),
+								: suggestions.options.map((option): Completion => ({...option, apply})),
 							validFor,
 						}
 						: null;
@@ -351,7 +352,7 @@ export class FullMediaWiki extends MediaWiki {
 						return refs.length > 0
 							? {
 								from: start + /^\s*/u.exec(search)![0].length,
-								options: refs.filter(([f]) => f < start || f > node.to).map(range => ({
+								options: refs.filter(([f]) => f < start || f > node.to).map((range): Completion => ({
 									type: 'text',
 									label: state.sliceDoc(...range).trim(),
 								})),

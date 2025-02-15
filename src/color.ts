@@ -31,20 +31,21 @@ const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Te
 	) {
 		return null;
 	}
-	return splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor).map(([s, start, end]) => {
-		const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
-		let alpha = color?.alpha;
-		if (color?.colorType !== ColorType.hex) {
-			alpha &&= numToHex(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1));
-		}
-		return color && {
-			...color,
-			colorType: 'hex',
-			alpha,
-			from: from + start,
-			to: from + end,
-		};
-	}).filter(Boolean) as WidgetOptions[];
+	return splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor)
+		.map(([s, start, end]): WidgetOptions | null => {
+			const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
+			let alpha = color?.alpha;
+			if (color?.colorType !== ColorType.hex) {
+				alpha &&= numToHex(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1));
+			}
+			return color && {
+				...color,
+				colorType: ColorType.hex,
+				alpha: alpha ?? '',
+				from: from + start,
+				to: from + end,
+			};
+		}).filter(Boolean) as WidgetOptions[];
 };
 
 export default [

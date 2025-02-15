@@ -180,7 +180,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 							&& k.startsWith('addon-')
 							&& !k.endsWith('-mac'),
 					)
-					.map(k => ({
+					.map((k): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label' | 'disabled'> => ({
 						data: k.slice(6),
 						label: parseMsg(k),
 						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor')
@@ -190,7 +190,10 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			value: [...prefs] as unknown as string,
 		});
 		monacoWidget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: langs.map((lang, i) => ({data: lang, label: labels[i]!})),
+			options: langs.map((lang, i): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label'> => ({
+				data: lang,
+				label: labels[i]!,
+			})),
 			value: [...useMonaco] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});

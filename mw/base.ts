@@ -145,7 +145,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			result: ApiSuggestions = [];
 		for (const [key, {aliases, label}] of params) {
 			const detail = label ?? '';
-			result.push([key, detail], ...aliases.map(alias => [alias, detail] satisfies [string, string]));
+			result.push([key, detail], ...aliases.map((alias): [string, string] => [alias, detail]));
 		}
 		return result;
 	} catch {

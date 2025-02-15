@@ -59,7 +59,7 @@ export default hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => 
 				inner.innerHTML = md!.render((hover.contents as MarkupContent).value);
 				return {dom};
 			},
-		} satisfies Tooltip;
+		};
 	}
 	return null;
 });

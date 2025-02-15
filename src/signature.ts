@@ -1,7 +1,7 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP, indexToPos} from './hover';
-import type {TooltipView} from '@codemirror/view';
+import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
 
@@ -53,7 +53,7 @@ export default [
 			})();
 		}
 	}),
-	showTooltip.from(field, value => {
+	showTooltip.from(field, (value): Tooltip | null => {
 		if (!value) {
 			return null;
 		}

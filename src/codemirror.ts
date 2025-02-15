@@ -421,12 +421,12 @@ export class CodeMirror6 {
 							diagnostic.actions = [
 								...fix ? [{name: 'fix', fix}] : [],
 								...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
-							].map(({name, fix: {range: [from, to], text}}) => ({
+							].map(({name, fix: {range: [from, to], text}}): Action => ({
 								name,
 								apply(view): void {
 									view.dispatch({changes: {from, to, insert: text}});
 								},
-							} satisfies Action));
+							}));
 						}
 						return diagnostic;
 					});
@@ -434,7 +434,7 @@ export class CodeMirror6 {
 			case 'css': {
 				const styleLint = await getCssLinter(opt);
 				return async doc => (await styleLint(doc.toString()))
-					.map(({text, severity, line, column, endLine, endColumn}) => ({
+					.map(({text, severity, line, column, endLine, endColumn}): Diagnostic => ({
 						source: 'Stylelint',
 						message: text,
 						severity,
@@ -445,7 +445,7 @@ export class CodeMirror6 {
 			case 'lua': {
 				const luaLint = await getLuaLinter();
 				return async doc => (await luaLint(doc.toString()))
-					.map(({line, column, end_column: endColumn, msg: message, severity}) => ({
+					.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
 						source: 'Luacheck',
 						message,
 						severity: severity === 1 ? 'warning' : 'error',

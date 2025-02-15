@@ -26,7 +26,7 @@ const createAction = (
 		if (ranges.length === 0) {
 			editor.trigger(id, command, undefined);
 		} else {
-			const edits = ranges.map(range => ({
+			const edits = ranges.map((range): editor.ISingleEditOperation => ({
 				range,
 				text: f(model.getValueInRange(range)),
 			}));
