@@ -52,7 +52,7 @@
 		"@codemirror/state": "^6.5.1",
 		"@codemirror/view": "^6.36.2",
 		"@lezer/highlight": "^1.2.1",
-		"wikiparser-node": "^1.16.2"
+		"wikiparser-node": "^1.16.4"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
@@ -85,7 +85,7 @@
 		"eslint-plugin-regexp": "^2.7.0",
 		"eslint-plugin-unicorn": "^56.0.1",
 		"http-server": "^14.1.1",
-		"luacheck-browserify": "^0.2.2",
+		"luacheck-browserify": "^0.2.3",
 		"mocha": "^11.1.0",
 		"monaco-editor": "^0.52.2",
 		"stylelint": "^16.14.1",

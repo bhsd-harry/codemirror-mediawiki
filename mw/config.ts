@@ -148,7 +148,17 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 	if (config) {
 		return config;
 	}
-	const {tags, nsid, doubleUnderscore, variants, urlProtocols, redirection, functionSynonyms, img} = mwConfig,
+	const {
+			tags,
+			nsid,
+			doubleUnderscore,
+			variants,
+			urlProtocols,
+			redirection,
+			functionSynonyms,
+			variableIDs,
+			img,
+		} = mwConfig,
 		[insensitive, sensitive] = functionSynonyms;
 	config = {
 		...minConfig,
@@ -161,6 +171,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		variants: variants!,
 		protocol: urlProtocols.replace(/\|\\?\/\\?\//u, ''),
 		redirection: redirection ?? minConfig.redirection,
+		...variableIDs && {variable: variableIDs},
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');
@@ -173,7 +184,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 			}
 		}
 	}
-	config.parserFunction[1] = 'wikiparser' in globalThis
+	config.parserFunction[1] = typeof wikiparse === 'object'
 		&& compareVersion(wikiparse.version, '1.15')
 		&& !Object.values(sensitive as Record<string, unknown>).includes(true)
 		? {...sensitive, '=': '='}

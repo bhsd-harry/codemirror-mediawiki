@@ -1,14 +1,13 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {loadScript} from '@bhsd/common';
 import {getTag} from './matchTag';
 import {tokens} from './config';
+import {getLSP, indexToPos, posToIndex} from './hover';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
 
-declare type Ranges = [number, number][];
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
 const trees = new WeakMap<EditorView, Tree>();
@@ -21,68 +20,6 @@ const trees = new WeakMap<EditorView, Tree>();
  * @param node.to 结束位置
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
-
-const attributes = new Set(['follow', 'extends']);
-
-/**
- * 查找注释的内容
- * @param view
- * @param tree 语法树
- * @param target 目标名称
- * @param all 是否查找所有
- * @param group 是否group属性
- */
-const findRefImmediate = (
-	view: EditorView,
-	tree: AST,
-	target: string,
-	all?: boolean,
-	group?: boolean,
-): Ranges => {
-	const sliceDoc = (from: number, to: number): string => view.state.sliceDoc(from, to);
-	const {childNodes, type, name} = tree;
-	if (!childNodes) {
-		return [];
-	} else if (type !== 'ext' || !(name === 'ref' || group && name === 'references')) {
-		return childNodes.flatMap(child => findRefImmediate(view, child, target, all, group));
-	}
-	const {range} = childNodes[1]!;
-	if (all || range[0] < range[1]) {
-		const attrs = childNodes[0]!.childNodes!.filter(
-				({type: t, name: n}) =>
-					t === 'ext-attr' && (group ? n === 'group' : n === 'name' || all && attributes.has(n!)),
-			),
-			attr = attrs[attrs.length - 1]?.childNodes![1];
-		if (!attr) {
-			// pass
-		} else if (all && !target) {
-			return [attr.range];
-		} else if (sliceDoc(...attr.range).trim() === target) {
-			return [(all ? tree : childNodes[1]!).range];
-		}
-	}
-	return [];
-};
-
-/**
- * 异步查找注释的内容
- * @param view
- * @param target 目标名称
- * @param all 是否查找所有
- * @param group 是否group属性
- */
-export const findRef = async (view: EditorView, target: string, all?: boolean, group?: boolean): Promise<Ranges> => {
-	await loadScript('npm/wikiparser-node/extensions/dist/base.min.js', 'wikiparse');
-	let tree = trees.get(view);
-	if (!tree || tree.docChanged) {
-		tree = wikiparse.json(view.state.doc.toString(), true, -5, 1);
-		trees.set(view, tree);
-	}
-	if (all && !target) { // 只用于CodeMirror autocompletion
-		tree.docChanged = true;
-	}
-	return findRefImmediate(view, await tree, target, all, group);
-};
 
 export default [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
@@ -117,7 +54,8 @@ export default [
 						target = target.slice(1, target.slice(-1) === quote ? -1 : undefined).trim();
 					}
 					if (target) {
-						const [ref] = await findRef(view, target);
+						const {doc} = state,
+							ref = await getLSP(view)?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 						return {
 							pos,
 							end: to,
@@ -127,15 +65,18 @@ export default [
 								dom.className = 'cm-tooltip-ref';
 								dom.style.font = getComputedStyle(view.contentDOM).font;
 								if (ref) {
-									dom.textContent = state.sliceDoc(...ref);
+									const {range: {start, end}} = ref[0]!,
+										anchor = posToIndex(doc, start),
+										head = posToIndex(doc, end);
+									dom.textContent = state.sliceDoc(anchor, head);
 									dom.addEventListener('click', () => {
 										view.dispatch({
-											selection: {anchor: ref[0], head: ref[1]},
+											selection: {anchor, head},
 											scrollIntoView: true,
 										});
 									});
 								} else {
-									dom.textContent = state.phrase('No definition found') + target;
+									dom.textContent = state.phrase('No definition found');
 								}
 								return {dom};
 							},

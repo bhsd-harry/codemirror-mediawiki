@@ -15,7 +15,6 @@ import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
-import {findRef} from './ref';
 import {braceStackUpdate} from './fold';
 import type {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
@@ -206,8 +205,7 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		const refAttrs = new Set(['name', 'follow', 'extends']),
-			htmlExt = Object.keys(this.config.tags).filter(tag => tag in htmlAttrs).map(tag => `mw-ext-${tag}`);
+		const htmlExt = Object.keys(this.config.tags).filter(tag => tag in htmlAttrs).map(tag => `mw-ext-${tag}`);
 		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
@@ -331,36 +329,6 @@ export class FullMediaWiki extends MediaWiki {
 						validFor: /^[a-z]*$/iu,
 					}
 					: null;
-			} else if (explicit && hasTag(types, 'extTagAttributeValue') && search !== '"' && search !== "'") {
-				const quote = prevSibling?.name.includes(tokens.extTagAttributeValue)
-					? state.sliceDoc(prevSibling.from, prevSibling.to)
-					: '';
-				while (prevSibling?.name.includes(tokens.extTagAttributeValue)) {
-					({prevSibling} = prevSibling);
-				}
-				prevSibling &&= prevSibling.prevSibling;
-				if (prevSibling) {
-					const names = prevSibling.name.split('_'),
-						isRef = names.includes('mw-ext-ref'),
-						key = state.sliceDoc(prevSibling.from, prevSibling.to).trim().toLowerCase();
-					if (
-						isRef && refAttrs.has(key)
-						|| key === 'group' && (isRef || names.includes('mw-ext-references'))
-					) {
-						Object.assign(this, {state});
-						const refs = await findRef(this as unknown as EditorView, '', true, key === 'group');
-						return refs.length > 0
-							? {
-								from: start + /^\s*/u.exec(search)![0].length,
-								options: refs.filter(([f]) => f < start || f > node.to).map((range): Completion => ({
-									type: 'text',
-									label: state.sliceDoc(...range).trim(),
-								})),
-								validFor: new RegExp(`^[^>${quote || String.raw`\s`}]*$`, 'u'),
-							}
-							: null;
-					}
-				}
 			} else if (!hasTag(types, [
 				'comment',
 				'templateVariableName',

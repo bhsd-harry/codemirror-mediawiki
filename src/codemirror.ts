@@ -39,7 +39,7 @@ import escapeKeymap from './escape';
 import codeFolding, {foldHandler} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
-import magicWordHover from './hover';
+import magicWordHover, {posToIndex} from './hover';
 import signatureHelp from './signature';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import openLinks from './openLinks';
@@ -139,7 +139,8 @@ const phrases: Record<string, string> = {};
  * @param line 行号
  * @param column 列号
  */
-const pos = (doc: Text, line: number, column: number): number => doc.line(line).from + column - 1;
+const pos = (doc: Text, line: number, column: number): number =>
+	posToIndex(doc, {line: line - 1, character: column - 1});
 
 /** CodeMirror 6 编辑器 */
 export class CodeMirror6 {

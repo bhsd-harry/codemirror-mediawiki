@@ -249,7 +249,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
-		if (!('monaco' in globalThis)) {
+		if (typeof monaco !== 'object') {
 			await $.ajax(
 				`${CDN}/npm/monaco-wiki@${mw.libs.wphl?.monacoVersion ?? 'latest'}/dist/all.min.js`,
 				{dataType: 'script', cache: true},

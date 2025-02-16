@@ -4896,6 +4896,16 @@
 		"parsed": "pmid 1 <magic-link>PMID 1</>rfc 1 <magic-link>RFC 1</>isbn 1234567890 <magic-link>ISBN 1234567890</>"
 	},
 	{
+		"desc": "Font of text following an external link",
+		"wikitext": "[//a ''b]c",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>a</><link-ground extlink-text> </><link-ground apostrophes>''</><link-ground extlink-text em>b</><link-ground extlink-bracket>]</><em>c</>"
+	},
+	{
+		"desc": "Interaction between apostrophes and <b> tags",
+		"wikitext": "'''a</b>b<b>c'''d",
+		"parsed": "<apostrophes>'''</><strong>a</><error>&lt;/b&gt</><strong>b</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><strong>c</><apostrophes>'''</>d"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

@@ -18,7 +18,7 @@ let md: MarkdownIt | undefined;
 export const getLSP = (view: EditorView): LanguageServiceBase | undefined => {
 	void loadScript('npm/wikiparser-node/extensions/dist/base.min.js', 'wikiparse');
 	void loadScript('npm/wikiparser-node/extensions/dist/lsp.min.js', 'wikiparse.LanguageService');
-	if (!('wikiparse' in globalThis && wikiparse.LanguageService)) {
+	if (!(typeof wikiparse === 'object' && wikiparse.LanguageService)) {
 		return undefined;
 	} else if (lsps.has(view)) {
 		return lsps.get(view);
@@ -38,17 +38,24 @@ export const indexToPos = (doc: Text, index: number): Position => {
 	return {line: line.number - 1, character: index - line.from};
 };
 
-export default hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
+/**
+ * 将位置转换为索引
+ * @param doc Text 实例
+ * @param pos 位置
+ */
+export const posToIndex = (doc: Text, pos: Position): number => doc.line(pos.line + 1).from + pos.character;
+
+export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 	const {state: {doc}} = view,
 		hover = await getLSP(view)
-			?.provideHover(doc.toString(), indexToPos(doc, pos + Math.max(0, side)));
+			?.provideHover(doc.toString(), indexToPos(doc, pos));
 	if (hover) {
 		await loadScript('npm/markdown-it/dist/markdown-it.min.js', 'markdownit', true);
 		md ??= markdownit();
 		const {end} = hover.range!;
 		return {
 			pos,
-			end: doc.line(end.line + 1).from + end.character,
+			end: posToIndex(doc, end),
 			above: true,
 			create(): TooltipView {
 				const dom = document.createElement('div'),

@@ -1,10 +1,16 @@
 ## 2.21.1
 
-*2025-02-17*
+*2025-02-22*
 
 **Fixed**
 
 - The [autocompletion](./README.md#autocompletion) extension now inserts `>` if necessary when completing a closing tag and in the MediaWiki mode
+- The [refHover](./README.md#refhover) extension
+- The [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration for variables when used on a MediaWiki site
+
+**Removed**
+
+- The [autocompletion](./README.md#autocompletion) extension no longer suggests `name` or `group` attributes of `<ref>` in the MediaWiki mode
 
 ## 2.21.0
 
