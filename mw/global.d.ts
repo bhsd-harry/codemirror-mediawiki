@@ -4,6 +4,9 @@ declare global {
 	namespace mw {
 		const addWikiEditor: ($textarea: JQuery<HTMLTextAreaElement>) => void;
 	}
+	namespace mw.libs {
+		const wphl: {monacoVersion?: string} | undefined;
+	}
 
 	interface JQueryStatic {
 		wikiEditor: {

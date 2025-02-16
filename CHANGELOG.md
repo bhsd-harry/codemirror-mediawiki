@@ -1,3 +1,11 @@
+## 2.21.1
+
+*2025-02-17*
+
+**Fixed**
+
+- The [autocompletion](./README.md#autocompletion) extension now inserts `>` if necessary when completing a closing tag and in the MediaWiki mode
+
 ## 2.21.0
 
 *2025-02-16*

@@ -385,6 +385,7 @@ export class FullMediaWiki extends MediaWiki {
 						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 							target = /^<([a-z\d]+)/iu.exec(mt2?.text ?? '')?.[1]!.toLowerCase(),
 							extTag = extTags[extTags.length - 1],
+							closed = /^\s*>/u.test(state.sliceDoc(pos)),
 							options = [
 								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
 								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
@@ -393,7 +394,13 @@ export class FullMediaWiki extends MediaWiki {
 						if (i !== false && i !== -1) {
 							options.splice(i, 1, {type: 'type', label: target!, boost: 99});
 						}
-						return {from: mt.from + 2, options, validFor};
+						return {
+							from: mt.from + 2,
+							options: closed
+								? options
+								: options.map((option): Completion => ({...option, apply: `${option.label}>`})),
+							validFor,
+						};
 					}
 					return {
 						from: mt.from + 1,
@@ -409,9 +416,15 @@ export class FullMediaWiki extends MediaWiki {
 					&& prevSibling?.name.includes(tokens.linkDelimiter)
 					&& !search.includes('[')
 				) {
+					const equal = state.sliceDoc(pos, pos + 1) === '=';
 					return {
 						from: prevSibling.to,
-						options: this.imgKeys,
+						options: equal
+							? this.imgKeys.map((option): Completion => ({
+								...option,
+								apply: option.label.replace(/=$/u, ''),
+							}))
+							: this.imgKeys,
 						validFor: /^[^|{}<>[\]$]*$/u,
 					};
 				} else if (!hasTag(types, ['linkText', 'extLinkText'])) {

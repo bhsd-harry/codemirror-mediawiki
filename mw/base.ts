@@ -251,9 +251,7 @@ export class CodeMirror extends CodeMirror6 {
 	async #initMonaco(): Promise<void> {
 		if (!('monaco' in globalThis)) {
 			await $.ajax(
-				`${CDN}/npm/monaco-wiki@${
-					(mw.libs as {wphl?: {monacoVersion?: string}}).wphl?.monacoVersion ?? 'latest'
-				}/dist/all.min.js`,
+				`${CDN}/npm/monaco-wiki@${mw.libs.wphl?.monacoVersion ?? 'latest'}/dist/all.min.js`,
 				{dataType: 'script', cache: true},
 			);
 		}
