@@ -557,13 +557,13 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 
 ## hover
 
-*version added: 2.21.0*
+*version added: 2.21.1*
 
 Show the help information of a magic word when hovering.
 
 ## signatureHelp
 
-*version added: 2.21.0*
+*version added: 2.21.1*
 
 Show the parser function signature when typing.
 

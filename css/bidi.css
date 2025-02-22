@@ -1,0 +1,8 @@
+.cm-bidi-isolate,
+.cm-editor[dir="rtl"] .cm-mw-template-name {
+	unicode-bidi: isolate;
+}
+.cm-bidi-ltr {
+	direction: ltr;
+	display: inline-block;
+}

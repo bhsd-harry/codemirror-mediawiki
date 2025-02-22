@@ -1,0 +1,32 @@
+.cm-tooltip-fold {
+	cursor: pointer;
+	line-height: 1.2;
+	padding: 0 1px;
+	opacity: .6;
+}
+.cm-tooltip-fold:hover {
+	opacity: 1;
+}
+
+.cm-tooltip-ref, .cm-tooltip-hover {
+	padding: 2px 5px;
+	width: max-content;
+	max-width: 60vw;
+}
+.cm-tooltip-ref {
+	cursor: pointer;
+	white-space: pre-wrap;
+}
+.cm-tooltip-hover * {
+	margin-top: 0 !important;
+	margin-bottom: 0 !important;
+}
+.cm-tooltip-hover > div {
+	font-size: 90%;
+	line-height: 1.4;
+}
+.cm-tooltip-hover code {
+	background-color: #e0e6eb;
+	padding: .1em .4em;
+	border-radius: .4em;
+}

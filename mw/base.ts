@@ -34,7 +34,7 @@ declare interface IWikitextModel extends editor.ITextModel {
 const baseVersion = '2.21',
 	addons = ['hover', 'signatureHelp'];
 
-mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.min.css`, 'text/css');
+mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 
 /**
  * jQuery.val overrides for CodeMirror.
