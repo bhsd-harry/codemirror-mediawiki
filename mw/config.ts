@@ -14,7 +14,9 @@ declare type MagicRule = (word: MagicWord) => boolean;
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 		getObject('InPageEditMwConfig') ?? {},
-	SITE_ID = typeof mw === 'object' ? mw.config.get('wgServerName') + mw.config.get('wgScriptPath') : location.origin,
+	SITE_ID = typeof mw === 'object'
+		? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
+		: location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
 
@@ -55,8 +57,11 @@ const setConfig = (config: MwConfig): void => {
  * @param modes tagModes
  */
 export const getMwConfig = async (modes: Record<string, string>): Promise<MwConfig> => {
-	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) { // 只在localStorage过期时才会重新加载ext.CodeMirror.data
-		await mw.loader.using(mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror');
+	// 只在localStorage过期时才会重新加载ext.CodeMirror.data
+	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) {
+		await mw.loader.using(
+			mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
+		);
 	}
 
 	let config = mw.config.get('extCodeMirrorConfig') as MwConfig | null;
@@ -129,7 +134,8 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 		config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
 		config!.variants = variants ? variants.map(({code}) => code) : [];
 		config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
-		config!.urlProtocols = mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':');
+		config!.urlProtocols = mw.config.get('wgUrlProtocols')
+			.replace(/\\:/gu, ':');
 		config!.variableIDs ??= variables;
 	}
 	setConfig(config!);

@@ -52,8 +52,8 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
 		new RegExp(`-${type}tag-${s}`, 'u').test(name),
 	isBracket = isTagComponent('bracket'),
 	isName = isTagComponent('name'),
-	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean =>
-		isBracket(node, type) && state.sliceDoc(node.from, node.to)[first ? 'endsWith' : 'startsWith']('/'),
+	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean => isBracket(node, type)
+		&& state.sliceDoc(node.from, node.to)[first ? 'endsWith' : 'startsWith']('/'),
 	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim().toLowerCase();
 
 /**

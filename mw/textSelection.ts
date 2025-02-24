@@ -39,8 +39,9 @@ declare interface TextSelection {
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement>;
 }
 
-const split = (selText: string, pre: string, post: string, splitlines?: boolean): string =>
-	splitlines ? selText.split('\n').map(line => pre + line + post).join('\n') : pre + selText + post;
+const split = (selText: string, pre: string, post: string, splitlines?: boolean): string => splitlines
+	? selText.split('\n').map(line => pre + line + post).join('\n')
+	: pre + selText + post;
 
 /**
  * jQuery.textSelection overrides for CodeMirror.

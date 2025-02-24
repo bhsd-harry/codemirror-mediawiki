@@ -50,7 +50,8 @@ declare interface Test {
 		void wikiparse.highlight!(pre, false, true);
 		select.selectedOptions[0]!.disabled = true;
 		btn.disabled = false;
-		history.replaceState(null, '', `#${encodeURIComponent(desc)}`); // eslint-disable-line no-restricted-globals
+		// eslint-disable-next-line no-restricted-globals
+		history.replaceState(null, '', `#${encodeURIComponent(desc)}`);
 	});
 	btn.addEventListener('click', () => {
 		dones.add(tests[Number(select.value)]!.desc);

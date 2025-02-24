@@ -214,7 +214,11 @@ export class FullMediaWiki extends MediaWiki {
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
 				start = pos - search.length;
 			let {prevSibling} = node;
-			if (explicit || isParserFunction && search.includes('#') || location.hostname.endsWith('.wikipedia.org')) {
+			if (
+				explicit
+				|| isParserFunction && search.includes('#')
+				|| location.hostname.endsWith('.wikipedia.org')
+			) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
@@ -346,11 +350,13 @@ export class FullMediaWiki extends MediaWiki {
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-				const extTags = [...types].filter(t => t.startsWith('mw-tag-')).map(s => s.slice(7));
+				const extTags = [...types].filter(t => t.startsWith('mw-tag-'))
+					.map(s => s.slice(7));
 				if (mt && mt.to - mt.from > 1) {
 					const validFor = /^[a-z\d]*$/iu;
 					if (mt.text[1] === '/') {
-						const mt2 = context.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
+						const mt2 = context
+								.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 							target = /^<([a-z\d]+)/iu.exec(mt2?.text ?? '')?.[1]!.toLowerCase(),
 							extTag = extTags[extTags.length - 1],
 							closed = /^\s*>/u.test(state.sliceDoc(pos)),

@@ -12,7 +12,8 @@ const storageKey = 'codemirror-mediawiki-addons',
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint'] as const,
-	user = mw.config.get('wgUserGroups')?.includes('user') && mw.config.get('wgUserName'),
+	user = mw.config.get('wgUserGroups')?.includes('user')
+		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
 declare type codeKey = typeof codeKeys[number];
@@ -156,7 +157,9 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			const codeField = new OO.ui.FieldLayout(widgets[label], {label: msg(`${label}-config`), align: 'top'}),
 				panel = new OO.ui.TabPanelLayout(label, {label, $content: codeField.$element});
 			panel.on('active', active => {
-				const [textarea] = panel.$element.find('textarea') as unknown as [HTMLTextAreaElement];
+				const [textarea] = panel.$element.find(
+					'textarea',
+				) as unknown as [HTMLTextAreaElement];
 				if (active && !instances.has(textarea)) {
 					(async () => {
 						const {editor} = await CodeMirror.fromTextArea(textarea, 'json');

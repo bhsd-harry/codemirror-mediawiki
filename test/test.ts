@@ -17,8 +17,9 @@ declare interface Test {
 }
 declare type TestResult = Pick<Test, 'desc' | 'wikitext' | 'parsed'>;
 
-// eslint-disable-next-line es-x/no-regexp-lookbehind-assertions
-const split = (test?: TestResult): string[] | undefined => test?.parsed?.split(/(?<=<\/>)(?!$)|(?<!^)(?=<\w)/u);
+const split = (test?: TestResult): string[] | undefined =>
+	// eslint-disable-next-line es-x/no-regexp-lookbehind-assertions
+	test?.parsed?.split(/(?<=<\/>)(?!$)|(?<!^)(?=<\w)/u);
 
 const tests: Test[] = require('wikiparser-node/test/parserTests.json'),
 	results: TestResult[] = require('../../parserTests.json'),
@@ -35,7 +36,8 @@ describe('Parser tests', () => {
 					while (node) {
 						checkNode(node);
 						const {from, to} = node,
-							name = node.name.replace(/_/gu, ' ').replace(/mw-/gu, ''),
+							name = node.name.replace(/_/gu, ' ')
+								.replace(/mw-/gu, ''),
 							last = tokens[tokens.length - 1];
 						if (last?.name === name) {
 							last.text += wikitext.slice(from, to);
@@ -65,6 +67,9 @@ describe('Parser tests', () => {
 		}
 	}
 	after(() => {
-		fs.writeFileSync('test/parserTests.json', `${JSON.stringify(tests, null, '\t')}\n`);
+		fs.writeFileSync(
+			'test/parserTests.json',
+			`${JSON.stringify(tests, null, '\t')}\n`,
+		);
 	});
 });

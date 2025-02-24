@@ -37,8 +37,20 @@ const createAction = (
 
 /** 创建Monaco编辑器的转义动作，需要等待Monaco加载 */
 const getEscapeActions = (): editor.IActionDescriptor[] => [
-	createAction('escape.html', 'Escape HTML Entity', 'BracketLeft', 'editor.action.indentLines', escapeHTML),
-	createAction('escape.uri', 'URI Encode/Decode', 'BracketRight', 'editor.action.outdentLines', escapeURI),
+	createAction(
+		'escape.html',
+		'Escape HTML Entity',
+		'BracketLeft',
+		'editor.action.indentLines',
+		escapeHTML,
+	),
+	createAction(
+		'escape.uri',
+		'URI Encode/Decode',
+		'BracketRight',
+		'editor.action.outdentLines',
+		escapeURI,
+	),
 ];
 
 const actionMap = new WeakMap<editor.IStandaloneCodeEditor, IDisposable[]>();

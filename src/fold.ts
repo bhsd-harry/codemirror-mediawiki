@@ -92,7 +92,10 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 			node = left;
 		} else {
 			const right = tree.resolve(posOrNode, 1);
-			node = isExt(left) && left.name.split('mw-tag-').length > right.name.split('mw-tag-').length ? left : right;
+			node = isExt(left)
+				&& left.name.split('mw-tag-').length > right.name.split('mw-tag-').length
+				? left
+				: right;
 		}
 	} else {
 		node = posOrNode;

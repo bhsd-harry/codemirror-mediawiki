@@ -14,7 +14,8 @@ declare interface WikiEditorContext {
  */
 const setActive = (context: WikiEditorContext, active?: true): void => {
 	const $group = context.modules.toolbar.$toolbar.find('.group-codemirror6');
-	$group.children('[rel=toggle]').children().addBack().toggleClass('tool-active', active);
+	$group.children('[rel=toggle]').children().addBack()
+		.toggleClass('tool-active', active);
 	$group.children('[rel=preferences]').toggle(active);
 };
 

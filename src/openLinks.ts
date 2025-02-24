@@ -9,7 +9,8 @@ import type {TagName} from './token';
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
-export const isMac = vendor.includes('Apple Computer') && (userAgent.includes('Mobile/') || maxTouchPoints > 2)
+export const isMac = vendor.includes('Apple Computer')
+	&& (userAgent.includes('Mobile/') || maxTouchPoints > 2)
 	|| platform.includes('Mac');
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',

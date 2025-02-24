@@ -36,8 +36,9 @@ export const titleParser = (state: EditorState, node: SyntaxNode, urlProtocols: 
 };
 
 export const isbnParser = (link: string): true => {
-	const url = new mw.Title(`Special:Booksources/${link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')}`)
-		.getUrl(undefined);
+	const url = new mw.Title(`Special:Booksources/${
+		link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')
+	}`).getUrl(undefined);
 	open(url, '_blank');
 	return true;
 };

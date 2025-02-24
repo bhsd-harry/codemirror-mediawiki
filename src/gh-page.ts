@@ -90,7 +90,11 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		input.addEventListener('change', () => {
 			void init(input.id);
 			// eslint-disable-next-line no-restricted-globals
-			history.replaceState(null, '', `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`);
+			history.replaceState(
+				null,
+				'',
+				`#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`,
+			);
 		});
 		if (input.checked) {
 			void init(input.id);
