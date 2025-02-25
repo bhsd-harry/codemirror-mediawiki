@@ -1,0 +1,6 @@
+.cm-inlay-hint {
+	color: #969696;
+	font-style: italic;
+	-webkit-user-select: none;
+	user-select: none;
+}

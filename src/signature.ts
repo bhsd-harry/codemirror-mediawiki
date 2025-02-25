@@ -17,10 +17,11 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 			return undefined;
 		},
 		update(oldValue, {state: {doc, selection: {main: {head}}}, effects}) {
+			const text = doc.toString();
 			for (const effect of effects) {
 				if (effect.is(stateEffect)) {
 					const {value} = effect;
-					if (head === value.cursor && doc.toString() === value.text) {
+					if (head === value.cursor && text === value.text) {
 						return value;
 					}
 				}

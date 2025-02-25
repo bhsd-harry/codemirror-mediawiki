@@ -1,3 +1,11 @@
+## 2.22.0
+
+*2025-02-26*
+
+**Added**
+
+- New extension option for the MediaWiki mode: [inlayHints](./README.md#inlayhints)
+
 ## 2.21.1
 
 *2025-02-22*

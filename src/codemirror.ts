@@ -41,6 +41,7 @@ import tagMatchingState from './matchTag';
 import refHover from './ref';
 import magicWordHover, {posToIndex} from './hover';
 import signatureHelp from './signature';
+import inlayHints from './inlay';
 import {getWikiLinter, getJsLinter, getCssLinter, getLuaLinter, getJsonLinter} from './linter';
 import openLinks from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
@@ -128,6 +129,7 @@ const avail: Record<string, Addon<any>> = {
 	refHover: mediawikiOnly(refHover),
 	hover: mediawikiOnly(magicWordHover),
 	signatureHelp: mediawikiOnly(signatureHelp),
+	inlayHints: mediawikiOnly(inlayHints),
 };
 
 const linters: Record<string, Extension> = {};

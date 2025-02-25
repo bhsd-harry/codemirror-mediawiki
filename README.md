@@ -567,6 +567,12 @@ Show the help information of a magic word when hovering.
 
 Show the parser function signature when typing.
 
+## inlayHints
+
+*version added: 2.22.0*
+
+Show inlay hints for anonymous parameters.
+
 ## openLinks
 
 *version added: 2.19.6*
