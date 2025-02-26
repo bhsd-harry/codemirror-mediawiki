@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.22.0",
+	"version": "2.22.1",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -53,7 +53,7 @@
 		"@codemirror/state": "^6.5.1",
 		"@codemirror/view": "^6.36.2",
 		"@lezer/highlight": "^1.2.1",
-		"wikiparser-node": "^1.16.5"
+		"wikiparser-node": "^1.17.0"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",

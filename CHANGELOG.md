@@ -1,3 +1,11 @@
+## 2.22.1
+
+*2025-02-27*
+
+**Fixed**
+
+- Incompatibility with [WikiParser-Node](https://github.com/bhsd-harry/wikiparser-node) v1.16
+
 ## 2.22.0
 
 *2025-02-26*

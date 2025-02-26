@@ -8,7 +8,6 @@ import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, load
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
 import escape from './escape';
 import wikiEditor from './wikiEditor';
-import type {Diagnostic} from '@codemirror/lint';
 import type {LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
@@ -413,8 +412,11 @@ export class CodeMirror extends CodeMirror6 {
 		if (linters[lang]) {
 			if (lang === 'mediawiki') {
 				this.lint(
-					async doc => (await linters[lang]!(doc) as (Diagnostic & {rule: LintError.Rule})[])
-						.filter(({rule, severity}) => Number(wikilint[rule]) > Number(severity === 'warning')),
+					async doc => (await linters[lang]!(doc)).filter(({message, severity}) => {
+						const rule = message
+							.slice(message.lastIndexOf('(') + 1, -1) as LintError.Rule;
+						return Number(wikilint[rule]) > Number(severity === 'warning');
+					}),
 				);
 			} else {
 				this.lint(linters[lang]);
