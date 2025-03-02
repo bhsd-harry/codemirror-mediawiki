@@ -1,6 +1,7 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
-import {getLSP, indexToPos} from './hover';
+import {getLSP} from '@bhsd/common';
+import {indexToPos} from './hover';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';

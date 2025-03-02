@@ -7,7 +7,7 @@ import type {PublicApi} from 'stylelint';
 import type {MwConfig, LintSource} from './codemirror';
 
 declare global {
-	module '/*' {
+	module '/codemirror-mediawiki/*' {
 		export {CodeMirror6};
 		export type {MwConfig, LintSource};
 	}

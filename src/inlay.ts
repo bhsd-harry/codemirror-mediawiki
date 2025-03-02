@@ -1,6 +1,7 @@
 import {StateField, StateEffect} from '@codemirror/state';
 import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
-import {getLSP, posToIndex} from './hover';
+import {getLSP} from '@bhsd/common';
+import {posToIndex} from './hover';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {InlayHint} from 'vscode-languageserver-types';
 

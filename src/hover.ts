@@ -1,32 +1,13 @@
 import {hoverTooltip} from '@codemirror/view';
-import {loadScript} from '@bhsd/common';
-import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
+import {loadScript, getLSP} from '@bhsd/common';
+import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text} from '@codemirror/state';
-import type {LanguageServiceBase} from 'wikiparser-node/extensions/typings';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
 import type * as MarkdownIt from 'markdown-it';
 
 declare const markdownit: () => MarkdownIt;
 
-const lsps = new WeakMap<EditorView, LanguageServiceBase>();
 let md: MarkdownIt | undefined;
-
-/**
- * 获取当前编辑器的语言服务
- * @param view EditorView 实例
- */
-export const getLSP = (view: EditorView): LanguageServiceBase | undefined => {
-	void loadScript('npm/wikiparser-node/extensions/dist/base.min.js', 'wikiparse');
-	void loadScript('npm/wikiparser-node/extensions/dist/lsp.min.js', 'wikiparse.LanguageService');
-	if (!(typeof wikiparse === 'object' && wikiparse.LanguageService)) {
-		return undefined;
-	} else if (lsps.has(view)) {
-		return lsps.get(view);
-	}
-	const lsp = new wikiparse.LanguageService();
-	lsps.set(view, lsp);
-	return lsp;
-};
 
 /**
  * 将索引转换为位置

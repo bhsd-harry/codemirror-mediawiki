@@ -25,7 +25,8 @@ export const cssLR = (): Extension => new LanguageSupport(cssLanguage, cssLangua
 				({prevSibling} = prevSibling);
 			}
 			if (prevSibling) {
-				for (const [i, option] of options.entries()) {
+				for (let i = 0; i < options.length; i++) {
+					const option = options[i]!;
 					if (CSS.supports(state.sliceDoc(prevSibling.from, node.from) + option.label)) {
 						options.splice(i, 1, {...option, boost: 50});
 					}

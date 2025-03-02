@@ -173,18 +173,15 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
  */
 const copyState = (state: State): State => {
 	const result = {...state};
-	for (const key in state) {
-		if (Object.prototype.hasOwnProperty.call(state, key)) {
-			const val = state[key as keyof State];
-			if (Array.isArray(val)) {
-				// @ts-expect-error initial value
-				result[key] = [...val];
-			} else if (key === 'extState') {
-				result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
-			} else if (key !== 'data' && val && typeof val === 'object') {
-				// @ts-expect-error initial value
-				result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
-			}
+	for (const [key, val] of Object.entries(state)) {
+		if (Array.isArray(val)) {
+			// @ts-expect-error initial value
+			result[key] = [...val];
+		} else if (key === 'extState') {
+			result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
+		} else if (key !== 'data' && val && typeof val === 'object') {
+			// @ts-expect-error initial value
+			result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
 		}
 	}
 	return result;

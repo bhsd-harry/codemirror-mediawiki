@@ -1,8 +1,9 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
+import {getLSP} from '@bhsd/common';
 import {getTag} from './matchTag';
 import {tokens} from './config';
-import {getLSP, indexToPos, posToIndex} from './hover';
+import {indexToPos, posToIndex} from './hover';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';

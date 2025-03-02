@@ -47,7 +47,7 @@
 		"test:real": "node test/dist/test/real.js"
 	},
 	"dependencies": {
-		"@bhsd/common": "^0.6.6",
+		"@bhsd/common": "^0.6.7",
 		"@codemirror/language": "^6.10.8",
 		"@codemirror/lint": "^6.8.4",
 		"@codemirror/state": "^6.5.1",
@@ -86,7 +86,7 @@
 		"eslint-plugin-regexp": "^2.7.0",
 		"eslint-plugin-unicorn": "^56.0.1",
 		"http-server": "^14.1.1",
-		"luacheck-browserify": "^0.2.3",
+		"luacheck-browserify": "^0.3.1",
 		"mocha": "^11.1.0",
 		"monaco-editor": "^0.52.2",
 		"stylelint": "^16.14.1",
