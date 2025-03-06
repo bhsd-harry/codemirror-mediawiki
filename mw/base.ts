@@ -412,9 +412,10 @@ export class CodeMirror extends CodeMirror6 {
 		if (linters[lang]) {
 			if (lang === 'mediawiki') {
 				this.lint(
-					async doc => (await linters[lang]!(doc)).filter(({message, severity}) => {
-						const rule = message
-							.slice(message.lastIndexOf('(') + 1, -1) as LintError.Rule;
+					async doc => (await linters[lang]!(doc)).filter(({source, message, severity}) => {
+						const rule = source === 'WikiLint'
+							? message.slice(message.lastIndexOf('(') + 1, -1) as LintError.Rule
+							: 'invalid-css';
 						return Number(wikilint[rule]) > Number(severity === 'warning');
 					}),
 				);

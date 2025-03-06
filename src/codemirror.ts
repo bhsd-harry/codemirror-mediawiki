@@ -53,7 +53,7 @@ import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
-import type {Config} from 'wikiparser-node';
+import type {Config, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 
@@ -405,8 +405,27 @@ export class CodeMirror6 {
 	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const wikiLinter = await getWikiLinter(opt);
-				return doc => wikiLinter.codemirror(doc.toString());
+				const wikiLint = await getWikiLinter(opt, this.#view);
+				return async doc => (await wikiLint(doc.toString()))
+					.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
+						source: source!,
+						from: from ?? posToIndex(doc, r!.start),
+						to: to ?? posToIndex(doc, r!.end),
+						severity: severity === 1 ? 'error' : 'warning',
+						message: source === 'Stylelint' ? message : `${message} (${code})`,
+						actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
+							name: title,
+							apply(view): void {
+								view.dispatch({
+									changes: {
+										from: posToIndex(doc, range.start),
+										to: posToIndex(doc, range.end),
+										insert: newText,
+									},
+								});
+							},
+						})),
+					}));
 			}
 			case 'javascript': {
 				const esLint = await getJsLinter(opt);

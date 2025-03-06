@@ -1,17 +1,40 @@
-import {CDN, loadScript, styleLint} from '@bhsd/common';
-import type {LinterBase} from 'wikiparser-node/extensions/typings';
+import {CDN, loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
+import {styleLint} from '@bhsd/common/dist/stylelint';
+import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
 import type {Warning} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 
-declare type getLinter<T> = (opt?: Record<string, unknown>) => T;
-declare type getAsyncLinter<T> = (opt?: Record<string, unknown>) => Promise<T>;
+declare type getLinter<T> = () => T;
+declare type getAsyncLinter<T> = (opt?: Record<string, unknown> | null, obj?: object) => Promise<T>;
+declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
+	range?: Range;
+	from?: number;
+	to?: number;
+}
 
 /**
- * 获取 WikiLint
- * @param opt 选项
+ * 计算位置
+ * @param maxOffset 最大偏移量
+ * @param lines 各行文本
+ * @param line 行号
+ * @param column 列号
  */
-export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
+const offsetAt = (maxOffset: number, lines: string[], line: number, column: number): number => {
+	if (line === 1) {
+		return 0;
+	}
+	return line === lines.length + 2
+		? maxOffset
+		: lines.slice(0, line - 2).join('\n').length + column - 1;
+};
+
+/**
+ * 获取 Wikitext LSP
+ * @param opt 选项
+ * @param obj 对象
+ */
+export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagnostic[]>> = async (opt, obj) => {
 	const REPO = 'npm/wikiparser-node',
 		DIR = `${REPO}/extensions/dist`,
 		lang = opt?.['i18n'];
@@ -24,7 +47,37 @@ export const getWikiLinter: getAsyncLinter<LinterBase> = async opt => {
 			wikiparse.setI18N(i18n);
 		} catch {}
 	}
-	return new wikiparse.Linter!(opt?.['include'] as boolean | undefined);
+	const lsp = getLSP(obj!)!;
+	return async text => {
+		const latest = 'findStyleTokens' in lsp,
+			diagnostics = await lsp.provideDiagnostics(text),
+			tokens = latest ? await lsp.findStyleTokens() : [];
+		if (!latest) {
+			return diagnostics;
+		}
+		const cssLint = await getCssLinter();
+		return [
+			diagnostics,
+			await Promise.all(tokens.map(async ({childNodes, type, tag}) => {
+				const {range: [offset], data} = childNodes![1]!.childNodes![0]!,
+					l = data!.length,
+					lines = data!.split('\n');
+				return (await cssLint(
+					`${type === 'ext-attr' ? 'div' : tag as string}{\n${sanitizeInlineStyle(data!)}\n}`,
+				)).map(({line, column, endLine, endColumn, rule, severity, text: message}): MixedDiagnostic => {
+					const from = offsetAt(l, lines, line, column) + offset;
+					return {
+						from,
+						to: endLine === undefined ? from : offsetAt(l, lines, endLine, endColumn!) + offset,
+						severity: severity === 'error' ? 1 : 2,
+						source: 'Stylelint',
+						code: rule,
+						message,
+					};
+				});
+			})),
+		].flat(2);
+	};
 };
 
 /**

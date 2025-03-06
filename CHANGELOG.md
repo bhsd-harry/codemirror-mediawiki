@@ -1,3 +1,11 @@
+## 2.23.0
+
+*2025-03-07*
+
+**Added**
+
+- Stylelint integration for Wikitext
+
 ## 2.22.1
 
 *2025-02-27*
@@ -931,7 +939,7 @@
 **Added**
 
 - New extension option for the MediaWiki mode: [autocompletion](./README.md#autocompletion)
-- ESLint and Stylelint now provide auto-fix suggestions
+- ESLint now provides auto-fix suggestions
 
 ## v2.4.7
 
