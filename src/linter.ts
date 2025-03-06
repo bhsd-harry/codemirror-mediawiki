@@ -39,7 +39,7 @@ export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagno
 		DIR = `${REPO}/extensions/dist`,
 		lang = opt?.['i18n'];
 	await loadScript(`${DIR}/base.min.js`, 'wikiparse');
-	await loadScript(`${DIR}/lint.min.js`, 'wikiparse.Linter');
+	await loadScript(`${DIR}/lsp.min.js`, 'wikiparse.LanguageService');
 	if (typeof lang === 'string') {
 		try {
 			const i18n: Record<string, string> =
