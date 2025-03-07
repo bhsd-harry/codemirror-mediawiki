@@ -15,18 +15,15 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 
 /**
  * 计算位置
- * @param maxOffset 最大偏移量
- * @param lines 各行文本
+ * @param range 范围
  * @param line 行号
  * @param column 列号
  */
-const offsetAt = (maxOffset: number, lines: string[], line: number, column: number): number => {
-	if (line === 1) {
-		return 0;
+const offsetAt = (range: [number, number], line: number, column: number): number => {
+	if (line === -2) {
+		return range[0];
 	}
-	return line === lines.length + 2
-		? maxOffset
-		: lines.slice(0, line - 2).join('\n').length + column - 1;
+	return line === 0 ? range[1] : range[0] + column;
 };
 
 /**
@@ -49,34 +46,33 @@ export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagno
 	}
 	const lsp = getLSP(obj!)!;
 	return async text => {
-		const latest = 'findStyleTokens' in lsp,
-			diagnostics = await lsp.provideDiagnostics(text),
-			tokens = latest ? await lsp.findStyleTokens() : [];
-		if (!latest) {
+		const diagnostics = await lsp.provideDiagnostics(text),
+			tokens = 'findStyleTokens' in lsp ? await lsp.findStyleTokens() : [];
+		if (tokens.length === 0) {
 			return diagnostics;
 		}
 		const cssLint = await getCssLinter();
 		return [
-			diagnostics,
-			await Promise.all(tokens.map(async ({childNodes, type, tag}) => {
-				const {range: [offset], data} = childNodes![1]!.childNodes![0]!,
-					l = data!.length,
-					lines = data!.split('\n');
-				return (await cssLint(
-					`${type === 'ext-attr' ? 'div' : tag as string}{\n${sanitizeInlineStyle(data!)}\n}`,
-				)).map(({line, column, endLine, endColumn, rule, severity, text: message}): MixedDiagnostic => {
-					const from = offsetAt(l, lines, line, column) + offset;
-					return {
-						from,
-						to: endLine === undefined ? from : offsetAt(l, lines, endLine, endColumn!) + offset,
-						severity: severity === 'error' ? 1 : 2,
-						source: 'Stylelint',
-						code: rule,
-						message,
-					};
-				});
-			})),
-		].flat(2);
+			...diagnostics,
+			...(await cssLint(
+				tokens.map(({childNodes, type, tag}, i) => `${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n${
+					sanitizeInlineStyle(childNodes![1]!.childNodes![0]!.data!)
+						.replace(/\n/gu, ' ')
+				}\n}`).join('\n'),
+			)).map(({line, column, endLine, endColumn, rule, severity, text: message}): MixedDiagnostic => {
+				const i = Math.ceil(line / 3),
+					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
+					from = offsetAt(range, line - 3 * i, column - 1);
+				return {
+					from,
+					to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
+					severity: severity === 'error' ? 1 : 2,
+					source: 'Stylelint',
+					code: rule,
+					message,
+				};
+			}),
+		];
 	};
 };
 
