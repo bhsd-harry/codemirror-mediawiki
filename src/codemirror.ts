@@ -56,6 +56,7 @@ import type {Highlighter} from '@lezer/highlight';
 import type {Config, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
+import type {Option, LiveOption} from './linter';
 
 export type {MwConfig};
 export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
@@ -402,11 +403,13 @@ export class CodeMirror6 {
 	 * 获取默认linter
 	 * @param opt 选项
 	 */
-	async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
+	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
+		const isFunc = typeof opt === 'function',
+			getOpt = (runtime?: true): Option => isFunc ? opt(runtime) : opt;
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const wikiLint = await getWikiLinter(opt, this.#view);
-				return async doc => (await wikiLint(doc.toString()))
+				const wikiLint = await getWikiLinter(getOpt(), this.#view);
+				return async doc => (await wikiLint(doc.toString(), getOpt(true)))
 					.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 						source: source!,
 						from: from ?? posToIndex(doc, r!.start),
@@ -428,8 +431,8 @@ export class CodeMirror6 {
 					}));
 			}
 			case 'javascript': {
-				const esLint = await getJsLinter(opt);
-				return doc => esLint(doc.toString())
+				const esLint = await getJsLinter();
+				return doc => esLint(doc.toString(), getOpt())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
@@ -454,8 +457,8 @@ export class CodeMirror6 {
 					});
 			}
 			case 'css': {
-				const styleLint = await getCssLinter(opt);
-				return async doc => (await styleLint(doc.toString()))
+				const styleLint = await getCssLinter();
+				return async doc => (await styleLint(doc.toString(), getOpt()))
 					.map(({text, severity, line, column, endLine, endColumn}): Diagnostic => ({
 						source: 'Stylelint',
 						message: text,

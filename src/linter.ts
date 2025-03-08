@@ -5,8 +5,17 @@ import type {Linter} from 'eslint';
 import type {Warning} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 
-declare type getLinter<T> = () => T;
-declare type getAsyncLinter<T> = (opt?: Record<string, unknown> | null, obj?: object) => Promise<T>;
+export type Option = Record<string, unknown> | null | undefined;
+export type LiveOption = (runtime?: true) => Option;
+declare type getLinter<T> = () => (text: string) => T;
+
+/**
+ * @param opt 初始化选项
+ * @param obj 仅用于wikiparse.LanguageService
+ * @param config runtime设置
+ */
+declare type getAsyncLinter<T, S = never, R = never> =
+	(opt?: S, obj?: R) => Promise<(text: string, config?: Option) => T>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
@@ -31,7 +40,7 @@ const offsetAt = (range: [number, number], line: number, column: number): number
  * @param opt 选项
  * @param obj 对象
  */
-export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagnostic[]>> = async (opt, obj) => {
+export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
 	const REPO = 'npm/wikiparser-node',
 		DIR = `${REPO}/extensions/dist`,
 		lang = opt?.['i18n'];
@@ -44,10 +53,12 @@ export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagno
 			wikiparse.setI18N(i18n);
 		} catch {}
 	}
-	const lsp = getLSP(obj!)!;
-	return async text => {
-		const diagnostics = await lsp.provideDiagnostics(text),
-			tokens = 'findStyleTokens' in lsp ? await lsp.findStyleTokens() : [];
+	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
+	return async (text, config) => {
+		const diagnostics = (await lsp.provideDiagnostics(text)).filter(
+				({code, severity}) => Number(config?.[code!] ?? 2) > Number(severity === 2),
+			),
+			tokens = 'findStyleTokens' in lsp && config?.['invalid-css'] !== '0' ? await lsp.findStyleTokens() : [];
 		if (tokens.length === 0) {
 			return diagnostics;
 		}
@@ -76,11 +87,8 @@ export const getWikiLinter: getAsyncLinter<(text: string) => Promise<MixedDiagno
 	};
 };
 
-/**
- * 获取 ESLint
- * @param opt 选项
- */
-export const getJsLinter: getAsyncLinter<(text: string) => Linter.LintMessage[]> = async opt => {
+/** 获取 ESLint */
+export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
 	await loadScript('npm/eslint-linter-browserify@8.57.0/linter.min.js', 'eslint', true);
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
@@ -88,27 +96,23 @@ export const getJsLinter: getAsyncLinter<(text: string) => Linter.LintMessage[]>
 			env: {browser: true, es2024: true},
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 			rules: {},
-			...opt,
 		};
 	for (const [name, {meta}] of esLinter.getRules()) {
 		if (meta?.docs?.recommended) {
-			conf.rules![name] ??= 2;
+			conf.rules![name] = 2;
 		}
 	}
-	return text => esLinter.verify(text, conf);
+	return (text, opt) => esLinter.verify(text, {...conf, ...opt});
 };
 
-/**
- * 获取 Stylelint
- * @param opt 选项
- */
-export const getCssLinter: getAsyncLinter<(text: string) => Promise<Warning[]>> = async opt => {
+/** 获取 Stylelint */
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
 	await loadScript('npm/stylelint-bundle', 'stylelint');
-	return code => styleLint(stylelint, code, opt?.['rules'] as Record<string, unknown> | undefined);
+	return (code, opt) => styleLint(stylelint, code, opt?.['rules'] as Record<string, unknown> | undefined);
 };
 
 /** 获取 Luacheck */
-export const getLuaLinter: getAsyncLinter<(text: string) => Promise<Diagnostic[]>> = async () => {
+export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>> = async () => {
 	await loadScript('npm/luacheck-browserify/dist/index.min.js', 'luacheck');
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
@@ -123,7 +127,7 @@ declare interface JsonError {
 }
 
 /** JSON.parse */
-export const getJsonLinter: getLinter<(text: string) => JsonError[]> = () => str => {
+export const getJsonLinter: getLinter<JsonError[]> = () => str => {
 	try {
 		if (str.trim()) {
 			JSON.parse(str);

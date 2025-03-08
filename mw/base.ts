@@ -8,13 +8,13 @@ import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, load
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
 import escape from './escape';
 import wikiEditor from './wikiEditor';
-import type {LintError} from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {LintSource, MwConfig} from '../src/codemirror';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
+import type {Option, LiveOption} from '../src/linter';
 
 declare global {
 	const monaco: typeof Monaco;
@@ -358,7 +358,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	override async getLinter(opt?: Record<string, unknown>): Promise<LintSource | undefined> {
+	override async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
 		const linter = await super.getLinter(opt);
 		linters[this.lang] = linter;
 		return linter;
@@ -378,50 +378,42 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		}
 		const {lang} = this,
-			eslint = codeConfigs.get('ESLint'),
-			stylelint = codeConfigs.get('Stylelint');
-		let opt: Record<string, unknown> | undefined;
+			loaded = lang in linters,
+			isWiki = lang === 'mediawiki';
+		let opt: Option | LiveOption,
+			defaultOpt: Option;
 		if (typeof optOrNs === 'number') {
-			if (lang === 'mediawiki' && (optOrNs === 10 || optOrNs === 828 || optOrNs === 2)) {
-				opt = {include: true};
+			if (isWiki && optOrNs !== 10 && optOrNs !== 828 && optOrNs !== 2) {
+				defaultOpt = {include: false};
 			} else if (lang === 'javascript') {
-				opt = {
+				defaultOpt = {
 					env: {browser: true, es2024: true, jquery: true},
 					globals: {mw: 'readonly', mediaWiki: 'readonly', OO: 'readonly'},
 					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
-					...eslint,
 				} satisfies Linter.Config;
-			} else if (lang === 'css' && stylelint) {
-				opt = stylelint;
 			}
 		} else {
 			opt = optOrNs;
 		}
-		if (!(lang in linters)) {
-			if (lang === 'mediawiki') {
-				opt = {...opt, i18n: languages[mw.config.get('wgUserLanguage')]};
+		if (opt || !loaded) {
+			if (isWiki) {
+				const i18n = languages[mw.config.get('wgUserLanguage')];
+				opt = opt
+					? {i18n, ...opt as Option}
+					: (runtime): Option => runtime ? wikilint : {...defaultOpt, i18n};
+			} else if (lang === 'javascript') {
+				opt ??= (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
+			} else if (lang === 'css') {
+				opt ??= (): Option => codeConfigs.get('Stylelint');
 			}
 			await this.getLinter(opt);
-			if (lang === 'mediawiki') {
+			if (isWiki && !loaded) {
 				const [mwConfig, minConfig] = await Promise.all([getMwConfig(tagModes), wikiparse.getConfig()]);
 				wikiparse.setConfig(getParserConfig(minConfig, mwConfig));
 			}
-		} else if (opt) {
-			await this.getLinter(opt);
 		}
 		if (linters[lang]) {
-			if (lang === 'mediawiki') {
-				this.lint(
-					async doc => (await linters[lang]!(doc)).filter(({source, message, severity}) => {
-						const rule = source === 'WikiLint'
-							? message.slice(message.lastIndexOf('(') + 1, -1) as LintError.Rule
-							: 'invalid-css';
-						return Number(wikilint[rule]) > Number(severity === 'warning');
-					}),
-				);
-			} else {
-				this.lint(linters[lang]);
-			}
+			this.lint(linters[lang]);
 		}
 	}
 

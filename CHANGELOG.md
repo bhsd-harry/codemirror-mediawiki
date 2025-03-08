@@ -1,10 +1,14 @@
 ## 2.23.0
 
-*2025-03-07*
+*2025-03-08*
 
 **Added**
 
 - Stylelint integration for Wikitext
+
+**Fixed**
+
+- Changes in ESLint/Stylelint configurations now take effects immediately (after any editing) on a MediaWiki site
 
 ## 2.22.1
 
