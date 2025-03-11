@@ -1,4 +1,4 @@
-import 'types-mediawiki';
+import type {} from 'types-mediawiki';
 
 declare global {
 	namespace mw {

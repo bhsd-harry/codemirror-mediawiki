@@ -47,15 +47,15 @@
 		"test:real": "node test/dist/test/real.js"
 	},
 	"dependencies": {
-		"@bhsd/common": "^0.7.0",
 		"@codemirror/lint": "^6.8.4",
 		"@codemirror/state": "^6.5.1",
 		"@codemirror/view": "^6.36.2",
 		"@lezer/common": "^1.2.3",
-		"wikiparser-node": "^1.17.1"
+		"wikiparser-node": "^1.18.1"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
+		"@bhsd/common": "^0.8.0",
 		"@codemirror/autocomplete": "^6.18.4",
 		"@codemirror/commands": "^6.8.0",
 		"@codemirror/language": "^6.10.8",

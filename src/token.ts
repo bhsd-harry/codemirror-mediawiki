@@ -8,6 +8,7 @@ import {Tag} from '@lezer/highlight';
 import {decodeHTML} from '@bhsd/common';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
+import type {MwConfig as MwConfigBase} from '@bhsd/common/dist/cm';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
@@ -65,14 +66,8 @@ export type ApiSuggestions = [string, string?][];
 export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean) =>
 	ApiSuggestions | Promise<ApiSuggestions>;
 
-export interface MwConfig {
-	readonly tags: Record<string, true>;
-	tagModes: Record<string, string>;
-	urlProtocols: string;
-	functionSynonyms: [Record<string, string>, Record<string, string>];
-	doubleUnderscore: [Record<string, unknown>, Record<string, unknown>];
+export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
-	variableIDs?: string[];
 	variants?: string[];
 	img?: Record<string, string>;
 	redirection?: string[];

@@ -1,6 +1,6 @@
 import {CodeMirror6} from './codemirror';
-import 'luacheck-browserify';
-import 'wikiparser-node/extensions/typings';
+import type {} from 'luacheck-browserify';
+import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';

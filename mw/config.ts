@@ -1,15 +1,9 @@
 import {CDN, setObject, getObject, compareVersion} from '@bhsd/common';
+import {getParserConfig as getParserConfigBase, getConfig, getVariants, getKeywords} from '@bhsd/common/dist/cm';
 import {getStaticMwConfig} from '../src/static';
+import type {MagicWord, MagicRule} from '@bhsd/common/dist/cm';
 import type {Config} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
-
-declare interface MagicWord {
-	name: string;
-	aliases: string[];
-	'case-sensitive': boolean;
-}
-
-declare type MagicRule = (word: MagicWord) => boolean;
 
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
@@ -18,23 +12,8 @@ const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 		? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
 		: location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
-	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30;
-
-/**
- * 将魔术字信息转换为CodeMirror接受的设置
- * @param magicWords 完整魔术字列表
- * @param rule 过滤函数
- * @param flip 是否反向筛选对大小写敏感的魔术字
- */
-const getConfig = (magicWords: MagicWord[], rule: MagicRule, flip?: boolean): Record<string, string> =>
-	Object.fromEntries(
-		magicWords.filter(rule).filter(({'case-sensitive': i}) => i !== flip)
-			.flatMap(({aliases, name, 'case-sensitive': i}) => aliases.map(alias => ({
-				alias: (i ? alias : alias.toLowerCase()).replace(/:$/u, ''),
-				name,
-			})))
-			.map(({alias, name}) => [alias, name]),
-	);
+	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30,
+	others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
 
 /**
  * 将魔术字信息转换为CodeMirror接受的设置
@@ -106,7 +85,6 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 			],
 			formatversion: '2',
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
-		const others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
 
 		// 先处理魔术字和状态开关
 		if (config && !isIPE) { // 情形2或3
@@ -130,12 +108,12 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 				),
 			};
 		}
-		config!.tagModes = modes;
-		config!.img = getConfig(magicwords, ({name}) => name.startsWith('img_'));
-		config!.variants = variants ? variants.map(({code}) => code) : [];
-		config!.redirection = magicwords.find(({name}) => name === 'redirect')!.aliases;
-		config!.urlProtocols = mw.config.get('wgUrlProtocols')
-			.replace(/\\:/gu, ':');
+		Object.assign(config!, {
+			...getKeywords(magicwords, true),
+			tagModes: modes,
+			variants: getVariants(variants),
+			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
+		});
 		config!.variableIDs ??= variables;
 	}
 	setConfig(config!);
@@ -154,49 +132,35 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 	if (config) {
 		return config;
 	}
-	const {
-			tags,
-			nsid,
-			doubleUnderscore,
-			variants,
-			urlProtocols,
-			redirection,
-			functionSynonyms,
-			variableIDs,
-			img,
-		} = mwConfig,
+	const {nsid, variants, redirection, functionSynonyms, img} = mwConfig,
 		[insensitive, sensitive] = functionSynonyms;
 	config = {
-		...minConfig,
-		ext: Object.keys(tags),
+		...getParserConfigBase(minConfig, mwConfig),
 		namespaces: mw.config.get('wgFormattedNamespaces'),
 		nsid,
-		doubleUnderscore: doubleUnderscore.map(
-			obj => Object.keys(obj).map(s => s.slice(2, -2)),
-		) as [string[], string[]],
 		variants: variants!,
-		protocol: urlProtocols.replace(/\|\\?\/\\?\//u, ''),
 		redirection: redirection ?? minConfig.redirection,
-		...variableIDs && {variable: variableIDs},
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');
 	}
-	config.parserFunction[0] = insensitive;
-	if (mw.loader.getState('ext.CodeMirror') === null) {
-		for (const [key, val] of Object.entries(insensitive)) {
-			if (!key.startsWith('#')) {
-				config.parserFunction[0][`#${key}`] = val;
-			}
+	const noCM = mw.loader.getState('ext.CodeMirror') === null;
+	for (const [key, val] of Object.entries(insensitive)) {
+		if (others.has(val) && val !== 'msgnw') {
+			delete config.parserFunction[0][key];
+			config.parserFunction[val === 'msg' || val === 'raw' ? 2 : 3].push(key);
+		} else if (noCM && !key.startsWith('#')) {
+			config.parserFunction[0][`#${key}`] = val;
 		}
 	}
-	config.parserFunction[1] = typeof wikiparse === 'object'
-		&& compareVersion(wikiparse.version, '1.15')
-		&& !Object.values(sensitive as Record<string, unknown>).includes(true)
-		? {...sensitive, '=': '='}
-		: [...Object.keys(sensitive), '='];
+	if (
+		typeof wikiparse !== 'object' || !compareVersion(wikiparse.version, '1.15')
+		|| Object.values(sensitive as Record<string, unknown>).includes(true)
+	) {
+		config.parserFunction[1] = Object.keys(config.parserFunction[1]);
+	}
 	for (const [key, val] of Object.entries(img!)) {
-		config.img[key] = val.slice(4);
+		config.img[key] = val.slice(4).replace(/_/gu, '-');
 	}
 	return config;
 };
