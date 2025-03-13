@@ -32,6 +32,7 @@ export const getStaticMwConfig = (
 		parserFunction: [p0, p1, ...p2],
 		protocol,
 		nsid,
+		functionHook,
 		variants,
 		redirection,
 		ext,
@@ -46,6 +47,7 @@ export const getStaticMwConfig = (
 		Object.fromEntries((d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [`__${s}__`, true])),
 		Object.fromEntries((d3 && d1.length === 0 ? Object.keys(d3) : d1).map(s => [`__${s}__`, true])),
 	],
+	functionHooks: functionHook,
 	variableIDs: variable,
 	functionSynonyms: [
 		{

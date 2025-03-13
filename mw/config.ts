@@ -1,5 +1,11 @@
 import {CDN, setObject, getObject, compareVersion} from '@bhsd/common';
-import {getParserConfig as getParserConfigBase, getConfig, getVariants, getKeywords} from '@bhsd/common/dist/cm';
+import {
+	getParserConfig as getParserConfigBase,
+	getConfig,
+	getVariants,
+	getKeywords,
+	otherParserFunctions,
+} from '@bhsd/common/dist/cm';
 import {getStaticMwConfig} from '../src/static';
 import type {MagicWord, MagicRule} from '@bhsd/common/dist/cm';
 import type {Config} from 'wikiparser-node';
@@ -13,7 +19,7 @@ const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 		: location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30,
-	others = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
+	others = new Set([...otherParserFunctions, 'msgnw']);
 
 /**
  * 将魔术字信息转换为CodeMirror接受的设置
@@ -51,7 +57,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
-	if (config?.img && config.redirection && config.variants && config.variableIDs && !isIPE) {
+	if (config?.img && config.redirection && config.variants && config.variableIDs && config.functionHooks && !isIPE) {
 		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
 		config.tagModes = modes;
 		return {...config, nsid};
@@ -82,6 +88,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 				'magicwords',
 				...config && !isIPE ? [] : ['extensiontags', 'functionhooks'],
 				...config?.variableIDs && !isIPE ? [] : ['variables'],
+				...config && !isIPE && !config.functionHooks ? ['functionhooks'] : [],
 			],
 			formatversion: '2',
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -115,6 +122,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
 		});
 		config!.variableIDs ??= variables;
+		config!.functionHooks ??= [...functionhooks, 'msgnw'];
 	}
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
@@ -132,7 +140,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 	if (config) {
 		return config;
 	}
-	const {nsid, variants, redirection, functionSynonyms, img} = mwConfig,
+	const {nsid, variants, redirection, functionSynonyms, functionHooks, img} = mwConfig,
 		[insensitive, sensitive] = functionSynonyms;
 	config = {
 		...getParserConfigBase(minConfig, mwConfig),
@@ -140,6 +148,7 @@ export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config =
 		nsid,
 		variants: variants!,
 		redirection: redirection ?? minConfig.redirection,
+		...functionHooks && {functionHook: functionHooks},
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');

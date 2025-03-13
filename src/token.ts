@@ -6,6 +6,7 @@
 
 import {Tag} from '@lezer/highlight';
 import {decodeHTML} from '@bhsd/common';
+import {otherParserFunctions} from '@bhsd/common/dist/cm';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
 import type {MwConfig as MwConfigBase} from '@bhsd/common/dist/cm';
@@ -68,6 +69,7 @@ export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean)
 
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
+	functionHooks?: string[];
 	variants?: string[];
 	img?: Record<string, string>;
 	redirection?: string[];
@@ -1429,7 +1431,7 @@ export class MediaWiki {
 			const [, f, delimiter] = name as [string, string, string],
 				ff = delimiter === ':' ? f : f.trim(),
 				ffLower = ff.toLowerCase(),
-				{config: {functionSynonyms, variableIDs}} = this,
+				{config: {functionSynonyms, variableIDs, functionHooks}} = this,
 				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
 					&& functionSynonyms[1][ff]
 					|| Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
@@ -1438,6 +1440,11 @@ export class MediaWiki {
 				(!delimiter || delimiter === ':' || delimiter === '}')
 				&& canonicalName
 				&& (delimiter === ':' || !variableIDs || variableIDs.includes(canonicalName))
+				&& (
+					delimiter !== ':'
+					|| !functionHooks
+					|| functionHooks.includes(canonicalName) || otherParserFunctions.has(canonicalName)
+				)
 			) {
 				stream.backUp(length);
 				state.nExt++;

@@ -4906,6 +4906,11 @@
 		"parsed": "<apostrophes>'''</><strong>a</><error>&lt;/b&gt</><strong>b</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><strong>c</><apostrophes>'''</>d"
 	},
 	{
+		"desc": "Function hook and variable",
+		"wikitext": "{{uc}}{{server:}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>uc</><template-ground template-bracket>}}{{</><template-ground template-name pagename>server:</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
