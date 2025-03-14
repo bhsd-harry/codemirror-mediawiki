@@ -1,10 +1,11 @@
 ## 2.23.1
 
-*2025-03-14*
+*2025-03-15*
 
 **Fixed**
 
 - Only function hooks are allowed to take parameters
+- Localized parser functions with a full-width colon `：` instead of a half-width colon `:`
 
 ## 2.23.0
 

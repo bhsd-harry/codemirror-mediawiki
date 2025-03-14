@@ -1050,7 +1050,7 @@ export class MediaWiki {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					state.tokenize = this.inTableDefinition(tr, quote.slice(1) || undefined);
+					state.tokenize = this.inTableDefinition(tr, quote[1]);
 				} else {
 					stream.match(
 						new RegExp(`^(?:[^&${chars}${equal}${quote[0]}]|${lookahead(chars)})+`, 'iu'),
@@ -1230,20 +1230,20 @@ export class MediaWiki {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					state.tokenize = this.inHtmlTagAttribute(name, quote.slice(1) || undefined);
+					state.tokenize = this.inHtmlTagAttribute(name, quote[1]);
 				} else {
 					stream.match(
 						new RegExp(`^(?:[^<>&${chars}${pipe}${quote[0]}]|${lookahead(chars)})+`, 'u'),
 					);
 				}
-				return makeLocalTagStyle('htmlTagAttributeValue', state);
+				return makeLocalStyle(style, state);
 			} else if (quote === '') { // 无引号的属性值
 				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
 				stream.match(new RegExp(String.raw`^(?:[^\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
-				return makeLocalTagStyle('htmlTagAttributeValue', state);
+				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
@@ -1286,7 +1286,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					const remains = quote.slice(1) || undefined;
+					const [, remains] = quote;
 					state.tokenize = this.inExtTagAttribute(
 						name,
 						remains,
@@ -1316,7 +1316,7 @@ export class MediaWiki {
 				);
 				return makeLocalStyle(style, state);
 			}
-			const mt = stream.match(/(?:[^>/=]|\/(?!>))+/u)!;
+			const mt = stream.match(/^(?:[^>/=]|\/(?!>))+/u)!;
 			if (stream.peek() === '=') {
 				state.tokenize = this.inExtTagAttribute(
 					name,
@@ -1426,22 +1426,28 @@ export class MediaWiki {
 			return makeLocalTagStyle('parserFunctionBracket', state);
 		}
 		// Check for parser function without '#'
-		const name = stream.match(/^([^}<{|:]+)(.?)/u, false);
+		const name = stream.match(/^([^}<{|:：]+)(.?)/u, false);
 		if (name) {
 			const [, f, delimiter] = name as [string, string, string],
-				ff = delimiter === ':' ? f : f.trim(),
-				ffLower = ff.toLowerCase(),
+				fullWidth = delimiter === '：';
+			let ff = f;
+			if (fullWidth) {
+				ff += '：';
+			} else if (delimiter !== ':') {
+				ff = f.trim();
+			}
+			const ffLower = ff.toLowerCase(),
 				{config: {functionSynonyms, variableIDs, functionHooks}} = this,
 				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
 					&& functionSynonyms[1][ff]
 					|| Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
 					&& functionSynonyms[0][ffLower];
 			if (
-				(!delimiter || delimiter === ':' || delimiter === '}')
+				(!delimiter || fullWidth || delimiter === ':' || delimiter === '}')
 				&& canonicalName
-				&& (delimiter === ':' || !variableIDs || variableIDs.includes(canonicalName))
+				&& (fullWidth || delimiter === ':' || !variableIDs || variableIDs.includes(canonicalName))
 				&& (
-					delimiter !== ':'
+					!fullWidth && delimiter !== ':'
 					|| !functionHooks
 					|| functionHooks.includes(canonicalName) || otherParserFunctions.has(canonicalName)
 				)
@@ -1485,14 +1491,14 @@ export class MediaWiki {
 				stream.pos = 0;
 				return '';
 			}
-			const ch = stream.eat(/[:|]/u);
+			const ch = stream.eat(/[:：|]/u);
 			if (ch) {
 				state.tokenize = this.inParserFunctionArgument(invoke, n);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
-			const mt = stream.match(/^(?:[^:}{|<>[\]\s]|\s(?!:))+/u);
+			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
 			if (mt) {
-				const name = mt[0].trim().toLowerCase(),
+				const name = mt[0].trim().toLowerCase() + (stream.peek() === '：' ? '：' : ''),
 					{config: {functionSynonyms: [insensitive]}} = this;
 				if (name.startsWith('#')) {
 					switch (insensitive[name] ?? insensitive[name.slice(1)]!) {

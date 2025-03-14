@@ -1,4 +1,4 @@
-import {CDN, loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
+import {loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
 import {styleLint} from '@bhsd/common/dist/stylelint';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
@@ -41,15 +41,14 @@ const offsetAt = (range: [number, number], line: number, column: number): number
  * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
-	const REPO = 'npm/wikiparser-node',
-		DIR = `${REPO}/extensions/dist`,
+	const DIR = 'npm/wikiparser-node/extensions/dist',
 		lang = opt?.['i18n'];
 	await loadScript(`${DIR}/base.min.js`, 'wikiparse');
 	await loadScript(`${DIR}/lsp.min.js`, 'wikiparse.LanguageService');
 	if (typeof lang === 'string') {
 		try {
 			const i18n: Record<string, string> =
-				await (await fetch(`${CDN}/${REPO}/i18n/${lang.toLowerCase()}.json`)).json();
+				await (await fetch(`${wikiparse.CDN}/i18n/${lang.toLowerCase()}.json`)).json();
 			wikiparse.setI18N(i18n);
 		} catch {}
 	}
