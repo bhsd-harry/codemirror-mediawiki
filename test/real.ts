@@ -1,4 +1,5 @@
 import {performance} from 'perf_hooks';
+import {refreshStdout} from '@bhsd/common';
 import parser, {checkNode} from './parser';
 
 declare interface MediaWikiPage {
@@ -19,9 +20,9 @@ declare interface MediaWikiResponse {
 }
 
 const apis = [
-	// ['LLWiki', 'https://llwiki.org/mediawiki'],
 	['维基百科', 'https://zh.wikipedia.org/w'],
 	['Wikipedia', 'https://en.wikipedia.org/w'],
+	['ウィキペディア', 'https://ja.wikipedia.org/w'],
 ] as const;
 
 let c: Record<string, string> | undefined;
@@ -65,8 +66,7 @@ const getPages = async (url: string): Promise<SimplePage[]> => {
 				i = 0;
 			for (let j = 0; j < 10; j++) {
 				for (const {content, title} of await getPages(`${url}/api.php`)) {
-					i++;
-					process.stdout.write(`\x1B[K${i} ${title}\r`);
+					refreshStdout(`${i++} ${title}`);
 					try {
 						const start = performance.now();
 						let node = parser.parse(content).topNode.firstChild;
