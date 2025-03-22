@@ -364,7 +364,7 @@ export class FullMediaWiki extends MediaWiki {
 								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
 								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
 							],
-							i = this.permittedHtmlTags.has(target!) && options.findIndex(({label}) => label === target);
+							i = this.permittedHtmlTags.has(target) && options.findIndex(({label}) => label === target);
 						if (i !== false && i !== -1) {
 							options.splice(i, 1, {type: 'type', label: target!, boost: 99});
 						}

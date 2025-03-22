@@ -14,6 +14,7 @@ import {
 	foldState,
 	language,
 } from '@codemirror/language';
+import {getRegex} from '@bhsd/common';
 import {tokens} from './config';
 import {matchTag} from './matchTag';
 import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
@@ -28,6 +29,8 @@ export interface DocRange {
 }
 
 declare type AnchorUpdate = (pos: number, range: DocRange) => number;
+
+const getExtRegex = getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
 const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
 	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
@@ -105,7 +108,7 @@ const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tre
 		if (isExt(node)) {
 			const {name} = node,
 				[tag] = /^[a-z]+/u.exec(name.slice(name.lastIndexOf('mw-tag-') + 7))!,
-				regex = new RegExp(`mw-tag-${tag}(?![a-z])`, 'u');
+				regex = getExtRegex(tag);
 			let {nextSibling} = node;
 			while (nextSibling && !(isExtBracket(nextSibling) && !regex.test(nextSibling.name))) {
 				({nextSibling} = nextSibling);

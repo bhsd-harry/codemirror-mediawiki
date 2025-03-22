@@ -63,7 +63,7 @@ export default ({langConfig}: CodeMirror6): Extension => [
 			}
 			const {name, from, to} = node;
 			if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
-				return langConfig.titleParser(state, node, langConfig.urlProtocols);
+				return langConfig.titleParser(state, node);
 			} else if (name.includes('-extlink-protocol')) {
 				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
 				return true;

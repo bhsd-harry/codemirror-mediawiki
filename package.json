@@ -51,11 +51,11 @@
 		"@codemirror/state": "^6.5.1",
 		"@codemirror/view": "^6.36.2",
 		"@lezer/common": "^1.2.3",
-		"wikiparser-node": "^1.18.2"
+		"wikiparser-node": "^1.18.3"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
-		"@bhsd/common": "^0.8.1",
+		"@bhsd/common": "^0.9.0",
 		"@codemirror/autocomplete": "^6.18.4",
 		"@codemirror/commands": "^6.8.0",
 		"@codemirror/lang-css": "^6.3.1",

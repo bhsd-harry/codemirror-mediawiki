@@ -2,7 +2,7 @@ import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
-import {titleParser, isbnParser} from './openLinks';
+import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
 import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
@@ -54,7 +54,7 @@ $.valHooks['textarea'] = {
 };
 
 const linters: Record<string, LintSource | undefined> = {},
-	langs = new Set(['javascript', 'css', 'lua', 'json']),
+	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json']),
 	langMap: Record<string, string> = {
 		'sanitized-css': 'css',
 		js: 'javascript',
@@ -233,14 +233,18 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
+	#setLangConfig(config: MwConfig): void {
+		if (this.lang === 'mediawiki') {
+			this.langConfig = $.extend(true, {titleParser: getTitleParser(config), isbnParser}, config);
+		}
+	}
+
 	override initialize(config?: unknown): void {
 		if (this.#model) {
 			throw new Error('A Monaco editor is already initialized!');
 		}
 		super.initialize(config);
-		if (this.lang === 'mediawiki') {
-			this.langConfig = $.extend(true, {titleParser, isbnParser}, config as MwConfig);
-		}
+		this.#setLangConfig(config as MwConfig);
 		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
 		if (font) {
 			this.view!.contentDOM.classList.add(font);
@@ -330,9 +334,7 @@ export class CodeMirror extends CodeMirror6 {
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		void super.setLanguage(lang, config);
-		if (lang === 'mediawiki') {
-			this.langConfig = $.extend(true, {titleParser, isbnParser}, config as MwConfig);
-		}
+		this.#setLangConfig(config as MwConfig);
 	}
 
 	override setContent(content: string): void {
@@ -495,7 +497,7 @@ export class CodeMirror extends CodeMirror6 {
 			lang = langMap[lang];
 		}
 		/* eslint-enable no-param-reassign */
-		const isCM = !useMonaco.has(langs.has(lang!) ? lang! : 'wiki'),
+		const isCM = !useMonaco.has(langs.has(lang) ? lang! : 'wiki'),
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
 			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
 		$textarea.data('CodeMirror6', cm);

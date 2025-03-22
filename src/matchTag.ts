@@ -48,8 +48,11 @@ class Tag {
 }
 
 const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.test(name),
-	isTagComponent = (s: string) => ({name}: SyntaxNode, type: TagType): boolean =>
-		new RegExp(`-${type}tag-${s}`, 'u').test(name),
+	isTagComponent = (s: string) => {
+		const reHtml = new RegExp(`-htmltag-${s}`, 'u'),
+			reExt = new RegExp(`-exttag-${s}`, 'u');
+		return ({name}: SyntaxNode, type: TagType): boolean => (type === 'ext' ? reExt : reHtml).test(name);
+	},
 	isBracket = isTagComponent('bracket'),
 	isName = isTagComponent('name'),
 	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean => isBracket(node, type)

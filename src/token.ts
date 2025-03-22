@@ -5,7 +5,7 @@
  */
 
 import {Tag} from '@lezer/highlight';
-import {decodeHTML} from '@bhsd/common';
+import {decodeHTML, getRegex} from '@bhsd/common';
 import {otherParserFunctions} from '@bhsd/common/dist/cm';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import * as plugins from './plugins';
@@ -78,7 +78,7 @@ export interface MwConfig extends MwConfigBase {
 	linkSuggest?: ApiSuggest;
 	paramSuggest?: ApiSuggest;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	titleParser?: (state: EditorState, node: SyntaxNode, urlProtocols: string) => true | undefined;
+	titleParser?: (state: EditorState, node: SyntaxNode) => true | undefined;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	isbnParser?: (link: string) => true;
 }
@@ -274,16 +274,6 @@ const getUrlRegex = (punctuations = ''): string => {
  */
 const getPunctuations = (lpar?: boolean): string => String.raw`.,;:!?\\${lpar ? '' : ')'}`;
 
-/**
- * 获取自由外链正则表达式
- * @param lpar 是否包含左括号
- */
-const getFreeRegex = (lpar?: boolean): RegExp => {
-	const punctuations = getPunctuations(lpar),
-		source = getUrlRegex(punctuations);
-	return new RegExp(`^(?:${source}|[${punctuations}]+(?=${source}))*`, 'u');
-};
-
 const getTokenizer = <T = Style>(
 	method: (...args: any[]) => Tokenizer<T>,
 	context: ClassMethodDecoratorContext | ClassGetterDecoratorContext,
@@ -385,7 +375,79 @@ const prepareItalicForCorrection = (stream: StringStream, state: State): void =>
 	data.mark = end;
 };
 
-const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']);
+/**
+ * 获取`|`的正则表达式
+ * @param isTemplate 是否在模板中
+ */
+const getPipe = (isTemplate: boolean): string =>
+	String.raw`${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\}`;
+
+const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
+	headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu'),
+	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
+	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
+	styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
+	convertRegex = new RegExp(
+		String.raw`^(?:[^};&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`,
+		'u',
+	),
+	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u'),
+	tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu'),
+	extLinkChars = "[{'<-",
+	tableDefinitionChars = '{<',
+	tableCellChars = "'<~_{-",
+	htmlAttrChars = '{/',
+	freeRegex = [false, true].map(lpar => {
+		const punctuations = getPunctuations(lpar),
+			source = getUrlRegex(punctuations);
+		return new RegExp(`^(?:${source}|[${punctuations}]+(?=${source}))*`, 'u');
+	}) as [RegExp, RegExp],
+	indentedTableRegex = [false, true].map(
+		isTemplate => new RegExp(String.raw`^:*\s*(?=\{(?:${getPipe(isTemplate)}))`, 'u'),
+	) as [RegExp, RegExp],
+	tableRegex = [false, true]
+		.map(isTemplate => new RegExp(String.raw`^(?:${getPipe(isTemplate)})\s*`, 'u')) as [RegExp, RegExp],
+	spacedTableRegex = [false, true].map(
+		isTemplate => new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${getPipe(isTemplate)}))`, 'u'),
+	) as [RegExp, RegExp],
+	linkTextRegex = [false, true].map(file => {
+		const chars = `]'{<${file ? '~' : '['}-`;
+		return new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
+	}) as [RegExp, RegExp],
+	tableDefinitionValueRegex = ['', '='].map(equal => new RegExp(
+		String.raw`^(?:[^\s&${tableDefinitionChars}${equal}]|${lookahead(tableDefinitionChars)})+`,
+		'iu',
+	)) as [RegExp, RegExp],
+	variableRegex = [false, true].map(
+		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? "[&~'_:-" : ''}]|\}(?!\}\})|${
+			isDefault ? lookahead("{<~'_-") : lookahead('{<', true)
+		})+`, 'iu'),
+	) as [RegExp, RegExp],
+	parserFunctionRegex = ['', '[&', '[&:'].map(
+		s => getRegex(chars => new RegExp(`^(?:[^|${s}${chars}]|${lookahead(chars)})+`, 'iu')),
+	),
+	getExtLinkTextRegex = getRegex(
+		pipe => new RegExp(String.raw`^(?:[^\]&${pipe}${extLinkChars}]|${lookahead(extLinkChars)})+`, 'iu'),
+	),
+	getExtLinkRegex = getRegex(pipe => new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u')),
+	getTableDefinitionRegex = getRegex(s => new RegExp(
+		`^(?:[^&${tableDefinitionChars}${s}]|${lookahead(tableDefinitionChars)})+`,
+		'iu',
+	)),
+	getTableCellRegex = getRegex(
+		s => new RegExp(`^(?:[^[&${s}${tableCellChars}]|${lookahead(tableCellChars)})+`, 'iu'),
+	),
+	getHtmlAttrRegex = getRegex(
+		s => new RegExp(`^(?:[^<>&${htmlAttrChars}${s}]|${lookahead(htmlAttrChars)})+`, 'u'),
+	),
+	getHtmlAttrKeyRegex = getRegex(
+		pipe => new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'),
+	),
+	getExtAttrRegex = getRegex(s => new RegExp(`^(?:[^>/${s}]|${lookahead('/')})+`, 'u')),
+	getExtTagCloseRegex = getRegex(
+		name => new RegExp(`</${name}${name === 'onlyinclude' ? '>' : String.raw`\s*(?:>|$)`}`, 'iu'),
+	),
+	getNestedRegex = getRegex(tag => new RegExp(String.raw`^(?:[^<]|<(?!${tag}(?:[\s/>]|$)))+`, 'iu'));
 
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
@@ -398,18 +460,14 @@ export class MediaWiki {
 	declare readonly linkRegex;
 	declare readonly fileRegex;
 	declare readonly redirectRegex;
+	declare readonly fullRedirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
-	declare readonly headerRegex;
-	declare readonly templateRegex;
-	declare readonly argumentRegex;
-	declare readonly styleRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
-	declare readonly convertRegex;
-	declare readonly wikiRegex;
-	declare readonly tableDefinitionRegex;
 	declare readonly tags;
+	declare readonly hasVariants;
+	declare readonly preRegex;
 
 	constructor(config: MwConfig) {
 		const {
@@ -441,10 +499,11 @@ export class MediaWiki {
 			})\s*:`,
 			'iu',
 		);
-		this.redirectRegex = new RegExp(
-			String.raw`^(?:${redirection.map(s => s.slice(1)).join('|')})(?:\s*:)?\s*(?=\[\[)`,
-			'iu',
-		);
+		const redirectSource = String.raw`(?:${
+			redirection.map(s => s.slice(1)).join('|')
+		})(?:\s*:)?\s*(?=\[\[)`;
+		this.redirectRegex = new RegExp(`^${redirectSource}`, 'iu');
+		this.fullRedirectRegex = new RegExp(String.raw`^\s*#${redirectSource}`, 'iu');
 		this.img = Object.keys(img).filter(word => !/\$1./u.test(word));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
@@ -455,23 +514,19 @@ export class MediaWiki {
 			}|(?:\d+x?|\d*x\d+)\s*(?:px)?px)\s*(?=\||\]\]|$))`,
 			'u',
 		);
-		this.headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu');
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
-		this.templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u');
-		this.argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
-		this.styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu');
 		this.convertSemicolon = variants && new RegExp(
 			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${variants.join('|')})\s*:|(?:$|\}-))`,
 			'u',
 		);
 		this.convertLang = variants
 			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'u');
-		this.convertRegex = new RegExp(
-			String.raw`^(?:[^};&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`,
-			'u',
-		);
-		this.wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u');
-		this.tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu');
+		this.hasVariants = Boolean(variants?.length);
+		this.preRegex = [false, true].map(
+			begin => new RegExp(String.raw`^(?:[^<&-]|-${
+				this.hasVariants ? String.raw`(?!\{)` : ''
+			}|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu'),
+		) as [RegExp, RegExp];
 		this.registerGroundTokens();
 	}
 
@@ -592,8 +647,7 @@ export class MediaWiki {
 				}
 				ch = stream.next()!;
 				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
-						.includes(state.tokenize.name),
-					pipe = String.raw`${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\}`;
+					.includes(state.tokenize.name);
 				switch (ch) {
 					case '#':
 						if (stream.match(this.redirectRegex)) {
@@ -607,7 +661,7 @@ export class MediaWiki {
 						return this.eatList(stream, state);
 					case ':':
 						// Highlight indented tables :{|, bug T108454
-						if (stream.match(new RegExp(String.raw`^:*\s*(?=\{(?:${pipe}))`, 'u'))) {
+						if (stream.match(indentedTableRegex[isTemplate ? 1 : 0])) {
 							chain(state, this.eatStartTable);
 							return makeLocalTagStyle('list', state);
 						}
@@ -627,7 +681,7 @@ export class MediaWiki {
 						break;
 					}
 					case '{':
-						if (stream.match(new RegExp(String.raw`^(?:${pipe})\s*`, 'u'))) {
+						if (stream.match(tableRegex[isTemplate ? 1 : 0])) {
 							chain(state, this.inTableDefinition());
 							return makeLocalTagStyle('tableBracket', state);
 						}
@@ -640,16 +694,11 @@ export class MediaWiki {
 					default:
 						if (/\s/u.test(ch)) {
 							// Leading spaces is valid syntax for tables, bug T108454
-							const re = new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${pipe}))`, 'u'),
-								re2 = new RegExp(
-									String.raw`^\s*#${this.redirectRegex.source.slice(1)}`,
-									'iu',
-								),
-								mt = stream.match(re);
+							const mt = stream.match(spacedTableRegex[isTemplate ? 1 : 0]);
 							if (mt) {
 								chain(state, this.eatStartTable);
 								return makeLocalStyle(mt[1] ? tokens.list : '', state);
-							} else if (stream.match(re2)) {
+							} else if (stream.match(this.fullRedirectRegex)) {
 								state.redirect = true;
 								return tokens.redirect;
 							} else if (ch === ' ') {
@@ -861,13 +910,10 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
 			} else if (text) {
-				const chars = "[{'<-";
-				return stream.match(
-					new RegExp(String.raw`^(?:[^\]&${pipe}${chars}]|${lookahead(chars)})+`, 'iu'),
-				)
+				return stream.match(getExtLinkTextRegex(pipe))
 					? makeTagStyle('extLinkText', state)
 					: this.eatWikiText('extLinkText')(stream, state);
-			} else if (stream.match(new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u'))) {
+			} else if (stream.match(getExtLinkRegex(pipe))) {
 				return makeLocalTagStyle('extLink', state);
 			}
 			state.tokenize = this.inExternalLink(true);
@@ -879,9 +925,9 @@ export class MediaWiki {
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	get eatFreeExternalLink(): Tokenizer {
 		return (stream, state) => {
-			const mt = stream.match(getFreeRegex())!;
+			const mt = stream.match(freeRegex[0])!;
 			if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
-				stream.match(getFreeRegex(true));
+				stream.match(freeRegex[1]);
 			}
 			pop(state);
 			return makeTagStyle('freeExtLink', state);
@@ -940,8 +986,7 @@ export class MediaWiki {
 	@getTokenizer
 	inLinkText(file: boolean, gallery?: boolean): Tokenizer {
 		const linkState = {bold: false, italic: false},
-			chars = `]'{<${file ? '~' : '['}-`,
-			regex = new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
+			regex = linkTextRegex[file ? 1 : 0];
 		return (stream, state) => {
 			const tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
@@ -1034,8 +1079,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inTableDefinition(tr?: boolean, quote?: string): Tokenizer {
-		const style = `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`,
-			chars = '{<';
+		const style = `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.tokenize = this.inTable;
@@ -1052,9 +1096,7 @@ export class MediaWiki {
 				if (stream.eat(quote[0]!)) {
 					state.tokenize = this.inTableDefinition(tr, quote[1]);
 				} else {
-					stream.match(
-						new RegExp(`^(?:[^&${chars}${equal}${quote[0]}]|${lookahead(chars)})+`, 'iu'),
-					);
+					stream.match(getTableDefinitionRegex(equal + quote[0]));
 				}
 				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (quote === '') { // 无引号的属性值
@@ -1062,14 +1104,14 @@ export class MediaWiki {
 					state.tokenize = this.inTableDefinition(tr);
 					return '';
 				}
-				stream.match(new RegExp(String.raw`^(?:[^\s&${chars}${equal}]|${lookahead(chars)})+`, 'iu'));
+				stream.match(tableDefinitionValueRegex[equal ? 1 : 0]);
 				return makeLocalTagStyle('tableDefinitionValue', state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
 				return makeLocalStyle(style, state);
 			}
-			stream.match(this.tableDefinitionRegex);
+			stream.match(tableDefinitionRegex);
 			return makeLocalStyle(style, state);
 		};
 	}
@@ -1102,7 +1144,7 @@ export class MediaWiki {
 					return this.eatWikiText('error')(stream, state);
 				}
 			}
-			return stream.match(this.wikiRegex)
+			return stream.match(wikiRegex)
 				? makeTagStyle('error', state)
 				: this.eatWikiText('error')(stream, state);
 		};
@@ -1110,7 +1152,6 @@ export class MediaWiki {
 
 	@getTokenizer
 	inTableCell(style: string, needAttr = true, firstLine = true): Tokenizer {
-		const chars = "'<~_{-";
 		return (stream, state) => {
 			if (stream.sol()) {
 				if (stream.match(/^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u, false)) {
@@ -1149,11 +1190,9 @@ export class MediaWiki {
 				pop(state);
 				return '';
 			}
-			const re = new RegExp(
-				`^(?:[^[&${firstLine ? '|!' : ':'}${equal}${chars}]|${lookahead(chars)})+`,
-				'iu',
-			);
-			return stream.match(re) ? makeStyle(style, state) : this.eatWikiText(style)(stream, state);
+			return stream.match(getTableCellRegex((firstLine ? '|!' : ':') + equal))
+				? makeStyle(style, state)
+				: this.eatWikiText(style)(stream, state);
 		};
 	}
 
@@ -1163,7 +1202,7 @@ export class MediaWiki {
 			if (stream.sol()) {
 				pop(state);
 				return '';
-			} else if (stream.match(this.headerRegex)) {
+			} else if (stream.match(headerRegex)) {
 				if (stream.eol()) {
 					stream.backUp(str.length);
 					state.tokenize = this.inStr(str, 'sectionHeader');
@@ -1203,9 +1242,8 @@ export class MediaWiki {
 	@getTokenizer
 	inHtmlTagAttribute(name: string, quote?: string): Tokenizer {
 		const style = quote === undefined
-				? `${tokens.htmlTagAttribute} mw-html-${name}`
-				: tokens.htmlTagAttributeValue,
-			chars = '{/';
+			? `${tokens.htmlTagAttribute} mw-html-${name}`
+			: tokens.htmlTagAttributeValue;
 		return (stream, state) => {
 			if (stream.match(new RegExp(`^${lookahead('<', state)}`, 'iu'), false)) {
 				pop(state);
@@ -1232,9 +1270,7 @@ export class MediaWiki {
 				if (stream.eat(quote[0]!)) {
 					state.tokenize = this.inHtmlTagAttribute(name, quote[1]);
 				} else {
-					stream.match(
-						new RegExp(`^(?:[^<>&${chars}${pipe}${quote[0]}]|${lookahead(chars)})+`, 'u'),
-					);
+					stream.match(getHtmlAttrRegex(pipe + quote[0]));
 				}
 				return makeLocalStyle(style, state);
 			} else if (quote === '') { // 无引号的属性值
@@ -1242,14 +1278,14 @@ export class MediaWiki {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
-				stream.match(new RegExp(String.raw`^(?:[^\s<>&${chars}${pipe}]|${lookahead(chars)})+`, 'u'));
+				stream.match(getHtmlAttrRegex(String.raw`\s${pipe}`));
 				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
 				const next = stream.peek();
 				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
 				return makeLocalStyle(style, state);
 			}
-			stream.match(new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'));
+			stream.match(getHtmlAttrKeyRegex(pipe));
 			return makeLocalStyle(style, state);
 		};
 	}
@@ -1295,11 +1331,7 @@ export class MediaWiki {
 					);
 					return makeLocalTagStyle('extTagAttributeValue', state);
 				}
-				return advance(
-					stream,
-					state,
-					new RegExp(`^(?:[^>/${quote[0]}]|${lookahead('/')})+`, 'u'),
-				);
+				return advance(stream, state, getExtAttrRegex(quote[0]!));
 			} else if (quote === '') { // 无引号的属性值
 				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
 					state.tokenize = this.inExtTagAttribute(name);
@@ -1333,12 +1365,7 @@ export class MediaWiki {
 	eatExtTagArea(name: string): Tokenizer {
 		return (stream, state) => {
 			const {pos} = stream,
-				i = stream.string.slice(pos).search(
-					new RegExp(
-						`</${name}${name === 'onlyinclude' ? '>' : String.raw`\s*(?:>|$)`}`,
-						'iu',
-					),
-				);
+				i = stream.string.slice(pos).search(getExtTagCloseRegex(name));
 			if (i === 0) {
 				stream.match('</');
 				state.tokenize = this.eatTagName(name, true);
@@ -1386,9 +1413,7 @@ export class MediaWiki {
 		} else if (pos === 1) {
 			tag = 'templateVariable';
 		}
-		const re = new RegExp(String.raw`^(?:[^|{}<${pos === 1 ? "[&~'_:-" : ''}]|\}(?!\}\})|${
-			pos === 1 ? lookahead("{<~'_-") : lookahead('{<', true)
-		})+`, 'iu');
+		const re = variableRegex[pos === 1 ? 1 : 0];
 		return (stream, state) => {
 			const sol = stream.sol();
 			stream.eatSpace();
@@ -1529,7 +1554,7 @@ export class MediaWiki {
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
 		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
 			chars = '{}<',
-			re = anchor ? this.templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#%]|%(?![\da-f]{2}))+/iu;
+			re = anchor ? templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#%]|%(?![\da-f]{2}))+/iu;
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1581,9 +1606,7 @@ export class MediaWiki {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}
-		const chars = n === 2 ? '}{<' : "}{<~'_-", // `#invoke`/`#tag`
-			regex = new RegExp(`^(?:[^|${module ? '' : '[&:'}${chars}]|${lookahead(chars)})+`, 'iu'),
-			regex2 = new RegExp(`^(?:[^|${module ? '' : '[&'}${chars}]|${lookahead(chars)})+`, 'iu');
+		const chars = n === 2 ? '}{<' : "}{<~'_-"; // `#invoke`/`#tag`
 		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
 		if (module === 1) {
 			style += ' mw-widget';
@@ -1602,7 +1625,8 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
 			}
-			return !isSolSyntax(stream) && stream.match(needColon(state) ? regex : regex2)
+			return !isSolSyntax(stream)
+				&& stream.match(parserFunctionRegex[module ? 0 : Number(needColon(state)) + 1]!(chars))
 				? makeLocalStyle(style, state)
 				: this.eatWikiText('parserFunction')(stream, state);
 		};
@@ -1647,7 +1671,7 @@ export class MediaWiki {
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 				return this.eatWikiText(tag)(stream, state);
 			}
-			return stream.match(needColon(state) ? this.argumentRegex : this.styleRegex) || space
+			return stream.match(needColon(state) ? argumentRegex : styleRegex) || space
 				? makeLocalTagStyle(tag, state)
 				: this.eatWikiText(tag)(stream, state);
 		};
@@ -1679,7 +1703,7 @@ export class MediaWiki {
 				stream.match(/^(?:(?:[^};=-]|\}(?!-)|=(?!>)|-(?!\{))+|;|=>)/u);
 				return makeStyle(style, state);
 			}
-			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space
+			return !isSolSyntax(stream, true) && stream.match(convertRegex) || space
 				? makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
@@ -1878,21 +1902,17 @@ export class MediaWiki {
 
 	@getTokenizer
 	inPre(begin?: boolean): Tokenizer<string> {
-		const hasVariants = this.config.variants?.length,
-			re = new RegExp(String.raw`^(?:[^<&-]|-${
-				hasVariants ? String.raw`(?!\{)` : ''
-			}|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu');
 		return (stream, state) => {
 			if (stream.match(begin ? /^<\/nowiki>/iu : /^<nowiki>/iu)) {
 				state.tokenize = this.inPre(!begin);
 				return tokens.comment;
-			} else if (hasVariants && stream.match('-{')) {
+			} else if (this.hasVariants && stream.match('-{')) {
 				chain(state, this.inConvert('', true, true, true));
 				return tokens.convertBracket;
 			} else if (stream.eat('&')) {
 				return this.eatEntity(stream, '');
 			}
-			stream.match(re);
+			stream.match(this.preRegex[begin ? 1 : 0]);
 			return '';
 		};
 	}
@@ -1907,9 +1927,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inNested(tag: string): Tokenizer<string> {
-		const re = tag === 'ref'
-			? /^(?:\{|(?:[^<{]|\{(?!\{)|<(?!!--|ref(?:[\s/>]|$)))+)/iu
-			: new RegExp(String.raw`^(?:[^<]|<(?!${tag}(?:[\s/>]|$)))+`, 'iu');
+		const re = tag === 'ref' ? /^(?:\{|(?:[^<{]|\{(?!\{)|<(?!!--|ref(?:[\s/>]|$)))+)/iu : getNestedRegex(tag);
 		return (stream, state) => {
 			if (tag === 'ref') {
 				if (stream.match('<!--')) {
