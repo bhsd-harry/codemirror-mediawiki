@@ -1315,17 +1315,17 @@
 	{
 		"desc": "msgnw keyword",
 		"wikitext": "{{msgnw:MSGNW test}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>msgnw</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>MSGNW test</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>msgnw</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-10>MSGNW test</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "int keyword",
 		"wikitext": "{{int:new-messages|lots of money|not!}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>new-messages</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>lots of money</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>not!</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-8>new-messages</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>lots of money</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>not!</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "int keyword - non-existing message",
 		"wikitext": "{{int:var}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>var</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-8>var</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "<includeonly> and <noinclude> being included",
@@ -3245,7 +3245,7 @@
 	{
 		"desc": "MSGNW magic word",
 		"wikitext": "{{MSGNW:msg}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>MSGNW</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>msg</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>MSGNW</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-10>msg</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "RAW magic word",
@@ -3715,7 +3715,7 @@
 	{
 		"desc": "T34057: Title needed when expanding <h> nodes.",
 		"wikitext": "{{int:T34057}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>T34057</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>int</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-8>T34057</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Title needed when expanding templates.",
@@ -6704,12 +6704,12 @@
 	{
 		"desc": "URL-encoding in URL functions (single parameter)",
 		"wikitext": "{{localurl:Some page|amp=&}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>localurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Some page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>amp=&amp;</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>localurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Some page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>amp=&amp;</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "URL-encoding in URL functions (multiple parameters)",
 		"wikitext": "{{localurl:Some page|q=?&amp=&}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>localurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Some page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>q=?&amp;amp=&amp;</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>localurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Some page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>q=?&amp;amp=&amp;</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Brackets in urls",
@@ -6875,7 +6875,7 @@
 	{
 		"desc": "Missing or all-empty outputs",
 		"wikitext": "[{{#ifexpr: 1}},{{#ifexpr: 1|}},{{#ifexpr: 1||}}]\n[{{#if: 1}},{{#if: 1|}},{{#if: 1||}}]\n[{{#ifeq: 1|1}},{{#ifeq: 1|1|}},{{#ifeq: 1|1||}}]\n[{{#switch: 1}},{{#switch: 1|}}]\n[{{#ifexist: ParserFunctions page}},{{#ifexist: ParserFunctions page|}},{{#ifexist: ParserFunctions page||}}]",
-		"parsed": "[<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> ParserFunctions page</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> ParserFunctions page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> ParserFunctions page</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>]"
+		"parsed": "[<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexpr</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifeq</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> 1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>][<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> ParserFunctions page</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> ParserFunctions page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction-bracket>}}</>,<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> ParserFunctions page</><ext-ground parserfunction-delimiter>||</><ext-ground parserfunction-bracket>}}</>]"
 	},
 	{
 		"desc": "Preserve tags in #switch default value",
@@ -6890,12 +6890,12 @@
 	{
 		"desc": "{{#ifexist}}",
 		"wikitext": "{{#ifexist:Media:Foobar.jpg|Found|Not found}}\n{{#ifexist:ParserFunctions page|Found|Not found}}\n{{#ifexist:Missing|Found|Not found}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Media:Foobar.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ParserFunctions page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Missing</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Media:Foobar.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>ParserFunctions page</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Missing</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "{{#ifexist:}} media redirect (bug 32031)",
 		"wikitext": "{{#ifexist:Media:Redirect_to_Foobar.jpg|Found|Not found}}\n{{#ifexist:Media:Redirect_to_nowhere.jpg|Found|Not found}}\n{{#ifexist:Media:Missing file.jpg|Found|Not found}}\n{{#ifexist:Media:Dionysos-Brunnen am Kölner Dom.jpg|Found|Not found}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Media:Redirect_to_Foobar.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Media:Redirect_to_nowhere.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Media:Missing file.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Media:Dionysos-Brunnen am Kölner Dom.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Media:Redirect_to_Foobar.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Media:Redirect_to_nowhere.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Media:Missing file.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>Media:Dionysos-Brunnen am Kölner Dom.jpg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Found</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Not found</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "#if",
@@ -10673,7 +10673,7 @@
 	{
 		"desc": "Whitespace in #REDIRECT with optional colon",
 		"wikitext": " \n #REDIRECT \n: \n[[Main Page]]",
-		"parsed": "<skipformatting>  </>#REDIRECT <list>:</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</>"
+		"parsed": " <redirect> #REDIRECT : </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Piped link in #REDIRECT",
@@ -10723,7 +10723,7 @@
 	{
 		"desc": "Redirect syntax under text isn't considered a redirect",
 		"wikitext": "some text\n\n#redirect [[Main Page]]",
-		"parsed": "some text<redirect>#redirect </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</>"
+		"parsed": "some text<list>#</>redirect <link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "New redirect",

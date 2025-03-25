@@ -6,6 +6,10 @@
 
 - The [openLinks](./README.md#openlinks) extension now supports more parser functions when used on a MediaWiki site
 
+**Fixed**
+
+- The redirection syntax can be multiline but only appears at the start of the document in the MediaWiki mode
+
 **Changed**
 
 - The [openLinks](./README.md#openlinks) extension is now only triggered by a main button click on text with underline

@@ -39,7 +39,8 @@ declare interface State extends Nesting {
 	bold: boolean;
 	italic: boolean;
 	dt: Partial<Nesting> & {n: number, html: number};
-	redirect: boolean;
+	sof: boolean;
+	redirect: {colon: boolean} | false;
 	imgLink: boolean;
 	data: MediaWikiData;
 }
@@ -143,7 +144,7 @@ const simpleToken: Tokenizer<string> = (stream, state): string => {
 	return Array.isArray(style) ? style[0] : style;
 };
 
-const startState = (tokenize: Tokenizer, tags: string[]): State => ({
+const startState = (tokenize: Tokenizer, tags: string[], sof = false): State => ({
 	tokenize,
 	stack: [],
 	inHtmlTag: [],
@@ -159,6 +160,7 @@ const startState = (tokenize: Tokenizer, tags: string[]): State => ({
 	bold: false,
 	italic: false,
 	dt: {n: 0, html: 0},
+	sof,
 	redirect: false,
 	imgLink: false,
 	data: new MediaWikiData(tags),
@@ -471,7 +473,6 @@ export class MediaWiki {
 	declare readonly linkRegex;
 	declare readonly fileRegex;
 	declare readonly redirectRegex;
-	declare readonly fullRedirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
 	declare readonly convertSemicolon;
@@ -510,11 +511,10 @@ export class MediaWiki {
 			})\s*:`,
 			'iu',
 		);
-		const redirectSource = String.raw`(?:${
-			redirection.map(s => s.slice(1)).join('|')
-		})(?:\s*:)?\s*(?=\[\[)`;
-		this.redirectRegex = new RegExp(`^${redirectSource}`, 'iu');
-		this.fullRedirectRegex = new RegExp(String.raw`^\s*#${redirectSource}`, 'iu');
+		this.redirectRegex = new RegExp(
+			String.raw`^\s*(?:${redirection.join('|')})(\s*:)?\s*(?=\[\[|$)`,
+			'iu',
+		);
 		this.img = Object.keys(img).filter(word => !/\$1./u.test(word));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
@@ -608,6 +608,9 @@ export class MediaWiki {
 		}
 		this.addToken('invoke', true);
 		this.addToken('widget', true);
+		for (const i of [0, 6, 8, 10]) {
+			this.addToken(`function-${i}`, true);
+		}
 	}
 
 	@getTokenizer
@@ -646,6 +649,25 @@ export class MediaWiki {
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
+				if (state.sof) {
+					if (stream.match(/^\s+$/u)) {
+						return '';
+					}
+					state.sof = false;
+					const mt = stream.match(this.redirectRegex);
+					if (mt) {
+						state.redirect = {colon: !mt[1]};
+						return tokens.redirect;
+					}
+				} else if (state.redirect) {
+					if (stream.match(/^\s+(?=$|\[\[)/u)) {
+						return '';
+					} else if (state.redirect.colon && stream.match(/^\s*:\s*(?=$|\[\[)/u)) {
+						state.redirect.colon = false;
+						return tokens.redirect;
+					}
+					state.redirect = false;
+				}
 				if (stream.match('//')) {
 					return makeStyle(style, state);
 				} else if (stream.match(regex)) {
@@ -661,11 +683,6 @@ export class MediaWiki {
 					.includes(state.tokenize.name);
 				switch (ch) {
 					case '#':
-						if (stream.match(this.redirectRegex)) {
-							state.redirect = true;
-							return tokens.redirect;
-						}
-						// fall through
 					case ';':
 					case '*':
 						stream.backUp(1);
@@ -709,9 +726,6 @@ export class MediaWiki {
 							if (mt) {
 								chain(state, this.eatStartTable);
 								return makeLocalStyle(mt[1] ? tokens.list : '', state);
-							} else if (stream.match(this.fullRedirectRegex)) {
-								state.redirect = true;
-								return tokens.redirect;
 							} else if (ch === ' ') {
 								/** @todo indent-pre is sometimes suppressed */
 								return tokens.skipFormatting;
@@ -1762,7 +1776,7 @@ export class MediaWiki {
 	 */
 	mediawiki(tags?: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.eatWikiText(''), tags ?? this.tags),
+			startState: () => startState(this.eatWikiText(''), tags ?? this.tags, tags === undefined),
 
 			copyState,
 
