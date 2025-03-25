@@ -8,8 +8,7 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		const {from, to, name, nextSibling} = node;
 		let page = state.sliceDoc(from, to).trim();
 		if (name.includes(tokens.fileText) && re.test(page)) {
-			open(page, '_blank');
-			return true;
+			return page;
 		}
 		if (page.startsWith('/')) {
 			page = `:${mw.config.get('wgPageName')}${page}`;
@@ -28,19 +27,10 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 			page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
 		}
-		const url = mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
-		if (url) {
-			open(url, '_blank');
-			return true;
-		}
-		return undefined;
+		return mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
 	};
 };
 
-export const isbnParser = (link: string): true => {
-	const url = new mw.Title(`Special:Booksources/${
-		link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')
-	}`).getUrl(undefined);
-	open(url, '_blank');
-	return true;
-};
+export const isbnParser = (link: string): string => new mw.Title(`Special:Booksources/${
+	link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')
+}`).getUrl(undefined);

@@ -78,9 +78,9 @@ export interface MwConfig extends MwConfigBase {
 	linkSuggest?: ApiSuggest;
 	paramSuggest?: ApiSuggest;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	titleParser?: (state: EditorState, node: SyntaxNode) => true | undefined;
+	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	isbnParser?: (link: string) => true;
+	isbnParser?: (link: string) => string;
 }
 
 class MediaWikiData {

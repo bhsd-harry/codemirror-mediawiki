@@ -5,7 +5,7 @@ import {hasTag} from './mediawiki';
 import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {CodeMirror6} from './codemirror';
-import type {TagName} from './token';
+import type {TagName, MwConfig} from './token';
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
@@ -40,47 +40,57 @@ document.addEventListener('keyup', e => {
 	}
 });
 
+const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
+
+const mouseEventListener = (e: MouseEvent, view: EditorView, langConfig: MwConfig | undefined): string | undefined => {
+	if (!e[modKey]) {
+		return undefined;
+	}
+	const position = view.posAtCoords(e);
+	if (!position) {
+		return undefined;
+	}
+	const {state} = view,
+		tree = ensureSyntaxTree(state, position);
+	if (!tree) {
+		return undefined;
+	}
+	let node: SyntaxNode = tree.resolve(position, -1);
+	if (node.name.includes(tokens.linkToSection)) {
+		node = node.prevSibling!;
+	} else if (!hasTag(new Set(node.name.split('_')), tags)) {
+		node = tree.resolve(position, 1);
+	}
+	const {name, from, to} = node;
+	if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
+		return langConfig.titleParser(state, node);
+	} else if (name.includes('-extlink-protocol')) {
+		return wrapURL(state.sliceDoc(from, node.nextSibling!.to));
+	} else if (/-extlink(?:_|$)/u.test(name)) {
+		return wrapURL(state.sliceDoc(node.prevSibling!.from, to));
+	} else if (name.includes(tokens.magicLink)) {
+		const link = state.sliceDoc(from, to);
+		if (link.startsWith('RFC')) {
+			return `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`;
+		} else if (link.startsWith('PMID')) {
+			return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
+		} else if (typeof langConfig?.isbnParser === 'function') {
+			return langConfig.isbnParser(link);
+		}
+	}
+	return undefined;
+};
+
 export default ({langConfig}: CodeMirror6): Extension => [
 	EditorView.domEventHandlers({
 		mousedown(e, view) {
-			if (!e[modKey] || e.button !== 0) {
+			if (e.button !== 0) {
 				return undefined;
 			}
-			const position = view.posAtCoords(e);
-			if (!position) {
-				return undefined;
-			}
-			const {state} = view,
-				tree = ensureSyntaxTree(state, position);
-			if (!tree) {
-				return undefined;
-			}
-			let node: SyntaxNode = tree.resolve(position, -1);
-			if (node.name.includes(tokens.linkToSection)) {
-				node = node.prevSibling!;
-			} else if (!hasTag(new Set(node.name.split('_')), tags)) {
-				node = tree.resolve(position, 1);
-			}
-			const {name, from, to} = node;
-			if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
-				return langConfig.titleParser(state, node);
-			} else if (name.includes('-extlink-protocol')) {
-				open(state.sliceDoc(from, node.nextSibling!.to), '_blank');
+			const url = mouseEventListener(e, view, langConfig);
+			if (url) {
+				open(url, '_blank');
 				return true;
-			} else if (/-extlink(?:_|$)/u.test(name)) {
-				open(state.sliceDoc(node.prevSibling!.from, to), '_blank');
-				return true;
-			} else if (name.includes(tokens.magicLink)) {
-				const link = state.sliceDoc(from, to);
-				if (link.startsWith('RFC')) {
-					open(`https://tools.ietf.org/html/rfc${link.slice(3).trim()}`, '_blank');
-					return true;
-				} else if (link.startsWith('PMID')) {
-					open(`https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`, '_blank');
-					return true;
-				} else if (typeof langConfig?.isbnParser === 'function') {
-					return langConfig.isbnParser(link);
-				}
 			}
 			return undefined;
 		},
