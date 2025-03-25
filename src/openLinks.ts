@@ -43,7 +43,10 @@ document.addEventListener('keyup', e => {
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
 const mouseEventListener = (e: MouseEvent, view: EditorView, langConfig: MwConfig | undefined): string | undefined => {
-	if (!e[modKey]) {
+	if (
+		!e[modKey]
+		|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
+	) {
 		return undefined;
 	}
 	const position = view.posAtCoords(e);
