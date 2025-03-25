@@ -23,7 +23,7 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 			} else if (name.includes('mw-invoke')) {
 				ns = 828;
 			} else {
-				ns = 6;
+				ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
 			}
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 			page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();

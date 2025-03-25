@@ -1,3 +1,11 @@
+## 2.23.2
+
+*2025-03-25*
+
+**Added**
+
+- The [openLinks](./README.md#openlinks) extension now supports more parser functions when used on a MediaWiki site
+
 ## 2.23.1
 
 *2025-03-15*

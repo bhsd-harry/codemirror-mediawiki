@@ -383,6 +383,17 @@ const getPipe = (isTemplate: boolean): string =>
 	String.raw`${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\}`;
 
 const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
+	pageFunctions = new Set<string | undefined>([
+		'filepath',
+		'localurl',
+		'localurle',
+		'fullurl',
+		'fullurle',
+		'canonicalurl',
+		'canonicalurle',
+		'int',
+		'msgnw',
+	]),
 	headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu'),
 	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
 	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
@@ -483,7 +494,7 @@ export class MediaWiki {
 		this.config = config;
 		this.tokenTable = {...tokenTable};
 		this.hiddenTable = {};
-		this.permittedHtmlTags = new Set([
+		this.permittedHtmlTags = new Set<string | undefined>([
 			...htmlTags,
 			...permittedHtmlTags ?? [],
 		]);
@@ -1494,7 +1505,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionName(invoke?: number, n?: number): Tokenizer {
+	inParserFunctionName(invoke?: number, n?: number, ns?: number): Tokenizer {
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1518,7 +1529,7 @@ export class MediaWiki {
 			}
 			const ch = stream.eat(/[:：|]/u);
 			if (ch) {
-				state.tokenize = this.inParserFunctionArgument(invoke, n);
+				state.tokenize = this.inParserFunctionArgument(invoke, n, ns);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
@@ -1538,10 +1549,31 @@ export class MediaWiki {
 							break;
 						case 'tag':
 							state.tokenize = this.inParserFunctionName(undefined, 2);
+							break;
+						case 'ifexist':
+						case 'lst':
+						case 'lstx':
+						case 'lsth':
+							state.tokenize = this.inParserFunctionName(Infinity);
 						// no default
 					}
-				} else if (insensitive[name] === 'filepath') {
-					state.tokenize = this.inParserFunctionName(Infinity);
+				} else {
+					const canonicalName = insensitive[name];
+					if (pageFunctions.has(canonicalName)) {
+						let namespace = 0;
+						switch (canonicalName) {
+							case 'filepath':
+								namespace = 6;
+								break;
+							case 'int':
+								namespace = 8;
+								break;
+							case 'msgnw':
+								namespace = 10;
+							// no default
+						}
+						state.tokenize = this.inParserFunctionName(Infinity, Infinity, namespace);
+					}
 				}
 				return makeLocalTagStyle('parserFunctionName', state);
 			}
@@ -1602,16 +1634,22 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionArgument(module?: number, n = module ?? Infinity): Tokenizer {
+	inParserFunctionArgument(module?: number, n = module ?? Infinity, ns = 0): Tokenizer {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}
 		const chars = n === 2 ? '}{<' : "}{<~'_-"; // `#invoke`/`#tag`
 		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
-		if (module === 1) {
-			style += ' mw-widget';
-		} else if (module === 2) {
-			style += ' mw-invoke';
+		switch (module) {
+			case 1:
+				style += ' mw-widget';
+				break;
+			case 2:
+				style += ' mw-invoke';
+				break;
+			case Infinity:
+				style += ` mw-function-${ns}`;
+			// no default
 		}
 		return (stream, state) => {
 			if (stream.eat('|')) {
