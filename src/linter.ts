@@ -113,6 +113,7 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
 /** 获取 Luacheck */
 export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>> = async () => {
 	await loadScript('npm/luacheck-browserify/dist/index.min.js', 'luacheck');
+	// eslint-disable-next-line @typescript-eslint/await-thenable
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
 };

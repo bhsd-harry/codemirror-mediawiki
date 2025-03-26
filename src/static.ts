@@ -1,4 +1,4 @@
-import type {Config} from 'wikiparser-node';
+import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
 export const tagModes = {
@@ -38,7 +38,7 @@ export const getStaticMwConfig = (
 		ext,
 		doubleUnderscore: [d0, d1, d2, d3],
 		img,
-	}: Config,
+	}: ConfigData,
 	modes: Record<string, string>,
 ): MwConfig => ({
 	tags: Object.fromEntries(ext.map(s => [s, true])),

@@ -53,7 +53,7 @@ import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
-import type {Config, QuickFixData} from 'wikiparser-node';
+import type {ConfigData, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 import type {Option, LiveOption} from './linter';
@@ -626,7 +626,7 @@ export class CodeMirror6 {
 	 * 将wikiparser-node设置转换为codemirror-mediawiki设置
 	 * @param config
 	 */
-	static getMwConfig(config: Config): MwConfig {
+	static getMwConfig(config: ConfigData): MwConfig {
 		return getStaticMwConfig(config, tagModes);
 	}
 }

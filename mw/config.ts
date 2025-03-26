@@ -8,7 +8,7 @@ import {
 } from '@bhsd/common/dist/cm';
 import {getStaticMwConfig} from '../src/static';
 import type {MagicWord, MagicRule} from '@bhsd/common/dist/cm';
-import type {Config} from 'wikiparser-node';
+import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 
 // 和本地缓存有关的常数
@@ -18,7 +18,7 @@ const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 		? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
 		: location.origin,
 	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
-	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1000 * 30,
+	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1e3 * 30,
 	others = new Set([...otherParserFunctions, 'msgnw']);
 
 /**
@@ -62,7 +62,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 		config.tagModes = modes;
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
-		const parserConfig: Config = await (await fetch(
+		const parserConfig: ConfigData = await (await fetch(
 			`${CDN}/npm/wikiparser-node/config/moegirl.json`,
 		)).json();
 		setObject('wikilintConfig', parserConfig);
@@ -135,8 +135,8 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
  * @param minConfig 基础Config
  * @param mwConfig
  */
-export const getParserConfig = (minConfig: Config, mwConfig: MwConfig): Config => {
-	let config: Config | null = getObject('wikilintConfig');
+export const getParserConfig = (minConfig: ConfigData, mwConfig: MwConfig): ConfigData => {
+	let config: ConfigData | null = getObject('wikilintConfig');
 	if (config) {
 		return config;
 	}
