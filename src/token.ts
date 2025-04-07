@@ -244,8 +244,9 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
 		'-': String.raw`-(?!\{(?!\{))`,
 	};
 	if (typeof comment === 'object') {
-		table['<'] = String.raw`<(?!!--|onlyinclude>|(?:${
-			comment.data.tags.slice(0, -1).join('|')
+		const {data: {tags}} = comment;
+		table['<'] = String.raw`<(?!!--${tags.includes('onlyinclude') ? '|onlyinclude>' : ''}|(?:${
+			tags.filter(tag => tag !== 'onlyinclude').join('|')
 		})(?:[\s/>]|$))`;
 	}
 	// eslint-disable-next-line @typescript-eslint/no-misused-spread
@@ -760,10 +761,11 @@ export class MediaWiki {
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false);
 					if (mt) {
-						const tagname = mt[1]!.toLowerCase();
+						const tagname = mt[1]!.toLowerCase(),
+							{data: {tags}, inHtmlTag} = state;
 						if (
-							mt[0] === 'onlyinclude>'
-							|| tagname !== 'onlyinclude' && state.data.tags.includes(tagname)
+							mt[0] === 'onlyinclude>' && tags.includes('onlyinclude')
+							|| tagname !== 'onlyinclude' && tags.includes(tagname)
 						) {
 							// Extension tag
 							if (isCloseTag) {
@@ -778,13 +780,13 @@ export class MediaWiki {
 								if (dt.n && dt.html) {
 									dt.html--;
 								}
-								if (tagname === state.inHtmlTag[0]) {
-									state.inHtmlTag.shift();
+								if (tagname === inHtmlTag[0]) {
+									inHtmlTag.shift();
 								} else {
 									chain(state, this.inStr('>', 'error'));
-									const i = state.inHtmlTag.lastIndexOf(tagname);
+									const i = inHtmlTag.lastIndexOf(tagname);
 									if (i !== -1) {
-										state.inHtmlTag.splice(i, 1);
+										inHtmlTag.splice(i, 1);
 									}
 									return makeLocalTagStyle('error', state);
 								}
@@ -1940,8 +1942,8 @@ export class MediaWiki {
 		};
 	}
 
-	'text/mediawiki'(): StreamParser<State> {
-		return this.mediawiki();
+	'text/mediawiki'(tags?: string[]): StreamParser<State> {
+		return this.mediawiki(tags);
 	}
 
 	'text/nowiki'(): StreamParser<Record<string, never>> {

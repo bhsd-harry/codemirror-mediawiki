@@ -8,6 +8,7 @@
 - [Autocompletion](./README.md#autocompletion) for parser functions such as `localurl`, `int` and `msgnw` on a MediaWiki site
 - [Autocompletion](./README.md#autocompletion) for the parser function `#invoke` now excludes documentation pages on a MediaWiki site
 - The [openLinks](./README.md#openlinks) extension for `<templatestyles>` on a MediaWiki site
+- Disallow nested `<onlyinclude>` in the MediaWiki mode
 
 ## 2.23.2
 
