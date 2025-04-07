@@ -233,28 +233,29 @@ export class FullMediaWiki extends MediaWiki {
 						};
 				}
 				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
-				let prefix = '';
-				if (isPage) {
-					if (hasTag(types, 'mw-widget')) {
-						prefix = 'Widget:';
-					} else if (hasTag(types, 'mw-invoke')) {
-						prefix = 'Module:';
-					} else {
-						prefix = 'File:';
-					}
-				}
 				if (isPage && search.trim() || hasTag(types, 'linkPageName')) {
+					let prefix = '';
+					if (isPage) {
+						prefix = this.autocompleteNamespaces[
+							[...types].find(t => t.startsWith('mw-function-'))!
+								.slice(12) as unknown as keyof typeof this.autocompleteNamespaces
+						];
+					}
 					const suggestions = await this.#linkSuggest(prefix + search);
-					return suggestions
-						? {
-							// eslint-disable-next-line unicorn/explicit-length-check
-							from: start + suggestions.offset - (isPage && prefix.length),
-							options: isPage
-								? suggestions.options
-								: suggestions.options.map((option): Completion => ({...option, apply})),
-							validFor,
-						}
-						: null;
+					if (!suggestions) {
+						return null;
+					} else if (!isPage) {
+						suggestions.options = suggestions.options.map((option): Completion => ({...option, apply}));
+					} else if (prefix === 'Module:') {
+						suggestions.options = suggestions.options
+							.filter(({label}) => !label.endsWith('/doc'));
+					}
+					return {
+						// eslint-disable-next-line unicorn/explicit-length-check
+						from: start + suggestions.offset - (isPage && prefix.length),
+						options: suggestions.options,
+						validFor,
+					};
 				}
 				const isArgument = hasTag(types, 'templateArgumentName'),
 					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),

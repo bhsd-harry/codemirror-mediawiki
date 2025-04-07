@@ -480,6 +480,7 @@ export class MediaWiki {
 	declare readonly tags;
 	declare readonly hasVariants;
 	declare readonly preRegex;
+	declare readonly autocompleteNamespaces;
 
 	constructor(config: MwConfig) {
 		const {
@@ -538,6 +539,14 @@ export class MediaWiki {
 				this.hasVariants ? String.raw`(?!\{)` : ''
 			}|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu'),
 		) as [RegExp, RegExp];
+		this.autocompleteNamespaces = {
+			0: '',
+			6: 'File:',
+			8: 'MediaWiki:',
+			10: 'Template:',
+			274: 'Widget:',
+			828: 'Module:',
+		};
 		this.registerGroundTokens();
 	}
 
@@ -606,10 +615,10 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
-		this.addToken('invoke', true);
-		this.addToken('widget', true);
-		for (const i of [0, 6, 8, 10]) {
-			this.addToken(`function-${i}`, true);
+		for (const i in this.autocompleteNamespaces) {
+			if (Number.isInteger(Number(i))) {
+				this.addToken(`function-${i}`, true);
+			}
 		}
 	}
 
@@ -1656,10 +1665,10 @@ export class MediaWiki {
 		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
 		switch (module) {
 			case 1:
-				style += ' mw-widget';
+				style += ' mw-function-274';
 				break;
 			case 2:
-				style += ' mw-invoke';
+				style += ' mw-function-828';
 				break;
 			case Infinity:
 				style += ` mw-function-${ns}`;

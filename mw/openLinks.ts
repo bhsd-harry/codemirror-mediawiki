@@ -10,20 +10,15 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		if (name.includes(tokens.fileText) && re.test(page)) {
 			return page;
 		}
-		if (page.startsWith('/')) {
+		const isTemplateStyles = name.includes(tokens.extTagAttributeValue);
+		if (!isTemplateStyles && page.startsWith('/')) {
 			page = `:${mw.config.get('wgPageName')}${page}`;
 		}
 		let ns = 0;
-		if (name.includes(tokens.templateName) || name.includes(tokens.extTagAttributeValue)) {
+		if (isTemplateStyles || name.includes(tokens.templateName)) {
 			ns = 10;
 		} else if (name.includes(tokens.parserFunction)) {
-			if (name.includes('mw-widget')) {
-				ns = 274;
-			} else if (name.includes('mw-invoke')) {
-				ns = 828;
-			} else {
-				ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
-			}
+			ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 			page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
 		}

@@ -5,6 +5,9 @@
 **Fixed**
 
 - CSS conflict with the [CodeMirror 6 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror) on a MediaWiki site
+- [Autocompletion](./README.md#autocompletion) for parser functions such as `localurl`, `int` and `msgnw` on a MediaWiki site
+- [Autocompletion](./README.md#autocompletion) for the parser function `#invoke` now excludes documentation pages on a MediaWiki site
+- The [openLinks](./README.md#openlinks) extension for `<templatestyles>` on a MediaWiki site
 
 ## 2.23.2
 
@@ -107,7 +110,7 @@
 **Added**
 
 - The [allowMultipleSelections](./README.md#allowmultipleselections) extension now also enables rectangular selections by holding the `Alt` key
-- The [autocompletion](./README.md#autocompletion) and [openLinks](./README.md#openlinks) extensions now also support the parser function `{{filepath:}}` when used on a MediaWiki site
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./README.md#openlinks) extensions now also support the parser function `filepath` when used on a MediaWiki site
 
 **Fixed**
 
