@@ -207,8 +207,12 @@ export class CodeMirror extends CodeMirror6 {
 		isCM = true,
 		page = mw.config.get('wgPageName'),
 	) {
-		if (instances.get(textarea)?.visible) {
+		if (instances.has(textarea)) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
+		} else if (textarea.id === 'wpTextbox1') {
+			mw.hook('ext.CodeMirror.ready').add((obj: {destroy(): void}) => {
+				obj.destroy();
+			});
 		}
 		super(textarea, lang, config, false);
 		this.ns = ns;

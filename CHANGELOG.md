@@ -1,3 +1,11 @@
+## 2.24.0
+
+*2025-04-07*
+
+**Fixed**
+
+- CSS conflict with the [CodeMirror 6 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror) on a MediaWiki site
+
 ## 2.23.2
 
 *2025-03-25*
