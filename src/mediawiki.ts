@@ -139,7 +139,7 @@ export class FullMediaWiki extends MediaWiki {
 	 * @param ns 命名空间
 	 */
 	async #linkSuggest(str: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
-		const {config: {linkSuggest}, nsRegex} = this;
+		const {config: {linkSuggest, nsid}, nsRegex} = this;
 		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(str)) {
 			return undefined;
 		}
@@ -167,9 +167,9 @@ export class FullMediaWiki extends MediaWiki {
 			const mt2 = nsRegex.exec(search) as [string, string] | null;
 			if (mt2) {
 				const [{length}, prefix] = mt2;
+				ns = nsid[prefix.replace(/ /gu, '_').toLowerCase()] || 1;
 				offset += length;
-				search = `${prefix}:${search.slice(length)}`;
-				ns = 1;
+				search = `${ns === -2 ? 'File' : prefix}:${search.slice(length)}`;
 			}
 		}
 		/* eslint-enable no-param-reassign */

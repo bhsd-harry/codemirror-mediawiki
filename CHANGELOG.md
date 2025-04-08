@@ -1,3 +1,11 @@
+## 2.24.1
+
+*2025-04-08*
+
+**Fixed**
+
+- [Autocompletion](./README.md#autocompletion) for media links on a MediaWiki site
+
 ## 2.24.0
 
 *2025-04-07*

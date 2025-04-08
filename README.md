@@ -589,3 +589,4 @@ CTRL/CMD-click opens a link in a new tab.
 1. Double URI encoding in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).
 1. Double HTML escaping in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20an%20ampersand)).
 1. Comments at the start of a line ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
+1. External link inside double brackets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
