@@ -1,10 +1,11 @@
 ## 2.24.1
 
-*2025-04-08*
+*2025-04-11*
 
 **Fixed**
 
 - [Autocompletion](./README.md#autocompletion) for media links on a MediaWiki site
+- `<includeonly>` and `<noinclude>` tags in link or template page names in the MediaWiki mode
 
 ## 2.24.0
 

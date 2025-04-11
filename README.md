@@ -584,6 +584,7 @@ CTRL/CMD-click opens a link in a new tab.
 ## Syntax Highlighting
 
 1. Preformatted text with a leading space may have false positives.
+1. [Extension:Translate](https://www.mediawiki.org/wiki/Extension:Translate) is not supported.
 1. Template parameter name followed by a newline ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
 1. Wikitext in template parameter names ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Double URI encoding in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).

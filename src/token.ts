@@ -100,7 +100,7 @@ class MediaWikiData {
 	declare readonly tags;
 
 	constructor(tags: string[]) {
-		this.tags = tags;
+		this.tags = tags.includes('translate') ? tags.filter(tag => tag !== 'tvar') : tags;
 		this.firstSingleLetterWord = null;
 		this.firstMultiLetterWord = null;
 		this.firstSpace = null;
@@ -459,7 +459,9 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	),
 	getExtAttrRegex = getRegex(s => new RegExp(`^(?:[^>/${s}]|${lookahead('/')})+`, 'u')),
 	getExtTagCloseRegex = getRegex(
-		name => new RegExp(`</${name}${name === 'onlyinclude' ? '>' : String.raw`\s*(?:>|$)`}`, 'iu'),
+		name => name === 'onlyinclude'
+			? /<\/onlyinclude(?:>|$)/u
+			: new RegExp(String.raw`</${name}\s*(?:>|$)`, 'iu'),
 	),
 	getNestedRegex = getRegex(tag => new RegExp(String.raw`^(?:[^<]|<(?!${tag}(?:[\s/>]|$)))+`, 'iu'));
 
@@ -763,10 +765,7 @@ export class MediaWiki {
 					if (mt) {
 						const tagname = mt[1]!.toLowerCase(),
 							{data: {tags}, inHtmlTag} = state;
-						if (
-							mt[0] === 'onlyinclude>' && tags.includes('onlyinclude')
-							|| tagname !== 'onlyinclude' && tags.includes(tagname)
-						) {
+						if ((mt[0] === 'onlyinclude>' || tagname !== 'onlyinclude') && tags.includes(tagname)) {
 							// Extension tag
 							if (isCloseTag) {
 								chain(state, this.inStr('>', 'error'));
@@ -1012,7 +1011,10 @@ export class MediaWiki {
 				return makeStyle(style, state);
 			} else if (stream.match(re) || space) {
 				return makeStyle(style, state);
-			} else if (stream.match(/^<[/a-z]/iu, false)) {
+			} else if (
+				stream.match(/^<(?!(?:includeonly|noinclude)(?:\/?>|\s|$))[/a-z]/iu, false)
+				&& !stream.match(/^<onlyinclude>/u, false)
+			) {
 				lt = stream.pos + 1;
 			}
 			return this.eatWikiText(section ? style : 'error')(stream, state);
@@ -1622,6 +1624,13 @@ export class MediaWiki {
 				return makeLocalTagStyle('templateBracket', state, 'nTemplate');
 			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
+				return makeLocalTagStyle('comment', state);
+			} else if (
+				stream.match(/^<\/?onlyinclude>/u)
+				|| stream.match(
+					/^<(?:(?:includeonly|noinclude)(?:\s[^>]*)?\/?>|\/(?:includeonly|noinclude)\s*>)/iu,
+				)
+			) {
 				return makeLocalTagStyle('comment', state);
 			} else if (stream.eat('|')) {
 				state.tokenize = this.inTemplateArgument(true);

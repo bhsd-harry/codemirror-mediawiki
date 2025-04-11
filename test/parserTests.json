@@ -2750,7 +2750,7 @@
 	{
 		"desc": "Fuzz testing: Parser24",
 		"wikitext": "{|\n{{{|\n<u CLASS=\n| {{{{SSSll!!!!!!!VVVV)]]][[Special:*xxxxxxx--><noinclude>}}}} >\n<br style=\"onmouseover='alert(document.cookie);' \" />\n\nMOVE YOUR MOUSE CURSOR OVER THIS TEXT\n|",
-		"parsed": "<table-bracket>{|</><templatevariable-bracket>{{{</><templatevariable-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>u </><htmltag-attribute html-u>CLASS=</><templatevariable-delimiter>|</><template-ground template-bracket> {{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>SSSll!!!!!!!VVVV)</><template2-ground error>]]][[</><template2-ground template-name pagename>Special:*xxxxxxx--</><template2-ground error>&gt</><comment>&lt;noinclude&gt</><templatevariable-bracket>}}}</><error>} &gt</><htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\"onmouseover='alert(document.cookie);' \"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</><error>MOVE YOUR MOUSE CURSOR OVER THIS TEXT</><table-delimiter>|</>"
+		"parsed": "<table-bracket>{|</><templatevariable-bracket>{{{</><templatevariable-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>u </><htmltag-attribute html-u>CLASS=</><templatevariable-delimiter>|</><template-ground template-bracket> {{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>SSSll!!!!!!!VVVV)</><template2-ground error>]]][[</><template2-ground template-name pagename>Special:*xxxxxxx--</><template2-ground error>&gt</><template2-ground comment>&lt;noinclude&gt</><template2-ground template-bracket>}}</><template-ground template-bracket>}}</><comment> &gt&lt;br style=\"onmouseover='alert(document.cookie);' \" /&gtMOVE YOUR MOUSE CURSOR OVER THIS TEXT</><templatevariable-delimiter>|</>"
 	},
 	{
 		"desc": "Fuzz testing: Parser25 (T8055)",
@@ -3645,7 +3645,7 @@
 	{
 		"desc": "preload: check that it doesn't try to do tricks",
 		"wikitext": "* <!-- Hello --> ''{{world}}'' {{<includeonly>subst:</includeonly>How are you}}{{ {{{|safesubst:}}} #if:1|2|3}}",
-		"parsed": "<list>*</> <comment>&lt;!-- Hello --&gt</> <apostrophes>''</><template-ground template-bracket>{{</><template-ground template-name pagename>world</><template-ground template-bracket>}}</><apostrophes>''</> <template-ground template-bracket>{{</><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>subst:</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>How are you}}<template-ground template-bracket>{{</><template-ground> </><template-ground templatevariable-bracket>{{{</><template-ground templatevariable-delimiter>|</><template-ground templatevariable>safesubst:</><template-ground templatevariable-bracket>}}}</><template-ground error> #if:1</><template-ground template-delimiter>|</><template-ground template>2</><template-ground template-delimiter>|</><template-ground template>3</><template-ground template-bracket>}}</>"
+		"parsed": "<list>*</> <comment>&lt;!-- Hello --&gt</> <apostrophes>''</><template-ground template-bracket>{{</><template-ground template-name pagename>world</><template-ground template-bracket>}}</><apostrophes>''</> <template-ground template-bracket>{{</><template-ground comment>&lt;includeonly&gt</><template-ground template-name pagename>subst:</><template-ground comment>&lt;/includeonly&gt</><template-ground template-name pagename>How are you</><template-ground template-bracket>}}{{</><template-ground> </><template-ground templatevariable-bracket>{{{</><template-ground templatevariable-delimiter>|</><template-ground templatevariable>safesubst:</><template-ground templatevariable-bracket>}}}</><template-ground error> #if:1</><template-ground template-delimiter>|</><template-ground template>2</><template-ground template-delimiter>|</><template-ground template>3</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Play a bit with r67090 and T5158",
@@ -4909,6 +4909,11 @@
 		"desc": "Function hook and variable",
 		"wikitext": "{{uc}}{{server:}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>uc</><template-ground template-bracket>}}{{</><template-ground template-name pagename>server:</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "New tvar syntax",
+		"wikitext": "<translate><tvar name=\"name\">contents</tvar></translate>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;tvar name=\"name\"&gtcontents&lt;/tvar&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "badCharacters"
@@ -11165,6 +11170,49 @@
 		"desc": "T319143 - copy-pasting of cells, after multiple cells, without \"row\"",
 		"wikitext": "{|\n|[[Eau]]||[[Abc]]\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Eau</><link-ground link-bracket>]]</><table-delimiter>||</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Abc</><link-ground link-bracket>]]</><table-bracket>|}</>"
+	},
+	{
+		"desc": "translateParserTests"
+	},
+	{
+		"desc": "#translation as magic word for valid language code",
+		"wikitext": "{{#translation:}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#translation</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#translation as magic word for source page",
+		"wikitext": "{{#translation:}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#translation</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#translation as magic word for invalid language code",
+		"wikitext": "{{#translation:}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#translation</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Old tvar syntax should not break too hard.",
+		"wikitext": "<translate><tvar|plop>pouet</></translate>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;tvar|plop&gtpouet&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Old tvar syntax should not pull content in cell attributes",
+		"wikitext": "{|\n|<translate>hello <tvar|var>variable</></translate>\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>|</><exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|var&gtvariable&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</><table-bracket>|}</>"
+	},
+	{
+		"desc": "Annotation markers starting lines should neither insert pre nor merge ranges",
+		"wikitext": "<translate><!--T:1--> translate 1</translate>\n<translate><!--T:2--> translate 2</translate>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;!--T:1--&gt translate 1</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;!--T:2--&gt translate 2</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "tvar in a template should get stripped",
+		"wikitext": "<translate>{{1x|<tvar|var>hello</>}}</translate>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>{{1x|&lt;tvar|var&gthello&lt;/&gt}}</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "tvar with old syntax containing template markup should not break",
+		"wikitext": "<translate>hello <tvar|code>{{1x|</>world<tvar|code2>}}</></translate>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|code&gt{{1x|&lt;/&gtworld&lt;tvar|code2&gt}}&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "wtEscaping"
