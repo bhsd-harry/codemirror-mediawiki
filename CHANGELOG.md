@@ -1,3 +1,12 @@
+## 2.24.2
+
+*2025-04-13*
+
+**Fixed**
+
+- Required sorting of [inlayHints](./README.md#inlayhints) in the MediaWiki mode
+- Highlighting of `<`, `{` and `&` in table attribute values in the MediaWiki mode
+
 ## 2.24.1
 
 *2025-04-11*

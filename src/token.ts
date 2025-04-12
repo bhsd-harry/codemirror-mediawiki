@@ -383,7 +383,35 @@ const prepareItalicForCorrection = (stream: StringStream, state: State): void =>
  * @param isTemplate 是否在模板中
  */
 const getPipe = (isTemplate: boolean): string =>
-	String.raw`${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\}`;
+	String.raw`(?:${isTemplate ? '' : String.raw`\||`}\{(?:\{\s*|\s*\()!\s*\}\})`;
+
+/**
+ * 计算标签属性的引号
+ * @param stream StringStream
+ */
+const getQuote = (stream: StringStream): string => {
+	const peek = stream.peek();
+	return peek === "'" || peek === '"' ? peek.repeat(2) : '';
+};
+
+/**
+ * 是否需要模板参数的等号
+ * @param t Tokenizer
+ */
+const getEqual = (t: Tokenizer): string => t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
+
+/**
+ * 下一个字符是否为空白字符
+ * @param stream StringStream
+ * @param sol 是否在行首
+ */
+const peekSpace = (stream: StringStream, sol?: boolean): boolean => {
+	if (sol && stream.sol()) {
+		return true;
+	}
+	const peek = stream.peek();
+	return Boolean(peek && !peek.trim());
+};
 
 const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	pageFunctions = new Set<string | undefined>([
@@ -406,7 +434,7 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		'u',
 	),
 	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u'),
-	tableDefinitionRegex = new RegExp(`^(?:[^&={</]|${lookahead('{</')})+`, 'iu'),
+	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
 	tableCellChars = "'<~_{-",
@@ -417,12 +445,12 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		return new RegExp(`^(?:${source}|[${punctuations}]+(?=${source}))*`, 'u');
 	}) as [RegExp, RegExp],
 	indentedTableRegex = [false, true].map(
-		isTemplate => new RegExp(String.raw`^:*\s*(?=\{(?:${getPipe(isTemplate)}))`, 'u'),
+		isTemplate => new RegExp(String.raw`^:*\s*(?=\{${getPipe(isTemplate)})`, 'u'),
 	) as [RegExp, RegExp],
 	tableRegex = [false, true]
-		.map(isTemplate => new RegExp(String.raw`^(?:${getPipe(isTemplate)})\s*`, 'u')) as [RegExp, RegExp],
+		.map(isTemplate => new RegExp(String.raw`^${getPipe(isTemplate)}\s*`, 'u')) as [RegExp, RegExp],
 	spacedTableRegex = [false, true].map(
-		isTemplate => new RegExp(String.raw`^\s*(:+\s*)?(?=\{(?:${getPipe(isTemplate)}))`, 'u'),
+		isTemplate => new RegExp(String.raw`^\s*(:+\s*)?(?=\{${getPipe(isTemplate)})`, 'u'),
 	) as [RegExp, RegExp],
 	linkTextRegex = [false, true].map(file => {
 		const chars = `]'{<${file ? '~' : '['}-`;
@@ -732,7 +760,7 @@ export class MediaWiki {
 						}
 						break;
 					default:
-						if (/\s/u.test(ch)) {
+						if (!ch.trim()) {
 							// Leading spaces is valid syntax for tables, bug T108454
 							const mt = stream.match(spacedTableRegex[isTemplate ? 1 : 0]);
 							if (mt) {
@@ -931,16 +959,16 @@ export class MediaWiki {
 	inExternalLink(text?: boolean): Tokenizer {
 		return (stream, state) => {
 			const t = state.stack[0]!,
-				isArgument = t.name === 'inTemplateArgument' && t.args![0],
+				equal = getEqual(t),
 				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable', 'inTableCell']
 					.includes(t.name),
-				pipe = (isNested ? '|' : '') + (isArgument ? '=' : ''),
+				pipe = (isNested ? '|' : '') + equal,
 				peek = stream.peek();
 			if (
 				stream.sol()
 				|| stream.match(/^\p{Zs}*\]/u)
 				|| isNested && peek === '|'
-				|| isArgument && peek === '='
+				|| equal && peek === '='
 			) {
 				pop(state);
 				return makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
@@ -1117,14 +1145,16 @@ export class MediaWiki {
 
 	@getTokenizer
 	inTableDefinition(tr?: boolean, quote?: string): Tokenizer {
-		const style = `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`;
+		const style = quote === undefined
+			? `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`
+			: tokens.tableDefinitionValue;
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.tokenize = this.inTable;
 				return '';
 			}
 			const t = state.stack[0]!,
-				equal = t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
+				equal = getEqual(t);
 			if (equal && stream.peek() === '=') {
 				pop(state);
 				return '';
@@ -1136,17 +1166,16 @@ export class MediaWiki {
 				} else {
 					stream.match(getTableDefinitionRegex(equal + quote[0]));
 				}
-				return makeLocalTagStyle('tableDefinitionValue', state);
+				return makeLocalStyle(style, state);
 			} else if (quote === '') { // 无引号的属性值
-				if (/\s/u.test(stream.peek() ?? '')) {
+				if (peekSpace(stream)) {
 					state.tokenize = this.inTableDefinition(tr);
 					return '';
 				}
 				stream.match(tableDefinitionValueRegex[equal ? 1 : 0]);
-				return makeLocalTagStyle('tableDefinitionValue', state);
+				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
-				const next = stream.peek();
-				state.tokenize = this.inTableDefinition(tr, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
+				state.tokenize = this.inTableDefinition(tr, getQuote(stream));
 				return makeLocalStyle(style, state);
 			}
 			stream.match(tableDefinitionRegex);
@@ -1223,7 +1252,7 @@ export class MediaWiki {
 				}
 			}
 			const t = state.stack[0]!,
-				equal = t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
+				equal = getEqual(t);
 			if (equal && stream.peek() === '=') {
 				pop(state);
 				return '';
@@ -1298,7 +1327,7 @@ export class MediaWiki {
 			}
 			const t = state.stack[0]!,
 				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
-					+ (t.name === 'inTemplateArgument' && t.args![0] ? '=' : '');
+					+ getEqual(t);
 			if (pipe.includes(stream.peek() ?? '')) {
 				pop(state);
 				return makeLocalTagStyle('htmlTagBracket', state);
@@ -1312,15 +1341,14 @@ export class MediaWiki {
 				}
 				return makeLocalStyle(style, state);
 			} else if (quote === '') { // 无引号的属性值
-				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
+				if (peekSpace(stream, true)) {
 					state.tokenize = this.inHtmlTagAttribute(name);
 					return '';
 				}
 				stream.match(getHtmlAttrRegex(String.raw`\s${pipe}`));
 				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
-				const next = stream.peek();
-				state.tokenize = this.inHtmlTagAttribute(name, /['"]/u.test(next ?? '') ? next!.repeat(2) : '');
+				state.tokenize = this.inHtmlTagAttribute(name, getQuote(stream));
 				return makeLocalStyle(style, state);
 			}
 			stream.match(getHtmlAttrKeyRegex(pipe));
@@ -1371,19 +1399,13 @@ export class MediaWiki {
 				}
 				return advance(stream, state, getExtAttrRegex(quote[0]!));
 			} else if (quote === '') { // 无引号的属性值
-				if (stream.sol() || /\s/u.test(stream.peek() ?? '')) {
+				if (peekSpace(stream, true)) {
 					state.tokenize = this.inExtTagAttribute(name);
 					return '';
 				}
 				return advance(stream, state, /^(?:[^>/\s]|\/(?!>))+/u);
 			} else if (stream.match(/^=\s*/u)) {
-				const next = stream.peek();
-				state.tokenize = this.inExtTagAttribute(
-					name,
-					/['"]/u.test(next ?? '') ? next!.repeat(2) : '',
-					isLang,
-					isPage,
-				);
+				state.tokenize = this.inExtTagAttribute(name, getQuote(stream), isLang, isPage);
 				return makeLocalStyle(style, state);
 			}
 			const mt = stream.match(/^(?:[^>/=]|\/(?!>))+/u)!;

@@ -39,9 +39,13 @@ const stateEffect = StateEffect.define<InlayHintEffect>(),
 					if (str === text) {
 						return inlayHints
 							? Decoration.set(
-								inlayHints.reverse().map(({position, label}) => Decoration.widget({
-									widget: new InlayHintWidget(label as string),
-								}).range(posToIndex(doc, position))),
+								inlayHints.reverse()
+									.map(({position, label}) => [posToIndex(doc, position), label as string] as const)
+									.sort(([a], [b]) => a - b)
+									.map(
+										([index, label]) =>
+											Decoration.widget({widget: new InlayHintWidget(label)}).range(index),
+									),
 							)
 							: Decoration.none;
 					}
