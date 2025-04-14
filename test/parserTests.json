@@ -4916,6 +4916,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;tvar name=\"name\"&gtcontents&lt;/tvar&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "Unicode number before autolinks",
+		"wikitext": "１http://example.com",
+		"parsed": "１http://example.com"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

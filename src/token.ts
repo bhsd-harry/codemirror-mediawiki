@@ -901,9 +901,9 @@ export class MediaWiki {
 				// no default
 			}
 			if (state.stack.length === 0) {
-				if (/[^\p{L}\d_]/u.test(ch || '')) {
+				if (/[^\p{L}\p{N}_]/u.test(ch || '')) {
 					// highlight free external links, bug T108448
-					stream.eatWhile(/[^\p{L}\d_&'{[<~:-]/u);
+					stream.eatWhile(/[^\p{L}\p{N}_&'{[<~:-]/u);
 					const mt = stream.match(this.urlProtocols, false);
 					if (mt && !stream.match('//')) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
@@ -915,7 +915,7 @@ export class MediaWiki {
 						return makeStyle(style, state);
 					}
 				}
-				stream.eatWhile(/[\p{L}\d]/u);
+				stream.eatWhile(/[\p{L}\p{N}]/u);
 			}
 			return makeStyle(style, state);
 		};
@@ -1119,7 +1119,7 @@ export class MediaWiki {
 
 	eatDoubleUnderscore(style: string, stream: StringStream, state: State): Style {
 		const {config: {doubleUnderscore}} = this,
-			name = stream.match(/^[\p{L}\d_]+?__/u);
+			name = stream.match(/^[\p{L}\p{N}_]+?__/u);
 		if (name) {
 			if (
 				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)

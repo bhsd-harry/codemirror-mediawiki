@@ -342,12 +342,12 @@ export class FullMediaWiki extends MediaWiki {
 				'linkToSection',
 				'extLink',
 			])) {
-				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\d_])*$/u);
+				let mt = context.matchBefore(/__(?:(?!__)[\p{L}\p{N}_])*$/u);
 				if (mt) {
 					return {
 						from: mt.from,
 						options: this.doubleUnderscore,
-						validFor: /^[\p{L}\d]*$/u,
+						validFor: /^[\p{L}\p{N}]*$/u,
 					};
 				}
 				mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
