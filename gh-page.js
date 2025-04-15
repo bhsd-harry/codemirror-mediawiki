@@ -14,14 +14,16 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         extension.checked = search.has(extension.id);
     }
     const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cm = new CodeMirror6(textarea), linters = {};
-    let config, parserConfig;
+    let config, fetchConfig;
     const init = async (lang) => {
         const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none';
+        let parserConfig;
         for (const id of mediawikiOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = display;
         }
         if (isMediaWiki || lang === 'html') {
-            parserConfig !== null && parserConfig !== void 0 ? parserConfig : (parserConfig = await (await fetch('/wikiparser-node/config/default.json')).json());
+            fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
+            parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
             Object.assign(cm, { config });
         }

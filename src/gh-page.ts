@@ -27,7 +27,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
-		parserConfig: ConfigData | undefined;
+		fetchConfig: Promise<ConfigData> | undefined;
 
 	/**
 	 * 设置语言
@@ -36,13 +36,14 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none';
+		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
 		}
 		if (isMediaWiki || lang === 'html') {
-			// eslint-disable-next-line require-atomic-updates
-			parserConfig ??= await (await fetch('/wikiparser-node/config/default.json')).json();
-			config ??= CodeMirror6.getMwConfig(parserConfig!);
+			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
+			parserConfig = await fetchConfig;
+			config ??= CodeMirror6.getMwConfig(parserConfig);
 			Object.assign(cm, {config});
 		}
 		await cm.setLanguage(lang, config);
