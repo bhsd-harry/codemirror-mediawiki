@@ -10,6 +10,7 @@ import {getStaticMwConfig} from '../src/static';
 import type {MagicWord, MagicRule} from '@bhsd/common/dist/cm';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
+import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';
 
 // 和本地缓存有关的常数
 const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
@@ -37,11 +38,7 @@ const setConfig = (config: MwConfig): void => {
 	mw.config.set('extCodeMirrorConfig', config);
 };
 
-/**
- * 加载CodeMirror的mediawiki模块需要的设置
- * @param modes tagModes
- */
-export const getMwConfig = async (modes: Record<string, string>): Promise<MwConfig> => {
+export const getMwConfig: MwConfigGetter = async modes => {
 	// 只在localStorage过期时才会重新加载ext.CodeMirror.data
 	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) {
 		await mw.loader.using(
@@ -130,12 +127,7 @@ export const getMwConfig = async (modes: Record<string, string>): Promise<MwConf
 	return {...config!, nsid};
 };
 
-/**
- * 将MwConfig转换为Config
- * @param minConfig 基础Config
- * @param mwConfig
- */
-export const getParserConfig = (minConfig: ConfigData, mwConfig: MwConfig): ConfigData => {
+export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 	let config: ConfigData | null = getObject('wikilintConfig');
 	if (config) {
 		return config;
