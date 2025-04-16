@@ -1,11 +1,12 @@
 ## 2.24.2
 
-*2025-04-13*
+*2025-04-16*
 
 **Fixed**
 
 - Required sorting of [inlayHints](./README.md#inlayhints) in the MediaWiki mode
 - Highlighting of `<`, `{` and `&` in table attribute values in the MediaWiki mode
+- The handling of unicode numbers in the MediaWiki mode
 
 ## 2.24.1
 
