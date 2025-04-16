@@ -1,6 +1,6 @@
 import {hoverTooltip} from '@codemirror/view';
 import {loadScript, getLSP} from '@bhsd/common';
-import type {Tooltip, TooltipView} from '@codemirror/view';
+import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
 import type {Text} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
 import type * as MarkdownIt from 'markdown-it';
@@ -26,6 +26,21 @@ export const indexToPos = (doc: Text, index: number): Position => {
  */
 export const posToIndex = (doc: Text, pos: Position): number => doc.line(pos.line + 1).from + pos.character;
 
+/**
+ * 创建 TooltipView
+ * @param view EditorView 实例
+ * @param innerHTML 提示内容
+ */
+export const createTooltipView = (view: EditorView, innerHTML: string): TooltipView => {
+	const dom = document.createElement('div'),
+		inner = document.createElement('div');
+	dom.append(inner);
+	dom.className = 'cm-tooltip-hover';
+	dom.style.font = getComputedStyle(view.contentDOM).font;
+	inner.innerHTML = innerHTML;
+	return {dom};
+};
+
 export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 	const {state: {doc}} = view,
 		hover = await getLSP(view)
@@ -39,13 +54,7 @@ export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 			end: posToIndex(doc, end),
 			above: true,
 			create(): TooltipView {
-				const dom = document.createElement('div'),
-					inner = document.createElement('div');
-				dom.append(inner);
-				dom.className = 'cm-tooltip-hover';
-				dom.style.font = getComputedStyle(view.contentDOM).font;
-				inner.innerHTML = md!.render((hover.contents as MarkupContent).value);
-				return {dom};
+				return createTooltipView(view, md!.render((hover.contents as MarkupContent).value));
 			},
 		};
 	}
