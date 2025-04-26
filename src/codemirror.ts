@@ -207,7 +207,7 @@ export class CodeMirror6 {
 				this.#indent.of(indentUnit.of(this.#indentStr)),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
-				syntaxHighlighting(defaultHighlightStyle satisfies Highlighter),
+				syntaxHighlighting(defaultHighlightStyle satisfies Highlighter, {fallback: true}),
 				EditorView.contentAttributes.of({
 					accesskey: textarea.accessKey,
 					tabindex: String(textarea.tabIndex),
