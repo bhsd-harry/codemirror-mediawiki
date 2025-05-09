@@ -70,10 +70,8 @@ export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean)
 
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
-	functionHooks?: string[];
 	variants?: string[];
 	img?: Record<string, string>;
-	redirection?: string[];
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	linkSuggest?: ApiSuggest;

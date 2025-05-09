@@ -83,9 +83,9 @@ export const getMwConfig: MwConfigGetter = async modes => {
 			siprop: [
 				'general',
 				'magicwords',
-				...config && !isIPE ? [] : ['extensiontags', 'functionhooks'],
-				...config?.variableIDs && !isIPE ? [] : ['variables'],
-				...config && !isIPE && !config.functionHooks ? ['functionhooks'] : [],
+				...config && !isIPE ? [] : ['extensiontags'],
+				...config?.variableIDs ? [] : ['variables'],
+				...config?.functionHooks ? [] : ['functionhooks'],
 			],
 			formatversion: '2',
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -98,7 +98,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 			}
 		} else { // 情形4：`config === null`
 			const functions = new Set([
-				...functionhooks,
+				...functionhooks.map(s => s.toLowerCase()),
 				...variables,
 				...others,
 			]);
@@ -119,7 +119,10 @@ export const getMwConfig: MwConfigGetter = async modes => {
 			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
 		});
 		config!.variableIDs ??= variables;
-		config!.functionHooks ??= [...functionhooks, 'msgnw'];
+		config!.functionHooks ??= functionhooks.map(s => s.toLowerCase());
+		if (!config!.functionHooks.includes('msgnw')) {
+			config!.functionHooks.push('msgnw');
+		}
 	}
 	setConfig(config!);
 	ALL_SETTINGS_CACHE[SITE_ID] = {config: config!, time: Date.now()};
@@ -132,15 +135,13 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 	if (config) {
 		return config;
 	}
-	const {nsid, variants, redirection, functionSynonyms, functionHooks, img} = mwConfig,
+	const {nsid, variants, functionSynonyms, img} = mwConfig,
 		[insensitive, sensitive] = functionSynonyms;
 	config = {
 		...getParserConfigBase(minConfig, mwConfig),
 		namespaces: mw.config.get('wgFormattedNamespaces'),
 		nsid,
 		variants: variants!,
-		redirection: redirection ?? minConfig.redirection,
-		...functionHooks && {functionHook: functionHooks},
 	};
 	if (location.hostname.endsWith('.moegirl.org.cn')) {
 		config.html[2].push('img');

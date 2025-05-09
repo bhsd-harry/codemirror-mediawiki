@@ -107,7 +107,12 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
 /** 获取 Stylelint */
 export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
 	await loadScript('npm/stylelint-bundle', 'stylelint');
-	return (code, opt) => styleLint(stylelint, code, opt?.['rules'] as Record<string, unknown> | undefined);
+	return (code, opt) => styleLint(
+		stylelint,
+		code,
+		opt?.['rules'] as Record<string, unknown> | undefined,
+		true,
+	);
 };
 
 /** 获取 Luacheck */
