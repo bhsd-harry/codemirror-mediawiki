@@ -1,3 +1,11 @@
+## 2.25.0
+
+*2025-05-17*
+
+**Added**
+
+- Stylelint now provides auto-fix suggestions
+
 ## 2.24.2
 
 *2025-04-16*

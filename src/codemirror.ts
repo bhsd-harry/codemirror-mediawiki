@@ -459,13 +459,28 @@ export class CodeMirror6 {
 			case 'css': {
 				const styleLint = await getCssLinter();
 				return async doc => (await styleLint(doc.toString(), getOpt()))
-					.map(({text, severity, line, column, endLine, endColumn}): Diagnostic => ({
-						source: 'Stylelint',
-						message: text,
-						severity,
-						from: pos(doc, line, column),
-						to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
-					}));
+					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
+						const diagnostic: Diagnostic = {
+							source: 'Stylelint',
+							message: text,
+							severity,
+							from: pos(doc, line, column),
+							to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
+						};
+						if (fix) {
+							diagnostic.actions = [
+								{
+									name: 'fix',
+									apply(view): void {
+										view.dispatch({
+											changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
+										});
+									},
+								},
+							];
+						}
+						return diagnostic;
+					});
 			}
 			case 'lua': {
 				const luaLint = await getLuaLinter();
