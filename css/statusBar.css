@@ -1,0 +1,55 @@
+.cm-status-worker,
+.cm-status-message {
+	padding: 0 .3em;
+	display: table-cell;
+}
+.cm-status-worker {
+	user-select: none;
+}
+.cm-status-worker > * {
+	display: table-cell;
+	white-space: nowrap;
+}
+.cm-status-error, .cm-status-warning {
+	padding-right: 8px;
+	cursor: pointer;
+}
+.cm-status-worker > * > div {
+	display: inline-block;
+	vertical-align: middle;
+}
+.cm-status-worker > * > div:first-child {
+	margin-right: 4px;
+	height: 1em;
+}
+.cm-status-fix-disabled {
+	content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><g fill="%23dadde3"><path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"></path></g></svg>');
+}
+.cm-status-fix-enabled {
+	content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><g fill="%23ffce31"><path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"></path></g></svg>');
+	cursor: pointer;
+}
+.cm-status-fix-menu {
+	display: none;
+	position: absolute;
+	padding: 1px 5px;
+	cursor: pointer;
+	z-index: 301;
+	background-color: #f5f5f5;
+	border: 1px solid #ddd;
+	border-radius: 2px;
+	box-shadow: 0 2px 2px 0 rgb(0, 0, 0, .25);
+	outline: none;
+	white-space: nowrap;
+}
+.cm-status-fix-menu:hover {
+	background-color: #e2f2ff;
+}
+.cm-status-message {
+	border-left: 1px solid #c8ccd1;
+	width: 100%;
+}
+.cm-status-message .cm-diagnosticAction {
+	padding-top: 0;
+	padding-bottom: 0;
+}

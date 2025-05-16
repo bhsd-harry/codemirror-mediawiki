@@ -5,6 +5,7 @@
 **Added**
 
 - Stylelint now provides auto-fix suggestions
+- A new status bar for the [lint](./README.md#lint) extension
 
 ## 2.24.2
 

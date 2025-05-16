@@ -47,6 +47,7 @@ import openLinks from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
+import statusBar from './statusBar';
 import * as plugins from './plugins';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
@@ -316,9 +317,15 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(view => lintSource(view.state.doc)),
+				linter(view => lintSource(view.state.doc), {
+					markerFilter(diagnostics) {
+						return diagnostics
+							.filter(({severity}) => severity !== 'custom' as unknown as Diagnostic['severity']);
+					},
+				}),
 				lintGutter(),
 				keymap.of(lintKeymap),
+				statusBar,
 			]
 			: [];
 		if (lintSource) {
@@ -414,14 +421,19 @@ export class CodeMirror6 {
 					}));
 			}
 			case 'javascript': {
-				const esLint = await getJsLinter();
+				const esLint = await getJsLinter(true);
+				const severities = {
+					0: 'custom',
+					1: 'warning',
+					2: 'error',
+				};
 				return doc => esLint(doc.toString(), getOpt())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
 								source: 'ESLint',
 								message: message + (ruleId ? ` (${ruleId})` : ''),
-								severity: severity === 1 ? 'warning' : 'error',
+								severity: severities[severity] as Diagnostic['severity'],
 								from: start,
 								to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
 							};
@@ -440,7 +452,7 @@ export class CodeMirror6 {
 					});
 			}
 			case 'css': {
-				const styleLint = await getCssLinter();
+				const styleLint = await getCssLinter(true);
 				return async doc => (await styleLint(doc.toString(), getOpt()))
 					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
 						const diagnostic: Diagnostic = {

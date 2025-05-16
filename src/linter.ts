@@ -2,7 +2,7 @@ import {loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
 import {styleLint} from '@bhsd/common/dist/stylelint';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
-import type {Warning} from 'stylelint';
+import type {Warning, Severity} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 
 export type Option = Record<string, unknown> | null | undefined;
@@ -86,8 +86,11 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	};
 };
 
-/** 获取 ESLint */
-export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
+/**
+ * 获取 ESLint
+ * @param fix 是否修正
+ */
+export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async (fix?: boolean) => {
 	await loadScript('npm/eslint-linter-browserify@8.57.0/linter.min.js', 'eslint', true);
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
@@ -101,13 +104,48 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
 			conf.rules![name] = 2;
 		}
 	}
-	return (text, opt) => esLinter.verify(text, {...conf, ...opt});
+	return (text, opt) => {
+		const config = {...conf, ...opt},
+			warnings = esLinter.verify(text, config);
+		if (fix) {
+			const {fixed, output} = esLinter.verifyAndFix(text, config);
+			if (fixed) {
+				warnings.push({
+					line: 1,
+					column: 1,
+					ruleId: null,
+					severity: 0,
+					message: output,
+				});
+			}
+		}
+		return warnings;
+	};
 };
 
-/** 获取 Stylelint */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
+/**
+ * 获取 Stylelint
+ * @param fix 是否修正
+ */
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (fix?: boolean) => {
 	await loadScript('npm/@bhsd/stylelint-browserify', 'stylelint');
-	return (code, opt) => styleLint(stylelint, code, opt?.['rules'] as Record<string, unknown> | undefined);
+	return async (code, opt) => {
+		const rules = opt?.['rules'] as Record<string, unknown> | undefined,
+			warnings = await styleLint(stylelint, code, rules);
+		if (fix) {
+			const text = await styleLint(stylelint, code, rules, true);
+			if (text !== code) {
+				warnings.push({
+					line: 1,
+					column: 1,
+					rule: 'fix',
+					severity: 'custom' as Severity,
+					text,
+				});
+			}
+		}
+		return warnings;
+	};
 };
 
 /** 获取 Luacheck */

@@ -30,8 +30,8 @@ declare interface IWikitextModel extends editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.22',
-	addons = ['inlayHints'];
+const baseVersion = '2.25',
+	addons = ['lint'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 
