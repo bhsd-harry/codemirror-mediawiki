@@ -219,7 +219,6 @@ export class CodeMirror6 {
 				keymap.of([
 					...defaultKeymap,
 					...searchKeymap,
-					...lintKeymap,
 					indentWithTab,
 					{
 						key: 'Mod-Shift-x',
@@ -288,23 +287,6 @@ export class CodeMirror6 {
 		this.#view!.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
 	}
 
-	/**
-	 * 开关语法检查面板
-	 * @param show 是否显示
-	 */
-	#toggleLintPanel(show: boolean): void {
-		if (HTMLUListElement.prototype.focus.name !== 'lintPanelFocus') {
-			const lintPanelFocus = function(this: HTMLUListElement, opt?: FocusOptions): void {
-				HTMLElement.prototype.focus.call(this, {
-					...opt,
-					...this.matches('.cm-panel-lint ul') && {preventScroll: true},
-				});
-			};
-			HTMLUListElement.prototype.focus = lintPanelFocus;
-		}
-		this.#minHeight(show);
-	}
-
 	/** 获取语法检查扩展 */
 	#getLintExtension(): LintExtension | undefined {
 		return (this.#linter.get(this.#view!.state) as LintExtension[])[0];
@@ -322,7 +304,7 @@ export class CodeMirror6 {
 				this.#language.reconfigure(languages[lang]!(config)),
 				this.#linter.reconfigure(linters[lang] ?? []),
 			]);
-			this.#toggleLintPanel(Boolean(linters[lang]));
+			this.#minHeight(Boolean(linters[lang]));
 			this.prefer({});
 		}
 	}
@@ -334,8 +316,9 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(view => lintSource(view.state.doc), {autoPanel: true}),
+				linter(view => lintSource(view.state.doc)),
 				lintGutter(),
+				keymap.of(lintKeymap),
 			]
 			: [];
 		if (lintSource) {
@@ -345,7 +328,7 @@ export class CodeMirror6 {
 		}
 		if (this.#view) {
 			this.#effects(this.#linter.reconfigure(linterExtension));
-			this.#toggleLintPanel(Boolean(lintSource));
+			this.#minHeight(Boolean(lintSource));
 		}
 	}
 
