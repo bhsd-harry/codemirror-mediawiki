@@ -20,6 +20,7 @@ declare interface Test {
 	Object.assign(globalThis, {cm});
 	/** @implements */
 	wikiparse.print = (wikitext, include, stage): Promise<[number, string, string][]> => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const printed = Parser.parse(wikitext, include, stage).print();
 		return Promise.resolve([[stage ?? Infinity, wikitext, printed]]);
 	};

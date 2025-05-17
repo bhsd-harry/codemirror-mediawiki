@@ -2,7 +2,7 @@ import {getObject, setObject, compareVersion} from '@bhsd/common';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.24.3',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.25.0',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 export const languages: Record<string, string> = {
