@@ -1,3 +1,11 @@
+## 2.25.1
+
+*2025-05-18*
+
+**Fixed**
+
+- The status bar is unclickable when there is no problem detected in the [lint](./README.md#lint) extension
+
 ## 2.25.0
 
 *2025-05-17*

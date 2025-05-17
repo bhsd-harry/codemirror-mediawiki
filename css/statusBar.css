@@ -11,6 +11,8 @@
 }
 .cm-status-error, .cm-status-warning {
 	padding-right: 8px;
+}
+.cm-status-worker-enabled .cm-status-error, .cm-status-worker-enabled .cm-status-warning {
 	cursor: pointer;
 }
 .cm-status-worker > * > div {

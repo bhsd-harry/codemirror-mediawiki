@@ -39,8 +39,10 @@ function getLintMarker(view: EditorView, severity: Severity | 'fix', handler?: (
 		count.textContent = '0';
 		marker.append(icon, count);
 		marker.addEventListener('click', () => {
-			nextDiagnostic(view);
-			view.focus();
+			if (marker.parentElement?.classList.contains('cm-status-worker-enabled')) {
+				nextDiagnostic(view);
+				view.focus();
+			}
 		});
 	}
 	return marker;
@@ -113,6 +115,7 @@ export default showPanel.of(view => {
 							{classList} = fix.firstChild as HTMLDivElement;
 						classList.toggle('cm-status-fix-enabled', fixable);
 						classList.toggle('cm-status-fix-disabled', !fixable);
+						worker.classList.toggle('cm-status-worker-enabled', diagnostics.length > 0);
 						updateDiagnosticsCount(diagnostics, 'error', error);
 						updateDiagnosticsCount(diagnostics, 'warning', warning);
 						updateDiagnosticMessage(view, diagnostics, head, message);

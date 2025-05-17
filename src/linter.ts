@@ -88,9 +88,9 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 
 /**
  * 获取 ESLint
- * @param fix 是否修正
+ * @param fixAll 是否修正
  */
-export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async (fix?: boolean) => {
+export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async (fixAll?: boolean) => {
 	await loadScript('npm/eslint-linter-browserify@8.57.0/linter.min.js', 'eslint', true);
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
@@ -107,7 +107,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 	return (text, opt) => {
 		const config = {...conf, ...opt},
 			warnings = esLinter.verify(text, config);
-		if (fix) {
+		if (fixAll && warnings.some(({fix, suggestions}) => fix || suggestions?.length)) {
 			const {fixed, output} = esLinter.verifyAndFix(text, config);
 			if (fixed) {
 				warnings.push({
@@ -125,14 +125,14 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 
 /**
  * 获取 Stylelint
- * @param fix 是否修正
+ * @param fixAll 是否修正
  */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (fix?: boolean) => {
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (fixAll?: boolean) => {
 	await loadScript('npm/@bhsd/stylelint-browserify', 'stylelint');
 	return async (code, opt) => {
 		const rules = opt?.['rules'] as Record<string, unknown> | undefined,
 			warnings = await styleLint(stylelint, code, rules);
-		if (fix) {
+		if (fixAll && warnings.some(({fix}) => fix)) {
 			const text = await styleLint(stylelint, code, rules, true);
 			if (text !== code) {
 				warnings.push({
