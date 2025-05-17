@@ -91,17 +91,20 @@ export default showPanel.of(view => {
 	const dom = document.createElement('div'),
 		worker = document.createElement('div'),
 		message = document.createElement('div'),
+		position = document.createElement('div'),
 		error = getLintMarker(view, 'error'),
 		warning = getLintMarker(view, 'warning'),
 		fix = getLintMarker(view, 'fix', handler);
 	worker.className = 'cm-status-worker';
 	worker.append(error, warning, fix);
 	message.className = 'cm-status-message';
+	position.className = 'cm-status-line';
+	position.textContent = '0:0';
 	dom.className = 'cm-panel cm-panel-status';
-	dom.append(worker, message);
+	dom.append(worker, message, position);
 	return {
 		dom,
-		update({state: {selection: {main: {head}}}, transactions, docChanged, selectionSet}): void {
+		update({state: {selection: {main: {head, anchor}}, doc}, transactions, docChanged, selectionSet}): void {
 			for (const tr of transactions) {
 				for (const effect of tr.effects) {
 					if (effect.is(setDiagnosticsEffect)) {
@@ -118,6 +121,11 @@ export default showPanel.of(view => {
 			}
 			if (docChanged || selectionSet) {
 				updateDiagnosticMessage(view, diagnostics, head, message);
+				const {number, from} = doc.lineAt(head);
+				position.textContent = `${number}:${head - from}`;
+				if (anchor !== head) {
+					position.textContent += ` (${Math.abs(head - anchor)})`;
+				}
 			}
 		},
 	};

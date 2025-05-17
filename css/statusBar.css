@@ -1,5 +1,4 @@
-.cm-status-worker,
-.cm-status-message {
+.cm-panel-status > div {
 	padding: 0 .3em;
 	display: table-cell;
 }
@@ -47,9 +46,13 @@
 }
 .cm-status-message {
 	border-left: 1px solid #c8ccd1;
+	border-right: 1px solid #c8ccd1;
 	width: 100%;
 }
 .cm-status-message .cm-diagnosticAction {
 	padding-top: 0;
 	padding-bottom: 0;
+}
+.cm-status-line {
+	white-space: nowrap;
 }
