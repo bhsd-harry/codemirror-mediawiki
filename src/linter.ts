@@ -97,16 +97,24 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 		conf: Linter.Config = {
 			env: {browser: true, es2024: true},
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
-			rules: {},
-		};
+		},
+		recommended: Linter.RulesRecord = {};
 	for (const [name, {meta}] of esLinter.getRules()) {
 		if (meta?.docs?.recommended) {
-			conf.rules![name] = 2;
+			recommended[name] = 2;
 		}
 	}
-	return (text, opt) => {
-		const config = {...conf, ...opt},
-			warnings = esLinter.verify(text, config);
+	return (text, opt: Linter.Config | null | undefined) => {
+		const config: Linter.Config = {...conf, ...opt};
+		if (
+			!('rules' in config)
+			|| config.extends === 'eslint:recommended'
+			|| Array.isArray(config.extends) && config.extends.includes('eslint:recommended')
+		) {
+			config.rules = {...recommended, ...config.rules};
+		}
+		delete config.extends;
+		const warnings = esLinter.verify(text, config);
 		if (fixAll && warnings.some(({fix, suggestions}) => fix || suggestions?.length)) {
 			const {fixed, output} = esLinter.verifyAndFix(text, config);
 			if (fixed) {
@@ -130,10 +138,9 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (fixAll?: boolean) => {
 	await loadScript('npm/@bhsd/stylelint-browserify', 'stylelint');
 	return async (code, opt) => {
-		const rules = opt?.['rules'] as Record<string, unknown> | undefined,
-			warnings = await styleLint(stylelint, code, rules);
+		const warnings = await styleLint(stylelint, code, opt);
 		if (fixAll && warnings.some(({fix}) => fix)) {
-			const text = await styleLint(stylelint, code, rules, true);
+			const text = await styleLint(stylelint, code, opt, true);
 			if (text !== code) {
 				warnings.push({
 					line: 1,

@@ -5,6 +5,7 @@
 **Added**
 
 - A new option to fix all occurrences of a selected rule in the [lint](./README.md#lint) extension
+- User-defined ESLint configurations can now extend [`eslint:recommended`](https://eslint.org/docs/v8.x/use/configure/configuration-files#using-eslintrecommended) in the [lint](./README.md#lint) extension
 
 **Fixed**
 

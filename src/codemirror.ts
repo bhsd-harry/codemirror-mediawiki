@@ -55,6 +55,7 @@ import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {ConfigData, QuickFixData} from 'wikiparser-node';
+import type {Linter} from 'eslint';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 import type {Option, LiveOption} from './linter';
@@ -455,8 +456,8 @@ export class CodeMirror6 {
 					});
 				lintSource.fixer = (doc, rule): string => {
 					const code = doc.toString(),
-						{rules} = {...getOpt()} as {rules?: Record<string, unknown>};
-					return esLint(code, {rules: {[rule]: rules?.[rule] ?? 2}})
+						{extends: _, ...config} = {...getOpt()} as Linter.Config;
+					return esLint(code, {...config, rules: {[rule]: config.rules?.[rule] ?? 2}})
 						.find(({severity}) => severity === 0)?.message ?? code;
 				};
 				return lintSource;
