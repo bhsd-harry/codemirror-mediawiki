@@ -2,20 +2,23 @@ import {loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
 import {styleLint} from '@bhsd/common/dist/stylelint';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
-import type {Warning, Severity} from 'stylelint';
+import type {Warning, Severity, Config} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: true) => Option;
 declare type getLinter<T> = () => (text: string) => T;
+declare type asyncLinter<T, S = Record<string, unknown>> = ((text: string, config?: Option) => T) & {
+	config?: S;
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	fixer?: (code: string, rule?: string) => string | Promise<string>;
+};
 
 /**
  * @param opt 初始化选项
  * @param obj 仅用于wikiparse.LanguageService
- * @param config runtime设置
  */
-declare type getAsyncLinter<T, S = never, R = never> =
-	(opt?: S, obj?: R) => Promise<(text: string, config?: Option) => T>;
+declare type getAsyncLinter<T, S = never, R = never> = (opt?: S, obj?: R) => Promise<asyncLinter<T>>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
@@ -104,7 +107,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 			recommended[name] = 2;
 		}
 	}
-	return (text, opt: Linter.Config | null | undefined) => {
+	const linter: asyncLinter<Linter.LintMessage[], Linter.Config> = (text, opt: Linter.Config | null | undefined) => {
 		const config: Linter.Config = {...conf, ...opt};
 		if (
 			!('rules' in config)
@@ -114,6 +117,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 			config.rules = {...recommended, ...config.rules};
 		}
 		delete config.extends;
+		linter.config = config as Record<string, unknown>;
 		const warnings = esLinter.verify(text, config);
 		if (fixAll && warnings.some(({fix, suggestions}) => fix || suggestions?.length)) {
 			const {fixed, output} = esLinter.verifyAndFix(text, config);
@@ -129,6 +133,11 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
 		}
 		return warnings;
 	};
+	linter.fixer = (code, rule): string => esLinter.verifyAndFix(
+		code,
+		rule ? {...linter.config, rules: {[rule]: linter.config!.rules?.[rule] ?? 2}} : linter.config!,
+	).output;
+	return linter as asyncLinter<Linter.LintMessage[]>;
 };
 
 /**
@@ -137,8 +146,11 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], boolean> = async 
  */
 export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (fixAll?: boolean) => {
 	await loadScript('npm/@bhsd/stylelint-browserify', 'stylelint');
-	return async (code, opt) => {
+	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
+		if (opt && 'rules' in opt) {
+			linter.config = opt;
+		}
 		if (fixAll && warnings.some(({fix}) => fix)) {
 			const text = await styleLint(stylelint, code, opt, true);
 			if (text !== code) {
@@ -153,6 +165,18 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, boolean> = async (
 		}
 		return warnings;
 	};
+	linter.fixer = (code, rule): Promise<string> => {
+		if (!linter.config) {
+			throw new Error('Fixer unavailable!');
+		}
+		return styleLint(
+			stylelint,
+			code,
+			rule ? {extends: [], rules: {[rule]: linter.config.rules?.[rule] ?? true}} : linter.config,
+			true,
+		);
+	};
+	return linter;
 };
 
 /** 获取 Luacheck */

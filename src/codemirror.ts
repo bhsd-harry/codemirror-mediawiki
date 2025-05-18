@@ -55,7 +55,6 @@ import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Highlighter} from '@lezer/highlight';
 import type {ConfigData, QuickFixData} from 'wikiparser-node';
-import type {Linter} from 'eslint';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 import type {Option, LiveOption} from './linter';
@@ -454,17 +453,16 @@ export class CodeMirror6 {
 						}
 						return diagnostic;
 					});
-				lintSource.fixer = (doc, rule): string => {
-					const code = doc.toString(),
-						{extends: _, ...config} = {...getOpt()} as Linter.Config;
-					return esLint(code, {...config, rules: {[rule]: config.rules?.[rule] ?? 2}})
-						.find(({severity}) => severity === 0)?.message ?? code;
-				};
+				lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
 				return lintSource;
 			}
 			case 'css': {
 				const styleLint = await getCssLinter(true);
-				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), getOpt()))
+				let option = getOpt() ?? {};
+				if (!('extends' in option || 'rules' in option)) {
+					option = {rules: option};
+				}
+				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
 					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
 						const diagnostic: Diagnostic = {
 							source: 'Stylelint',
@@ -487,14 +485,7 @@ export class CodeMirror6 {
 						}
 						return diagnostic;
 					});
-				lintSource.fixer = async (doc, rule): Promise<string> => {
-					const code = doc.toString(),
-						{rules} = {...getOpt()} as {rules?: Record<string, unknown>},
-						value = rule !== 'declaration-block-no-duplicate-properties'
-							|| [true, {ignore: ['consecutive-duplicates-with-different-syntaxes']}];
-					return (await stylelint.lint({code, config: {rules: {[rule]: rules?.[rule] ?? value}, fix: true}}))
-						.code!;
-				};
+				lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
 				return lintSource;
 			}
 			case 'lua': {
