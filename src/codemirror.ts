@@ -60,7 +60,10 @@ import type {DocRange} from './fold';
 import type {Option, LiveOption} from './linter';
 
 export type {MwConfig};
-export type LintSource = (doc: Text) => Diagnostic[] | Promise<Diagnostic[]>;
+export type LintSource = ((doc: Text) => Diagnostic[] | Promise<Diagnostic[]>) & {
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	fixer?: (doc: Text, rule: string) => string | Promise<string>;
+};
 export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>];
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
@@ -325,7 +328,7 @@ export class CodeMirror6 {
 				}),
 				lintGutter(),
 				keymap.of(lintKeymap),
-				statusBar,
+				statusBar(lintSource.fixer),
 			]
 			: [];
 		if (lintSource) {
@@ -427,7 +430,7 @@ export class CodeMirror6 {
 					1: 'warning',
 					2: 'error',
 				};
-				return doc => esLint(doc.toString(), getOpt())
+				const lintSource: LintSource = doc => esLint(doc.toString(), getOpt())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
@@ -450,10 +453,17 @@ export class CodeMirror6 {
 						}
 						return diagnostic;
 					});
+				lintSource.fixer = (doc, rule): string => {
+					const code = doc.toString(),
+						{rules} = {...getOpt()} as {rules?: Record<string, unknown>};
+					return esLint(code, {rules: {[rule]: rules?.[rule] ?? 2}})
+						.find(({severity}) => severity === 0)?.message ?? code;
+				};
+				return lintSource;
 			}
 			case 'css': {
 				const styleLint = await getCssLinter(true);
-				return async doc => (await styleLint(doc.toString(), getOpt()))
+				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), getOpt()))
 					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
 						const diagnostic: Diagnostic = {
 							source: 'Stylelint',
@@ -476,6 +486,15 @@ export class CodeMirror6 {
 						}
 						return diagnostic;
 					});
+				lintSource.fixer = async (doc, rule): Promise<string> => {
+					const code = doc.toString(),
+						{rules} = {...getOpt()} as {rules?: Record<string, unknown>},
+						value = rule !== 'declaration-block-no-duplicate-properties'
+							|| [true, {ignore: ['consecutive-duplicates-with-different-syntaxes']}];
+					return (await stylelint.lint({code, config: {rules: {[rule]: rules?.[rule] ?? value}, fix: true}}))
+						.code!;
+				};
+				return lintSource;
 			}
 			case 'lua': {
 				const luaLint = await getLuaLinter();

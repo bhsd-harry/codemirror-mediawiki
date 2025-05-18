@@ -1,36 +1,29 @@
 import {showPanel} from '@codemirror/view';
 import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import type {EditorView} from '@codemirror/view';
+import type {Extension} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
+import type {LintSource} from './codemirror';
 
 declare type Severity = 'error' | 'warning';
 
 function getLintMarker(view: EditorView, severity: Severity): HTMLDivElement;
-function getLintMarker(view: EditorView, severity: 'fix', handler: () => void): HTMLDivElement;
-function getLintMarker(view: EditorView, severity: Severity | 'fix', handler?: () => void): HTMLDivElement {
+function getLintMarker(view: EditorView, severity: 'fix', menu: HTMLDivElement): HTMLDivElement;
+function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTMLDivElement): HTMLDivElement {
 	const marker = document.createElement('div'),
 		icon = document.createElement('div');
 	marker.className = `cm-status-${severity}`;
 	if (severity === 'fix') {
-		const menu = document.createElement('div');
-		menu.className = 'cm-status-fix-menu';
-		menu.textContent = 'Fix all auto-fixable problems';
-		menu.tabIndex = -1;
-		menu.addEventListener('click', handler!);
-		menu.addEventListener('focusout', () => {
-			menu.style.display = 'none';
-		});
-		view.dom.append(menu);
 		icon.className = 'cm-status-fix-disabled';
 		marker.title = 'Fix all';
 		marker.append(icon);
 		marker.addEventListener('click', ({clientX, clientY}) => {
 			if (icon.className === 'cm-status-fix-enabled') {
 				const {bottom, left} = view.dom.getBoundingClientRect();
-				menu.style.bottom = `${bottom - clientY + 5}px`;
-				menu.style.left = `${clientX - 20 - left}px`;
-				menu.style.display = 'block';
-				menu.focus();
+				menu!.style.bottom = `${bottom - clientY + 5}px`;
+				menu!.style.left = `${clientX - 20 - left}px`;
+				menu!.style.display = 'block';
+				menu!.focus();
 			}
 		});
 	} else {
@@ -57,7 +50,11 @@ const updateDiagnosticMessage = (
 	diagnostics: readonly Diagnostic[],
 	head: number,
 	message: HTMLDivElement,
+	option?: HTMLDivElement,
 ): void => {
+	if (option) {
+		option.style.display = 'none';
+	}
 	const diagnostic = diagnostics.find(({from, to}) => from <= head && to >= head);
 	if (diagnostic) {
 		message.textContent = diagnostic.message;
@@ -73,6 +70,14 @@ const updateDiagnosticMessage = (
 				});
 				return button;
 			}));
+			if (option) {
+				const rule = / \(([^()]+)\)$/u.exec(diagnostic.message)?.[1];
+				if (rule) {
+					option.textContent = `Fix all ${rule} problems`;
+					option.dataset['rule'] = rule;
+					option.style.display = 'block';
+				}
+			}
 		}
 	} else {
 		message.textContent = '';
@@ -82,21 +87,48 @@ const updateDiagnosticMessage = (
 const fixAll = (diagnostics: readonly Diagnostic[]): Diagnostic | undefined =>
 	diagnostics.find(({severity}) => severity === 'custom' as Severity);
 
-export default showPanel.of(view => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default (fixer: LintSource['fixer']): Extension => showPanel.of(view => {
 	let diagnostics: readonly Diagnostic[] = [];
-	const handler = (): void => {
-		view.dispatch({
-			changes: {from: 0, to: view.state.doc.length, insert: fixAll(diagnostics)!.message},
-		});
-		view.focus();
-	};
 	const dom = document.createElement('div'),
 		worker = document.createElement('div'),
 		message = document.createElement('div'),
 		position = document.createElement('div'),
 		error = getLintMarker(view, 'error'),
 		warning = getLintMarker(view, 'warning'),
-		fix = getLintMarker(view, 'fix', handler);
+		menu = document.createElement('div'),
+		option = document.createElement('div'),
+		option2 = document.createElement('div'),
+		fix = getLintMarker(view, 'fix', menu);
+	option.textContent = 'Fix all auto-fixable problems';
+	option.addEventListener('click', (): void => {
+		view.dispatch({
+			changes: {from: 0, to: view.state.doc.length, insert: fixAll(diagnostics)!.message},
+		});
+		view.focus();
+	});
+	option2.style.display = 'none';
+	if (fixer) {
+		option2.addEventListener('click', () => {
+			(async () => {
+				const {doc} = view.state,
+					output = await fixer(doc, option2.dataset['rule']!);
+				if (output !== doc.toString()) {
+					view.dispatch({
+						changes: {from: 0, to: doc.length, insert: output},
+					});
+				}
+				view.focus();
+			})();
+		});
+	}
+	menu.className = 'cm-status-fix-menu';
+	menu.tabIndex = -1;
+	menu.append(option, option2);
+	menu.addEventListener('focusout', () => {
+		menu.style.display = 'none';
+	});
+	view.dom.append(menu);
 	worker.className = 'cm-status-worker';
 	worker.append(error, warning, fix);
 	message.className = 'cm-status-message';
@@ -118,12 +150,12 @@ export default showPanel.of(view => {
 						worker.classList.toggle('cm-status-worker-enabled', diagnostics.length > 0);
 						updateDiagnosticsCount(diagnostics, 'error', error);
 						updateDiagnosticsCount(diagnostics, 'warning', warning);
-						updateDiagnosticMessage(view, diagnostics, head, message);
+						updateDiagnosticMessage(view, diagnostics, head, message, fixer && option2);
 					}
 				}
 			}
 			if (docChanged || selectionSet) {
-				updateDiagnosticMessage(view, diagnostics, head, message);
+				updateDiagnosticMessage(view, diagnostics, head, message, fixer && option2);
 				const {number, from} = doc.lineAt(head);
 				position.textContent = `${number}:${head - from}`;
 				if (anchor !== head) {

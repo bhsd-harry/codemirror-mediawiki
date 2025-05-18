@@ -2,6 +2,10 @@
 
 *2025-05-18*
 
+**Added**
+
+- A new option to fix all occurrences of a selected rule in the [lint](./README.md#lint) extension
+
 **Fixed**
 
 - The status bar is unclickable when there is no problem detected in the [lint](./README.md#lint) extension
