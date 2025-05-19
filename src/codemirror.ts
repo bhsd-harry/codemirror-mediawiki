@@ -62,7 +62,7 @@ import type {Option, LiveOption} from './linter';
 export type {MwConfig};
 export type LintSource = ((doc: Text) => Diagnostic[] | Promise<Diagnostic[]>) & {
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	fixer?: (doc: Text, rule: string) => string | Promise<string>;
+	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
 export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>];
 
@@ -320,12 +320,7 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(view => lintSource(view.state.doc), {
-					markerFilter(diagnostics) {
-						return diagnostics
-							.filter(({severity}) => severity !== 'custom' as unknown as Diagnostic['severity']);
-					},
-				}),
+				linter(view => lintSource(view.state.doc)),
 				lintGutter(),
 				keymap.of(lintKeymap),
 				statusBar(lintSource.fixer),
@@ -407,7 +402,7 @@ export class CodeMirror6 {
 						source: source!,
 						from: from ?? posToIndex(doc, r!.start),
 						to: to ?? posToIndex(doc, r!.end),
-						severity: severity === 1 ? 'error' : 'warning',
+						severity: severity === 2 ? 'warning' : 'error',
 						message: source === 'Stylelint' ? message : `${message} (${code})`,
 						actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
 							name: title,
@@ -424,19 +419,14 @@ export class CodeMirror6 {
 					}));
 			}
 			case 'javascript': {
-				const esLint = await getJsLinter(true);
-				const severities = {
-					0: 'custom',
-					1: 'warning',
-					2: 'error',
-				};
+				const esLint = await getJsLinter();
 				const lintSource: LintSource = doc => esLint(doc.toString(), getOpt())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
 								source: 'ESLint',
 								message: message + (ruleId ? ` (${ruleId})` : ''),
-								severity: severities[severity] as Diagnostic['severity'],
+								severity: severity === 1 ? 'warning' : 'error',
 								from: start,
 								to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
 							};
@@ -457,7 +447,7 @@ export class CodeMirror6 {
 				return lintSource;
 			}
 			case 'css': {
-				const styleLint = await getCssLinter(true);
+				const styleLint = await getCssLinter();
 				let option = getOpt() ?? {};
 				if (!('extends' in option || 'rules' in option)) {
 					option = {rules: option};

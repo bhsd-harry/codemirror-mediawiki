@@ -56,7 +56,7 @@
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
-		"@bhsd/common": "^0.10.1",
+		"@bhsd/common": "^0.10.2",
 		"@codemirror/autocomplete": "^6.18.6",
 		"@codemirror/commands": "^6.8.1",
 		"@codemirror/lang-css": "^6.3.1",
