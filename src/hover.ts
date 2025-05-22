@@ -24,7 +24,10 @@ export const indexToPos = (doc: Text, index: number): Position => {
  * @param doc Text 实例
  * @param pos 位置
  */
-export const posToIndex = (doc: Text, pos: Position): number => doc.line(pos.line + 1).from + pos.character;
+export const posToIndex = (doc: Text, pos: Position): number => {
+	const line = doc.line(pos.line + 1);
+	return Math.min(line.from + pos.character, line.to);
+};
 
 /**
  * 创建 TooltipView

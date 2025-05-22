@@ -1,3 +1,11 @@
+## 2.25.2
+
+*2025-05-22*
+
+**Fixed**
+
+- Stylelint reports a wrong range for the `no-empty-source` rule
+
 ## 2.25.1
 
 *2025-05-20*
