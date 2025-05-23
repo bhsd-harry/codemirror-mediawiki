@@ -1,3 +1,11 @@
+## 2.25.3
+
+*2025-05-23*
+
+**Fixed**
+
+- The status bar should only provide auto-fix suggestions for `fix` actions
+
 ## 2.25.2
 
 *2025-05-22*

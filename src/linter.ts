@@ -91,7 +91,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 
 /** 获取 ESLint */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
-	await loadScript('npm/eslint-linter-browserify@8.57.0/linter.min.js', 'eslint', true);
+	await loadScript('npm/@bhsd/eslint-browserify', 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
 		conf: Linter.Config = {
@@ -150,7 +150,7 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
 
 /** 获取 Luacheck */
 export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>> = async () => {
-	await loadScript('npm/luacheck-browserify/dist/index.min.js', 'luacheck');
+	await loadScript('npm/luacheck-browserify', 'luacheck');
 	// eslint-disable-next-line @typescript-eslint/await-thenable
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);

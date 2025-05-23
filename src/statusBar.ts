@@ -47,6 +47,8 @@ const updateDiagnosticsCount = (diagnostics: readonly Diagnostic[], s: Severity,
 	marker.lastChild!.textContent = String(diagnostics.filter(({severity}) => severity === s).length);
 };
 
+const hasFix = (diagnostic: Diagnostic): boolean | undefined => diagnostic.actions?.some(({name}) => name === 'fix');
+
 const updateDiagnosticMessage = (
 	view: EditorView,
 	allDiagnostics: readonly Diagnostic[],
@@ -78,7 +80,7 @@ const updateDiagnosticMessage = (
 		menu.replaceChildren(
 			...[
 				...new Set(
-					diagnostics.filter(({actions}) => actions?.length)
+					diagnostics.filter(hasFix)
 						.map(({message}) => / \(([^()]+)\)$/u.exec(message)?.[1])
 						.filter(Boolean) as string[],
 				),
@@ -145,7 +147,7 @@ export default (fixer: LintSource['fixer']): Extension => showPanel.of(view => {
 				for (const effect of tr.effects) {
 					if (effect.is(setDiagnosticsEffect)) {
 						diagnostics = effect.value;
-						const fixable = Boolean(fixer) && diagnostics.some(({actions}) => actions?.length),
+						const fixable = Boolean(fixer) && diagnostics.some(hasFix),
 							{classList} = fix.firstChild as HTMLDivElement;
 						classList.toggle('cm-status-fix-enabled', fixable);
 						classList.toggle('cm-status-fix-disabled', !fixable);
