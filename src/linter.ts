@@ -47,7 +47,7 @@ const offsetAt = (range: [number, number], line: number, column: number): number
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
 	await getWikiparse(
 		opt?.['getConfig'] as (() => Promise<ConfigData>) | undefined,
-		opt?.['i18n'] as string | undefined,
+		opt?.['i18n'] as string | string[] | undefined,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
 	return async (text, config) => {

@@ -404,10 +404,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (opt || !loaded) {
 			if (isWiki) {
-				const extra = {
-					getConfig: this.getWikiConfig,
-					i18n: languages[mw.config.get('wgUserLanguage')],
-				};
+				const extra = {getConfig: this.getWikiConfig, i18n: languages};
 				opt = opt
 					? {...extra, ...opt as Option}
 					: (runtime): Option => ({...extra, ...runtime ? wikilint : defaultOpt});
