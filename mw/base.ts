@@ -12,6 +12,7 @@ import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
+import type {ConfigData} from 'wikiparser-node';
 import type {LintSource, MwConfig} from '../src/codemirror';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
 import type {Option, LiveOption} from '../src/linter';
@@ -403,24 +404,30 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (opt || !loaded) {
 			if (isWiki) {
-				const i18n = languages[mw.config.get('wgUserLanguage')];
+				const extra = {
+					getConfig: this.getWikiConfig,
+					i18n: languages[mw.config.get('wgUserLanguage')],
+				};
 				opt = opt
-					? {i18n, ...opt as Option}
-					: (runtime): Option => runtime ? wikilint : {...defaultOpt, i18n};
+					? {...extra, ...opt as Option}
+					: (runtime): Option => ({...extra, ...runtime ? wikilint : defaultOpt});
 			} else if (lang === 'javascript') {
 				opt ??= (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
 			} else if (lang === 'css') {
 				opt ??= (): Option => codeConfigs.get('Stylelint');
 			}
 			await this.getLinter(opt);
-			if (isWiki && !loaded) {
-				const [mwConfig, minConfig] = await Promise.all([getMwConfig(tagModes), wikiparse.getConfig()]);
-				wikiparse.setConfig(getParserConfig(minConfig, mwConfig));
-			}
 		}
 		if (linters[lang]) {
 			this.lint(linters[lang]);
 		}
+	}
+
+	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
+	// @ts-expect-error convert a function property to a method
+	override async getWikiConfig(this: void): Promise<ConfigData> {
+		const [mwConfig, minConfig] = await Promise.all([getMwConfig(tagModes), wikiparse.getConfig()]);
+		return getParserConfig(minConfig, mwConfig);
 	}
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {

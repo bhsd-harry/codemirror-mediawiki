@@ -1,3 +1,11 @@
+## 2.25.4
+
+*2025-05-25*
+
+**Fixed**
+
+- The [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration is always loaded for the extensions [hover](./README.md#hover), [inlayHints](./README.md#inlayhints), [refHover](./README.md#refhover) and [signatureHelp](./README.md#signaturehelp) when used on a MediaWiki site
+
 ## 2.25.3
 
 *2025-05-23*

@@ -8,6 +8,7 @@ import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
+import type {CodeMirror6} from './codemirror';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
@@ -22,7 +23,7 @@ const trees = new WeakMap<EditorView, Tree>();
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
 
-export default [
+export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 		const {state} = view,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
@@ -56,7 +57,8 @@ export default [
 					}
 					if (target) {
 						const {doc} = state,
-							ref = await getLSP(view)?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
+							ref = await getLSP(view, false, cm.getWikiConfig)
+								?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 						return {
 							pos,
 							end: to,

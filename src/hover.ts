@@ -1,9 +1,10 @@
 import {hoverTooltip} from '@codemirror/view';
 import {loadScript, getLSP} from '@bhsd/common';
 import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
-import type {Text} from '@codemirror/state';
+import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
 import type * as MarkdownIt from 'markdown-it';
+import type {CodeMirror6} from './codemirror';
 
 declare const markdownit: () => MarkdownIt;
 
@@ -44,9 +45,9 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
 	return {dom};
 };
 
-export default hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
+export default (cm: CodeMirror6): Extension => hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 	const {state: {doc}} = view,
-		hover = await getLSP(view)
+		hover = await getLSP(view, false, cm.getWikiConfig)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
 	if (hover) {
 		await loadScript('npm/markdown-it/dist/markdown-it.min.js', 'markdownit', true);

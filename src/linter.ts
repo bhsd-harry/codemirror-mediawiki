@@ -1,9 +1,10 @@
-import {loadScript, getLSP, sanitizeInlineStyle} from '@bhsd/common';
+import {loadScript, getWikiparse, getLSP, sanitizeInlineStyle} from '@bhsd/common';
 import {styleLint} from '@bhsd/common/dist/stylelint';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
 import type {Warning, Config} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
+import type {ConfigData} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: true) => Option;
@@ -44,17 +45,10 @@ const offsetAt = (range: [number, number], line: number, column: number): number
  * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
-	const DIR = 'npm/wikiparser-node/extensions/dist',
-		lang = opt?.['i18n'];
-	await loadScript(`${DIR}/base.min.js`, 'wikiparse');
-	await loadScript(`${DIR}/lsp.min.js`, 'wikiparse.LanguageService');
-	if (typeof lang === 'string') {
-		try {
-			const i18n: Record<string, string> =
-				await (await fetch(`${wikiparse.CDN}/i18n/${lang.toLowerCase()}.json`)).json();
-			wikiparse.setI18N(i18n);
-		} catch {}
-	}
+	await getWikiparse(
+		opt?.['getConfig'] as (() => Promise<ConfigData>) | undefined,
+		opt?.['i18n'] as string | undefined,
+	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
 	return async (text, config) => {
 		const diagnostics = (await lsp.provideDiagnostics(text)).filter(

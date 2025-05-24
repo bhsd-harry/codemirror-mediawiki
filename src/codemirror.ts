@@ -95,7 +95,13 @@ for (const [language, parser] of Object.entries(plugins)) {
  * 仅供mediawiki模式的扩展
  * @param ext 扩展
  */
-const mediawikiOnly = (ext: Extension = []): Addon<Extension> => [(e = []): Extension => e, {mediawiki: ext}];
+function mediawikiOnly(ext: Extension): Addon<Extension>;
+function mediawikiOnly(ext: (cm: CodeMirror6) => Extension): Addon<boolean>;
+function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon<Extension> | Addon<boolean> {
+	return typeof ext === 'function'
+		? [(enable: boolean, cm): Extension => enable ? ext(cm!) : [], {mediawiki: true}] as Addon<boolean>
+		: [(e: Extension = []): Extension => e, {mediawiki: ext}];
+}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, Addon<any>> = {
 	highlightSpecialChars: [highlightSpecialChars, {}],
@@ -151,6 +157,7 @@ const pos = (doc: Text, line: number, column: number): number =>
 
 /** CodeMirror 6 编辑器 */
 export class CodeMirror6 {
+	declare getWikiConfig?: () => Promise<ConfigData>;
 	declare langConfig: MwConfig | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();

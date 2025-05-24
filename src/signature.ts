@@ -5,6 +5,7 @@ import {indexToPos, createTooltipView} from './hover';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
+import type {CodeMirror6} from './codemirror';
 
 declare interface SignatureEffect {
 	signatureHelp?: SignatureHelp | undefined;
@@ -31,7 +32,7 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 		},
 	});
 
-export default [
+export default (cm: CodeMirror6): Extension => [
 	field,
 	EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {
 		if (docChanged || selectionSet && state.field(field)?.signatureHelp?.signatures.length) {
@@ -49,7 +50,8 @@ export default [
 					effects: stateEffect.of({
 						text,
 						cursor,
-						signatureHelp: await getLSP(view)?.provideSignatureHelp(text, indexToPos(doc, cursor)),
+						signatureHelp: await getLSP(view, false, cm.getWikiConfig)
+							?.provideSignatureHelp(text, indexToPos(doc, cursor)),
 					}),
 				});
 			})();
