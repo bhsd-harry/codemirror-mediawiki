@@ -1,3 +1,11 @@
+## 2.25.5
+
+*2025-05-30*
+
+**Fixed**
+
+- The `line-height` CSS property of the status bar is now set to `1.4`
+
 ## 2.25.4
 
 *2025-05-26*

@@ -1,3 +1,6 @@
+.cm-panel-status {
+	line-height: 1.4;
+}
 .cm-panel-status > div {
 	padding: 0 .3em;
 	display: table-cell;
