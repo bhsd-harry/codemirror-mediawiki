@@ -2,7 +2,7 @@ import {getObject, setObject, compareVersion} from '@bhsd/common';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.25.3',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.25.4',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
 
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
