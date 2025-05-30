@@ -80,7 +80,7 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
  * @param posOrNode 字符位置或语法树节点
  * @param tree 语法树
  */
-const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false => {
+export const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false => {
 	if (typeof posOrNode === 'number') {
 		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
 	}
@@ -289,9 +289,9 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 	return found;
 };
 
-const foldableLine = (
+export const foldableLine = (
 	{state, viewport: {to: end}, viewportLineBlocks}: EditorView,
-	{from: f, to: t}: BlockInfo,
+	{from: f, to: t}: DocRange,
 ): DocRange | false => {
 	const tree = syntaxTree(state);
 

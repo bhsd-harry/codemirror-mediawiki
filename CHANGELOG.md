@@ -1,3 +1,11 @@
+## 2.25.6
+
+*2025-06-04*
+
+**Fixed**
+
+- Self-closing HTML tags (e.g., `<li/>`) in the [tagMatching](./README.md#tagmatching) extension in the MediaWiki mode
+
 ## 2.25.5
 
 *2025-05-30*

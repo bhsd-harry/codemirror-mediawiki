@@ -18,7 +18,7 @@ const isolateLTR = Decoration.mark({
 	}),
 	isolate = Decoration.mark({class: 'cm-bidi-isolate'});
 
-const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
+export const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
 	const set = new RangeSetBuilder<Decoration>();
 	if (textDirection === Direction.RTL) {
 		for (const {from, to} of visibleRanges) {

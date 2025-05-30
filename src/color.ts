@@ -15,7 +15,7 @@ import type {StyleSpec} from 'style-mod';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 import type {Addon} from './codemirror';
 
-const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
+export const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
 	if (
 		!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)
 		&& (

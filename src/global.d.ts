@@ -13,7 +13,7 @@ declare global {
 	}
 
 	const eslint: {
-		Linter: new () => Linter;
+		Linter: typeof Linter;
 	};
 	const stylelint: PublicApi;
 	const Parser: Parser;

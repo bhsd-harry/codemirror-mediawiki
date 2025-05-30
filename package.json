@@ -18,8 +18,6 @@
 		"/dist/*.d.ts",
 		"/dist/*.mjs",
 		"/dist/*.d.mts",
-		"!/dist/*-page.d.ts",
-		"!/dist/parser.*",
 		"/mediawiki.css"
 	],
 	"browser": "dist/main.min.js",
@@ -33,11 +31,11 @@
 	"scripts": {
 		"prepublishOnly": "npm run build",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css",
-		"build:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && esbuild ./src/linter.ts --charset=utf8 --target=es2019 --format=esm --outfile=dist/linter.mjs && tsc --emitDeclarationOnly && cp dist/linter.d.ts dist/linter.d.mts && mv dist/mwConfig.d.ts dist/mwConfig.d.mts",
+		"build:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && esbuild ./src/linter.ts --charset=utf8 --target=es2019 --format=esm --outfile=dist/linter.mjs && tsc --emitDeclarationOnly && cp dist/linter.d.ts dist/linter.d.mts && mv dist/mwConfig.d.ts dist/mwConfig.d.mts && rm dist/*-page.d.ts",
 		"build:mw": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.mjs",
 		"build:wiki": "esbuild ./mw/base.ts --charset=utf8 --bundle --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
-		"build:test": "tsc --project test/tsconfig.json && mocha",
+		"build:test": "tsc --project test/tsconfig.json && mocha test/dist/test/*.test.js && mocha --reporter=progress test/dist/test/test.js",
 		"build": "npm run build:css && rm -rf dist/ && npm run build:core && npm run build:mw && npm run build:wiki && eslint --no-eslintrc -c .eslintrc.dist.cjs dist/*.js",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint **/*.css",
@@ -48,15 +46,15 @@
 		"test:real": "node test/dist/test/real.js"
 	},
 	"dependencies": {
+		"@bhsd/common": "^0.11.0",
 		"@codemirror/lint": "^6.8.5",
 		"@codemirror/state": "^6.5.2",
-		"@codemirror/view": "^6.36.5",
+		"@codemirror/view": "^6.36.8",
 		"@lezer/common": "^1.2.3",
-		"wikiparser-node": "^1.20.3"
+		"wikiparser-node": "^1.21.0"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
-		"@bhsd/common": "^0.11.0",
 		"@codemirror/autocomplete": "^6.18.6",
 		"@codemirror/commands": "^6.8.1",
 		"@codemirror/lang-css": "^6.3.1",
@@ -64,7 +62,7 @@
 		"@codemirror/lang-json": "^6.0.1",
 		"@codemirror/language": "^6.11.0",
 		"@codemirror/legacy-modes": "^6.4.2",
-		"@codemirror/search": "^6.5.10",
+		"@codemirror/search": "^6.5.11",
 		"@lezer/highlight": "^1.2.1",
 		"@stylistic/eslint-plugin": "^3.1.0",
 		"@stylistic/stylelint-plugin": "^3.1.2",
@@ -82,8 +80,6 @@
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-jsdoc": "^50.6.3",
 		"eslint-plugin-json-es": "^1.6.0",
-		"eslint-plugin-markdown": "4.0.1",
-		"eslint-plugin-n": "^17.15.1",
 		"eslint-plugin-promise": "^7.2.1",
 		"eslint-plugin-regexp": "^2.7.0",
 		"eslint-plugin-unicorn": "^56.0.1",

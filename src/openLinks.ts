@@ -9,7 +9,8 @@ import type {TagName, MwConfig} from './token';
 
 const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 
-export const isMac = vendor.includes('Apple Computer')
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+export const isMac = vendor?.includes('Apple Computer')
 	&& (userAgent.includes('Mobile/') || maxTouchPoints > 2)
 	|| platform.includes('Mac');
 
@@ -25,14 +26,16 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		'file-text.cm-mw-pagename',
 	];
 
-document.addEventListener('keydown', e => {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+globalThis.document?.addEventListener('keydown', e => {
 	if (e.key === key) {
 		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
 			ele.style.setProperty('--codemirror-cursor', 'pointer');
 		}
 	}
 });
-document.addEventListener('keyup', e => {
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+globalThis.document?.addEventListener('keyup', e => {
 	if (e.key === key) {
 		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
 			ele.style.removeProperty('--codemirror-cursor');

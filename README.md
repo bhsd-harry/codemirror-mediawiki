@@ -583,7 +583,7 @@ CTRL/CMD-click opens a link in a new tab.
 
 ## Syntax Highlighting
 
-1. Preformatted text with a leading space may have false positives.
+1. Preformatted text with a leading space may have false positives (Examples [1](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions), [2](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Categories%20and%20newlines%3A%20All%20preceding%20newlines%20should%20be%20suppressed%20(courtesy%20T2087))).
 1. [Extension:Translate](https://www.mediawiki.org/wiki/Extension:Translate) is not supported.
 1. Template parameter name followed by a newline ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
 1. Wikitext in template parameter names ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).

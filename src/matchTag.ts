@@ -1,7 +1,7 @@
 import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {voidHtmlTags} from './config';
+import {voidHtmlTags, selfClosingTags} from './config';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
@@ -25,7 +25,9 @@ class Tag {
 	}
 
 	get selfClosing(): boolean {
-		return voidHtmlTags.includes(this.name) || this.type === 'ext' && isClosing(this.last, this.type, this.state);
+		return voidHtmlTags.includes(this.name)
+			|| (this.type === 'ext' || selfClosingTags.includes(this.name))
+			&& isClosing(this.last, this.type, this.state);
 	}
 
 	get from(): number {
@@ -100,7 +102,11 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 		if (isName(sibling, type) && getName(state, sibling) === name) {
 			const tag = getTag(state, sibling);
 			if (tag) {
-				stack += tag.closing ? -1 : 1;
+				if (tag.closing) {
+					stack--;
+				} else {
+					stack += tag.selfClosing ? 0 : 1;
+				}
 				if (stack === 0) {
 					return tag;
 				}

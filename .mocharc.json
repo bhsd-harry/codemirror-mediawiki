@@ -1,5 +1,3 @@
 {
-	"diff": false,
-	"reporter": "progress",
-	"spec": "test/dist/test/test.js"
+	"diff": false
 }
