@@ -362,7 +362,7 @@ export class FullMediaWiki extends MediaWiki {
 							extTag = extTags[extTags.length - 1],
 							closed = /^\s*>/u.test(state.sliceDoc(pos)),
 							options = [
-								...this.htmlTags.filter(({label}) => !this.implicitlyClosedHtmlTags.has(label)),
+								...this.htmlTags.filter(({label}) => !this.voidHtmlTags.has(label)),
 								...extTag ? [{type: 'type', label: extTag, boost: 50}] : [],
 							],
 							i = this.permittedHtmlTags.has(target) && options.findIndex(({label}) => label === target);

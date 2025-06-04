@@ -208,6 +208,11 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>redirect to foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>redirect to foo</><template-ground template-bracket>}}</>"
 	},
 	{
+		"desc": "Transclusion with a (stripped) fragment",
+		"wikitext": "{{Foo#bar}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Foo</><template-ground error>#bar</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "T53086: Double newlines in blockquotes should be turned into paragraphs",
 		"wikitext": "<blockquote>\nFoo\n\nBar\n</blockquote>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</>FooBar<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>"
@@ -331,6 +336,11 @@
 		"desc": "Broken wikilinks (but not external links) prevent templates from closing",
 		"wikitext": "[http://example.com x\n\n{{1x|[http://example.com x}}\n\n[[Foo\n\n{{1x|[[Foo}}",
 		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>example.com</><link-ground extlink-text> x</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground extlink-bracket>[</><template-link-ground extlink-protocol>http://</><template-link-ground extlink>example.com</><template-link-ground extlink-text> x}}</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Foo</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-link-ground link-bracket>[[</><template2-link-ground link-pagename pagename>Foo</><template2-link-ground error>}}</>"
+	},
+	{
+		"desc": "Non-wikilinks should not be treated as broken wikilinks",
+		"wikitext": "{{1x|[[1],[2]]}}\n\n{{1x|[[{}]]}}\n\n{{1x|[[1, [[2, 3]], 4]]}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1</><template-link-ground error>]</><template-link-ground link-pagename pagename>,</><template-link-ground error>[</><template-link-ground link-pagename pagename>2</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground error>{}</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1, </><template-link-ground error>[[</><template-link-ground link-pagename pagename>2, 3</><template-link-ground link-bracket>]]</><template-ground template>, 4]]</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Wikilinks with embedded newlines are not broken",
@@ -708,6 +718,16 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#a</><link-ground link-delimiter>|</><link-ground link-text>b</><link-ground link-bracket>]]</>"
 	},
 	{
+		"desc": "Purely hash wikilink on file page",
+		"wikitext": "[[#a|b]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#a</><link-ground link-delimiter>|</><link-ground link-text>b</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Purely hash wikilink on category page",
+		"wikitext": "[[#a|b]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#a</><link-ground link-delimiter>|</><link-ground link-text>b</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "Serialization of purely hash wikilink",
 		"wikitext": "[[#a|<nowiki>[[</nowiki>]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#a</><link-ground link-delimiter>|</><link-ground exttag-bracket>&lt;</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><tag-nowiki>[[</><link-ground exttag-bracket>&lt;/</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><link-ground link-bracket>]]</>"
@@ -761,6 +781,11 @@
 		"desc": "Wikilink in wikilink",
 		"wikitext": "[[Hi|[[Ho]]]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Hi</><link-ground link-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Ho</><link-ground link-bracket>]]</>]]"
+	},
+	{
+		"desc": "Category in wikilink",
+		"wikitext": "[[Hi|Ho[[Category:Hiho]]]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Hi</><link-ground link-delimiter>|</><link-ground link-text>Ho</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Hiho</><link-ground link-bracket>]]</>]]"
 	},
 	{
 		"desc": "Parsoid T55221: Wikilinks should be properly entity-escaped",
@@ -1018,6 +1043,11 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><list>*</>a<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><list>*</>b<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
+		"desc": "T368721: Closing block tags not on the stack of open elements in lists",
+		"wikitext": "<!-- block tag  -->\n*a</div>b\n\n<!-- wikitext block tag -->\n*a</p>b",
+		"parsed": "<comment>&lt;!-- block tag  --&gt</><list>*</>a<error>&lt;/div&gt</>b<comment>&lt;!-- wikitext block tag --&gt</><list>*</>a<error>&lt;/p&gt</>b"
+	},
+	{
 		"desc": "Unclosed formatting tags that straddle lists are closed and reopened",
 		"wikitext": "#<s> a\n#b </s>",
 		"parsed": "<list>#</><htmltag-bracket>&lt;</><htmltag-name>s</><htmltag-bracket>&gt</> a<list>#</>b <htmltag-bracket>&lt;/</><htmltag-name>s</><htmltag-bracket>&gt</>"
@@ -1051,11 +1081,6 @@
 		"desc": "Parsoid: Template-generated DISPLAYTITLE",
 		"wikitext": "{{{{1x|DISPLAYTITLE}}:Foo}}",
 		"parsed": "<template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>DISPLAYTITLE</><template2-ground template-bracket>}}</><template-ground template-name pagename>:Foo</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "Parsoid html2wt b/c check: Cached Parsoid HTML for DISPLAYTITLE should be handled properly",
-		"wikitext": "{{DISPLAYTITLE:foo}}\n{{DISPLAYTITLE:''{{PAGENAME}}''}}\n{{{{1x|DISPLAYTITLE}}:Foo}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>foo</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground apostrophes>''</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>PAGENAME</><ext2-ground parserfunction-bracket>}}</><ext-ground apostrophes>''</><ext-ground parserfunction-bracket>}}</><template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>DISPLAYTITLE</><template2-ground template-bracket>}}</><template-ground template-name pagename>:Foo</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Namespace 1 {{ns:1}}",
@@ -1223,6 +1248,16 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1</><template2-ground template-bracket>{{</><template2-ground template-name pagename>2</><template2-ground templatevariable-bracket>{{{</><template2-ground templatevariable-name>3</><template2-ground templatevariable-bracket>}}}</><template2-ground template-delimiter>|</><template2-ground template-argument-name>4=</><template2-ground template>5</><template2-ground template-bracket>}}</><template-ground template-bracket>}}</>"
 	},
 	{
+		"desc": "T372669: While processing templates with templated names, other attributes shouldn't be processed",
+		"wikitext": "{{{{1x|1x}}|foo|{{1x|ignore-this[[Category:Foo]]}}}}",
+		"parsed": "<template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>1x</><template2-ground template-bracket>}}</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-delimiter>|</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>ignore-this</><template2-link-ground link-bracket>[[</><template2-link-ground link-pagename pagename>Category:Foo</><template2-link-ground link-bracket>]]</><template2-ground template-bracket>}}</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "T372669: Template names from multiple templates",
+		"wikitext": "{{{{1x|1}}{{1x|x}}|foo}}",
+		"parsed": "<template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>1</><template2-ground template-bracket>}}{{</><template2-ground template-name pagename>1x</><template2-ground template-delimiter>|</><template2-ground template>x</><template2-ground template-bracket>}}</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "Templates with invalid templated targets",
 		"wikitext": "{{1x\n{{1x|foo}}\n}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-bracket>}}</>}}"
@@ -1296,6 +1331,11 @@
 		"desc": "T2041: Template parameters shown as broken links",
 		"wikitext": "{{{parameter}}}",
 		"parsed": "<templatevariable-bracket>{{{</><templatevariable-name>parameter</><templatevariable-bracket>}}}</>"
+	},
+	{
+		"desc": "Unsubstituted template argument with newlines",
+		"wikitext": "{{{testing\n\n123}}}",
+		"parsed": "<templatevariable-bracket>{{{</><templatevariable-name>testing</>123}}}"
 	},
 	{
 		"desc": "Template with targets containing wikilinks",
@@ -1374,8 +1414,8 @@
 	},
 	{
 		"desc": "T236868: Un-closed <noinclude> caused bad SourceRange length",
-		"wikitext": "{| <noinclude>\n|- <noinclude>\n| A\n|-</noinclude>\n|}",
-		"parsed": "<table-bracket>{| </><exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>|- &lt;noinclude&gt| A|-</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><table-bracket>|}</>"
+		"wikitext": "{| <noinclude>\n|- <noinclude>\n|A\n|- </noinclude>\n|}",
+		"parsed": "<table-bracket>{| </><exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>|- &lt;noinclude&gt|A|- </><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Self-closed noinclude, includeonly, onlyinclude tags",
@@ -1418,24 +1458,14 @@
 		"parsed": "a<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>b</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt&lt;/</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt</><template-ground template>c</><template-ground template-bracket>}}</>da<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>b</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt&lt;/</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt</><template-ground template>c</><template-ground template-bracket>}}</>d<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt&lt;/</><template-ground htmltag-name>table</><template-ground htmltag-bracket>&gt</><template-ground template>b</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "Parsoid: Merge double tds (T52603)",
-		"wikitext": "{|\n|{{1x|{{!}} foo}}\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template> foo</><template-ground template-bracket>}}</><table-bracket>|}</>"
-	},
-	{
-		"desc": "Parsoid: Merge double tds in nested transclusion content (T52603)",
-		"wikitext": "{{1x|<div>}}\n{|\n|{{1x|{{!}} foo}}\n|}\n{{1x|</div>}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</><table-bracket>{|</><table-delimiter>|</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template> foo</><template-ground template-bracket>}}</><table-bracket>|}</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground htmltag-bracket>&lt;/</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</>"
-	},
-	{
 		"desc": "Template name with question mark",
 		"wikitext": "{{temp?|123}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>temp?</><template-ground template-delimiter>|</><template-ground template>123</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "0. includeonly around the entire attribute",
-		"wikitext": "<span <includeonly>id=\"v1\"</includeonly><noinclude>id=\"v2\"</noinclude>>bar</span>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>id=\"v1\"</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>id=\"v2\"</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><htmltag-bracket>&gt</>bar<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+		"wikitext": "<span <includeonly>id=\"v1\"</includeonly><noinclude>id=\"v2\" </noinclude>>bar</span>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>id=\"v1\"</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>id=\"v2\" </><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><htmltag-bracket>&gt</>bar<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "1. includeonly in html attr key",
@@ -1469,8 +1499,8 @@
 	},
 	{
 		"desc": "Table wikitext syntax outside wiki-tables",
-		"wikitext": "a\n|+ not a caption\n! not a table heading\n|- not a table row\n| not a table cell\n| class=\"foo bar\" | baz\nb\n|}\n|-\nc",
-		"parsed": "a|+ not a caption! not a table heading|- not a table row| not a table cell| class=\"foo bar\" | bazb|}|-c"
+		"wikitext": "a\n|+ not a caption\n! not a table heading!! neither is this\n|- not a table row\n| not a table cell || neither is this\n| class=\"foo bar\" | baz\nb\n|}\n|-\nc\n|-\n{{1x|!a!!b}}\n|-\n{{1x|{{!}}a {{!}}{{!}}b}}",
+		"parsed": "a|+ not a caption! not a table heading!! neither is this|- not a table row| not a table cell || neither is this| class=\"foo bar\" | bazb|}|-c|-<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>!a!!b</><template-ground template-bracket>}}</>|-<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>a </><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>b</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Content after <tr> like wikitext should get fully processed",
@@ -2028,49 +2058,49 @@
 		"parsed": "<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>Bar<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> Bar<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</>Bar<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</> Bar<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</>Bar<list>*</> Foo<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</> Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</>Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</> Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</>Bar<list>*</> Foo <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</> Bar"
 	},
 	{
-		"desc": "1. Categories and newlines: All preceding newlines should be suppressed (courtesy T2087)",
-		"wikitext": "This\n   \n[[Category:Foo]] and this should be part of same paragraph (not an indent-pre)\n   \n{{1x|[[Category:Foo]] and so should this!}}",
-		"parsed": "This<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</> and this should be part of same paragraph (not an indent-pre)<skipformatting> </>  <template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template> and so should this!</><template-ground template-bracket>}}</>"
+		"desc": "1. cats/langlinks and newlines: All preceding newlines should be suppressed (courtesy T2087)",
+		"wikitext": "This\n   \n[[Category:Foo]] and this\n[[es:Foo]] and this should be part of same paragraph (not an indent-pre)\n   \n{{1x|[[Category:Foo]] and so should this!}}\n{{1x|[[es:Foo]] and this!}}",
+		"parsed": "This<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</> and this<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> and this should be part of same paragraph (not an indent-pre)<skipformatting> </>  <template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template> and so should this!</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>es:Foo</><template-link-ground link-bracket>]]</><template-ground template> and this!</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "2. Categories and newlines: All preceding newlines should be suppressed (courtesy T2087)",
-		"wikitext": "* This\n   \n[[Category:Foo]] and this should be part of the same list item\n* So should this\n\n{{1x|[[Category:Foo]] and this should be part of the same list item}}",
-		"parsed": "<list>*</> This<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</> and this should be part of the same list item<list>*</> So should this<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template> and this should be part of the same list item</><template-ground template-bracket>}}</>"
+		"desc": "2. cats/langlinks and newlines: All preceding newlines should be suppressed (courtesy T2087)",
+		"wikitext": "* This\n   \n[[Category:Foo]] and this\n[[es:Foo]] and this should be part of the same list item\n* So should this\n\n{{1x|[[Category:Foo]] and this}}\n{{1x|[[es:Foo]] and this should be part of the same list item}}",
+		"parsed": "<list>*</> This<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</> and this<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</> and this should be part of the same list item<list>*</> So should this<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template> and this</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>es:Foo</><template-link-ground link-bracket>]]</><template-ground template> and this should be part of the same list item</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "3. Categories and newlines: newline suppression for last list item should RT properly",
-		"wikitext": "*a\n*b\n   \n[[Category:Foo]]\n   \n[[Category:Bar]]\n[[Category:Baz]]\n\n:c\n\n[[Category:C]]\n\n;d\n\n[[Category:D]]",
-		"parsed": "<list>*</>a<list>*</>b<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]]</><list>:</>c<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:C</><link-ground link-bracket>]]</><list>;</><strong>d</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:D</><link-ground link-bracket>]]</>"
+		"desc": "3. cats/langlinks and newlines: newline suppression for last list item should RT properly",
+		"wikitext": "*a\n*b\n   \n[[Category:Foo]]\n   \n[[Category:Bar]]\n[[Category:Baz]]\n[[es:Foo]]\n\n:c\n\n[[Category:C]]\n\n;d\n\n[[Category:D]]\n[[es:Bar]]",
+		"parsed": "<list>*</>a<list>*</>b<skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><skipformatting> </>  <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</><list>:</>c<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:C</><link-ground link-bracket>]]</><list>;</><strong>d</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:D</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Bar</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "4. Categories and newlines: newline suppression for last list item should RT properly",
-		"wikitext": "*a\n****b\n\n[[Category:Foo]]",
-		"parsed": "<list>*</>a<list>****</>b<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>"
+		"desc": "4. cats/langlinks: newline suppression for last list item should RT properly",
+		"wikitext": "*a\n****b\n\n[[Category:Foo]]\n[[es:Foo]]",
+		"parsed": "<list>*</>a<list>****</>b<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "5. Categories and newlines: migrateTrailingCategories dom pass should only run on the rightmost path of nested lists",
-		"wikitext": "*a\n**b\n[[Category:Foo]]\n*c\n**d\n[[Category:Foo]]",
-		"parsed": "<list>*</>a<list>**</>b<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><list>*</>c<list>**</>d<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>"
+		"desc": "5. cats/langlinks: migrateTrailingSolTransparentLinks dom pass should only run on the rightmost path of nested lists",
+		"wikitext": "*a\n**b\n[[Category:Foo]]\n*c\n**d\n[[Category:Foo]]\n[[es:Foo]]",
+		"parsed": "<list>*</>a<list>**</>b<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><list>*</>c<list>**</>d<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "6. Categories and newlines: migrateTrailingCategories dom pass should not migrate categories not preceded by newlines",
-		"wikitext": "*a [[Category:Foo]]",
-		"parsed": "<list>*</>a <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>"
+		"desc": "6. cats/langlinks: migrateTrailingSolTransparentLinks dom pass should not migrate them when not preceded by newlines",
+		"wikitext": "*a [[Category:Foo]]\n*b [[es:Foo]]",
+		"parsed": "<list>*</>a <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><list>*</>b <link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "7. Categories and newlines: migrateTrailingCategories dom pass should leave template content alone",
-		"wikitext": "*{{1x|a\n[[Category:Foo]]}}",
-		"parsed": "<list>*</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
+		"desc": "7. cats/langlinks: migrateTrailingSolTransparentLinks dom pass should leave template content alone",
+		"wikitext": "*{{1x|a\n[[Category:Foo]]\n[[es:Foo]]}}",
+		"parsed": "<list>*</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]][[</><template-link-ground link-pagename pagename>es:Foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "8. Categories and newlines: migrateTrailingCategories dom pass should not get tripped by intervening templates",
-		"wikitext": "*a\n\n{{1x|[[Category:Foo]]\n[[Category:Bar]]}}\n[[Category:Baz]]",
-		"parsed": "<list>*</>a<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]][[</><template-link-ground link-pagename pagename>Category:Bar</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]]</>"
+		"desc": "8. cats/langlinks: migrateTrailingSolTransparentLinks dom pass should not get tripped by intervening templates",
+		"wikitext": "*a\n\n{{1x|[[Category:Foo]]\n[[Category:Bar]]}}\n[[Category:Baz]]\n[[es:Baz]]",
+		"parsed": "<list>*</>a<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]][[</><template-link-ground link-pagename pagename>Category:Bar</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Baz</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "Categories and newlines: migrateTrailingCategories dom pass should not get tripped by comments and whitespace",
-		"wikitext": "*a\n\n[[Category:Bar]]<!--boo1--> <!--boo2-->\n[[Category:Baz]]<!--boo3--> <!--boo4-->",
-		"parsed": "<list>*</>a<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]]</><comment>&lt;!--boo1--&gt</> <comment>&lt;!--boo2--&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]]</><comment>&lt;!--boo3--&gt</> <comment>&lt;!--boo4--&gt</>"
+		"desc": "cats/langlinks: migrateTrailingSolTransparentLinks dom pass should not get tripped by comments and whitespace",
+		"wikitext": "*a\n\n[[Category:Bar]]<!--boo1--> <!--boo2-->\n[[Category:Baz]]<!--boo3--> <!--boo4-->\n[[es:Foo]]<!--boo5--> <!--boo6-->",
+		"parsed": "<list>*</>a<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Bar</><link-ground link-bracket>]]</><comment>&lt;!--boo1--&gt</> <comment>&lt;!--boo2--&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Baz</><link-ground link-bracket>]]</><comment>&lt;!--boo3--&gt</> <comment>&lt;!--boo4--&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo</><link-ground link-bracket>]]</><comment>&lt;!--boo5--&gt</> <comment>&lt;!--boo6--&gt</>"
 	},
 	{
 		"desc": "No regressions on internal links following category (T174639)",
@@ -2121,11 +2151,6 @@
 		"desc": "Parsoid: Defaultsort variations (T236846)",
 		"wikitext": "{{DEFAULTSORT}}\n\n{{DEFAULTSORT:}}\n{{DEFAULTSORT:DOGGIE}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>DEFAULTSORT</><template-ground template-bracket>}}</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>DOGGIE</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Parsoid html2wt b/c check: Defaultsort with key content being added (T236846)",
-		"wikitext": "{{DEFAULTSORT:BIRD}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DEFAULTSORT</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>BIRD</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Parsoid: Defaultsort (template-generated)",
@@ -2348,11 +2373,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Bat!</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "Media link from old 1.7.0 DOM spec (crash test, parsoid-only) T198511",
-		"wikitext": "This is what Parsoid would emit (and we still handle this HTML fine):\n\n[[Media:Foobar.jpg|A neat file to look at]]\n\nBut VisualEditor would mangle the rel attribute, and give us back this:\n\n[http://example.com/images/3/3a/Foobar.jpg A neat file to look at]\n\nBut at least we don't crash when trying to handle the mangled HTML!",
-		"parsed": "This is what Parsoid would emit (and we still handle this HTML fine):<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>A neat file to look at</><link-ground link-bracket>]]</>But VisualEditor would mangle the rel attribute, and give us back this:<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>example.com/images/3/3a/Foobar.jpg</><link-ground extlink-text> A neat file to look at</><link-ground extlink-bracket>]</>But at least we don't crash when trying to handle the mangled HTML!"
-	},
-	{
 		"desc": "Media link to nonexistent file (T3702)",
 		"wikitext": "[[Media:No such.jpg]]\n[[Media:No_such file.jpg]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:No such.jpg</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Media:No_such file.jpg</><link-ground link-bracket>]]</>"
@@ -2471,21 +2491,6 @@
 		"desc": "T4304: HTML attribute safety (bold)",
 		"wikitext": "<div title=\"'''foobar'''\"></div>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"'''foobar'''\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
-	},
-	{
-		"desc": "T4304: HTML attribute safety (ISBN)",
-		"wikitext": "<div title=\"ISBN 1234567890\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"ISBN 1234567890\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
-	},
-	{
-		"desc": "T4304: HTML attribute safety (RFC)",
-		"wikitext": "<div title=\"RFC 1234\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"RFC 1234\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
-	},
-	{
-		"desc": "T4304: HTML attribute safety (PMID)",
-		"wikitext": "<div title=\"PMID 1234567890\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"PMID 1234567890\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "T4304: HTML attribute safety (web link)",
@@ -2626,6 +2631,11 @@
 		"desc": "Sanitizer: Validating the contents of the id attribute (T6515)",
 		"wikitext": "<br id=\"\" /><br id=\"a space\" />",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>id=</><htmltag-attribute-value>\"\"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt&lt;</><htmltag-name>br </><htmltag-attribute html-br>id=</><htmltag-attribute-value>\"a space\"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Sanitizer: Validating the contents of the id attribute, empty attribute syntax (T6515)",
+		"wikitext": "<br id />",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>id </><htmltag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Sanitizer: Validating id attribute uniqueness (T6515, T8301)",
@@ -2826,6 +2836,11 @@
 		"desc": "Special page transclusion twice (T7021)",
 		"wikitext": "{{Special:Prefixindex/Xyzzyx}}\n{{Special:Prefixindex/Xyzzyx}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Special:Prefixindex/Xyzzyx</><template-ground template-bracket>}}{{</><template-ground template-name pagename>Special:Prefixindex/Xyzzyx</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Nested special page transclusion",
+		"wikitext": "{{nested special}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>nested special</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Transclusion of default MediaWiki message",
@@ -3083,9 +3098,14 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>| </><html-td table-definition>colspan=\"1\" </><table-delimiter2>|</><table-td>foo </><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>!</><ext-ground parserfunction-bracket>}}</><table-td> bar</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Using {{!}} in wikilinks (T290526)",
-		"wikitext": "[[Main Page{{!}}Something else]]\n\n[[{{T290526}}]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><ext-link-ground parserfunction-bracket>{{</><ext-link-ground parserfunction-name>!</><ext-link-ground parserfunction-bracket>}}</><link-ground link-pagename pagename>Something else</><link-ground link-bracket>]][[</><template-link-ground template-bracket>{{</><template-link-ground template-name pagename>T290526</><template-link-ground template-bracket>}}</><link-ground link-bracket>]]</>"
+		"desc": "1. Using {{!}} in wikilinks (T290526)",
+		"wikitext": "[[Main Page{{!}}Something else]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><ext-link-ground parserfunction-bracket>{{</><ext-link-ground parserfunction-name>!</><ext-link-ground parserfunction-bracket>}}</><link-ground link-pagename pagename>Something else</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "2. Using {{!}} in wikilinks (T290526)",
+		"wikitext": "[[{{T290526}}]]",
+		"parsed": "<link-ground link-bracket>[[</><template-link-ground template-bracket>{{</><template-link-ground template-name pagename>T290526</><template-link-ground template-bracket>}}</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Using {{!}} in template arguments (T290526)",
@@ -3121,51 +3141,6 @@
 		"desc": "Illegal character references (T106578, T113194)",
 		"wikitext": "; Null: &#00;\n; FF: &#xC;\n; CR: &#xD;\n; Control (low): &#8;\n; Control (high): &#x7F; &#x9F;\n; Unsupported legacy: &#128; &#130; &#131; &#150; &#159;\n; Surrogate: &#xD83D;&#xDCA9;\n; Invalid characters: &#xfffe; &#xffff;\n; This is an okay astral character: &#x1F4A9;\n; This is an okay multi-codepoint HTML5 entity: &acE;\n; This are valid wikitext-specific entities: &רלמ; &رلم;\n; Highest valid characters: &#x10fffd; &#x10fffe; &#x10ffff;",
 		"parsed": "<list>;</><strong> Null</><list>:</> <entity>&amp;#00;</><list>;</><strong> FF</><list>:</> <entity>&amp;#xC;</><list>;</><strong> CR</><list>:</> <entity>&amp;#xD;</><list>;</><strong> Control (low)</><list>:</> <entity>&amp;#8;</><list>;</><strong> Control (high)</><list>:</> <entity>&amp;#x7F;</> <entity>&amp;#x9F;</><list>;</><strong> Unsupported legacy</><list>:</> <entity>&amp;#128;</> <entity>&amp;#130;</> <entity>&amp;#131;</> <entity>&amp;#150;</> <entity>&amp;#159;</><list>;</><strong> Surrogate</><list>:</> <entity>&amp;#xD83D;&amp;#xDCA9;</><list>;</><strong> Invalid characters</><list>:</> <entity>&amp;#xfffe;</> <entity>&amp;#xffff;</><list>;</><strong> This is an okay astral character</><list>:</> <entity>&amp;#x1F4A9;</><list>;</><strong> This is an okay multi-codepoint HTML5 entity</><list>:</> <entity>&amp;acE;</><list>;</><strong> This are valid wikitext-specific entities</><list>:</> &רלמ; &رلم;<list>;</><strong> Highest valid characters</><list>:</> <entity>&amp;#x10fffd;</> <entity>&amp;#x10fffe;</> <entity>&amp;#x10ffff;</>"
-	},
-	{
-		"desc": "ISBN code coverage",
-		"wikitext": "ISBN  978-0-1234-56&#x20;789",
-		"parsed": "<magic-link>ISBN  978-0-1234-56</><entity>&amp;#x20;</>789"
-	},
-	{
-		"desc": "ISBN followed by 5 spaces",
-		"wikitext": "ISBN",
-		"parsed": "ISBN"
-	},
-	{
-		"desc": "Double ISBN",
-		"wikitext": "ISBN ISBN 1234567890",
-		"parsed": "ISBN <magic-link>ISBN 1234567890</>"
-	},
-	{
-		"desc": "ISBN with an X",
-		"wikitext": "ISBN 3-462-04561-X\nISBN 3-462-04561-x\nISBN 080442957X\nISBN 080442957x\nISBN 978080442957X\nISBN 978080442957x",
-		"parsed": "<magic-link>ISBN 3-462-04561-XISBN 3-462-04561-xISBN 080442957XISBN 080442957xISBN 978080442957XISBN 978080442957x</>"
-	},
-	{
-		"desc": "ISBN with empty prefix (parsoid test)",
-		"wikitext": "ISBN 1234567890",
-		"parsed": "<magic-link>ISBN 1234567890</>"
-	},
-	{
-		"desc": "T24905: <abbr> followed by ISBN followed by </a>",
-		"wikitext": "<abbr>(fr)</abbr> ISBN 2753300917 [http://www.example.com example.com]",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>abbr</><htmltag-bracket>&gt</>(fr)<htmltag-bracket>&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt</> <magic-link>ISBN 2753300917</> <link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>www.example.com</><link-ground extlink-text> example.com</><link-ground extlink-bracket>]</>"
-	},
-	{
-		"desc": "Double RFC",
-		"wikitext": "RFC RFC 1234",
-		"parsed": "RFC <magic-link>RFC 1234</>"
-	},
-	{
-		"desc": "Double RFC with a wiki link",
-		"wikitext": "RFC [[RFC 1234]]",
-		"parsed": "RFC <link-ground link-bracket>[[</><link-ground link-pagename pagename>RFC 1234</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "RFC code coverage",
-		"wikitext": "RFC   983&#x20;987",
-		"parsed": "<magic-link>RFC   983</><entity>&amp;#x20;</>987"
 	},
 	{
 		"desc": "Another italics / bold test",
@@ -3261,31 +3236,6 @@
 		"desc": "Template caching",
 		"wikitext": "{{Test}}\n{{Test}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Test</><template-ground template-bracket>}}{{</><template-ground template-name pagename>Test</><template-ground template-bracket>}}</>"
-	},
-	{
-		"desc": "ISBN with a dummy number",
-		"wikitext": "ISBN ---",
-		"parsed": "ISBN ---"
-	},
-	{
-		"desc": "ISBN with space-delimited number",
-		"wikitext": "ISBN 92 9017 032 8",
-		"parsed": "<magic-link>ISBN 92 9017 032 8</>"
-	},
-	{
-		"desc": "ISBN with multiple spaces, no number",
-		"wikitext": "ISBN  foo",
-		"parsed": "ISBN  foo"
-	},
-	{
-		"desc": "ISBN length",
-		"wikitext": "ISBN 123456789\n\nISBN 1234567890\n\nISBN 12345678901",
-		"parsed": "ISBN 123456789<magic-link>ISBN 1234567890</>ISBN 12345678901"
-	},
-	{
-		"desc": "ISBN with trailing year (T9110)",
-		"wikitext": "ISBN 1-234-56789-0 - 2006\n\nISBN 1 234 56789 0 - 2006",
-		"parsed": "<magic-link>ISBN 1-234-56789-0</> - 2006<magic-link>ISBN 1 234 56789 0</> - 2006"
 	},
 	{
 		"desc": "anchorencode",
@@ -3668,6 +3618,11 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\" clear : both ; \"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
 	},
 	{
+		"desc": "Displayspace processing on embedded fragments",
+		"wikitext": "[[File:Foobar.jpg|« test »]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground file-text>« test »</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "HTML5 data attributes",
 		"wikitext": "<span data-foo=\"bar\">Baz</span>\n<p data-abc-def_hij=\"\">Quuz</p>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>data-foo=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>&gt</>Baz<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>p </><htmltag-attribute html-p>data-abc-def_hij=</><htmltag-attribute-value>\"\"</><htmltag-bracket>&gt</>Quuz<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</>"
@@ -3743,6 +3698,16 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction>2</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction>2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>R</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "Check lossless in formatNum",
+		"wikitext": "{{formatnum:9999999999999999}}\n{{formatnum:9999999999999999|LOSSLESS}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>9999999999999999</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>9999999999999999</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>LOSSLESS</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Check noCommafy + lossless in formatNum",
+		"wikitext": "{{formatnum:999999999999999|NOSEP|LOSSLESS}}\n{{formatnum:9999999999999999|NOSEP|LOSSLESS}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>999999999999999</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>NOSEP</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>LOSSLESS</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>9999999999999999</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>NOSEP</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>LOSSLESS</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
 		"desc": "Wrong option for formatNum (T58199)",
 		"wikitext": "{{formatnum:1,234.56|Random}}\n{{formatnum:1,234.56|EVERYTHING}}\n{{formatnum:1234.56|any argument that has the string 'NOSEP'}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1,234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Random</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1,234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>EVERYTHING</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>formatnum</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1234.56</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>any argument that has the string 'NOSEP'</><ext-ground parserfunction-bracket>}}</>"
@@ -3773,9 +3738,44 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>quux</><table-delimiter>|- </><table-definition html-tr>id=</><table-definition-value>foo</><table-definition html-tr> | style=</><table-definition-value>'color: red'</><table-delimiter>|</><table-td>bar</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Language parser function",
+		"desc": "Language parser function (autonym)",
 		"wikitext": "{{#language:ar}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#language</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ar</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Language parser function (case-insensitive)",
+		"wikitext": "{{#language:AR}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#language</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>AR</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Language parser function (non-autonym)",
+		"wikitext": "{{#language:aR|En}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#language</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>aR</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>En</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Language parser function (bcp-47 codes)",
+		"wikitext": "{{#language:de-x-formal|en-simple}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#language</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>de-x-formal</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>en-simple</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Dir parser function (valid codes)",
+		"wikitext": "Persian: {{#dir:fa}}\n\nEnglish: {{#dir:en}}\n\nPersian (with space): {{#dir: fa}}\n\nTajik: {{#dir:tg}}\n\nThe string 'egl' is a valid internal code; however when used as a\nBCP-47 code it refers to the internal code 'eml'.  Unfortunately,\nboth of these have ltr directionality which makes this test case\nless useful than it could be.\n\nAmbiguous BCP-47 code:\n;Directionality of internal code 'egl':{{#dir:egl}}\n;Directionality of internal code 'eml':{{#dir:egl|bcp47}} == {{#dir:eml}}",
+		"parsed": "Persian: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>fa</><ext-ground parserfunction-bracket>}}</>English: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>en</><ext-ground parserfunction-bracket>}}</>Persian (with space): <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> fa</><ext-ground parserfunction-bracket>}}</>Tajik: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>tg</><ext-ground parserfunction-bracket>}}</>The string 'egl' is a valid internal code; however when used as aBCP-47 code it refers to the internal code 'eml'.  Unfortunately,both of these have ltr directionality which makes this test caseless useful than it could be.Ambiguous BCP-47 code:<list>;</><strong>Directionality of internal code 'egl'</><list>:</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>egl</><ext-ground parserfunction-bracket>}}</><list>;</><strong>Directionality of internal code 'eml'</><list>:</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>egl</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>bcp47</><ext-ground parserfunction-bracket>}}</> == <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>eml</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Dir parser function (invalid code)",
+		"wikitext": "{{#dir:blah<blah}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#dir</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>blah&lt;blah</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Bcp47 parser function (valid codes)",
+		"wikitext": "Serbian: {{#bcp47:sr-ec}}\n\nCantonese: {{#bcp47:zh-yue}}\n\nFormal German (with space): {{#bcp47: de-formal}}\n\nSimple English: {{#bcp47:simple}}\n\nThe string 'egl' is a valid internal code, distinct from the\ninternal code 'eml'; however both map to the BCP-47 code 'egl'.\n\nAmbiguous BCP-47 code:\n;Internal code 'eml':{{#bcp47:eml}} == egl\n;Internal code 'egl':{{#bcp47:egl}} == egl",
+		"parsed": "Serbian: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>sr-ec</><ext-ground parserfunction-bracket>}}</>Cantonese: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>zh-yue</><ext-ground parserfunction-bracket>}}</>Formal German (with space): <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> de-formal</><ext-ground parserfunction-bracket>}}</>Simple English: <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>simple</><ext-ground parserfunction-bracket>}}</>The string 'egl' is a valid internal code, distinct from theinternal code 'eml'; however both map to the BCP-47 code 'egl'.Ambiguous BCP-47 code:<list>;</><strong>Internal code 'eml'</><list>:</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>eml</><ext-ground parserfunction-bracket>}}</> == egl<list>;</><strong>Internal code 'egl'</><list>:</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>egl</><ext-ground parserfunction-bracket>}}</> == egl"
+	},
+	{
+		"desc": "Bcp47 parser function (examples from Template:BCP47)",
+		"wikitext": "Unaffected codes, for example:\n*{{#bcp47:en}} returns: \"en\"\nChanges required by BCP47, using standard codes:\n*{{#bcp47:als}} returns: \"gsw\"\n*{{#bcp47:fiu-vro}} returns: \"vro\"\n*{{#bcp47:simple}} returns: \"en\"\n*{{#bcp47:zh-classical}} returns: \"lzh\"\n*{{#bcp47:roa-rup}} returns: \"rup\"\nChanges required by BCP47, currently using private-use extensions:\n*{{#bcp47:nrm}} returns: \"nrf\"\n*{{#bcp47:roa-tara}} returns: \"it-x-tara\"\nChanges preferable with BCP47 for improved interoperability (not really violations):\n*{{#bcp47:be-x-old}} returns: \"be-tarask\"",
+		"parsed": "Unaffected codes, for example:<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>en</><ext-ground parserfunction-bracket>}}</> returns: \"en\"Changes required by BCP47, using standard codes:<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>als</><ext-ground parserfunction-bracket>}}</> returns: \"gsw\"<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>fiu-vro</><ext-ground parserfunction-bracket>}}</> returns: \"vro\"<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>simple</><ext-ground parserfunction-bracket>}}</> returns: \"en\"<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>zh-classical</><ext-ground parserfunction-bracket>}}</> returns: \"lzh\"<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>roa-rup</><ext-ground parserfunction-bracket>}}</> returns: \"rup\"Changes required by BCP47, currently using private-use extensions:<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>nrm</><ext-ground parserfunction-bracket>}}</> returns: \"nrf\"<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>roa-tara</><ext-ground parserfunction-bracket>}}</> returns: \"it-x-tara\"Changes preferable with BCP47 for improved interoperability (not really violations):<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#bcp47</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>be-x-old</><ext-ground parserfunction-bracket>}}</> returns: \"be-tarask\""
 	},
 	{
 		"desc": "Padleft and padright (default 0-padding)",
@@ -3838,11 +3838,6 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test</><link-ground link-delimiter>|</><link-ground error>&lt;/span&gt</><link-ground link-bracket>]]</>"
 	},
 	{
-		"desc": "LST Sections: Backwards compatibility",
-		"wikitext": "<section begin=\"2011-05-16\" />\n<section end=\"2014-04-10 (MW 1.23wmf22)\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>section </><exttag-attribute ext-section>begin=</><exttag-attribute-value>\"2011-05-16\"</><exttag-attribute ext-section> </><exttag-bracket>/&gt&lt;</><exttag-name>section </><exttag-attribute ext-section>end=</><exttag-attribute-value>\"2014-04-10 (MW 1.23wmf22)\"</><exttag-attribute ext-section> </><exttag-bracket>/&gt</>"
-	},
-	{
 		"desc": "LST Sections: Newfangled approach",
 		"wikitext": "<section begin=\"2011-05-16\" />\n<section end=\"2014-04-10 (MW 1.23wmf22)\" />",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>section </><exttag-attribute ext-section>begin=</><exttag-attribute-value>\"2011-05-16\"</><exttag-attribute ext-section> </><exttag-bracket>/&gt&lt;</><exttag-name>section </><exttag-attribute ext-section>end=</><exttag-attribute-value>\"2014-04-10 (MW 1.23wmf22)\"</><exttag-attribute ext-section> </><exttag-bracket>/&gt</>"
@@ -3859,8 +3854,8 @@
 	},
 	{
 		"desc": "Empty LI and TR nodes should not be stripped from top-level content",
-		"wikitext": "*a\n*\n*b\n\n{|\n|-\n|-\n|foo\n|}",
-		"parsed": "<list>*</>a<list>**</>b<table-bracket>{|</><table-delimiter>|-|-|</><table-td>foo</><table-bracket>|}</>"
+		"wikitext": "* a\n*\n* b\n\n{|\n|-\n|-\n|foo\n|}",
+		"parsed": "<list>*</> a<list>**</> b<table-bracket>{|</><table-delimiter>|-|-|</><table-td>foo</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Empty TR nodes should not be stripped if they have any attributes set",
@@ -4318,21 +4313,6 @@
 		"parsed": "<skipformatting> </>a<skipformatting> </>b<skipformatting> </>c<skipformatting> </>d<skipformatting> </>e<skipformatting>   </>f"
 	},
 	{
-		"desc": "Edited ISBN links not serializable as ISBN links should serialize as wikilinks",
-		"wikitext": "[[Special:BookSources/1234567890|ISBN 1234567895]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/1234567890</><link-ground link-delimiter>|</><link-ground link-text>ISBN 1234567895</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Edited RFC links not serializable as RFC links should serialize as extlinks",
-		"wikitext": "[https://tools.ietf.org/html/rfc123 New RFC]",
-		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>tools.ietf.org/html/rfc123</><link-ground extlink-text> New RFC</><link-ground extlink-bracket>]</>"
-	},
-	{
-		"desc": "Edited PMID links not serializable as PMID links should serialize as extlinks",
-		"wikitext": "[//www.ncbi.nlm.nih.gov/pubmed/123?dopt=Abstract New PMID]",
-		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>www.ncbi.nlm.nih.gov/pubmed/123?dopt=Abstract</><link-ground extlink-text> New PMID</><link-ground extlink-bracket>]</>"
-	},
-	{
 		"desc": "WTS of autolinks with trailing/surrounding context",
 		"wikitext": "http://cscott.net'''foo'''\n\nhttp://cscott.net<b>foo</b>\n\n'''http://cscott.net'''\n\n'''http://cscott.net '''\n\n'''http://cscott.net<nowiki/>x'''\n\nhttp://cscott.net<nowiki/>x",
 		"parsed": "<free-extlink-protocol>http://</><free-extlink>cscott.net</><apostrophes>'''</><strong>foo</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><apostrophes>'''</><strong>http://cscott.net</><apostrophes>''''''</><strong>http://cscott.net </><apostrophes>''''''</><strong>http://cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><strong>x</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
@@ -4381,16 +4361,6 @@
 		"desc": "WTS of edited external link surrounded by square brackets (T220018)",
 		"wikitext": "[http://example.com foo]",
 		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>example.com</><link-ground extlink-text> foo</><link-ground extlink-bracket>]</>"
-	},
-	{
-		"desc": "Magic links inside links (not autolinked)",
-		"wikitext": "[[Foo|http://example.com]]\n[[Foo|RFC 1234]]\n[[Foo|PMID 1234]]\n[[Foo|ISBN 123456789x]]\n\n[http://foo.com http://example.com]\n[http://foo.com RFC 1234]\n[http://foo.com PMID 1234]\n[http://foo.com ISBN 123456789x]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>http://example.com</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>RFC 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>PMID 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>ISBN 123456789x</><link-ground link-bracket>]]</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> http://example.com</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> RFC 1234</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> PMID 1234</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> ISBN 123456789x</><link-ground extlink-bracket>]</>"
-	},
-	{
-		"desc": "WTS of magic word text (T109371)",
-		"wikitext": "<nowiki>RFC 1234</nowiki>\n\n[http://foo.com RFC 1234]\n\n[[Foo|RFC 1234]]",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>RFC 1234</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> RFC 1234</><link-ground extlink-bracket>]</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>RFC 1234</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Edited Redirect link should emit a non-piped wikitext link",
@@ -4708,11 +4678,6 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"a\"</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"b\"</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
-		"desc": "Selser: Check for validity of DSR before using it",
-		"wikitext": "<span id=\"a\">a</span>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"a\"</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
-	},
-	{
 		"desc": "DOMDiff: Edits to content nested in elements with templated attributes should not be lost (T139388)",
 		"wikitext": "<div style=\"{{1x|color:red;}}%\">foo</div>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>color:red;</><template-ground template-bracket>}}</><htmltag-attribute-value>%\"</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
@@ -4721,6 +4686,11 @@
 		"desc": "Empty LI (T49673)",
 		"wikitext": "*a\n* \n*\n*b",
 		"parsed": "<list>*</>a<list>*</> <list>**</>b"
+	},
+	{
+		"desc": "Empty list item with rendering transparent tag",
+		"wikitext": "{{1x|*hmm\n*[[category:123]]}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>*hmm</><template-ground list>*</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>category:123</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "unclosed internal link XSS (T137264)",
@@ -4858,6 +4828,66 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>width=</><htmltag-attribute-value>\"95%\"</><htmltag-attribute html-div> style=</><htmltag-attribute-value>\"border: 3px solid darkblue\"</><htmltag-bracket>&gt</>hi"
 	},
 	{
+		"desc": "Extension tag with embedded html",
+		"wikitext": "<embedtag>Content with a [[broken link]].</embedtag>",
+		"parsed": "<embedtag>Content with a <link-ground link-bracket>[[</><link-ground link-pagename pagename>broken link</><link-ground link-bracket>]]</>.</embedtag>"
+	},
+	{
+		"desc": "Cloned formatting element with extension tag that unpacks itself in attribute name position",
+		"wikitext": "<i <sealtag>y</sealtag>>\n\nz",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </><sealtag>y</sealtag>>z"
+	},
+	{
+		"desc": "Cloned formatting element with extension tag that unpacks itself in attribute value position",
+		"wikitext": "<i title=\"<sealtag>y</sealtag>\">a\n\nz",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>title=</><htmltag-attribute-value>\"</><sealtag>y</sealtag>\">az"
+	},
+	{
+		"desc": "Include directive string gluing",
+		"wikitext": "<noinclude>{{1x|</noinclude>testing<noinclude>}}</noinclude>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude template-ground template-bracket>{{</><tag-noinclude template-ground template-name pagename>1x</><tag-noinclude template-ground template-delimiter>|</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</>testing<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>}}</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "1. Include directive in template target",
+		"wikitext": "{{1x<noinclude>|123</noinclude>}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground comment>&lt;noinclude&gt</><template-ground template-delimiter>|</><template-ground template>123</><template-ground error>&lt;/noinclude&gt</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "2. Include directive in template target",
+		"wikitext": "{{1x<includeonly>|123</includeonly>|345}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground comment>&lt;includeonly&gt</><template-ground template-delimiter>|</><template-ground template>123</><template-ground error>&lt;/includeonly&gt</><template-ground template-delimiter>|</><template-ground template>345</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "3. Include directive in template target",
+		"wikitext": "{{1x<onlyinclude>|123</onlyinclude>}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground comment>&lt;onlyinclude&gt</><template-ground template-delimiter>|</><template-ground template>123</><template-ground error>&lt;/onlyinclude&gt</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "4. Include directive in template target",
+		"wikitext": "{{{{{1<noinclude>|1x</noinclude>}}}|123}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground templatevariable-bracket>{{{</><template-ground templatevariable-name>1&lt;noinclude&gt</><template-ground templatevariable-delimiter>|</><template-ground templatevariable>1x</><template-ground error>&lt;/noinclude&gt</><template-ground templatevariable-bracket>}}}</><template-ground template-delimiter>|</><template-ground template>123</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tag contents using isRawHTML flag",
+		"wikitext": "DoBlockLevels and LanguageConverter still run on isHTML content:\n<divtag raw=\"true\" ishtml=\"true\"><!--protect newline-->\n:foo -{raw}- <b>bold</b>\n</divtag>\n\nBut with isRawHTML the result is left alone:\n<divtag raw=\"true\" israwhtml=\"true\"><!--protect newline-->\n:foo -{raw}- <b>bold</b>\n</divtag>",
+		"parsed": "DoBlockLevels and LanguageConverter still run on isHTML content:<divtag raw=\"true\" ishtml=\"true\"><comment>&lt;!--protect newline--&gt</><list>:</>foo <convert-bracket>-{</>raw<convert-bracket>}-</> <htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>bold<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</></divtag>But with isRawHTML the result is left alone:<divtag raw=\"true\" israwhtml=\"true\"><comment>&lt;!--protect newline--&gt</><list>:</>foo <convert-bracket>-{</>raw<convert-bracket>}-</> <htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>bold<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</></divtag>"
+	},
+	{
+		"desc": "Parser function contents using isRawHTML flag",
+		"wikitext": "DoBlockLevels and LanguageConverter still run on isHTML content:\n{{#divtag:<!--protect newline-->\n:foo -{raw}- <b>bold</b>\n|raw|isHTML}}\n\nBut with isRawHTML the result is left alone:\n{{#divtag:<!--protect newline-->\n:foo -{raw}- <b>bold</b>\n|raw|isRawHTML}}",
+		"parsed": "DoBlockLevels and LanguageConverter still run on isHTML content:<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#divtag</><ext-ground parserfunction-delimiter>:</><ext-ground comment>&lt;!--protect newline--&gt</><ext-ground list>:</><ext-ground parserfunction>foo </><ext-ground convert-bracket>-{</><ext-ground parserfunction>raw</><ext-ground convert-bracket>}-</><ext-ground parserfunction> </><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>bold</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>raw</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isHTML</><ext-ground parserfunction-bracket>}}</>But with isRawHTML the result is left alone:<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#divtag</><ext-ground parserfunction-delimiter>:</><ext-ground comment>&lt;!--protect newline--&gt</><ext-ground list>:</><ext-ground parserfunction>foo </><ext-ground convert-bracket>-{</><ext-ground parserfunction>raw</><ext-ground convert-bracket>}-</><ext-ground parserfunction> </><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>bold</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>raw</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isRawHTML</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Handling of nested nowiki strip markers in Parsoid fragments (2)",
+		"wikitext": "Text {{#spantag:<nowiki><b></nowiki> {{#spantag:<nowiki><c></nowiki>}}}}",
+		"parsed": "Text <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#spantag</><ext-ground parserfunction-delimiter>:</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>&lt;b&gt</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction> </><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#spantag</><ext2-ground parserfunction-delimiter>:</><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><tag-nowiki>&lt;c&gt</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "T386233: suppress <nowiki/> tags between extension tags",
+		"wikitext": "Deliberately unclosed b tag triggers p-wrapping if a nowiki span is\nadded between the divtags:\n\n<b>{{1x|<divtag>abc</divtag><divtag>xyz</divtag>}}",
+		"parsed": "Deliberately unclosed b tag triggers p-wrapping if a nowiki span isadded between the divtags:<htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>&lt;divtag&gtabc&lt;/divtag&gt&lt;divtag&gtxyz&lt;/divtag&gt</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "additionalTests"
 	},
 	{
@@ -4947,6 +4977,11 @@
 		"desc": "External links: tab character",
 		"wikitext": "[http://www.example.com Alice in\tWonderland]",
 		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>www.example.com</><link-ground extlink-text> Alice in\tWonderland</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "U+0338, bare and as entity",
+		"wikitext": "Header\n\n== &#x338; One & ==\n&#x338; Text\n\n== ̸ Two & ==\n̸ Text",
+		"parsed": "Header<section-header section--2>==</><section> </><entity>&amp;#x338;</><section> One &amp; </><section-header>==</><entity>&amp;#x338;</> Text<section-header section--2>==</><section> ̸ Two &amp; </><section-header>==</≯ Text"
 	},
 	{
 		"desc": "Stray carriage return in text",
@@ -6164,57 +6199,57 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>dl</><htmltag-bracket>&gt&lt;</><htmltag-name>dt</><htmltag-bracket>&gt</>x<htmltag-bracket>&lt;/</><htmltag-name>dt</><htmltag-bracket>&gt&lt;</><htmltag-name>dd</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>dd</><htmltag-bracket>&gt&lt;</><htmltag-name>dd</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>dd</><htmltag-bracket>&gt&lt;/</><htmltag-name>dl</><htmltag-bracket>&gt</>"
 	},
 	{
-		"desc": "Definition Lists: No nesting: Multiple dd's",
+		"desc": "No nesting: Multiple dd's",
 		"wikitext": ";x\n:a\n:b",
 		"parsed": "<list>;</><strong>x</><list>:</>a<list>:</>b"
 	},
 	{
-		"desc": "Definition Lists: Indentation: Regular",
+		"desc": "Indentation: Regular",
 		"wikitext": ":i1\n::i2\n:::i3",
 		"parsed": "<list>:</>i1<list>::</>i2<list>:::</>i3"
 	},
 	{
-		"desc": "Definition Lists: Indentation: Missing 1st level",
+		"desc": "Indentation: Missing 1st level",
 		"wikitext": "::i2\n:::i3",
 		"parsed": "<list>::</>i2<list>:::</>i3"
 	},
 	{
-		"desc": "Definition Lists: Indentation: Multi-level indent",
+		"desc": "Indentation: Multi-level indent",
 		"wikitext": ":::i3",
 		"parsed": "<list>:::</>i3"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables",
+		"desc": "Hacky use to indent tables",
 		"wikitext": "::{|\n|foo\n|bar\n|}\nthis text\nshould be left alone",
 		"parsed": "<list>::</><table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-delimiter>|</><table-td>bar</><table-bracket>|}</>this textshould be left alone"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables (with content following table)",
+		"desc": "Hacky use to indent tables (with content following table)",
 		"wikitext": ":{|\n|foo\n|bar\n|} <!--c1--> this text should be part of the dl",
 		"parsed": "<list>:</><table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-delimiter>|</><table-td>bar</><table-bracket>|}</> <comment>&lt;!--c1--&gt</> this text should be part of the dl"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables, with comments (T65979)",
+		"desc": "Hacky use to indent tables, with comments (T65979)",
 		"wikitext": "<!-- foo -->\n::{|\n|foo\n|bar\n|}<!-- bar -->\nthis text\nshould be left alone",
 		"parsed": "<comment>&lt;!-- foo --&gt</><list>::</><table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-delimiter>|</><table-td>bar</><table-bracket>|}</><comment>&lt;!-- bar --&gt</>this textshould be left alone"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables, with comment before table",
+		"desc": "Hacky use to indent tables, with comment before table",
 		"wikitext": "::<!-- foo -->{|\n|foo\n|}",
 		"parsed": "<list>::</><comment>&lt;!-- foo --&gt</>{||foo|}"
 	},
 	{
-		"desc": "Definition Lists: Hack use to indent tables, in a nested list context (T262943)",
+		"desc": "Hack use to indent tables, in a nested list context (T262943)",
 		"wikitext": "This is a discussion thread.\n\n:Parent comment.\n::Child comment\n::{|\n|With a\n|Table!\n|}",
 		"parsed": "This is a discussion thread.<list>:</>Parent comment.<list>::</>Child comment<list>::</><table-bracket>{|</><table-delimiter>|</><table-td>With a</><table-delimiter>|</><table-td>Table!</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables (WS-insensitive)",
+		"desc": "Hacky use to indent tables (WS-insensitive)",
 		"wikitext": ":{|\n|a\n|}",
 		"parsed": "<list>:</><table-bracket>{|</><table-delimiter>|</><table-td>a</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Definition Lists: Hacky use to indent tables (nl-insensitive)",
+		"desc": "Hacky use to indent tables (nl-insensitive)",
 		"wikitext": ":{|\n\n\n|a\n|}",
 		"parsed": "<list>:</><table-bracket>{|</><table-delimiter>|</><table-td>a</><table-bracket>|}</>"
 	},
@@ -6229,109 +6264,114 @@
 		"parsed": "<list>:</><table-bracket>{|</><table-delimiter>|</><list>:</><table-td>a</><list>:</><table-td>b</><table-delimiter>|</><list>*</><table-td>c</><list>*</><table-td>d</><table-bracket>|}</><list>*</>e<list>*</>f"
 	},
 	{
-		"desc": "Definition Lists: Nesting: Multi-level (Parsoid only)",
+		"desc": "Nesting: Multi-level (Parsoid only)",
 		"wikitext": ";t1:d1\n;;t2::d2\n;;;t3:::d3",
 		"parsed": "<list>;</><strong>t1</><list>:</>d1<list>;;</><strong>t2</><list>::</>d2<list>;;;</><strong>t3</><list>:::</>d3"
 	},
 	{
-		"desc": "Definition Lists: Nesting: Test 2",
+		"desc": "Nesting: Test 2",
 		"wikitext": ";t1\n::d2",
 		"parsed": "<list>;</><strong>t1</><list>::</>d2"
 	},
 	{
-		"desc": "Definition Lists: Nesting: Test 3",
+		"desc": "Nesting: Test 3",
 		"wikitext": ":;t1\n::::d2",
 		"parsed": "<list>:;</><strong>t1</><list>::::</>d2"
 	},
 	{
-		"desc": "Definition Lists: Nesting: Test 4",
+		"desc": "Nesting: Test 4",
 		"wikitext": "::;t3\n:::d3",
 		"parsed": "<list>::;</><strong>t3</><list>:::</>d3"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 1",
+		"desc": "Mixed Lists: Test 1",
 		"wikitext": ":;*foo\n::*bar\n:;baz",
 		"parsed": "<list>:;*</><strong>foo</><list>::*</>bar<list>:;</><strong>baz</>"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 2",
+		"desc": "Mixed Lists: Test 2",
 		"wikitext": "*:d1\n*:d2",
 		"parsed": "<list>*:</>d1<list>*:</>d2"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 3",
+		"desc": "Mixed Lists: Test 3",
 		"wikitext": "*:::d1\n*:::d2",
 		"parsed": "<list>*:::</>d1<list>*:::</>d2"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 4",
+		"desc": "Mixed Lists: Test 4",
 		"wikitext": "*;d1 :d2\n*;d3 :d4",
 		"parsed": "<list>*;</><strong>d1 </><list>:</>d2<list>*;</><strong>d3 </><list>:</>d4"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 5",
+		"desc": "Mixed Lists: Test 5",
 		"wikitext": "*:d1\n*::d2",
 		"parsed": "<list>*:</>d1<list>*::</>d2"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 6",
+		"desc": "Mixed Lists: Test 6",
 		"wikitext": "#*:d1\n#*:::d3",
 		"parsed": "<list>#*:</>d1<list>#*:::</>d3"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 7",
+		"desc": "Mixed Lists: Test 7",
 		"wikitext": ":*d1\n:*d2",
 		"parsed": "<list>:*</>d1<list>:*</>d2"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 8",
+		"desc": "Mixed Lists: Test 8",
 		"wikitext": ":*d1\n::*d2",
 		"parsed": "<list>:*</>d1<list>::*</>d2"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 9",
+		"desc": "Mixed Lists: Test 9",
 		"wikitext": "*;foo :bar",
 		"parsed": "<list>*;</><strong>foo </><list>:</>bar"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 10",
+		"desc": "Mixed Lists: Test 10",
 		"wikitext": "*#;foo :bar",
 		"parsed": "<list>*#;</><strong>foo </><list>:</>bar"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 11",
+		"desc": "Mixed Lists: Test 11",
 		"wikitext": ";a\n:*b",
 		"parsed": "<list>;</><strong>a</><list>:*</>b"
 	},
 	{
-		"desc": "Definition Lists: Mixed Lists: Test 12",
-		"wikitext": "*#*#;*;;foo :bar\n*#*#;boo :baz",
-		"parsed": "<list>*#*#;*;;</><strong>foo </><list>:</><strong>bar</><list>*#*#;</><strong>boo </><list>:</>baz"
-	},
-	{
-		"desc": "Definition Lists: Mixed Lists: Test 13",
+		"desc": "Mixed Lists: Test 13",
 		"wikitext": "*#*#;*;;foo : bar\n*#*#;boo : baz",
 		"parsed": "<list>*#*#;*;;</><strong>foo </><list>:</><strong> bar</><list>*#*#;</><strong>boo </><list>:</> baz"
 	},
 	{
-		"desc": "Definition Lists: Weird Ones: Test 1",
-		"wikitext": "*#;*::;;foo :bar (who uses this?)",
-		"parsed": "<list>*#;*::;;</><strong>foo </><list>:</><strong>bar (who uses this?)</>"
-	},
-	{
-		"desc": "Definition Lists: colons occurring in tags",
+		"desc": "colons occurring in tags",
 		"wikitext": ";a:b\n;'''a:b'''\n;<i>a:b</i>\n;<span>a:b</span>\n;<div>a:b</div>\n;<div>a\n:b</div>\n;{{1x|a:b}}\n;{{1x|''a:b''}}\n;;;''a:b''",
 		"parsed": "<list>;</><strong>a</><list>:</>b<list>;</><apostrophes>'''</><strong>a:b</><apostrophes>'''</><list>;</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</><strong>a:b</><htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><list>;</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><strong>a:b</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><list>;</><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</><strong>a:b</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><list>;</><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</><strong>a</><list>:</>b<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><list>;</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>a:b</><template-ground template-bracket>}}</><list>;</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground apostrophes>''</><template-ground template>a:b</><template-ground apostrophes>''</><template-ground template-bracket>}}</><list>;;;</><apostrophes>''</><strong em>a:b</><apostrophes>''</>"
 	},
 	{
-		"desc": "Definition Lists: colons and tables 1",
+		"desc": "colons and tables 1",
 		"wikitext": ":{|\n|x\n|}\n:{|\n|y\n|}",
 		"parsed": "<list>:</><table-bracket>{|</><table-delimiter>|</><table-td>x</><table-bracket>|}</><list>:</><table-bracket>{|</><table-delimiter>|</><table-td>y</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Definition Lists: template interaction",
+		"desc": "Template interaction",
 		"wikitext": "::{{definition_list}}\n\n:one\n::{{definition_list}}\n:::two\n:::three\n::four",
 		"parsed": "<list>::</><template-ground template-bracket>{{</><template-ground template-name pagename>definition_list</><template-ground template-bracket>}}</><list>:</>one<list>::</><template-ground template-bracket>{{</><template-ground template-name pagename>definition_list</><template-ground template-bracket>}}</><list>:::</>two<list>:::</>three<list>::</>four"
+	},
+	{
+		"desc": "Second colon on line: No templates involved",
+		"wikitext": ";term:def=foo:bar\n\n;'''1:00''':bar",
+		"parsed": "<list>;</><strong>term</><list>:</>def=foo:bar<list>;</><apostrophes>'''</><strong>1:00</><apostrophes>'''</><list>:</>bar"
+	},
+	{
+		"desc": "Second colon on line: Templates involved and T2959 kicks in",
+		"wikitext": ":a\n::{{1x|1=::foo}} bar\n\n;term:def=foo{{1x|:bar}}",
+		"parsed": "<list>:</>a<list>::</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ground template>::foo</><template-ground template-bracket>}}</> bar<list>;</><strong>term</><list>:</>def=foo<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>:bar</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Void elements without self-closing slash in definition lists",
+		"wikitext": ";[[File:Foobar.jpg|Test]]:123\n;Test<br>12:3",
+		"parsed": "<list>;</><link-ground link-bracket>[[</><link-ground link-pagename pagename strong>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground file-text strong>Test</><link-ground link-bracket>]]</><list>:</>123<list>;</><strong>Test</><htmltag-bracket>&lt;</><htmltag-name>br</><htmltag-bracket>&gt</><strong>12</><list>:</>3"
 	},
 	{
 		"desc": "extLinks"
@@ -6732,6 +6772,11 @@
 		"parsed": "http://[2404:130:0:1000::187:2]/index.phpExamples from <magic-link>RFC 2373</>, section 2.2:<list>*</>http://[1080::8:800:200C:417A]/unicast<list>*</>http://[FF01::101]/multicast<list>*</>http://[::1]/loopback<list>*</>http://[::]/unspecified<list>*</>http://[::13.1.68.3]/ipv4compat<list>*</>http://[::FFFF:129.144.52.38]/ipv4compatExamples from <magic-link>RFC 2732</>, section 2:<list>*</>http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html<list>*</>http://[1080:0:0:0:8:800:200C:417A]/index.html<list>*</>http://[3ffe:2a00:100:7031::1]<list>*</>http://[1080::8:800:200C:417A]/foo<list>*</>http://[::192.9.5.5]/ipng<list>*</>http://[::FFFF:129.144.52.38]:80/index.html<list>*</>http://[2010:836B:4179::836B:4179]"
 	},
 	{
+		"desc": "Ensure html2wt b/c for stashed RFC target links (T382963)",
+		"wikitext": "RFC 1234\n\nRFC 1234",
+		"parsed": "<magic-link>RFC 1234RFC 1234</>"
+	},
+	{
 		"desc": "Unicode text around autolinks",
 		"wikitext": "größhttps://foo.org\n\ngröß https://foo.org\n\n아들 고건 사진https://foo.org\n\n💩https://foo.org",
 		"parsed": "größhttps://foo.orggröß <free-extlink-protocol>https://</><free-extlink>foo.org</>아들 고건 사진https://foo.org💩<free-extlink-protocol>https://</><free-extlink>foo.org</>"
@@ -6785,6 +6830,54 @@
 		"desc": "Extlink in square brackets with entity",
 		"wikitext": "[&nbsp;[http://test.com 123]&nbsp;]\n\n[http://test.com [123]",
 		"parsed": "[<entity>&amp;nbsp;</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>test.com</><link-ground extlink-text> 123</><link-ground extlink-bracket>]</><entity>&amp;nbsp;</>]<link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>test.com</><link-ground extlink-text> [123</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Extlink in indent pre gets link attributes",
+		"wikitext": " [http://test.com 123]",
+		"parsed": "<skipformatting> </><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>test.com</><link-ground extlink-text> 123</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "extTags"
+	},
+	{
+		"desc": "Extension tags in extension content: <nowiki>",
+		"wikitext": "{{#tag:nowiki|a<nowiki>b</nowiki>c}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>nowiki</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension content: <pre>",
+		"wikitext": "{{#tag:pre|a<nowiki>b</nowiki>c}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>pre</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension content: <indicator>",
+		"wikitext": "{{#tag:indicator|a<nowiki>b</nowiki>c|name=foo}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>indicator</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>foo</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension attributes: <pre>",
+		"wikitext": "{{#tag:pre|content|class=a<nowiki>b</nowiki>c}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>pre</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>content</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>class=</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension attributes: <indicator>",
+		"wikitext": "{{#tag:indicator|content|name=a<nowiki>b</nowiki>c}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>indicator</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>content</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension attributes: bogus tag name",
+		"wikitext": "{{#tag:does-not-exist|<nowiki>content</nowiki>|name=a<nowiki>b</nowiki>c}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>does-not-exist</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>content</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>a</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>c</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Extension tags in extension name",
+		"wikitext": "{{#tag:no<nowiki>ignored</nowiki>wiki|content}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>no</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>ignored</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction>wiki</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>content</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Doubly-nested tags",
+		"wikitext": "{{#tag:nowiki|more {{#tag:nowiki|content <nowiki>here</nowiki>}}}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>nowiki</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>more </><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#tag</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>nowiki</><ext2-ground parserfunction-delimiter>|</><ext2-ground parserfunction>content </><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><tag-nowiki>here</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "fragmentModes"
@@ -7431,6 +7524,31 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>With a section?</><template-ground template-bracket>}}</>"
 	},
 	{
+		"desc": "Reset section numbering per template",
+		"wikitext": "=== out ===\n123\n\n{{with one}}\n\n=== out 2 ===\n456\n\n{{with two}}\n\n{{with one}}",
+		"parsed": "<section-header section--3>===</><section> out </><section-header>===</>123<template-ground template-bracket>{{</><template-ground template-name pagename>with one</><template-ground template-bracket>}}</><section-header section--3>===</><section> out 2 </><section-header>===</>456<template-ground template-bracket>{{</><template-ground template-name pagename>with two</><template-ground template-bracket>}}{{</><template-ground template-name pagename>with one</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Nested section numbering",
+		"wikitext": "=== out ===\n123\n\n{{with heading nesting}}",
+		"parsed": "<section-header section--3>===</><section> out </><section-header>===</>123<template-ground template-bracket>{{</><template-ground template-name pagename>with heading nesting</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Sections follow template redirects",
+		"wikitext": "{{with redirect}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>with redirect</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Editable headings can only have trailing comments and whitespace",
+		"wikitext": "==== test ====\nyup\n\n==== hi ho ====<noinclude>\nnope\n</noinclude>\n\n==== test 2 ====\nanother yup\n\n<!-- well -->==== ha ha ====\nback to nope\n\n==== he he ====  <!-- but this is ok -->\nsee",
+		"parsed": "<section-header section--4>====</><section> test </><section-header>====</>yup==== hi ho ====<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>nope</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><section-header section--4>====</><section> test 2 </><section-header>====</>another yup<comment>&lt;!-- well --&gt</>==== ha ha ====back to nope<section-header section--4>====</><section> he he </><section-header>====  </><comment>&lt;!-- but this is ok --&gt</>see"
+	},
+	{
+		"desc": "T368722: Empty headings",
+		"wikitext": "== ==",
+		"parsed": "<section-header section--2>==</><section> </><section-header>==</>"
+	},
+	{
 		"desc": "indentPre"
 	},
 	{
@@ -7720,6 +7838,212 @@
 		"desc": "Indicator with comments should not be <p>-wrapped",
 		"wikitext": "<indicator name=\"x\"><!-- hello -->\n<span>some stuff</span>\n<!-- second comment--></indicator>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>indicator </><exttag-attribute ext-indicator>name=</><exttag-attribute-value>\"x\"</><exttag-bracket>&gt</><tag-indicator comment>&lt;!-- hello --&gt</><tag-indicator htmltag-bracket>&lt;</><tag-indicator htmltag-name>span</><tag-indicator htmltag-bracket>&gt</><tag-indicator>some stuff</><tag-indicator htmltag-bracket>&lt;/</><tag-indicator htmltag-name>span</><tag-indicator htmltag-bracket>&gt</><tag-indicator comment>&lt;!-- second comment--&gt</><exttag-bracket>&lt;/</><exttag-name>indicator</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Indicator shouldn't prevent empty elt class",
+		"wikitext": "<nowiki/><indicator name=\"x\">\n<span>some stuff</span>\n</indicator><nowiki/>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt&lt;</><exttag-name>indicator </><exttag-attribute ext-indicator>name=</><exttag-attribute-value>\"x\"</><exttag-bracket>&gt</><tag-indicator htmltag-bracket>&lt;</><tag-indicator htmltag-name>span</><tag-indicator htmltag-bracket>&gt</><tag-indicator>some stuff</><tag-indicator htmltag-bracket>&lt;/</><tag-indicator htmltag-name>span</><tag-indicator htmltag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>indicator</><exttag-bracket>&gt&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Indicator shouldn't prevent addition of link classes",
+		"wikitext": "<indicator name=\"link\">[http://www.example.com Example]</indicator>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>indicator </><exttag-attribute ext-indicator>name=</><exttag-attribute-value>\"link\"</><exttag-bracket>&gt</><tag-indicator link-ground extlink-bracket>[</><tag-indicator link-ground extlink-protocol>http://</><tag-indicator link-ground extlink>www.example.com</><tag-indicator link-ground extlink-text> Example</><tag-indicator link-ground extlink-bracket>]</><exttag-bracket>&lt;/</><exttag-name>indicator</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "interlanguageLinks"
+	},
+	{
+		"desc": "Interlanguage link",
+		"wikitext": "Blah blah blah\n[[zh:Chinese]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>zh:Chinese</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interlanguage link with spacing",
+		"wikitext": "Blah blah blah\n[[   zh  :    Chinese     ]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[   </><link-ground link-pagename pagename>zh  :    Chinese     </><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Double interlanguage link",
+		"wikitext": "Blah blah blah\n[[es:Spanish]]\n[[zh:Chinese]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Spanish</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>zh:Chinese</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interlanguage link variations",
+		"wikitext": "Blah blah blah\n[[   es :Spanish]]\n[[ ZH :Chinese]]\n[[es:Foo_bar]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[   </><link-ground link-pagename pagename>es :Spanish</><link-ground link-bracket>]][[ </><link-ground link-pagename pagename>ZH :Chinese</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>es:Foo_bar</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Escaping of interlanguage links (T129218, T156308)",
+		"wikitext": "Blah blah blah\n[[:es:Spanish]]\n[[ : zh : Chinese ]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>:es:Spanish</><link-ground link-bracket>]][[ </><link-ground link-pagename pagename>: zh : Chinese </><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Multiple colons escaping interlanguage links",
+		"wikitext": "[[:es:Spanish]]\n[[::es:Spanish]]\n[[:::es:Spanish]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:es:Spanish</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>::es:Spanish</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:::es:Spanish</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Space and question mark encoding in interlanguage links (T95473)",
+		"wikitext": "Blah blah blah\n[[es:Foo bar?]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Foo bar?</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "\"Extra\" interlanguage links (T34189 / gerrit 111390)",
+		"wikitext": "Blah blah blah\n[[mul:Article]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>mul:Article</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Language links render as inline links if $wgInterwikiMagic=false",
+		"wikitext": "Blah blah blah\n[[zh:Chinese]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>zh:Chinese</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Language links render as inline links in the Talk namespace",
+		"wikitext": "Blah blah blah\n[[zh:Chinese]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>zh:Chinese</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Parsoid: recognize interlanguage links without a target page",
+		"wikitext": "[[es:]]\n\n[[ko:]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>ko:</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Parsoid: recognize interwiki links without a target page",
+		"wikitext": "[[:es:]]\n\n[[:ko:]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:es:</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:ko:</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Handle interwiki links pointing to the current wiki as plain wiki links (T47209)",
+		"wikitext": "[[mi:Foo]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>mi:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interlanguage link with preceding local interwiki link (T70085)",
+		"wikitext": "Blah blah blah\n[[local:es:Spanish]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:es:Spanish</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Looks like an interlanguage link, but is actually a local interwiki",
+		"wikitext": "Blah blah blah\n[[mi:Template:Foo]]",
+		"parsed": "Blah blah blah<link-ground link-bracket>[[</><link-ground link-pagename pagename>mi:Template:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interlanguage link with a fragment",
+		"wikitext": "[[zh:Chinese#fragment]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>zh:Chinese</><link-ground link-tosection>#fragment</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "{{#interlanguagelink}} parser function as a means to force an interlanguage link (T363538)",
+		"wikitext": "*{{#interlanguagelink:mi|Template:Bar}}\n*[[mi:Template:Foo]]",
+		"parsed": "<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#interlanguagelink</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>mi</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Template:Bar</><ext-ground parserfunction-bracket>}}</><list>*</><link-ground link-bracket>[[</><link-ground link-pagename pagename>mi:Template:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "{{#interlanguagelink}} parser function as a means to force an interlanguage link, v2 (T363538)",
+		"wikitext": "*{{#interlanguagelink:mi|Template:Bat#fragment-kept|caption is ignored}}",
+		"parsed": "<list>*</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#interlanguagelink</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>mi</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Template:Bat#fragment-kept</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>caption is ignored</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "interwikiLinks"
+	},
+	{
+		"desc": "Inline interwiki link",
+		"wikitext": "[[MeatBall:SoftSecurity]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>MeatBall:SoftSecurity</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Inline interwiki link with empty title (T4372)",
+		"wikitext": "[[MeatBall:]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>MeatBall:</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interwiki link encoding conversion (T3636)",
+		"wikitext": "*[[Wikipedia:ro:Olteni&#0355;a]]\n*[[Wikipedia:ro:Olteni&#355;a]]",
+		"parsed": "<list>*</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Wikipedia:ro:Olteni&amp;#0355;a</><link-ground link-bracket>]]</><list>*</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Wikipedia:ro:Olteni&amp;#355;a</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interwiki link with fragment (T4130)",
+		"wikitext": "[[MeatBall:SoftSecurity#foo]]\n\n[[meatball:Soft#Bar]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>MeatBall:SoftSecurity</><link-ground link-tosection>#foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:Soft</><link-ground link-tosection>#Bar</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Link scenarios with escaped fragments",
+		"wikitext": "[[#Is this great?]]\n[[Foo#Is this great?]]\n[[meatball:Foo#Is this great?]]\n[[:en:Foo#Is this great?]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:Foo</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:en:Foo</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Link scenarios with escaped fragments (legacy)",
+		"wikitext": "[[#Is this great?]]\n[[Foo#Is this great?]]\n[[meatball:Foo#Is this great?]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:Foo</><link-ground link-tosection>#Is this great?</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Different interwiki prefixes mapping to the same URL",
+		"wikitext": "[[:en:Foo]]\n\n[[:en:Foo|Foo]]\n\n[[wikipedia:Foo]]\n\n[[:wikipedia:Foo|Foo]]\n\n[[wikipedia:en:Foo]]\n\n[[:wikipedia:en:Foo]]\n\n[[  wikiPEdia :Foo]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:en:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:en:Foo</><link-ground link-delimiter>|</><link-ground link-text>Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>wikipedia:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:wikipedia:Foo</><link-ground link-delimiter>|</><link-ground link-text>Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>wikipedia:en:Foo</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>:wikipedia:en:Foo</><link-ground link-bracket>]][[  </><link-ground link-pagename pagename>wikiPEdia :Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interwiki links that cannot be represented in wiki syntax",
+		"wikitext": "[[meatball:ok]]\n[[meatball:ok#foo|ok with fragment]]\n[[meatball:ok_as_well?|ok ending with ? mark]]\n[http://de.wikipedia.org/wiki/Foo?action=history has query]\n[http://de.wikipedia.org/wiki/#foo is just fragment]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>meatball:ok</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:ok</><link-ground link-tosection>#foo</><link-ground link-delimiter>|</><link-ground link-text>ok with fragment</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:ok_as_well?</><link-ground link-delimiter>|</><link-ground link-text>ok ending with ? mark</><link-ground link-bracket>]]</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>de.wikipedia.org/wiki/Foo?action=history</><link-ground extlink-text> has query</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>de.wikipedia.org/wiki/#foo</><link-ground extlink-text> is just fragment</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Interwiki links: trail",
+		"wikitext": "[[wikipedia:Foo|Ba]]r",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>wikipedia:Foo</><link-ground link-delimiter>|</><link-ground link-text>Ba</><link-ground link-bracket>]]</>r"
+	},
+	{
+		"desc": "Local interwiki link",
+		"wikitext": "[[local:Template:Foo]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:Template:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Local interwiki link: self-link to current page",
+		"wikitext": "[[local:Main Page]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:Main Page</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Local interwiki link: prefix only (T66167)",
+		"wikitext": "[[local:]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Local interwiki link: with additional interwiki prefix (T63357)",
+		"wikitext": "[[local:meatball:Hello]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:meatball:Hello</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Multiple local interwiki link prefixes",
+		"wikitext": "[[local:local:local:local:mi:local:Foo]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:local:local:local:mi:local:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interwiki link that could be a language link, if not for a local interwiki prefix (T292022)",
+		"wikitext": "[[:es:Hello|local:es:Hello]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:es:Hello</><link-ground link-delimiter>|</><link-ground link-text>local:es:Hello</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Internal link with a namespace matching a local interwiki prefix (T228616)",
+		"wikitext": "[[Project:Hello]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Project:Hello</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "{{#interwikilink}} parser function as a means to force an interwiki link (T363538)",
+		"wikitext": "[[Project:Hello World]]\n\n{{#interwikilink:Project|Hello World}}\n\n{{#interwikilink:Project|Hello World 2|caption text}}",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Project:Hello World</><link-ground link-bracket>]]</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#interwikilink</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Project</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Hello World</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#interwikilink</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Project</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Hello World 2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>caption text</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Interwiki link with percent encoded target",
+		"wikitext": "[[:es:Nueva Guip%C3%BAzcoa|Nueva Guipúzcoa]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>:es:Nueva Guip%C3%BAzcoa</><link-ground link-delimiter>|</><link-ground link-text>Nueva Guipúzcoa</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Interwiki link with colon escape after prefix",
+		"wikitext": "[[meatball::Category:Hello]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>meatball::Category:Hello</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Self-links and interwiki",
+		"wikitext": "[[local:Main Page]]\n\n[[meatball:Main Page]]\n\n[[mi:Main Page]]\n\n[[local:Main Page#anchor]]\n\n[[meatball:Main Page#anchor]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>local:Main Page</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:Main Page</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>mi:Main Page</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>local:Main Page</><link-ground link-tosection>#anchor</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>meatball:Main Page</><link-ground link-tosection>#anchor</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "langParserTests"
@@ -8247,13 +8571,163 @@
 	},
 	{
 		"desc": "Magic links: use appropriate serialization for \"almost\" magic links.",
-		"wikitext": "X[[Special:BookSources/0978739256|foo]]\n\nX[https://tools.ietf.org/html/rfc1234 foo]",
-		"parsed": "X<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/0978739256</><link-ground link-delimiter>|</><link-ground link-text>foo</><link-ground link-bracket>]]</>X<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>tools.ietf.org/html/rfc1234</><link-ground extlink-text> foo</><link-ground extlink-bracket>]</>"
+		"wikitext": "X[[Special:BookSources/0978739256|foo]]\n\nX[https://datatracker.ietf.org/doc/html/rfc1234 foo]",
+		"parsed": "X<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/0978739256</><link-ground link-delimiter>|</><link-ground link-text>foo</><link-ground link-bracket>]]</>X<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>datatracker.ietf.org/doc/html/rfc1234</><link-ground extlink-text> foo</><link-ground extlink-bracket>]</>"
 	},
 	{
 		"desc": "Magic links: All disabled (T47942)",
 		"wikitext": "ISBN 0-306-40615-2\nPMID 1234\nRFC 4321",
 		"parsed": "<magic-link>ISBN 0-306-40615-2PMID 1234RFC 4321</>"
+	},
+	{
+		"desc": "Magic links: html2wt of old wikitext when disabled (T47942)",
+		"wikitext": "[[Special:BookSources/0306406152|ISBN 0-306-40615-2]]\n[//www.ncbi.nlm.nih.gov/pubmed/1234?dopt=Abstract PMID 1234]\n[https://datatracker.ietf.org/doc/html/rfc4321 RFC 4321]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/0306406152</><link-ground link-delimiter>|</><link-ground link-text>ISBN 0-306-40615-2</><link-ground link-bracket>]]</><link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>www.ncbi.nlm.nih.gov/pubmed/1234?dopt=Abstract</><link-ground extlink-text> PMID 1234</><link-ground extlink-bracket>][</><link-ground extlink-protocol>https://</><link-ground extlink>datatracker.ietf.org/doc/html/rfc4321</><link-ground extlink-text> RFC 4321</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Prefer PMID magic link, no interwiki and magic links enabled (T145590#8608455)",
+		"wikitext": "PMID 234",
+		"parsed": "<magic-link>PMID 234</>"
+	},
+	{
+		"desc": "Prefer PMID magic link, interwiki and magic links enabled (T145590#8608455)",
+		"wikitext": "PMID 234",
+		"parsed": "<magic-link>PMID 234</>"
+	},
+	{
+		"desc": "Round-trip PMID interwiki, magic links enabled (T145590#8608455)",
+		"wikitext": "[[pmid:234|PMID 234]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>pmid:234</><link-ground link-delimiter>|</><link-ground link-text>PMID 234</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Prefer PMID interwiki, magic links disabled (T145590#8608455)",
+		"wikitext": "[[pmid:234|PMID 234]]\n\n[https://datatracker.ietf.org/doc/html/rfc4321 RFC 4321]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>pmid:234</><link-ground link-delimiter>|</><link-ground link-text>PMID 234</><link-ground link-bracket>]]</><link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>datatracker.ietf.org/doc/html/rfc4321</><link-ground extlink-text> RFC 4321</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Preder PMID extlink if no interwiki, magic links disabled (T145590#8608455)",
+		"wikitext": "[//www.ncbi.nlm.nih.gov/pubmed/234?dopt=Abstract PMID 234]",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>www.ncbi.nlm.nih.gov/pubmed/234?dopt=Abstract</><link-ground extlink-text> PMID 234</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Magic links inside links (not autolinked)",
+		"wikitext": "[[Foo|http://example.com]]\n[[Foo|RFC 1234]]\n[[Foo|PMID 1234]]\n[[Foo|ISBN 123456789x]]\n\n[http://foo.com http://example.com]\n[http://foo.com RFC 1234]\n[http://foo.com PMID 1234]\n[http://foo.com ISBN 123456789x]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>http://example.com</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>RFC 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>PMID 1234</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>ISBN 123456789x</><link-ground link-bracket>]]</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> http://example.com</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> RFC 1234</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> PMID 1234</><link-ground extlink-bracket>][</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> ISBN 123456789x</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "WTS of magic word text (T109371)",
+		"wikitext": "<nowiki>RFC 1234</nowiki>\n\n[http://foo.com RFC 1234]\n\n[[Foo|RFC 1234]]",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>RFC 1234</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>foo.com</><link-ground extlink-text> RFC 1234</><link-ground extlink-bracket>]</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>RFC 1234</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "T4304: HTML attribute safety (ISBN)",
+		"wikitext": "<div title=\"ISBN 1234567890\"></div>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"ISBN 1234567890\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "T4304: HTML attribute safety (RFC)",
+		"wikitext": "<div title=\"RFC 1234\"></div>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"RFC 1234\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "T4304: HTML attribute safety (PMID)",
+		"wikitext": "<div title=\"PMID 1234567890\"></div>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"PMID 1234567890\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "ISBN code coverage",
+		"wikitext": "ISBN  978-0-1234-56&#x20;789",
+		"parsed": "<magic-link>ISBN  978-0-1234-56</><entity>&amp;#x20;</>789"
+	},
+	{
+		"desc": "ISBN followed by 5 spaces",
+		"wikitext": "ISBN",
+		"parsed": "ISBN"
+	},
+	{
+		"desc": "Double ISBN",
+		"wikitext": "ISBN ISBN 1234567890",
+		"parsed": "ISBN <magic-link>ISBN 1234567890</>"
+	},
+	{
+		"desc": "ISBN with an X",
+		"wikitext": "ISBN 3-462-04561-X\nISBN 3-462-04561-x\nISBN 080442957X\nISBN 080442957x\nISBN 978080442957X\nISBN 978080442957x",
+		"parsed": "<magic-link>ISBN 3-462-04561-XISBN 3-462-04561-xISBN 080442957XISBN 080442957xISBN 978080442957XISBN 978080442957x</>"
+	},
+	{
+		"desc": "ISBN with empty prefix (parsoid test)",
+		"wikitext": "ISBN 1234567890",
+		"parsed": "<magic-link>ISBN 1234567890</>"
+	},
+	{
+		"desc": "T24905: <abbr> followed by ISBN followed by </a>",
+		"wikitext": "<abbr>(fr)</abbr> ISBN 2753300917 [http://www.example.com example.com]",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>abbr</><htmltag-bracket>&gt</>(fr)<htmltag-bracket>&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt</> <magic-link>ISBN 2753300917</> <link-ground extlink-bracket>[</><link-ground extlink-protocol>http://</><link-ground extlink>www.example.com</><link-ground extlink-text> example.com</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Double RFC",
+		"wikitext": "RFC RFC 1234",
+		"parsed": "RFC <magic-link>RFC 1234</>"
+	},
+	{
+		"desc": "Double RFC with a wiki link",
+		"wikitext": "RFC [[RFC 1234]]",
+		"parsed": "RFC <link-ground link-bracket>[[</><link-ground link-pagename pagename>RFC 1234</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "RFC code coverage",
+		"wikitext": "RFC   983&#x20;987",
+		"parsed": "<magic-link>RFC   983</><entity>&amp;#x20;</>987"
+	},
+	{
+		"desc": "ISBN with a dummy number",
+		"wikitext": "ISBN ---",
+		"parsed": "ISBN ---"
+	},
+	{
+		"desc": "ISBN with space-delimited number",
+		"wikitext": "ISBN 92 9017 032 8",
+		"parsed": "<magic-link>ISBN 92 9017 032 8</>"
+	},
+	{
+		"desc": "ISBN with multiple spaces, no number",
+		"wikitext": "ISBN  foo",
+		"parsed": "ISBN  foo"
+	},
+	{
+		"desc": "ISBN length",
+		"wikitext": "ISBN 123456789\n\nISBN 1234567890\n\nISBN 12345678901",
+		"parsed": "ISBN 123456789<magic-link>ISBN 1234567890</>ISBN 12345678901"
+	},
+	{
+		"desc": "ISBN with trailing year (T9110)",
+		"wikitext": "ISBN 1-234-56789-0 - 2006\n\nISBN 1 234 56789 0 - 2006",
+		"parsed": "<magic-link>ISBN 1-234-56789-0</> - 2006<magic-link>ISBN 1 234 56789 0</> - 2006"
+	},
+	{
+		"desc": "Edited ISBN links not serializable as ISBN links should serialize as wikilinks\n(magic links enabled)",
+		"wikitext": "[[Special:BookSources/1234567890|ISBN 1234567895]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/1234567890</><link-ground link-delimiter>|</><link-ground link-text>ISBN 1234567895</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Edited ISBN links not serializable as ISBN links should serialize as wikilinks\n(magic links disabled)",
+		"wikitext": "[[Special:BookSources/1234567890|ISBN 1234567895]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Special:BookSources/1234567890</><link-ground link-delimiter>|</><link-ground link-text>ISBN 1234567895</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Edited RFC links not serializable as RFC links should serialize as extlinks",
+		"wikitext": "[https://datatracker.ietf.org/doc/html/rfc123 New RFC]",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>datatracker.ietf.org/doc/html/rfc123</><link-ground extlink-text> New RFC</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Edited PMID links not serializable as PMID links should serialize as extlinks",
+		"wikitext": "[//www.ncbi.nlm.nih.gov/pubmed/123?dopt=Abstract New PMID]",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>www.ncbi.nlm.nih.gov/pubmed/123?dopt=Abstract</><link-ground extlink-text> New PMID</><link-ground extlink-bracket>]</>"
+	},
+	{
+		"desc": "Edited PMID links not serializable as PMID links should serialize as wikilinks if possible",
+		"wikitext": "[[pmid:123|New PMID]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>pmid:123</><link-ground link-delimiter>|</><link-ground link-text>New PMID</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "magicWords"
@@ -8614,6 +9088,16 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PAGELANGUAGE</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "Magic Word: {{USERLANGUAGE}} disabled",
+		"wikitext": "{{USERLANGUAGE}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>USERLANGUAGE</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Magic Word: {{USERLANGUAGE}} enabled",
+		"wikitext": "{{USERLANGUAGE}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>USERLANGUAGE</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
 		"desc": "Case-sensitive magic words, when cased differently, should just be template transclusions",
 		"wikitext": "{{CurrentMonth}}\n{{currentday}}\n{{cURreNTweEK}}\n{{currentHour}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>CurrentMonth</><template-ground template-bracket>}}{{</><template-ground template-name pagename>currentday</><template-ground template-bracket>}}{{</><template-ground template-name pagename>cURreNTweEK</><template-ground template-bracket>}}{{</><template-ground template-name pagename>currentHour</><template-ground template-bracket>}}</>"
@@ -8649,6 +9133,31 @@
 		"parsed": "<double-underscore>__TOC____NOTOC____FORCETOC____INDEX____NOINDEX____NOGALLERY____NOEDITSECTION____NOTITLECONVERT____NOCONTENTCONVERT__</>"
 	},
 	{
+		"desc": "NOGALLERY sets flag",
+		"wikitext": "__NOGALLERY__",
+		"parsed": "<double-underscore>__NOGALLERY__</>"
+	},
+	{
+		"desc": "1. HIDDENCAT sets tracking category on category page",
+		"wikitext": "__HIDDENCAT__",
+		"parsed": "<double-underscore>__HIDDENCAT__</>"
+	},
+	{
+		"desc": "2. HIDDENCAT sets tracking category on category page",
+		"wikitext": "__HIDDENCAT__",
+		"parsed": "<double-underscore>__HIDDENCAT__</>"
+	},
+	{
+		"desc": "New section link / no new section link",
+		"wikitext": "__NEWSECTIONLINK__ __NONEWSECTIONLINK__",
+		"parsed": "<double-underscore>__NEWSECTIONLINK__</> <double-underscore>__NONEWSECTIONLINK__</>"
+	},
+	{
+		"desc": "Templated new section link",
+		"wikitext": "{{NewSectionLink}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>NewSectionLink</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "media"
 	},
 	{
@@ -8660,16 +9169,6 @@
 		"desc": "Simple image redirect",
 		"wikitext": "[[Image:Redirect to foobar.jpg]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Image:Redirect to foobar.jpg</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Serialize simple image with figure-inline wrapper",
-		"wikitext": "[[File:Foobar.jpg]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-bracket>]]</>"
-	},
-	{
-		"desc": "Serialize simple image with mw:Image typeof",
-		"wikitext": "[[File:Foobar.jpg]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Simple image (using File: namespace, now canonical)",
@@ -8805,6 +9304,11 @@
 		"desc": "Image with size specified with pxpx (T15500, T53628)",
 		"wikitext": "[[File:Foobar.jpg|20pxpx]]\n[[File:Foobar.jpg|200x20pxpx]]",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>20pxpx</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>200x20pxpx</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "T374311: Gallery with trailing px should not trigger double-px",
+		"wikitext": "<gallery widths=\"100px\">\nFile:Foobar.jpg\n</gallery>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>widths=</><exttag-attribute-value>\"100px\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Image with link parameter, wiki target",
@@ -9363,8 +9867,8 @@
 	},
 	{
 		"desc": "Gallery with valid attributes",
-		"wikitext": "<gallery type=\"123\" summary=\"345\">\nFile:File:Foobar.jpg\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>type=</><exttag-attribute-value>\"123\"</><exttag-attribute ext-gallery> summary=</><exttag-attribute-value>\"345\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:File:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"wikitext": "<gallery type=\"123\" summary=\"345\" class=\"foo\">\nFile:File:Foobar.jpg\n</gallery>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>type=</><exttag-attribute-value>\"123\"</><exttag-attribute ext-gallery> summary=</><exttag-attribute-value>\"345\"</><exttag-attribute ext-gallery> class=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:File:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery",
@@ -9832,6 +10336,11 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground file-text>123</><link-ground link-bracket>]]</>"
 	},
 	{
+		"desc": "Fragment in media filename",
+		"wikitext": "[[File:Foobar.jpg#fragment|123]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground error>#fragment</><link-ground link-delimiter>|</><link-ground file-text>123</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "Entities in media filenames",
 		"wikitext": "[[File:Hi&#45;ho.jpg|thumb]]\n\n<gallery>\nHi&#45;ho.jpg\nFile:Hi&#45;ho.jpg\n</gallery>",
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Hi&amp;#45;ho.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>Hi&amp;#45;ho.jpgFile:Hi&amp;#45;ho.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
@@ -9845,6 +10354,109 @@
 		"desc": "Gallery line with trailing closing square brackets",
 		"wikitext": "<gallery>\nFile:Foobar.jpg|Testing 123]]\nFile:Foobar.jpg|Testing [[123]]\n</gallery>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery file-text>Testing 123]]</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery link-delimiter>|</><tag-gallery file-text>Testing </><tag-gallery link-ground link-bracket>[[</><tag-gallery link-ground link-pagename pagename>123</><tag-gallery link-ground link-bracket>]]</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Broken media gets category",
+		"wikitext": "[[File:Foobaz.jpg]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobaz.jpg</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "pWrapping"
+	},
+	{
+		"desc": "No block tags",
+		"wikitext": "a\n\nb",
+		"parsed": "ab"
+	},
+	{
+		"desc": "Block tag on one line (<div>)",
+		"wikitext": "a <div>foo</div>\n\nb",
+		"parsed": "a <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>b"
+	},
+	{
+		"desc": "No p-wrappable content",
+		"wikitext": "<span><div>x</div></span>\n<span><s><div>x</div></s></span>\n<small><em></em></small><span><s><div>x</div></s></span>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>x<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>s</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>x<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>s</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>small</><htmltag-bracket>&gt&lt;</><htmltag-name>em</><htmltag-bracket>&gt&lt;/</><htmltag-name>em</><htmltag-bracket>&gt&lt;/</><htmltag-name>small</><htmltag-bracket>&gt&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>s</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>x<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>s</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Transclusion meta tags shouldn't trip Parsoid's useless p-wrapper stripping code",
+		"wikitext": "{{1x|<span><div>x</div></span>}}\nx",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>span</><template-ground htmltag-bracket>&gt&lt;</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt</><template-ground template>x</><template-ground htmltag-bracket>&lt;/</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt&lt;/</><template-ground htmltag-name>span</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</>x"
+	},
+	{
+		"desc": "Block tag on one line (<blockquote>)",
+		"wikitext": "a <blockquote>foo</blockquote>\n\nb",
+		"parsed": "a <htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>b"
+	},
+	{
+		"desc": "Block tag on both lines (<div>)",
+		"wikitext": "a <div>foo</div>\n\nb <div>foo</div>",
+		"parsed": "a <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>b <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Block tag on both lines (<blockquote>)",
+		"wikitext": "a <blockquote>foo</blockquote>\n\nb <blockquote>foo</blockquote>",
+		"parsed": "a <htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>b <htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Multiple lines without block tags",
+		"wikitext": "<div>foo</div> a\nb\nc\nd<!--foo--> e\nx <div>foo</div> z",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</> abcd<comment>&lt;!--foo--&gt</> ex <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</> z"
+	},
+	{
+		"desc": "Empty lines between lines with block tags",
+		"wikitext": "<div></div>\n\n\n<div></div>a\n\nb\n<div>a</div>b\n\n<div>b</div>d\n\n\n<div>e</div>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>ab<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>d<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>e<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unclosed HTML p-tags should be handled properly",
+		"wikitext": "<div><p>foo</div>\na\n\nb",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>p</><htmltag-bracket>&gt</>foo<error>&lt;/div&gt</>ab"
+	},
+	{
+		"desc": "1. P-wrapping should leave sol-transparent tags outside p-tags where possible",
+		"wikitext": "a [[Category:A1]] [[Category:A2]]\n[[Category:A3]]\n[[Category:A4]]",
+		"parsed": "a <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:A1</><link-ground link-bracket>]]</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:A2</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:A3</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Category:A4</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "2. P-wrapping should leave sol-transparent tags outside p-tags where possible",
+		"wikitext": "[[Category:A1]]a",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:A1</><link-ground link-bracket>]]</>a"
+	},
+	{
+		"desc": "No paragraph necessary for SOL transparent template",
+		"wikitext": "<span><div>foo</div></span>\n[[Category:Foo]]\n\n<span><div>foo</div></span>\n{{1x|[[Category:Foo]]}}",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "Avoid expanding multiline sol transparent template ranges unnecessarily",
+		"wikitext": "hi\n\n\n{{1x|<br/>\n}}\n\n[[Category:Ho]]",
+		"parsed": "hi<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>br</><template-ground htmltag-bracket>/&gt</><template-ground template-bracket>}}</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Ho</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Paragraph wrapping following unclosed table",
+		"wikitext": "{|\n|-\n\n{|\n| x\n|}\n\na\n\nb\n\nc",
+		"parsed": "<table-bracket>{|</><table-delimiter>|-</><table-bracket>{|</><table-delimiter>| </><table-td>x</><table-bracket>|}</><error>abc</>"
+	},
+	{
+		"desc": "Paragraph wrapping suppressed in html p",
+		"wikitext": "<p>\n\n\nhi\n\n\n\n</p>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>p</><htmltag-bracket>&gt</>hi<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "Dangling table row doesn't prevent p-wrapping",
+		"wikitext": "{|\n| hi\n|-\n|} ho",
+		"parsed": "<table-bracket>{|</><table-delimiter>| </><table-td>hi</><table-delimiter>|-</><table-bracket>|}</> ho"
+	},
+	{
+		"desc": "Paragraph wrapping suppressed in table captions",
+		"wikitext": "{|\n|+hi\n|ho\n|}\n\n{|\n|hi\n|+ho\n|}\n\nit's off to work we go",
+		"parsed": "<table-bracket>{|</><table-delimiter>|+</><table-caption>hi</><table-delimiter>|</><table-td>ho</><table-bracket>|}{|</><table-delimiter>|</><table-td>hi</><table-delimiter>|+</><table-caption>ho</><table-bracket>|}</>it's off to work we go"
+	},
+	{
+		"desc": "Extlink on a line with a block gets wrapped",
+		"wikitext": "[https://google.com {{1x|foo}}] bar <div>foo</div>",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>https://</><link-ground extlink>google.com</><link-ground extlink-text> </><template-link-ground template-bracket>{{</><template-link-ground template-name pagename>1x</><template-link-ground template-delimiter>|</><template-link-ground template>foo</><template-link-ground template-bracket>}}</><link-ground extlink-bracket>]</> bar <htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "parserFunctionTests"
@@ -10802,11 +11414,6 @@
 		"desc": "tables"
 	},
 	{
-		"desc": "Tables with multiple newlines after individual lines embedded in links",
-		"wikitext": "[[Test|\n{|\n\n|test\n|}]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Test</><link-ground link-delimiter>|</><link-ground table-bracket>{|</><link-ground table-delimiter>|</><link-ground table-td>test</><link-ground table-bracket>|}</><link-ground link-bracket>]]</>"
-	},
-	{
 		"desc": "A table with no data.",
 		"wikitext": "{||}",
 		"parsed": "<table-bracket>{|</><table-definition html-table>|}</>"
@@ -10847,6 +11454,11 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>|+</><html-caption table-definition>style=\"color: red;\"</><table-delimiter2>|</><table-caption>caption2</><table-delimiter>|+ </><html-caption table-definition>style=\"color: red;\"</><table-delimiter2>|</><table-caption>caption3</><table-delimiter>|-|</><table-td>foo</><table-bracket>|}</>"
 	},
 	{
+		"desc": "Multi-line captions in tables",
+		"wikitext": "{|\n|+line 1 of caption\nline 2 of caption\n|data\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>|+</><table-caption>line 1 of captionline 2 of caption</><table-delimiter>|</><table-td>data</><table-bracket>|}</>"
+	},
+	{
 		"desc": "Table td-cell syntax variations",
 		"wikitext": "{|\n|foo bar foo|baz\n|foo bar foo||baz\n|style='color:red;'|baz\n|style='color:red;'||baz\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><html-td table-definition>foo bar foo</><table-delimiter2>|</><table-td>baz</><table-delimiter>|</><table-td>foo bar foo</><table-delimiter>||</><table-td>baz</><table-delimiter>|</><html-td table-definition>style='color:red;'</><table-delimiter2>|</><table-td>baz</><table-delimiter>|</><table-td>style='color:red;'</><table-delimiter>||</><table-td>baz</><table-bracket>|}</>"
@@ -10855,6 +11467,11 @@
 		"desc": "Simple table",
 		"wikitext": "{|\n|1||2\n|-\n|3||4\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>1</><table-delimiter>||</><table-td>2</><table-delimiter>|-|</><table-td>3</><table-delimiter>||</><table-td>4</><table-bracket>|}</>"
+	},
+	{
+		"desc": "Row-syntax table cells require that the row start with a table cell",
+		"wikitext": "{|\n|a\nb||c\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>ab||c</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Simple table but with multiple dashes for row wikitext",
@@ -11087,7 +11704,7 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>|-|</><table-td>class=\"foo\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ground template> </><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>bar</><template-ground template-bracket>}}</><table-delimiter>|-|</><table-td>class=\"foo\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ground entity>&amp;nbsp;</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>bar</><template-ground template-bracket>}}</><table-bracket>|}</>"
 	},
 	{
-		"desc": "Templated table cell with untemplated attributes: Unsupported Scenario",
+		"desc": "Templated table cell with untemplated attributes",
 		"wikitext": "{|\n|-\n|class=\"foo\"{{1x|1={{!}}title=\"fail\"{{!}}bar}}\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>|-|</><table-td>class=\"foo\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>title=\"fail\"</><template-ext-ground parserfunction-bracket>{{</><template-ext-ground parserfunction-name>!</><template-ext-ground parserfunction-bracket>}}</><template-ground template>bar</><template-ground template-bracket>}}</><table-bracket>|}</>"
 	},
@@ -11175,6 +11792,26 @@
 		"desc": "T319143 - copy-pasting of cells, after multiple cells, without \"row\"",
 		"wikitext": "{|\n|[[Eau]]||[[Abc]]\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Eau</><link-ground link-bracket>]]</><table-delimiter>||</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Abc</><link-ground link-bracket>]]</><table-bracket>|}</>"
+	},
+	{
+		"desc": "Spec syntactic differences in parsing of !! compared to ||",
+		"wikitext": "{|\n<!--cmt-->!!foo\n{{1x|!!foo}}\n<!--cmt-->!!foo!!bar\n{{1x|!!foo}}{{1x|!!bar}}\n|}",
+		"parsed": "<table-bracket>{|</><comment>&lt;!--cmt--&gt</><error>!!foo</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>!!foo</><template-ground template-bracket>}}</><comment>&lt;!--cmt--&gt</><error>!!foo!!bar</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>!!foo</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>!!bar</><template-ground template-bracket>}}</><table-bracket>|}</>"
+	},
+	{
+		"desc": "Multiline inline table line in file caption",
+		"wikitext": "[[File:Foobar.jpg|thumb|\n{|\n|\nasdf\n|}\n]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground table-bracket>{|</><link-ground table-delimiter>|</><link-ground table-td>asdf</><link-ground table-bracket>|}</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Table lines with multiple newlines, spaces, comments embedded in file caption",
+		"wikitext": "[[File:Foobar.jpg|thumb|\n  <!--cmt-->   \n{|\n  \n |test\n   <!--cmt-->  \n|}]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground link-delimiter>|</><link-ground image-parameter>thumb</><link-ground link-delimiter>|</><link-ground file-text>  </><link-ground comment>&lt;!--cmt--&gt</><link-ground file-text>   </><link-ground table-bracket>{|</>  <link-ground table-delimiter> |</><link-ground table-td>test   </><link-ground comment>&lt;!--cmt--&gt</><link-ground table-td>  </><link-ground table-bracket>|}</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "First line attributes should be handled by html2wt even without data-parsoid",
+		"wikitext": "{|\n|- valign=\"top\"\n|Bar\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>|- </><table-definition html-tr>valign=</><table-definition-value>\"top\"</><table-delimiter>|</><table-td>Bar</><table-bracket>|}</>"
 	},
 	{
 		"desc": "translateParserTests"

@@ -45,7 +45,11 @@ globalThis.document?.addEventListener('keyup', e => {
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
-const mouseEventListener = (e: MouseEvent, view: EditorView, langConfig: MwConfig | undefined): string | undefined => {
+export const mouseEventListener = (
+	e: MouseEvent,
+	view: EditorView,
+	langConfig: MwConfig | undefined,
+): string | undefined => {
 	if (
 		!e[modKey]
 		|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
@@ -77,7 +81,7 @@ const mouseEventListener = (e: MouseEvent, view: EditorView, langConfig: MwConfi
 	} else if (name.includes(tokens.magicLink)) {
 		const link = state.sliceDoc(from, to);
 		if (link.startsWith('RFC')) {
-			return `https://tools.ietf.org/html/rfc${link.slice(3).trim()}`;
+			return `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`;
 		} else if (link.startsWith('PMID')) {
 			return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
 		} else if (typeof langConfig?.isbnParser === 'function') {

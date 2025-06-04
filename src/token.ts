@@ -497,7 +497,7 @@ export class MediaWiki {
 	declare readonly tokenTable;
 	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
-	declare readonly implicitlyClosedHtmlTags;
+	declare readonly voidHtmlTags;
 	declare readonly urlProtocols;
 	declare readonly linkRegex;
 	declare readonly fileRegex;
@@ -529,7 +529,7 @@ export class MediaWiki {
 			...htmlTags,
 			...permittedHtmlTags ?? [],
 		]);
-		this.implicitlyClosedHtmlTags = new Set([
+		this.voidHtmlTags = new Set([
 			...voidHtmlTags,
 			...implicitlyClosedHtmlTags ?? [],
 		]);
@@ -1316,7 +1316,7 @@ export class MediaWiki {
 			}
 			const mt = stream.match(/^\/?>/u);
 			if (mt) {
-				if (!this.implicitlyClosedHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
+				if (!this.voidHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.unshift(name);
 					state.dt.html++;
 				}
