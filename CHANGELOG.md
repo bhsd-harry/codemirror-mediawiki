@@ -1,3 +1,11 @@
+## 2.25.7
+
+*2025-06-11*
+
+**Fixed**
+
+- Free external links following wikitext syntax in the MediaWiki mode
+
 ## 2.25.6
 
 *2025-06-07*

@@ -706,16 +706,6 @@ export class MediaWiki {
 					}
 					state.redirect = false;
 				}
-				if (stream.match('//')) {
-					return makeStyle(style, state);
-				} else if (stream.match(regex)) {
-					return makeTagStyle('magicLink', state);
-				}
-				const mtFree = stream.match(this.urlProtocols, false);
-				if (mtFree) {
-					chain(state, this.eatExternalLinkProtocol(mtFree[0]));
-					return '';
-				}
 				ch = stream.next()!;
 				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
 					.includes(state.tokenize.name);
@@ -777,7 +767,6 @@ export class MediaWiki {
 				ch = stream.next()!;
 			}
 
-			const {dt} = state;
 			switch (ch) {
 				case '~':
 					if (stream.match(/^~{2,4}/u)) {
@@ -792,35 +781,16 @@ export class MediaWiki {
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false);
 					if (mt) {
-						const tagname = mt[1]!.toLowerCase(),
-							{data: {tags}, inHtmlTag} = state;
-						if ((mt[0] === 'onlyinclude>' || tagname !== 'onlyinclude') && tags.includes(tagname)) {
+						const tagname = mt[1]!.toLowerCase();
+						if (
+							(mt[0] === 'onlyinclude>' || tagname !== 'onlyinclude')
+							&& state.data.tags.includes(tagname)
+						) {
 							// Extension tag
-							if (isCloseTag) {
-								chain(state, this.inStr('>', 'error'));
-								return makeLocalTagStyle('error', state);
-							}
-							chain(state, this.eatTagName(tagname));
-							return makeLocalTagStyle('extTagBracket', state);
+							return this.eatExtTag(tagname, isCloseTag, state);
 						} else if (this.permittedHtmlTags.has(tagname)) {
 							// Html tag
-							if (isCloseTag) {
-								if (dt.n && dt.html) {
-									dt.html--;
-								}
-								if (tagname === inHtmlTag[0]) {
-									inHtmlTag.shift();
-								} else {
-									chain(state, this.inStr('>', 'error'));
-									const i = inHtmlTag.lastIndexOf(tagname);
-									if (i !== -1) {
-										inHtmlTag.splice(i, 1);
-									}
-									return makeLocalTagStyle('error', state);
-								}
-							}
-							chain(state, this.eatTagName(tagname, isCloseTag, true));
-							return makeLocalTagStyle('htmlTagBracket', state);
+							return this.eatHtmlTag(tagname, isCloseTag, state);
 						}
 					}
 					break;
@@ -888,7 +858,7 @@ export class MediaWiki {
 				}
 				case ':':
 					if (needColon(state)) {
-						dt.n--;
+						state.dt.n--;
 						return makeLocalTagStyle('list', state);
 					}
 					break;
@@ -902,11 +872,15 @@ export class MediaWiki {
 				// no default
 			}
 			if (state.stack.length === 0) {
-				if (/[^\p{L}\p{N}_]/u.test(ch || '')) {
+				if (ch !== '_') {
 					// highlight free external links, bug T108448
-					stream.eatWhile(/[^\p{L}\p{N}_&'{[<~:-]/u);
+					if (/[\p{L}\p{N}]/u.test(ch)) {
+						stream.backUp(1);
+					} else {
+						stream.eatWhile(/[^\p{L}\p{N}_&'{[<~:-]/u);
+					}
 					const mt = stream.match(this.urlProtocols, false);
-					if (mt && !stream.match('//')) {
+					if (mt) {
 						chain(state, this.eatExternalLinkProtocol(mt[0]));
 						return makeStyle(style, state);
 					}
@@ -985,17 +959,14 @@ export class MediaWiki {
 		};
 	}
 
-	@getTokenizer
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
-	get eatFreeExternalLink(): Tokenizer {
-		return (stream, state) => {
-			const mt = stream.match(freeRegex[0])!;
-			if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
-				stream.match(freeRegex[1]);
-			}
-			pop(state);
-			return makeTagStyle('freeExtLink', state);
-		};
+	eatFreeExternalLink(this: void, stream: StringStream, state: State): Style {
+		const mt = stream.match(freeRegex[0])!;
+		if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
+			stream.match(freeRegex[1]);
+		}
+		pop(state);
+		return makeTagStyle('freeExtLink', state);
 	}
 
 	@getTokenizer
@@ -1288,6 +1259,36 @@ export class MediaWiki {
 	@getTokenizer
 	get inComment(): Tokenizer {
 		return this.inStr('-->', 'comment', 'comment');
+	}
+
+	eatExtTag(tagname: string, isCloseTag: boolean, state: State): string {
+		if (isCloseTag) {
+			chain(state, this.inStr('>', 'error'));
+			return makeLocalTagStyle('error', state);
+		}
+		chain(state, this.eatTagName(tagname));
+		return makeLocalTagStyle('extTagBracket', state);
+	}
+
+	eatHtmlTag(tagname: string, isCloseTag: boolean, state: State): string {
+		if (isCloseTag) {
+			const {dt, inHtmlTag} = state;
+			if (dt.n && dt.html) {
+				dt.html--;
+			}
+			if (tagname === inHtmlTag[0]) {
+				inHtmlTag.shift();
+			} else {
+				chain(state, this.inStr('>', 'error'));
+				const i = inHtmlTag.lastIndexOf(tagname);
+				if (i !== -1) {
+					inHtmlTag.splice(i, 1);
+				}
+				return makeLocalTagStyle('error', state);
+			}
+		}
+		chain(state, this.eatTagName(tagname, isCloseTag, true));
+		return makeLocalTagStyle('htmlTagBracket', state);
 	}
 
 	@getTokenizer

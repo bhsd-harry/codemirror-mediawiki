@@ -593,6 +593,14 @@ CTRL/CMD-click opens a link in a new tab.
 1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
 
+### Heading
+
+1. Comments at the SOL break section headings ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Section%20extraction%20prefixed%20by%20comment%20(section%201))).
+
+### Table
+
+1. Comments at the SOL break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
+
 ### Link
 
 1. Nested double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Non-wikilinks%20should%20not%20be%20treated%20as%20broken%20wikilinks)).
@@ -606,4 +614,4 @@ CTRL/CMD-click opens a link in a new tab.
 ### Block element
 
 1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
-1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)).
+1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).

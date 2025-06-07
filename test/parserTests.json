@@ -3070,12 +3070,12 @@
 	{
 		"desc": "Handling of &#x0A; in URLs",
 		"wikitext": "*irc://&#x0A;a",
-		"parsed": "<list>*</>irc://<entity>&amp;#x0A;</>a"
+		"parsed": "<list>*</><free-extlink-protocol>irc://</><free-extlink>&amp;#x0A;a</>"
 	},
 	{
 		"desc": "Handling of %0A in URLs",
 		"wikitext": "*irc://%0Aa",
-		"parsed": "<list>*</>irc://%0Aa"
+		"parsed": "<list>*</><free-extlink-protocol>irc://</><free-extlink>%0Aa</>"
 	},
 	{
 		"desc": "5 quotes, code coverage +1 line",
@@ -4315,17 +4315,17 @@
 	{
 		"desc": "WTS of autolinks with trailing/surrounding context",
 		"wikitext": "http://cscott.net'''foo'''\n\nhttp://cscott.net<b>foo</b>\n\n'''http://cscott.net'''\n\n'''http://cscott.net '''\n\n'''http://cscott.net<nowiki/>x'''\n\nhttp://cscott.net<nowiki/>x",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>cscott.net</><apostrophes>'''</><strong>foo</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><apostrophes>'''</><strong>http://cscott.net</><apostrophes>''''''</><strong>http://cscott.net </><apostrophes>''''''</><strong>http://cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><strong>x</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
+		"parsed": "<free-extlink-protocol>http://</><free-extlink>cscott.net</><apostrophes>'''</><strong>foo</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><apostrophes>''''''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><strong> </><apostrophes>''''''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><strong>x</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
 	},
 	{
 		"desc": "WTS of autolinks with nowikis (round-trip)",
 		"wikitext": "x<nowiki/>http://cscott.net<nowiki/>x",
-		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>http://cscott.net<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
+		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
 	},
 	{
 		"desc": "WTS of autolinks with escapes (editing)",
 		"wikitext": "x<nowiki/>http://cscott.net<nowiki/>x",
-		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>http://cscott.net<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
+		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
 	},
 	{
 		"desc": "WTS of edited autolink-like text (T103364)",
@@ -4345,7 +4345,7 @@
 	{
 		"desc": "WTS of an autolink surrounded by square brackets (T220018)",
 		"wikitext": "<nowiki>[</nowiki>http://example.com]",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>[</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>http://example.com]"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>[</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><free-extlink-protocol>http://</><free-extlink>example.com</>]"
 	},
 	{
 		"desc": "WTS of edited autolink surrounded by square brackets (T220018)",
@@ -4868,24 +4868,9 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground templatevariable-bracket>{{{</><template-ground templatevariable-name>1&lt;noinclude&gt</><template-ground templatevariable-delimiter>|</><template-ground templatevariable>1x</><template-ground error>&lt;/noinclude&gt</><template-ground templatevariable-bracket>}}}</><template-ground template-delimiter>|</><template-ground template>123</><template-ground template-bracket>}}</>"
 	},
 	{
-		"desc": "Extension tag contents using isRawHTML flag",
-		"wikitext": "DoBlockLevels and LanguageConverter still run on isHTML content:\n<divtag raw=\"true\" ishtml=\"true\"><!--protect newline-->\n:foo -{raw}- <b>bold</b>\n</divtag>\n\nBut with isRawHTML the result is left alone:\n<divtag raw=\"true\" israwhtml=\"true\"><!--protect newline-->\n:foo -{raw}- <b>bold</b>\n</divtag>",
-		"parsed": "DoBlockLevels and LanguageConverter still run on isHTML content:<divtag raw=\"true\" ishtml=\"true\"><comment>&lt;!--protect newline--&gt</><list>:</>foo <convert-bracket>-{</>raw<convert-bracket>}-</> <htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>bold<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</></divtag>But with isRawHTML the result is left alone:<divtag raw=\"true\" israwhtml=\"true\"><comment>&lt;!--protect newline--&gt</><list>:</>foo <convert-bracket>-{</>raw<convert-bracket>}-</> <htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>bold<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</></divtag>"
-	},
-	{
 		"desc": "Parser function contents using isRawHTML flag",
 		"wikitext": "DoBlockLevels and LanguageConverter still run on isHTML content:\n{{#divtag:<!--protect newline-->\n:foo -{raw}- <b>bold</b>\n|raw|isHTML}}\n\nBut with isRawHTML the result is left alone:\n{{#divtag:<!--protect newline-->\n:foo -{raw}- <b>bold</b>\n|raw|isRawHTML}}",
 		"parsed": "DoBlockLevels and LanguageConverter still run on isHTML content:<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#divtag</><ext-ground parserfunction-delimiter>:</><ext-ground comment>&lt;!--protect newline--&gt</><ext-ground list>:</><ext-ground parserfunction>foo </><ext-ground convert-bracket>-{</><ext-ground parserfunction>raw</><ext-ground convert-bracket>}-</><ext-ground parserfunction> </><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>bold</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>raw</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isHTML</><ext-ground parserfunction-bracket>}}</>But with isRawHTML the result is left alone:<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#divtag</><ext-ground parserfunction-delimiter>:</><ext-ground comment>&lt;!--protect newline--&gt</><ext-ground list>:</><ext-ground parserfunction>foo </><ext-ground convert-bracket>-{</><ext-ground parserfunction>raw</><ext-ground convert-bracket>}-</><ext-ground parserfunction> </><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>bold</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>b</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>raw</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isRawHTML</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Handling of nested nowiki strip markers in Parsoid fragments (2)",
-		"wikitext": "Text {{#spantag:<nowiki><b></nowiki> {{#spantag:<nowiki><c></nowiki>}}}}",
-		"parsed": "Text <ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#spantag</><ext-ground parserfunction-delimiter>:</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>&lt;b&gt</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction> </><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#spantag</><ext2-ground parserfunction-delimiter>:</><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><tag-nowiki>&lt;c&gt</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "T386233: suppress <nowiki/> tags between extension tags",
-		"wikitext": "Deliberately unclosed b tag triggers p-wrapping if a nowiki span is\nadded between the divtags:\n\n<b>{{1x|<divtag>abc</divtag><divtag>xyz</divtag>}}",
-		"parsed": "Deliberately unclosed b tag triggers p-wrapping if a nowiki span isadded between the divtags:<htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>&lt;divtag&gtabc&lt;/divtag&gt&lt;divtag&gtxyz&lt;/divtag&gt</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "additionalTests"
@@ -6131,7 +6116,7 @@
 	{
 		"desc": "Definition list with URL link",
 		"wikitext": ";http://example.com/ :definition",
-		"parsed": "<list>;</><strong>http</><list>:</>//example.com/ :definition"
+		"parsed": "<list>;</><free-extlink-protocol>http://</><free-extlink strong>example.com/</><strong> </><list>:</>definition"
 	},
 	{
 		"desc": "Definition list with bracketed URL link",
@@ -6146,12 +6131,12 @@
 	{
 		"desc": "Definition list with news link containing colon",
 		"wikitext": ";news:alt.wikipedia.rox :This isn't even a real newsgroup!",
-		"parsed": "<list>;</><strong>news</><list>:</>alt.wikipedia.rox :This isn't even a real newsgroup!"
+		"parsed": "<list>;</><free-extlink-protocol>news:</><free-extlink strong>alt.wikipedia.rox</><strong> </><list>:</>This isn't even a real newsgroup!"
 	},
 	{
 		"desc": "Malformed definition list with colon",
 		"wikitext": ";news:alt.wikipedia.rox -- don't crash or enter an infinite loop",
-		"parsed": "<list>;</><strong>news</><list>:</>alt.wikipedia.rox -- don't crash or enter an infinite loop"
+		"parsed": "<list>;</><free-extlink-protocol>news:</><free-extlink strong>alt.wikipedia.rox</><strong> -- don't crash or enter an infinite loop</>"
 	},
 	{
 		"desc": "Definition lists: colon in external link text",
@@ -6479,7 +6464,7 @@
 	{
 		"desc": "External links: Free with trailing quotes (T113666)",
 		"wikitext": "'''News:''' Stuff here\n\nnews:'a'b''c''d e",
-		"parsed": "<apostrophes>'''</><strong>News:</><apostrophes>'''</> Stuff here<free-extlink-protocol>news:</><free-extlink>'a'b</><apostrophes>''</><em>c</><apostrophes>''</>d e"
+		"parsed": "<apostrophes>'''</><free-extlink-protocol>News:</><apostrophes>'''</> Stuff here<free-extlink-protocol>news:</><free-extlink>'a'b</><apostrophes>''</><em>c</><apostrophes>''</>d e"
 	},
 	{
 		"desc": "External links: with entity",
@@ -12102,7 +12087,7 @@
 	{
 		"desc": "Links 6. Add <nowiki/>s between text-nodes and url-links when required (T66300)",
 		"wikitext": "x<nowiki/>http://example.com<nowiki/>y\nhttp://example.com<nowiki/>?x\nhttp://example.com<nowiki/>&x\nhttp://example.com<nowiki/>'x\nhttp://example.com<nowiki/>,x\nhttp://example.com<nowiki/>.x\nhttp://example.com<nowiki/>;x\nhttp://example.com<nowiki/>:x\nhttp://example.com<nowiki/>;x\nhttp://example.com<nowiki/>!x\nhttp://example.com<nowiki/>=x\nhttp://example.com<nowiki/>(x)\nhttp://example.com(x<nowiki/>)",
-		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>http://example.com<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>?x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>&x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>'x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>,x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>.x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>:x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>!x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>=x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>(x)<free-extlink-protocol>http://</><free-extlink>example.com(x</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>)"
+		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>?x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>&x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>'x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>,x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>.x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>:x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>!x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>=x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>(x)<free-extlink-protocol>http://</><free-extlink>example.com(x</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>)"
 	},
 	{
 		"desc": "Links 7a. Don't add spurious <nowiki/>s between text-nodes and url-links (T66300)",
@@ -12117,7 +12102,7 @@
 	{
 		"desc": "Links 8. Add <nowiki/>s between text-nodes and RFC-links when required (T66300)",
 		"wikitext": "RFC 123<nowiki/>4\nRFC 123<nowiki/>y\nX<nowiki/>RFC 123<nowiki/>y",
-		"parsed": "<magic-link>RFC 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>4<magic-link>RFC 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>yX<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>RFC 123<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y"
+		"parsed": "<magic-link>RFC 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>4<magic-link>RFC 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>yX<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><magic-link>RFC 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y"
 	},
 	{
 		"desc": "Links 9. Don't add spurious <nowiki/>s between text-nodes and RFC-links (T66300)",
@@ -12127,7 +12112,7 @@
 	{
 		"desc": "Links 10. Add <nowiki/>s between text-nodes and PMID-links when required (T66300)",
 		"wikitext": "PMID 123<nowiki/>4\nPMID 123<nowiki/>y\nX<nowiki/>PMID 123<nowiki/>y",
-		"parsed": "<magic-link>PMID 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>4<magic-link>PMID 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>yX<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>PMID 123<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y"
+		"parsed": "<magic-link>PMID 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>4<magic-link>PMID 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>yX<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><magic-link>PMID 123</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y"
 	},
 	{
 		"desc": "Links 11. Don't add spurious <nowiki/>s between text-nodes and PMID-links (T66300)",
@@ -12137,7 +12122,7 @@
 	{
 		"desc": "Links 12. Add <nowiki/>s between text-nodes and ISBN-links when required (T66300)",
 		"wikitext": "ISBN 1234567890<nowiki/>1\nISBN 1234567890<nowiki/>x\na<nowiki/>ISBN 1234567890<nowiki/>b",
-		"parsed": "<magic-link>ISBN 1234567890</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>1<magic-link>ISBN 1234567890</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>xa<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>ISBN 1234567890<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>b"
+		"parsed": "<magic-link>ISBN 1234567890</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>1<magic-link>ISBN 1234567890</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>xa<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><magic-link>ISBN 1234567890</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>b"
 	},
 	{
 		"desc": "Links 13. Don't add spurious <nowiki/>s between text-nodes and ISBN-links (T66300)",
