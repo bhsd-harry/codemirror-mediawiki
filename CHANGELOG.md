@@ -1,9 +1,10 @@
 ## 2.25.6
 
-*2025-06-05*
+*2025-06-07*
 
 **Fixed**
 
+- Leading space followed by comments will not be highlighted as a `<pre>` tag in the MediaWiki mode
 - Self-closing HTML tags (e.g., `<li/>`) in the [tagMatching](./README.md#tagmatching) extension in the MediaWiki mode
 
 ## 2.25.5

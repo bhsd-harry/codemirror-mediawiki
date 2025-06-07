@@ -51,7 +51,7 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/view": "^6.36.8",
 		"@lezer/common": "^1.2.3",
-		"wikiparser-node": "^1.21.0"
+		"wikiparser-node": "^1.21.1"
 	},
 	"devDependencies": {
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",

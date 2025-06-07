@@ -15,7 +15,7 @@
 	{
 		"desc": "Paragraphs with newline spacing with comment lines in between",
 		"wikitext": "----\na\n<!--foo-->\nb\n----\na\n<!--foo--><!--More than 1 comment, still stripped-->\nb\n----\na\n <!--foo--> <!----> <!-- bar --> \nb\n----\na\n<!--foo-->\n\nb\n----\na\n\n<!--foo-->\nb\n----\na\n<!--foo-->\n\n\nb\n----\na\n\n\n<!--foo-->\nb\n----",
-		"parsed": "<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt&lt;!--More than 1 comment, still stripped--&gt</>b<hr>----</>a<skipformatting> </><comment>&lt;!--foo--&gt</> <comment>&lt;!----&gt</> <comment>&lt;!-- bar --&gt</> b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>"
+		"parsed": "<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt&lt;!--More than 1 comment, still stripped--&gt</>b<hr>----</>a <comment>&lt;!--foo--&gt</> <comment>&lt;!----&gt</> <comment>&lt;!-- bar --&gt</> b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>a<comment>&lt;!--foo--&gt</>b<hr>----</>"
 	},
 	{
 		"desc": "Paragraphs with newline spacing with non-empty white-space lines in between",
@@ -25,12 +25,12 @@
 	{
 		"desc": "Paragraphs with newline spacing with non-empty mixed comment and white-space lines in between",
 		"wikitext": "----\na\n <!--foo-->\nb\n----\na\n <!--foo--><!--More than 1 comment doesn't disable stripping of this line!-->\nb\n----\na\n \n<!--foo-->\n <!--bar-->\nb\n----\na\n \n <!--foo-->\n <!--bar-->\n \nb\n----",
-		"parsed": "<hr>----</>a<skipformatting> </><comment>&lt;!--foo--&gt</>b<hr>----</>a<skipformatting> </><comment>&lt;!--foo--&gt&lt;!--More than 1 comment doesn't disable stripping of this line!--&gt</>b<hr>----</>a<skipformatting> </><comment>&lt;!--foo--&gt</><skipformatting> </><comment>&lt;!--bar--&gt</>b<hr>----</>a<skipformatting>  </><comment>&lt;!--foo--&gt</><skipformatting> </><comment>&lt;!--bar--&gt</><skipformatting> </>b<hr>----</>"
+		"parsed": "<hr>----</>a <comment>&lt;!--foo--&gt</>b<hr>----</>a <comment>&lt;!--foo--&gt&lt;!--More than 1 comment doesn't disable stripping of this line!--&gt</>b<hr>----</>a<skipformatting> </><comment>&lt;!--foo--&gt</> <comment>&lt;!--bar--&gt</>b<hr>----</>a<skipformatting> </> <comment>&lt;!--foo--&gt</> <comment>&lt;!--bar--&gt</><skipformatting> </>b<hr>----</>"
 	},
 	{
 		"desc": "Extra newlines: More paragraphs with indented comment",
 		"wikitext": "a\n\n   <!--boo-->\n\nb",
-		"parsed": "a<skipformatting> </>  <comment>&lt;!--boo--&gt</>b"
+		"parsed": "a   <comment>&lt;!--boo--&gt</>b"
 	},
 	{
 		"desc": "Extra new lines before and after lists are preserved",
@@ -1005,7 +1005,7 @@
 	{
 		"desc": "Single-comment whitespace lines dont break lists, and neither do multi-comment whitespace lines",
 		"wikitext": "*a\n<!--This line will NOT split the list-->\n*b\n <!--This line will NOT split the list either-->\n*c\n <!--foo--> <!----> <!--This line NOT split the list either--> \n*d",
-		"parsed": "<list>*</>a<comment>&lt;!--This line will NOT split the list--&gt</><list>*</>b<skipformatting> </><comment>&lt;!--This line will NOT split the list either--&gt</><list>*</>c<skipformatting> </><comment>&lt;!--foo--&gt</> <comment>&lt;!----&gt</> <comment>&lt;!--This line NOT split the list either--&gt</> <list>*</>d"
+		"parsed": "<list>*</>a<comment>&lt;!--This line will NOT split the list--&gt</><list>*</>b <comment>&lt;!--This line will NOT split the list either--&gt</><list>*</>c <comment>&lt;!--foo--&gt</> <comment>&lt;!----&gt</> <comment>&lt;!--This line NOT split the list either--&gt</> <list>*</>d"
 	},
 	{
 		"desc": "Replacing whitespace with tabs still doesn't break the list (gerrit 78327)",
@@ -7639,7 +7639,7 @@
 	{
 		"desc": "1b. Indent-Pre and Comments",
 		"wikitext": " a\n <!--a-->\nc",
-		"parsed": "<skipformatting> </>a<skipformatting> </><comment>&lt;!--a--&gt</>c"
+		"parsed": "<skipformatting> </>a <comment>&lt;!--a--&gt</>c"
 	},
 	{
 		"desc": "1c. Indent-Pre and Comments",
@@ -7744,7 +7744,7 @@
 	{
 		"desc": "6. Pre-blocks should extend across lines with leading WS even when there is no wrappable content",
 		"wikitext": " a\n \n <!-- continue -->\n b\n\n c\n \nd",
-		"parsed": "<skipformatting> </>a<skipformatting>  </><comment>&lt;!-- continue --&gt</><skipformatting> </>b<skipformatting> </>c<skipformatting> </>d"
+		"parsed": "<skipformatting> </>a<skipformatting> </> <comment>&lt;!-- continue --&gt</><skipformatting> </>b<skipformatting> </>c<skipformatting> </>d"
 	},
 	{
 		"desc": "7a. Indent-pre and category links",
@@ -12217,7 +12217,7 @@
 	{
 		"desc": "Behavior switches should be SOL-transparent",
 		"wikitext": " __TOC__\n\n <!-- this one's bogus -->\n __TOO__\n\n __TOC__ foo\n\n__TOC__\n bar",
-		"parsed": "<skipformatting> </><double-underscore>__TOC__</><skipformatting> </><comment>&lt;!-- this one's bogus --&gt</><skipformatting> </>__TOO__<skipformatting> </><double-underscore>__TOC__</> foo<double-underscore>__TOC__</><skipformatting> </>bar"
+		"parsed": "<skipformatting> </><double-underscore>__TOC__</> <comment>&lt;!-- this one's bogus --&gt</><skipformatting> </>__TOO__<skipformatting> </><double-underscore>__TOC__</> foo<double-underscore>__TOC__</><skipformatting> </>bar"
 	},
 	{
 		"desc": "During serialization, normalize output when given a SOL-transparent prefix",

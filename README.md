@@ -583,11 +583,27 @@ CTRL/CMD-click opens a link in a new tab.
 
 ## Syntax Highlighting
 
-1. Preformatted text with a leading space may have false positives (Examples [1](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions), [2](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20cats%2Flanglinks%20and%20newlines%3A%20All%20preceding%20newlines%20should%20be%20suppressed%20(courtesy%20T2087))).
+### Extension
+
 1. [Extension:Translate](https://www.mediawiki.org/wiki/Extension:Translate) is not supported.
-1. Template parameter name followed by a newline ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
-1. Wikitext in template parameter names ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
-1. Double URI encoding in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).
-1. Double HTML escaping in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20an%20ampersand)).
-1. Comments at the start of a line ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
-1. External link inside double brackets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
+
+### Transclusion
+
+1. Non-existing parser functions starting with `#` are highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
+1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
+1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
+
+### Link
+
+1. Nested double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Non-wikilinks%20should%20not%20be%20treated%20as%20broken%20wikilinks)).
+1. Double URI encoding should not appear in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).
+1. Double HTML escaping should not appear in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20an%20ampersand)).
+
+### External link
+
+1. External links inside double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
+
+### Block element
+
+1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
+1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)).

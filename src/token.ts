@@ -764,7 +764,10 @@ export class MediaWiki {
 							if (mt) {
 								chain(state, this.eatStartTable);
 								return makeLocalStyle(mt[1] ? tokens.list : '', state);
-							} else if (ch === ' ') {
+							} else if (
+								ch === ' '
+								&& !/^ \s*(?=<!--)(?:\s|<!--(?:(?!-->).)*-->)+$/u.test(stream.string)
+							) {
 								/** @todo indent-pre is sometimes suppressed */
 								return tokens.skipFormatting;
 							}
