@@ -85,7 +85,8 @@ const linters: Record<string, LintSource | undefined> = {},
 		['hover', 'hover', {enabled: false}, undefined],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
 		['inlayHints', 'inlayHints', {enabled: 'offUnlessPressed'}, {enabled: 'onUnlessPressed'}],
-	];
+	],
+	templateParameters = new Map<string, ApiSuggestions>();
 
 /**
  * 判断是否为普通编辑器
@@ -132,6 +133,9 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 	}
 	try {
 		titles = new mw.Title(titles, 10).getPrefixedDb();
+		if (templateParameters.has(titles)) {
+			return templateParameters.get(titles)!;
+		}
 		/* eslint-enable no-param-reassign */
 		const {pages} = await api.get({
 				action: 'templatedata',
@@ -148,6 +152,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			const detail = label ?? '';
 			result.push([key, detail], ...aliases.map((alias): [string, string] => [alias, detail]));
 		}
+		templateParameters.set(titles, result);
 		return result;
 	} catch {
 		return [];

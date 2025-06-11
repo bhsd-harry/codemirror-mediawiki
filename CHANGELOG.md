@@ -2,9 +2,14 @@
 
 *2025-06-11*
 
+**Added**
+
+- [Autocompletion](./README.md#autocompletion) for magic words, tag names, tag attributes and URL protocols in the MediaWiki mode can now be explicitly triggered
+
 **Fixed**
 
 - Free external links following wikitext syntax in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) in a template argument and table cells in the MediaWiki mode
 
 ## 2.25.6
 
