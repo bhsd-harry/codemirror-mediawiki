@@ -1,10 +1,10 @@
-## 2.25.7
+## 2.26.0
 
-*2025-06-11*
+*2025-06-12*
 
 **Added**
 
-- [Autocompletion](./README.md#autocompletion) for magic words, tag names, tag attributes and URL protocols in the MediaWiki mode can now be explicitly triggered
+- [Autocompletion](./README.md#autocompletion) for magic words, tag names, tag attributes, image keywords and URL protocols in the MediaWiki mode can now be explicitly triggered
 
 **Fixed**
 

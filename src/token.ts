@@ -991,10 +991,12 @@ export class MediaWiki {
 				return makeTagStyle(file ? 'error' : 'linkToSection', state);
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
+				let s: TagName = redirect ? 'error' : 'linkDelimiter';
 				if (file) {
+					s = 'fileDelimiter';
 					this.toEatImageParameter(stream, state);
 				}
-				return makeLocalTagStyle(redirect ? 'error' : 'linkDelimiter', state);
+				return makeLocalTagStyle(s, state);
 			}
 			let regex;
 			if (redirect) {
@@ -1050,7 +1052,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('error', state);
 			} else if (file && stream.match(/^\|\s*/u)) {
 				this.toEatImageParameter(stream, state);
-				return makeLocalTagStyle('linkDelimiter', state);
+				return makeLocalTagStyle('fileDelimiter', state);
 			} else if (stream.match(/^'(?=')/u)) {
 				return this.eatApostrophes(linkState)(stream, state) || makeStyle(tmpstyle, state);
 			} else if (
@@ -2105,7 +2107,7 @@ export class MediaWiki {
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(true, true);
 				this.toEatImageParameter(stream, state);
-				return makeLocalTagStyle('linkDelimiter', state);
+				return makeLocalTagStyle('fileDelimiter', state);
 			} else if (stream.match(regex)) {
 				return makeTagStyle('error', state);
 			}

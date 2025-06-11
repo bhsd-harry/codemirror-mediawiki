@@ -396,14 +396,16 @@ export class FullMediaWiki extends MediaWiki {
 					validFor,
 				};
 			}
+			const isDelimiter = explicit && hasTag(types, 'fileDelimiter');
 			if (
-				hasTag(types, 'fileText')
-				&& prevSibling?.name.includes(tokens.linkDelimiter)
+				isDelimiter
+				|| hasTag(types, 'fileText')
+				&& prevSibling?.name.includes(tokens.fileDelimiter)
 				&& !search.includes('[')
 			) {
 				const equal = state.sliceDoc(pos, pos + 1) === '=';
 				return {
-					from: prevSibling.to,
+					from: isDelimiter ? pos : prevSibling!.to,
 					options: equal
 						? this.imgKeys.map((option): Completion => ({
 							...option,
