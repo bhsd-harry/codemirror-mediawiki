@@ -4941,6 +4941,66 @@
 		"parsed": "<list>;;;</><strong>t3</><list>:::</>d3<list>;;;;;</><strong>t5</><list>:::::</>:d5<list>;</><strong>t1</><list>;*</><strong>t1</><list>:</>d1<list>;*</><strong>t1</><list>:</>d1"
 	},
 	{
+		"desc": "Extension tag in language conversion",
+		"wikitext": "-{<pre>foo</pre>}-\n\n-{<pre>foo</pre>|bar}-",
+		"parsed": "<convert-bracket>-{</><exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>foo</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</><convert-bracket>}--{</><exttag-bracket>&lt;</><exttag-name>pre</><exttag-bracket>&gt</><tag-pre>foo</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Template in language conversion",
+		"wikitext": "-{{{1x|foo}} }-\n\n-{{{1x|foo}}|bar}-",
+		"parsed": "-{<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-bracket>}}</> }--{<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo</><template-ground template-bracket>}}</>|bar}-"
+	},
+	{
+		"desc": "Template variable in language conversion",
+		"wikitext": "-{{{{foo}}} }-\n\n-{{{{foo}}}|bar}-\n\n-{{{{foo|baz}}} }-\n\n-{{{{foo|baz}}}|bar}-",
+		"parsed": "-<template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>foo</><template2-ground template-bracket>}}</><template-ground error>} }</><template-ground template-name pagename>-</>-<template-ground template-bracket>{{</><template2-ground template-bracket>{{</><template2-ground template-name pagename>foo</><template2-ground template-bracket>}}</><template-ground error>}</><template-ground template-delimiter>|</><template-ground template>bar}--</><template2-ground template-bracket>{{</><template3-ground template-bracket>{{</><template3-ground template-name pagename>foo</><template3-ground template-delimiter>|</><template3-ground template>baz</><template3-ground template-bracket>}}</><template2-ground error>} }</><template2-ground template-name pagename>-</><template-ground template>-</><template2-ground template-bracket>{{</><template3-ground template-bracket>{{</><template3-ground template-name pagename>foo</><template3-ground template-delimiter>|</><template3-ground template>baz</><template3-ground template-bracket>}}</><template2-ground error>}</><template2-ground template-delimiter>|</><template2-ground template>bar}-</>"
+	},
+	{
+		"desc": "Section heading in language conversion",
+		"wikitext": "-{\n==foo==\n}-\n\n-{\n==foo==\n|bar}-",
+		"parsed": "<convert-bracket>-{</><section-header section--2>==</><section>foo</><section-header>==</><convert-bracket>}--{</><section-header section--2>==</><section>foo</><section-header>==</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "HTML tag in language conversion",
+		"wikitext": "-{<b>foo</b>}-\n\n-{<b>foo</b>|bar}-",
+		"parsed": "<convert-bracket>-{</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><convert-bracket>}--{</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><convert-flag>foo</><htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Table in language conversion",
+		"wikitext": "-{\n{|\n|foo\n|}}-\n\n-{\n{|\n|foo\n|}|bar}-",
+		"parsed": "<convert-bracket>-{</><table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-bracket>|}</><convert-bracket>}--{</><table-bracket>{|</><table-delimiter>|</><table-td>foo</><table-bracket>|}</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Hr in language conversion",
+		"wikitext": "-{\n----}-\n\n-{\n----|bar}-",
+		"parsed": "<convert-bracket>-{</><hr>----</><convert-bracket>}--{</><convert-flag>----</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Internal link in language conversion",
+		"wikitext": "-{[[foo]]}-\n\n-{[[foo]]|bar}-",
+		"parsed": "<convert-bracket>-{</><link-ground link-bracket>[[</><link-ground link-pagename pagename>foo</><link-ground link-bracket>]]</><convert-bracket>}--{</><link-ground link-bracket>[[</><link-ground link-pagename pagename>foo</><link-ground link-bracket>]]</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Quote in language conversion",
+		"wikitext": "-{''foo''}-\n\n-{''foo''|bar}-",
+		"parsed": "<convert-bracket>-{</><apostrophes>''</><em>foo</><apostrophes>''</><convert-bracket>}--{</><apostrophes>''</><convert-flag>foo</><apostrophes>''</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "External link in language conversion",
+		"wikitext": "-{[//foo]}-\n\n-{[//foo]|bar}-",
+		"parsed": "<convert-bracket>-{</><link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>foo</><link-ground extlink-bracket>]</><convert-bracket>}--{</><link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>foo</><link-ground extlink-bracket>]</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "List in language conversion",
+		"wikitext": "-{\n*foo}-\n\n-{\n*foo|bar}-",
+		"parsed": "<convert-bracket>-{</><list>*</>foo<convert-bracket>}--{</><list>*</><convert-flag>foo</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Magic link in language conversion",
+		"wikitext": "-{PMID 1}-\n\n-{PMID 1|bar}-",
+		"parsed": "<convert-bracket>-{</>PMID 1<convert-bracket>}--{</><convert-flag>PMID 1</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

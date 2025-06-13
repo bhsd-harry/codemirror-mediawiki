@@ -31,9 +31,9 @@ declare interface Nesting extends Record<NestCount, number> {
 	extState: object | false;
 }
 declare interface State extends Nesting {
-	tokenize: Tokenizer;
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
+	tokenize: Tokenizer;
 	extMode: StreamParser<object> | false;
 	lbrack: boolean | undefined;
 	bold: boolean;
@@ -46,10 +46,11 @@ declare interface State extends Nesting {
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
-	pos: number;
+	readonly char?: string | undefined;
 	readonly string: string;
-	style: Style;
 	readonly state: State;
+	pos: number;
+	style: Style;
 }
 declare interface StringStream extends StringStreamBase {
 	match(pattern: string, consume?: boolean, caseInsensitive?: boolean): true | null;
@@ -427,10 +428,6 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
 	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
 	styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
-	convertRegex = new RegExp(
-		String.raw`^(?:[^};&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{[<~_-")})+`,
-		'u',
-	),
 	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u'),
 	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
 	extLinkChars = "[{'<-",
@@ -504,6 +501,7 @@ export class MediaWiki {
 	declare readonly redirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
+	declare readonly convertRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
 	declare readonly tags;
@@ -556,6 +554,10 @@ export class MediaWiki {
 			'u',
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
+		this.convertRegex = new RegExp(
+			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{<~_-")}|\[(?!\[|${urlProtocols}))+`,
+			'u',
+		);
 		this.convertSemicolon = variants && new RegExp(
 			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${variants.join('|')})\s*:|(?:$|\}-))`,
 			'u',
@@ -1801,7 +1803,7 @@ export class MediaWiki {
 				stream.match(/^(?:(?:[^};=-]|\}(?!-)|=(?!>)|-(?!\{))+|;|=>)/u);
 				return makeStyle(style, state);
 			}
-			return !isSolSyntax(stream, true) && stream.match(convertRegex) || space
+			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space
 				? makeStyle(style, state)
 				: this.eatWikiText(style)(stream, state);
 		};
@@ -1905,7 +1907,8 @@ export class MediaWiki {
 				do {
 					// get token style
 					stream.start = stream.pos;
-					const style = state.tokenize(stream, state);
+					const char = stream.peek(),
+						style = state.tokenize(stream, state);
 					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
@@ -1938,9 +1941,26 @@ export class MediaWiki {
 								}
 							}
 						}
+					} else if (char === '|' && typeof style === 'string' && style.includes(tokens.convertDelimiter)) {
+						let count = 0;
+						for (let i = readyTokens.length - 1; i >= 0; i--) {
+							const token = readyTokens[i]!;
+							if (cmpNesting(state, token.state, true)) {
+								const {style: s} = token;
+								if (typeof s === 'string' && s.includes(tokens.convertBracket)) {
+									count += token.char === '-' ? 1 : -1;
+									if (count === 1) {
+										break;
+									}
+								} else if (typeof s === 'object') {
+									token.style = s[0]
+										+ (s[0].includes(tokens.convertFlag) ? '' : ` ${tokens.convertFlag}`);
+								}
+							}
+						}
 					}
 					// save token
-					readyTokens.push({pos: stream.pos, string: stream.string, state: copyState(state), style});
+					readyTokens.push({pos: stream.pos, char, string: stream.string, state: copyState(state), style});
 				} while (/** @todo should end at table delimiter as well */ !stream.eol());
 				if (!state.bold || !state.italic) {
 					// no need to rollback

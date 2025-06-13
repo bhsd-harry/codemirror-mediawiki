@@ -1,3 +1,12 @@
+## 2.26.1
+
+*2025-06-14*
+
+**Fixed**
+
+- Error tolerance for wrong converter flags in the MediaWiki mode
+- External links in language conversion syntax in the MediaWiki mode
+
 ## 2.26.0
 
 *2025-06-12*
