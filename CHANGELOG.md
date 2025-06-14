@@ -2,6 +2,10 @@
 
 *2025-06-15*
 
+**Added**
+
+- Substitution of magic words starting with `#` in the MediaWiki mode
+
 **Fixed**
 
 - Error tolerance for wrong converter flags in the MediaWiki mode

@@ -414,6 +414,10 @@ const peekSpace = (stream: StringStream, sol?: boolean): boolean => {
 
 const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	pageFunctions = new Set<string | undefined>([
+		'subst',
+		'safesubst',
+		'raw',
+		'msg',
 		'filepath',
 		'localurl',
 		'localurle',
@@ -805,9 +809,9 @@ export class MediaWiki {
 						chain(state, this.inVariable());
 						return makeLocalTagStyle('templateVariableBracket', state);
 					}
-					const mt = stream.match(/^\{(?!\{(?!\{))(\s*)/u);
+					const mt = stream.match(/^\{(?!\{(?!\{))/u);
 					if (mt) {
-						return this.eatTransclusion(stream, state, mt[1]!) ?? makeStyle(style, state);
+						return this.eatTransclusion(stream, state) ?? makeStyle(style, state);
 					}
 					break;
 				}
@@ -1508,7 +1512,8 @@ export class MediaWiki {
 		};
 	}
 
-	eatTransclusion(stream: StringStream, state: State, {length}: string): string | undefined {
+	eatTransclusion(stream: StringStream, state: State): string | undefined {
+		const [{length}] = stream.match(/^\s*/u)!;
 		// Parser function
 		if (stream.peek() === '#') {
 			stream.backUp(length);
@@ -1560,7 +1565,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionName(invoke?: number, n?: number, ns?: number): Tokenizer {
+	inParserFunctionName(invoke?: number, n?: number, ns?: number, subst?: boolean): Tokenizer {
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1584,7 +1589,9 @@ export class MediaWiki {
 			}
 			const ch = stream.eat(/[:：|]/u);
 			if (ch) {
-				state.tokenize = this.inParserFunctionArgument(invoke, n, ns);
+				state.tokenize = subst && stream.match(/^\s*#/u, false)
+					? this.inParserFunctionName()
+					: this.inParserFunctionArgument(invoke, n, ns);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
@@ -1623,11 +1630,15 @@ export class MediaWiki {
 							case 'int':
 								namespace = 8;
 								break;
+							case 'raw':
+							case 'msg':
 							case 'msgnw':
 								namespace = 10;
 							// no default
 						}
-						state.tokenize = this.inParserFunctionName(Infinity, Infinity, namespace);
+						state.tokenize = canonicalName === 'subst' || canonicalName === 'safesubst'
+							? this.inParserFunctionName(invoke, n, ns, true)
+							: this.inParserFunctionName(Infinity, Infinity, namespace);
 					}
 				}
 				return makeLocalTagStyle('parserFunctionName', state);
@@ -2055,9 +2066,9 @@ export class MediaWiki {
 					chain(state, this.inVariable());
 					return tokens.templateVariableBracket;
 				}
-				const mt = stream.match(/^\{\{(?!\{(?!\{))(\s*)/u);
+				const mt = stream.match(/^\{\{(?!\{(?!\{))/u);
 				if (mt) {
-					return this.eatTransclusion(stream, state, mt[1]!) ?? tokens.comment;
+					return this.eatTransclusion(stream, state) ?? tokens.comment;
 				}
 			}
 			if (stream.match(re)) {

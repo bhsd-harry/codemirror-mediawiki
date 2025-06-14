@@ -3225,7 +3225,7 @@
 	{
 		"desc": "RAW magic word",
 		"wikitext": "{{RAW:QUERTY}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>RAW</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>QUERTY</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>RAW</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-10>QUERTY</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Always escape literal '>' in output, not just after '<'",
@@ -3510,7 +3510,7 @@
 	{
 		"desc": "Complex edit comment with link with more than one pipe (T99346)",
 		"wikitext": "Created page with \"<noinclude>[[Category:Requests for permissions/Bot|{{subst:#titleparts:{{subst:PAGENAME}}|1|3}}]]</noinclude> === [[User:MineoBot|]] 8=== {{Request for permissions/links|Mineo...\"",
-		"parsed": "Created page with \"<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude link-ground link-bracket>[[</><tag-noinclude link-ground link-pagename pagename>Category:Requests for permissions/Bot</><tag-noinclude link-ground link-delimiter>|</><tag-noinclude ext-link-ground parserfunction-bracket>{{</><tag-noinclude ext-link-ground parserfunction-name>subst</><tag-noinclude ext-link-ground parserfunction-delimiter>:</><tag-noinclude ext-link-ground parserfunction>#titleparts:</><tag-noinclude ext2-link-ground parserfunction-bracket>{{</><tag-noinclude ext2-link-ground parserfunction-name>subst</><tag-noinclude ext2-link-ground parserfunction-delimiter>:</><tag-noinclude ext2-link-ground parserfunction>PAGENAME</><tag-noinclude ext2-link-ground parserfunction-bracket>}}</><tag-noinclude ext-link-ground parserfunction-delimiter>|</><tag-noinclude ext-link-ground parserfunction>1</><tag-noinclude ext-link-ground parserfunction-delimiter>|</><tag-noinclude ext-link-ground parserfunction>3</><tag-noinclude ext-link-ground parserfunction-bracket>}}</><tag-noinclude link-ground link-bracket>]]</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</> === <link-ground link-bracket>[[</><link-ground link-pagename pagename>User:MineoBot</><link-ground link-delimiter>|</><link-ground link-bracket>]]</> 8=== <template-ground template-bracket>{{</><template-ground template-name pagename>Request for permissions/links</><template-ground template-delimiter>|</><template-ground template>Mineo...\"</>"
+		"parsed": "Created page with \"<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude link-ground link-bracket>[[</><tag-noinclude link-ground link-pagename pagename>Category:Requests for permissions/Bot</><tag-noinclude link-ground link-delimiter>|</><tag-noinclude ext-link-ground parserfunction-bracket>{{</><tag-noinclude ext-link-ground parserfunction-name>subst</><tag-noinclude ext-link-ground parserfunction-delimiter>:</><tag-noinclude ext-link-ground parserfunction-name>#titleparts</><tag-noinclude ext-link-ground parserfunction-delimiter>:</><tag-noinclude ext2-link-ground parserfunction-bracket>{{</><tag-noinclude ext2-link-ground parserfunction-name>subst</><tag-noinclude ext2-link-ground parserfunction-delimiter>:</><tag-noinclude ext2-link-ground parserfunction>PAGENAME</><tag-noinclude ext2-link-ground parserfunction-bracket>}}</><tag-noinclude ext-link-ground parserfunction-delimiter>|</><tag-noinclude ext-link-ground parserfunction>1</><tag-noinclude ext-link-ground parserfunction-delimiter>|</><tag-noinclude ext-link-ground parserfunction>3</><tag-noinclude ext-link-ground parserfunction-bracket>}}</><tag-noinclude link-ground link-bracket>]]</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</> === <link-ground link-bracket>[[</><link-ground link-pagename pagename>User:MineoBot</><link-ground link-delimiter>|</><link-ground link-bracket>]]</> 8=== <template-ground template-bracket>{{</><template-ground template-name pagename>Request for permissions/links</><template-ground template-delimiter>|</><template-ground template>Mineo...\"</>"
 	},
 	{
 		"desc": "Space normalisation on autocomment (T24784)",
@@ -4999,6 +4999,11 @@
 		"desc": "Magic link in language conversion",
 		"wikitext": "-{PMID 1}-\n\n-{PMID 1|bar}-",
 		"parsed": "<convert-bracket>-{</>PMID 1<convert-bracket>}--{</><convert-flag>PMID 1</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Nested <poem><pre>",
+		"wikitext": "<poem><pre>\nthis\nis\na\ntest\n</pre></poem>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>poem</><exttag-bracket>&gt</><tag-poem exttag-bracket>&lt;</><tag-poem exttag-name>pre</><tag-poem exttag-bracket>&gt</><tag-poem tag-pre>thisisatest</><tag-poem exttag-bracket>&lt;/</><tag-poem exttag-name>pre</><tag-poem exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>poem</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "badCharacters"
@@ -8529,12 +8534,12 @@
 	{
 		"desc": "Scribunto: isSubsting during PST",
 		"wikitext": "{{safesubst:#invoke:test|isSubsting}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>safesubst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>#invoke:test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isSubsting</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>safesubst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-name>#invoke</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-828>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isSubsting</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Scribunto: isSubsting during normal parse",
 		"wikitext": "{{safesubst:#invoke:test|isSubsting}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>safesubst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>#invoke:test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isSubsting</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>safesubst</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-name>#invoke</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-828>test</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>isSubsting</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Scribunto: frame:getTitle",
