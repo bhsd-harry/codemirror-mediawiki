@@ -589,6 +589,7 @@ CTRL/CMD-click opens a link in a new tab.
 
 ### Transclusion
 
+1. Substitution is not correctly highlighted ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#Scribunto%3A%20isSubsting%20during%20PST)).
 1. Non-existing parser functions starting with `#` are highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
 1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
@@ -604,11 +605,13 @@ CTRL/CMD-click opens a link in a new tab.
 ### Link
 
 1. Nested double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Non-wikilinks%20should%20not%20be%20treated%20as%20broken%20wikilinks)).
+1. Multiple leading colons should be invalid ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#Multiple%20colons%20escaping%20interlanguage%20links)).
 1. Double URI encoding should not appear in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20%25%20as%20a%20double%20hex%20sequence%20interpreted%20to%20hex%20sequence)).
 1. Double HTML escaping should not appear in link targets ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Link%20containing%20an%20ampersand)).
 
 ### External link
 
+1. IPv6 addresses are not supported ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).
 1. External links inside double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
 
 ### Block element

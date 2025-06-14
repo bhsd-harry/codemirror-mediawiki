@@ -1,13 +1,8 @@
 import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
+import {keybindings, encapsulateLines} from './keybindings';
 import type {KeyBinding} from '@codemirror/view';
-
-declare interface KeymapConfig {
-	key: string;
-	pre?: string;
-	post?: string;
-	splitlines?: boolean;
-}
+import type {KeymapConfig} from './keybindings';
 
 /**
  * 生成keymap
@@ -25,11 +20,7 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 			if (splitlines) {
 				const start = state.doc.lineAt(from).from,
 					end = state.doc.lineAt(to).to,
-					lines = state.sliceDoc(start, end).split('\n'),
-					insert = lines.map(line => {
-						const str = (/^(={1,6})(.+)\1$/u.exec(line)?.[2] ?? line).trim();
-						return pre === ' ' || lines.length === 1 || line.trim() ? pre + str + post : str;
-					}).join('\n');
+					insert = encapsulateLines(state.sliceDoc(start, end), pre, post);
 				return {
 					range: EditorSelection.range(start, start + insert.length),
 					changes: {from: start, to: end, insert},
@@ -49,24 +40,4 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 	preventDefault: true,
 });
 
-export default keymap.of(([
-	{key: 'Ctrl-8', pre: '<blockquote>', post: '</blockquote>'},
-	{key: 'Mod-.', pre: '<sup>', post: '</sup>'},
-	{key: 'Mod-,', pre: '<sub>', post: '</sub>'},
-	{key: 'Mod-Shift-6', pre: '<code>', post: '</code>'},
-	{key: 'Ctrl-Shift-5', pre: '<s>', post: '</s>'},
-	{key: 'Mod-u', pre: '<u>', post: '</u>'},
-	{key: 'Mod-k', pre: '[[', post: ']]'},
-	{key: 'Mod-i', pre: "''", post: "''"},
-	{key: 'Mod-b', pre: "'''", post: "'''"},
-	{key: 'Mod-Shift-k', pre: '<ref>', post: '</ref>'},
-	{key: 'Mod-/', pre: '<!-- ', post: ' -->'},
-	{key: 'Ctrl-0', splitlines: true},
-	...new Array(6).fill(0).map((_, i): KeymapConfig => ({
-		key: `Ctrl-${i + 1}`,
-		pre: `${'='.repeat(i + 1)} `,
-		post: ` ${'='.repeat(i + 1)}`,
-		splitlines: true,
-	})),
-	{key: 'Ctrl-7', pre: ' ', splitlines: true},
-] satisfies KeymapConfig[]).map(getKeymap));
+export default keymap.of(keybindings.map(getKeymap));
