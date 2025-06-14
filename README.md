@@ -603,10 +603,6 @@ CTRL/CMD-click opens a link in a new tab.
 
 1. Comments at the SOL break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
 
-### Link
-
-1. Nested double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Non-wikilinks%20should%20not%20be%20treated%20as%20broken%20wikilinks)).
-
 ### External link
 
 1. IPv6 addresses are not supported ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).

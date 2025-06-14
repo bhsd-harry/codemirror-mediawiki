@@ -455,6 +455,11 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		const chars = `]'{<${file ? '~' : '['}-`;
 		return new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
 	}) as [RegExp, RegExp],
+	linkErrorRegex = [
+		new RegExp(String.raw`^(?:[<>{}]|%(?:3[ce]|[57][bd])|${lookahead('[]')})+`, 'iu'),
+		new RegExp(String.raw`^(?:\}|${lookahead('[]{')})+`, 'u'),
+		new RegExp(String.raw`^(?:[>}]|%(?:3[ce]|[57][bd])|${lookahead('[]{<')})+`, 'iu'),
+	] as const,
 	tableDefinitionValueRegex = ['', '='].map(equal => new RegExp(
 		String.raw`^(?:[^\s&${tableDefinitionChars}${equal}]|${lookahead(tableDefinitionChars)})+`,
 		'iu',
@@ -559,7 +564,7 @@ export class MediaWiki {
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.convertRegex = new RegExp(
-			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|${lookahead("'{<~_-")}|\[(?!\[|${urlProtocols}))+`,
+			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_-")})+`,
 			'u',
 		);
 		this.convertSemicolon = variants && new RegExp(
@@ -983,7 +988,12 @@ export class MediaWiki {
 				: /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}%]|%(?!3[ce]|[57][bd]))+/iu;
 		let lt: number | undefined;
 		return (stream, state) => {
-			if (stream.sol() || lt && stream.pos > lt || stream.match(/^\s*\]\]/u)) {
+			if (
+				stream.sol()
+				|| lt && stream.pos > lt
+				|| stream.match(/^\s*\]\]/u)
+				|| stream.match(/^\[\[/u, false)
+			) {
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
@@ -1006,11 +1016,11 @@ export class MediaWiki {
 			}
 			let regex;
 			if (redirect) {
-				regex = /^(?:[<>[{}]|\](?!\])|%(?:3[ce]|[57][bd]))+/iu;
+				[regex] = linkErrorRegex;
 			} else if (section) {
-				regex = /^(?:[[}]|\](?!\])|\{(?!\{))+/u;
+				[, regex] = linkErrorRegex;
 			} else {
-				regex = /^(?:[>[}]|\](?!\])|\{(?!\{)|<(?!!--|\/?[a-z])|%(?:3[ce]|[57][bd]))+/iu;
+				[,, regex] = linkErrorRegex;
 			}
 			if (stream.match(regex)) {
 				return makeTagStyle('error', state);

@@ -340,7 +340,7 @@
 	{
 		"desc": "Non-wikilinks should not be treated as broken wikilinks",
 		"wikitext": "{{1x|[[1],[2]]}}\n\n{{1x|[[{}]]}}\n\n{{1x|[[1, [[2, 3]], 4]]}}",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1</><template-link-ground error>]</><template-link-ground link-pagename pagename>,</><template-link-ground error>[</><template-link-ground link-pagename pagename>2</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground error>{}</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1, </><template-link-ground error>[[</><template-link-ground link-pagename pagename>2, 3</><template-link-ground link-bracket>]]</><template-ground template>, 4]]</><template-ground template-bracket>}}</>"
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1</><template-link-ground error>]</><template-link-ground link-pagename pagename>,</><template-link-ground error>[</><template-link-ground link-pagename pagename>2</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground error>{}</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>1, </><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>2, 3</><template-link-ground link-bracket>]]</><template-ground template>, 4]]</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "Wikilinks with embedded newlines are not broken",
@@ -11330,7 +11330,7 @@
 	{
 		"desc": "3. Other redirect variants",
 		"wikitext": "#REDIRECT [[<nowiki>[[Bar]]</nowiki>]]",
-		"parsed": "<redirect>#REDIRECT </><link-ground link-bracket>[[</><link-ground error>&lt;</><link-ground link-pagename pagename>nowiki</><link-ground error>&gt[[</><link-ground link-pagename pagename>Bar</><link-ground link-bracket>]]</><error>&lt;/nowiki&gt</>]]"
+		"parsed": "<redirect>#REDIRECT </><link-ground link-bracket>[[</><link-ground error>&lt;</><link-ground link-pagename pagename>nowiki</><link-ground error>&gt</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Bar</><link-ground link-bracket>]]</><error>&lt;/nowiki&gt</>]]"
 	},
 	{
 		"desc": "4. Redirect to a templated destination",
