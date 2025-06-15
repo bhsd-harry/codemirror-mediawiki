@@ -31,8 +31,8 @@ declare interface IWikitextModel extends editor.ITextModel {
 }
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.25',
-	addons = ['lint'];
+const baseVersion = '2.27',
+	addons = ['autocompletion'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 

@@ -1,10 +1,11 @@
 ## 2.27.0
 
-*2025-06-15*
+*2025-06-16*
 
 **Added**
 
 - Substitution of magic words starting with `#` in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for the Lua mode
 
 **Fixed**
 
