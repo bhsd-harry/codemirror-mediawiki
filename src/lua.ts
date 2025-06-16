@@ -13,7 +13,7 @@ const map = {
 		3: 'interface',
 		4: 'namespace',
 	},
-	luaGlobal: LuaGlobal = {
+	globals: LuaGlobal = {
 		debug: {
 			traceback: 2,
 		},
@@ -212,11 +212,11 @@ const map = {
 			ext: 4,
 		},
 	},
-	luaTable: Completion[] = [
+	tables: Completion[] = [
 		'_G',
-		...Object.keys(luaGlobal),
+		...Object.keys(globals),
 	].map(label => ({label, type: 'namespace'})),
-	luaConstant: Completion[] = [
+	constants: Completion[] = [
 		...[
 			'false',
 			'nil',
@@ -245,16 +245,16 @@ const map = {
 			'require',
 		].map(label => ({label, type: 'function'})),
 	],
-	luaBinary: Completion[] = [
+	binary: Completion[] = [
 		'and',
 		'or',
 		'in',
 	].map(label => ({label, type: 'keyword'})),
-	luaUnary: Completion[] = [
+	unary: Completion[] = [
 		'not',
 		'function',
 	].map(label => ({label, type: 'keyword'})),
-	luaBlock: Completion[] = [
+	blocks: Completion[] = [
 		'break',
 		'elseif',
 		'return',
@@ -264,7 +264,7 @@ const map = {
 		'do',
 		'until',
 	].map(label => ({label, type: 'keyword'})),
-	luaKeyword: Completion[] = [
+	keywords: Completion[] = [
 		'if',
 		'while',
 		'repeat',
@@ -289,7 +289,7 @@ lua.languageData!['autocomplete'] = (context => {
 		case '.': {
 			const mt = context.matchBefore(/(?:^|[^\w.]|\.\.)\w(?:\w|\.(?!\.))+$/u);
 			if (mt) {
-				let cur: LuaGlobal | number | undefined = luaGlobal,
+				let cur: LuaGlobal | number | undefined = globals,
 					s = mt.text;
 				if (s.startsWith('.')) {
 					s = s.slice(2);
@@ -317,7 +317,7 @@ lua.languageData!['autocomplete'] = (context => {
 			if (pre === char) {
 				return {
 					from: from + 1,
-					options: luaTable,
+					options: tables,
 					validFor,
 				};
 			}
@@ -338,7 +338,7 @@ lua.languageData!['autocomplete'] = (context => {
 		case ',':
 			return {
 				from: from + pre.length,
-				options: [...luaConstant, ...luaTable, ...luaUnary],
+				options: [...constants, ...tables, ...unary],
 				validFor,
 			};
 		case '}':
@@ -346,21 +346,21 @@ lua.languageData!['autocomplete'] = (context => {
 		case ')':
 			return {
 				from: from + pre.length,
-				options: [...luaBinary, ...luaBlock],
+				options: [...binary, ...blocks],
 				validFor,
 			};
 		case ';':
 		case '':
 			return {
 				from: from + pre.length,
-				options: [...luaKeyword, ...luaBlock, ...luaConstant, ...luaTable, ...luaUnary],
+				options: [...keywords, ...blocks, ...constants, ...tables, ...unary],
 				validFor,
 			};
 		default:
 			if (pre !== char) {
 				return {
 					from: from + pre.length,
-					options: [...luaConstant, ...luaTable, ...luaBinary, ...luaUnary, ...luaBlock],
+					options: [...constants, ...tables, ...binary, ...unary, ...blocks],
 					validFor,
 				};
 			}

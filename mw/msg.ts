@@ -1,18 +1,16 @@
-import {getObject, setObject, compareVersion} from '@bhsd/common';
+import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/common';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './base';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.27.0',
-	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1);
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-export const languages: string[] = mw.language?.getFallbackLanguageChain?.()
-	?? [mw.config.get('wgUserLanguage')];
-
 const storageKey = 'codemirror-mediawiki-i18n';
 
-/** 预存的I18N，可以用于判断是否是首次安装 */
-export const i18n: Record<string, string> = getObject(storageKey) ?? {};
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.27.1',
+	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+	languages = mw.language?.getFallbackLanguageChain() ?? [mw.config.get('wgUserLanguage')],
+
+	/** 预存的I18N，可以用于判断是否是首次安装 */
+	i18n: Record<string, string> = getObject(storageKey) ?? {};
 
 const {version} = i18n;
 
@@ -21,20 +19,12 @@ const {version} = i18n;
  * @param CDN CDN地址
  */
 export const setI18N = async (CDN: string): Promise<void> => {
-	if (version !== curVersion || !languages.includes(i18n['lang']!)) {
-		for (let i = 0; i < languages.length; i++) {
-			const lang = languages[i]!;
-			try {
-				// eslint-disable-next-line no-await-in-loop
-				Object.assign(i18n, await (await fetch(`${CDN}/${REPO_CDN}/i18n/${lang}.json`)).json());
-				setObject(storageKey, i18n);
-				break;
-			} catch (e) {
-				if (i === languages.length - 1) {
-					void mw.notify(msg('i18n-failed', languages[0]!), {type: 'error'});
-					console.error(e);
-				}
-			}
+	try {
+		await setI18NBase(`${CDN}/${REPO_CDN}/i18n`, curVersion, languages, storageKey, i18n);
+	} catch (e) {
+		if (e instanceof Error) {
+			void mw.notify(e.message, {type: 'error'});
+			console.error(e);
 		}
 	}
 	for (const [k, v] of Object.entries(i18n)) {
