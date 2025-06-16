@@ -7,31 +7,7 @@ declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
 }
 
-const /** 位于` `之后 */ luaBinary: Completion[] = [
-		'and',
-		'or',
-		'in',
-	].map(label => ({label, type: 'keyword'})),
-	/** 不位于`.`/`:`之后 */ luaUnary: Completion[] = [
-		'not',
-		'function',
-	].map(label => ({label, type: 'keyword'})),
-	/** 位于` `/`;`之后 */ luaKeyword: Completion[] = [
-		'break',
-		'elseif',
-		'return',
-		'end',
-		'if',
-		'then',
-		'else',
-		'do',
-		'while',
-		'repeat',
-		'until',
-		'for',
-		'local',
-	].map(label => ({label, type: 'keyword'})),
-	map = {
+const map = {
 		1: 'constant',
 		2: 'function',
 		3: 'interface',
@@ -236,17 +212,17 @@ const /** 位于` `之后 */ luaBinary: Completion[] = [
 			ext: 4,
 		},
 	},
-	/** 不位于`.`/`:`之后 */ luaConstant: Completion[] = [
+	luaTable: Completion[] = [
+		'_G',
+		...Object.keys(luaGlobal),
+	].map(label => ({label, type: 'namespace'})),
+	luaConstant: Completion[] = [
 		...[
 			'false',
 			'nil',
 			'true',
 			'_VERSION',
 		].map(label => ({label, type: 'constant'})),
-		...[
-			'_G',
-			...Object.keys(luaGlobal),
-		].map(label => ({label, type: 'namespace'})),
 		...[
 			'assert',
 			'error',
@@ -269,48 +245,125 @@ const /** 位于` `之后 */ luaBinary: Completion[] = [
 			'require',
 		].map(label => ({label, type: 'function'})),
 	],
+	luaBinary: Completion[] = [
+		'and',
+		'or',
+		'in',
+	].map(label => ({label, type: 'keyword'})),
+	luaUnary: Completion[] = [
+		'not',
+		'function',
+	].map(label => ({label, type: 'keyword'})),
+	luaBlock: Completion[] = [
+		'break',
+		'elseif',
+		'return',
+		'end',
+		'then',
+		'else',
+		'do',
+		'until',
+	].map(label => ({label, type: 'keyword'})),
+	luaKeyword: Completion[] = [
+		'if',
+		'while',
+		'repeat',
+		'for',
+		'local',
+	].map(label => ({label, type: 'keyword'})),
 	types = new Set(['variableName', 'variableName.standard', 'keyword']);
 lua.languageData!['autocomplete'] = (context => {
 	const {state, pos} = context,
-		node = syntaxTree(state).resolveInner(pos, -1),
-		{from, text} = context.matchBefore(/(?:^|\W)\w*$/u)!,
-		char = /^\W/u.test(text) ? text.charAt(0) : '',
-		validFor = /^\w*$/u;
-	if (char === ':') {
+		node = syntaxTree(state).resolveInner(pos, -1);
+	if (!types.has(node.name)) {
 		return null;
-	} else if (char === '.') {
-		const mt = context.matchBefore(/(?:^|[^\w.])\w[\w.]+$/u);
-		if (mt) {
-			const parts = (/^\w/u.test(mt.text) ? mt.text : mt.text.slice(1)).split('.');
-			let cur: LuaGlobal | number | undefined = luaGlobal;
-			for (const part of parts.slice(0, -1)) {
-				cur = cur[part];
-				if (typeof cur !== 'object') {
-					return null;
+	}
+	const {from, text} = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w*$/u)!,
+		pre = /^(.*?)\b\w*$/u.exec(text)![1]!,
+		char = pre.trim();
+	if (char !== '.' && !/\w$/u.test(char)) {
+		return null;
+	}
+	const validFor = /^\w*$/u;
+	switch (char) {
+		case '.': {
+			const mt = context.matchBefore(/(?:^|[^\w.]|\.\.)\w(?:\w|\.(?!\.))+$/u);
+			if (mt) {
+				let cur: LuaGlobal | number | undefined = luaGlobal,
+					s = mt.text;
+				if (s.startsWith('.')) {
+					s = s.slice(2);
+				} else if (/^\W/u.test(s)) {
+					s = s.slice(1);
 				}
+				for (const part of s.split('.').slice(0, -1)) {
+					cur = cur[part];
+					if (typeof cur !== 'object') {
+						return null;
+					}
+				}
+				return {
+					from: from + 1,
+					options: Object.keys(cur).map((label): Completion => ({
+						label,
+						type: typeof cur[label] === 'object' ? 'namespace' : map[cur[label]!],
+					})),
+					validFor,
+				};
 			}
+			break;
+		}
+		case '#':
+			if (pre === char) {
+				return {
+					from: from + 1,
+					options: luaTable,
+					validFor,
+				};
+			}
+			break;
+		case '..':
+		case '+':
+		case '-':
+		case '*':
+		case '/':
+		case '%':
+		case '^':
+		case '=':
+		case '<':
+		case '>':
+		case '{':
+		case '[':
+		case '(':
+		case ',':
 			return {
-				from: from + 1,
-				options: Object.keys(cur).map((label): Completion => ({
-					label,
-					type: typeof cur[label] === 'object' ? 'namespace' : map[cur[label]!],
-				})),
+				from: from + pre.length,
+				options: [...luaConstant, ...luaTable, ...luaUnary],
 				validFor,
 			};
-		}
-	} else if (/\w/u.test(text) && types.has(node.name)) {
-		const options = [...luaUnary, ...luaConstant];
-		if (char === ';' || !char.trim()) {
-			options.push(...luaKeyword);
-			if (char !== ';') {
-				options.push(...luaBinary);
+		case '}':
+		case ']':
+		case ')':
+			return {
+				from: from + pre.length,
+				options: [...luaBinary, ...luaBlock],
+				validFor,
+			};
+		case ';':
+		case '':
+			return {
+				from: from + pre.length,
+				options: [...luaKeyword, ...luaBlock, ...luaConstant, ...luaTable, ...luaUnary],
+				validFor,
+			};
+		default:
+			if (pre !== char) {
+				return {
+					from: from + pre.length,
+					options: [...luaConstant, ...luaTable, ...luaBinary, ...luaUnary, ...luaBlock],
+					validFor,
+				};
 			}
-		}
-		return {
-			from: from + char.length,
-			options,
-			validFor,
-		};
 	}
 	return null;
 }) as CompletionSource;
