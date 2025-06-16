@@ -211,15 +211,12 @@ const map = {
 			ext: 4,
 		},
 	},
+	builtin = ['false', 'nil', 'true'],
+	builtins: Completion[] = builtin.map(label => ({label, type: 'constant'})),
 	tables: Completion[] = [
 		'_G',
 		...Object.keys(globals),
 	].map(label => ({label, type: 'namespace'})),
-	builtins: Completion[] = [
-		'false',
-		'nil',
-		'true',
-	].map(label => ({label, type: 'constant'})),
 	constants: Completion[] = [
 		{label: '_VERSION', type: 'constant'},
 		...[
@@ -262,6 +259,7 @@ const map = {
 		'else',
 		'do',
 		'until',
+		'goto',
 	].map(label => ({label, type: 'keyword'})),
 	keywords: Completion[] = [
 		'if',
@@ -361,16 +359,18 @@ lua.languageData!['autocomplete'] = (context => {
 		case '':
 			return {
 				from,
-				options: [...keywords, ...blocks, ...builtins, ...constants, ...tables, ...unary],
+				options: [...keywords, ...blocks, ...unary, ...constants, ...tables, ...builtins],
 				validFor,
 			};
 		default:
 			if (pre !== char) {
+				const {prevSibling} = node;
 				return {
 					from,
-					options: node.prevSibling?.name === 'keyword'
-						? [...builtins, ...constants, ...tables, ...binary, ...unary, ...blocks]
-						: [...binary, ...blocks],
+					options: prevSibling?.name !== 'keyword'
+						|| builtin.includes(state.sliceDoc(prevSibling.from, prevSibling.to))
+						? [...binary, ...blocks]
+						: [...builtins, ...constants, ...tables, ...unary, ...blocks],
 					validFor,
 				};
 			}

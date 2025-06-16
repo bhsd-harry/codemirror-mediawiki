@@ -133,8 +133,8 @@ describe('Lua autocompletion', () => {
 				from: 2,
 				options: [
 					{label: 'for', type: 'keyword'},
-					{label: 'false', type: 'constant'},
 					{label: 'function', type: 'keyword'},
+					{label: 'false', type: 'constant'},
 				],
 			},
 		);
@@ -159,10 +159,10 @@ describe('Lua autocompletion', () => {
 			},
 		);
 		await mockTest(
-			'a or n',
+			'a or o',
 			{
 				from: 5,
-				options: nil,
+				options: [{label: 'os', type: 'namespace'}],
 			},
 		);
 	});
