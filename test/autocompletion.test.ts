@@ -1,25 +1,9 @@
-import * as assert from 'assert';
-import {CompletionContext} from '@codemirror/autocomplete';
 import {FullMediaWiki} from '../src/mediawiki';
-import {mwConfig, createState} from './util';
-import type {CompletionResult} from '@codemirror/autocomplete';
+import {mwConfig, autocompletionTest} from './util';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
-const mockTest = async (doc: string, result: CompletionResult | null): Promise<void> => {
-	const state = createState(doc),
-		context = new CompletionContext(state, doc.length, true),
-		completion = await mediawiki.completionSource(context);
-	assert.deepStrictEqual(
-		completion && {
-			...completion,
-			options: completion.options.filter(
-				option => option.label.toLowerCase().startsWith(doc.slice(completion.from).toLowerCase()),
-			),
-		},
-		result,
-	);
-};
+const mockTest = autocompletionTest(mediawiki.completionSource);
 
 describe('autocompletion', () => {
 	it('parser function name', async () => {
