@@ -1,9 +1,8 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
-import type {Extension} from '@codemirror/state';
 import type {CompletionContext, CompletionResult} from '@codemirror/autocomplete';
 
-export default (): Extension => new LanguageSupport(cssLanguage, cssLanguage.data.of({
+export default (): LanguageSupport => new LanguageSupport(cssLanguage, cssLanguage.data.of({
 	autocomplete(context: CompletionContext) {
 		const {state, pos} = context,
 			node = syntaxTree(state).resolveInner(pos, -1),

@@ -1,6 +1,5 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
-import type {Extension} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
@@ -216,13 +215,13 @@ const map = {
 		'_G',
 		...Object.keys(globals),
 	].map(label => ({label, type: 'namespace'})),
+	builtins: Completion[] = [
+		'false',
+		'nil',
+		'true',
+	].map(label => ({label, type: 'constant'})),
 	constants: Completion[] = [
-		...[
-			'false',
-			'nil',
-			'true',
-			'_VERSION',
-		].map(label => ({label, type: 'constant'})),
+		{label: '_VERSION', type: 'constant'},
 		...[
 			'assert',
 			'error',
@@ -278,13 +277,14 @@ lua.languageData!['autocomplete'] = (context => {
 	if (!types.has(node.name)) {
 		return null;
 	}
-	const {from, text} = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w*$/u)!,
-		pre = /^(.*?)\b\w*$/u.exec(text)![1]!,
+	const {from: f, text} = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w*$/u)!,
+		pre = /^(.*?)(?:\b\w*)?$/u.exec(text)![1]!,
 		char = pre.trim();
-	if (char !== '.' && !/\w$/u.test(char)) {
+	if (char !== '.' && !/\w$/u.test(text)) {
 		return null;
 	}
-	const validFor = /^\w*$/u;
+	const from = f + pre.length,
+		validFor = /^\w*$/u;
 	switch (char) {
 		case '.': {
 			const mt = context.matchBefore(/(?:^|[^\w.]|\.\.)\w(?:\w|\.(?!\.))+$/u);
@@ -303,7 +303,7 @@ lua.languageData!['autocomplete'] = (context => {
 					}
 				}
 				return {
-					from: from + 1,
+					from,
 					options: Object.keys(cur).map((label): Completion => ({
 						label,
 						type: typeof cur[label] === 'object' ? 'namespace' : map[cur[label]!],
@@ -316,7 +316,7 @@ lua.languageData!['autocomplete'] = (context => {
 		case '#':
 			if (pre === char) {
 				return {
-					from: from + 1,
+					from,
 					options: tables,
 					validFor,
 				};
@@ -329,38 +329,48 @@ lua.languageData!['autocomplete'] = (context => {
 		case '/':
 		case '%':
 		case '^':
-		case '=':
+		case '&':
+		case '|':
+		case '~':
 		case '<':
 		case '>':
-		case '{':
 		case '[':
+			return {
+				from,
+				options: [...constants, ...tables],
+				validFor,
+			};
+		case '=':
+		case '{':
 		case '(':
 		case ',':
 			return {
-				from: from + pre.length,
-				options: [...constants, ...tables, ...unary],
+				from,
+				options: [...builtins, ...constants, ...tables, ...unary],
 				validFor,
 			};
 		case '}':
 		case ']':
 		case ')':
 			return {
-				from: from + pre.length,
+				from,
 				options: [...binary, ...blocks],
 				validFor,
 			};
 		case ';':
 		case '':
 			return {
-				from: from + pre.length,
-				options: [...keywords, ...blocks, ...constants, ...tables, ...unary],
+				from,
+				options: [...keywords, ...blocks, ...builtins, ...constants, ...tables, ...unary],
 				validFor,
 			};
 		default:
 			if (pre !== char) {
 				return {
-					from: from + pre.length,
-					options: [...constants, ...tables, ...binary, ...unary, ...blocks],
+					from,
+					options: node.prevSibling?.name === 'keyword'
+						? [...builtins, ...constants, ...tables, ...binary, ...unary, ...blocks]
+						: [...binary, ...blocks],
 					validFor,
 				};
 			}
@@ -368,4 +378,5 @@ lua.languageData!['autocomplete'] = (context => {
 	return null;
 }) as CompletionSource;
 
-export default (): Extension => new LanguageSupport(StreamLanguage.define(lua));
+export default (): LanguageSupport => new LanguageSupport(StreamLanguage.define(lua));
+export {lua};

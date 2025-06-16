@@ -6,7 +6,7 @@ import type {ConfigData} from 'wikiparser-node';
 
 export const mwConfig = getStaticMwConfig(config as unknown as ConfigData, tagModes);
 
-export const createState = (doc: string): EditorState => EditorState.create({
+export const createState = (doc: string, lang = mediawiki(mwConfig)): EditorState => EditorState.create({
 	doc,
-	extensions: [mediawiki(mwConfig)],
+	extensions: [lang],
 });
