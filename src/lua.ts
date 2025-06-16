@@ -1,46 +1,11 @@
-import {javascript as js, javascriptLanguage, scopeCompletionSource} from '@codemirror/lang-javascript';
-import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
-import {LanguageSupport, syntaxTree} from '@codemirror/language';
 import {lua} from '@codemirror/legacy-modes/mode/lua';
+import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
 import type {Extension} from '@codemirror/state';
-import type {CompletionContext, CompletionResult, CompletionSource, Completion} from '@codemirror/autocomplete';
-export {json as jsonLR} from '@codemirror/lang-json';
-export {css} from '@codemirror/legacy-modes/mode/css';
-export {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
+import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
 }
-
-export const javascriptLR = (): Extension => [
-	js(),
-	javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)}),
-];
-
-export const cssLR = (): Extension => new LanguageSupport(cssLanguage, cssLanguage.data.of({
-	autocomplete(context: CompletionContext) {
-		const {state, pos} = context,
-			node = syntaxTree(state).resolveInner(pos, -1),
-			result = cssCompletionSource(context) as CompletionResult | null;
-		if (result && node.name === 'ValueName') {
-			const options = [{label: 'revert', type: 'keyword'}, ...result.options];
-			let {prevSibling} = node;
-			while (prevSibling && prevSibling.name !== 'PropertyName') {
-				({prevSibling} = prevSibling);
-			}
-			if (prevSibling) {
-				for (let i = 0; i < options.length; i++) {
-					const option = options[i]!;
-					if (CSS.supports(state.sliceDoc(prevSibling.from, node.from) + option.label)) {
-						options.splice(i, 1, {...option, boost: 50});
-					}
-				}
-			}
-			result.options = options;
-		}
-		return result;
-	},
-}));
 
 const /** 位于` `之后 */ luaBinary: Completion[] = [
 		'and',
@@ -350,4 +315,4 @@ lua.languageData!['autocomplete'] = (context => {
 	return null;
 }) as CompletionSource;
 
-export {lua};
+export default (): Extension => new LanguageSupport(StreamLanguage.define(lua));

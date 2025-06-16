@@ -17,8 +17,6 @@ import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
-	StreamLanguage,
-	LanguageSupport,
 	bracketMatching,
 	indentUnit,
 	ensureSyntaxTree,
@@ -33,6 +31,7 @@ import {
 	completionKeymap,
 	startCompletion,
 } from '@codemirror/autocomplete';
+import {json} from '@codemirror/lang-json';
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
 import escapeKeymap from './escape';
@@ -48,12 +47,13 @@ import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
 import statusBar from './statusBar';
-import * as plugins from './plugins';
+import javascript from './javascript';
+import css from './css';
+import lua from './lua';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
-import type {Highlighter} from '@lezer/highlight';
 import type {ConfigData, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
@@ -82,14 +82,11 @@ const languages: Record<string, (config?: any) => Extension> = {
 		];
 	},
 	html,
+	javascript,
+	css,
+	json,
+	lua,
 };
-for (const [language, parser] of Object.entries(plugins)) {
-	if (typeof parser === 'function') {
-		languages[language.slice(0, -2)] = parser;
-	} else if (!(language in languages)) {
-		languages[language] = (): LanguageSupport => new LanguageSupport(StreamLanguage.define(parser));
-	}
-}
 
 /**
  * 仅供mediawiki模式的扩展
@@ -218,7 +215,7 @@ export class CodeMirror6 {
 				this.#indent.of(indentUnit.of(this.#indentStr)),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
-				syntaxHighlighting(defaultHighlightStyle satisfies Highlighter, {fallback: true}),
+				syntaxHighlighting(defaultHighlightStyle),
 				EditorView.contentAttributes.of({
 					accesskey: textarea.accessKey,
 					tabindex: String(textarea.tabIndex),

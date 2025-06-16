@@ -8,7 +8,8 @@ import {Tag} from '@lezer/highlight';
 import {decodeHTML, getRegex} from '@bhsd/common';
 import {otherParserFunctions} from '@bhsd/common/dist/cm';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
-import * as plugins from './plugins';
+import {css} from '@codemirror/legacy-modes/mode/css';
+import {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
 import type {MwConfig as MwConfigBase} from '@bhsd/common/dist/cm';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
@@ -1382,12 +1383,18 @@ export class MediaWiki {
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re)!;
 			if (isLang) {
-				let lang = mt[0].trim().toLowerCase();
-				if (lang === 'js') {
-					lang = 'javascript';
+				switch (mt[0].trim().toLowerCase()) {
+					case 'js':
+					case 'javascript':
+						state.extMode = javascript as StreamParser<object>;
+						break;
+					case 'css':
+						state.extMode = css as StreamParser<object>;
+						break;
+					case 'json':
+						state.extMode = json as StreamParser<object>;
+					// no default
 				}
-				state.extMode = (lang === 'css' || lang === 'javascript' || lang === 'lua' || lang === 'json')
-					&& plugins[lang] as StreamParser<object>;
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
 		};
@@ -2170,14 +2177,16 @@ export class MediaWiki {
 			},
 		};
 	}
-}
 
-for (const [language, parser] of Object.entries(plugins)) {
-	if (!language.endsWith('LR')) {
-		Object.defineProperty(MediaWiki.prototype, language, {
-			value(): StreamParser<object> {
-				return parser as StreamParser<object>;
-			},
-		});
+	javascript(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		return javascript;
+	}
+
+	css(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		return css;
+	}
+
+	json(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		return json;
 	}
 }

@@ -24,7 +24,6 @@ import type {
 	Completion,
 	CompletionResult,
 } from '@codemirror/autocomplete';
-import type {Highlighter} from '@lezer/highlight';
 import type {MwConfig, TagName} from './token';
 
 const wmf = /\.(?:wiktionary|wiki(?:pedia|books|news|quote|source|versity|voyage))\.org$/u;
@@ -436,7 +435,7 @@ export class FullMediaWiki extends MediaWiki {
 export const mediawiki = (config: MwConfig): LanguageSupport => {
 	const mode = new FullMediaWiki(config),
 		lang = StreamLanguage.define(mode.mediawiki()),
-		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()) satisfies Highlighter);
+		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()));
 	return new LanguageSupport(lang, highlighter);
 };
 

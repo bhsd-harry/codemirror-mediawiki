@@ -11,6 +11,7 @@
 
 - Error tolerance for wrong converter flags in the MediaWiki mode
 - External links in language conversion syntax in the MediaWiki mode
+- Missing styles for the sublanguage modes in the MediaWiki mode
 
 ## 2.26.0
 
