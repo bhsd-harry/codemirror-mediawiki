@@ -65,6 +65,7 @@ export type LintSource = ((doc: Text) => Diagnostic[] | Promise<Diagnostic[]>) &
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
 export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>];
+export type Dialect = 'sanitized-css' | undefined;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
 
@@ -156,6 +157,7 @@ const pos = (doc: Text, line: number, column: number): number =>
 export class CodeMirror6 {
 	declare getWikiConfig?: () => Promise<ConfigData>;
 	declare langConfig: MwConfig | undefined;
+	declare dialect: Dialect;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -455,6 +457,25 @@ export class CodeMirror6 {
 				let option = getOpt() ?? {};
 				if (!('extends' in option || 'rules' in option)) {
 					option = {rules: option};
+				}
+				if (this.dialect === 'sanitized-css') {
+					const rules = option['rules'] as Record<string, unknown> | undefined;
+					option = {
+						...option,
+						rules: {
+							...rules,
+							'property-no-vendor-prefix': [
+								true,
+								{
+									ignoreProperties: ['user-select'],
+								},
+							],
+							'property-disallowed-list': [
+								...(rules?.['property-disallowed-list'] as string[] | undefined) ?? [],
+								'/^--/',
+							],
+						},
+					};
 				}
 				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
 					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {

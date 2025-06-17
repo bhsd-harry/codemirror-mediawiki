@@ -21,7 +21,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         for (const id of mediawikiOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = display;
         }
-        if (isMediaWiki || lang === 'html') {
+        if (isMediaWiki) {
             fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
             parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));

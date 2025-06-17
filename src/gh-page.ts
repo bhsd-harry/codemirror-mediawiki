@@ -40,7 +40,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		for (const id of mediawikiOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
 		}
-		if (isMediaWiki || lang === 'html') {
+		if (isMediaWiki) {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;
 			config ??= CodeMirror6.getMwConfig(parserConfig);

@@ -13,7 +13,7 @@ import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {ConfigData} from 'wikiparser-node';
-import type {LintSource, MwConfig} from '../src/codemirror';
+import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
 import type {Option, LiveOption} from '../src/linter';
 
@@ -506,13 +506,18 @@ export class CodeMirror extends CodeMirror6 {
 				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
 			}
 		}
+		let dialect: Dialect;
 		if (lang && lang in langMap) {
+			if (lang === 'sanitized-css') {
+				dialect = lang;
+			}
 			lang = langMap[lang];
 		}
 		/* eslint-enable no-param-reassign */
 		const isCM = !useMonaco.has(langs.has(lang) ? lang! : 'wiki'),
 			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, undefined, isCM, page);
+			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, dialect, isCM, page);
+		cm.dialect = dialect;
 		$textarea.data('CodeMirror6', cm);
 		if (isWiki) {
 			await cm.setLanguage(lang, await getMwConfig(tagModes));

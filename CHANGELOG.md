@@ -5,6 +5,7 @@
 **Added**
 
 - Snippet [autocompletion](./README.md#autocompletion) for the Lua mode
+- Additional [lint](./README.md#lint) rules for the `sanitized-css` pages on a MediaWiki site
 
 ## 2.27.2
 
