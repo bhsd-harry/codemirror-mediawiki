@@ -4,55 +4,25 @@ import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {openPreference, prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
-import {msg, setI18N, welcome, REPO_CDN, curVersion, localize, languages} from './msg';
+import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
+import {msg, curVersion, languages} from './msg';
+import prepareSuggest from './suggest';
 import escape from './escape';
 import wikiEditor from './wikiEditor';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
-import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
 import type {ConfigData} from 'wikiparser-node';
 import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
-import type {ApiSuggest, ApiSuggestions} from '../src/token';
 import type {Option, LiveOption} from '../src/linter';
 
 declare global {
 	const monaco: typeof Monaco;
 }
 
-declare interface TemplateParam {
-	label: string | null;
-	aliases: string[];
-}
-
 declare interface IWikitextModel extends editor.ITextModel {
 	lint?: (this: IWikitextModel, on: boolean) => void; // eslint-disable-line @typescript-eslint/method-signature-style
 }
-
-// 每次新增插件都需要修改这里
-const baseVersion = '2.27',
-	addons = ['autocompletion'];
-
-mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
-
-/**
- * jQuery.val overrides for CodeMirror.
- */
-$.valHooks['textarea'] = {
-	get(elem: HTMLTextAreaElement): string {
-		const cm = instances.get(elem);
-		return cm?.visible ? cm.getContent() : elem.value;
-	},
-	set(elem: HTMLTextAreaElement, value: string): void {
-		const cm = instances.get(elem);
-		if (cm?.visible) {
-			cm.setContent(value);
-		} else {
-			elem.value = value;
-		}
-	},
-};
 
 const linters: Record<string, LintSource | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json']),
@@ -85,92 +55,13 @@ const linters: Record<string, LintSource | undefined> = {},
 		['hover', 'hover', {enabled: false}, undefined],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
 		['inlayHints', 'inlayHints', {enabled: 'offUnlessPressed'}, {enabled: 'onUnlessPressed'}],
-	],
-	templateParameters = new Map<string, ApiSuggestions>();
+	];
 
 /**
  * 判断是否为普通编辑器
  * @param textarea 文本框
  */
 const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('#cm-preference');
-
-/**
- * 获取维基链接建议
- * @param api mw.Api 实例
- * @param title 页面标题
- */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest =>
-	async (search: string, namespace = 0, subpage?: boolean) => {
-		if (subpage) {
-			search = title + search; // eslint-disable-line no-param-reassign
-		}
-		try {
-			const [, pages] = await api.get({
-				action: 'opensearch',
-				search,
-				namespace,
-				limit: 'max',
-			} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
-			if (subpage) {
-				const {length} = title;
-				return pages.map(page => [page.slice(length)]);
-			}
-			return namespace === 0 ? pages.map(page => [page]) : pages.map(page => [new mw.Title(page).getMainText()]);
-		} catch {
-			return [];
-		}
-	};
-
-/**
- * 获取模板参数建议
- * @param api mw.Api 实例
- * @param page 页面标题
- */
-const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string) => {
-	/* eslint-disable no-param-reassign */
-	if (titles.startsWith('/')) {
-		titles = page + titles;
-	}
-	try {
-		titles = new mw.Title(titles, 10).getPrefixedDb();
-		if (templateParameters.has(titles)) {
-			return templateParameters.get(titles)!;
-		}
-		/* eslint-enable no-param-reassign */
-		const {pages} = await api.get({
-				action: 'templatedata',
-				titles,
-				redirects: true,
-				converttitles: true,
-				lang: mw.config.get('wgUserLanguage'),
-			} as TemplateDataApiTemplateDataParams as Record<string, string>) as {
-				pages: Record<number, {params: Record<string, TemplateParam>}>;
-			},
-			params = Object.entries(Object.values(pages)[0]?.params ?? {}),
-			result: ApiSuggestions = [];
-		for (const [key, {aliases, label}] of params) {
-			const detail = label ?? '';
-			result.push([key, detail], ...aliases.map((alias): [string, string] => [alias, detail]));
-		}
-		templateParameters.set(titles, result);
-		return result;
-	} catch {
-		return [];
-	}
-};
-
-/**
- * 准备建议
- * @param page 页面标题
- */
-const prepareSuggest = async (page: string): Promise<Record<string, ApiSuggest>> => {
-	await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
-	const api = new mw.Api({parameters: {formatversion: 2}});
-	return {
-		linkSuggest: linkSuggestFactory(api, page),
-		paramSuggest: paramSuggestFactory(api, page),
-	};
-};
 
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
@@ -545,38 +436,3 @@ export class CodeMirror extends CodeMirror6 {
 		return cm;
 	}
 }
-
-document.body.addEventListener('click', e => {
-	if (e.target instanceof HTMLTextAreaElement && e.shiftKey && !instances.has(e.target)) {
-		e.preventDefault();
-		void CodeMirror.fromTextArea(e.target);
-	}
-});
-
-(async () => {
-	const portletContainer: Record<string, string> = {
-		minerva: 'page-actions-overflow',
-		moeskin: 'moe-global-toolbar:visible #p-tb,#moe-mobile-toolbar:visible',
-		citizen: 'p-tb',
-	};
-	await Promise.all([
-		mw.loader.using('mediawiki.util'),
-		setI18N(CDN),
-	]);
-	mw.hook('wiki-codemirror6').add(localize);
-	mw.hook('wiki-codemirror6.setting').add(localize);
-	mw.util.addPortletLink(
-		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
-		'#',
-		msg('title'),
-		'cm-settings',
-	)!.addEventListener('click', e => {
-		e.preventDefault();
-		const selector = '.cm-editor + textarea, .monaco-container + textarea',
-			textareas = [...document.querySelectorAll<HTMLTextAreaElement>(selector)];
-		void openPreference(textareas.map(textarea => instances.get(textarea)));
-	});
-	void welcome(baseVersion, addons);
-})();
-
-Object.assign(globalThis, {CodeMirror6: CodeMirror});

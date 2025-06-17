@@ -1,6 +1,6 @@
 import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/common';
 import {isMac} from '../src/openLinks';
-import type {CodeMirror} from './base';
+import type {CodeMirror} from './codemirror';
 
 const storageKey = 'codemirror-mediawiki-i18n';
 

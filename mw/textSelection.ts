@@ -1,4 +1,4 @@
-import {CodeMirror} from './base';
+import {CodeMirror} from './codemirror';
 import type * as Monaco from 'monaco-editor';
 import type {editor, Range as R, Position, Selection} from 'monaco-editor';
 

@@ -1,5 +1,5 @@
 import {msg} from './msg';
-import type {CodeMirror} from './base';
+import type {CodeMirror} from './codemirror';
 
 declare interface WikiEditorContext {
 	modules: {
