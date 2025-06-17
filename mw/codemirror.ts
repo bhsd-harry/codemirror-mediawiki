@@ -69,6 +69,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	declare ns;
 	declare page;
+	declare $textarea;
 	#visible = true;
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
@@ -114,12 +115,13 @@ export class CodeMirror extends CodeMirror6 {
 		super(textarea, lang, config, false);
 		this.ns = ns;
 		this.page = page;
+		this.$textarea = $(textarea);
 		instances.set(textarea, this);
 		if (isCM) {
 			this.initialize(config);
 		} else {
 			this.#init = this.#initMonaco();
-			$(textarea).data('jquery.textSelection', monacoTextSelection);
+			this.$textarea.data('jquery.textSelection', monacoTextSelection);
 		}
 		if (isEditor(textarea)) {
 			mw.hook('wiki-codemirror6').fire(this);
@@ -212,20 +214,20 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override toggle(show = !this.#visible): void {
-		const {textarea} = this;
+		const {textarea, $textarea} = this;
 		if (!this.#model) {
 			super.toggle(show);
-			$(textarea).data('jquery.textSelection', show && textSelection);
+			$textarea.data('jquery.textSelection', show && textSelection);
 		} else if (show && !this.#visible) {
 			this.#model.setValue(textarea.value);
 			this.#refresh();
 			this.#container!.style.display = '';
 			textarea.style.display = 'none';
-			$(textarea).data('jquery.textSelection', monacoTextSelection);
+			$textarea.data('jquery.textSelection', monacoTextSelection);
 		} else if (!show && this.#visible) {
 			this.#container!.style.display = 'none';
 			textarea.style.display = '';
-			$(textarea).removeData('jquery.textSelection');
+			$textarea.removeData('jquery.textSelection');
 		}
 		this.#visible = show;
 	}
@@ -405,6 +407,9 @@ export class CodeMirror extends CodeMirror6 {
 				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
 			} else if (wgCanonicalSpecialPageName === 'Upload') {
 				ns = 6;
+				lang = 'wikitext';
+			} else if (wgCanonicalSpecialPageName === 'ExpandTemplates' && textarea.name === 'wpInput') {
+				ns = 0;
 				lang = 'wikitext';
 			} else {
 				await mw.loader.using('oojs-ui-windows');
