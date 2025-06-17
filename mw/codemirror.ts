@@ -15,6 +15,7 @@ import type {editor} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
+import type {WikiEditorContext} from './wikiEditor';
 
 declare global {
 	const monaco: typeof Monaco;
@@ -234,11 +235,15 @@ export class CodeMirror extends CodeMirror6 {
 	override async setLanguage(lang?: string, config?: unknown): Promise<void> {
 		if (this.#model) {
 			throw new Error('Cannot change the language of a Monaco editor!');
-		} else if (lang === 'mediawiki' || lang === 'html') {
+		}
+		const isWiki = lang === 'mediawiki' || lang === 'html';
+		if (isWiki) {
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		void super.setLanguage(lang, config);
 		this.#setLangConfig(config as MwConfig);
+		(this.$textarea.data('wikiEditorContext') as WikiEditorContext | undefined)
+			?.modules.toolbar.$toolbar.toggleClass('codemirror-coding', !isWiki);
 	}
 
 	override setContent(content: string): void {
@@ -387,17 +392,6 @@ export class CodeMirror extends CodeMirror6 {
 		ns?: number,
 		page?: string,
 	): Promise<CodeMirror> {
-		const $textarea = $(textarea);
-		if (prefs.has('wikiEditor') && isEditor(textarea)) {
-			try {
-				await wikiEditor($textarea, textarea.readOnly);
-			} catch (e) {
-				if (e instanceof Error && e.message === 'no-wikiEditor') {
-					void mw.notify(msg(e.message), {type: 'error'});
-				}
-				prefs.delete('wikiEditor');
-			}
-		}
 		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
@@ -422,13 +416,25 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			lang = langMap[lang];
 		}
+		const $textarea = $(textarea),
+			isWiki = lang === 'mediawiki' || lang === 'html';
+		if (prefs.has('wikiEditor') && isEditor(textarea)) {
+			try {
+				await wikiEditor($textarea, textarea.readOnly, isWiki);
+			} catch (e) {
+				if (e instanceof Error && e.message === 'no-wikiEditor') {
+					void mw.notify(msg(e.message), {type: 'error'});
+				}
+				prefs.delete('wikiEditor');
+			}
+		}
 		/* eslint-enable no-param-reassign */
 		const isCM = !useMonaco.has(langs.has(lang) ? lang! : 'wiki'),
-			isWiki = isCM && (lang === 'mediawiki' || lang === 'html'),
-			cm = new CodeMirror(textarea, isWiki ? undefined : lang, ns, dialect, isCM, page);
+			isCMWiki = isCM && isWiki,
+			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
 		cm.dialect = dialect;
 		$textarea.data('CodeMirror6', cm);
-		if (isWiki) {
+		if (isCMWiki) {
 			await cm.setLanguage(lang, await getMwConfig(tagModes));
 		}
 		await Promise.all([loadJSON, cm.#init]);

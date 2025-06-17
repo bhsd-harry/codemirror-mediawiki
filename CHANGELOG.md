@@ -14,7 +14,7 @@
 
 **Changed**
 
-- [WikiEditor](./mw/README.md#wikieditor) toolbar buttons are now hidden if the textarea element is read-only on a MediaWiki site
+- [WikiEditor](./mw/README.md#wikieditor) toolbar buttons are now hidden if the textarea element is read-only or the language is not MediaWiki on a MediaWiki site
 - The [wikiEditor](./mw/README.md#wikieditor) extension now also adds buttons to a pre-existing toolbar on a MediaWiki site
 
 ## 2.27.2

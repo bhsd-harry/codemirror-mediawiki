@@ -1,7 +1,7 @@
 import {msg} from './msg';
 import type {CodeMirror} from './codemirror';
 
-declare interface WikiEditorContext {
+export interface WikiEditorContext {
 	modules: {
 		toolbar: {$toolbar: JQuery};
 	};
@@ -13,18 +13,19 @@ declare interface WikiEditorContext {
  * @param active 是否激活
  */
 const setActive = (context: WikiEditorContext, active?: true): void => {
-	const $group = context.modules.toolbar.$toolbar.find('.group-codemirror6');
-	$group.children('[rel=toggle]').children().addBack()
+	const {$toolbar} = context.modules.toolbar;
+	$toolbar.find('.group-codemirror6').children('[rel=toggle]').children().addBack()
 		.toggleClass('tool-active', active);
-	$group.children('[rel=preferences]').toggle(active);
+	$toolbar.find('.group-codemirror6-more').toggle(active);
 };
 
 /**
  * 添加WikiEditor工具栏
  * @param $textarea 文本框
  * @param readOnly 是否只读
+ * @param isWiki 是否为维基文本
  */
-export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean): Promise<void> => {
+export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean, isWiki: boolean): Promise<void> => {
 	if (!mw.loader.getState('ext.wikiEditor')) {
 		throw new Error('no-wikiEditor');
 	}
@@ -70,6 +71,10 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean)
 							},
 						},
 					},
+				},
+			},
+			'codemirror6-more': {
+				tools: {
 					preferences: {
 						type: 'button',
 						oouiIcon: 'settings',
@@ -87,7 +92,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean)
 	});
 	context ??= $textarea.data('wikiEditorContext') as WikiEditorContext;
 	setActive(context, true);
-	if (readOnly) {
-		context.modules.toolbar.$toolbar.addClass('codemirror-readonly');
-	}
+	const {$toolbar} = context.modules.toolbar;
+	$toolbar.toggleClass('codemirror-readonly', readOnly)
+		.toggleClass('codemirror-coding', !isWiki);
 };

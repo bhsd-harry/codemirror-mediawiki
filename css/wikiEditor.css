@@ -5,6 +5,10 @@
 .codemirror-readonly .group-format,
 .codemirror-readonly .group-insert,
 .codemirror-readonly .tabs,
-.codemirror-readonly .sections {
+.codemirror-readonly .sections,
+.codemirror-coding .group-format,
+.codemirror-coding .group-insert,
+.codemirror-coding .tabs,
+.codemirror-coding .sections {
 	display: none;
 }
