@@ -1,5 +1,6 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
+import {snippetCompletion} from '@codemirror/autocomplete';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
@@ -247,9 +248,17 @@ const map = {
 		'in',
 	].map(label => ({label, type: 'keyword'})),
 	unary: Completion[] = [
-		'not',
-		'function',
-	].map(label => ({label, type: 'keyword'})),
+		...[
+			'not',
+			'function',
+		].map(label => ({label, type: 'keyword'})),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('function ${name}(${})\n\t${}\nend', {
+			label: 'function',
+			detail: 'definition',
+			type: 'keyword',
+		}),
+	],
 	blocks: Completion[] = [
 		'break',
 		'elseif',
@@ -262,12 +271,50 @@ const map = {
 		'goto',
 	].map(label => ({label, type: 'keyword'})),
 	keywords: Completion[] = [
-		'if',
-		'while',
-		'repeat',
-		'for',
-		'local',
-	].map(label => ({label, type: 'keyword'})),
+		...[
+			'if',
+			'while',
+			'repeat',
+			'for',
+			'local',
+		].map(label => ({label, type: 'keyword'})),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('if ${condition} then\n\t${}\nend', {
+			label: 'if',
+			detail: 'block',
+			type: 'keyword',
+		}),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('if ${condition} then\n\t${}\nelse\n\t${}\nend', {
+			label: 'if',
+			detail: '/ else block',
+			type: 'keyword',
+		}),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('while ${condition} do\n\t${}\nend', {
+			label: 'while',
+			detail: 'loop',
+			type: 'keyword',
+		}),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('repeat \n\t${}\nuntil ${condition}', {
+			label: 'repeat',
+			detail: 'loop',
+			type: 'keyword',
+		}),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('for ${name} = ${from}, ${to}, ${step} do\n\t${}\nend', {
+			label: 'for',
+			detail: 'loop',
+			type: 'keyword',
+		}),
+		// eslint-disable-next-line no-template-curly-in-string
+		snippetCompletion('for ${...} in ${...} do\n\t${}\nend', {
+			label: 'for',
+			detail: 'in loop',
+			type: 'keyword',
+		}),
+	],
 	types = new Set(['variableName', 'variableName.standard', 'keyword']);
 lua.languageData!['autocomplete'] = (context => {
 	const {state, pos} = context,

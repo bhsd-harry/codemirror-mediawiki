@@ -81,6 +81,7 @@ describe('Lua autocompletion', () => {
 				options: [
 					{label: 'false', type: 'constant'},
 					{label: 'function', type: 'keyword'},
+					{label: 'function', type: 'keyword', detail: 'definition'},
 				],
 			},
 		);
@@ -133,7 +134,10 @@ describe('Lua autocompletion', () => {
 				from: 2,
 				options: [
 					{label: 'for', type: 'keyword'},
+					{label: 'for', type: 'keyword', detail: 'loop'},
+					{label: 'for', type: 'keyword', detail: 'in loop'},
 					{label: 'function', type: 'keyword'},
+					{label: 'function', type: 'keyword', detail: 'definition'},
 					{label: 'false', type: 'constant'},
 				],
 			},
@@ -144,6 +148,7 @@ describe('Lua autocompletion', () => {
 				from: 5,
 				options: [
 					{label: 'repeat', type: 'keyword'},
+					{label: 'repeat', type: 'keyword', detail: 'loop'},
 					{label: 'return', type: 'keyword'},
 					{label: 'require', type: 'function'},
 				],

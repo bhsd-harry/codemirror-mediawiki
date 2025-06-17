@@ -1,3 +1,11 @@
+## 2.27.3
+
+*2025-06-18*
+
+**Added**
+
+- Snippet [autocompletion](./README.md#autocompletion) for the Lua mode
+
 ## 2.27.2
 
 *2025-06-16*

@@ -25,7 +25,12 @@ export const autocompletionTest = (source: CompletionSource, lang?: LanguageSupp
 				...completion,
 				options: completion.options.filter(
 					option => option.label.toLowerCase().startsWith(doc.slice(completion.from).toLowerCase()),
-				),
+				).map(option => {
+					if (typeof option.apply === 'function') {
+						delete option.apply;
+					}
+					return option;
+				}),
 			},
 			validFor ? result && {...result, validFor} : result,
 		);
