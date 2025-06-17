@@ -179,7 +179,6 @@ export class CodeMirror extends CodeMirror6 {
 		this.#container = document.createElement('div');
 		this.#container.className = 'monaco-container';
 		this.#refresh();
-		this.#container.style.minHeight = '2em';
 		textarea.before(this.#container);
 		textarea.style.display = 'none';
 		this.#editor = monaco.editor.create(this.#container, {
@@ -391,7 +390,7 @@ export class CodeMirror extends CodeMirror6 {
 		const $textarea = $(textarea);
 		if (prefs.has('wikiEditor') && isEditor(textarea)) {
 			try {
-				await wikiEditor($textarea);
+				await wikiEditor($textarea, textarea.readOnly);
 			} catch (e) {
 				if (e instanceof Error && e.message === 'no-wikiEditor') {
 					void mw.notify(msg(e.message), {type: 'error'});

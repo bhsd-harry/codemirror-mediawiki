@@ -1,3 +1,10 @@
 .wikiEditor-ui-toolbar {
 	z-index: 7;
 }
+
+.codemirror-readonly .group-format,
+.codemirror-readonly .group-insert,
+.codemirror-readonly .tabs,
+.codemirror-readonly .sections {
+	display: none;
+}
