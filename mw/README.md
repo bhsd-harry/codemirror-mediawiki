@@ -6,6 +6,7 @@
 - [Accessors](#accessors)
 	- [editor](#editor)
 	- [model](#model)
+	- [$toolbar](#toolbar)
 - [Methods](#methods)
 	- [defaultLint](#defaultlint)
 	- [getContent](#getcontent)
@@ -89,6 +90,18 @@ The Monaco editor instance.
 
 **type**: [`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
 The Monaco text model instance.
+
+</details>
+
+## $toolbar
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.28.0*
+
+**type**: [`JQuery | undefined`](https://api.jquery.com/)  
+The WikiEditor toolbar instance.
 
 </details>
 

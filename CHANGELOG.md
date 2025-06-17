@@ -7,6 +7,8 @@
 - Snippet [autocompletion](./README.md#autocompletion) for the Lua mode
 - Additional [lint](./README.md#lint) rules for the `sanitized-css` pages on a MediaWiki site
 - Smart indentation for JavaScript, CSS, Lua and JSON modes
+- More [wikiEditor](./mw/README.md#wikieditor) toolbar buttons for the JavaScript, CSS, JSON and Lua modes
+- New method: [`setLineWrapping`](./README.md#setlinewrapping)
 
 **Fixed**
 

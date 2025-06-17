@@ -8,7 +8,7 @@ import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './pr
 import {msg, curVersion, languages} from './msg';
 import prepareSuggest from './suggest';
 import escape from './escape';
-import wikiEditor from './wikiEditor';
+import wikiEditor, {toggleButton} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
@@ -90,6 +90,11 @@ export class CodeMirror extends CodeMirror6 {
 		return this.#editor;
 	}
 
+	get $toolbar(): JQuery | undefined {
+		return (this.$textarea.data('wikiEditorContext') as WikiEditorContext | undefined)
+			?.modules.toolbar.$toolbar;
+	}
+
 	/**
 	 * @param textarea 文本框
 	 * @param lang 语言
@@ -155,6 +160,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (font) {
 			this.view!.contentDOM.classList.add(font);
 		}
+		toggleButton(this.$toolbar, 'lineWrapping', true);
 	}
 
 	/** 初始化 Monaco 编辑器 */
@@ -168,6 +174,7 @@ export class CodeMirror extends CodeMirror6 {
 		const {textarea, lang} = this,
 			language = monacoLangs[lang] ?? lang,
 			isWiki = language === 'wikitext',
+			wrapping = isWiki || language === 'html' || language === 'plaintext',
 			tab = this.#indentStr.includes('\t');
 		// eslint-disable-next-line @typescript-eslint/await-thenable
 		await monaco;
@@ -187,7 +194,7 @@ export class CodeMirror extends CodeMirror6 {
 			automaticLayout: true,
 			theme: 'monokai',
 			readOnly: textarea.readOnly,
-			wordWrap: isWiki || language === 'html' || language === 'plaintext' ? 'on' : 'off',
+			wordWrap: wrapping ? 'on' : 'off',
 			wordBreak: 'keepAll',
 			tabSize: tab ? 4 : Number(this.#indentStr),
 			insertSpaces: !tab,
@@ -205,6 +212,7 @@ export class CodeMirror extends CodeMirror6 {
 				textarea.value = this.#model!.getValue();
 			}, 400);
 		});
+		toggleButton(this.$toolbar, 'lineWrapping', wrapping);
 	}
 
 	/** 刷新 Monaco 编辑器高度 */
@@ -242,8 +250,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		void super.setLanguage(lang, config);
 		this.#setLangConfig(config as MwConfig);
-		(this.$textarea.data('wikiEditorContext') as WikiEditorContext | undefined)
-			?.modules.toolbar.$toolbar.toggleClass('codemirror-coding', !isWiki);
+		this.$toolbar?.toggleClass('codemirror-coding', !isWiki);
 	}
 
 	override setContent(content: string): void {
@@ -266,6 +273,14 @@ export class CodeMirror extends CodeMirror6 {
 			this.#editor.updateOptions({tabSize: tab ? 4 : Number(indent), insertSpaces: !tab});
 		} else {
 			super.setIndent(indent);
+		}
+	}
+
+	override setLineWrapping(wrapping: boolean): void {
+		if (this.#editor) {
+			this.#editor.updateOptions({wordWrap: wrapping ? 'on' : 'off'});
+		} else {
+			super.setLineWrapping(wrapping);
 		}
 	}
 
@@ -348,7 +363,11 @@ export class CodeMirror extends CodeMirror6 {
 			? (ext: string): boolean => extensions.includes(ext)
 			: (ext: string): boolean | undefined => extensions[ext];
 		const hasLint = hasExtension('lint'),
+			hasSpecialChars = hasExtension('highlightSpecialChars') && hasExtension('highlightWhitespace'),
 			isWiki = this.lang === 'mediawiki';
+		if (hasSpecialChars !== undefined) {
+			toggleButton(this.$toolbar, 'invisibleChars', hasSpecialChars);
+		}
 		if (this.view) {
 			super.prefer(extensions);
 			if (hasLint !== undefined) {

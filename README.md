@@ -10,8 +10,8 @@
 - [Usage](#usage)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
-	- [textarea](#textarea)
 	- [lang](#lang)
+	- [textarea](#textarea)
 	- [view](#view)
 	- [visible](#visible)
 - [Methods](#methods)
@@ -26,6 +26,7 @@
 	- [setContent](#setcontent)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
+	- [setLineWrapping](#setlinewrapping)
 	- [toggle](#toggle)
 	- [update](#update)
 - [Static methods](#static-methods)
@@ -36,19 +37,19 @@
 	- [autocompletion](#autocompletion)
 	- [bracketMatching](#bracketmatching)
 	- [closeBrackets](#closebrackets)
-	- [highlightActiveLine](#highlightactiveline)
-	- [highlightSpecialChars](#highlightspecialchars)
-	- [highlightWhitespace](#highlightwhitespace)
-	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
-	- [highlightSelectionMatches](#highlightselectionmatches)
 	- [codeFolding](#codefolding)
-	- [scrollPastEnd](#scrollpastend)
 	- [colorPicker](#colorpicker)
 	- [escape](#escape)
-	- [tagMatching](#tagmatching)
-	- [refHover](#refhover)
+	- [highlightActiveLine](#highlightactiveline)
+	- [highlightSelectionMatches](#highlightselectionmatches)
+	- [highlightSpecialChars](#highlightspecialchars)
+	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
+	- [highlightWhitespace](#highlightwhitespace)
 	- [hover](#hover)
 	- [openLinks](#openlinks)
+	- [refHover](#refhover)
+	- [scrollPastEnd](#scrollpastend)
+	- [tagMatching](#tagmatching)
 - [Known issues](#known-issues)
 	- [Syntax Highlighting](#syntax-highlighting)
 
@@ -114,16 +115,6 @@ const cm = new CodeMirror6(textarea, 'lua');
 
 # Accessors
 
-## textarea
-
-<details>
-	<summary>Expand</summary>
-
-**type**: `HTMLTextAreaElement`  
-The textarea element replaced by CodeMirror, read-only.
-
-</details>
-
 ## lang
 
 <details>
@@ -133,6 +124,16 @@ The textarea element replaced by CodeMirror, read-only.
 
 **type**: `string`  
 The current language mode, read-only.
+
+</details>
+
+## textarea
+
+<details>
+	<summary>Expand</summary>
+
+**type**: `HTMLTextAreaElement`  
+The textarea element replaced by CodeMirror, read-only.
 
 </details>
 
@@ -394,6 +395,23 @@ cm.setLanguage('lua');
 
 </details>
 
+## setLineWrapping
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.28.0*
+
+**param**: `boolean` whether to enable line wrapping  
+Switch between line wrapping and no line wrapping.
+
+```js
+cm.setLineWrapping(false);
+cm.setLineWrapping(true);
+```
+
+</details>
+
 ## toggle
 
 <details>
@@ -483,32 +501,6 @@ Matched or unmatched brackets are highlighted in cyan or dark red when the curso
 
 Automatically close brackets (`{`, `[` and `(`) and quotes (`"`, and `'` except for the MediaWiki mode).
 
-## highlightActiveLine
-
-Highlight the line the cursor is on in light cyan.
-
-## highlightSpecialChars
-
-Show invisible characters as red dots.
-
-## highlightWhitespace
-
-*version added: 2.0.12*
-
-Show spaces and tabs as dots and arrows.
-
-## highlightTrailingWhitespace
-
-*version added: 2.0.9*
-
-Highlight trailing whitespace in a red-orange color.
-
-## highlightSelectionMatches
-
-*version added: 2.15.3*
-
-Highlight texts that match the selection in light green.
-
 ## codeFolding
 
 *version added: 2.3.0*
@@ -521,12 +513,6 @@ Key bindings:
 - `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold at the selected text
 - `Ctrl` + `Alt` + `[`: Fold all
 - `Ctrl` + `Alt` + `]`: Unfold all
-
-## scrollPastEnd
-
-*version added: 2.15.3*
-
-Allow the editor to be scrolled down past the end of the document.
 
 ## colorPicker
 
@@ -543,11 +529,43 @@ Key bindings:
 - `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
 
-## tagMatching
+## highlightActiveLine
 
-*version added: 2.4.1*
+Highlight the line the cursor is on in light cyan.
 
-Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
+## highlightSelectionMatches
+
+*version added: 2.15.3*
+
+Highlight texts that match the selection in light green.
+
+## highlightSpecialChars
+
+Show invisible characters as red dots.
+
+## highlightTrailingWhitespace
+
+*version added: 2.0.9*
+
+Highlight trailing whitespace in a red-orange color.
+
+## highlightWhitespace
+
+*version added: 2.0.12*
+
+Show spaces and tabs as dots and arrows.
+
+## hover
+
+*version added: 2.21.1*
+
+Show the help information of a magic word when hovering.
+
+## openLinks
+
+*version added: 2.19.6*
+
+CTRL/CMD-click opens a link in a new tab.
 
 ## refHover
 
@@ -555,11 +573,17 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
 
-## hover
+## scrollPastEnd
 
-*version added: 2.21.1*
+*version added: 2.15.3*
 
-Show the help information of a magic word when hovering.
+Allow the editor to be scrolled down past the end of the document.
+
+## tagMatching
+
+*version added: 2.4.1*
+
+Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
 
 ## signatureHelp
 
@@ -572,12 +596,6 @@ Show the parser function signature when typing.
 *version added: 2.22.0*
 
 Show inlay hints for anonymous parameters.
-
-## openLinks
-
-*version added: 2.19.6*
-
-CTRL/CMD-click opens a link in a new tab.
 
 # Known issues
 

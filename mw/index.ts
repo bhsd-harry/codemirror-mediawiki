@@ -5,8 +5,8 @@ import {openPreference} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.27',
-	addons = ['autocompletion'];
+const baseVersion = '2.28',
+	addons = ['wikiEditor'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 
@@ -54,7 +54,7 @@ document.body.addEventListener('click', e => {
 		'cm-settings',
 	)!.addEventListener('click', e => {
 		e.preventDefault();
-		const selector = '.cm-editor + textarea, .monaco-container + textarea',
+		const selector = '.cm-editor+textarea,.monaco-container+textarea',
 			textareas = [...document.querySelectorAll<HTMLTextAreaElement>(selector)];
 		void openPreference(textareas.map(textarea => instances.get(textarea)));
 	});

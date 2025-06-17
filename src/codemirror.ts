@@ -167,6 +167,7 @@ export class CodeMirror6 {
 	readonly #indent = new Compartment();
 	readonly #extraKeys = new Compartment();
 	readonly #phrases = new Compartment();
+	readonly #lineWrapping = new Compartment();
 	#view: EditorView | undefined;
 	#lang;
 	#visible = false;
@@ -218,6 +219,7 @@ export class CodeMirror6 {
 				this.#dir.of(EditorView.editorAttributes.of({dir: d})),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
+				this.#lineWrapping.of(EditorView.lineWrapping),
 				syntaxHighlighting(defaultHighlightStyle),
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
@@ -225,7 +227,6 @@ export class CodeMirror6 {
 				}),
 				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
-				EditorView.lineWrapping,
 				highlightActiveLineGutter(),
 				keymap.of([
 					...defaultKeymap,
@@ -400,6 +401,16 @@ export class CodeMirror6 {
 			this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
 		} else {
 			this.#indentStr = indent;
+		}
+	}
+
+	/**
+	 * 设置文本换行
+	 * @param wrapping 是否换行
+	 */
+	setLineWrapping(wrapping: boolean): void {
+		if (this.#view) {
+			this.#effects(this.#lineWrapping.reconfigure(wrapping ? EditorView.lineWrapping : []));
 		}
 	}
 
