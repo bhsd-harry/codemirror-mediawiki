@@ -240,6 +240,8 @@ export class CodeMirror extends CodeMirror6 {
 					}
 				});
 			}
+		} else {
+			mw.hook('wiki-codemirror6.setting').fire(this);
 		}
 	}
 
@@ -400,7 +402,16 @@ export class CodeMirror extends CodeMirror6 {
 			} else if (lang === 'javascript') {
 				defaultOpt = {
 					env: {browser: true, es2024: true, jquery: true},
-					globals: {mw: 'readonly', mediaWiki: 'readonly', OO: 'readonly'},
+					globals: {
+						mw: 'readonly',
+						mediaWiki: 'readonly',
+						OO: 'readonly',
+						addOnloadHook: 'readonly',
+						importScriptURI: 'readonly',
+						importScript: 'readonly',
+						importStylesheet: 'readonly',
+						importStylesheetURI: 'readonly',
+					},
 					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
 				} satisfies Linter.Config;
 			}
@@ -433,6 +444,9 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {
+		if (!isEditor(this.textarea) && Array.isArray(extensions)) {
+			extensions = extensions.filter(ext => ext !== 'scrollPastEnd'); // eslint-disable-line no-param-reassign
+		}
 		const hasExtension = Array.isArray(extensions)
 			? (ext: string): boolean => extensions.includes(ext)
 			: (ext: string): boolean | undefined => extensions[ext];
@@ -550,6 +564,7 @@ document.body.addEventListener('click', e => {
 		setI18N(CDN),
 	]);
 	mw.hook('wiki-codemirror6').add(localize);
+	mw.hook('wiki-codemirror6.setting').add(localize);
 	mw.util.addPortletLink(
 		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
 		'#',

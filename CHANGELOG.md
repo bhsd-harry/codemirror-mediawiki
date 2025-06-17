@@ -8,6 +8,10 @@
 - Additional [lint](./README.md#lint) rules for the `sanitized-css` pages on a MediaWiki site
 - Smart indentation for JavaScript, CSS, Lua and JSON modes
 
+**Fixed**
+
+- The CodeMirror editors in the preference dialog are now localized when used on a MediaWiki site
+
 ## 2.27.2
 
 *2025-06-16*
