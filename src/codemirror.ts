@@ -47,6 +47,7 @@ import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
 import statusBar from './statusBar';
+import {detectIndent, noDetectionLangs} from './indent';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
@@ -209,27 +210,26 @@ export class CodeMirror6 {
 	initialize(config?: unknown): void {
 		let timer: NodeJS.Timeout | undefined;
 		const {textarea, lang} = this,
+			{value, dir: d, accessKey, tabIndex, lang: l, readOnly} = textarea,
 			extensions = [
 				this.#language.of(languages[lang]!(config)),
 				this.#linter.of(linters[lang] ?? []),
 				this.#extensions.of([]),
-				this.#dir.of(EditorView.editorAttributes.of({dir: textarea.dir})),
-				this.#indent.of(indentUnit.of(this.#indentStr)),
+				this.#dir.of(EditorView.editorAttributes.of({dir: d})),
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
 				syntaxHighlighting(defaultHighlightStyle),
 				EditorView.contentAttributes.of({
-					accesskey: textarea.accessKey,
-					tabindex: String(textarea.tabIndex),
+					accesskey: accessKey,
+					tabindex: String(tabIndex),
 				}),
-				EditorView.editorAttributes.of({lang: textarea.lang}),
+				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
 				EditorView.lineWrapping,
 				highlightActiveLineGutter(),
 				keymap.of([
 					...defaultKeymap,
 					...searchKeymap,
-					indentWithTab,
 					{
 						key: 'Mod-Shift-x',
 						run: (): true => {
@@ -243,32 +243,42 @@ export class CodeMirror6 {
 				EditorView.theme({
 					'.cm-panels': {direction: document.dir},
 				}),
-				EditorView.updateListener.of(({state: {doc}, docChanged, focusChanged}) => {
+				EditorView.updateListener.of(({
+					state: {doc},
+					startState: {doc: startDoc},
+					docChanged,
+					focusChanged,
+				}) => {
 					if (docChanged) {
 						clearTimeout(timer);
 						timer = setTimeout(() => {
 							textarea.value = doc.toString();
 							textarea.dispatchEvent(new Event('input'));
 						}, 400);
+						if (!noDetectionLangs.has(this.lang) && !startDoc.toString().trim()) {
+							this.setIndent(detectIndent(doc.toString(), this.#indentStr, this.lang));
+						}
 					}
 					if (focusChanged) {
 						textarea.dispatchEvent(new Event(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
 				}),
-				...textarea.readOnly
+				...readOnly
 					? [EditorState.readOnly.of(true)]
 					: [
 						history(),
 						indentOnInput(),
+						this.#indent.of(indentUnit.of(detectIndent(value, this.#indentStr, lang))),
 						keymap.of([
 							...historyKeymap,
+							indentWithTab,
 							{win: 'Ctrl-Shift-z', run: redo, preventDefault: true},
 						]),
 					],
 			];
 		this.#view = new EditorView({
 			extensions,
-			doc: textarea.value,
+			doc: value,
 		});
 		const {fontSize, lineHeight, border} = getComputedStyle(textarea);
 		textarea.before(this.#view.dom);

@@ -38,7 +38,7 @@ export const keybindings = [
 export const encapsulateLines = (text: string, pre: string, post: string): string => {
 	const lines = text.split('\n');
 	return lines.map(line => {
-		const str = (/^(={1,6})(.+)\1$/u.exec(line)?.[2] ?? line).trim();
+		const str = (/^(={1,6})(.+)\1\s*$/u.exec(line)?.[2] ?? line).trim();
 		return pre === ' ' || lines.length === 1 || line.trim() ? pre + str + post : str;
 	}).join('\n');
 };
