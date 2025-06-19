@@ -32,6 +32,7 @@ import {
 	startCompletion,
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
+import {getLSP} from '@bhsd/common';
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
 import escapeKeymap from './escape';
@@ -187,7 +188,7 @@ export class CodeMirror6 {
 	}
 
 	get visible(): boolean {
-		return this.#visible;
+		return this.#visible && this.textarea.isConnected;
 	}
 
 	/**
@@ -607,6 +608,18 @@ export class CodeMirror6 {
 			});
 		}
 		this.#visible = show;
+	}
+
+	/** 销毁实例 */
+	destroy(): void {
+		if (this.visible) {
+			this.toggle(false);
+		}
+		if (this.#view) {
+			getLSP(this.#view)?.destroy();
+			this.#view.destroy();
+		}
+		Object.setPrototypeOf(this, null);
 	}
 
 	/**

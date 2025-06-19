@@ -5,6 +5,7 @@
 **Added**
 
 - Add a search button to the [WikiEditor](./mw/README.md#wikieditor) toolbar for the JavaScript, CSS, JSON and Lua modes on a MediaWiki site
+- New method: [`destroy`](./README.md#destroy)
 
 **Fixed**
 

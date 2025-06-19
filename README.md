@@ -8,6 +8,8 @@
 
 - [Description](#description)
 - [Usage](#usage)
+	- [JavaScript](#javascript)
+	- [CSS](#css)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
 	- [lang](#lang)
@@ -15,6 +17,7 @@
 	- [view](#view)
 	- [visible](#visible)
 - [Methods](#methods)
+	- [destroy](#destroy)
 	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
 	- [getNodeAt](#getnodeat)
@@ -46,9 +49,11 @@
 	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
 	- [highlightWhitespace](#highlightwhitespace)
 	- [hover](#hover)
+	- [inlayHints](#inlayhints)
 	- [openLinks](#openlinks)
 	- [refHover](#refhover)
 	- [scrollPastEnd](#scrollpastend)
+	- [signatureHelp](#signaturehelp)
 	- [tagMatching](#tagmatching)
 - [Known issues](#known-issues)
 	- [Syntax Highlighting](#syntax-highlighting)
@@ -66,6 +71,8 @@ Nonetheless, this repository also provides a customized version with additional 
 # Usage
 
 You can download the code via CDN, for example:
+
+## JavaScript
 
 ```js
 // static import
@@ -89,6 +96,18 @@ or
 
 ```js
 const {CodeMirror6} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
+```
+
+## CSS
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mediawiki.css">
+```
+
+or
+
+```html
+<link rel="stylesheet" href="https://unpkg.com/@bhsd/codemirror-mediawiki/mediawiki.css">
 ```
 
 # Constructor
@@ -160,6 +179,21 @@ Whether the editor is visible, read-only.
 </details>
 
 # Methods
+
+## destroy
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.28.1*
+
+Destroy the instance. This method is irrevocable and not recommended for general use. Instead, you should call the [`toggle`](#toggle) method to hide the editor.
+
+```js
+cm.destroy();
+```
+
+</details>
 
 ## extraKeys
 
@@ -561,6 +595,12 @@ Show spaces and tabs as dots and arrows.
 
 Show the help information of a magic word when hovering.
 
+## inlayHints
+
+*version added: 2.22.0*
+
+Show inlay hints for anonymous parameters.
+
 ## openLinks
 
 *version added: 2.19.6*
@@ -579,23 +619,17 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 
 Allow the editor to be scrolled down past the end of the document.
 
-## tagMatching
-
-*version added: 2.4.1*
-
-Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
-
 ## signatureHelp
 
 *version added: 2.21.1*
 
 Show the parser function signature when typing.
 
-## inlayHints
+## tagMatching
 
-*version added: 2.22.0*
+*version added: 2.4.1*
 
-Show inlay hints for anonymous parameters.
+Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
 
 # Known issues
 

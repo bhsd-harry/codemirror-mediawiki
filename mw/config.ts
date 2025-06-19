@@ -12,15 +12,7 @@ import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';
 
-// 和本地缓存有关的常数
-const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
-		getObject('InPageEditMwConfig') ?? {},
-	SITE_ID = typeof mw === 'object'
-		? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
-		: location.origin,
-	SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
-	VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1e3 * 30,
-	others = new Set([...otherParserFunctions, 'msgnw']);
+const others = new Set([...otherParserFunctions, 'msgnw']);
 
 /**
  * 将魔术字信息转换为CodeMirror接受的设置
@@ -39,6 +31,14 @@ const setConfig = (config: MwConfig): void => {
 };
 
 export const getMwConfig: MwConfigGetter = async modes => {
+	// 和本地缓存有关的常数
+	const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
+			getObject('InPageEditMwConfig') ?? {},
+		SITE_ID = typeof mw === 'object'
+			? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
+			: location.origin,
+		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
+		VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1e3 * 30;
 	// 只在localStorage过期时才会重新加载ext.CodeMirror.data
 	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) {
 		await mw.loader.using(

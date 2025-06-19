@@ -8,7 +8,7 @@ import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './pr
 import {msg, curVersion, languages} from './msg';
 import prepareSuggest from './suggest';
 import escape from './escape';
-import wikiEditor, {toggleButton} from './wikiEditor';
+import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
 import type {editor} from 'monaco-editor';
@@ -71,6 +71,7 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	static readonly version = curVersion;
+	static readonly instances = instances;
 
 	declare ns;
 	declare page;
@@ -83,7 +84,7 @@ export class CodeMirror extends CodeMirror6 {
 	#indentStr = '\t';
 
 	override get visible(): boolean {
-		return this.#visible;
+		return this.#visible && this.textarea.isConnected;
 	}
 
 	get model(): IWikitextModel | undefined {
@@ -119,7 +120,7 @@ export class CodeMirror extends CodeMirror6 {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
 		mw.hook('ext.CodeMirror.ready').add((obj: ExtCodeMirror) => {
-			if (obj.textarea === textarea) {
+			if (obj.textarea === textarea && Object.getPrototypeOf(this) !== null) {
 				obj.destroy();
 			}
 		});
@@ -179,17 +180,19 @@ export class CodeMirror extends CodeMirror6 {
 			language = monacoLangs[lang] ?? lang,
 			isWiki = language === 'wikitext',
 			wrapping = isWiki || language === 'html' || language === 'plaintext',
-			tab = this.#indentStr.includes('\t');
+			tab = this.#indentStr.includes('\t'),
+			container = 'monaco-container';
 		// eslint-disable-next-line @typescript-eslint/await-thenable
 		await monaco;
 		for (const editor of monaco.editor.getEditors()) {
-			if (!editor.getDomNode()?.isConnected) {
+			if (editor.getContainerDomNode().classList.contains(container) && !editor.getDomNode()?.isConnected) {
+				editor.getModel()?.dispose();
 				editor.dispose();
 			}
 		}
 		this.#model = monaco.editor.createModel(textarea.value, language);
 		this.#container = document.createElement('div');
-		this.#container.className = 'monaco-container';
+		this.#container.className = container;
 		this.#refresh();
 		textarea.before(this.#container);
 		textarea.style.display = 'none';
@@ -242,6 +245,23 @@ export class CodeMirror extends CodeMirror6 {
 			$textarea.removeData('jquery.textSelection');
 		}
 		this.#visible = show;
+		setActive(this.$toolbar, show);
+	}
+
+	override destroy(): void {
+		if (this.visible) {
+			this.toggle(false);
+		}
+		if (this.#editor) {
+			this.#editor.dispose();
+			this.#model!.dispose();
+			this.#container!.remove();
+		}
+		this.$textarea.data('CodeMirror6', null);
+		this.$toolbar?.removeClass(['readonly', 'wiki', 'coding'].map(s => `codemirror-${s}`).join(' '))
+			.find(getGroup(['', 'format', 'more', 'search']))
+			.remove();
+		super.destroy();
 	}
 
 	override async setLanguage(lang?: string, config?: unknown): Promise<void> {

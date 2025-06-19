@@ -6,6 +6,7 @@ import type {Command} from '@codemirror/view';
 import type {CodeMirror} from './codemirror';
 
 declare type Action<T = CodeMirror> = (ctx: WikiEditorContext, cm: T) => void;
+declare type GroupName = '' | 'format' | 'more' | 'search';
 
 /**
  * 查找WikiEditor工具栏按钮
@@ -16,8 +17,7 @@ declare type Action<T = CodeMirror> = (ctx: WikiEditorContext, cm: T) => void;
 function findButton($toolbar: JQuery, name: string, children?: boolean): JQuery;
 function findButton($toolbar: JQuery | undefined, name: string, children?: boolean): JQuery | undefined;
 function findButton($toolbar: JQuery | undefined, name: string, children?: boolean): JQuery | undefined {
-	const $button = $toolbar
-		?.find(`.group-codemirror6${name === 'toggle' ? '' : '-more'}>[rel=${name}]`);
+	const $button = $toolbar?.find(`${getGroup(name === 'toggle' ? '' : 'more')}>[rel=${name}]`);
 	return children ? $button?.children().addBack() : $button;
 }
 
@@ -28,6 +28,10 @@ function findButton($toolbar: JQuery | undefined, name: string, children?: boole
  */
 const isActive = ($toolbar: JQuery, name: string): boolean =>
 	findButton($toolbar, name).hasClass('tool-active');
+
+export const getGroup = (name: GroupName | GroupName[]): string => Array.isArray(name)
+	? name.map(n => getGroup(n)).join()
+	: `.group-codemirror6${name && `-${name}`}`;
 
 /**
  * 切换WikiEditor工具栏按钮状态
@@ -41,14 +45,15 @@ export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?
 
 /**
  * 设置工具栏按钮状态
- * @param context WikiEditor context
+ * @param $toolbar WikiEditor工具栏
  * @param active 是否激活
  */
-const setActive = (context: WikiEditorContext, active?: boolean): void => {
-	const {$toolbar} = context.modules.toolbar;
-	toggleButton($toolbar, 'toggle', active);
-	$toolbar.find('.group-codemirror6-format,.group-codemirror6-more').toggle(active);
-	$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
+export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
+	if ($toolbar) {
+		toggleButton($toolbar, 'toggle', active);
+		$toolbar.find(getGroup(['format', 'more'])).toggle(active);
+		$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
+	}
 };
 
 /**
@@ -126,9 +131,8 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				tools: {
 					toggle: getTool(
 						'highlight',
-						(ctx, cm) => {
+						(_, cm) => {
 							cm.toggle();
-							setActive(ctx);
 						},
 						'CodeMirror 6',
 					),
@@ -196,7 +200,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 			},
 		},
 	});
-	setActive(context, true);
+	setActive($toolbar, true);
 	$toolbar.toggleClass('codemirror-readonly', readOnly)
 		.toggleClass('codemirror-wiki', isWiki)
 		.toggleClass('codemirror-coding', !isWiki);
