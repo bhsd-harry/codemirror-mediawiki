@@ -57,13 +57,12 @@ const blankTarget = ($dom: JQuery): JQuery => {
  * @param key 消息键，省略`cm-mw-`前缀
  * @param text 是否输出为文本
  */
-function parseMsg(key: string, text: true): string;
-function parseMsg(key: string): JQuery;
-function parseMsg(key: string, text?: true): string | JQuery {
+export function parseMsg(key: string, text: boolean): string;
+export function parseMsg(key: string): JQuery;
+export function parseMsg(key: string, text?: boolean): string | JQuery {
 	const message = mw.message(`cm-mw-${key}`);
 	return text ? message.parse() : blankTarget(message.parseDom());
 }
-export {parseMsg};
 
 /**
  * 创建气泡提示消息

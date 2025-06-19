@@ -7,7 +7,7 @@ import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigData} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
-export type LiveOption = (runtime?: true) => Option;
+export type LiveOption = (runtime?: boolean) => Option;
 declare type getLinter<T> = () => (text: string) => T;
 declare type asyncLinter<T, S = Record<string, unknown>> = ((text: string, config?: Option) => T) & {
 	config?: S;
@@ -24,6 +24,14 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
 	to?: number;
+}
+
+declare interface JsonError {
+	message: string;
+	severity: 'error';
+	line: string | undefined;
+	column: string | undefined;
+	position: string | undefined;
 }
 
 /**
@@ -149,14 +157,6 @@ export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>> = async () => {
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
 };
-
-declare interface JsonError {
-	message: string;
-	severity: 'error';
-	line: string | undefined;
-	column: string | undefined;
-	position: string | undefined;
-}
 
 /** JSON.parse */
 export const getJsonLinter: getLinter<JsonError[]> = () => str => {

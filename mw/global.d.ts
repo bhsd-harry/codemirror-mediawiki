@@ -8,6 +8,13 @@ declare global {
 		const wphl: {monacoVersion?: string} | undefined;
 	}
 
+	interface WikiEditorContext {
+		$textarea: JQuery<HTMLTextAreaElement>;
+		modules: {
+			toolbar: {$toolbar: JQuery};
+		};
+	}
+
 	interface JQueryStatic {
 		wikiEditor: {
 			modules: {
@@ -15,6 +22,9 @@ declare global {
 					config: {
 						getDefaultConfig(): object;
 						replaceIcons($textarea: JQuery<HTMLTextAreaElement>): void;
+					};
+					api: {
+						openDialog(context: WikiEditorContext, module: string): void;
 					};
 				};
 				toolbar: {

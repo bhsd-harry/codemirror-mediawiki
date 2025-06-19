@@ -6,16 +6,6 @@ import {instances} from './textSelection';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';
 
-const storageKey = 'codemirror-mediawiki-addons',
-	monacoKey = 'codemirror-mediawiki-monaco',
-	langs = ['wiki', 'javascript', 'css', 'lua', 'json'],
-	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
-	wikilintKey = 'codemirror-mediawiki-wikilint',
-	codeKeys = ['ESLint', 'Stylelint'] as const,
-	user = mw.config.get('wgUserGroups')?.includes('user')
-		&& mw.config.get('wgUserName'),
-	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
-
 declare type codeKey = typeof codeKeys[number];
 
 declare type Preferences = {
@@ -35,6 +25,16 @@ declare interface MediaWikiResponse {
 		readonly pages: MediaWikiPage[];
 	};
 }
+
+const storageKey = 'codemirror-mediawiki-addons',
+	monacoKey = 'codemirror-mediawiki-monaco',
+	langs = ['wiki', 'javascript', 'css', 'lua', 'json'],
+	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
+	wikilintKey = 'codemirror-mediawiki-wikilint',
+	codeKeys = ['ESLint', 'Stylelint'] as const,
+	user = mw.config.get('wgUserGroups')?.includes('user')
+		&& mw.config.get('wgUserName'),
+	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
 const enum RuleState {
 	off = '0',

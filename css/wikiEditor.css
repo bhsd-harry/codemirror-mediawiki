@@ -12,6 +12,11 @@
 .codemirror-coding .sections {
 	display: none;
 }
-.wikiEditor-ui-toolbar:not(.codemirror-coding) .group-codemirror6-format {
+.codemirror-wiki .group-codemirror6-format,
+.codemirror-wiki .group-codemirror6-search {
 	display: none !important;
+}
+
+.codeEditor-ui-toolbar .group-codemirror6 {
+	display: none;
 }

@@ -2,17 +2,6 @@ import {CodeMirror} from './codemirror';
 import type * as Monaco from 'monaco-editor';
 import type {editor, Range as R, Position, Selection} from 'monaco-editor';
 
-export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
-
-/**
- * 获取CodeMirror实例
- * @param $ele textarea元素的jQuery对象
- */
-const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
-
-const fromPositions = (monaco: typeof Monaco, model: editor.ITextModel, ref: [number, number]): R =>
-	monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]);
-
 declare interface EncapsulateOptions {
 	pre?: string;
 	peri?: string;
@@ -39,9 +28,20 @@ declare interface TextSelection {
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement>;
 }
 
+export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
+
+const fromPositions = (monaco: typeof Monaco, model: editor.ITextModel, ref: [number, number]): R =>
+	monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]);
+
 const split = (selText: string, pre: string, post: string, splitlines?: boolean): string => splitlines
 	? selText.split('\n').map(line => pre + line + post).join('\n')
 	: pre + selText + post;
+
+/**
+ * 获取CodeMirror实例
+ * @param $ele textarea元素的jQuery对象
+ */
+export const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
 
 /**
  * jQuery.textSelection overrides for CodeMirror.

@@ -1,14 +1,11 @@
 import {indentMore, indentLess} from '@codemirror/commands';
-import {gotoLine} from '@codemirror/search';
+import {gotoLine, openSearchPanel} from '@codemirror/search';
 import {msg} from './msg';
-import {instances} from './textSelection';
+import {getInstance} from './textSelection';
+import type {Command} from '@codemirror/view';
 import type {CodeMirror} from './codemirror';
 
-export interface WikiEditorContext {
-	modules: {
-		toolbar: {$toolbar: JQuery};
-	};
-}
+declare type Action<T = CodeMirror> = (ctx: WikiEditorContext, cm: T) => void;
 
 /**
  * 查找WikiEditor工具栏按钮
@@ -47,10 +44,11 @@ export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?
  * @param context WikiEditor context
  * @param active 是否激活
  */
-const setActive = (context: WikiEditorContext, active?: true): void => {
+const setActive = (context: WikiEditorContext, active?: boolean): void => {
 	const {$toolbar} = context.modules.toolbar;
 	toggleButton($toolbar, 'toggle', active);
 	$toolbar.find('.group-codemirror6-format,.group-codemirror6-more').toggle(active);
+	$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
 };
 
 /**
@@ -60,13 +58,27 @@ const setActive = (context: WikiEditorContext, active?: true): void => {
  * @param execute 执行函数
  * @param label 按钮标签
  */
-const getTool = (oouiIcon: string, execute: (ctx: WikiEditorContext) => void, label?: string): object => ({
+const getTool = (oouiIcon: string, execute: Action | [Command, string, Action<void>?], label?: string): object => ({
 	type: 'button',
 	oouiIcon,
 	label,
 	action: {
 		type: 'callback',
-		execute,
+		execute(ctx: WikiEditorContext): void {
+			const cm = getInstance(ctx.$textarea);
+			if (typeof execute === 'function') {
+				execute(ctx, cm);
+				return;
+			}
+			const [cmd, handler, fallback] = execute;
+			if (fallback && !cm.visible) {
+				fallback(ctx);
+			} else if (cm.view) {
+				cmd(cm.view);
+			} else if (cm.editor) {
+				cm.editor.trigger('wikiEditor', handler, undefined);
+			}
+		},
 	},
 });
 
@@ -114,8 +126,8 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				tools: {
 					toggle: getTool(
 						'highlight',
-						(ctx: WikiEditorContext) => {
-							($textarea.data('CodeMirror6') as CodeMirror | undefined)?.toggle();
+						(ctx, cm) => {
+							cm.toggle();
 							setActive(ctx);
 						},
 						'CodeMirror 6',
@@ -126,33 +138,11 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				tools: {
 					indent: getTool(
 						'indent',
-						() => {
-							const cm = instances.get($textarea[0]!)!;
-							if (cm.view) {
-								indentMore(cm.view);
-							} else if (cm.editor) {
-								cm.editor.trigger(
-									'wikiEditor',
-									'editor.action.indentLines',
-									undefined,
-								);
-							}
-						},
+						[indentMore, 'editor.action.indentLines'],
 					),
 					outdent: getTool(
 						'outdent',
-						() => {
-							const cm = instances.get($textarea[0]!)!;
-							if (cm.view) {
-								indentLess(cm.view);
-							} else if (cm.editor) {
-								cm.editor.trigger(
-									'wikiEditor',
-									'editor.action.outdentLines',
-									undefined,
-								);
-							}
-						},
+						[indentLess, 'editor.action.outdentLines'],
 					),
 				},
 			},
@@ -160,9 +150,9 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				tools: {
 					invisibleChars: getTool(
 						'pilcrow',
-						() => {
+						(_, cm) => {
 							const state = !isActive($toolbar, 'invisibleChars');
-							instances.get($textarea[0]!)!.prefer({
+							cm.prefer({
 								highlightSpecialChars: state,
 								highlightWhitespace: state,
 							});
@@ -170,26 +160,15 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 					lineWrapping: getTool(
 						'wrapping',
-						() => {
+						(_, cm) => {
 							const state = !isActive($toolbar, 'lineWrapping');
-							instances.get($textarea[0]!)!.setLineWrapping(state);
+							cm.setLineWrapping(state);
 							toggleButton($toolbar, 'lineWrapping', state);
 						},
 					),
 					gotoLine: getTool(
 						'gotoLine',
-						() => {
-							const cm = instances.get($textarea[0]!)!;
-							if (cm.view) {
-								gotoLine(cm.view);
-							} else if (cm.editor) {
-								cm.editor.trigger(
-									'wikiEditor',
-									'editor.action.gotoLine',
-									undefined,
-								);
-							}
-						},
+						[gotoLine, 'editor.action.gotoLine'],
 					),
 					preferences: getTool(
 						'settings',
@@ -200,9 +179,25 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
+			'codemirror6-search': {
+				tools: {
+					cmSearch: getTool(
+						'articleSearch',
+						[
+							openSearchPanel,
+							'editor.action.startFindReplaceAction',
+							(ctx): void => {
+								$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
+							},
+						],
+						mw.msg('wikieditor-toolbar-tool-replace'),
+					),
+				},
+			},
 		},
 	});
 	setActive(context, true);
 	$toolbar.toggleClass('codemirror-readonly', readOnly)
+		.toggleClass('codemirror-wiki', isWiki)
 		.toggleClass('codemirror-coding', !isWiki);
 };

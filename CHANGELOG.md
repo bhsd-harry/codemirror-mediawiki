@@ -1,3 +1,15 @@
+## 2.28.1
+
+*2025-06-20*
+
+**Added**
+
+- Add a search button to the [WikiEditor](./mw/README.md#wikieditor) toolbar for the JavaScript, CSS, JSON and Lua modes on a MediaWiki site
+
+**Fixed**
+
+- Hide the CodeMirror button in the [WikiEditor](./mw/README.md#wikieditor) toolbar when the [CodeEditor](https://www.mediawiki.org/wiki/Extension:CodeEditor) is active on a MediaWiki site
+
 ## 2.28.0
 
 *2025-06-18*
@@ -7,7 +19,7 @@
 - Snippet [autocompletion](./README.md#autocompletion) for the Lua mode
 - Additional [lint](./README.md#lint) rules for the `sanitized-css` pages on a MediaWiki site
 - Smart indentation for JavaScript, CSS, Lua and JSON modes
-- More [wikiEditor](./mw/README.md#wikieditor) toolbar buttons for the JavaScript, CSS, JSON and Lua modes
+- More [WikiEditor](./mw/README.md#wikieditor) toolbar buttons for the JavaScript, CSS, JSON and Lua modes
 - New method: [`setLineWrapping`](./README.md#setlinewrapping)
 
 **Fixed**
@@ -338,7 +350,7 @@
 **Fixed**
 
 - Highlighting of apostrophes in different table cells in one line in the MediaWiki mode
-- Incompatibility with the [wikiEditor](./mw/README.md#wikieditor) heading tool when using the Monaco editor on a MediaWiki site
+- Incompatibility with the [WikiEditor](./mw/README.md#wikieditor) heading tool when using the Monaco editor on a MediaWiki site
 
 **Changed**
 

@@ -15,7 +15,6 @@ import type {editor} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
-import type {WikiEditorContext} from './wikiEditor';
 
 declare global {
 	const monaco: typeof Monaco;
@@ -23,6 +22,11 @@ declare global {
 
 declare interface IWikitextModel extends editor.ITextModel {
 	lint?: (this: IWikitextModel, on: boolean) => void; // eslint-disable-line @typescript-eslint/method-signature-style
+}
+
+declare interface ExtCodeMirror {
+	textarea: HTMLTextAreaElement;
+	destroy(): void;
 }
 
 const linters: Record<string, LintSource | undefined> = {},
@@ -75,7 +79,7 @@ export class CodeMirror extends CodeMirror6 {
 	#container: HTMLDivElement | undefined;
 	#model: IWikitextModel | undefined;
 	#editor: editor.IStandaloneCodeEditor | undefined;
-	readonly #init;
+	#init: Promise<void> | undefined;
 	#indentStr = '\t';
 
 	override get visible(): boolean {
@@ -113,22 +117,18 @@ export class CodeMirror extends CodeMirror6 {
 	) {
 		if (instances.has(textarea)) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
-		} else if (textarea.id === 'wpTextbox1') {
-			mw.hook('ext.CodeMirror.ready').add((obj: {destroy(): void}) => {
-				obj.destroy();
-			});
 		}
+		mw.hook('ext.CodeMirror.ready').add((obj: ExtCodeMirror) => {
+			if (obj.textarea === textarea) {
+				obj.destroy();
+			}
+		});
 		super(textarea, lang, config, false);
 		this.ns = ns;
 		this.page = page;
 		this.$textarea = $(textarea);
 		instances.set(textarea, this);
-		if (isCM) {
-			this.initialize(config);
-		} else {
-			this.#init = this.#initMonaco();
-			this.$textarea.data('jquery.textSelection', monacoTextSelection);
-		}
+		this.initialize(config, !isCM);
 		if (isEditor(textarea)) {
 			mw.hook('wiki-codemirror6').fire(this);
 			if (textarea.id === 'wpTextbox1') {
@@ -150,9 +150,13 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	override initialize(config?: unknown): void {
+	override initialize(config?: unknown, monaco?: boolean): void {
 		if (this.#model) {
 			throw new Error('A Monaco editor is already initialized!');
+		} else if (monaco) {
+			this.#init = this.#initMonaco();
+			this.$textarea.data('jquery.textSelection', monacoTextSelection);
+			return;
 		}
 		super.initialize(config);
 		this.#setLangConfig(config as MwConfig);

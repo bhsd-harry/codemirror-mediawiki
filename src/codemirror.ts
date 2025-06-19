@@ -420,7 +420,7 @@ export class CodeMirror6 {
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
 		const isFunc = typeof opt === 'function',
-			getOpt = (runtime?: true): Option => isFunc ? opt(runtime) : opt;
+			getOpt = (runtime?: boolean): Option => isFunc ? opt(runtime) : opt;
 		switch (this.#lang) {
 			case 'mediawiki': {
 				const wikiLint = await getWikiLinter(getOpt(), this.#view);
