@@ -8,7 +8,6 @@ import {
 	foldedRanges,
 	unfoldAll,
 	codeFolding,
-	foldService,
 	foldGutter,
 	foldKeymap,
 	foldState,
@@ -385,31 +384,6 @@ const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
 export default [
 	(e = defaultFoldExtension): Extension => e,
 	{
-		lua: [
-			defaultFoldExtension,
-			foldService.of(({doc, tabSize}, start, from) => {
-				const {text, number} = doc.lineAt(start);
-				if (!text.trim()) {
-					return null;
-				}
-				const getIndent = (line: string): number =>
-					/^\s*/u.exec(line)![0].replace(/\t/gu, ' '.repeat(tabSize)).length;
-				const indent = getIndent(text);
-				let j = number,
-					empty = true;
-				for (; j < doc.lines; j++) {
-					const {text: next} = doc.line(j + 1);
-					if (next.trim()) {
-						empty = false;
-						const nextIndent = getIndent(next);
-						if (indent >= nextIndent) {
-							break;
-						}
-					}
-				}
-				return empty || j === number ? null : {from, to: doc.line(j).to};
-			}),
-		],
 		mediawiki: [
 			codeFolding({
 				placeholderDOM(view) {

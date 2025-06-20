@@ -1,5 +1,5 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
-import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
+import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
@@ -425,5 +425,28 @@ lua.languageData!['autocomplete'] = (context => {
 	return null;
 }) as CompletionSource;
 
-export default (): LanguageSupport => new LanguageSupport(StreamLanguage.define(lua));
+const support = foldService.of(({doc, tabSize}, start, from) => {
+	const {text, number} = doc.lineAt(start);
+	if (!text.trim()) {
+		return null;
+	}
+	const getIndent = (line: string): number =>
+		/^\s*/u.exec(line)![0].replace(/\t/gu, ' '.repeat(tabSize)).length;
+	const indent = getIndent(text);
+	let j = number,
+		empty = true;
+	for (; j < doc.lines; j++) {
+		const {text: next} = doc.line(j + 1);
+		if (next.trim()) {
+			empty = false;
+			const nextIndent = getIndent(next);
+			if (indent >= nextIndent) {
+				break;
+			}
+		}
+	}
+	return empty || j === number ? null : {from, to: doc.line(j).to};
+});
+
+export default (): LanguageSupport => new LanguageSupport(StreamLanguage.define(lua), support);
 export {lua};
