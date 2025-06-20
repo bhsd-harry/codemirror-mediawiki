@@ -1,3 +1,11 @@
+## 2.28.2
+
+*2025-06-21*
+
+**Fixed**
+
+- [CodeFolding](./README.md#codefolding) for the Lua mode with empty lines
+
 ## 2.28.1
 
 *2025-06-20*

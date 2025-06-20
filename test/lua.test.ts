@@ -1,5 +1,7 @@
+import * as assert from 'assert';
+import {foldable} from '@codemirror/language';
 import luaLanguage, {lua} from '../src/lua';
-import {autocompletionTest} from './util';
+import {autocompletionTest, createState} from './util';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
 const nil = [
@@ -10,6 +12,13 @@ const nil = [
 	lang = luaLanguage();
 
 const mockTest = autocompletionTest(lua.languageData!['autocomplete'] as CompletionSource, lang, /^\w*$/u);
+
+const foldTest = (doc: string, result: unknown): void => {
+	assert.deepStrictEqual(
+		foldable(createState(doc, lang), 0, doc.indexOf('\n')),
+		result,
+	);
+};
 
 describe('Lua autocompletion', () => {
 	it('comment', async () => {
@@ -170,5 +179,18 @@ describe('Lua autocompletion', () => {
 				options: [{label: 'os', type: 'namespace'}],
 			},
 		);
+	});
+});
+
+describe('Lua folding', () => {
+	it('no folding', () => {
+		foldTest('a\n\nb', null);
+		foldTest('\ta\n\t\t\n    b', null);
+		foldTest('\ta\nb', null);
+	});
+	it('folding', () => {
+		foldTest('a\n\tb\n\tc\nd', {from: 1, to: 7});
+		foldTest('a\n  b\n    c\n  d\ne', {from: 1, to: 15});
+		foldTest('\ta\n\t\tb\n\tc', {from: 2, to: 6});
 	});
 });

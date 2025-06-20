@@ -438,11 +438,11 @@ const support = foldService.of(({doc, tabSize}, start, from) => {
 	for (; j < doc.lines; j++) {
 		const {text: next} = doc.line(j + 1);
 		if (next.trim()) {
-			empty = false;
 			const nextIndent = getIndent(next);
 			if (indent >= nextIndent) {
 				break;
 			}
+			empty = false;
 		}
 	}
 	return empty || j === number ? null : {from, to: doc.line(j).to};
