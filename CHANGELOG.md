@@ -2,14 +2,6 @@
 
 *2025-06-21*
 
-**Fixed**
-
-- [CodeFolding](./README.md#codefolding) for the Lua mode with empty lines
-
-## 2.28.1
-
-*2025-06-20*
-
 **Added**
 
 - Add a search button to the [WikiEditor](./mw/README.md#wikieditor) toolbar for the JavaScript, CSS, JSON and Lua modes on a MediaWiki site
@@ -18,6 +10,7 @@
 **Fixed**
 
 - Hide the CodeMirror button in the [WikiEditor](./mw/README.md#wikieditor) toolbar when the [CodeEditor](https://www.mediawiki.org/wiki/Extension:CodeEditor) is active on a MediaWiki site
+- [CodeFolding](./README.md#codefolding) for the Lua mode with empty lines
 
 ## 2.28.0
 

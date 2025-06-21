@@ -82,6 +82,7 @@ export class CodeMirror extends CodeMirror6 {
 	#editor: editor.IStandaloneCodeEditor | undefined;
 	#init: Promise<void> | undefined;
 	#indentStr = '\t';
+	#handler;
 
 	override get visible(): boolean {
 		return this.#visible && this.textarea.isConnected;
@@ -119,15 +120,17 @@ export class CodeMirror extends CodeMirror6 {
 		if (instances.has(textarea)) {
 			throw new RangeError('The textarea has already been replaced by CodeMirror.');
 		}
-		mw.hook('ext.CodeMirror.ready').add((obj: ExtCodeMirror) => {
-			if (obj.textarea === textarea && Object.getPrototypeOf(this) !== null) {
+		const handler = (obj: ExtCodeMirror): void => {
+			if (obj.textarea === textarea) {
 				obj.destroy();
 			}
-		});
+		};
+		mw.hook('ext.CodeMirror.ready').add(handler);
 		super(textarea, lang, config, false);
 		this.ns = ns;
 		this.page = page;
 		this.$textarea = $(textarea);
+		this.#handler = handler;
 		instances.set(textarea, this);
 		this.initialize(config, !isCM);
 		if (isEditor(textarea)) {
@@ -261,6 +264,7 @@ export class CodeMirror extends CodeMirror6 {
 		this.$toolbar?.removeClass(['readonly', 'wiki', 'coding'].map(s => `codemirror-${s}`).join(' '))
 			.find(getGroup(['', 'format', 'more', 'search']))
 			.remove();
+		mw.hook('ext.CodeMirror.ready').remove(this.#handler);
 		super.destroy();
 	}
 

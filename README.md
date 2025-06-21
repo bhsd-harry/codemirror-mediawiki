@@ -185,7 +185,7 @@ Whether the editor is visible, read-only.
 <details>
 	<summary>Expand</summary>
 
-*version added: 2.28.1*
+*version added: 2.28.2*
 
 Destroy the instance. This method is irrevocable and not recommended for general use. Instead, you should call the [`toggle`](#toggle) method to hide the editor.
 
