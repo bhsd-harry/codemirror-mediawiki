@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-unreadable-iife */
 import {loadScript, getWikiparse, getLSP, sanitizeInlineStyle} from '@bhsd/common';
 import {styleLint} from '@bhsd/common/dist/stylelint';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
@@ -90,6 +91,20 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		];
 	};
 };
+
+export const jsConfig = /* #__PURE__ */ ((): Linter.Config => ({
+	env: {browser: true, es2024: true, jquery: true},
+	globals: {
+		mw: 'readonly',
+		mediaWiki: 'readonly',
+		OO: 'readonly',
+		addOnloadHook: 'readonly',
+		importScriptURI: 'readonly',
+		importScript: 'readonly',
+		importStylesheet: 'readonly',
+		importStylesheetURI: 'readonly',
+	},
+}))();
 
 /** 获取 ESLint */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {

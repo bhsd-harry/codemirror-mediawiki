@@ -322,13 +322,14 @@ lua.languageData!['autocomplete'] = (context => {
 	if (!types.has(node.name)) {
 		return null;
 	}
-	const {from: f, text} = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w*$/u)!,
-		pre = /^(.*?)(?:\b\w*)?$/u.exec(text)![1]!,
-		char = pre.trim();
-	if (char !== '.' && !/\w$/u.test(text)) {
+	const match = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w+$|\.{1,2}$/u);
+	if (!match || match.text === '..') {
 		return null;
 	}
-	const from = f + pre.length,
+	const {from: f, text} = match,
+		pre = /^(.*?)(?:\b\w*)?$/u.exec(text)![1]!,
+		char = pre.trim(),
+		from = f + pre.length,
 		validFor = /^\w*$/u;
 	switch (char) {
 		case '.': {

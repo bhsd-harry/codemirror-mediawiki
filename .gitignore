@@ -1,4 +1,5 @@
 /.vscode/
+/build
 dist/
 !/dist/main.min.js
 /.markdownlint.json

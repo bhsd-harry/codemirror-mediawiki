@@ -1,6 +1,7 @@
 import {CDN} from '@bhsd/common';
 import {CodeMirror6} from '../src/codemirror';
 import {tagModes} from '../src/static';
+import {jsConfig} from '../src/linter';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
@@ -341,17 +342,7 @@ export class CodeMirror extends CodeMirror6 {
 				defaultOpt = {include: false};
 			} else if (lang === 'javascript') {
 				defaultOpt = {
-					env: {browser: true, es2024: true, jquery: true},
-					globals: {
-						mw: 'readonly',
-						mediaWiki: 'readonly',
-						OO: 'readonly',
-						addOnloadHook: 'readonly',
-						importScriptURI: 'readonly',
-						importScript: 'readonly',
-						importStylesheet: 'readonly',
-						importStylesheetURI: 'readonly',
-					},
+					...jsConfig,
 					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
 				} satisfies Linter.Config;
 			}
@@ -363,7 +354,7 @@ export class CodeMirror extends CodeMirror6 {
 				const extra = {getConfig: this.getWikiConfig, i18n: languages};
 				opt = opt
 					? {...extra, ...opt as Option}
-					: (runtime): Option => ({...extra, ...runtime ? wikilint : defaultOpt});
+					: (runtime): Option => runtime ? wikilint : {...extra, ...defaultOpt};
 			} else if (lang === 'javascript') {
 				opt ??= (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
 			} else if (lang === 'css') {
