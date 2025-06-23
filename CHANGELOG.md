@@ -1,3 +1,11 @@
+## 2.29.0
+
+*2025-06-24*
+
+**Added**
+
+- The [bracketMatching](./README.md#bracketmatching) extension now also highlights the enclosing brackets
+
 ## 2.28.2
 
 *2025-06-21*

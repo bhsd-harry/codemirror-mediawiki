@@ -17,7 +17,6 @@ import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
-	bracketMatching,
 	indentUnit,
 	ensureSyntaxTree,
 } from '@codemirror/language';
@@ -49,6 +48,7 @@ import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
 import statusBar from './statusBar';
 import {detectIndent, noDetectionLangs} from './indent';
+import bracketMatching from './matchBrackets';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
