@@ -4,7 +4,7 @@ import type {CodeMirror} from './codemirror';
 
 const storageKey = 'codemirror-mediawiki-i18n';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.29.1',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.29.2',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	languages = mw.language?.getFallbackLanguageChain() ?? [mw.config.get('wgUserLanguage')],
