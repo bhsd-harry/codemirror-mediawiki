@@ -63,7 +63,7 @@ export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
  * @param execute 执行函数
  * @param label 按钮标签
  */
-const getTool = (oouiIcon: string, execute: Action | [Command, string, Action<void>?], label?: string): object => ({
+const getTool = (oouiIcon: string, execute: Action | [Command, string, Action<void>?], label: string): object => ({
 	type: 'button',
 	oouiIcon,
 	label,
@@ -99,15 +99,31 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 	}
 	let context = $textarea.data('wikiEditorContext') as WikiEditorContext | undefined;
 	const done = new Promise<void>(resolve => { // MW >= 1.21
-		if (context) {
-			resolve();
-			return;
-		}
-		$textarea.on('wikiEditor-toolbar-doneInitialSections', () => {
-			resolve();
-		});
-	});
-	await mw.loader.using(['ext.wikiEditor', 'oojs-ui.styles.icons-interactions', 'ext.codeEditor.icons']);
+			if (context) {
+				resolve();
+				return;
+			}
+			$textarea.on('wikiEditor-toolbar-doneInitialSections', () => {
+				resolve();
+			});
+		}),
+		hasCodeEditor = mw.loader.getState('ext.codeEditor') !== null;
+	await Promise.all([
+		mw.loader.using([
+			'ext.wikiEditor',
+			'oojs-ui.styles.icons-interactions',
+			...hasCodeEditor ? ['ext.codeEditor.icons'] : [],
+		]),
+		hasCodeEditor
+			? new mw.Api().loadMessagesIfMissing([
+				'codeeditor-indent',
+				'codeeditor-outdent',
+				'codeeditor-invisibleChars-toggle',
+				'codeeditor-lineWrapping-toggle',
+				'codeeditor-gotoline',
+			])
+			: false,
+	]);
 	if (context) {
 		/** @todo 萌娘百科小工具更新后删除 */
 		context.modules.toolbar.$toolbar.find('.group-insert>.tool:not([rel])').hide();
@@ -138,42 +154,55 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			'codemirror6-format': {
-				tools: {
-					indent: getTool(
-						'indent',
-						[indentMore, 'editor.action.indentLines'],
-					),
-					outdent: getTool(
-						'outdent',
-						[indentLess, 'editor.action.outdentLines'],
-					),
-				},
-			},
+			...hasCodeEditor
+				? {
+					'codemirror6-format': {
+						tools: {
+							indent: getTool(
+								'indent',
+								[indentMore, 'editor.action.indentLines'],
+								mw.msg('codeeditor-indent'),
+							),
+							outdent: getTool(
+								'outdent',
+								[indentLess, 'editor.action.outdentLines'],
+								mw.msg('codeeditor-outdent'),
+							),
+						},
+					},
+				}
+				: {},
 			'codemirror6-more': {
 				tools: {
-					invisibleChars: getTool(
-						'pilcrow',
-						(_, cm) => {
-							const state = !isActive($toolbar, 'invisibleChars');
-							cm.prefer({
-								highlightSpecialChars: state,
-								highlightWhitespace: state,
-							});
-						},
-					),
-					lineWrapping: getTool(
-						'wrapping',
-						(_, cm) => {
-							const state = !isActive($toolbar, 'lineWrapping');
-							cm.setLineWrapping(state);
-							toggleButton($toolbar, 'lineWrapping', state);
-						},
-					),
-					gotoLine: getTool(
-						'gotoLine',
-						[gotoLine, 'editor.action.gotoLine'],
-					),
+					...hasCodeEditor
+						? {
+							invisibleChars: getTool(
+								'pilcrow',
+								(_, cm) => {
+									const state = !isActive($toolbar, 'invisibleChars');
+									cm.prefer({
+										highlightSpecialChars: state,
+										highlightWhitespace: state,
+									});
+								},
+								mw.msg('codeeditor-invisibleChars-toggle'),
+							),
+							lineWrapping: getTool(
+								'wrapping',
+								(_, cm) => {
+									const state = !isActive($toolbar, 'lineWrapping');
+									cm.setLineWrapping(state);
+									toggleButton($toolbar, 'lineWrapping', state);
+								},
+								mw.msg('codeeditor-lineWrapping-toggle'),
+							),
+							gotoLine: getTool(
+								'gotoLine',
+								[gotoLine, 'editor.action.gotoLine'],
+								mw.msg('codeeditor-gotoline'),
+							),
+						}
+						: {},
 					preferences: getTool(
 						'settings',
 						() => {

@@ -20,7 +20,9 @@
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/codemirror.js",
+	"module": "./dist/codemirror.js",
 	"types": "./dist/codemirror.d.ts",
+	"type": "module",
 	"sideEffects": false,
 	"repository": {
 		"type": "git",
@@ -31,7 +33,7 @@
 		"bundle:core": "esbuild ./src/codemirror.ts --charset=utf8 --bundle --format=esm --outfile=build/main.js",
 		"bundle:wiki": "esbuild ./mw/index.ts --charset=utf8 --bundle --format=esm --outfile=build/wiki.js",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css",
-		"build:core": "npm run bundle:core && esbuild ./build/main.js --charset=utf8 --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc && rm dist/*-page.{js,d.ts}",
+		"build:core": "npm run bundle:core && esbuild ./build/main.js --charset=utf8 --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",
 		"build:mw": "esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js",
 		"build:wiki": "npm run bundle:wiki && esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
@@ -88,7 +90,7 @@
 		"luacheck-browserify": "^0.7.0",
 		"mocha": "^11.1.0",
 		"monaco-editor": "^0.52.2",
-		"stylelint": "^16.20.0",
+		"stylelint": "^16.21.0",
 		"stylelint-config-recommended": "^16.0.0",
 		"types-mediawiki": "^1.9.1",
 		"typescript": "^5.8.2"

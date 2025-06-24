@@ -1,10 +1,14 @@
-## 2.29.0
+## 2.29.1
 
 *2025-06-24*
 
 **Added**
 
 - The [bracketMatching](./README.md#bracketmatching) extension now also highlights the enclosing brackets
+
+**Fixed**
+
+- The [wikiEditor](./mw/README.md#wikieditor) extension if [Extension:CodeEditor](https://www.mediawiki.org/wiki/Extension:CodeEditor) is not installed on a MediaWiki site
 
 ## 2.28.2
 
