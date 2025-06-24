@@ -1,7 +1,9 @@
 #!/usr/local/bin/bash
 if [[ $2 == 'npm' ]]
 then
+	gsed -i '/"types":/a \\t"type": "module",' package.json
 	npm publish --tag "${3-latest}"
+	gsed -i '/"type": "module",/d' package.json
 else
 	sed -i '' -E "s|codemirror-mediawiki@[^/']+|codemirror-mediawiki@$1|g" mw/msg.ts
 	npm run lint && npm run build:test && npm run test:real && npm run build && npm run build:gh-page

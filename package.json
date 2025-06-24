@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "2.29.0",
+	"version": "2.29.1",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -22,7 +22,6 @@
 	"main": "./dist/codemirror.js",
 	"module": "./dist/codemirror.js",
 	"types": "./dist/codemirror.d.ts",
-	"type": "module",
 	"sideEffects": false,
 	"repository": {
 		"type": "git",
