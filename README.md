@@ -7,7 +7,8 @@
 	<summary>Expand</summary>
 
 - [Description](#description)
-- [Usage](#usage)
+- [Installation](#installation)
+- [Browser Usage](#browser-usage)
 	- [JavaScript](#javascript)
 	- [CSS](#css)
 - [Constructor](#constructor)
@@ -68,7 +69,19 @@ Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experime
 
 Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://github.com/bhsd-harry/Wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
 
-# Usage
+# Installation
+
+You can install the package via npm and import it as a module:
+
+```bash
+npm install @bhsd/codemirror-mediawiki
+```
+
+```js
+import {CodeMirror6} from '@bhsd/codemirror-mediawiki';
+```
+
+# Browser Usage
 
 You can download the code via CDN, for example:
 
