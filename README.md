@@ -130,7 +130,7 @@ or
 
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `unknown` the optional language configuration  
+**param**: `unknown` the language configuration, only required for the MediaWiki mode and the mixed MediaWiki-HTML mode  
 **param**: `boolean` whether to initialize immediately, default as true  
 
 ```js

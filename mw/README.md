@@ -49,7 +49,7 @@ The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) cla
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
-**param**: `unknown` the optional language configuration  
+**param**: `unknown` the language configuration, only required for the MediaWiki mode and the mixed MediaWiki-HTML mode  
 **param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror  
 **param**: `string` the optional page title, default as the current page title  
 
