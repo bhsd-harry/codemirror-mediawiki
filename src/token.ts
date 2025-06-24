@@ -7,9 +7,9 @@
 import {Tag} from '@lezer/highlight';
 import {decodeHTML, getRegex} from '@bhsd/common';
 import {otherParserFunctions} from '@bhsd/common/dist/cm';
-import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import {css} from '@codemirror/legacy-modes/mode/css';
 import {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
+import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import type {MwConfig as MwConfigBase} from '@bhsd/common/dist/cm';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';

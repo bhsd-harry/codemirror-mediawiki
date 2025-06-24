@@ -5,13 +5,14 @@ import type {Extension, StateField, Transaction, Range, Facet, EditorState} from
 import type {Config, MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 
-const findEnclosingBrackets = (parent: SyntaxNode | null, brackets: string): MatchResult | undefined => {
+export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
+	let parent: SyntaxNode | null = node;
 	while (parent) {
 		const {firstChild, lastChild} = parent;
 		if (firstChild && lastChild) {
 			const i = brackets.indexOf(firstChild.name),
 				j = brackets.indexOf(lastChild.name);
-			if (i !== -1 && j !== -1 && i % 2 === 0 && j % 2 === 1) {
+			if (i !== -1 && j !== -1 && i % 2 === 0 && j % 2 === 1 && firstChild.from < pos && lastChild.to > pos) {
 				return {start: firstChild, end: lastChild, matched: true};
 			}
 		}
@@ -20,7 +21,7 @@ const findEnclosingBrackets = (parent: SyntaxNode | null, brackets: string): Mat
 	return undefined;
 };
 
-const findEnclosingPlainBrackets = (
+export const findEnclosingPlainBrackets = (
 	state: EditorState,
 	pos: number,
 	config: Required<Config>,
@@ -31,15 +32,19 @@ const findEnclosingPlainBrackets = (
 				// eslint-disable-next-line @typescript-eslint/no-misused-spread
 				[...brackets].filter((_, i) => i % 2).map(c => c === ']' ? String.raw`\]` : c).join('')
 			}]`,
-			'u',
+			'gu',
 		),
-		i = state.sliceDoc(pos, pos + maxScanDistance).search(re);
-	if (i === -1) {
-		return null;
+		str = state.sliceDoc(pos, pos + maxScanDistance);
+	let mt = re.exec(str);
+	while (mt) {
+		const result = matchBrackets(state, pos + mt.index + 1, -1, config),
+			left = result?.end?.to;
+		if (left !== undefined && left <= pos) {
+			return result;
+		}
+		mt = re.exec(str);
 	}
-	const mt = matchBrackets(state, pos + i + 1, -1, config),
-		left = mt?.end?.to;
-	return left !== undefined && left <= pos ? mt : null;
+	return null;
 };
 
 export default (configs: Config): Extension => {
@@ -67,8 +72,8 @@ export default (configs: Config): Extension => {
 							matchBrackets(state, head, 1, config)
 							|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
 						)
-						|| findEnclosingBrackets(tree.resolveInner(head, -1).parent, brackets)
-						|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1).parent, brackets)
+						|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
+						|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
 						|| findEnclosingPlainBrackets(state, head, config);
 				if (match) {
 					decorations.push(...renderMatch(match, state));

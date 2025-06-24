@@ -5,6 +5,7 @@
 	],
 	"compilerOptions": {
 		"target": "ES2024",
+		"module": "commonjs",
 		"declaration": false,
 		"removeComments": true,
 		"outDir": "dist"

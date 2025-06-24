@@ -3,8 +3,9 @@
 		"src/*.ts"
 	],
 	"compilerOptions": {
-		"target": "ES2019",
-		"module": "CommonJS",
+		"target": "esnext",
+		"module": "es6",
+		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"declaration": true,
 		"outDir": "dist",
