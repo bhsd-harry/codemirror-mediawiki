@@ -112,7 +112,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 		mw.loader.using([
 			'ext.wikiEditor',
 			'oojs-ui.styles.icons-interactions',
-			...hasCodeEditor ? ['ext.codeEditor.icons'] : [],
+			...hasCodeEditor ? ['ext.codeEditor.icons'] : ['oojs-ui.styles.icons-editing-list'],
 		]),
 		hasCodeEditor
 			? new mw.Api().loadMessagesIfMissing([
@@ -154,24 +154,20 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			...hasCodeEditor
-				? {
-					'codemirror6-format': {
-						tools: {
-							indent: getTool(
-								'indent',
-								[indentMore, 'editor.action.indentLines'],
-								mw.msg('codeeditor-indent'),
-							),
-							outdent: getTool(
-								'outdent',
-								[indentLess, 'editor.action.outdentLines'],
-								mw.msg('codeeditor-outdent'),
-							),
-						},
-					},
-				}
-				: {},
+			'codemirror6-format': {
+				tools: {
+					indent: getTool(
+						'indent',
+						[indentMore, 'editor.action.indentLines'],
+						hasCodeEditor ? mw.msg('codeeditor-indent') : 'Indent',
+					),
+					outdent: getTool(
+						'outdent',
+						[indentLess, 'editor.action.outdentLines'],
+						hasCodeEditor ? mw.msg('codeeditor-outdent') : 'Outdent',
+					),
+				},
+			},
 			'codemirror6-more': {
 				tools: {
 					...hasCodeEditor

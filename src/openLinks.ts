@@ -26,22 +26,33 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		'file-text.cm-mw-pagename',
 	];
 
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-globalThis.document?.addEventListener('keydown', e => {
-	if (e.key === key) {
-		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+const toggleOpenLinks = (toggle?: boolean): void => {
+	for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+		if (toggle) {
 			ele.style.setProperty('--codemirror-cursor', 'pointer');
-		}
-	}
-});
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-globalThis.document?.addEventListener('keyup', e => {
-	if (e.key === key) {
-		for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
+		} else {
 			ele.style.removeProperty('--codemirror-cursor');
 		}
 	}
+};
+
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
+globalThis.document?.addEventListener('keydown', e => {
+	if (e.key === key) {
+		toggleOpenLinks(true);
+	}
 });
+globalThis.document?.addEventListener('keyup', e => {
+	if (e.key === key) {
+		toggleOpenLinks();
+	}
+});
+globalThis.document?.addEventListener('visibilitychange', () => {
+	if (document.hidden) {
+		toggleOpenLinks();
+	}
+});
+/* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
