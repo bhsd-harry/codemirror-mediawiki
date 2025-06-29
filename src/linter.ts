@@ -106,9 +106,14 @@ export const jsConfig = /* #__PURE__ */ ((): Linter.Config => ({
 	},
 }))();
 
-/** 获取 ESLint */
-export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
-	await loadScript('npm/@bhsd/eslint-browserify', 'eslint');
+/**
+ * 获取 ESLint
+ * @param cdn CDN 地址
+ */
+export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
+	cdn = 'npm/@bhsd/eslint-browserify',
+) => {
+	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
 		conf: Linter.Config = {
@@ -141,9 +146,14 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[]> = async () => {
 	return linter as asyncLinter<Linter.LintMessage[]>;
 };
 
-/** 获取 Stylelint */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
-	await loadScript('npm/@bhsd/stylelint-browserify', 'stylelint');
+/**
+ * 获取 Stylelint
+ * @param cdn CDN 地址
+ */
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (
+	cdn = 'npm/@bhsd/stylelint-browserify',
+) => {
+	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
 		if (opt && 'rules' in opt) {
@@ -165,9 +175,14 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>> = async () => {
 	return linter;
 };
 
-/** 获取 Luacheck */
-export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>> = async () => {
-	await loadScript('npm/luacheck-browserify', 'luacheck');
+/**
+ * 获取 Luacheck
+ * @param cdn CDN 地址
+ */
+export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (
+	cdn = 'npm/luacheck-browserify',
+) => {
+	await loadScript(cdn, 'luacheck');
 	// eslint-disable-next-line @typescript-eslint/await-thenable
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
