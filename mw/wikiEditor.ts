@@ -112,6 +112,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 		mw.loader.using([
 			'ext.wikiEditor',
 			'oojs-ui.styles.icons-interactions',
+			'oojs-ui.styles.icons-layout',
 			...hasCodeEditor ? ['ext.codeEditor.icons'] : ['oojs-ui.styles.icons-editing-list'],
 		]),
 		hasCodeEditor
@@ -154,20 +155,24 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			'codemirror6-format': {
-				tools: {
-					indent: getTool(
-						'indent',
-						[indentMore, 'editor.action.indentLines'],
-						hasCodeEditor ? mw.msg('codeeditor-indent') : 'Indent',
-					),
-					outdent: getTool(
-						'outdent',
-						[indentLess, 'editor.action.outdentLines'],
-						hasCodeEditor ? mw.msg('codeeditor-outdent') : 'Outdent',
-					),
+			...readOnly || isWiki
+				? {}
+				: {
+					'codemirror6-format': {
+						tools: {
+							indent: getTool(
+								'indent',
+								[indentMore, 'editor.action.indentLines'],
+								hasCodeEditor ? mw.msg('codeeditor-indent') : 'Indent',
+							),
+							outdent: getTool(
+								'outdent',
+								[indentLess, 'editor.action.outdentLines'],
+								hasCodeEditor ? mw.msg('codeeditor-outdent') : 'Outdent',
+							),
+						},
+					},
 				},
-			},
 			'codemirror6-more': {
 				tools: {
 					...hasCodeEditor
@@ -208,21 +213,25 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			'codemirror6-search': {
-				tools: {
-					cmSearch: getTool(
-						'articleSearch',
-						[
-							openSearchPanel,
-							'editor.action.startFindReplaceAction',
-							(ctx): void => {
-								$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
-							},
-						],
-						mw.msg('wikieditor-toolbar-tool-replace'),
-					),
+			...isWiki
+				? {}
+				: {
+					'codemirror6-search': {
+						tools: {
+							cmSearch: getTool(
+								'articleSearch',
+								[
+									openSearchPanel,
+									'editor.action.startFindReplaceAction',
+									(ctx): void => {
+										$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
+									},
+								],
+								mw.msg('wikieditor-toolbar-tool-replace'),
+							),
+						},
+					},
 				},
-			},
 		},
 	});
 	setActive($toolbar, true);

@@ -142,12 +142,12 @@ export default (fixer: LintSource['fixer']): Extension => showPanel.of(view => {
 	dom.append(worker, message, position);
 	return {
 		dom,
-		update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
+		update({state: {selection: {main}, doc, readOnly}, transactions, docChanged, selectionSet}): void {
 			for (const tr of transactions) {
 				for (const effect of tr.effects) {
 					if (effect.is(setDiagnosticsEffect)) {
 						diagnostics = effect.value;
-						const fixable = Boolean(fixer) && diagnostics.some(hasFix),
+						const fixable = !readOnly && Boolean(fixer) && diagnostics.some(hasFix),
 							{classList} = fix.firstChild as HTMLDivElement;
 						classList.toggle('cm-status-fix-enabled', fixable);
 						classList.toggle('cm-status-fix-disabled', !fixable);

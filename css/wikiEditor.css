@@ -12,10 +12,6 @@
 .codemirror-coding .sections {
 	display: none;
 }
-.codemirror-wiki .group-codemirror6-format,
-.codemirror-wiki .group-codemirror6-search {
-	display: none !important;
-}
 
 .codeEditor-ui-toolbar .group-codemirror6 {
 	display: none;

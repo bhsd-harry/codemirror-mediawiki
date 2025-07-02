@@ -1,3 +1,11 @@
+## 2.29.3
+
+*2025-07-03*
+
+**Fixed**
+
+- Prevent text changes when the textarea is read-only
+
 ## 2.29.2
 
 *2025-06-24*

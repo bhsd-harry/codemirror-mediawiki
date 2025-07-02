@@ -104,44 +104,45 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, Addon<any>> = {
-	highlightSpecialChars: [highlightSpecialChars, {}],
-	highlightActiveLine: [highlightActiveLine, {}],
-	highlightWhitespace: [highlightWhitespace, {}],
-	highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
-	highlightSelectionMatches: [highlightSelectionMatches, {}],
-	bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
-	closeBrackets: [closeBrackets, {}],
-	scrollPastEnd: [scrollPastEnd, {}],
-	openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
-	allowMultipleSelections: [
-		(): Extension => [
-			EditorState.allowMultipleSelections.of(true),
-			drawSelection(),
-			rectangularSelection(),
-			crosshairCursor(),
+		highlightSpecialChars: [highlightSpecialChars, {}],
+		highlightActiveLine: [highlightActiveLine, {}],
+		highlightWhitespace: [highlightWhitespace, {}],
+		highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
+		highlightSelectionMatches: [highlightSelectionMatches, {}],
+		bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
+		closeBrackets: [closeBrackets, {}],
+		scrollPastEnd: [scrollPastEnd, {}],
+		openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
+		allowMultipleSelections: [
+			(): Extension => [
+				EditorState.allowMultipleSelections.of(true),
+				drawSelection(),
+				rectangularSelection(),
+				crosshairCursor(),
+			],
+			{},
 		],
-		{},
-	],
-	autocompletion: [
-		(): Extension => [
-			autocompletion({defaultKeymap: false}),
-			keymap.of([
-				...completionKeymap.filter(({run}) => run !== startCompletion),
-				{key: 'Shift-Enter', run: startCompletion},
-				{key: 'Tab', run: acceptCompletion},
-			]),
+		autocompletion: [
+			(): Extension => [
+				autocompletion({defaultKeymap: false}),
+				keymap.of([
+					...completionKeymap.filter(({run}) => run !== startCompletion),
+					{key: 'Shift-Enter', run: startCompletion},
+					{key: 'Tab', run: acceptCompletion},
+				]),
+			],
+			{},
 		],
-		{},
-	],
-	codeFolding,
-	colorPicker,
-	escape: mediawikiOnly(keymap.of(escapeKeymap)),
-	tagMatching: mediawikiOnly(tagMatchingState),
-	refHover: mediawikiOnly(refHover),
-	hover: mediawikiOnly(magicWordHover),
-	signatureHelp: mediawikiOnly(signatureHelp),
-	inlayHints: mediawikiOnly(inlayHints),
-};
+		codeFolding,
+		colorPicker,
+		escape: mediawikiOnly(keymap.of(escapeKeymap)),
+		tagMatching: mediawikiOnly(tagMatchingState),
+		refHover: mediawikiOnly(refHover),
+		hover: mediawikiOnly(magicWordHover),
+		signatureHelp: mediawikiOnly(signatureHelp),
+		inlayHints: mediawikiOnly(inlayHints),
+	},
+	editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
 
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
@@ -266,7 +267,13 @@ export class CodeMirror6 {
 					}
 				}),
 				...readOnly
-					? [EditorState.readOnly.of(true)]
+					? [
+						EditorState.readOnly.of(true),
+						EditorState.transactionFilter.of(tr => tr.docChanged ? [] : tr),
+						EditorView.theme({
+							'input[type="color"]': {pointerEvents: 'none'},
+						}),
+					]
 					: [
 						history(),
 						indentOnInput(),
@@ -338,7 +345,15 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(view => lintSource(view.state.doc)),
+				linter(async ({state: {doc, readOnly}}) => {
+					const diagnostics = await lintSource(doc);
+					if (readOnly) {
+						for (const diagnostic of diagnostics) {
+							delete diagnostic.actions;
+						}
+					}
+					return diagnostics;
+				}),
 				lintGutter(),
 				keymap.of(lintKeymap),
 				statusBar(lintSource.fixer),
@@ -384,11 +399,14 @@ export class CodeMirror6 {
 			}
 		}
 		if (this.#view) {
+			const {readOnly} = this.#view.state;
 			this.#effects(
-				this.#extensions.reconfigure([...this.#preferred].map(name => {
-					const [extension, configs] = avail[name]!;
-					return extension(configs[this.#lang], this);
-				})),
+				this.#extensions.reconfigure(
+					[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name)).map(name => {
+						const [extension, configs] = avail[name]!;
+						return extension(configs[this.#lang], this);
+					}),
+				),
 			);
 		}
 	}
