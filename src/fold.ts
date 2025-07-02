@@ -15,8 +15,8 @@ import {
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import {tokens} from './config';
-import {matchTag} from './matchTag';
-import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue} from '@codemirror/view';
+import {matchTag, getTag} from './matchTag';
+import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
@@ -60,8 +60,10 @@ const isComponent = (keys: TagName[]) =>
 	/**
 	 * Check if a SyntaxNode is part of a extension tag
 	 * @param node 语法树节点
+	 * @param refOnly 是否仅检查`<ref>`标签
 	 */
-	isExt = (node: SyntaxNode): boolean => node.name.includes('mw-tag-');
+	isExt = (node: SyntaxNode, refOnly: boolean): boolean =>
+		node.name.includes(`mw-tag-${refOnly ? 'ref' : ''}`);
 
 /**
  * Update the stack of opening (+) or closing (-) brackets
@@ -73,13 +75,21 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
 };
 
+const refNames = new Set<string | undefined>(['ref', 'references']);
+
 /**
  * 寻找可折叠的范围
  * @param state
  * @param posOrNode 字符位置或语法树节点
  * @param tree 语法树
+ * @param refOnly 是否仅检查`<ref>`标签
  */
-export const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tree?: Tree | null): DocRange | false => {
+export const foldable = (
+	state: EditorState,
+	posOrNode: number | SyntaxNode,
+	tree?: Tree | null,
+	refOnly = false,
+): DocRange | false => {
 	if (typeof posOrNode === 'number') {
 		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
 	}
@@ -90,11 +100,11 @@ export const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tre
 	if (typeof posOrNode === 'number') {
 		// Find the initial template node on both sides of the position
 		const left = tree.resolve(posOrNode, -1);
-		if (isTemplate(left)) {
+		if (!refOnly && isTemplate(left)) {
 			node = left;
 		} else {
 			const right = tree.resolve(posOrNode, 1);
-			node = isExt(left)
+			node = isExt(left, refOnly)
 				&& left.name.split('mw-tag-').length > right.name.split('mw-tag-').length
 				? left
 				: right;
@@ -102,9 +112,9 @@ export const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tre
 	} else {
 		node = posOrNode;
 	}
-	if (!isTemplate(node)) {
+	if (refOnly || !isTemplate(node)) {
 		// Not a template
-		if (isExt(node)) {
+		if (isExt(node, refOnly)) {
 			const {name} = node,
 				[tag] = /^[a-z]+/u.exec(name.slice(name.lastIndexOf('mw-tag-') + 7))!,
 				regex = getExtRegex(tag);
@@ -112,7 +122,9 @@ export const foldable = (state: EditorState, posOrNode: number | SyntaxNode, tre
 			while (nextSibling && !(isExtBracket(nextSibling) && !regex.test(nextSibling.name))) {
 				({nextSibling} = nextSibling);
 			}
-			if (nextSibling) { // The closing bracket of the current extension tag
+			const next = nextSibling?.nextSibling;
+			// The closing bracket of the current extension tag
+			if (nextSibling && (!refOnly || next && refNames.has(getTag(state, next)?.name))) {
 				return {from: matchTag(state, nextSibling.to)!.end!.to, to: nextSibling.from};
 			}
 		}
@@ -229,6 +241,7 @@ const getAnchor = (state: EditorState): number => Math.max(...state.selection.ra
  * @param end 终止位置
  * @param anchor 光标位置
  * @param update 更新光标位置
+ * @param refOnly 是否仅检查`<ref>`标签
  */
 const traverse = (
 	state: EditorState,
@@ -238,10 +251,11 @@ const traverse = (
 	end: number,
 	anchor: number,
 	update: AnchorUpdate,
+	refOnly?: boolean,
 ): number => {
 	while (node && node.from <= end) {
 		/* eslint-disable no-param-reassign */
-		const range = foldable(state, node, tree);
+		const range = foldable(state, node, tree, refOnly);
 		if (range) {
 			effects.push(foldEffect.of(range));
 			node = tree.resolve(range.to, 1);
@@ -381,6 +395,29 @@ const markers = ViewPlugin.fromClass(class implements PluginValue {
 
 const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
 
+/**
+ * 生成折叠命令
+ * @param refOnly 是否仅检查`<ref>`标签
+ */
+const foldCommand = (refOnly?: boolean): Command => view => {
+	const {state} = view,
+		tree = syntaxTree(state),
+		effects: StateEffect<DocRange>[] = [],
+		anchor = traverse(
+			state,
+			tree,
+			effects,
+			tree.topNode.firstChild,
+			Infinity,
+			getAnchor(state),
+			updateAll,
+			refOnly,
+		);
+	return execute(view, effects, anchor);
+};
+
+export const foldRef = foldCommand(true);
+
 export default [
 	(e = defaultFoldExtension): Extension => e,
 	{
@@ -446,21 +483,12 @@ export default [
 				{
 					// Fold all templates in the document
 					key: 'Ctrl-Alt-[',
-					run(view): boolean {
-						const {state} = view,
-							tree = syntaxTree(state),
-							effects: StateEffect<DocRange>[] = [],
-							anchor = traverse(
-								state,
-								tree,
-								effects,
-								tree.topNode.firstChild,
-								Infinity,
-								getAnchor(state),
-								updateAll,
-							);
-						return execute(view, effects, anchor);
-					},
+					run: foldCommand(),
+				},
+				{
+					// Fold all `<ref>` tags in the document
+					key: 'Mod-Alt-,',
+					run: foldRef,
 				},
 				{
 					// Unfold the template at the selection/cursor

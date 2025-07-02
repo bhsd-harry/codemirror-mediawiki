@@ -60,5 +60,6 @@
 	"phrase-Fold-line": "折叠行",
 	"phrase-Unfold-line": "展开行",
 	"phrase-Fold-template-or-extension-tag": "折叠模板、解析器函数或扩展标签",
-	"phrase-No-definition-found": "未找到定义："
+	"phrase-No-definition-found": "未找到定义：",
+	"toolbar-fold-ref": "折叠/展开参考资料"
 }

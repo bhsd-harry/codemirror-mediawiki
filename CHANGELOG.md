@@ -1,6 +1,11 @@
-## 2.29.3
+## 2.30.0
 
 *2025-07-03*
+
+**Added**
+
+- New key binding `Mod` + `Alt` + `,` to fold all `<ref>` and `<references>` tags in the MediaWiki mode
+- New [WikiEditor](./mw/README.md#wikieditor) toolbar button to fold all `<ref>` and `<references>` tags in the MediaWiki mode on a MediaWiki site
 
 **Fixed**
 

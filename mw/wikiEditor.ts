@@ -1,5 +1,7 @@
 import {indentMore, indentLess} from '@codemirror/commands';
 import {gotoLine, openSearchPanel} from '@codemirror/search';
+import {unfoldAll} from '@codemirror/language';
+import {foldRef} from '../src/fold';
 import {msg} from './msg';
 import {getInstance} from './textSelection';
 import type {Command} from '@codemirror/view';
@@ -201,6 +203,28 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 								'gotoLine',
 								[gotoLine, 'editor.action.gotoLine'],
 								mw.msg('codeeditor-gotoline'),
+							),
+						}
+						: {},
+					...isWiki
+						? {
+							foldRef: getTool(
+								'viewCompact',
+								(_, {view}) => {
+									if (!view) {
+										return;
+									}
+									const button: OO.ui.ButtonWidget = findButton($toolbar, 'foldRef')
+											.data('ooui'),
+										isNormal = button.getIcon() === 'viewCompact';
+									button.setIcon(isNormal ? 'viewDetails' : 'viewCompact');
+									if (isNormal) {
+										foldRef(view);
+									} else {
+										unfoldAll(view);
+									}
+								},
+								msg('toolbar-fold-ref'),
 							),
 						}
 						: {},

@@ -4,8 +4,8 @@ import {createState} from './util';
 import type {EditorView, BlockInfo} from '@codemirror/view';
 import type {DocRange} from '../src/fold';
 
-const inlineTest = (doc: string, pos: number, range: DocRange | false): void => {
-		assert.deepStrictEqual(foldable(createState(doc), pos), range);
+const inlineTest = (doc: string, pos: number, range: DocRange | false, refOnly?: boolean): void => {
+		assert.deepStrictEqual(foldable(createState(doc), pos, undefined, refOnly), range);
 	},
 	blockTest = (text: string, line: number, range: DocRange | false): void => {
 		const state = createState(text),
@@ -35,6 +35,12 @@ describe('codeFolding', () => {
 		inlineTest('<references><ref name=a>a</ref></references>', 12, {from: 12, to: 31});
 		inlineTest('<references><ref name=a>a</ref></references>', 31, {from: 12, to: 31});
 		inlineTest('<references><ref name=a>a</ref>', 12, false);
+	});
+	it('<ref>/<references> only', () => {
+		inlineTest('<nowiki>a</nowiki>', 8, {from: 8, to: 9});
+		inlineTest('<nowiki>a</nowiki>', 8, false, true);
+		inlineTest('<ref>a</ref>', 5, {from: 5, to: 6}, true);
+		inlineTest('<references>a</references>', 12, {from: 12, to: 13}, true);
 	});
 
 	const sections = `
