@@ -5006,6 +5006,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>poem</><exttag-bracket>&gt</><tag-poem exttag-bracket>&lt;</><tag-poem exttag-name>pre</><tag-poem exttag-bracket>&gt</><tag-poem tag-pre>thisisatest</><tag-poem exttag-bracket>&lt;/</><tag-poem exttag-name>pre</><tag-poem exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>poem</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "Precedence of table over links",
+		"wikitext": "{|\n! [[Foo!!]]\n| [[Bar\n|Baz]]\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>! </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo!!</><link-ground link-bracket>]]</><table-delimiter>| </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Bar</><table-delimiter>|</><table-td>Baz]]</><table-bracket>|}</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

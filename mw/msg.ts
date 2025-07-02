@@ -20,7 +20,8 @@ const {version} = i18n;
  */
 export const setI18N = async (CDN: string): Promise<void> => {
 	try {
-		await setI18NBase(`${CDN}/${REPO_CDN}/i18n`, curVersion, languages, storageKey, i18n);
+		// @ts-expect-error build-time constant
+		await setI18NBase(`${CDN}/${REPO_CDN}/i18n`, curVersion, languages, $LANGS as string[], storageKey, i18n);
 	} catch (e) {
 		if (e instanceof Error) {
 			void mw.notify(e.message, {type: 'error'});
