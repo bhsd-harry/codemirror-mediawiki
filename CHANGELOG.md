@@ -1,3 +1,11 @@
+## 2.30.1
+
+*2025-07-13*
+
+**Changed**
+
+- Smart indentation is now enforced
+
 ## 2.30.0
 
 *2025-07-03*

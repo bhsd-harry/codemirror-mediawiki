@@ -47,7 +47,7 @@ import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
 import statusBar from './statusBar';
-import {detectIndent, noDetectionLangs} from './indent';
+import {detectIndent} from './indent';
 import bracketMatching from './matchBrackets';
 import javascript from './javascript';
 import css from './css';
@@ -258,8 +258,8 @@ export class CodeMirror6 {
 							textarea.value = doc.toString();
 							textarea.dispatchEvent(new Event('input'));
 						}, 400);
-						if (!noDetectionLangs.has(this.lang) && !startDoc.toString().trim()) {
-							this.setIndent(detectIndent(doc.toString(), this.#indentStr, this.lang));
+						if (!startDoc.toString().trim()) {
+							this.setIndent(this.#indentStr);
 						}
 					}
 					if (focusChanged) {
@@ -417,7 +417,9 @@ export class CodeMirror6 {
 	 */
 	setIndent(indent: string): void {
 		if (this.#view) {
-			this.#effects(this.#indent.reconfigure(indentUnit.of(indent)));
+			this.#effects(this.#indent.reconfigure(indentUnit.of(
+				detectIndent(this.#view.state.doc, indent, this.#lang),
+			)));
 		} else {
 			this.#indentStr = indent;
 		}

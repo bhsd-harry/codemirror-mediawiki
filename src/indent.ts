@@ -1,4 +1,6 @@
-export const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
+import type {Text} from '@codemirror/state';
+
+const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
 
 /**
  * 检测文本的缩进方式
@@ -6,13 +8,14 @@ export const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
  * @param defaultIndent 默认缩进方式
  * @param lang 语言
  */
-export const detectIndent = (text: string, defaultIndent: string, lang: string): string => {
+export const detectIndent = (text: string | Text, defaultIndent: string, lang: string): string => {
 	if (noDetectionLangs.has(lang)) {
 		return defaultIndent;
 	}
-	const lineSpaces: number[] = [];
+	const lineSpaces: number[] = [],
+		lines = typeof text === 'string' ? text.split('\n') : (text as Text & {text: string[]}).text;
 	let tabLines = 0;
-	for (const line of text.split('\n')) {
+	for (const line of lines) {
 		if (!line.trim()) {
 			continue;
 		}
