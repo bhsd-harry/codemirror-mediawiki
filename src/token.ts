@@ -2051,7 +2051,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (stream.match(begin ? /^<\/nowiki>/iu : /^<nowiki>/iu)) {
 				state.tokenize = this.inPre(!begin);
-				return tokens.comment;
+				return tokens.ignored;
 			} else if (this.hasVariants && stream.match('-{')) {
 				chain(state, this.inConvert('', true, true, true));
 				return tokens.convertBracket;
@@ -2085,11 +2085,11 @@ export class MediaWiki {
 				}
 				const mt = stream.match(/^\{\{(?!\{(?!\{))/u);
 				if (mt) {
-					return this.eatTransclusion(stream, state) ?? tokens.comment;
+					return this.eatTransclusion(stream, state) ?? tokens.ignored;
 				}
 			}
 			if (stream.match(re)) {
-				return tokens.comment;
+				return tokens.ignored;
 			}
 			stream.eat('<');
 			chain(state, this.eatTagName(tag));

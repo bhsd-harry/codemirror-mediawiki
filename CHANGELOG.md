@@ -10,6 +10,7 @@
 **Fixed**
 
 - Prevent text changes when the textarea is read-only
+- [Autocompletion](./README.md#autocompletion) for some closing extension tags including `</references>` in the MediaWiki mode
 
 ## 2.29.2
 

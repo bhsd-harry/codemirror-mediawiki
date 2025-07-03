@@ -144,6 +144,14 @@ describe('autocompletion', () => {
 				validFor: /^[a-z\d]*$/iu,
 			},
 		);
+		await mockTest(
+			'<references></re',
+			{
+				from: 14,
+				options: [{label: 'references', type: 'type', boost: 50, apply: 'references>'}],
+				validFor: /^[a-z\d]*$/iu,
+			},
+		);
 	});
 	it('opening tag', async () => {
 		await mockTest(
