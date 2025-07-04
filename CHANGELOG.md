@@ -1,3 +1,11 @@
+## 2.30.2
+
+*2025-07-09*
+
+**Fixed**
+
+- Hide the [WikiEditor](./mw/README.md#wikieditor) search button when the [CodeEditor](https://www.mediawiki.org/wiki/Extension:CodeEditor) is active on a MediaWiki site
+
 ## 2.30.1
 
 *2025-07-04*

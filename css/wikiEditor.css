@@ -13,6 +13,7 @@
 	display: none;
 }
 
-.codeEditor-ui-toolbar .group-codemirror6 {
+.codeEditor-ui-toolbar .group-codemirror6,
+.codeEditor-ui-toolbar .group-codemirror6-search {
 	display: none;
 }
