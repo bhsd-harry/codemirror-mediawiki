@@ -4,7 +4,7 @@ import type {CodeMirror} from './codemirror';
 
 const storageKey = 'codemirror-mediawiki-i18n';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.30.0',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.30.1',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
 	languages = (async () => {
 		await mw.loader.using('mediawiki.language');
