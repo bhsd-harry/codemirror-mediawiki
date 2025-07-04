@@ -24,7 +24,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest =>
 				search,
 				namespace,
 				limit: 'max',
-			} as ApiOpenSearchParams as Record<string, string>) as [string, string[]];
+			} satisfies ApiOpenSearchParams) as [string, string[]];
 			if (subpage) {
 				const {length} = title;
 				return pages.map(page => [page.slice(length)]);
@@ -52,12 +52,12 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		}
 		/* eslint-enable no-param-reassign */
 		const {pages} = await api.get({
-				action: 'templatedata',
-				titles,
-				redirects: true,
-				converttitles: true,
-				lang: mw.config.get('wgUserLanguage'),
-			} as TemplateDataApiTemplateDataParams as Record<string, string>) as {
+			action: 'templatedata',
+			titles,
+			redirects: true,
+			converttitles: true,
+			lang: mw.config.get('wgUserLanguage'),
+		} satisfies TemplateDataApiTemplateDataParams) as {
 				pages: Record<number, {params: Record<string, TemplateParam>}>;
 			},
 			params = Object.entries(Object.values(pages)[0]?.params ?? {}),

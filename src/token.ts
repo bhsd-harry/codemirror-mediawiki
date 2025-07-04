@@ -1351,7 +1351,7 @@ export class MediaWiki {
 					+ getEqual(t);
 			if (pipe.includes(stream.peek() ?? '')) {
 				pop(state);
-				return makeLocalTagStyle('htmlTagBracket', state);
+				return '';
 			} else if (stream.match(/^(?:[&<]|\{\{)/u, false)) {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值

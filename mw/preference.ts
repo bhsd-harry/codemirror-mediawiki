@@ -90,7 +90,7 @@ export const loadJSON = (async () => {
 		rvprop: 'content',
 		rvlimit: 1,
 	};
-	(await api)!.get(params as Record<string, string>).then( // eslint-disable-line promise/prefer-await-to-then
+	(await api)!.get(params).then( // eslint-disable-line promise/prefer-await-to-then
 		res => {
 			const {query: {pages: [page]}} = res as MediaWikiResponse;
 			if (page?.revisions) {
@@ -326,7 +326,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				summary: msg('save-summary'),
 			};
 			// eslint-disable-next-line promise/prefer-await-to-then
-			(await api)!.postWithToken('csrf', params as Record<string, string>).then(
+			(await api)!.postWithToken('csrf', params).then(
 				() => {
 					void mw.notify(parseMsg('save-success'), {type: 'success'});
 				},
