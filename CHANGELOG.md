@@ -1,6 +1,10 @@
 ## 2.30.1
 
-*2025-07-13*
+*2025-07-04*
+
+**Fixed**
+
+- Race condition when loading the i18n data on a MediaWiki site
 
 **Changed**
 

@@ -6,8 +6,10 @@ const storageKey = 'codemirror-mediawiki-i18n';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.30.0',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
-	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-	languages = mw.language?.getFallbackLanguageChain() ?? [mw.config.get('wgUserLanguage')],
+	languages = (async () => {
+		await mw.loader.using('mediawiki.language');
+		return mw.language.getFallbackLanguageChain();
+	})(),
 
 	/** 预存的I18N，可以用于判断是否是首次安装 */
 	i18n: Record<string, string> = getObject(storageKey) ?? {};
@@ -20,8 +22,15 @@ const {version} = i18n;
  */
 export const setI18N = async (CDN: string): Promise<void> => {
 	try {
-		// @ts-expect-error build-time constant
-		await setI18NBase(`${CDN}/${REPO_CDN}/i18n`, curVersion, languages, $LANGS as string[], storageKey, i18n);
+		await setI18NBase(
+			`${CDN}/${REPO_CDN}/i18n`,
+			curVersion,
+			await languages,
+			// @ts-expect-error build-time constant
+			$LANGS as string[],
+			storageKey,
+			i18n,
+		);
 	} catch (e) {
 		if (e instanceof Error) {
 			void mw.notify(e.message, {type: 'error'});
