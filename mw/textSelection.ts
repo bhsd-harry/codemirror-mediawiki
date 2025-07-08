@@ -1,6 +1,5 @@
 import {CodeMirror} from './codemirror';
-import type * as Monaco from 'monaco-editor';
-import type {editor, Range as R, Position, Selection} from 'monaco-editor';
+import type {editor, Selection} from 'monaco-editor';
 
 declare interface EncapsulateOptions {
 	pre?: string;
@@ -29,9 +28,6 @@ declare interface TextSelection {
 }
 
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
-
-const fromPositions = (monaco: typeof Monaco, model: editor.ITextModel, ref: [number, number]): R =>
-	monaco.Range.fromPositions(...ref.map(i => model.getPositionAt(i)) as [Position, Position]);
 
 const split = (selText: string, pre: string, post: string, splitlines?: boolean): string => splitlines
 	? selText.split('\n').map(line => pre + line + post).join('\n')
@@ -153,7 +149,7 @@ export const monacoTextSelection: TextSelection = {
 	},
 	setSelection({start, end = start}) {
 		const {model, editor} = getInstance(this);
-		editor!.setSelection(fromPositions(monaco, model!, [start, end]));
+		editor!.setSelection(model!.getRangeAt!(start, end));
 		return this;
 	},
 	replaceSelection(text) {

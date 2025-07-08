@@ -12,7 +12,7 @@ import escape from './escape';
 import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type * as Monaco from 'monaco-editor';
-import type {editor} from 'monaco-editor';
+import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
@@ -22,7 +22,10 @@ declare global {
 }
 
 declare interface IWikitextModel extends editor.ITextModel {
-	lint?: (this: IWikitextModel, on: boolean) => void; // eslint-disable-line @typescript-eslint/method-signature-style
+	/* eslint-disable @typescript-eslint/method-signature-style */
+	getRangeAt?: (start: number, end: number) => IRange;
+	lint?: (this: IWikitextModel, on: boolean) => void;
+	/* eslint-enable @typescript-eslint/method-signature-style */
 }
 
 declare interface ExtCodeMirror {
