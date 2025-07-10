@@ -1,3 +1,11 @@
+## 2.30.3
+
+*2025-07-11*
+
+**Changed**
+
+- Migrate from [markdown-it](https://npmjs.com/package/markdown-it) to [marked](https://npmjs.com/package/marked) for the [hover](./README.md#hover) extension
+
 ## 2.30.2
 
 *2025-07-09*

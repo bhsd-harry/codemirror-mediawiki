@@ -3,12 +3,11 @@ import {loadScript, getLSP} from '@bhsd/common';
 import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
-import type * as MarkdownIt from 'markdown-it';
 import type {CodeMirror6} from './codemirror';
 
-declare const markdownit: () => MarkdownIt;
-
-let md: MarkdownIt | undefined;
+declare const marked: {
+	parse(source: string): string;
+};
 
 /**
  * 将索引转换为位置
@@ -50,15 +49,14 @@ export default (cm: CodeMirror6): Extension => hoverTooltip(async (view, pos): P
 		hover = await getLSP(view, false, cm.getWikiConfig)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
 	if (hover) {
-		await loadScript('npm/markdown-it/dist/markdown-it.min.js', 'markdownit', true);
-		md ??= markdownit();
+		await loadScript('npm/marked/lib/marked.umd.js', 'marked', true);
 		const {end} = hover.range!;
 		return {
 			pos,
 			end: posToIndex(doc, end),
 			above: true,
 			create(): TooltipView {
-				return createTooltipView(view, md!.render((hover.contents as MarkupContent).value));
+				return createTooltipView(view, marked.parse((hover.contents as MarkupContent).value));
 			},
 		};
 	}
