@@ -12,6 +12,7 @@ import {
 	syntaxTree,
 } from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
+import {wmf} from '@bhsd/common';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
@@ -26,7 +27,7 @@ import type {
 } from '@codemirror/autocomplete';
 import type {MwConfig, TagName} from './token';
 
-const wmf = /\.(?:wiktionary|wiki(?:pedia|books|news|quote|source|versity|voyage))\.org$/u;
+const re = new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u');
 
 /**
  * 检查首字母大小写并插入正确的自动填充内容
@@ -214,7 +215,7 @@ export class FullMediaWiki extends MediaWiki {
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
 				start = pos - search.length;
 			let {prevSibling} = node;
-			if (explicit || isParserFunction && search.includes('#') || wmf.test(location.hostname)) {
+			if (explicit || isParserFunction && search.includes('#') || re.test(location.hostname)) {
 				const validFor = /^[^|{}<>[\]#]*$/u;
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],

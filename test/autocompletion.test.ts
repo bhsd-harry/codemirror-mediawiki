@@ -159,8 +159,8 @@ describe('autocompletion', () => {
 			{
 				from: 1,
 				options: [
-					{label: 'img', type: 'type'},
 					{label: 'imagemap', type: 'type'},
+					{label: 'img', type: 'type'},
 				],
 				validFor: /^[a-z\d]*$/iu,
 			},

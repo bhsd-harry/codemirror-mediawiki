@@ -49,6 +49,7 @@ import toolKeymap from './keymap';
 import statusBar from './statusBar';
 import {detectIndent} from './indent';
 import bracketMatching from './matchBrackets';
+import wikitextLSP from './lsp';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
@@ -326,11 +327,17 @@ export class CodeMirror6 {
 	 * @param lang 语言
 	 * @param config 语言设置
 	 */
-	setLanguage(lang = 'plain', config?: unknown): void | Promise<void> {
+	async setLanguage(lang = 'plain', config?: unknown): Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
+			let ext = languages[lang]!(config);
+			ws: { // eslint-disable-line no-unused-labels
+				if (lang === 'mediawiki') {
+					ext = [ext, await wikitextLSP()];
+				}
+			}
 			this.#effects([
-				this.#language.reconfigure(languages[lang]!(config)),
+				this.#language.reconfigure(ext),
 				this.#linter.reconfigure(linters[lang] ?? []),
 			]);
 			this.#minHeight(Boolean(linters[lang]));
