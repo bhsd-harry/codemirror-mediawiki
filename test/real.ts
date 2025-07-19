@@ -1,4 +1,4 @@
-import {execute} from '@bhsd/common/dist/test';
+import {execute} from '@bhsd/test-util';
 import parse, {checkNode} from './parser';
 
 void execute(content => {

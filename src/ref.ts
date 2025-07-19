@@ -1,6 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {getLSP} from '@bhsd/common';
+import {getLSP} from '@bhsd/browser';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import {indexToPos, posToIndex} from './hover';

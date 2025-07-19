@@ -31,7 +31,7 @@ import {
 	startCompletion,
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
-import {getLSP} from '@bhsd/common';
+import {getLSP} from '@bhsd/browser';
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
 import escapeKeymap from './escape';

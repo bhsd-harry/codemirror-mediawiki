@@ -1,6 +1,7 @@
 /* eslint-disable unicorn/no-unreadable-iife */
-import {loadScript, getWikiparse, getLSP, sanitizeInlineStyle} from '@bhsd/common';
-import {styleLint} from '@bhsd/common/dist/stylelint';
+import {sanitizeInlineStyle} from '@bhsd/common';
+import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
+import {styleLint} from '@bhsd/stylelint-util';
 import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
 import type {Warning, Config} from 'stylelint';

@@ -1,6 +1,6 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
-import {getLSP} from '@bhsd/common';
+import {getLSP} from '@bhsd/browser';
 import {indexToPos, createTooltipView} from './hover';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';

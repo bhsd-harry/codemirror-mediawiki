@@ -1,5 +1,5 @@
 import {hoverTooltip} from '@codemirror/view';
-import {loadScript, getLSP} from '@bhsd/common';
+import {loadScript, getLSP} from '@bhsd/browser';
 import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';

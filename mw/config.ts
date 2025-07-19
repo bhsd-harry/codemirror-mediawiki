@@ -1,13 +1,13 @@
-import {CDN, setObject, getObject, compareVersion} from '@bhsd/common';
+import {CDN, setObject, getObject, compareVersion} from '@bhsd/browser';
 import {
 	getParserConfig as getParserConfigBase,
 	getConfig,
 	getVariants,
 	getKeywords,
 	otherParserFunctions,
-} from '@bhsd/common/dist/cm';
+} from '@bhsd/cm-util';
 import {getStaticMwConfig} from '../src/static';
-import type {MagicWord, MagicRule} from '@bhsd/common/dist/cm';
+import type {MagicWord, MagicRule} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';

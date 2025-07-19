@@ -1,4 +1,4 @@
-import {CDN} from '@bhsd/common';
+import {CDN} from '@bhsd/browser';
 import {CodeMirror6} from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';

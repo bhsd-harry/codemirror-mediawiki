@@ -5,12 +5,13 @@
  */
 
 import {Tag} from '@lezer/highlight';
-import {decodeHTML, getRegex} from '@bhsd/common';
-import {otherParserFunctions} from '@bhsd/common/dist/cm';
+import {getRegex} from '@bhsd/common';
+import {decodeHTML} from '@bhsd/browser';
+import {otherParserFunctions} from '@bhsd/cm-util';
 import {css} from '@codemirror/legacy-modes/mode/css';
 import {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
-import type {MwConfig as MwConfigBase} from '@bhsd/common/dist/cm';
+import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';

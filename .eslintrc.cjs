@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-const config = require('@bhsd/common/eslintrc.browser.cjs');
+const config = require('@bhsd/code-standard/eslintrc.browser.cjs');
 const {parserOptions, ignorePatterns, rules, overrides: [json, ts]} = config;
 
 module.exports = {

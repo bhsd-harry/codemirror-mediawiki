@@ -1,5 +1,5 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
-import {getObject, setObject} from '@bhsd/common';
+import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';

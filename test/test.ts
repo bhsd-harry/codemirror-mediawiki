@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
-import {mochaTest} from '@bhsd/common/dist/test';
+import {mochaTest} from '@bhsd/test-util';
 import parse, {checkNode} from './parser';
 
 declare interface Token {

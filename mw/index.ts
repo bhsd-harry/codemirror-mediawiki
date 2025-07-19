@@ -1,4 +1,4 @@
-import {CDN} from '@bhsd/common';
+import {CDN} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
 import {instances} from './textSelection';
 import {openPreference} from './preference';

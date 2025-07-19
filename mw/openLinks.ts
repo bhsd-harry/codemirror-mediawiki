@@ -1,4 +1,4 @@
-import {normalizeTitle} from '@bhsd/common';
+import {normalizeTitle} from '@bhsd/browser';
 import {tokens} from '../src/config';
 import type {MwConfig} from '../src/token';
 
