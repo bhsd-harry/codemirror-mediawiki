@@ -117,11 +117,10 @@ The `CodeMirror` class inherits all the [methods](../README.md#methods) from the
 *version added: 2.1.9*
 
 **param**: `boolean` whether to start linting  
-**param**: `Record<string, unknown> | number` the optional linter configuration or the namespace id  
 Lint the CodeMirror editor with a default linter.
 
 ```js
-cm.defaultLint(true, 0);
+cm.defaultLint(true);
 ```
 
 </details>

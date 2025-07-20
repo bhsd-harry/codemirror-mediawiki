@@ -11,6 +11,7 @@ import prepareSuggest from './suggest';
 import escape from './escape';
 import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
+import type {Config} from 'stylelint';
 import type * as Monaco from 'monaco-editor';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
@@ -325,49 +326,61 @@ export class CodeMirror extends CodeMirror6 {
 	/**
 	 * 添加或移除默认 linter
 	 * @param on 是否添加
-	 * @param opt linter选项
-	 * @param ns 命名空间
 	 */
-	defaultLint(on: boolean, opt: Record<string, unknown>): Promise<void>;
-	defaultLint(on: boolean, ns?: number): Promise<void>;
-	async defaultLint(on: boolean, optOrNs: Record<string, unknown> | number | undefined = this.ns): Promise<void> {
+	async defaultLint(on: boolean): Promise<void> {
 		if (!on) {
 			this.lint();
 			return;
 		}
-		const {lang} = this,
-			loaded = lang in linters,
-			isWiki = lang === 'mediawiki';
-		let opt: Option | LiveOption,
-			defaultOpt: Option;
-		if (typeof optOrNs === 'number') {
-			if (isWiki && optOrNs !== 10 && optOrNs !== 828 && optOrNs !== 2) {
-				defaultOpt = {include: false};
-			} else if (lang === 'javascript') {
-				defaultOpt = {
-					...jsConfig,
-					...optOrNs === 8 || optOrNs === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
-				} satisfies Linter.Config;
+		const {lang, ns, dialect} = this,
+			loaded = lang in linters;
+		if (!loaded) {
+			const isWiki = lang === 'mediawiki';
+			let defaultOpt: Option;
+			if (typeof ns === 'number') {
+				if (isWiki && ns !== 10 && ns !== 828 && ns !== 2) {
+					defaultOpt = {include: false};
+				} else if (lang === 'javascript') {
+					defaultOpt = {
+						...jsConfig,
+						...ns === 8 || ns === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
+					} satisfies Linter.Config;
+				}
 			}
-		} else {
-			opt = optOrNs;
-		}
-		if (opt || !loaded) {
+			let opt: LiveOption | undefined;
 			if (isWiki) {
-				const extra = {getConfig: this.getWikiConfig, i18n: await languages};
-				opt = opt
-					? {...extra, ...opt as Option}
-					: (runtime): Option => runtime ? wikilint : {...extra, ...defaultOpt};
+				const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
+				opt = (runtime): Option => runtime ? wikilint : option;
 			} else if (lang === 'javascript') {
-				opt ??= (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
+				opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
 			} else if (lang === 'css') {
-				opt ??= (): Option => codeConfigs.get('Stylelint');
+				opt = (): Option => {
+					const option: Config = codeConfigs.get('Stylelint');
+					if (dialect === 'sanitized-css') {
+						const {rules} = option;
+						return {
+							...option,
+							rules: {
+								...rules,
+								'property-no-vendor-prefix': [
+									true,
+									{
+										ignoreProperties: ['user-select'],
+									},
+								],
+								'property-disallowed-list': [
+									...(rules?.['property-disallowed-list'] as string[] | undefined) ?? [],
+									'/^--/',
+								],
+							},
+						};
+					}
+					return option;
+				};
 			}
 			await this.getLinter(opt);
 		}
-		if (linters[lang]) {
-			this.lint(linters[lang]);
-		}
+		this.lint(linters[lang]);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this

@@ -507,25 +507,6 @@ export class CodeMirror6 {
 				if (!('extends' in option || 'rules' in option)) {
 					option = {rules: option};
 				}
-				if (this.dialect === 'sanitized-css') {
-					const rules = option['rules'] as Record<string, unknown> | undefined;
-					option = {
-						...option,
-						rules: {
-							...rules,
-							'property-no-vendor-prefix': [
-								true,
-								{
-									ignoreProperties: ['user-select'],
-								},
-							],
-							'property-disallowed-list': [
-								...(rules?.['property-disallowed-list'] as string[] | undefined) ?? [],
-								'/^--/',
-							],
-						},
-					};
-				}
 				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
 					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
 						const diagnostic: Diagnostic = {

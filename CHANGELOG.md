@@ -1,6 +1,6 @@
-## 2.30.4
+## 2.31.0
 
-*2025-07-21*
+*2025-07-20*
 
 **Added**
 
@@ -13,6 +13,7 @@
 **Changed**
 
 - Templates with `subst` or `safesubst` modifiers are now highlighted as templates in the MediaWiki mode
+- [`defaultLint`](./mw/README.md#defaultlint) method no longer accepts a second parameter on a MediaWiki site
 
 ## 2.30.3
 
