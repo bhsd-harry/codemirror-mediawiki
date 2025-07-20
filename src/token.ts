@@ -264,7 +264,7 @@ const needColon = (state: State): boolean => {
 };
 
 /**
- * 获取外部链接正则表达式
+ * 获取外部链接正则表达式，注意`&lt;`和`&gt;`大小写敏感
  * @param punctuations 标点符号
  */
 const getUrlRegex = (punctuations = ''): string => {
@@ -433,7 +433,7 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
 	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
 	styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
-	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'u'),
+	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'iu'),
 	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
@@ -511,6 +511,7 @@ export class MediaWiki {
 	declare readonly redirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
+	declare readonly convertFlags;
 	declare readonly convertRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
@@ -566,16 +567,20 @@ export class MediaWiki {
 			'u',
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
+		this.convertFlags = new RegExp(
+			String.raw`^(?:[^}|{[<]|\}(?!-)|\{(?![{|])|\[(?!\[|${urlProtocols})|${lookahead('<')})*(?=\|)`,
+			'iu',
+		);
 		this.convertRegex = new RegExp(
 			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_-")})+`,
-			'u',
+			'iu',
 		);
 		this.convertSemicolon = variants && new RegExp(
 			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${variants.join('|')})\s*:|(?:$|\}-))`,
-			'u',
+			'iu',
 		);
 		this.convertLang = variants
-			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'u');
+			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'iu');
 		this.hasVariants = Boolean(variants?.length);
 		this.preRegex = [false, true].map(
 			begin => new RegExp(String.raw`^(?:[^<&-]|-${
@@ -1836,7 +1841,7 @@ export class MediaWiki {
 			if (stream.match('}-')) {
 				pop(state);
 				return makeLocalTagStyle('convertBracket', state);
-			} else if (needFlag && stream.match(/^[;\sa-z-]*(?=\|)/iu)) {
+			} else if (needFlag && stream.match(this.convertFlags)) {
 				state.tokenize = this.inConvert(style, false, true, plain);
 				chain(state, this.inStr('|', 'convertDelimiter'));
 				return makeLocalTagStyle('convertFlag', state);

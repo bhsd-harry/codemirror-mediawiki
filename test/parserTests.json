@@ -4983,7 +4983,7 @@
 	{
 		"desc": "Quote in language conversion",
 		"wikitext": "-{''foo''}-\n\n-{''foo''|bar}-",
-		"parsed": "<convert-bracket>-{</><apostrophes>''</><em>foo</><apostrophes>''</><convert-bracket>}--{</><apostrophes>''</><convert-flag>foo</><apostrophes>''</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+		"parsed": "<convert-bracket>-{</><apostrophes>''</><em>foo</><apostrophes>''</><convert-bracket>}--{</><convert-flag>''foo''</><convert-delimiter>|</>bar<convert-bracket>}-</>"
 	},
 	{
 		"desc": "External link in language conversion",
@@ -4993,7 +4993,7 @@
 	{
 		"desc": "List in language conversion",
 		"wikitext": "-{\n*foo}-\n\n-{\n*foo|bar}-",
-		"parsed": "<convert-bracket>-{</><list>*</>foo<convert-bracket>}--{</><list>*</><convert-flag>foo</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+		"parsed": "<convert-bracket>-{</><list>*</>foo<convert-bracket>}--{</><convert-flag>*foo</><convert-delimiter>|</>bar<convert-bracket>}-</>"
 	},
 	{
 		"desc": "Magic link in language conversion",
@@ -5009,6 +5009,11 @@
 		"desc": "Precedence of table over links",
 		"wikitext": "{|\n! [[Foo!!]]\n| [[Bar\n|Baz]]\n|}",
 		"parsed": "<table-bracket>{|</><table-delimiter>! </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo!!</><link-ground link-bracket>]]</><table-delimiter>| </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Bar</><table-delimiter>|</><table-td>Baz]]</><table-bracket>|}</>"
+	},
+	{
+		"desc": "Upper-case language variant is acceptable in conversion rules",
+		"wikitext": "-{zh-Hans:a;zh-Hant:b}-",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh-Hans:</>a<convert-delimiter>;</><convert-lang>zh-Hant:</>b<convert-bracket>}-</>"
 	},
 	{
 		"desc": "badCharacters"
