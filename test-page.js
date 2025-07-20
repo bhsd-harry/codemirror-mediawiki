@@ -30,7 +30,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     }
     select.addEventListener('change', () => {
         const { wikitext, desc } = tests[Number(select.value)];
-        cm.setContent(wikitext);
+        cm.setContent(wikitext, true);
         pre.textContent = wikitext;
         pre.classList.remove('wikiparser');
         void wikiparse.highlight(pre, false, true);

@@ -396,6 +396,7 @@ cm.scrollTo();
 *version added: 2.1.8*
 
 **param**: `string` new content  
+**param**: `boolean` whether to force the content to be set in the read-only mode, default as false  
 Reset the content of the editor. Need initialization first.
 
 ```js

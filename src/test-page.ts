@@ -46,7 +46,7 @@ declare interface Test {
 	}
 	select.addEventListener('change', () => {
 		const {wikitext, desc} = tests[Number(select.value)]!;
-		cm.setContent(wikitext!);
+		cm.setContent(wikitext!, true);
 		pre.textContent = wikitext!;
 		pre.classList.remove('wikiparser');
 		void wikiparse.highlight!(pre, false, true);

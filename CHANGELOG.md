@@ -1,3 +1,11 @@
+## 2.30.4
+
+*2025-07-21*
+
+**Added**
+
+- [`setContent`](./README.md#setcontent) method now accepts a second parameter to force the content to be set in the read-only mode
+
 ## 2.30.3
 
 *2025-07-11*

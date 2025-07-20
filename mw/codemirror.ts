@@ -285,11 +285,11 @@ export class CodeMirror extends CodeMirror6 {
 		this.$toolbar?.toggleClass('codemirror-coding', !isWiki);
 	}
 
-	override setContent(content: string): void {
+	override setContent(content: string, force?: boolean): void {
 		if (this.#model) {
 			this.#model.setValue(content);
 		} else {
-			super.setContent(content);
+			super.setContent(content, force);
 		}
 	}
 

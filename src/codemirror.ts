@@ -588,11 +588,13 @@ export class CodeMirror6 {
 	/**
 	 * 重设编辑器内容
 	 * @param insert 新内容
+	 * @param force 是否强制
 	 */
-	setContent(insert: string): void {
+	setContent(insert: string, force?: boolean): void {
 		if (this.#view) {
 			this.#view.dispatch({
 				changes: {from: 0, to: this.#view.state.doc.length, insert},
+				filter: !force,
 			});
 		}
 	}
