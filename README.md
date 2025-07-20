@@ -655,7 +655,6 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 ### Transclusion
 
-1. Substitution is not correctly highlighted ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#Scribunto%3A%20isSubsting%20during%20PST)).
 1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
 1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).

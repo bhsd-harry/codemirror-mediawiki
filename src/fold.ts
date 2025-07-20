@@ -39,13 +39,22 @@ const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
  * @param keys The keys of the tokens to check
  */
 const isComponent = (keys: TagName[]) =>
-		({name}: SyntaxNode): boolean => keys.some(key => name.includes(tokens[key])),
+		(node: SyntaxNode | null): boolean => keys.some(key => node?.name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
 	isTemplateBracket = isComponent(['templateBracket', 'parserFunctionBracket']),
 
+	/** Check if a SyntaxNode is a template name */
+	isTemplateName = isComponent(['templateName', 'parserFunctionName']),
+
 	/** Check if a SyntaxNode is a template delimiter (`|` or `:`) */
 	isDelimiter = isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
+
+	/**
+	 * Check if a SyntaxNode is a template delimiter (`|` or `:`), excluding `subst:` and `safesubst:`
+	 * @param node SyntaxNode
+	 */
+	isTemplateDelimiter = (node: SyntaxNode): boolean => isDelimiter(node) && !isTemplateName(node.nextSibling),
 
 	/**
 	 * Check if a SyntaxNode is part of a template, except for the brackets
@@ -132,7 +141,7 @@ export const foldable = (
 	}
 	let {prevSibling, nextSibling} = node,
 		/** The stack of opening (+) or closing (-) brackets */ stack = 1,
-		/** The first delimiter */ delimiter: SyntaxNode | null = isDelimiter(node) ? node : null,
+		/** The first delimiter */ delimiter: SyntaxNode | null = isTemplateDelimiter(node) ? node : null,
 		/** The start of the closing bracket */ to = 0;
 	while (nextSibling) {
 		if (isTemplateBracket(nextSibling)) {
@@ -146,7 +155,7 @@ export const foldable = (
 				break;
 			}
 			stack += lbrace;
-		} else if (!delimiter && stack === 1 && isDelimiter(nextSibling)) {
+		} else if (!delimiter && stack === 1 && isTemplateDelimiter(nextSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = nextSibling;
 		}
@@ -166,7 +175,7 @@ export const foldable = (
 				break;
 			}
 			stack += rbrace;
-		} else if (stack === -1 && isDelimiter(prevSibling)) {
+		} else if (stack === -1 && isTemplateDelimiter(prevSibling)) {
 			// The first delimiter of the current template so far
 			delimiter = prevSibling;
 		}

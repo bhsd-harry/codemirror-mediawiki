@@ -6,6 +6,14 @@
 
 - [`setContent`](./README.md#setcontent) method now accepts a second parameter to force the content to be set in the read-only mode
 
+**Fixed**
+
+- Conversion flags cannot be set multiple times in the MediaWiki mode
+
+**Changed**
+
+- Templates with `subst` or `safesubst` modifiers are now highlighted as templates in the MediaWiki mode
+
 ## 2.30.3
 
 *2025-07-11*

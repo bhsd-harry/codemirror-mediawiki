@@ -25,6 +25,8 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
             fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
             parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
+            config.linkSuggest = (s) => [[`${s} (article)`], [`${s} (user)`]];
+            config.paramSuggest = () => [['param1'], ['param2']];
             Object.assign(cm, { config });
         }
         await cm.setLanguage(lang, config);
