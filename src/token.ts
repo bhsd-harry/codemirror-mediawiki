@@ -511,7 +511,6 @@ export class MediaWiki {
 	declare readonly redirectRegex;
 	declare readonly img;
 	declare readonly imgRegex;
-	declare readonly convertFlags;
 	declare readonly convertRegex;
 	declare readonly convertSemicolon;
 	declare readonly convertLang;
@@ -567,10 +566,6 @@ export class MediaWiki {
 			'u',
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
-		this.convertFlags = new RegExp(
-			String.raw`^(?:[^}|{[<]|\}(?!-)|\{(?![{|])|\[(?!\[|${urlProtocols})|${lookahead('<')})*(?=\|)`,
-			'iu',
-		);
 		this.convertRegex = new RegExp(
 			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_-")})+`,
 			'iu',
@@ -1414,7 +1409,11 @@ export class MediaWiki {
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
 		};
 		return (stream, state) => {
-			if (stream.eat('>')) {
+			if (stream.match('/>') || name === 'img' && stream.match('>')) {
+				state.extMode = false;
+				pop(state);
+				return makeLocalTagStyle('extTagBracket', state);
+			} else if (stream.eat('>')) {
 				const {config: {tagModes}} = this;
 				state.extName = name;
 				state.extMode ||= name in tagModes
@@ -1423,10 +1422,6 @@ export class MediaWiki {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
-				return makeLocalTagStyle('extTagBracket', state);
-			} else if (stream.match('/>')) {
-				state.extMode = false;
-				pop(state);
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
@@ -1841,7 +1836,7 @@ export class MediaWiki {
 			if (stream.match('}-')) {
 				pop(state);
 				return makeLocalTagStyle('convertBracket', state);
-			} else if (needFlag && stream.match(this.convertFlags)) {
+			} else if (needFlag && stream.match(/^[;\sa-z-]*(?=\|)/iu)) {
 				state.tokenize = this.inConvert(style, false, true, plain);
 				chain(state, this.inStr('|', 'convertDelimiter'));
 				return makeLocalTagStyle('convertFlag', state);

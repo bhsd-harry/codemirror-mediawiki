@@ -4983,7 +4983,7 @@
 	{
 		"desc": "Quote in language conversion",
 		"wikitext": "-{''foo''}-\n\n-{''foo''|bar}-",
-		"parsed": "<convert-bracket>-{</><apostrophes>''</><em>foo</><apostrophes>''</><convert-bracket>}--{</><convert-flag>''foo''</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+		"parsed": "<convert-bracket>-{</><apostrophes>''</><em>foo</><apostrophes>''</><convert-bracket>}--{</><apostrophes>''</><convert-flag>foo</><apostrophes>''</><convert-delimiter>|</>bar<convert-bracket>}-</>"
 	},
 	{
 		"desc": "External link in language conversion",
@@ -4993,7 +4993,7 @@
 	{
 		"desc": "List in language conversion",
 		"wikitext": "-{\n*foo}-\n\n-{\n*foo|bar}-",
-		"parsed": "<convert-bracket>-{</><list>*</>foo<convert-bracket>}--{</><convert-flag>*foo</><convert-delimiter>|</>bar<convert-bracket>}-</>"
+		"parsed": "<convert-bracket>-{</><list>*</>foo<convert-bracket>}--{</><list>*</><convert-flag>foo</><convert-delimiter>|</>bar<convert-bracket>}-</>"
 	},
 	{
 		"desc": "Magic link in language conversion",
@@ -8125,13 +8125,13 @@
 	},
 	{
 		"desc": "Explicit definition of language variant alternatives",
-		"wikitext": "-{zh:China;zh-tw:Taiwan}-, not China",
-		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, not China"
+		"wikitext": "-{zh:China;zh-tw:Taiwan}-, is China",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>;</><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, is China"
 	},
 	{
 		"desc": "Explicit definition of language variant alternatives (BCP 47 codes)",
-		"wikitext": "-{zh:China;zh-Hant-TW:Taiwan}-, not China",
-		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China;zh-Hant-TW:Taiwan<convert-bracket>}-</>, not China"
+		"wikitext": "-{zh:China;zh-Hant-TW:Taiwan}-, is China",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China;zh-Hant-TW:Taiwan<convert-bracket>}-</>, is China"
 	},
 	{
 		"desc": "Filter syntax for language variants",
@@ -8140,13 +8140,13 @@
 	},
 	{
 		"desc": "Explicit session-wise two-way language variant mapping (A flag and - flag)",
-		"wikitext": "This is -{zh:China; zh-tw:Taiwan}-, but we'll forget that now.\n\nTaiwan is not China.\n\nBut -{A|zh:China; zh-tw:Taiwan}- is China,\n\n(This-{-|zh:China; zh-tw:Taiwan}- should be stripped!)\n\nand -{China}- is China.",
-		"parsed": "This is <convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.Taiwan is not China.But <convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> is China,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>China<convert-bracket>}-</> is China."
+		"wikitext": "This is -{zh:China; zh-tw:Taiwan}-, but we'll forget that now.\n\nTaiwan is China.\n\n-{A|zh:China; zh-tw:Taiwan}- is China,\n\n(This-{-|zh:China; zh-tw:Taiwan}- should be stripped!)\n\nand -{China}- is China.",
+		"parsed": "This is <convert-bracket>-{</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.Taiwan is China.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> is China,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>China<convert-bracket>}-</> is China."
 	},
 	{
 		"desc": "Explicit session-wise one-way language variant mapping (A flag and - flag)",
-		"wikitext": "This is -{COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}-, but we'll forget that now.\n\nCOUNTRY is China or Taiwan.\n\nBut -{A|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- is COUNTRY,\n\n(This-{-|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- should be stripped!)\n\nand -{COUNTRY}- is COUNTRY.",
-		"parsed": "This is <convert-bracket>-{</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.COUNTRY is China or Taiwan.But <convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> is COUNTRY,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>COUNTRY<convert-bracket>}-</> is COUNTRY."
+		"wikitext": "This is -{LOCATION=>zh:China;LOCATION=>zh-tw:Taiwan}-, but we'll forget that now.\n\nLOCATION is China or Taiwan.\n\n-{A|LOCATION=>zh:China;LOCATION=>zh-tw:Taiwan}- is LOCATION,\n\n(This-{-|LOCATION=>zh:China;LOCATION=>zh-tw:Taiwan}- should be stripped!)\n\nand -{LOCATION}- is LOCATION.",
+		"parsed": "This is <convert-bracket>-{</>LOCATION<convert-lang>=&gtzh:</>China<convert-delimiter>;</>LOCATION<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</>, but we'll forget that now.LOCATION is China or Taiwan.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>LOCATION<convert-lang>=&gtzh:</>China<convert-delimiter>;</>LOCATION<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> is LOCATION,(This<convert-bracket>-{</><convert-flag>-</><convert-delimiter>|</>LOCATION<convert-lang>=&gtzh:</>China<convert-delimiter>;</>LOCATION<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)and <convert-bracket>-{</>LOCATION<convert-bracket>}-</> is LOCATION."
 	},
 	{
 		"desc": "Explicit session-wise two-way language variant mapping (H flag for hide)",
@@ -8155,8 +8155,8 @@
 	},
 	{
 		"desc": "Explicit session-wise one-way language variant mapping (H flag for hide)",
-		"wikitext": "(This-{H|COUNTRY=>zh:China;COUNTRY=>zh-tw:Taiwan}- should be stripped!)\n\nCOUNTRY is Taiwan or China.",
-		"parsed": "(This<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>COUNTRY<convert-lang>=&gtzh:</>China<convert-delimiter>;</>COUNTRY<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)COUNTRY is Taiwan or China."
+		"wikitext": "(This-{H|LOCATION=>zh:China;LOCATION=>zh-tw:Taiwan}- should be stripped!)\n\nLOCATION is Taiwan and China.",
+		"parsed": "(This<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>LOCATION<convert-lang>=&gtzh:</>China<convert-delimiter>;</>LOCATION<convert-lang>=&gtzh-tw:</>Taiwan<convert-bracket>}-</> should be stripped!)LOCATION is Taiwan and China."
 	},
 	{
 		"desc": "Adding explicit conversion rule for title (T flag)",

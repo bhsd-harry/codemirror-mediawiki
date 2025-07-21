@@ -661,11 +661,11 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 ### Heading
 
-1. Comments at the SOL break section headings ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Section%20extraction%20prefixed%20by%20comment%20(section%201))).
+1. Comments at the SOL should not break section headings ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Section%20extraction%20prefixed%20by%20comment%20(section%201))).
 
 ### Table
 
-1. Comments at the SOL break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
+1. Comments at the SOL should not break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
 
 ### External link
 
@@ -676,3 +676,7 @@ Matched or unmatched tags are highlighted in cyan or dark red when the cursor is
 
 1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
 1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
+
+### Language conversion
+
+1. BCP 47 language codes are not supported in language conversion ([Example](https://bhsd-harry.github.io/wikiparser-node/tests.html#Explicit%20definition%20of%20language%20variant%20alternatives%20(BCP%2047%20codes))).

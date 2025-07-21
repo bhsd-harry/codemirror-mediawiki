@@ -162,7 +162,10 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				) as unknown as [HTMLTextAreaElement];
 				if (active && !instances.has(textarea)) {
 					(async () => {
-						const {editor} = await CodeMirror.fromTextArea(textarea, 'json');
+						const {view, editor} = await CodeMirror.fromTextArea(textarea, 'json');
+						if (view) {
+							view.dom.style.removeProperty('height');
+						}
 						if (editor) {
 							editor.getContainerDomNode().style.height = `${Math.max(editor.getContentHeight(), 400)}px`;
 						}
