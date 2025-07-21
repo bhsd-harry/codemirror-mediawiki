@@ -10,12 +10,12 @@
 **Fixed**
 
 - Conversion flags cannot be set multiple times in the MediaWiki mode
+- Table cell syntax has a higher precedence than link text in the MediaWiki mode
 
 **Changed**
 
 - Templates with `subst` or `safesubst` modifiers are now highlighted as templates in the MediaWiki mode
 - [`defaultLint`](./mw/README.md#defaultlint) method no longer accepts a second parameter on a MediaWiki site
-- Wikitext syntax within language conversion flags is no longer highlighted in the MediaWiki mode
 
 ## 2.30.3
 

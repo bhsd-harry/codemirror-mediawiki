@@ -435,6 +435,7 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
 	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'iu'),
 	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
+	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u,
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
 	tableCellChars = "'<~_{-",
@@ -1060,7 +1061,13 @@ export class MediaWiki {
 				} ${file && state.imgLink ? tokens.pageName : ''}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
-			if (closing || !file && stream.match('[[', false)) {
+			if (
+				closing
+				|| !file && stream.match('[[', false)
+				|| !gallery
+				&& state.stack[0]?.name === 'inTableCell'
+				&& stream.sol() && stream.match(tableCellRegex, false)
+			) {
 				if (gallery) {
 					return makeStyle(tmpstyle, state);
 				} else if (closing && !redirect && lbrack && stream.peek() === ']') {
@@ -1222,7 +1229,7 @@ export class MediaWiki {
 	inTableCell(style: string, needAttr = true, firstLine = true): Tokenizer {
 		return (stream, state) => {
 			if (stream.sol()) {
-				if (stream.match(/^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u, false)) {
+				if (stream.match(tableCellRegex, false)) {
 					state.tokenize = this.inTable;
 					return '';
 				} else if (firstLine) {
