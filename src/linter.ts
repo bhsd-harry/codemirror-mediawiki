@@ -76,6 +76,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 					sanitizeInlineStyle(childNodes![1]!.childNodes![0]!.data!)
 						.replace(/\n/gu, ' ')
 				}\n}`).join('\n'),
+				config?.['css'] as Option,
 			)).map(({line, column, endLine, endColumn, rule, severity, text: message}): MixedDiagnostic => {
 				const i = Math.ceil(line / 3),
 					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,

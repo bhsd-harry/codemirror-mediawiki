@@ -5,6 +5,7 @@
 **Added**
 
 - [`setContent`](./README.md#setcontent) method now accepts a second parameter to force the content to be set in the read-only mode
+- When used on a MediaWiki site, the Stylelint configuration is now respected in the MediaWiki mode
 
 **Fixed**
 

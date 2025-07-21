@@ -350,14 +350,14 @@ export class CodeMirror extends CodeMirror6 {
 			let opt: LiveOption | undefined;
 			if (isWiki) {
 				const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
-				opt = (runtime): Option => runtime ? wikilint : option;
+				opt = (runtime): Option => runtime ? {...wikilint, css: codeConfigs.get('Stylelint')} : option;
 			} else if (lang === 'javascript') {
 				opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
 			} else if (lang === 'css') {
 				opt = (): Option => {
-					const option: Config = codeConfigs.get('Stylelint');
+					const option: Config | undefined = codeConfigs.get('Stylelint');
 					if (dialect === 'sanitized-css') {
-						const {rules} = option;
+						const rules = option?.rules;
 						return {
 							...option,
 							rules: {
