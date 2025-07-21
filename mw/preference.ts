@@ -36,7 +36,7 @@ const storageKey = 'codemirror-mediawiki-addons',
 		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
-const enum RuleState {
+export const enum RuleState {
 	off = '0',
 	error = '1',
 	on = '2',

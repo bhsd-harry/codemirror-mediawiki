@@ -5,7 +5,7 @@ import {jsConfig} from '../src/linter';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON} from './preference';
+import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON, RuleState} from './preference';
 import {msg, curVersion, languages} from './msg';
 import prepareSuggest from './suggest';
 import escape from './escape';
@@ -23,6 +23,7 @@ declare global {
 }
 
 declare interface IWikitextModel extends editor.ITextModel {
+	linter?: {option?: Option | LiveOption};
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	getRangeAt?: (start: number, end: number) => IRange;
 	lint?: (this: IWikitextModel, on: boolean) => void;
@@ -318,9 +319,14 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	override async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		const linter = await super.getLinter(opt);
-		linters[this.lang] = linter;
-		return linter;
+		if (this.view) {
+			const linter = await super.getLinter(opt);
+			linters[this.lang] = linter;
+			return linter;
+		} else if (this.#model?.linter) {
+			this.#model.linter.option = opt;
+		}
+		return undefined;
 	}
 
 	/**
@@ -329,7 +335,11 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	async defaultLint(on: boolean): Promise<void> {
 		if (!on) {
-			this.lint();
+			if (this.view) {
+				this.lint();
+			} else if (this.#model?.lint) {
+				this.#model.lint(false);
+			}
 			return;
 		}
 		const {lang, ns, dialect} = this,
@@ -350,7 +360,9 @@ export class CodeMirror extends CodeMirror6 {
 			let opt: LiveOption | undefined;
 			if (isWiki) {
 				const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
-				opt = (runtime): Option => runtime ? {...wikilint, css: codeConfigs.get('Stylelint')} : option;
+				opt = (runtime): Option => runtime
+					? {defaultSeverity: RuleState.error, ...wikilint, css: codeConfigs.get('Stylelint')}
+					: option;
 			} else if (lang === 'javascript') {
 				opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
 			} else if (lang === 'css') {
@@ -380,7 +392,11 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			await this.getLinter(opt);
 		}
-		this.lint(linters[lang]);
+		if (this.view) {
+			this.lint(linters[lang]);
+		} else if (this.#model?.lint) {
+			this.#model.lint(true);
+		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
@@ -400,19 +416,17 @@ export class CodeMirror extends CodeMirror6 {
 		const hasLint = hasExtension('lint'),
 			hasSpecialChars = hasExtension('highlightSpecialChars') && hasExtension('highlightWhitespace'),
 			isWiki = this.lang === 'mediawiki';
+		if (hasLint !== undefined) {
+			void this.defaultLint(hasLint);
+		}
 		if (hasSpecialChars !== undefined) {
 			toggleButton(this.$toolbar, 'invisibleChars', hasSpecialChars);
 		}
 		if (this.view) {
 			super.prefer(extensions);
-			if (hasLint !== undefined) {
-				void this.defaultLint(hasLint);
-			}
 			return;
 		} else if (!this.#editor || !this.#model) {
 			throw new Error('The editor is not initialized!');
-		} else if (hasLint !== undefined && this.#model.lint) {
-			this.#model.lint(hasLint);
 		}
 		if (isWiki) {
 			escape(this.#editor, hasExtension('escape'));
