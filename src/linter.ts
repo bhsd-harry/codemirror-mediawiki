@@ -9,7 +9,7 @@ import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigData} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
-export type LiveOption = (runtime?: boolean) => Option;
+export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
 declare type getLinter<T> = () => (text: string) => T;
 declare type asyncLinter<T, S = Record<string, unknown>> = ((text: string, config?: Option) => T) & {
 	config?: S;

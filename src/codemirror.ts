@@ -448,11 +448,11 @@ export class CodeMirror6 {
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
 		const isFunc = typeof opt === 'function',
-			getOpt = (runtime?: boolean): Option => isFunc ? opt(runtime) : opt;
+			getOpt: LiveOption = runtime => isFunc ? opt(runtime) : opt;
 		switch (this.#lang) {
 			case 'mediawiki': {
-				const wikiLint = await getWikiLinter(getOpt(), this.#view);
-				return async doc => (await wikiLint(doc.toString(), getOpt(true)))
+				const wikiLint = await getWikiLinter(await getOpt(), this.#view);
+				return async doc => (await wikiLint(doc.toString(), await getOpt(true)))
 					.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 						source: source!,
 						from: from ?? posToIndex(doc, r!.start),
@@ -475,7 +475,7 @@ export class CodeMirror6 {
 			}
 			case 'javascript': {
 				const esLint = await getJsLinter();
-				const lintSource: LintSource = doc => esLint(doc.toString(), getOpt())
+				const lintSource: LintSource = async doc => esLint(doc.toString(), await getOpt())
 					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 						const start = pos(doc, line, column),
 							diagnostic: Diagnostic = {
@@ -503,7 +503,7 @@ export class CodeMirror6 {
 			}
 			case 'css': {
 				const styleLint = await getCssLinter();
-				let option = getOpt() ?? {};
+				let option = await getOpt() ?? {};
 				if (!('extends' in option || 'rules' in option)) {
 					option = {rules: option};
 				}
