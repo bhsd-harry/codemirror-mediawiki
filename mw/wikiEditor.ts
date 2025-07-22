@@ -110,23 +110,31 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 			});
 		}),
 		hasCodeEditor = mw.loader.getState('ext.codeEditor') !== null;
-	await Promise.all([
-		mw.loader.using([
-			'ext.wikiEditor',
-			'oojs-ui.styles.icons-interactions',
-			'oojs-ui.styles.icons-layout',
-			...hasCodeEditor ? ['ext.codeEditor.icons'] : ['oojs-ui.styles.icons-editing-list'],
-		]),
-		hasCodeEditor
-			? new mw.Api().loadMessagesIfMissing([
+	await mw.loader.using([
+		'ext.wikiEditor',
+		'oojs-ui.styles.icons-interactions',
+		'oojs-ui.styles.icons-layout',
+		...hasCodeEditor ? ['ext.codeEditor.icons'] : ['oojs-ui.styles.icons-editing-list'],
+	]);
+	if (hasCodeEditor) {
+		try {
+			await new mw.Api().loadMessagesIfMissing([
 				'codeeditor-indent',
 				'codeeditor-outdent',
 				'codeeditor-invisibleChars-toggle',
 				'codeeditor-lineWrapping-toggle',
 				'codeeditor-gotoline',
-			])
-			: false,
-	]);
+			]);
+		} catch {
+			mw.messages.set({
+				'codeeditor-indent': 'Indent',
+				'codeeditor-outdent': 'Outdent',
+				'codeeditor-invisibleChars-toggle': 'Toggle invisible characters',
+				'codeeditor-lineWrapping-toggle': 'Toggle line wrapping',
+				'codeeditor-gotoline': 'Go to line number...',
+			});
+		}
+	}
 	if (context) {
 		/** @todo 萌娘百科小工具更新后删除 */
 		context.modules.toolbar.$toolbar.find('.group-insert>.tool:not([rel])').hide();
