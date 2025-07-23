@@ -31,6 +31,7 @@ import {
 	startCompletion,
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
+import {autoCloseTags} from '@codemirror/lang-html';
 import {getLSP} from '@bhsd/browser';
 import colorPicker from './color';
 import {mediawiki, html} from './mediawiki';
@@ -53,6 +54,7 @@ import wikitextLSP from './lsp';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
+import vue from './vue';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -61,13 +63,14 @@ import type {ConfigData, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
 import type {Option, LiveOption} from './linter';
+import type {Text as ExtendedText} from './indent';
 
 export type {MwConfig};
 export type LintSource = ((doc: Text) => Diagnostic[] | Promise<Diagnostic[]>) & {
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
-export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>];
+export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
@@ -90,6 +93,7 @@ const languages: Record<string, (config?: any) => Extension> = {
 	css,
 	json,
 	lua,
+	vue,
 };
 
 /**
@@ -105,15 +109,14 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, Addon<any>> = {
-		highlightSpecialChars: [highlightSpecialChars, {}],
-		highlightActiveLine: [highlightActiveLine, {}],
-		highlightWhitespace: [highlightWhitespace, {}],
-		highlightTrailingWhitespace: [highlightTrailingWhitespace, {}],
-		highlightSelectionMatches: [highlightSelectionMatches, {}],
+		highlightSpecialChars: [highlightSpecialChars],
+		highlightActiveLine: [highlightActiveLine],
+		highlightWhitespace: [highlightWhitespace],
+		highlightTrailingWhitespace: [highlightTrailingWhitespace],
+		highlightSelectionMatches: [highlightSelectionMatches],
 		bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
-		closeBrackets: [closeBrackets, {}],
-		scrollPastEnd: [scrollPastEnd, {}],
-		openLinks: [(enable: boolean, cm): Extension => enable ? openLinks(cm!) : [], {mediawiki: true}],
+		closeBrackets: [(e: Extension = []): Extension => [closeBrackets(), e], {vue: autoCloseTags}],
+		scrollPastEnd: [scrollPastEnd],
 		allowMultipleSelections: [
 			(): Extension => [
 				EditorState.allowMultipleSelections.of(true),
@@ -121,7 +124,6 @@ const avail: Record<string, Addon<any>> = {
 				rectangularSelection(),
 				crosshairCursor(),
 			],
-			{},
 		],
 		autocompletion: [
 			(): Extension => [
@@ -132,10 +134,10 @@ const avail: Record<string, Addon<any>> = {
 					{key: 'Tab', run: acceptCompletion},
 				]),
 			],
-			{},
 		],
 		codeFolding,
 		colorPicker,
+		openLinks: mediawikiOnly(openLinks),
 		escape: mediawikiOnly(keymap.of(escapeKeymap)),
 		tagMatching: mediawikiOnly(tagMatchingState),
 		refHover: mediawikiOnly(refHover),
@@ -395,10 +397,10 @@ export class CodeMirror6 {
 	 */
 	prefer(names: string[] | Record<string, boolean>): void {
 		if (Array.isArray(names)) {
-			this.#preferred = new Set(names.filter(name => avail[name]));
+			this.#preferred = new Set(names.filter(name => Object.prototype.hasOwnProperty.call(avail, name)));
 		} else {
 			for (const [name, enable] of Object.entries(names)) {
-				if (enable && avail[name]) {
+				if (enable && Object.prototype.hasOwnProperty.call(avail, name)) {
 					this.#preferred.add(name);
 				} else {
 					this.#preferred.delete(name);
@@ -410,7 +412,7 @@ export class CodeMirror6 {
 			this.#effects(
 				this.#extensions.reconfigure(
 					[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name)).map(name => {
-						const [extension, configs] = avail[name]!;
+						const [extension, configs = {}] = avail[name]!;
 						return extension(configs[this.#lang], this);
 					}),
 				),
@@ -425,7 +427,7 @@ export class CodeMirror6 {
 	setIndent(indent: string): void {
 		if (this.#view) {
 			this.#effects(this.#indent.reconfigure(indentUnit.of(
-				detectIndent(this.#view.state.doc, indent, this.#lang),
+				detectIndent(this.#view.state.doc as ExtendedText, indent, this.#lang),
 			)));
 		} else {
 			this.#indentStr = indent;

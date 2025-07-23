@@ -28,8 +28,8 @@ declare interface MediaWikiResponse {
 
 const storageKey = 'codemirror-mediawiki-addons',
 	monacoKey = 'codemirror-mediawiki-monaco',
-	langs = ['wiki', 'javascript', 'css', 'lua', 'json'],
-	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON'],
+	langs = ['wiki', 'javascript', 'css', 'lua', 'json', 'vue'],
+	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint'] as const,
 	user = mw.config.get('wgUserGroups')?.includes('user')

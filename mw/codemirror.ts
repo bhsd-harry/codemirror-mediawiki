@@ -36,7 +36,7 @@ declare interface ExtCodeMirror {
 }
 
 const linters: Record<string, LintSource | undefined> = {},
-	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json']),
+	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
 	langMap: Record<string, string> = {
 		'sanitized-css': 'css',
 		js: 'javascript',

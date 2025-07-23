@@ -24,6 +24,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	}
 
 	const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'],
+		cssOnly = ['colorPicker'],
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
@@ -35,10 +36,14 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	 */
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
-			display = isMediaWiki ? '' : 'none';
+			display = isMediaWiki ? '' : 'none',
+			cssDisplay = isMediaWiki || lang === 'css' ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
+		}
+		for (const id of cssOnly) {
+			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = cssDisplay;
 		}
 		if (isMediaWiki) {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
@@ -112,6 +117,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		['css', 'css'],
 		['lua', 'lua'],
 		['json', 'json'],
+		['vue', 'vue'],
 	]);
 	addEventListener('hashchange', () => {
 		const target = hashMap.get(location.hash.slice(1).toLowerCase()),

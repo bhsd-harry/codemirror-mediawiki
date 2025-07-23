@@ -1,3 +1,15 @@
+## 2.32.0
+
+*2025-07-23*
+
+**Added**
+
+- Language support for Vue
+
+**Fixed**
+
+- Load the [WikiEditor](./mw/README.md#wikieditor) extension even when the API request fails on a MediaWiki site
+
 ## 2.31.0
 
 *2025-07-22*

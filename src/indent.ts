@@ -1,4 +1,9 @@
-import type {Text} from '@codemirror/state';
+import type {Text as TextBase} from '@codemirror/state';
+
+export interface Text extends TextBase {
+	children: readonly Text[] | null;
+	text: string[];
+}
 
 const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
 
@@ -12,9 +17,16 @@ export const detectIndent = (text: string | Text, defaultIndent: string, lang: s
 	if (noDetectionLangs.has(lang)) {
 		return defaultIndent;
 	}
-	const lineSpaces: number[] = [],
-		lines = typeof text === 'string' ? text.split('\n') : (text as Text & {text: string[]}).text;
-	let tabLines = 0;
+	const lineSpaces: number[] = [];
+	let tabLines = 0,
+		lines: string[];
+	if (typeof text === 'string') {
+		lines = text.split('\n');
+	} else if (text.children) {
+		lines = text.children.flatMap(({text: t}) => t);
+	} else {
+		lines = text.text;
+	}
 	for (const line of lines) {
 		if (!line.trim()) {
 			continue;

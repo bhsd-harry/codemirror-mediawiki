@@ -13,13 +13,16 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     for (const extension of extensions) {
         extension.checked = search.has(extension.id);
     }
-    const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cm = new CodeMirror6(textarea), linters = {};
+    const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cm = new CodeMirror6(textarea), linters = {};
     let config, fetchConfig;
     const init = async (lang) => {
-        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none';
+        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || lang === 'css' ? '' : 'none';
         let parserConfig;
         for (const id of mediawikiOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = display;
+        }
+        for (const id of cssOnly) {
+            document.getElementById(id).closest('.fieldLayout').style.display = cssDisplay;
         }
         if (isMediaWiki) {
             fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
@@ -77,6 +80,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         ['css', 'css'],
         ['lua', 'lua'],
         ['json', 'json'],
+        ['vue', 'vue'],
     ]);
     addEventListener('hashchange', () => {
         const target = hashMap.get(location.hash.slice(1).toLowerCase()), element = languages.find(({ id }) => id === target);
