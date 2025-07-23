@@ -1,6 +1,6 @@
 ## 3.0.0
 
-*2025-07-23*
+*2025-07-24*
 
 **Added**
 
@@ -13,7 +13,8 @@
 **Changed**
 
 - The tagMatching extension is now merged with the [bracketMatching](./README.md#bracketmatching) extension
-- All language modes now need explicit registration
+- All language modes now need explicit [registration](./README.md#language-modes)
+- The argument type of [`lint`](./README.md#lint) and the return type of [`getLinter`](./README.md#getlinter) are now changed to `(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>` to support nested language modes, e.g., Vue
 
 ## 2.31.0
 
@@ -21,7 +22,7 @@
 
 **Added**
 
-- [`setContent`](./README.md#setcontent) method now accepts a second parameter to force the content to be set in the read-only mode
+- [`setContent`](./README.md#setcontent) now accepts a second parameter to force the content to be set in the read-only mode
 - When used on a MediaWiki site, the Stylelint configuration is now respected in the MediaWiki mode
 
 **Fixed**
@@ -32,7 +33,7 @@
 **Changed**
 
 - Templates with `subst` or `safesubst` modifiers are now highlighted as templates in the MediaWiki mode
-- [`defaultLint`](./mw/README.md#defaultlint) method no longer accepts a second parameter on a MediaWiki site
+- [`defaultLint`](./mw/README.md#defaultlint) no longer accepts a second parameter on a MediaWiki site
 
 ## 2.30.3
 
@@ -1389,7 +1390,7 @@
 
 **Changed**
 
-- Reseting the editor size in [`toggle`](./README.md#toggle) method
+- Reseting the editor size in [`toggle`](./README.md#toggle)
 
 ## v2.1.5
 
@@ -1467,7 +1468,7 @@
 
 **Changed**
 
-- The argument type of [`lint`](./README.md#lint) method
+- The argument type of [`lint`](./README.md#lint)
 
 ## v2.0.12
 

@@ -373,7 +373,7 @@ cm.extraKeys([
 *version added: 2.1.3*
 
 **param**: `Record<string, any>` the optional linter configuration  
-**returns**: `Promise<(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>>`  
+**returns**: `Promise<(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>>`  
 Get the default linting function, which can be used as the argument of [`lint`](#lint).
 
 ```js
@@ -423,11 +423,11 @@ cm.initialize();
 <details>
 	<summary>Expand</summary>
 
-**param**: `(doc: Text) => Diagnostic[] | Promise<Diagnostic[]>` the linting function  
+**param**: `(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>` the linting function  
 Set the linting function.
 
 ```js
-cm.lint(doc => [
+cm.lint(({doc}) => [
 	/**
 	 * @type {Diagnostic}
 	 * @see https://codemirror.net/docs/ref/#lint.Diagnostic

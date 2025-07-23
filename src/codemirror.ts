@@ -40,6 +40,8 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
+import {cssLanguage} from '@codemirror/lang-css';
+import {javascriptLanguage} from '@codemirror/lang-javascript';
 import {css as cssParser} from '@codemirror/legacy-modes/mode/css';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
@@ -91,7 +93,7 @@ import type {Option, LiveOption} from './linter';
 import type {Text as ExtendedText} from './indent';
 
 export type {MwConfig};
-export type LintSource = ((doc: Text) => Diagnostic[] | Promise<Diagnostic[]>) & {
+export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>) & {
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
@@ -173,6 +175,21 @@ const phrases: Record<string, string> = {};
  */
 const pos = (doc: Text, line: number, column: number): number =>
 	posToIndex(doc, {line: line - 1, character: column - 1});
+
+/**
+ * 获取子语言指定行列的位置
+ * @param doc 文档
+ * @param from 子语言起始位置
+ * @param line 行号
+ * @param column 列号
+ */
+const nestedPos = (doc: Text, from: number, line: number, column: number): number => {
+	const lineDesc = doc.lineAt(from);
+	return posToIndex(doc, {
+		line: lineDesc.number + line - 2,
+		character: (line === 1 ? from - lineDesc.from : 0) + column - 1,
+	});
+};
 
 /**
  * 获取Linter选项
@@ -330,7 +347,7 @@ export const registerMediaWiki = (): void => {
 	});
 	linterRegistry['mediawiki'] = async (opt, v): Promise<LintSource> => {
 		const wikiLint = await getWikiLinter(await getOpt(opt), v);
-		return async doc => (await wikiLint(doc.toString(), await getOpt(opt, true)))
+		return async ({doc}) => (await wikiLint(doc.toString(), await getOpt(opt, true)))
 			.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 				source: source!,
 				from: from ?? posToIndex(doc, r!.start),
@@ -367,7 +384,7 @@ export const registerJavaScript = (): void => {
 	languages['javascript'] = javascript;
 	linterRegistry['javascript'] = async (opt): Promise<LintSource> => {
 		const esLint = await getJsLinter();
-		const lintSource: LintSource = async doc => esLint(doc.toString(), await getOpt(opt))
+		const lintSource: LintSource = async ({doc}) => esLint(doc.toString(), await getOpt(opt))
 			.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
 				const start = pos(doc, line, column),
 					diagnostic: Diagnostic = {
@@ -402,33 +419,36 @@ export const registerCSS = (): void => {
 	addon[1]['css'] = [cssColorPicker];
 	linterRegistry['css'] = async (opt): Promise<LintSource> => {
 		const styleLint = await getCssLinter();
-		let option = await getOpt(opt) ?? {};
-		if (!('extends' in option || 'rules' in option)) {
-			option = {rules: option};
-		}
-		const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
-			.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
-				const diagnostic: Diagnostic = {
-					source: 'Stylelint',
-					message: text,
-					severity,
-					from: pos(doc, line, column),
-					to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
-				};
-				if (fix) {
-					diagnostic.actions = [
-						{
-							name: 'fix',
-							apply(view): void {
-								view.dispatch({
-									changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
-								});
+		const lintSource: LintSource = async ({doc}) => {
+			let option = await getOpt(opt) ?? {};
+			if (!('extends' in option || 'rules' in option)) {
+				option = {rules: option};
+			}
+			return (await styleLint(doc.toString(), option))
+				.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
+					const start = pos(doc, line, column),
+						diagnostic: Diagnostic = {
+							source: 'Stylelint',
+							message: text,
+							severity,
+							from: start,
+							to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
+						};
+					if (fix) {
+						diagnostic.actions = [
+							{
+								name: 'fix',
+								apply(view): void {
+									view.dispatch({
+										changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
+									});
+								},
 							},
-						},
-					];
-				}
-				return diagnostic;
-			});
+						];
+					}
+					return diagnostic;
+				});
+		};
 		lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
 		return lintSource;
 	};
@@ -438,7 +458,7 @@ export const registerJSON = (): void => {
 	languages['json'] = json;
 	linterRegistry['json'] = (): LintSource => {
 		const jsonLint = getJsonLinter();
-		return doc => {
+		return ({doc}) => {
 			const [e] = jsonLint(doc.toString());
 			if (e) {
 				const {message, severity, line, column, position} = e;
@@ -459,7 +479,7 @@ export const registerLua = (): void => {
 	languages['lua'] = lua;
 	linterRegistry['lua'] = async (): Promise<LintSource> => {
 		const luaLint = await getLuaLinter();
-		return async doc => (await luaLint(doc.toString()))
+		return async ({doc}) => (await luaLint(doc.toString()))
 			.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
 				source: 'Luacheck',
 				message,
@@ -478,6 +498,82 @@ export const registerVue = (): void => {
 	const addon2 = avail['colorPicker'] as Addon<[Extension?]>;
 	addon2[1] ??= {};
 	addon2[1]['vue'] = [cssColorPicker];
+	linterRegistry['vue'] = async (opt): Promise<LintSource> => {
+		const styleLint = await getCssLinter(),
+			esLint = await getJsLinter();
+		return async state => {
+			const {doc} = state,
+				option = await getOpt(opt) ?? {},
+				jsOpt = option['js'] as Option;
+			let cssOpt = (option['css'] as Option) ?? {};
+			if (!('extends' in cssOpt || 'rules' in cssOpt)) {
+				cssOpt = {rules: cssOpt};
+			}
+			return [
+				...(await Promise.all(
+					cssLanguage.findRegions(state).map(
+						async ({from, to}) => (await styleLint(state.sliceDoc(from, to), cssOpt))
+							.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
+								const start = nestedPos(doc, from, line, column),
+									diagnostic: Diagnostic = {
+										source: 'Stylelint',
+										message: text,
+										severity,
+										from: start,
+										to: endLine === undefined
+											? Math.min(to, start + 1)
+											: nestedPos(doc, from, endLine, endColumn!),
+									};
+								if (fix) {
+									diagnostic.actions = [
+										{
+											name: 'fix',
+											apply(view): void {
+												view.dispatch({
+													changes: {
+														from: from + fix.range[0],
+														to: from + fix.range[1],
+														insert: fix.text,
+													},
+												});
+											},
+										},
+									];
+								}
+								return diagnostic;
+							}),
+					),
+				)).flat(),
+				...javascriptLanguage.findRegions(state).flatMap(
+					({from, to}) => esLint(state.sliceDoc(from, to), jsOpt)
+						.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
+							const start = nestedPos(doc, from, line, column),
+								diagnostic: Diagnostic = {
+									source: 'ESLint',
+									message: message + (ruleId ? ` (${ruleId})` : ''),
+									severity: severity === 1 ? 'warning' : 'error',
+									from: start,
+									to: endLine === undefined
+										? Math.min(to, start + 1)
+										: nestedPos(doc, from, endLine, endColumn!),
+								};
+							if (fix || suggestions.length > 0) {
+								diagnostic.actions = [
+									...fix ? [{name: 'fix', fix}] : [],
+									...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
+								].map(({name, fix: {range: [f, t], text}}): Action => ({
+									name,
+									apply(view): void {
+										view.dispatch({changes: {from: from + f, to: from + t, insert: text}});
+									},
+								}));
+							}
+							return diagnostic;
+						}),
+				),
+			];
+		};
+	};
 };
 
 export const registerLanguage = (
@@ -691,9 +787,9 @@ export class CodeMirror6 {
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
 			? [
-				linter(async ({state: {doc, readOnly}}) => {
-					const diagnostics = await lintSource(doc);
-					if (readOnly) {
+				linter(async ({state}) => {
+					const diagnostics = await lintSource(state);
+					if (state.readOnly) {
 						for (const diagnostic of diagnostics) {
 							delete diagnostic.actions;
 						}
