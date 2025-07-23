@@ -47,7 +47,7 @@ export const findEnclosingPlainBrackets = (
 	return null;
 };
 
-export default (configs: Config): Extension => {
+export default (configs?: Config): Extension => {
 	const extension = bracketMatching(configs) as [
 			Extension & {facet: Facet<Config, Required<Config>>},
 			[StateField<DecorationSet>, Extension],

@@ -10,6 +10,10 @@
 
 - Load the [WikiEditor](./mw/README.md#wikieditor) extension even when the API request fails on a MediaWiki site
 
+**Changed**
+
+- The tagMatching extension is now merged with the [bracketMatching](./README.md#bracketmatching) extension
+
 ## 2.31.0
 
 *2025-07-22*
@@ -153,7 +157,7 @@
 **Fixed**
 
 - Leading space followed by comments will not be highlighted as a `<pre>` tag in the MediaWiki mode
-- Self-closing HTML tags (e.g., `<li/>`) in the [tagMatching](./README.md#tagmatching) extension in the MediaWiki mode
+- Self-closing HTML tags (e.g., `<li/>`) in the tagMatching extension in the MediaWiki mode
 
 ## 2.25.5
 
@@ -394,7 +398,7 @@
 
 **Fixed**
 
-- Extensions including [tagMatching](./README.md#tagmatching), [codeFolding](./README.md#codefolding) and [refHover](./README.md#refhover) when there are neighboring tags in the MediaWiki mode, since [v2.18.13](#21813)
+- Extensions including tagMatching, [codeFolding](./README.md#codefolding) and [refHover](./README.md#refhover) when there are neighboring tags in the MediaWiki mode, since [v2.18.13](#21813)
 - Extensions including [codeFolding](./README.md#codefolding) and [autocompletion](./README.md#autocompletion) when there are neighboring template brackets in the MediaWiki mode, since [v2.18.13](#21813)
 - Language conversion syntax inside `<pre>` should not be highlighted if no language variants are specified in the MediaWiki mode
 
@@ -609,7 +613,7 @@
 
 **Fixed**
 
-- The [tagMatching](./README.md#tagmatching) extension now ignores the case of the tag name
+- The tagMatching extension now ignores the case of the tag name
 
 ## 2.16.0
 
@@ -1193,7 +1197,7 @@
 
 **Fixed**
 
-- Interaction between the [tagMatching](./README.md#tagmatching) extension and uncustomized extension tags
+- Interaction between the tagMatching extension and uncustomized extension tags
 
 ## v2.6.0
 
@@ -1254,7 +1258,7 @@
 
 **Added**
 
-- New extension option for the MediaWiki mode: [tagMatching](./README.md#tagmatching)
+- New extension option for the MediaWiki mode: tagMatching
 
 ## v2.3.5
 

@@ -13,7 +13,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     for (const extension of extensions) {
         extension.checked = search.has(extension.id);
     }
-    const mediawikiOnly = ['escape', 'tagMatching', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cm = new CodeMirror6(textarea), linters = {};
+    const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cm = new CodeMirror6(textarea), linters = {};
     let config, fetchConfig;
     const init = async (lang) => {
         const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || lang === 'css' ? '' : 'none';

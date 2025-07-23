@@ -2,10 +2,12 @@ import type {Text as TextBase} from '@codemirror/state';
 
 export interface Text extends TextBase {
 	children: readonly Text[] | null;
-	text: string[];
+	text?: string[];
 }
 
 const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
+
+const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
 
 /**
  * 检测文本的缩进方式
@@ -17,16 +19,9 @@ export const detectIndent = (text: string | Text, defaultIndent: string, lang: s
 	if (noDetectionLangs.has(lang)) {
 		return defaultIndent;
 	}
-	const lineSpaces: number[] = [];
-	let tabLines = 0,
-		lines: string[];
-	if (typeof text === 'string') {
-		lines = text.split('\n');
-	} else if (text.children) {
-		lines = text.children.flatMap(({text: t}) => t);
-	} else {
-		lines = text.text;
-	}
+	const lineSpaces: number[] = [],
+		lines = typeof text === 'string' ? text.split('\n') : getLines(text);
+	let tabLines = 0;
 	for (const line of lines) {
 		if (!line.trim()) {
 			continue;

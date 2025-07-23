@@ -59,6 +59,7 @@ import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
+import type {Config} from '@codemirror/language';
 import type {ConfigData, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
@@ -114,8 +115,14 @@ const avail: Record<string, Addon<any>> = {
 		highlightWhitespace: [highlightWhitespace],
 		highlightTrailingWhitespace: [highlightTrailingWhitespace],
 		highlightSelectionMatches: [highlightSelectionMatches],
-		bracketMatching: [bracketMatching, {mediawiki: {brackets: '()[]{}（）【】［］｛｝'}}],
-		closeBrackets: [(e: Extension = []): Extension => [closeBrackets(), e], {vue: autoCloseTags}],
+		bracketMatching: [
+			([config, e = []]: [Config?, Extension?] = []): Extension => [bracketMatching(config), e],
+			{mediawiki: [{brackets: '()[]{}（）【】［］｛｝'}, tagMatchingState]},
+		] satisfies Addon<[Config?, Extension?]>,
+		closeBrackets: [
+			(e: Extension = []): Extension => [closeBrackets(), e],
+			{vue: autoCloseTags},
+		] satisfies Addon<Extension>,
 		scrollPastEnd: [scrollPastEnd],
 		allowMultipleSelections: [
 			(): Extension => [
@@ -139,7 +146,6 @@ const avail: Record<string, Addon<any>> = {
 		colorPicker,
 		openLinks: mediawikiOnly(openLinks),
 		escape: mediawikiOnly(keymap.of(escapeKeymap)),
-		tagMatching: mediawikiOnly(tagMatchingState),
 		refHover: mediawikiOnly(refHover),
 		hover: mediawikiOnly(magicWordHover),
 		signatureHelp: mediawikiOnly(signatureHelp),

@@ -54,7 +54,6 @@
 	- [refHover](#refhover)
 	- [scrollPastEnd](#scrollpastend)
 	- [signatureHelp](#signaturehelp)
-	- [tagMatching](#tagmatching)
 - [Known issues](#known-issues)
 	- [Syntax Highlighting](#syntax-highlighting)
 
@@ -337,36 +336,48 @@ cm.prefer([
 	'autocompletion',
 	'bracketMatching',
 	'closeBrackets',
-	'highlightActiveLine',
-	'highlightSpecialChars',
-	'highlightWhitespace',
-	'highlightTrailingWhitespace',
-	'highlightSelectionMatches',
 	'codeFolding',
+	'highlightActiveLine',
+	'highlightSelectionMatches',
+	'highlightSpecialChars',
+	'highlightTrailingWhitespace',
+	'highlightWhitespace',
 	'scrollPastEnd',
+
+	// only available in CSS and MediaWiki modes
+	'colorPicker',
 
 	// only available in MediaWiki mode
 	'escape',
-	'tagMatching',
+	'hover',
+	'inlayHints',
+	'openLinks',
 	'refHover',
+	'signatureHelp',
 ]);
 cm.prefer({
 	allowMultipleSelections: false,
 	autocompletion: false,
 	bracketMatching: false,
 	closeBrackets: false,
-	highlightActiveLine: false,
-	highlightSpecialChars: false,
-	highlightWhitespace: false,
-	highlightTrailingWhitespace: false,
-	highlightSelectionMatches: false,
 	codeFolding: false,
+	highlightActiveLine: false,
+	highlightSelectionMatches: false,
+	highlightSpecialChars: false,
+	highlightTrailingWhitespace: false,
+	highlightWhitespace: false,
 	scrollPastEnd: false,
+
+	// only available in CSS and MediaWiki modes
+	colorPicker: false,
 
 	// only available in MediaWiki mode
 	escape: false,
-	tagMatching: false,
+	hover: false,
+	inlayHints: false,
+	openLinks: false,
 	refHover: false,
+	signatureHelp: false,
 });
 ```
 
@@ -540,7 +551,7 @@ Provide autocompletion for MediaWiki, CSS and JavaScript modes.
 
 *version added: 2.0.9*
 
-Matched or unmatched brackets are highlighted in cyan or dark red when the cursor is next to them.
+Matched or unmatched brackets or tags are highlighted in cyan or dark red when the cursor is next to them.
 
 ## closeBrackets
 
@@ -637,12 +648,6 @@ Allow the editor to be scrolled down past the end of the document.
 *version added: 2.21.1*
 
 Show the parser function signature when typing.
-
-## tagMatching
-
-*version added: 2.4.1*
-
-Matched or unmatched tags are highlighted in cyan or dark red when the cursor is inside.
 
 # Known issues
 
