@@ -8,8 +8,8 @@ import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
-import {css} from '@codemirror/legacy-modes/mode/css';
 import {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
+import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {EditorState} from '@codemirror/state';
@@ -1400,17 +1400,12 @@ export class MediaWiki {
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re)!;
 			if (isLang) {
-				switch (mt[0].trim().toLowerCase()) {
-					case 'js':
-					case 'javascript':
-						state.extMode = javascript as StreamParser<object>;
-						break;
-					case 'css':
-						state.extMode = css as StreamParser<object>;
-						break;
-					case 'json':
-						state.extMode = json as StreamParser<object>;
-					// no default
+				let lang = mt[0].trim().toLowerCase();
+				if (lang === 'js') {
+					lang = 'javascript';
+				}
+				if (lang in this) {
+					state.extMode = this[lang as 'text/pre']() as StreamParser<object>;
 				}
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
@@ -2213,11 +2208,11 @@ export class MediaWiki {
 		return javascript;
 	}
 
-	css(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
-		return css;
-	}
-
 	json(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
 		return json;
+	}
+
+	lua(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		return lua;
 	}
 }

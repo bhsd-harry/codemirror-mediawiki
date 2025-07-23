@@ -62,6 +62,12 @@ module.exports = {
 			},
 		},
 		{
+			files: 'src/*.ts',
+			rules: {
+				'jsdoc/no-bad-blocks': 0,
+			},
+		},
+		{
 			files: 'mw/*.ts',
 			env: {
 				jquery: true,

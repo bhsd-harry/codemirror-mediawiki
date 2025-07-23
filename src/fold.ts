@@ -1,13 +1,10 @@
-import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror/view';
-import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
+import {keymap, GutterMarker, ViewPlugin} from '@codemirror/view';
+import {RangeSetBuilder} from '@codemirror/state';
 import {
 	syntaxTree,
 	ensureSyntaxTree,
 	foldEffect,
-	unfoldEffect,
 	foldedRanges,
-	unfoldAll,
-	codeFolding,
 	foldGutter,
 	foldKeymap,
 	foldState,
@@ -17,7 +14,7 @@ import {getRegex} from '@bhsd/common';
 import {tokens} from './config';
 import {matchTag, getTag} from './matchTag';
 import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
-import type {EditorState, StateEffect, Extension} from '@codemirror/state';
+import type {EditorState, StateEffect, Extension, RangeSet} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
 import type {Addon} from './codemirror';
@@ -29,10 +26,10 @@ export interface DocRange {
 
 declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 
-const getExtRegex = getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
+const getExtRegex = /* @__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
-const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
-	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
+export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to);
+const updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
 
 /**
  * Check if a SyntaxNode is among the specified components
@@ -42,13 +39,13 @@ const isComponent = (keys: TagName[]) =>
 		(node: SyntaxNode | null): boolean => keys.some(key => node?.name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
-	isTemplateBracket = isComponent(['templateBracket', 'parserFunctionBracket']),
+	isTemplateBracket = /* @__PURE__ */ isComponent(['templateBracket', 'parserFunctionBracket']),
 
 	/** Check if a SyntaxNode is a template name */
-	isTemplateName = isComponent(['templateName', 'parserFunctionName']),
+	isTemplateName = /* @__PURE__ */ isComponent(['templateName', 'parserFunctionName']),
 
 	/** Check if a SyntaxNode is a template delimiter (`|` or `:`) */
-	isDelimiter = isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
+	isDelimiter = /* @__PURE__ */ isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
 
 	/**
 	 * Check if a SyntaxNode is a template delimiter (`|` or `:`), excluding `subst:` and `safesubst:`
@@ -64,7 +61,7 @@ const isComponent = (keys: TagName[]) =>
 		/-(?:template|ext)[a-z\d-]+ground/u.test(node.name) && !isTemplateBracket(node),
 
 	/** Check if a SyntaxNode is an extension tag bracket (`<` or `>`) */
-	isExtBracket = isComponent(['extTagBracket']),
+	isExtBracket = /* @__PURE__ */ isComponent(['extTagBracket']),
 
 	/**
 	 * Check if a SyntaxNode is part of a extension tag
@@ -189,7 +186,7 @@ export const foldable = (
  * 创建折叠提示
  * @param state
  */
-const create = (state: EditorState): Tooltip | null => {
+export const create = (state: EditorState): Tooltip | null => {
 	const {selection: {main: {head}}} = state,
 		range = foldable(state, head);
 	if (range) {
@@ -225,7 +222,7 @@ const create = (state: EditorState): Tooltip | null => {
  * @param effects 折叠
  * @param anchor 光标位置
  */
-const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
+export const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
 	if (effects.length > 0) {
 		view.dom.querySelector('.cm-tooltip-fold')?.remove();
 		// Fold the template(s) and update the cursor position
@@ -239,7 +236,7 @@ const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: num
  * The rightmost position of all selections, to be updated with folding
  * @param state
  */
-const getAnchor = (state: EditorState): number => Math.max(...state.selection.ranges.map(({to}) => to));
+export const getAnchor = (state: EditorState): number => Math.max(...state.selection.ranges.map(({to}) => to));
 
 /**
  * 折叠所有模板
@@ -252,7 +249,7 @@ const getAnchor = (state: EditorState): number => Math.max(...state.selection.ra
  * @param update 更新光标位置
  * @param refOnly 是否仅检查`<ref>`标签
  */
-const traverse = (
+export const traverse = (
 	state: EditorState,
 	tree: Tree,
 	effects: StateEffect<DocRange>[],
@@ -278,7 +275,7 @@ const traverse = (
 	return anchor;
 };
 
-class FoldMarker extends GutterMarker {
+export class FoldMarker extends GutterMarker {
 	declare readonly open;
 
 	constructor(open: boolean) {
@@ -298,10 +295,10 @@ class FoldMarker extends GutterMarker {
 	}
 }
 
-const canFold = new FoldMarker(true),
-	canUnfold = new FoldMarker(false);
+const canFold = /* @__PURE__ */ new FoldMarker(true),
+	canUnfold = /* @__PURE__ */ new FoldMarker(false);
 
-const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
+export const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
 	let found: DocRange | undefined;
 	state.field(foldState, false)?.between(line.from, line.to, (from, to) => {
 		if (!found && to === line.to) {
@@ -382,7 +379,7 @@ const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
 	return builder.finish();
 };
 
-const markers = ViewPlugin.fromClass(class implements PluginValue {
+export const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
 	declare markers;
 
 	constructor(view: EditorView) {
@@ -408,7 +405,7 @@ const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
  * 生成折叠命令
  * @param refOnly 是否仅检查`<ref>`标签
  */
-const foldCommand = (refOnly?: boolean): Command => view => {
+export const foldCommand = (refOnly?: boolean): Command => view => {
 	const {state} = view,
 		tree = syntaxTree(state),
 		effects: StateEffect<DocRange>[] = [],
@@ -425,133 +422,9 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 	return execute(view, effects, anchor);
 };
 
-export const foldRef = foldCommand(true);
+export const foldRef = /* @__PURE__ */ foldCommand(true);
 
-export default [
-	(e = defaultFoldExtension): Extension => e,
-	{
-		mediawiki: [
-			codeFolding({
-				placeholderDOM(view) {
-					const element = document.createElement('span');
-					element.textContent = '…';
-					element.setAttribute('aria-label', 'folded code');
-					element.title = view.state.phrase('unfold');
-					element.className = 'cm-foldPlaceholder';
-					element.addEventListener('click', ({target}) => {
-						const pos = view.posAtDOM(target as Node),
-							{state} = view,
-							{selection} = state;
-						foldedRanges(state).between(pos, pos, (from, to) => {
-							if (from === pos) {
-								// Unfold the template and redraw the selections
-								view.dispatch({effects: unfoldEffect.of({from, to}), selection});
-							}
-						});
-					});
-					return element;
-				},
-			}),
-			/** @see https://codemirror.net/examples/tooltip/ */
-			StateField.define<Tooltip | null>({
-				create,
-				update(tooltip, {state, docChanged, selection}) {
-					if (docChanged) {
-						return null;
-					}
-					return selection ? create(state) : tooltip;
-				},
-				provide(f) {
-					return showTooltip.from(f);
-				},
-			}),
-			keymap.of([
-				{
-					// Fold the template at the selection/cursor
-					key: 'Ctrl-Shift-[',
-					mac: 'Cmd-Alt-[',
-					run(view): boolean {
-						const {state} = view,
-							tree = syntaxTree(state),
-							effects: StateEffect<DocRange>[] = [];
-						let anchor = getAnchor(state);
-						for (const {from, to, empty} of state.selection.ranges) {
-							let node: SyntaxNode | null | undefined;
-							if (empty) {
-								// No selection, try both sides of the cursor position
-								node = tree.resolve(from, -1);
-							}
-							if (!node || node.name === 'Document') {
-								node = tree.resolve(from, 1);
-							}
-							anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
-						}
-						return execute(view, effects, anchor);
-					},
-				},
-				{
-					// Fold all templates in the document
-					key: 'Ctrl-Alt-[',
-					run: foldCommand(),
-				},
-				{
-					// Fold all `<ref>` tags in the document
-					key: 'Mod-Alt-,',
-					run: foldRef,
-				},
-				{
-					// Unfold the template at the selection/cursor
-					key: 'Ctrl-Shift-]',
-					mac: 'Cmd-Alt-]',
-					run(view): boolean {
-						const {state} = view,
-							{selection} = state,
-							effects: StateEffect<DocRange>[] = [],
-							folded = foldedRanges(state);
-						for (const {from, to} of selection.ranges) {
-							// Unfold any folded range at the selection
-							folded.between(from, to, (i, j) => {
-								effects.push(unfoldEffect.of({from: i, to: j}));
-							});
-						}
-						if (effects.length > 0) {
-							// Unfold the template(s) and redraw the selections
-							view.dispatch({effects, selection});
-							return true;
-						}
-						return false;
-					},
-				},
-				{key: 'Ctrl-Alt-]', run: unfoldAll},
-			]),
-			markers,
-			gutter({
-				class: 'cm-foldGutter',
-				markers(view) {
-					return view.plugin(markers)?.markers ?? RangeSet.empty;
-				},
-				initialSpacer() {
-					return new FoldMarker(false);
-				},
-				domEventHandlers: {
-					click(view, line) {
-						const folded = findFold(view, line);
-						if (folded) {
-							view.dispatch({effects: unfoldEffect.of(folded)});
-							return true;
-						}
-						const range = foldableLine(view, line);
-						if (range) {
-							view.dispatch({effects: foldEffect.of(range)});
-							return true;
-						}
-						return false;
-					},
-				},
-			}),
-		],
-	},
-] satisfies Addon<Extension>;
+export default [(e = defaultFoldExtension): Extension => e] satisfies Addon<Extension>;
 
 /**
  * 点击提示折叠模板参数

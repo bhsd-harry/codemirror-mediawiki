@@ -13,13 +13,13 @@ import {html} from 'wikiparser-node/config/default.json';
  *
  * @see https://www.mediawiki.org/wiki/Extension:CodeMirror#Extension_integration
  */
-export const htmlTags = html.flat(),
+export const htmlTags = /* @__PURE__ */ html.flat(),
 
 	/** HTML tags that are only self-closing. */
-	voidHtmlTags = html[2]!,
+	voidHtmlTags = /* @__PURE__ */ (() => html[2]!)(),
 
 	/** HTML tags that can be self-closing. */
-	selfClosingTags = html[1]!,
+	selfClosingTags = /* @__PURE__ */ (() => html[1]!)(),
 
 	/**
 	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
@@ -104,7 +104,7 @@ export const htmlTags = html.flat(),
 	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
 	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
 	 */
-	tokenTable = (() => {
+	tokenTable = /* @__PURE__ */ (() => {
 		const table: Record<string, Tag> = {
 			variable: tags.variableName,
 			'variable-2': tags.special(tags.variableName),

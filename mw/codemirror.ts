@@ -1,5 +1,14 @@
 import {CDN} from '@bhsd/browser';
-import {CodeMirror6} from '../src/codemirror';
+import {
+	CodeMirror6,
+	registerCSS,
+	registerHTML,
+	registerJSON,
+	registerJavaScript,
+	registerLua,
+	registerMediaWiki,
+	registerVue,
+} from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
 import {getMwConfig, getParserConfig} from './config';
@@ -34,6 +43,14 @@ declare interface ExtCodeMirror {
 	textarea: HTMLTextAreaElement;
 	destroy(): void;
 }
+
+registerCSS();
+registerHTML();
+registerJSON();
+registerJavaScript();
+registerLua();
+registerMediaWiki();
+registerVue();
 
 const linters: Record<string, LintSource | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),

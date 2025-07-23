@@ -1,4 +1,10 @@
-import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
+import { CodeMirror6, registerCSS, registerJSON, registerJavaScript, registerLua, registerMediaWiki, registerVue, } from '/codemirror-mediawiki/dist/main.min.js';
+registerCSS();
+registerJSON();
+registerJavaScript();
+registerLua();
+registerMediaWiki();
+registerVue();
 (() => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
@@ -16,7 +22,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
     const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cm = new CodeMirror6(textarea), linters = {};
     let config, fetchConfig;
     const init = async (lang) => {
-        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || lang === 'css' ? '' : 'none';
+        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || lang === 'css' || lang === 'vue' ? '' : 'none';
         let parserConfig;
         for (const id of mediawikiOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = display;
@@ -35,7 +41,7 @@ import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
         await cm.setLanguage(lang, config);
         if (search.get('lint') !== '0' && !(lang in linters)) {
             linters[lang] = await cm.getLinter();
-            if (isMediaWiki) {
+            if (isMediaWiki && typeof wikiparse === 'object') {
                 wikiparse.setConfig(parserConfig);
             }
             if (linters[lang]) {

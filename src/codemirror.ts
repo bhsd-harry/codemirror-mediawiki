@@ -11,14 +11,22 @@ import {
 	scrollPastEnd,
 	rectangularSelection,
 	crosshairCursor,
+	showTooltip,
+	gutter,
 } from '@codemirror/view';
-import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
+import {Compartment, EditorState, EditorSelection, SelectionRange, StateField, RangeSet} from '@codemirror/state';
 import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
 	indentUnit,
 	ensureSyntaxTree,
+	codeFolding as codeFoldingBase,
+	unfoldAll,
+	unfoldEffect,
+	foldEffect,
+	foldedRanges,
+	syntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
@@ -32,11 +40,26 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
+import {css as cssParser} from '@codemirror/legacy-modes/mode/css';
 import {getLSP} from '@bhsd/browser';
-import colorPicker from './color';
-import {mediawiki, html} from './mediawiki';
+import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
+import colorPicker, {discoverColors} from './color';
+import {mediawiki, html, FullMediaWiki} from './mediawiki';
 import escapeKeymap from './escape';
-import codeFolding, {foldHandler} from './fold';
+import codeFolding, {
+	foldHandler,
+	create,
+	getAnchor,
+	execute,
+	traverse,
+	markers,
+	foldCommand,
+	foldRef,
+	foldableLine,
+	updateSelection,
+	FoldMarker,
+	findFold,
+} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
 import magicWordHover, {posToIndex} from './hover';
@@ -55,11 +78,12 @@ import javascript from './javascript';
 import css from './css';
 import lua from './lua';
 import vue from './vue';
-import type {ViewPlugin, KeyBinding} from '@codemirror/view';
+import type {ViewPlugin, KeyBinding, Tooltip} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
-import type {SyntaxNode} from '@lezer/common';
 import type {Diagnostic, Action} from '@codemirror/lint';
-import type {Config} from '@codemirror/language';
+import type {Config, LanguageSupport} from '@codemirror/language';
+import type {SyntaxNode} from '@lezer/common';
+import type {StyleSpec} from 'style-mod';
 import type {ConfigData, QuickFixData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
@@ -79,23 +103,7 @@ declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>
 const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const languages: Record<string, (config?: any) => Extension> = {
-	plain,
-	mediawiki(config: MwConfig) {
-		return [
-			mediawiki(config),
-			plain(),
-			bidiIsolation,
-			toolKeymap,
-		];
-	},
-	html,
-	javascript,
-	css,
-	json,
-	lua,
-	vue,
-};
+const languages: Record<string, (config?: any) => Extension> = {plain};
 
 /**
  * 仅供mediawiki模式的扩展
@@ -110,48 +118,49 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const avail: Record<string, Addon<any>> = {
-		highlightSpecialChars: [highlightSpecialChars],
-		highlightActiveLine: [highlightActiveLine],
-		highlightWhitespace: [highlightWhitespace],
-		highlightTrailingWhitespace: [highlightTrailingWhitespace],
-		highlightSelectionMatches: [highlightSelectionMatches],
-		bracketMatching: [
-			([config, e = []]: [Config?, Extension?] = []): Extension => [bracketMatching(config), e],
-			{mediawiki: [{brackets: '()[]{}（）【】［］｛｝'}, tagMatchingState]},
-		] satisfies Addon<[Config?, Extension?]>,
-		closeBrackets: [
-			(e: Extension = []): Extension => [closeBrackets(), e],
-			{vue: autoCloseTags},
-		] satisfies Addon<Extension>,
-		scrollPastEnd: [scrollPastEnd],
-		allowMultipleSelections: [
-			(): Extension => [
-				EditorState.allowMultipleSelections.of(true),
-				drawSelection(),
-				rectangularSelection(),
-				crosshairCursor(),
-			],
+	highlightSpecialChars: [highlightSpecialChars],
+	highlightActiveLine: [highlightActiveLine],
+	highlightWhitespace: [highlightWhitespace],
+	highlightTrailingWhitespace: [highlightTrailingWhitespace],
+	highlightSelectionMatches: [highlightSelectionMatches],
+	bracketMatching: [
+		([config, e = []]: [Config?, Extension?] = []): Extension => [
+			bracketMatching(config),
+			e,
 		],
-		autocompletion: [
-			(): Extension => [
-				autocompletion({defaultKeymap: false}),
-				keymap.of([
-					...completionKeymap.filter(({run}) => run !== startCompletion),
-					{key: 'Shift-Enter', run: startCompletion},
-					{key: 'Tab', run: acceptCompletion},
-				]),
-			],
+	] satisfies Addon<[Config?, Extension?]>,
+	closeBrackets: [(e: Extension = []): Extension => [closeBrackets(), e]] satisfies Addon<Extension>,
+	scrollPastEnd: [scrollPastEnd],
+	allowMultipleSelections: [
+		(): Extension => [
+			EditorState.allowMultipleSelections.of(true),
+			drawSelection(),
+			rectangularSelection(),
+			crosshairCursor(),
 		],
-		codeFolding,
-		colorPicker,
-		openLinks: mediawikiOnly(openLinks),
-		escape: mediawikiOnly(keymap.of(escapeKeymap)),
-		refHover: mediawikiOnly(refHover),
-		hover: mediawikiOnly(magicWordHover),
-		signatureHelp: mediawikiOnly(signatureHelp),
-		inlayHints: mediawikiOnly(inlayHints),
-	},
-	editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
+	],
+	autocompletion: [
+		(): Extension => [
+			autocompletion({defaultKeymap: false}),
+			keymap.of([
+				...completionKeymap.filter(({run}) => run !== startCompletion),
+				{key: 'Shift-Enter', run: startCompletion},
+				{key: 'Tab', run: acceptCompletion},
+			]),
+		],
+	],
+	codeFolding,
+	colorPicker,
+};
+
+const linterRegistry: Record<
+	string,
+	(opt?: Option | LiveOption, view?: EditorView) => LintSource | Promise<LintSource>
+> = {};
+
+const destroyListeners: ((view: EditorView) => void)[] = [];
+
+const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
 
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
@@ -165,11 +174,329 @@ const phrases: Record<string, string> = {};
 const pos = (doc: Text, line: number, column: number): number =>
 	posToIndex(doc, {line: line - 1, character: column - 1});
 
-/** CodeMirror 6 编辑器 */
+/**
+ * 获取Linter选项
+ * @param opt Linter选项
+ * @param runtime 是否为运行时选项
+ */
+const getOpt = (opt: Option | LiveOption, runtime?: boolean): Option | Promise<Option> =>
+	typeof opt === 'function' ? opt(runtime) : opt;
+
+export const registerMediaWiki = (): void => {
+	languages['mediawiki'] = (config: MwConfig): Extension => [
+		mediawiki(config),
+		plain(),
+		bidiIsolation,
+		toolKeymap,
+	];
+	const addon = avail['colorPicker'] as Addon<[Extension?, StyleSpec?]>;
+	addon[1] ??= {};
+	addon[1]['mediawiki'] = [
+		[makeColorPicker({discoverColors}), colorPickerTheme],
+		{marginLeft: '0.6ch'},
+	];
+	(avail['bracketMatching'] as Addon<[Config?, Extension?]>)[1] = {
+		mediawiki: [{brackets: '()[]{}（）【】［］｛｝'}, tagMatchingState],
+	};
+	(avail['codeFolding'] as Addon<Extension>)[1] = {
+		mediawiki: [
+			codeFoldingBase({
+				placeholderDOM(view) {
+					const element = document.createElement('span');
+					element.textContent = '…';
+					element.setAttribute('aria-label', 'folded code');
+					element.title = view.state.phrase('unfold');
+					element.className = 'cm-foldPlaceholder';
+					element.addEventListener('click', ({target}) => {
+						const p = view.posAtDOM(target as Node),
+							{state} = view,
+							{selection} = state;
+						foldedRanges(state).between(p, p, (from, to) => {
+							if (from === p) {
+								// Unfold the template and redraw the selections
+								view.dispatch({effects: unfoldEffect.of({from, to}), selection});
+							}
+						});
+					});
+					return element;
+				},
+			}),
+			/** @see https://codemirror.net/examples/tooltip/ */
+			StateField.define<Tooltip | null>({
+				create,
+				update(tooltip, {state, docChanged, selection}) {
+					if (docChanged) {
+						return null;
+					}
+					return selection ? create(state) : tooltip;
+				},
+				provide(f) {
+					return showTooltip.from(f);
+				},
+			}),
+			keymap.of([
+				{
+					// Fold the template at the selection/cursor
+					key: 'Ctrl-Shift-[',
+					mac: 'Cmd-Alt-[',
+					run(view): boolean {
+						const {state} = view,
+							tree = syntaxTree(state),
+							effects: StateEffect<DocRange>[] = [];
+						let anchor = getAnchor(state);
+						for (const {from, to, empty} of state.selection.ranges) {
+							let node: SyntaxNode | null | undefined;
+							if (empty) {
+								// No selection, try both sides of the cursor position
+								node = tree.resolve(from, -1);
+							}
+							if (!node || node.name === 'Document') {
+								node = tree.resolve(from, 1);
+							}
+							anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+						}
+						return execute(view, effects, anchor);
+					},
+				},
+				{
+					// Fold all templates in the document
+					key: 'Ctrl-Alt-[',
+					run: foldCommand(),
+				},
+				{
+					// Fold all `<ref>` tags in the document
+					key: 'Mod-Alt-,',
+					run: foldRef,
+				},
+				{
+					// Unfold the template at the selection/cursor
+					key: 'Ctrl-Shift-]',
+					mac: 'Cmd-Alt-]',
+					run(view): boolean {
+						const {state} = view,
+							{selection} = state,
+							effects: StateEffect<DocRange>[] = [],
+							folded = foldedRanges(state);
+						for (const {from, to} of selection.ranges) {
+							// Unfold any folded range at the selection
+							folded.between(from, to, (i, j) => {
+								effects.push(unfoldEffect.of({from: i, to: j}));
+							});
+						}
+						if (effects.length > 0) {
+							// Unfold the template(s) and redraw the selections
+							view.dispatch({effects, selection});
+							return true;
+						}
+						return false;
+					},
+				},
+				{key: 'Ctrl-Alt-]', run: unfoldAll},
+			]),
+			markers,
+			gutter({
+				class: 'cm-foldGutter',
+				markers(view) {
+					return view.plugin(markers)?.markers ?? RangeSet.empty;
+				},
+				initialSpacer() {
+					return new FoldMarker(false);
+				},
+				domEventHandlers: {
+					click(view, line) {
+						const folded = findFold(view, line);
+						if (folded) {
+							view.dispatch({effects: unfoldEffect.of(folded)});
+							return true;
+						}
+						const range = foldableLine(view, line);
+						if (range) {
+							view.dispatch({effects: foldEffect.of(range)});
+							return true;
+						}
+						return false;
+					},
+				},
+			}),
+		],
+	};
+	Object.assign(avail, {
+		openLinks: mediawikiOnly(openLinks),
+		escape: mediawikiOnly(keymap.of(escapeKeymap)),
+		refHover: mediawikiOnly(refHover),
+		hover: mediawikiOnly(magicWordHover),
+		signatureHelp: mediawikiOnly(signatureHelp),
+		inlayHints: mediawikiOnly(inlayHints),
+	});
+	linterRegistry['mediawiki'] = async (opt, v): Promise<LintSource> => {
+		const wikiLint = await getWikiLinter(await getOpt(opt), v);
+		return async doc => (await wikiLint(doc.toString(), await getOpt(opt, true)))
+			.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
+				source: source!,
+				from: from ?? posToIndex(doc, r!.start),
+				to: to ?? posToIndex(doc, r!.end),
+				severity: severity === 2 ? 'warning' : 'error',
+				message: source === 'Stylelint' ? message : `${message} (${code})`,
+				actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
+					name: title,
+					apply(view): void {
+						view.dispatch({
+							changes: {
+								from: posToIndex(doc, range.start),
+								to: posToIndex(doc, range.end),
+								insert: newText,
+							},
+						});
+					},
+				})),
+			}));
+	};
+	destroyListeners.push(view => getLSP(view)?.destroy());
+};
+
+export const registerHTML = (): void => {
+	Object.assign(FullMediaWiki.prototype, {
+		css() {
+			return cssParser;
+		},
+	});
+	languages['html'] = html;
+};
+
+export const registerJavaScript = (): void => {
+	languages['javascript'] = javascript;
+	linterRegistry['javascript'] = async (opt): Promise<LintSource> => {
+		const esLint = await getJsLinter();
+		const lintSource: LintSource = async doc => esLint(doc.toString(), await getOpt(opt))
+			.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
+				const start = pos(doc, line, column),
+					diagnostic: Diagnostic = {
+						source: 'ESLint',
+						message: message + (ruleId ? ` (${ruleId})` : ''),
+						severity: severity === 1 ? 'warning' : 'error',
+						from: start,
+						to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
+					};
+				if (fix || suggestions.length > 0) {
+					diagnostic.actions = [
+						...fix ? [{name: 'fix', fix}] : [],
+						...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
+					].map(({name, fix: {range: [from, to], text}}): Action => ({
+						name,
+						apply(view): void {
+							view.dispatch({changes: {from, to, insert: text}});
+						},
+					}));
+				}
+				return diagnostic;
+			});
+		lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
+		return lintSource;
+	};
+};
+
+export const registerCSS = (): void => {
+	languages['css'] = css;
+	const addon = avail['colorPicker'] as Addon<[Extension?]>;
+	addon[1] ??= {};
+	addon[1]['css'] = [cssColorPicker];
+	linterRegistry['css'] = async (opt): Promise<LintSource> => {
+		const styleLint = await getCssLinter();
+		let option = await getOpt(opt) ?? {};
+		if (!('extends' in option || 'rules' in option)) {
+			option = {rules: option};
+		}
+		const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
+			.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
+				const diagnostic: Diagnostic = {
+					source: 'Stylelint',
+					message: text,
+					severity,
+					from: pos(doc, line, column),
+					to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
+				};
+				if (fix) {
+					diagnostic.actions = [
+						{
+							name: 'fix',
+							apply(view): void {
+								view.dispatch({
+									changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
+								});
+							},
+						},
+					];
+				}
+				return diagnostic;
+			});
+		lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
+		return lintSource;
+	};
+};
+
+export const registerJSON = (): void => {
+	languages['json'] = json;
+	linterRegistry['json'] = (): LintSource => {
+		const jsonLint = getJsonLinter();
+		return doc => {
+			const [e] = jsonLint(doc.toString());
+			if (e) {
+				const {message, severity, line, column, position} = e;
+				let from = 0;
+				if (position) {
+					from = Number(position);
+				} else if (line && column) {
+					from = pos(doc, Number(line), Number(column));
+				}
+				return [{message, severity, from, to: from}];
+			}
+			return [];
+		};
+	};
+};
+
+export const registerLua = (): void => {
+	languages['lua'] = lua;
+	linterRegistry['lua'] = async (): Promise<LintSource> => {
+		const luaLint = await getLuaLinter();
+		return async doc => (await luaLint(doc.toString()))
+			.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
+				source: 'Luacheck',
+				message,
+				severity: severity === 1 ? 'warning' : 'error',
+				from: pos(doc, line, column),
+				to: pos(doc, line, endColumn + 1),
+			}));
+	};
+};
+
+export const registerVue = (): void => {
+	languages['vue'] = vue;
+	const addon1 = avail['closeBrackets'] as Addon<Extension>;
+	addon1[1] ??= {};
+	addon1[1]['vue'] = autoCloseTags;
+	const addon2 = avail['colorPicker'] as Addon<[Extension?]>;
+	addon2[1] ??= {};
+	addon2[1]['vue'] = [cssColorPicker];
+};
+
+export const registerLanguage = (
+	name: string,
+	lang: (config?: unknown) => LanguageSupport,
+	lintSource?: (opt?: Option | LiveOption) => LintSource | Promise<LintSource>,
+): void => {
+	languages[name] = lang;
+	if (lintSource) {
+		linterRegistry[name] = lintSource;
+	}
+};
+
+/** CodeMirror 6 editor */
 export class CodeMirror6 {
+	/** only for sanitized-css */
+	declare dialect: Dialect;
 	declare getWikiConfig?: () => Promise<ConfigData>;
 	declare langConfig: MwConfig | undefined;
-	declare dialect: Dialect;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -185,27 +512,31 @@ export class CodeMirror6 {
 	#preferred = new Set<string>();
 	#indentStr = '\t';
 
+	/** textarea element */
 	get textarea(): HTMLTextAreaElement {
 		return this.#textarea;
 	}
 
+	/** EditorView instance */
 	get view(): EditorView | undefined {
 		return this.#view;
 	}
 
+	/** language */
 	get lang(): string {
 		return this.#lang;
 	}
 
+	/** whether the editor view is visible */
 	get visible(): boolean {
 		return this.#visible && this.textarea.isConnected;
 	}
 
 	/**
-	 * @param textarea 文本框
-	 * @param lang 语言
-	 * @param config 语言设置
-	 * @param init 是否初始化
+	 * @param textarea textarea element
+	 * @param lang language
+	 * @param config language configuration
+	 * @param init whether to initialize the editor immediately
 	 */
 	constructor(textarea: HTMLTextAreaElement, lang = 'plain', config?: unknown, init = true) {
 		this.#textarea = textarea;
@@ -216,8 +547,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 初始化编辑器
-	 * @param config 语言设置
+	 * Initialize the editor
+	 * @param config language configuration
 	 */
 	initialize(config?: unknown): void {
 		let timer: NodeJS.Timeout | undefined;
@@ -331,14 +662,14 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 设置语言
-	 * @param lang 语言
-	 * @param config 语言设置
+	 * Set language
+	 * @param lang language
+	 * @param config language configuration
 	 */
 	async setLanguage(lang = 'plain', config?: unknown): Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
-			let ext = languages[lang]!(config);
+			let ext = (languages[lang] ?? plain)(config);
 			ws: { // eslint-disable-line no-unused-labels
 				if (lang === 'mediawiki') {
 					ext = [ext, await wikitextLSP()];
@@ -354,8 +685,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 开始语法检查
-	 * @param lintSource 语法检查函数
+	 * Start syntax checking
+	 * @param lintSource function for syntax checking
 	 */
 	lint(lintSource?: LintSource): void {
 		const linterExtension = lintSource
@@ -385,7 +716,7 @@ export class CodeMirror6 {
 		}
 	}
 
-	/** 立即更新语法检查 */
+	/** Update syntax checking immediately */
 	update(): void {
 		if (this.#view) {
 			const extension = this.#getLintExtension();
@@ -398,8 +729,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 添加扩展
-	 * @param names 扩展名
+	 * Add extensions
+	 * @param names extension names
 	 */
 	prefer(names: string[] | Record<string, boolean>): void {
 		if (Array.isArray(names)) {
@@ -427,8 +758,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 设置缩进
-	 * @param indent 缩进字符串
+	 * Set text indentation
+	 * @param indent indentation string
 	 */
 	setIndent(indent: string): void {
 		if (this.#view) {
@@ -441,8 +772,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 设置文本换行
-	 * @param wrapping 是否换行
+	 * Set line wrapping
+	 * @param wrapping whether to enable line wrapping
 	 */
 	setLineWrapping(wrapping: boolean): void {
 		if (this.#view) {
@@ -451,133 +782,17 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 获取默认linter
-	 * @param opt 选项
+	 * Get default linter
+	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		const isFunc = typeof opt === 'function',
-			getOpt: LiveOption = runtime => isFunc ? opt(runtime) : opt;
-		switch (this.#lang) {
-			case 'mediawiki': {
-				const wikiLint = await getWikiLinter(await getOpt(), this.#view);
-				return async doc => (await wikiLint(doc.toString(), await getOpt(true)))
-					.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
-						source: source!,
-						from: from ?? posToIndex(doc, r!.start),
-						to: to ?? posToIndex(doc, r!.end),
-						severity: severity === 2 ? 'warning' : 'error',
-						message: source === 'Stylelint' ? message : `${message} (${code})`,
-						actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
-							name: title,
-							apply(view): void {
-								view.dispatch({
-									changes: {
-										from: posToIndex(doc, range.start),
-										to: posToIndex(doc, range.end),
-										insert: newText,
-									},
-								});
-							},
-						})),
-					}));
-			}
-			case 'javascript': {
-				const esLint = await getJsLinter();
-				const lintSource: LintSource = async doc => esLint(doc.toString(), await getOpt())
-					.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
-						const start = pos(doc, line, column),
-							diagnostic: Diagnostic = {
-								source: 'ESLint',
-								message: message + (ruleId ? ` (${ruleId})` : ''),
-								severity: severity === 1 ? 'warning' : 'error',
-								from: start,
-								to: endLine === undefined ? start + 1 : pos(doc, endLine, endColumn!),
-							};
-						if (fix || suggestions.length > 0) {
-							diagnostic.actions = [
-								...fix ? [{name: 'fix', fix}] : [],
-								...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
-							].map(({name, fix: {range: [from, to], text}}): Action => ({
-								name,
-								apply(view): void {
-									view.dispatch({changes: {from, to, insert: text}});
-								},
-							}));
-						}
-						return diagnostic;
-					});
-				lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
-				return lintSource;
-			}
-			case 'css': {
-				const styleLint = await getCssLinter();
-				let option = await getOpt() ?? {};
-				if (!('extends' in option || 'rules' in option)) {
-					option = {rules: option};
-				}
-				const lintSource: LintSource = async doc => (await styleLint(doc.toString(), option))
-					.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
-						const diagnostic: Diagnostic = {
-							source: 'Stylelint',
-							message: text,
-							severity,
-							from: pos(doc, line, column),
-							to: endLine === undefined ? doc.line(line).to : pos(doc, endLine, endColumn!),
-						};
-						if (fix) {
-							diagnostic.actions = [
-								{
-									name: 'fix',
-									apply(view): void {
-										view.dispatch({
-											changes: {from: fix.range[0], to: fix.range[1], insert: fix.text},
-										});
-									},
-								},
-							];
-						}
-						return diagnostic;
-					});
-				lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
-				return lintSource;
-			}
-			case 'lua': {
-				const luaLint = await getLuaLinter();
-				return async doc => (await luaLint(doc.toString()))
-					.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
-						source: 'Luacheck',
-						message,
-						severity: severity === 1 ? 'warning' : 'error',
-						from: pos(doc, line, column),
-						to: pos(doc, line, endColumn + 1),
-					}));
-			}
-			case 'json': {
-				const jsonLint = getJsonLinter();
-				return doc => {
-					const [e] = jsonLint(doc.toString());
-					if (e) {
-						const {message, severity, line, column, position} = e;
-						let from = 0;
-						if (position) {
-							from = Number(position);
-						} else if (line && column) {
-							from = pos(doc, Number(line), Number(column));
-						}
-						return [{message, severity, from, to: from}];
-					}
-					return [];
-				};
-			}
-			default:
-				return undefined;
-		}
+		return linterRegistry[this.#lang]?.(opt, this.#view);
 	}
 
 	/**
-	 * 重设编辑器内容
-	 * @param insert 新内容
-	 * @param force 是否强制
+	 * Set content
+	 * @param insert new content
+	 * @param force whether to forcefully replace the content
 	 */
 	setContent(insert: string, force?: boolean): void {
 		if (this.#view) {
@@ -589,8 +804,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 在编辑器和文本框之间切换
-	 * @param show 是否显示编辑器
+	 * Switch between textarea and editor view
+	 * @param show whether to show the editor view
 	 */
 	toggle(show = !this.#visible): void {
 		if (!this.#view) {
@@ -628,21 +843,23 @@ export class CodeMirror6 {
 		this.#visible = show;
 	}
 
-	/** 销毁实例 */
+	/** Destroy the editor */
 	destroy(): void {
 		if (this.visible) {
 			this.toggle(false);
 		}
 		if (this.#view) {
-			getLSP(this.#view)?.destroy();
+			for (const listener of destroyListeners) {
+				listener(this.#view);
+			}
 			this.#view.destroy();
 		}
 		Object.setPrototypeOf(this, null);
 	}
 
 	/**
-	 * 添加额外快捷键
-	 * @param keys 快捷键
+	 * Define extra key bindings
+	 * @param keys key bindings
 	 */
 	extraKeys(keys: KeyBinding[]): void {
 		if (this.#view) {
@@ -651,8 +868,8 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 设置翻译信息
-	 * @param messages 翻译信息
+	 * Set translation messages
+	 * @param messages translation messages
 	 */
 	localize(messages?: Record<string, string>): void {
 		Object.assign(phrases, messages);
@@ -662,16 +879,16 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 获取语法树节点
-	 * @param position 位置
+	 * Get the syntax node at the specified position
+	 * @param position position
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
 		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
 	}
 
 	/**
-	 * 滚动至指定位置
-	 * @param position 位置
+	 * Scroll to the specified position
+	 * @param position position or selection range
 	 */
 	scrollTo(position?: number | {anchor: number, head: number}): void {
 		if (this.#view) {
@@ -685,9 +902,9 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 替换选中内容
-	 * @param view
-	 * @param func 替换函数
+	 * Replace the current selection with the result of a function
+	 * @param view EditorView instance
+	 * @param func function to produce the replacement text
 	 */
 	static replaceSelections(
 		view: EditorView,
@@ -711,8 +928,9 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 将wikiparser-node设置转换为codemirror-mediawiki设置
-	 * @param config
+	 * Convert a [WikiParser-Node](https://npmjs.com/package/wikiparser-node) configuration
+	 * to a CodeMirror-MediaWiki configuration
+	 * @param config WikiParser-Node configuration
 	 */
 	static getMwConfig(config: ConfigData): MwConfig {
 		return getStaticMwConfig(config, tagModes);

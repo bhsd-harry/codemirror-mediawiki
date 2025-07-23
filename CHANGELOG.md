@@ -1,4 +1,4 @@
-## 2.32.0
+## 3.0.0
 
 *2025-07-23*
 
@@ -13,6 +13,7 @@
 **Changed**
 
 - The tagMatching extension is now merged with the [bracketMatching](./README.md#bracketmatching) extension
+- All language modes now need explicit registration
 
 ## 2.31.0
 

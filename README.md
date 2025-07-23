@@ -10,8 +10,17 @@
 - [Browser Usage](#browser-usage)
 	- [JavaScript](#javascript)
 	- [CSS](#css)
+- [Language modes](#language-modes)
+	- [css](#css)
+	- [html](#html)
+	- [javascript](#javascript)
+	- [json](#json)
+	- [lua](#lua)
+	- [mediawiki](#mediawiki)
+	- [vue](#vue)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
+	- [dialect](#dialect)
 	- [lang](#lang)
 	- [textarea](#textarea)
 	- [view](#view)
@@ -76,7 +85,16 @@ npm install @bhsd/codemirror-mediawiki
 ```
 
 ```js
-import {CodeMirror6} from '@bhsd/codemirror-mediawiki';
+import {
+	CodeMirror6,
+	registerMediaWiki,
+	registerHTML,
+	registerCSS,
+	registerJavaScript,
+	registerJSON,
+	registerLua,
+	registerVue,
+} from '@bhsd/codemirror-mediawiki';
 ```
 
 # Browser Usage
@@ -87,26 +105,62 @@ You can download the code via CDN, for example:
 
 ```js
 // static import
-import {CodeMirror6} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki';
+import {
+	CodeMirror6,
+	registerMediaWiki,
+	registerHTML,
+	registerCSS,
+	registerJavaScript,
+	registerJSON,
+	registerLua,
+	registerVue,
+} from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki';
 ```
 
 or
 
 ```js
-import {CodeMirror6} from 'https://unpkg.com/@bhsd/codemirror-mediawiki';
+import {
+	CodeMirror6,
+	registerMediaWiki,
+	registerHTML,
+	registerCSS,
+	registerJavaScript,
+	registerJSON,
+	registerLua,
+	registerVue,
+} from 'https://unpkg.com/@bhsd/codemirror-mediawiki';
 ```
 
 or
 
 ```js
 // dynamic import
-const {CodeMirror6} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki');
+const {
+	CodeMirror6,
+	registerMediaWiki,
+	registerHTML,
+	registerCSS,
+	registerJavaScript,
+	registerJSON,
+	registerLua,
+	registerVue,
+} = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki');
 ```
 
 or
 
 ```js
-const {CodeMirror6} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
+const {
+	CodeMirror6,
+	registerMediaWiki,
+	registerHTML,
+	registerCSS,
+	registerJavaScript,
+	registerJSON,
+	registerLua,
+	registerVue,
+} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
 ```
 
 ## CSS
@@ -119,6 +173,81 @@ or
 
 ```html
 <link rel="stylesheet" href="https://unpkg.com/@bhsd/codemirror-mediawiki/mediawiki.css">
+```
+
+# Language modes
+
+## css
+
+The CSS mode contains a [dialect](#dialect) for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles). You can bundle the CSS mode by importing the `registerCSS` function:
+
+```js
+import {registerCSS} from '@bhsd/codemirror-mediawiki';
+registerCSS();
+```
+
+## html
+
+This is a mixed MediaWiki-HTML mode, which is used for [Extension:Widgets](https://www.mediawiki.org/wiki/Extension:Widgets). You can bundle the HTML mode by importing the `registerHTML` function:
+
+```js
+import {registerHTML} from '@bhsd/codemirror-mediawiki';
+registerHTML();
+```
+
+## javascript
+
+You can bundle the JavaScript mode by importing the `registerJavaScript` function:
+
+```js
+import {registerJavaScript} from '@bhsd/codemirror-mediawiki';
+registerJavaScript();
+```
+
+## json
+
+You can bundle the JSON mode by importing the `registerJSON` function:
+
+```js
+import {registerJSON} from '@bhsd/codemirror-mediawiki';
+registerJSON();
+```
+
+## lua
+
+You can bundle the Lua mode by importing the `registerLua` function:
+
+```js
+import {registerLua} from '@bhsd/codemirror-mediawiki';
+registerLua();
+```
+
+## mediawiki
+
+You can bundle the MediaWiki mode by importing the `registerMediaWiki` function:
+
+```js
+import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
+registerMediaWiki();
+```
+
+## vue
+
+You can bundle the Vue mode by importing the `registerVue` function:
+
+```js
+import {registerVue} from '@bhsd/codemirror-mediawiki';
+registerVue();
+```
+
+## Other languages
+
+You can also register other languages by importing the `registerLanguage` function:
+
+```js
+import {registerLanguage} from '@bhsd/codemirror-mediawiki';
+import {python} from '@codemirror/lang-python';
+registerLanguage('python', python);
 ```
 
 # Constructor
@@ -144,6 +273,18 @@ const cm = new CodeMirror6(textarea, 'lua');
 </details>
 
 # Accessors
+
+## dialect
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 2.28.0*
+
+**type**: `'sanitized-css' | undefined`  
+Only used for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles) as a dialect of the CSS mode.
+
+</details>
 
 ## lang
 

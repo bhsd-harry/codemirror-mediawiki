@@ -1,6 +1,21 @@
-import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
+import {
+	CodeMirror6,
+	registerCSS,
+	registerJSON,
+	registerJavaScript,
+	registerLua,
+	registerMediaWiki,
+	registerVue,
+} from '/codemirror-mediawiki/dist/main.min.js';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
+
+registerCSS();
+registerJSON();
+registerJavaScript();
+registerLua();
+registerMediaWiki();
+registerVue();
 
 (() => {
 	if (!location.pathname.startsWith('/codemirror-mediawiki')) {
@@ -37,7 +52,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
-			cssDisplay = isMediaWiki || lang === 'css' ? '' : 'none';
+			cssDisplay = isMediaWiki || lang === 'css' || lang === 'vue' ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
@@ -56,7 +71,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
 		await cm.setLanguage(lang, config);
 		if (search.get('lint') !== '0' && !(lang in linters)) {
 			linters[lang] = await cm.getLinter();
-			if (isMediaWiki) {
+			if (isMediaWiki && typeof wikiparse === 'object') {
 				wikiparse.setConfig(parserConfig!);
 			}
 			if (linters[lang]) {

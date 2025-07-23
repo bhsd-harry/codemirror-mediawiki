@@ -1,4 +1,13 @@
-import {CodeMirror6} from './codemirror';
+import {
+	CodeMirror6,
+	registerCSS,
+	registerHTML,
+	registerJSON,
+	registerJavaScript,
+	registerLua,
+	registerMediaWiki,
+	registerVue,
+} from './codemirror';
 import type {} from 'luacheck-browserify';
 import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
@@ -8,7 +17,16 @@ import type {MwConfig, LintSource} from './codemirror';
 
 declare global {
 	module '/codemirror-mediawiki/*' {
-		export {CodeMirror6};
+		export {
+			CodeMirror6,
+			registerCSS,
+			registerHTML,
+			registerJSON,
+			registerJavaScript,
+			registerLua,
+			registerMediaWiki,
+			registerVue,
+		};
 		export type {MwConfig, LintSource};
 	}
 

@@ -1,14 +1,6 @@
 import {splitColors, numToHex} from '@bhsd/common';
 import {EditorView} from '@codemirror/view';
-import {
-	parseCallExpression,
-	parseColorLiteral,
-	ColorType,
-	colorPicker,
-	colorPickerTheme,
-	makeColorPicker,
-	wrapperClassName,
-} from '@bhsd/codemirror-css-color-picker';
+import {parseCallExpression, parseColorLiteral, ColorType, wrapperClassName} from '@bhsd/codemirror-css-color-picker';
 import type {Text, Extension} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {StyleSpec} from 'style-mod';
@@ -63,11 +55,4 @@ export default [
 			}),
 		]
 		: [],
-	{
-		css: [colorPicker],
-		mediawiki: [
-			[makeColorPicker({discoverColors}), colorPickerTheme],
-			{marginLeft: '0.6ch'},
-		],
-	},
 ] satisfies Addon<[Extension?, StyleSpec?]>;
