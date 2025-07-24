@@ -11,22 +11,14 @@ import {
 	scrollPastEnd,
 	rectangularSelection,
 	crosshairCursor,
-	showTooltip,
-	gutter,
 } from '@codemirror/view';
-import {Compartment, EditorState, EditorSelection, SelectionRange, StateField, RangeSet} from '@codemirror/state';
+import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
 import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
 	indentOnInput,
 	indentUnit,
 	ensureSyntaxTree,
-	codeFolding as codeFoldingBase,
-	unfoldAll,
-	unfoldEffect,
-	foldEffect,
-	foldedRanges,
-	syntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
@@ -48,20 +40,7 @@ import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '
 import colorPicker, {discoverColors} from './color';
 import {mediawiki, html, FullMediaWiki} from './mediawiki';
 import escapeKeymap from './escape';
-import codeFolding, {
-	foldHandler,
-	create,
-	getAnchor,
-	execute,
-	traverse,
-	markers,
-	foldCommand,
-	foldRef,
-	foldableLine,
-	updateSelection,
-	FoldMarker,
-	findFold,
-} from './fold';
+import codeFolding, {foldHandler, mediaWikiFold} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
 import magicWordHover, {posToIndex} from './hover';
@@ -80,7 +59,7 @@ import javascript from './javascript';
 import css from './css';
 import lua from './lua';
 import vue from './vue';
-import type {ViewPlugin, KeyBinding, Tooltip} from '@codemirror/view';
+import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, Text, StateEffect} from '@codemirror/state';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {Config, LanguageSupport} from '@codemirror/language';
@@ -216,126 +195,7 @@ export const registerMediaWiki = (): void => {
 		mediawiki: [{brackets: '()[]{}（）【】［］｛｝'}, tagMatchingState],
 	};
 	(avail['codeFolding'] as Addon<Extension>)[1] = {
-		mediawiki: [
-			codeFoldingBase({
-				placeholderDOM(view) {
-					const element = document.createElement('span');
-					element.textContent = '…';
-					element.setAttribute('aria-label', 'folded code');
-					element.title = view.state.phrase('unfold');
-					element.className = 'cm-foldPlaceholder';
-					element.addEventListener('click', ({target}) => {
-						const p = view.posAtDOM(target as Node),
-							{state} = view,
-							{selection} = state;
-						foldedRanges(state).between(p, p, (from, to) => {
-							if (from === p) {
-								// Unfold the template and redraw the selections
-								view.dispatch({effects: unfoldEffect.of({from, to}), selection});
-							}
-						});
-					});
-					return element;
-				},
-			}),
-			/** @see https://codemirror.net/examples/tooltip/ */
-			StateField.define<Tooltip | null>({
-				create,
-				update(tooltip, {state, docChanged, selection}) {
-					if (docChanged) {
-						return null;
-					}
-					return selection ? create(state) : tooltip;
-				},
-				provide(f) {
-					return showTooltip.from(f);
-				},
-			}),
-			keymap.of([
-				{
-					// Fold the template at the selection/cursor
-					key: 'Ctrl-Shift-[',
-					mac: 'Cmd-Alt-[',
-					run(view): boolean {
-						const {state} = view,
-							tree = syntaxTree(state),
-							effects: StateEffect<DocRange>[] = [];
-						let anchor = getAnchor(state);
-						for (const {from, to, empty} of state.selection.ranges) {
-							let node: SyntaxNode | null | undefined;
-							if (empty) {
-								// No selection, try both sides of the cursor position
-								node = tree.resolve(from, -1);
-							}
-							if (!node || node.name === 'Document') {
-								node = tree.resolve(from, 1);
-							}
-							anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
-						}
-						return execute(view, effects, anchor);
-					},
-				},
-				{
-					// Fold all templates in the document
-					key: 'Ctrl-Alt-[',
-					run: foldCommand(),
-				},
-				{
-					// Fold all `<ref>` tags in the document
-					key: 'Mod-Alt-,',
-					run: foldRef,
-				},
-				{
-					// Unfold the template at the selection/cursor
-					key: 'Ctrl-Shift-]',
-					mac: 'Cmd-Alt-]',
-					run(view): boolean {
-						const {state} = view,
-							{selection} = state,
-							effects: StateEffect<DocRange>[] = [],
-							folded = foldedRanges(state);
-						for (const {from, to} of selection.ranges) {
-							// Unfold any folded range at the selection
-							folded.between(from, to, (i, j) => {
-								effects.push(unfoldEffect.of({from: i, to: j}));
-							});
-						}
-						if (effects.length > 0) {
-							// Unfold the template(s) and redraw the selections
-							view.dispatch({effects, selection});
-							return true;
-						}
-						return false;
-					},
-				},
-				{key: 'Ctrl-Alt-]', run: unfoldAll},
-			]),
-			markers,
-			gutter({
-				class: 'cm-foldGutter',
-				markers(view) {
-					return view.plugin(markers)?.markers ?? RangeSet.empty;
-				},
-				initialSpacer() {
-					return new FoldMarker(false);
-				},
-				domEventHandlers: {
-					click(view, line) {
-						const folded = findFold(view, line);
-						if (folded) {
-							view.dispatch({effects: unfoldEffect.of(folded)});
-							return true;
-						}
-						const range = foldableLine(view, line);
-						if (range) {
-							view.dispatch({effects: foldEffect.of(range)});
-							return true;
-						}
-						return false;
-					},
-				},
-			}),
-		],
+		mediawiki: mediaWikiFold,
 	};
 	Object.assign(avail, {
 		openLinks: mediawikiOnly(openLinks),

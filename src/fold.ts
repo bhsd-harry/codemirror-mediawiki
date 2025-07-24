@@ -1,10 +1,13 @@
-import {keymap, GutterMarker, ViewPlugin} from '@codemirror/view';
-import {RangeSetBuilder} from '@codemirror/state';
+import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror/view';
+import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
 import {
 	syntaxTree,
 	ensureSyntaxTree,
 	foldEffect,
+	unfoldEffect,
 	foldedRanges,
+	unfoldAll,
+	codeFolding,
 	foldGutter,
 	foldKeymap,
 	foldState,
@@ -14,7 +17,7 @@ import {getRegex} from '@bhsd/common';
 import {tokens} from './config';
 import {matchTag, getTag} from './matchTag';
 import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
-import type {EditorState, StateEffect, Extension, RangeSet} from '@codemirror/state';
+import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
 import type {Addon} from './codemirror';
@@ -425,6 +428,127 @@ export const foldCommand = (refOnly?: boolean): Command => view => {
 export const foldRef = /* @__PURE__ */ foldCommand(true);
 
 export default [(e = defaultFoldExtension): Extension => e] satisfies Addon<Extension>;
+
+export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
+	codeFolding({
+		placeholderDOM(view) {
+			const element = document.createElement('span');
+			element.textContent = '…';
+			element.setAttribute('aria-label', 'folded code');
+			element.title = view.state.phrase('unfold');
+			element.className = 'cm-foldPlaceholder';
+			element.addEventListener('click', ({target}) => {
+				const p = view.posAtDOM(target as Node),
+					{state} = view,
+					{selection} = state;
+				foldedRanges(state).between(p, p, (from, to) => {
+					if (from === p) {
+						// Unfold the template and redraw the selections
+						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
+					}
+				});
+			});
+			return element;
+		},
+	}),
+	/** @see https://codemirror.net/examples/tooltip/ */
+	StateField.define<Tooltip | null>({
+		create,
+		update(tooltip, {state, docChanged, selection}) {
+			if (docChanged) {
+				return null;
+			}
+			return selection ? create(state) : tooltip;
+		},
+		provide(f) {
+			return showTooltip.from(f);
+		},
+	}),
+	keymap.of([
+		{
+			// Fold the template at the selection/cursor
+			key: 'Ctrl-Shift-[',
+			mac: 'Cmd-Alt-[',
+			run(view): boolean {
+				const {state} = view,
+					tree = syntaxTree(state),
+					effects: StateEffect<DocRange>[] = [];
+				let anchor = getAnchor(state);
+				for (const {from, to, empty} of state.selection.ranges) {
+					let node: SyntaxNode | null | undefined;
+					if (empty) {
+						// No selection, try both sides of the cursor position
+						node = tree.resolve(from, -1);
+					}
+					if (!node || node.name === 'Document') {
+						node = tree.resolve(from, 1);
+					}
+					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+				}
+				return execute(view, effects, anchor);
+			},
+		},
+		{
+			// Fold all templates in the document
+			key: 'Ctrl-Alt-[',
+			run: foldCommand(),
+		},
+		{
+			// Fold all `<ref>` tags in the document
+			key: 'Mod-Alt-,',
+			run: foldRef,
+		},
+		{
+			// Unfold the template at the selection/cursor
+			key: 'Ctrl-Shift-]',
+			mac: 'Cmd-Alt-]',
+			run(view): boolean {
+				const {state} = view,
+					{selection} = state,
+					effects: StateEffect<DocRange>[] = [],
+					folded = foldedRanges(state);
+				for (const {from, to} of selection.ranges) {
+					// Unfold any folded range at the selection
+					folded.between(from, to, (i, j) => {
+						effects.push(unfoldEffect.of({from: i, to: j}));
+					});
+				}
+				if (effects.length > 0) {
+					// Unfold the template(s) and redraw the selections
+					view.dispatch({effects, selection});
+					return true;
+				}
+				return false;
+			},
+		},
+		{key: 'Ctrl-Alt-]', run: unfoldAll},
+	]),
+	markers,
+	gutter({
+		class: 'cm-foldGutter',
+		markers(view) {
+			return view.plugin(markers)?.markers ?? RangeSet.empty;
+		},
+		initialSpacer() {
+			return new FoldMarker(false);
+		},
+		domEventHandlers: {
+			click(view, line) {
+				const folded = findFold(view, line);
+				if (folded) {
+					view.dispatch({effects: unfoldEffect.of(folded)});
+					return true;
+				}
+				const range = foldableLine(view, line);
+				if (range) {
+					view.dispatch({effects: foldEffect.of(range)});
+					return true;
+				}
+				return false;
+			},
+		},
+	}),
+])();
 
 /**
  * 点击提示折叠模板参数
