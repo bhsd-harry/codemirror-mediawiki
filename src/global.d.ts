@@ -13,7 +13,8 @@ import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
-import type {MwConfig, LintSource} from './codemirror';
+import type {MwConfig} from './codemirror';
+import type {LintSource} from './lintsource';
 
 declare global {
 	module '/codemirror-mediawiki/*' {

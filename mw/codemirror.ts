@@ -24,8 +24,9 @@ import type {Config} from 'stylelint';
 import type * as Monaco from 'monaco-editor';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
-import type {LintSource, MwConfig, Dialect} from '../src/codemirror';
+import type {MwConfig, Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
+import type {LintSource} from '../src/lintsource';
 
 declare global {
 	const monaco: typeof Monaco;
@@ -362,10 +363,9 @@ export class CodeMirror extends CodeMirror6 {
 		const {lang, ns, dialect} = this,
 			loaded = lang in linters;
 		if (!loaded) {
-			const isWiki = lang === 'mediawiki';
 			let defaultOpt: Option;
 			if (typeof ns === 'number') {
-				if (isWiki && ns !== 10 && ns !== 828 && ns !== 2) {
+				if (lang === 'mediawiki' && ns !== 10 && ns !== 828 && ns !== 2) {
 					defaultOpt = {include: false};
 				} else if (lang === 'javascript') {
 					defaultOpt = {
@@ -375,37 +375,48 @@ export class CodeMirror extends CodeMirror6 {
 				}
 			}
 			let opt: LiveOption | undefined;
-			if (isWiki) {
-				const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
-				opt = (runtime): Option => runtime
-					? {defaultSeverity: RuleState.error, ...wikilint, css: codeConfigs.get('Stylelint')}
-					: option;
-			} else if (lang === 'javascript') {
-				opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
-			} else if (lang === 'css') {
-				opt = (): Option => {
-					const option: Config | undefined = codeConfigs.get('Stylelint');
-					if (dialect === 'sanitized-css') {
-						const rules = option?.rules;
-						return {
-							...option,
-							rules: {
-								...rules,
-								'property-no-vendor-prefix': [
-									true,
-									{
-										ignoreProperties: ['user-select'],
-									},
-								],
-								'property-disallowed-list': [
-									...(rules?.['property-disallowed-list'] as string[] | undefined) ?? [],
-									'/^--/',
-								],
-							},
-						};
-					}
-					return option;
-				};
+			switch (lang) {
+				case 'mediawiki': {
+					const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
+					opt = (runtime): Option => runtime
+						? {defaultSeverity: RuleState.error, ...wikilint, css: codeConfigs.get('Stylelint')}
+						: option;
+					break;
+				}
+				case 'javascript':
+					opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
+					break;
+				case 'css':
+					opt = (): Option => {
+						const option: Config | undefined = codeConfigs.get('Stylelint');
+						if (dialect === 'sanitized-css') {
+							const rules = option?.rules;
+							return {
+								...option,
+								rules: {
+									...rules,
+									'property-no-vendor-prefix': [
+										true,
+										{
+											ignoreProperties: ['user-select'],
+										},
+									],
+									'property-disallowed-list': [
+										...(rules?.['property-disallowed-list'] as string[] | undefined) ?? [],
+										'/^--/',
+									],
+								},
+							};
+						}
+						return option;
+					};
+					break;
+				case 'vue':
+					opt = (): Option => ({
+						js: {...defaultOpt, ...codeConfigs.get('ESLint')},
+						css: codeConfigs.get('Stylelint'),
+					});
+				// no default
 			}
 			await this.getLinter(opt);
 		}

@@ -3,7 +3,7 @@ import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import type {EditorView} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
-import type {LintSource} from './codemirror';
+import type {LintSource} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
 

@@ -438,11 +438,11 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 			element.title = view.state.phrase('unfold');
 			element.className = 'cm-foldPlaceholder';
 			element.addEventListener('click', ({target}) => {
-				const p = view.posAtDOM(target as Node),
+				const pos = view.posAtDOM(target as Node),
 					{state} = view,
 					{selection} = state;
-				foldedRanges(state).between(p, p, (from, to) => {
-					if (from === p) {
+				foldedRanges(state).between(pos, pos, (from, to) => {
+					if (from === pos) {
 						// Unfold the template and redraw the selections
 						view.dispatch({effects: unfoldEffect.of({from, to}), selection});
 					}
