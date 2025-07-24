@@ -144,6 +144,19 @@ const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHel
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
 
+/**
+ * 注册特定语言的扩展
+ * @param lang 语言
+ * @param name 扩展名
+ * @param ext 扩展
+ */
+const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T): void => {
+	const addon = avail[name] as Addon<T>;
+	addon[1] ??= {};
+	addon[1][lang] = ext;
+};
+
+/** Register MediaWiki language support */
 export const registerMediaWiki = (): void => {
 	languages['mediawiki'] = (config: MwConfig): Extension => [
 		mediawiki(config),
@@ -151,18 +164,15 @@ export const registerMediaWiki = (): void => {
 		bidiIsolation,
 		toolKeymap,
 	];
-	const addon = avail['colorPicker'] as Addon<[Extension?, StyleSpec?]>;
-	addon[1] ??= {};
-	addon[1]['mediawiki'] = [
+	registerLangExtension<[Extension, StyleSpec]>('mediawiki', 'colorPicker', [
 		[makeColorPicker({discoverColors}), colorPickerTheme],
 		{marginLeft: '0.6ch'},
-	];
-	(avail['bracketMatching'] as Addon<[Config?, Extension?]>)[1] = {
-		mediawiki: [{brackets: '()[]{}（）【】［］｛｝'}, tagMatchingState],
-	};
-	(avail['codeFolding'] as Addon<Extension>)[1] = {
-		mediawiki: mediaWikiFold,
-	};
+	]);
+	registerLangExtension<[Config, Extension]>('mediawiki', 'bracketMatching', [
+		{brackets: '()[]{}（）【】［］｛｝'},
+		tagMatchingState,
+	]);
+	registerLangExtension('mediawiki', 'codeFolding', mediaWikiFold);
 	Object.assign(avail, {
 		openLinks: mediawikiOnly(openLinks),
 		escape: mediawikiOnly(keymap.of(escapeKeymap)),
@@ -175,6 +185,7 @@ export const registerMediaWiki = (): void => {
 	destroyListeners.push(view => getLSP(view)?.destroy());
 };
 
+/** Register mixed MediaWiki-HTML language support */
 export const registerHTML = (): void => {
 	Object.assign(FullMediaWiki.prototype, {
 		css() {
@@ -184,40 +195,45 @@ export const registerHTML = (): void => {
 	languages['html'] = html;
 };
 
+/** Register JavaScript language support */
 export const registerJavaScript = (): void => {
 	languages['javascript'] = javascript;
 	linterRegistry['javascript'] = getJsLintSource;
 };
 
+/** Register CSS language support */
 export const registerCSS = (): void => {
 	languages['css'] = css;
-	const addon = avail['colorPicker'] as Addon<[Extension?]>;
-	addon[1] ??= {};
-	addon[1]['css'] = [cssColorPicker];
+	registerLangExtension<[Extension]>('css', 'colorPicker', [cssColorPicker]);
 	linterRegistry['css'] = getCssLintSource;
 };
 
+/** Register JSON language support */
 export const registerJSON = (): void => {
 	languages['json'] = json;
 	linterRegistry['json'] = getJsonLintSource;
 };
 
+/** Register Lua language support */
 export const registerLua = (): void => {
 	languages['lua'] = lua;
 	linterRegistry['lua'] = getLuaLintSource;
 };
 
+/** Register Vue language support */
 export const registerVue = (): void => {
 	languages['vue'] = vue;
-	const addon1 = avail['closeBrackets'] as Addon<Extension>;
-	addon1[1] ??= {};
-	addon1[1]['vue'] = autoCloseTags;
-	const addon2 = avail['colorPicker'] as Addon<[Extension?]>;
-	addon2[1] ??= {};
-	addon2[1]['vue'] = [cssColorPicker];
+	registerLangExtension('vue', 'closeBrackets', autoCloseTags);
+	registerLangExtension<[Extension]>('vue', 'colorPicker', [cssColorPicker]);
 	linterRegistry['vue'] = getVueLintSource;
 };
 
+/**
+ * Register a custom language support
+ * @param name language name
+ * @param lang language support
+ * @param lintSource optional linter
+ */
 export const registerLanguage = (
 	name: string,
 	lang: (config?: unknown) => LanguageSupport,
