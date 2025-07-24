@@ -5,6 +5,7 @@
 **Added**
 
 - Language support for Vue
+- Quick fixes for Stylelint errors are now available in the MediaWiki mode when the [lint](./README.md#lint) extension is enabled
 
 **Fixed**
 

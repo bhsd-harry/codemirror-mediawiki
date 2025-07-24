@@ -2,11 +2,11 @@
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
-import type {Diagnostic as DiagnosticBase, Range} from 'vscode-languageserver-types';
+import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
 import type {Warning, Config} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
-import type {ConfigData} from 'wikiparser-node';
+import type {ConfigData, QuickFixData, AST} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
@@ -39,14 +39,35 @@ declare interface JsonError {
 /**
  * 计算位置
  * @param range 范围
- * @param line 行号
- * @param column 列号
+ * @param lineOrOffset 行号或相对位置
+ * @param columnOrPrefix 列号或前缀
  */
-const offsetAt = (range: [number, number], line: number, column: number): number => {
-	if (line === -2) {
+const offsetAt = (range: [number, number], lineOrOffset: number, columnOrPrefix: number | string): number => {
+	if (typeof columnOrPrefix === 'string') {
+		return Math.min(range[1], range[0] + Math.max(0, lineOrOffset - columnOrPrefix.length));
+	} else if (lineOrOffset === -2) {
 		return range[0];
 	}
-	return line === 0 ? range[1] : range[0] + column;
+	return lineOrOffset === 0 ? range[1] : range[0] + columnOrPrefix;
+};
+
+/**
+ * 获取伪CSS代码块的前缀
+ * @param token AST 节点
+ * @param token.type 节点类型
+ * @param token.tag 节点标签
+ * @param i 节点序号
+ */
+const getPrefix = ({type, tag}: AST, i: number): string => `${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n`;
+
+/**
+ * 将偏移量转换为位置
+ * @param code 代码字符串
+ * @param index 偏移量
+ */
+const indexToPos = (code: string, index: number): Position => {
+	const lines = code.slice(0, index).split('\n');
+	return {line: lines.length - 1, character: lines[lines.length - 1]!.length};
 };
 
 /**
@@ -73,13 +94,14 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		return [
 			...diagnostics,
 			...(await cssLint(
-				tokens.map(({childNodes, type, tag}, i) => `${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n${
-					sanitizeInlineStyle(childNodes![1]!.childNodes![0]!.data!)
+				tokens.map((token, i) => `${getPrefix(token, i)}${
+					sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
 						.replace(/\n/gu, ' ')
 				}\n}`).join('\n'),
 				config?.['css'] as Option,
-			)).map(({line, column, endLine, endColumn, rule, severity, text: message}): MixedDiagnostic => {
+			)).map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
 				const i = Math.ceil(line / 3),
+					prefix = getPrefix(tokens[i - 1]!, i),
 					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
 					from = offsetAt(range, line - 3 * i, column - 1);
 				return {
@@ -89,6 +111,21 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 					source: 'Stylelint',
 					code: rule,
 					message,
+					...fix
+						? {
+							data: [
+								{
+									range: {
+										start: indexToPos(text, offsetAt(range, fix.range[0], prefix)),
+										end: indexToPos(text, offsetAt(range, fix.range[1], prefix)),
+									},
+									newText: fix.text,
+									title: 'Fix: Stylelint',
+									fix: true,
+								} satisfies QuickFixData,
+							],
+						}
+						: {},
 				};
 			}),
 		];
