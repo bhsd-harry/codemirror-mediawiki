@@ -2,6 +2,8 @@ import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/browser';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './codemirror';
 
+declare const $LANGS: string[];
+
 const storageKey = 'codemirror-mediawiki-i18n';
 
 export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.31.0',
@@ -26,8 +28,7 @@ export const setI18N = async (CDN: string): Promise<void> => {
 			`${CDN}/${REPO_CDN}/i18n`,
 			curVersion,
 			await languages,
-			// @ts-expect-error build-time constant
-			$LANGS as string[],
+			$LANGS,
 			storageKey,
 			i18n,
 		);

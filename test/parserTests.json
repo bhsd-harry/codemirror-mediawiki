@@ -5054,209 +5054,6 @@
 		"parsed": "hiho"
 	},
 	{
-		"desc": "bookReferencing"
-	},
-	{
-		"desc": "Book Referencing attribute rejected by default",
-		"wikitext": "<ref name=\"parent\">[foo]</ref>\n<ref extends=\"parent\">[bar]</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[foo]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[bar]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "Book Referencing attribute allowed with feature flag set",
-		"wikitext": "<ref name=\"parent\">[foo]</ref>\n<ref extends=\"parent\">[bar]</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[foo]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"parent\"</><exttag-bracket>&gt</><tag-ref>[bar]</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T240424 - Subreference reused as normal ref before its full definition",
-		"wikitext": "<ref name=\"b\" />\n<ref name=\"b\" extends=\"a\">page 2</ref>\n<ref name=\"a\">book</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T240424 - Extended reference reused before defined in the <references> section",
-		"wikitext": "<ref name=\"a\" />\n<ref name=\"b\" />\n<references>\n<ref name=\"b\" extends=\"a\">page 2</ref>\n<ref name=\"a\">book</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"b\"</><tag-references exttag-attribute ext-ref> extends=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>page 2</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T367749 - Turning a top-level ref into a subref is forbidden, even if the content is the same",
-		"wikitext": "<ref name=p20>page 20</ref>\n<ref extends=book name=p20>page 20</ref>\n<references>\n<ref name=book>book</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>p20</><exttag-bracket>&gt</><tag-ref>page 20</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>book</><exttag-attribute ext-ref> name=</><exttag-attribute-value>p20</><exttag-bracket>&gt</><tag-ref>page 20</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>book</><tag-references exttag-bracket>&gt</><tag-references tag-ref>book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T367749 - Turning a top-level ref into a subref is forbidden, especially when the content conflicts",
-		"wikitext": "<ref name=p20>page 20</ref>\n<ref extends=book name=p20>different content</ref>\n<references>\n<ref name=book>book</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>p20</><exttag-bracket>&gt</><tag-ref>page 20</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>book</><exttag-attribute ext-ref> name=</><exttag-attribute-value>p20</><exttag-bracket>&gt</><tag-ref>different content</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>book</><tag-references exttag-bracket>&gt</><tag-references tag-ref>book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T367749 - Turning a top-level ref into a subref is fine when the content is an empty string",
-		"wikitext": "<ref name=p20></ref>\n<ref extends=book name=p20>page 20</ref>\n<references>\n<ref name=book>book</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>p20</><exttag-bracket>&gt&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>book</><exttag-attribute ext-ref> name=</><exttag-attribute-value>p20</><exttag-bracket>&gt</><tag-ref>page 20</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>book</><tag-references exttag-bracket>&gt</><tag-references tag-ref>book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - Naming book references is fine",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref extends=\"a\" name=\"c\">page 3</ref>\n<ref name=\"b\" />\n<ref name=\"c\" />\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>page 3</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Extending a reference that doesn't exist #1",
-		"wikitext": "<ref extends=\"a\">page 1</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - Extending a reference that doesn't exist #2",
-		"wikitext": "<ref>book</ref>\n<ref extends=\"a\">page 1</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - Reference with the same name defined twice",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref name=\"a\">magazine</ref>\n<ref extends=\"a\">page 1</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>magazine</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - Can't reuse a name for two book references",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref extends=\"a\" name=\"b\">page 3</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 3</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Can't extend a book reference (no nesting)",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref extends=\"b\">section 3</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>section 3</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Can't extend a book reference (no nesting), specified in reverse order",
-		"wikitext": "<ref extends=\"b\">section 3</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref name=\"a\">book</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>section 3</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Named reference without text",
-		"wikitext": "<ref name=\"a\" />\n<ref extends=\"a\">page 1</ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - No text for a book reference",
-		"wikitext": "<ref name=\"foo\">book</ref>\n<ref extends=\"foo\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Empty text for a book reference",
-		"wikitext": "<ref name=\"foo\">book</ref>\n<ref extends=\"foo\"></ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - De-facto empty text for a book reference",
-		"wikitext": "<ref name=\"foo\">book</ref>\n<ref extends=\"foo\"> </ref>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref> </><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T236256 - Everything in the same group",
-		"wikitext": "<ref group=\"g1\" name=\"a\">book</ref>\n<ref group=\"g1\" extends=\"a\" name=\"b\">page</ref>\n<ref group=\"g1\" name=\"b\" />\n<references group=\"g1\"/>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g1\"</><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Base and book reference in different groups don't collide",
-		"wikitext": "<ref group=\"g1\" name=\"a\">book</ref>\n<ref group=\"g2\" extends=\"a\">page</ref>\n<references group=\"g1\"/>\n<references group=\"g2\"/>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g2\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g1\"</><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g2\"</><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Extending in the unnamed default group doesn't collide with refs from other groups",
-		"wikitext": "<ref group=\"g1\" name=\"a\">book</ref>\n<ref extends=\"a\">page</ref>\n<references group=\"g1\"/>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g1\"</><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Extends in named group doesn't conflict with default group",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref group=\"g1\" extends=\"a\">page</ref>\n<references group=\"g1\"/>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g1\"</><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Extending a multi-part ref should be fine",
-		"wikitext": "<ref name=\"a\">part 1</ref>\n<ref follow=\"a\">part 2</ref>\n<ref extends=\"a\">ok</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>part 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>part 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>ok</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Dont allow splitting a book reference for now",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref extends=\"a\" name=\"b\">page 2</ref>\n<ref follow=\"b\">and page 3 the same time?</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>and page 3 the same time?</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Can't be a follow up and a book reference the same time",
-		"wikitext": "<ref name=\"a\">book 1</ref>\n<ref follow=\"a\" extends=\"a\">huh?</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>huh?</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T236256 - Can't be a follow up and a book reference the same time, even when referencing 2 different bases",
-		"wikitext": "<ref name=\"a\">book 1</ref>\n<ref name=\"b\">book 2</ref>\n<ref follow=\"a\" extends=\"b\">huh?</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book 1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>book 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>huh?</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Extending a <ref> that doesn't appear in the text, but in <references>",
-		"wikitext": "<ref extends=\"a\">Page 2</ref>\n<references>\n<ref name=\"a\">Book</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>Page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T239810: Extending a <ref> that doesn't appear in the text, but in {{#tag:references}}",
-		"wikitext": "<ref extends=\"a\">Page 2</ref>\n{{#tag:references|\n<ref name=\"a\">Book</ref>\n}}",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>Page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"a\"</><ext-ground exttag-bracket>&gt</><tag-ref>Book</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Extends <ref> defined in <references> called with #tag",
-		"wikitext": "<ref name=\"foo\">BAR</ref>\n<ref name=\"footwo\" />\n{{#tag:references|\n<ref name=\"footwo\" extends=\"foo\">p. 10</ref>\n}}",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref>BAR</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"footwo\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"footwo\"</><ext-ground exttag-attribute ext-ref> extends=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-bracket>&gt</><tag-ref>p. 10</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Extends parent <ref> defined in <references> called with #tag",
-		"wikitext": "<ref>BAR</ref>\n<ref name=\"footwo\" extends=\"foo\">page 7</ref>\n<ref name=\"foo\" />\n{{#tag:references|\n<ref name=\"foo\">book name</ref>\n}}",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>BAR</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"footwo\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"foo\"</><exttag-bracket>&gt</><tag-ref>page 7</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-bracket>&gt</><tag-ref>book name</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "Interleaved extends groups",
-		"wikitext": "<ref name=\"a\">text-a</ref>\n<ref name=\"c\">text-c</ref>\n\n<ref extends=\"a\">page b</ref>\n<ref extends=\"c\">page d</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text-a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>text-c</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page b</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>page d</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Multiple groups with extends",
-		"wikitext": "<ref name=\"a\">text-a</ref>\n<ref extends=\"a\">page b</ref>\n<references />\n\n<ref name=\"c\">text-c</ref>\n<ref extends=\"c\">page d</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text-a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page b</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>text-c</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>page d</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Multiple groups with extends, duplicated names across groups",
-		"wikitext": "<ref name=\"a\">text-a</ref>\n<ref extends=\"a\">page b</ref>\n<references />\n\n<ref name=\"a\">text-c</ref>\n<ref extends=\"a\">page d</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text-a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page b</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text-c</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page d</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Intervening ref before extends",
-		"wikitext": "<ref name=\"a\">book</ref>\n<ref>another</ref>\n<ref extends=\"a\">page 2</ref>\n\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>another</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page 2</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Normal refs after extends",
-		"wikitext": "<ref name=\"a\">text-a</ref>\n<ref extends=\"a\">page b</ref>\n\n<ref name=\"c\">text-c</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>text-a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>page b</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>text-c</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T242110: Copy-pasted, named sub-references should be merged and not mess with the numbering",
-		"wikitext": "<ref name=\"a1\" extends=\"a\">a1</ref>\n<ref name=\"a1\" extends=\"a\">a1</ref>\n<references>\n<ref name=\"a\">a</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T242110: Reused sub-references should be merged and not mess with the numbering",
-		"wikitext": "<ref name=\"a1\" extends=\"a\">a1</ref>\n<ref name=\"a1\" extends=\"a\" />\n<references>\n<ref name=\"a\">a</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "Reused sub-references can be rolled back without messing up numbering",
-		"wikitext": "<ref name=\"a1\" extends=\"a\" />\n<ref group=\"g\" name=\"a1\" extends=\"a\" />\n{{#tag:references|\n<ref name=\"a\">a in group</ref>\n<ref name=\"a1\" extends=\"a\">a1 in group</ref>\n|group=g}}\n<ref name=\"a1\" extends=\"a\">a1</ref>\n<references>\n<ref name=\"a\">a</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"g\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"a\"</><ext-ground exttag-bracket>&gt</><tag-ref>a in group</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"a1\"</><ext-ground exttag-attribute ext-ref> extends=</><ext-ground exttag-attribute-value>\"a\"</><ext-ground exttag-bracket>&gt</><tag-ref>a1 in group</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>group=</><ext-ground parserfunction>g</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T242110: Bad extends attributes on reused sub-references should report an error",
-		"wikitext": "<ref name=\"a1\" extends=\"a\">a1</ref>\n<ref name=\"a1\" extends=\"unknown\" />\n<references>\n<ref name=\"a\">a</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"unknown\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
-		"desc": "T242110: Copy-pasted, named sub-references should appear in proper order",
-		"wikitext": "<ref name=\"a1\" extends=\"a\">a1</ref>\n<ref name=\"a1\" extends=\"a\">a1</ref>\n<ref name=\"b1\" extends=\"b\">b1</ref>\n<ref name=\"b1\" extends=\"b\" />\n<ref name=\"c1\" extends=\"c\">c1</ref>\n<ref name=\"c1\" />\n<references>\n<ref name=\"a\">a</ref>\n<ref name=\"b\">a</ref>\n<ref name=\"c\">a</ref>\n</references>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>a1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>b1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"b\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c1\"</><exttag-attribute ext-ref> extends=</><exttag-attribute-value>\"c\"</><exttag-bracket>&gt</><tag-ref>c1</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"c1\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"b\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"c\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>a</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
-	},
-	{
 		"desc": "citeParserTests"
 	},
 	{
@@ -5705,9 +5502,19 @@
 		"parsed": "A <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</>B <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>bar</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>foo</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><tag-references ignored>This should just get lost.</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
 	},
 	{
-		"desc": "References: 6. <references /> from a transclusion",
-		"wikitext": "<ref>Foo</ref> {{1x|<references />}}",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>Foo</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>references </><template-ground exttag-bracket>/&gt</><template-ground template-bracket>}}</>"
+		"desc": "References: 6. <references> with nested refs from a transclusion",
+		"wikitext": "<ref name=\"bar\" />\n{{1x|<references><ref name=\"bar\">Foo</ref></references>}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"bar\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Foo</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "References: 6.1. T399937 <references> with nested refs from a transclusion wrapped in a div\n# FIXME Parsoid is forwarding body.html of nested references here, currently that's not wanted. See T399937",
+		"wikitext": "<ref name=\"bar\" />\n{{1x|1=<div class=\"usr1\"><references><ref name=\"bar\">Foo</ref></references></div>}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>div </><template-ground htmltag-attribute html-div>class=</><template-ground htmltag-attribute-value>\"usr1\"</><template-ground htmltag-bracket>&gt</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"bar\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Foo</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><template-ground htmltag-bracket>&lt;/</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "References: 6.2. T399937 <references> with nested refs from a transclusion wrapped in a div preceded by another div\n#FIXME Parsoid should not add nested refs from the template, we'll have issues when round tripping then. See T399937",
+		"wikitext": "<ref name=\"bar\" />\n{{1x|1=<div class=\"usr0\"/><div class=\"usr1\"><references><ref name=\"bar\">Foo</ref></references></div>}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template-argument-name>1=</><template-ground htmltag-bracket>&lt;</><template-ground htmltag-name>div </><template-ground htmltag-attribute html-div>class=</><template-ground htmltag-attribute-value>\"usr0\"</><template-ground htmltag-bracket>/&gt&lt;</><template-ground htmltag-name>div </><template-ground htmltag-attribute html-div>class=</><template-ground htmltag-attribute-value>\"usr1\"</><template-ground htmltag-bracket>&gt</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"bar\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Foo</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>references</><template-ground exttag-bracket>&gt</><template-ground htmltag-bracket>&lt;/</><template-ground htmltag-name>div</><template-ground htmltag-bracket>&gt</><template-ground template-bracket>}}</>"
 	},
 	{
 		"desc": "References: 7. Multiple references tags (one without and one with nested refs) should be correctly handled",
@@ -5785,9 +5592,24 @@
 		"parsed": "one<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>two</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#tag</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>ref</><ext2-ground parserfunction-delimiter>|</><ext2-ground parserfunction>three</><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>ref</><ext2-ground exttag-bracket>&gt</><tag-ref>four</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>ref</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "Ref in ref: self-referential",
-		"wikitext": "{{#tag:ref|<ref name=\"x\" />|name=x}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"x\"</><ext-ground exttag-attribute ext-ref> </><ext-ground exttag-bracket>/&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>x</><ext-ground parserfunction-bracket>}}</>"
+		"desc": "1. Ref in ref: self-referential",
+		"wikitext": "{{#tag:ref|<div><ref name=\"x\" /></div>|name=x}}\n\n<references />",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"x\"</><ext-ground exttag-attribute ext-ref> </><ext-ground exttag-bracket>/&gt</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>x</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "2. Ref in ref: self-referential, redefinition",
+		"wikitext": "{{#tag:ref|<div><ref name=\"x\">y</ref></div>|name=\"x\"}}\n\n<references />",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"x\"</><ext-ground exttag-bracket>&gt</><tag-ref>y</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"x\"</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "3. Ref in ref: self-referential, redefinition and leading, with other ref",
+		"wikitext": "<ref name=\"x\" />\n\n{{#tag:ref|<div><ref name=\"x\">y</ref><ref name=\"z\">z</ref></div>|name=\"x\"}}\n\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"x\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"x\"</><ext-ground exttag-bracket>&gt</><tag-ref>y</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"z\"</><ext-ground exttag-bracket>&gt</><tag-ref>z</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"x\"</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Reference list-defined nested <ref>s (T349981)",
+		"wikitext": "<ref name=\"foo\" group=\"1\" />{{#tag:references|{{#tag:ref|foo<ref>bar</ref>|name=foo|group=1}}|group=1}}\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"1\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#tag</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>ref</><ext2-ground parserfunction-delimiter>|</><ext2-ground parserfunction>foo</><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>ref</><ext2-ground exttag-bracket>&gt</><tag-ref>bar</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>ref</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-delimiter>|</><ext2-ground template-argument-name>name=</><ext2-ground parserfunction>foo</><ext2-ground parserfunction-delimiter>|</><ext2-ground template-argument-name>group=</><ext2-ground parserfunction>1</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>group=</><ext-ground parserfunction>1</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Nested ref with forward slash",
@@ -6011,8 +5833,8 @@
 	},
 	{
 		"desc": "Headings: Category in ref isn't hoisted",
-		"wikitext": "== foo <ref>bar \n[[Category:Baz]] </ref> ==\n\n<references />",
-		"parsed": "== foo <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>bar </><tag-ref link-ground link-bracket>[[</><tag-ref link-ground link-pagename pagename>Category:Baz</><tag-ref link-ground link-bracket>]]</><tag-ref> </><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> ==<exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+		"wikitext": "== foo <ref>bar\n[[Category:Baz]] </ref> ==\n\n<references />",
+		"parsed": "== foo <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>bar</><tag-ref link-ground link-bracket>[[</><tag-ref link-ground link-pagename pagename>Category:Baz</><tag-ref link-ground link-bracket>]]</><tag-ref> </><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> ==<exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Testing serialization after deletion in references",
@@ -6043,6 +5865,56 @@
 		"desc": "Handle extension content in section headers properly",
 		"wikitext": "==c<ref>d</ref>==",
 		"parsed": "<section-header section--2>==</><section>c</><exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>d</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><section-header>==</>"
+	},
+	{
+		"desc": "Non-diffing cite error",
+		"wikitext": "<ref name=\"aaa\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"aaa\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "1. Multiple definition with the same complex content",
+		"wikitext": "<ref name=\"a\"><b>abc</b></ref> <ref name=\"a\"><b>abc</b></ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref htmltag-bracket>&lt;</><tag-ref htmltag-name>b</><tag-ref htmltag-bracket>&gt</><tag-ref>abc</><tag-ref htmltag-bracket>&lt;/</><tag-ref htmltag-name>b</><tag-ref htmltag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref htmltag-bracket>&lt;</><tag-ref htmltag-name>b</><tag-ref htmltag-bracket>&gt</><tag-ref>abc</><tag-ref htmltag-bracket>&lt;/</><tag-ref htmltag-name>b</><tag-ref htmltag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "2. Multiple definition with the same complex content",
+		"wikitext": "<ref name=\"b\">{{1x|abc}}</ref> <ref name=\"b\">{{1x|abc}}</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref template-ground template-bracket>{{</><tag-ref template-ground template-name pagename>1x</><tag-ref template-ground template-delimiter>|</><tag-ref template-ground template>abc</><tag-ref template-ground template-bracket>}}</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref template-ground template-bracket>{{</><tag-ref template-ground template-name pagename>1x</><tag-ref template-ground template-delimiter>|</><tag-ref template-ground template>abc</><tag-ref template-ground template-bracket>}}</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "3. Multiple definition with the same complex content, but one is templated",
+		"wikitext": "{{1x|<ref name=\"ref\">{{1x|<span>txt</span>}}</ref>}} <ref name=\"ref\">{{1x|<span>txt</span>}}</ref>\n<references />",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground exttag-bracket>&lt;</><template-ground exttag-name>ref </><template-ground exttag-attribute ext-ref>name=</><template-ground exttag-attribute-value>\"ref\"</><template-ground exttag-bracket>&gt</><tag-ref template-ground template-bracket>{{</><tag-ref template-ground template-name pagename>1x</><tag-ref template-ground template-delimiter>|</><tag-ref template-ground htmltag-bracket>&lt;</><tag-ref template-ground htmltag-name>span</><tag-ref template-ground htmltag-bracket>&gt</><tag-ref template-ground template>txt</><tag-ref template-ground htmltag-bracket>&lt;/</><tag-ref template-ground htmltag-name>span</><tag-ref template-ground htmltag-bracket>&gt</><tag-ref template-ground template-bracket>}}</><template-ground exttag-bracket>&lt;/</><template-ground exttag-name>ref</><template-ground exttag-bracket>&gt</><template-ground template-bracket>}}</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"ref\"</><exttag-bracket>&gt</><tag-ref template-ground template-bracket>{{</><tag-ref template-ground template-name pagename>1x</><tag-ref template-ground template-delimiter>|</><tag-ref template-ground htmltag-bracket>&lt;</><tag-ref template-ground htmltag-name>span</><tag-ref template-ground htmltag-bracket>&gt</><tag-ref template-ground template>txt</><tag-ref template-ground htmltag-bracket>&lt;/</><tag-ref template-ground htmltag-name>span</><tag-ref template-ground htmltag-bracket>&gt</><tag-ref template-ground template-bracket>}}</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Nested reference with same name but different group",
+		"wikitext": "{{#tag:ref|note <ref name=\"foo\" group=\"notes\">nested note</ref>|name=\"foo\"|group=\"foo\"}}\n\n<references group=\"foo\" />\n<references group=\"notes\" />",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>note </><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-attribute ext-ref> group=</><ext-ground exttag-attribute-value>\"notes\"</><ext-ground exttag-bracket>&gt</><tag-ref>nested note</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"foo\"</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>group=</><ext-ground parserfunction>\"foo\"</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"notes\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Nested reference with same name but different group (default in nested)",
+		"wikitext": "{{#tag:ref|note <ref name=\"foo\">nested note</ref>|name=\"foo\"|group=\"foo\"}}\n\n<references />\n<references group=\"foo\" />",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>note </><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-bracket>&gt</><tag-ref>nested note</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"foo\"</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>group=</><ext-ground parserfunction>\"foo\"</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Nested reference with same name but different group (default in outer)",
+		"wikitext": "{{#tag:ref|note <ref name=\"foo\" group=\"foo\">nested note</ref>|name=\"foo\"}}\n\n<references />\n<references group=\"foo\" />",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>note </><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-attribute ext-ref> group=</><ext-ground exttag-attribute-value>\"foo\"</><ext-ground exttag-bracket>&gt</><tag-ref>nested note</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"foo\"</><ext-ground parserfunction-bracket>}}</><exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "References error without wrapper round-trip test",
+		"wikitext": "<ref group=\"a\">foo</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>group=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>foo</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "T393913: Parsoid support for nested <ref> in different groups",
+		"wikitext": "<ref name=\"thefourtruths\" group=\"lower-alpha\">asfd</ref>\n\n{{#tag:ref|<div><ref>123</ref></div>|name=\"thefourtruths\"|group=\"lower-alpha\"}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"thefourtruths\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"lower-alpha\"</><exttag-bracket>&gt</><tag-ref>asfd</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>ref</><ext-ground parserfunction-delimiter>|</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><tag-ref>123</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>div</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>name=</><ext-ground parserfunction>\"thefourtruths\"</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>group=</><ext-ground parserfunction>\"lower-alpha\"</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Roundtrip multiple follows",
+		"wikitext": "<ref name=\"test\">hiho</ref>\n<ref follow=\"test\">hi</ref>\n<ref follow=\"test\">ho</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"test\"</><exttag-bracket>&gt</><tag-ref>hiho</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"test\"</><exttag-bracket>&gt</><tag-ref>hi</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"test\"</><exttag-bracket>&gt</><tag-ref>ho</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "citeSmokeTests"
@@ -6943,39 +6815,6 @@
 		"desc": "Doubly-nested tags",
 		"wikitext": "{{#tag:nowiki|more {{#tag:nowiki|content <nowiki>here</nowiki>}}}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>nowiki</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>more </><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#tag</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>nowiki</><ext2-ground parserfunction-delimiter>|</><ext2-ground parserfunction>content </><ext2-ground exttag-bracket>&lt;</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><tag-nowiki>here</><ext2-ground exttag-bracket>&lt;/</><ext2-ground exttag-name>nowiki</><ext2-ground exttag-bracket>&gt</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-bracket>}}</>"
-	},
-	{
-		"desc": "fragmentModes"
-	},
-	{
-		"desc": "Legacy fragment encoding",
-		"wikitext": "<ref name=\"nature%20phylo\">A</ref>\n<ref name=\"Mininova%2E26%2E11%2E2009\">B</ref>\n<ref name=\"%c8%98tiri_2019\">C</ref>\n<ref name=\"play%21\">D</ref>\n<ref name=\"Terry+O%26rsquo%3BN…</ref\">E</ref>\n<ref name=\"9&nbsp;pm\">F</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"nature%20phylo\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Mininova%2E26%2E11%2E2009\"</><exttag-bracket>&gt</><tag-ref>B</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"%c8%98tiri_2019\"</><exttag-bracket>&gt</><tag-ref>C</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"play%21\"</><exttag-bracket>&gt</><tag-ref>D</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Terry+O%26rsquo%3BN…&lt;/ref\"</><exttag-bracket>&gt</><tag-ref>E</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"9&amp;nbsp;pm\"</><exttag-bracket>&gt</><tag-ref>F</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T298278: Collection of test cases in HTML5 mode",
-		"wikitext": "<ref name=\"nature%20phylo\">A</ref>\n<ref name=\"Mininova%2E26%2E11%2E2009\">B</ref>\n<ref name=\"%c8%98tiri_2019\">C</ref>\n<ref name=\"play%21\">D</ref>\n<ref name=\"Terry+O%26rsquo%3BN…</ref\">E</ref>\n<ref name=\"9&nbsp;pm\">F</ref>\n<references />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"nature%20phylo\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Mininova%2E26%2E11%2E2009\"</><exttag-bracket>&gt</><tag-ref>B</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"%c8%98tiri_2019\"</><exttag-bracket>&gt</><tag-ref>C</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"play%21\"</><exttag-bracket>&gt</><tag-ref>D</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Terry+O%26rsquo%3BN…&lt;/ref\"</><exttag-bracket>&gt</><tag-ref>E</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"9&amp;nbsp;pm\"</><exttag-bracket>&gt</><tag-ref>F</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "URL encoded strings accidentally copy-pasted in legacy mode",
-		"wikitext": "<ref name=\"n%25%32%30n\" group=\"g%25%32%30g\">A</ref>\n<references group=\"g%25%32%30g\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"n%25%32%30n\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "T298278: URL encoded strings accidentally copy-pasted in HTML5 mode",
-		"wikitext": "<ref name=\"n%25%32%30n\" group=\"g%25%32%30g\">A</ref>\n<references group=\"g%25%32%30g\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"n%25%32%30n\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Multiple, partly encoded spaces in legacy mode",
-		"wikitext": "<ref name=\"a_ %20a\" group=\"b_ %20b\">A</ref>\n<references group=\"b_ %20b\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a_ %20a\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
-	},
-	{
-		"desc": "Multiple, partly encoded spaces in HTML5 mode",
-		"wikitext": "<ref name=\"a_ %20a\" group=\"b_ %20b\">A</ref>\n<references group=\"b_ %20b\" />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a_ %20a\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "funcsParserTests"
@@ -11476,6 +11315,209 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#pos</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>FooBar</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>Foo</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>32</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "subReferencingTests"
+	},
+	{
+		"desc": "Subreferencing attribute blocked without feature flag",
+		"wikitext": "<ref details=\"abc\" name=\"a\">def</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"abc\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "T397760: Details with no name but feature flag disabled",
+		"wikitext": "<ref details=\"y\">x</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"y\"</><exttag-bracket>&gt</><tag-ref>x</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Subreferencing attribute allowed with feature flag set",
+		"wikitext": "<ref details=\"0\" name=\"a\">def</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"0\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Subreferencing round trips in reverse alphabetical attribute order",
+		"wikitext": "<ref name=\"a\" details=\"0\">def</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> details=</><exttag-attribute-value>\"0\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unnamed main reference with a lonely sub-ref, neither can be reused",
+		"wikitext": "<ref details=\"abc\">def</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"abc\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Named main ref with inline details",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\">The book</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Empty sub-referencing attribute with no meaningful content",
+		"wikitext": "<ref details=\"   \" name=\"a\">def</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"   \"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Multiple subreferences",
+		"wikitext": "<ref details=\"abc\" name=\"a\">def</ref> <ref details=\"ghi\" name=\"b\">jkl</ref>\n<references>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"abc\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"ghi\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"b\"</><exttag-bracket>&gt</><tag-ref>jkl</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Parent reference used before sub-reference",
+		"wikitext": "<ref name=\"book\">The book</ref> <ref details=\"p. 1\" name=\"book\" />\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Parent reference used after sub-reference",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\" /> <ref name=\"book\">The book</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Main+details reference used after sub-reference",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\" /> <ref details=\"p. 2\" name=\"book\">The book</ref>\n<references>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 2\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Main+details reference used after sub-reference and standalone main ref",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\" /> <ref details=\"p. 2\" name=\"book\">The book</ref> <ref name=\"book\">The book</ref>\n<references>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 2\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused, list-defined parent reference",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\" />\n<references>\n<ref name=\"book\">The book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>The book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "No main content due to missing name or empty content",
+		"wikitext": "<ref details=\"page 1\" />\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty content and no name",
+		"wikitext": "<ref details=\"page 1\"></ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-bracket>&gt&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "No main content due to missing named main ref",
+		"wikitext": "<ref details=\"page 1\" name=\"missingbook\" />\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"missingbook\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty content and missing named main ref",
+		"wikitext": "<ref details=\"page 1\" name=\"missingbook\"></ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"missingbook\"</><exttag-bracket>&gt&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "T392195: Details get lost on sub-ref with empty main content",
+		"wikitext": "<ref name=\"book\">Book</ref><ref details=\"page 1\" name=\"book\"></ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty details content with name, ignored outside of <references>",
+		"wikitext": "<ref details=\"\" name=\"a\">Book</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty details content without name, ignored outside of <references>",
+		"wikitext": "<ref details=\"\">Book</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty details content inside of <references>",
+		"wikitext": "<ref name=\"a\" />\n<references>\n<ref details=\"\" name=\"a\">Book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"a\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused list-defined sub-ref with no name",
+		"wikitext": "<references>\n<ref details=\"page 1\">Book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"page 1\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused list-defined sub-ref with linked existing main ref",
+		"wikitext": "<ref name=\"book\">Book</ref>\n<references>\n<ref details=\"page 1\" name=\"book\"></ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"page 1\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "There is no such thing as a list-defined sub-ref (completely unused)",
+		"wikitext": "<references>\n<ref details=\"p. 1\" name=\"book\">The book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"p. 1\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>The book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused list defined sub-ref with used main content",
+		"wikitext": "<ref name=\"book\" />\n<references>\n<ref details=\"page 1\" name=\"book\">Book</ref>\n<ref details=\"page 2\" name=\"book\">Book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"page 1\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"page 2\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused list defined sub-ref with used main content (same as above but with #tag)",
+		"wikitext": "<ref name=\"book\" />\n{{#tag:references|<ref details=\"page 1\" name=\"book\">Book</ref>\n<ref details=\"page 2\" name=\"book\">Book</ref>}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>details=</><ext-ground exttag-attribute-value>\"page 1\"</><ext-ground exttag-attribute ext-ref> name=</><ext-ground exttag-attribute-value>\"book\"</><ext-ground exttag-bracket>&gt</><tag-ref>Book</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>details=</><ext-ground exttag-attribute-value>\"page 2\"</><ext-ground exttag-attribute ext-ref> name=</><ext-ground exttag-attribute-value>\"book\"</><ext-ground exttag-bracket>&gt</><tag-ref>Book</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "There is no such thing as a list-defined sub-ref (duplicate main content)",
+		"wikitext": "<ref name=\"book\">The book</ref>\n<references>\n<ref details=\"p. 1\" name=\"book\">The book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"p. 1\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>The book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Unused list defined sub-ref due to duplicate details content",
+		"wikitext": "<ref details=\"page 1\" name=\"book\" />\n<references>\n<ref details=\"page 1\" name=\"book\">Book</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>details=</><tag-references exttag-attribute-value>\"page 1\"</><tag-references exttag-attribute ext-ref> name=</><tag-references exttag-attribute-value>\"book\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Book</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Conflicting main content",
+		"wikitext": "<ref details=\"page 1\" name=\"book\">Book</ref> <ref details=\"page 2\" name=\"book\">Book, but different</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 2\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book, but different</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Repeating the main content when using details",
+		"wikitext": "<ref name=\"book\">Book</ref> <ref details=\"page 1\" name=\"book\">Book</ref> <ref details=\"page 1\" name=\"book\">Book</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Using `follow` with details on the \"main\" part",
+		"wikitext": "<ref details=\"page 1\" name=\"book\">Book</ref>\n<ref follow=\"book\">continued</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>follow=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>continued</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Using `follow` with details on the \"follow\" part",
+		"wikitext": "<ref name=\"book\">Book</ref> <ref details=\"page 1\" follow=\"book\">continued</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>Book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> follow=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>continued</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Details include basic wikitext syntax",
+		"wikitext": "<ref details=\"''abc''\" name=\"a\">def</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"''abc''\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Details include template invocation",
+		"wikitext": "<ref details=\"{{Deco-z|abc}}\" name=\"a\">def</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"{{Deco-z|abc}}\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>def</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Details include another, nested ref tag",
+		"wikitext": "<ref name=x>x</ref>\n<ref details=\"d<ref name=x&gt;x</ref&gt;\" name=a>a</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>x</><exttag-bracket>&gt</><tag-ref>x</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"d&lt;ref name=x&amp;gt;x&lt;/ref&amp;gt;\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>a</><exttag-bracket>&gt</><tag-ref>a</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Subreference doesn't affect main reference numbering",
+		"wikitext": "<ref>abc</ref> <ref details=\"def\" name=\"a\">ghi</ref> <ref>jkl</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>abc</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"def\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>ghi</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>jkl</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Subreference of existing ref doesn't affect main reference numbering",
+		"wikitext": "<ref name=\"a\">abc</ref> <ref details=\"def\" name=\"a\">abc</ref> <ref>jkl</ref>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>abc</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"def\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"a\"</><exttag-bracket>&gt</><tag-ref>abc</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>jkl</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Rolling back a sub-reference inside the #tag:references function",
+		"wikitext": "<ref name=\"a\" />\n{{#tag:references|<ref name=\"a\">a</ref><ref details=\"p1\" name=\"b\">b</ref>}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>name=</><ext-ground exttag-attribute-value>\"a\"</><ext-ground exttag-bracket>&gt</><tag-ref>a</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt&lt;</><ext-ground exttag-name>ref </><ext-ground exttag-attribute ext-ref>details=</><ext-ground exttag-attribute-value>\"p1\"</><ext-ground exttag-attribute ext-ref> name=</><ext-ground exttag-attribute-value>\"b\"</><ext-ground exttag-bracket>&gt</><tag-ref>b</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>ref</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Named main ref with inline details and <references> called with #tag",
+		"wikitext": "<ref details=\"p. 1\" name=\"book\">The book</ref> <ref>Another book</ref>\n{{#tag:references}}",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"p. 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"book\"</><exttag-bracket>&gt</><tag-ref>The book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</> <exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>Another book</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>references</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Synthetic main refs from VE dont convert to list defined refs",
+		"wikitext": "<ref details=\"page 1\" name=\"miller\">Miller</ref>\n<ref name=\"smith\" />\n\n<references>\n<ref name=\"smith\">Smith</ref>\n</references>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"miller\"</><exttag-bracket>&gt</><tag-ref>Miller</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"smith\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"smith\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Smith</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "tables"
 	},
 	{
@@ -11920,6 +11962,39 @@
 		"desc": "tvar with old syntax containing template markup should not break",
 		"wikitext": "<translate>hello <tvar|code>{{1x|</>world<tvar|code2>}}</></translate>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|code&gt{{1x|&lt;/&gtworld&lt;tvar|code2&gt}}&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "urlFragmentModes"
+	},
+	{
+		"desc": "Legacy fragment encoding",
+		"wikitext": "<ref name=\"nature%20phylo\">A</ref>\n<ref name=\"Mininova%2E26%2E11%2E2009\">B</ref>\n<ref name=\"%c8%98tiri_2019\">C</ref>\n<ref name=\"play%21\">D</ref>\n<ref name=\"Terry+O%26rsquo%3BN…</ref\">E</ref>\n<ref name=\"9&nbsp;pm\">F</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"nature%20phylo\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Mininova%2E26%2E11%2E2009\"</><exttag-bracket>&gt</><tag-ref>B</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"%c8%98tiri_2019\"</><exttag-bracket>&gt</><tag-ref>C</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"play%21\"</><exttag-bracket>&gt</><tag-ref>D</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Terry+O%26rsquo%3BN…&lt;/ref\"</><exttag-bracket>&gt</><tag-ref>E</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"9&amp;nbsp;pm\"</><exttag-bracket>&gt</><tag-ref>F</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "T298278: Collection of test cases in HTML5 mode",
+		"wikitext": "<ref name=\"nature%20phylo\">A</ref>\n<ref name=\"Mininova%2E26%2E11%2E2009\">B</ref>\n<ref name=\"%c8%98tiri_2019\">C</ref>\n<ref name=\"play%21\">D</ref>\n<ref name=\"Terry+O%26rsquo%3BN…</ref\">E</ref>\n<ref name=\"9&nbsp;pm\">F</ref>\n<references />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"nature%20phylo\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Mininova%2E26%2E11%2E2009\"</><exttag-bracket>&gt</><tag-ref>B</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"%c8%98tiri_2019\"</><exttag-bracket>&gt</><tag-ref>C</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"play%21\"</><exttag-bracket>&gt</><tag-ref>D</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"Terry+O%26rsquo%3BN…&lt;/ref\"</><exttag-bracket>&gt</><tag-ref>E</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"9&amp;nbsp;pm\"</><exttag-bracket>&gt</><tag-ref>F</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "URL encoded strings accidentally copy-pasted in legacy mode",
+		"wikitext": "<ref name=\"n%25%32%30n\" group=\"g%25%32%30g\">A</ref>\n<references group=\"g%25%32%30g\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"n%25%32%30n\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "T298278: URL encoded strings accidentally copy-pasted in HTML5 mode",
+		"wikitext": "<ref name=\"n%25%32%30n\" group=\"g%25%32%30g\">A</ref>\n<references group=\"g%25%32%30g\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"n%25%32%30n\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"g%25%32%30g\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Multiple, partly encoded spaces in legacy mode",
+		"wikitext": "<ref name=\"a_ %20a\" group=\"b_ %20b\">A</ref>\n<references group=\"b_ %20b\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a_ %20a\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Multiple, partly encoded spaces in HTML5 mode",
+		"wikitext": "<ref name=\"a_ %20a\" group=\"b_ %20b\">A</ref>\n<references group=\"b_ %20b\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a_ %20a\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "wtEscaping"
