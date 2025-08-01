@@ -99,7 +99,7 @@
 		"mocha": "^11.7.1",
 		"monaco-editor": "^0.52.2",
 		"stylelint": "^16.22.0",
-		"stylelint-config-recommended": "^16.0.0",
+		"stylelint-config-recommended": "^17.0.0",
 		"types-mediawiki": "^1.10.1",
 		"typescript": "^5.8.2"
 	}
