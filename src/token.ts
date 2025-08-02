@@ -1411,7 +1411,7 @@ export class MediaWiki {
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
 		};
 		return (stream, state) => {
-			if (stream.match('/>') || name === 'img' && stream.match('>')) {
+			if (stream.match('/>')) {
 				state.extMode = false;
 				pop(state);
 				return makeLocalTagStyle('extTagBracket', state);

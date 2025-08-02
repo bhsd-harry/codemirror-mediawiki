@@ -143,9 +143,6 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		nsid,
 		variants: variants!,
 	};
-	if (location.hostname.endsWith('.moegirl.org.cn')) {
-		config.html[2].push('img');
-	}
 	const noCM = mw.loader.getState('ext.CodeMirror') === null;
 	for (const [key, val] of Object.entries(insensitive)) {
 		if (others.has(val) && val !== 'msgnw') {

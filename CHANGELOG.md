@@ -1,6 +1,6 @@
 ## 3.0.0
 
-*2025-07-24*
+*2025-08-03*
 
 **Added**
 
@@ -16,6 +16,7 @@
 - The tagMatching extension is now merged with the [bracketMatching](./README.md#bracketmatching) extension
 - All language modes now need explicit [registration](./README.md#language-modes)
 - The argument type of [`lint`](./README.md#lint) and the return type of [`getLinter`](./README.md#getlinter) are now changed to `(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>` to support nested language modes, e.g., Vue
+- `<img>` is now highlighted as an extension tag in the MediaWiki mode
 
 ## 2.31.0
 
