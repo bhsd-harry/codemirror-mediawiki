@@ -54,13 +54,15 @@ The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) cla
 **param**: `string` the optional page title, default as the current page title  
 
 ```js
-const cm = new CodeMirror6(textarea); // plain text
-const cm = new CodeMirror6(textarea, 'mediawiki', undefined, mwConfig);
-const cm = new CodeMirror6(textarea, 'html', 274, mwConfig); // mixed MediaWiki-HTML
-const cm = new CodeMirror6(textarea, 'css');
-const cm = new CodeMirror6(textarea, 'javascript');
-const cm = new CodeMirror6(textarea, 'json');
-const cm = new CodeMirror6(textarea, 'lua');
+let cm;
+cm = new CodeMirror6(textarea); // plain text
+cm = new CodeMirror6(textarea, 'mediawiki', undefined, mwConfig);
+cm = new CodeMirror6(textarea, 'html', 274, mwConfig);
+cm = new CodeMirror6(textarea, 'css');
+cm = new CodeMirror6(textarea, 'javascript');
+cm = new CodeMirror6(textarea, 'json');
+cm = new CodeMirror6(textarea, 'lua');
+cm = new CodeMirror6(textarea, 'vue');
 ```
 
 </details>
@@ -173,6 +175,12 @@ Replace the textarea with a CodeMirror or Monaco editor.
 
 ```js
 CodeMirror6.fromTextArea(textarea, 'mediawiki');
+CodeMirror6.fromTextArea(textarea, 'html');
+CodeMirror6.fromTextArea(textarea, 'css');
+CodeMirror6.fromTextArea(textarea, 'javascript');
+CodeMirror6.fromTextArea(textarea, 'json');
+CodeMirror6.fromTextArea(textarea, 'lua');
+CodeMirror6.fromTextArea(textarea, 'vue');
 ```
 
 </details>

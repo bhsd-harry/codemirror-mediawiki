@@ -261,13 +261,15 @@ registerLanguage('python', python);
 **param**: `boolean` whether to initialize immediately, default as true  
 
 ```js
-const cm = new CodeMirror6(textarea); // plain text
-const cm = new CodeMirror6(textarea, 'mediawiki', mwConfig);
-const cm = new CodeMirror6(textarea, 'html', mwConfig); // mixed MediaWiki-HTML
-const cm = new CodeMirror6(textarea, 'css');
-const cm = new CodeMirror6(textarea, 'javascript');
-const cm = new CodeMirror6(textarea, 'json');
-const cm = new CodeMirror6(textarea, 'lua');
+let cm;
+cm = new CodeMirror6(textarea); // plain text
+cm = new CodeMirror6(textarea, 'mediawiki', mwConfig);
+cm = new CodeMirror6(textarea, 'html', mwConfig);
+cm = new CodeMirror6(textarea, 'css');
+cm = new CodeMirror6(textarea, 'javascript');
+cm = new CodeMirror6(textarea, 'json');
+cm = new CodeMirror6(textarea, 'lua');
+cm = new CodeMirror6(textarea, 'vue');
 ```
 
 </details>
@@ -585,11 +587,12 @@ Set the language mode.
 
 ```js
 cm.setLanguage('mediawiki', mwConfig);
-cm.setLanguage('html', mwConfig); // mixed MediaWiki-HTML
+cm.setLanguage('html', mwConfig);
 cm.setLanguage('css');
 cm.setLanguage('javascript');
 cm.setLanguage('json');
 cm.setLanguage('lua');
+cm.setLanguage('vue');
 ```
 
 </details>
