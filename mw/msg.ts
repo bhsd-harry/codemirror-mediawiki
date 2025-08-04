@@ -6,7 +6,7 @@ declare const $LANGS: string[];
 
 const storageKey = 'codemirror-mediawiki-i18n';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@2.31.0',
+export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@3.0.0',
 	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
 	languages = (async () => {
 		await mw.loader.using('mediawiki.language');

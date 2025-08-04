@@ -10,6 +10,7 @@ export const keybindings = [
 	{key: 'Ctrl-8', pre: '<blockquote>', post: '</blockquote>', desc: 'blockquote'},
 	{key: 'Mod-.', pre: '<sup>', post: '</sup>', desc: 'sup'},
 	{key: 'Mod-,', pre: '<sub>', post: '</sub>', desc: 'sub'},
+	{key: 'Ctrl-,', pre: '<sub>', post: '</sub>', desc: 'sub'},
 	{key: 'Mod-Shift-6', pre: '<code>', post: '</code>', desc: 'code'},
 	{key: 'Ctrl-Shift-5', pre: '<s>', post: '</s>', desc: 's'},
 	{key: 'Mod-u', pre: '<u>', post: '</u>', desc: 'u'},

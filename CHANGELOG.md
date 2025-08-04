@@ -1,11 +1,12 @@
 ## 3.0.0
 
-*2025-08-03*
+*2025-08-04*
 
 **Added**
 
 - Language support for Vue
 - Quick fixes for Stylelint errors are now available in the MediaWiki mode when the [lint](./README.md#lint) extension is enabled
+- Alternative keyboard shortcut for subscript in the MediaWiki mode: `Ctrl` + `,`
 
 **Fixed**
 
@@ -71,7 +72,7 @@
 
 **Added**
 
-- New key binding `Mod` + `Alt` + `,` to fold all `<ref>` and `<references>` tags in the MediaWiki mode
+- New keyboard shortcut `Mod` + `Alt` + `,` to fold all `<ref>` and `<references>` tags in the MediaWiki mode
 - New [WikiEditor](./mw/README.md#wikieditor) toolbar button to fold all `<ref>` and `<references>` tags in the MediaWiki mode on a MediaWiki site
 
 **Fixed**
@@ -708,7 +709,7 @@
 **Added**
 
 - Bidi isolation for HTML/extension tags and table attributes in the MediaWiki mode
-- New key binding `Mod` + `Shift` + `X` to toggle between LTR and RTL
+- New keyboard shortcut `Mod` + `Shift` + `X` to toggle between LTR and RTL
 
 **Fixed**
 
