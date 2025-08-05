@@ -35,7 +35,7 @@ or
 mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
-The script also loads the [styles](../mediawiki.css), adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
+The supported languages include: `mediawiki`, `html`, `css`, `javascript`, `json` and `lua`. The script also loads the [styles](../mediawiki.css), adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
 
 # Constructor
 
@@ -62,7 +62,6 @@ cm = new CodeMirror6(textarea, 'css');
 cm = new CodeMirror6(textarea, 'javascript');
 cm = new CodeMirror6(textarea, 'json');
 cm = new CodeMirror6(textarea, 'lua');
-cm = new CodeMirror6(textarea, 'vue');
 ```
 
 </details>
@@ -180,7 +179,6 @@ CodeMirror6.fromTextArea(textarea, 'css');
 CodeMirror6.fromTextArea(textarea, 'javascript');
 CodeMirror6.fromTextArea(textarea, 'json');
 CodeMirror6.fromTextArea(textarea, 'lua');
-CodeMirror6.fromTextArea(textarea, 'vue');
 ```
 
 </details>

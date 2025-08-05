@@ -1,3 +1,11 @@
+## 3.0.1
+
+*2025-08-05*
+
+**Removed**
+
+- The pre-bundled version for the MediaWiki sites no longer supports the Vue language mode to reduce the bundle size
+
 ## 3.0.0
 
 *2025-08-04*

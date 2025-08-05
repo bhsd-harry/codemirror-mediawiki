@@ -7,7 +7,7 @@ import {
 	registerJavaScript,
 	registerLua,
 	registerMediaWiki,
-	registerVue,
+	// registerVue,
 } from '../src/codemirror';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
@@ -51,7 +51,7 @@ registerJSON();
 registerJavaScript();
 registerLua();
 registerMediaWiki();
-registerVue();
+// registerVue();
 
 const linters: Record<string, LintSource | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
