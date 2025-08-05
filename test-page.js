@@ -1,4 +1,5 @@
-import { CodeMirror6 } from '/codemirror-mediawiki/dist/main.min.js';
+import { CodeMirror6, registerMediaWiki } from '/codemirror-mediawiki/dist/main.min.js';
+registerMediaWiki();
 (async () => {
     const tests = await (await fetch('./test/parserTests.json')).json(), key = 'codemirror-mediawiki-done', dones = new Set(JSON.parse(localStorage.getItem(key))), isGH = location.hostname.endsWith('.github.io'), select = document.querySelector('select'), btn = document.querySelector('button'), textarea = document.querySelector('textarea'), pre = document.querySelector('pre');
     Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();

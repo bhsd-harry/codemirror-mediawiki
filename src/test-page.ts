@@ -1,10 +1,12 @@
-import {CodeMirror6} from '/codemirror-mediawiki/dist/main.min.js';
+import {CodeMirror6, registerMediaWiki} from '/codemirror-mediawiki/dist/main.min.js';
 import type {ConfigData} from 'wikiparser-node';
 
 declare interface Test {
 	desc: string;
 	wikitext?: string;
 }
+
+registerMediaWiki();
 
 (async () => {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
