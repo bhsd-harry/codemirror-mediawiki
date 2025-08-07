@@ -1,3 +1,11 @@
+## 3.0.2
+
+*2025-08-08*
+
+**Fixed**
+
+- The range of quick fixes for Stylelint errors in the MediaWiki mode
+
 ## 3.0.1
 
 *2025-08-05*

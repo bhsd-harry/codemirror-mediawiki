@@ -40,15 +40,15 @@ declare interface JsonError {
  * 计算位置
  * @param range 范围
  * @param lineOrOffset 行号或相对位置
- * @param columnOrPrefix 列号或前缀
+ * @param column 列号
  */
-const offsetAt = (range: [number, number], lineOrOffset: number, columnOrPrefix: number | string): number => {
-	if (typeof columnOrPrefix === 'string') {
-		return Math.min(range[1], range[0] + Math.max(0, lineOrOffset - columnOrPrefix.length));
+const offsetAt = (range: [number, number], lineOrOffset: number, column?: number): number => {
+	if (column === undefined) {
+		return Math.min(range[1], range[0] + Math.max(0, lineOrOffset));
 	} else if (lineOrOffset === -2) {
 		return range[0];
 	}
-	return lineOrOffset === 0 ? range[1] : range[0] + columnOrPrefix;
+	return lineOrOffset === 0 ? range[1] : range[0] + column;
 };
 
 /**
@@ -80,7 +80,8 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		opt?.['getConfig'] as (() => Promise<ConfigData>) | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
 	);
-	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
+	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
+		cssLint = await getCssLinter();
 	return async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(
@@ -90,44 +91,42 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		if (tokens.length === 0) {
 			return diagnostics;
 		}
-		const cssLint = await getCssLinter();
+		const lines = tokens.map((token, i) => `${getPrefix(token, i)}${
+			sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
+				.replace(/\n/gu, ' ')
+		}\n}`);
 		return [
 			...diagnostics,
-			...(await cssLint(
-				tokens.map((token, i) => `${getPrefix(token, i)}${
-					sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
-						.replace(/\n/gu, ' ')
-				}\n}`).join('\n'),
-				config?.['css'] as Option,
-			)).map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
-				const i = Math.ceil(line / 3),
-					prefix = getPrefix(tokens[i - 1]!, i),
-					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
-					from = offsetAt(range, line - 3 * i, column - 1);
-				return {
-					from,
-					to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
-					severity: severity === 'error' ? 1 : 2,
-					source: 'Stylelint',
-					code: rule,
-					message,
-					...fix
-						? {
-							data: [
-								{
-									range: {
-										start: indexToPos(text, offsetAt(range, fix.range[0], prefix)),
-										end: indexToPos(text, offsetAt(range, fix.range[1], prefix)),
-									},
-									newText: fix.text,
-									title: 'Fix: Stylelint',
-									fix: true,
-								} satisfies QuickFixData,
-							],
-						}
-						: {},
-				};
-			}),
+			...(await cssLint(lines.join('\n'), config?.['css'] as Option))
+				.map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
+					const i = Math.ceil(line / 3),
+						{length} = getPrefix(tokens[i - 1]!, i),
+						{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
+						from = offsetAt(range, line - 3 * i, column - 1),
+						diagnostic: MixedDiagnostic = {
+							from,
+							to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
+							severity: severity === 'error' ? 1 : 2,
+							source: 'Stylelint',
+							code: rule,
+							message,
+						};
+					if (fix) {
+						const before = lines.slice(0, i - 1).join('\n').length + 1 + length;
+						diagnostic.data = [
+							{
+								range: {
+									start: indexToPos(text, offsetAt(range, fix.range[0] - before)),
+									end: indexToPos(text, offsetAt(range, fix.range[1] - before)),
+								},
+								newText: fix.text,
+								title: 'Fix: Stylelint',
+								fix: true,
+							} satisfies QuickFixData,
+						];
+					}
+					return diagnostic;
+				}),
 		];
 	};
 };
