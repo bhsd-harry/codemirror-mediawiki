@@ -59,7 +59,6 @@ import toolKeymap from './keymap';
 import statusBar from './statusBar';
 import {detectIndent} from './indent';
 import bracketMatching from './matchBrackets';
-import wikitextLSP from './lsp';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
@@ -420,15 +419,11 @@ export class CodeMirror6 {
 	 * @param lang language
 	 * @param config language configuration
 	 */
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async setLanguage(lang = 'plain', config?: unknown): Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
-			let ext = (languages[lang] ?? plain)(config);
-			ws: { // eslint-disable-line no-unused-labels
-				if (lang === 'mediawiki') {
-					ext = [ext, await wikitextLSP()];
-				}
-			}
+			const ext = (languages[lang] ?? plain)(config);
 			this.#effects([
 				this.#language.reconfigure(ext),
 				this.#linter.reconfigure(linters[lang] ?? []),

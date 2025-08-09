@@ -7,7 +7,6 @@ const langs = fs.readdirSync('i18n').map(file => file.slice(0, -5));
 esbuild.buildSync({
 	charset: 'utf8',
 	bundle: true,
-	dropLabels: process.env.WS ? undefined : ['ws'],
 	format: 'esm',
 	logLevel: 'info',
 	...process.env.MODE === 'wiki'

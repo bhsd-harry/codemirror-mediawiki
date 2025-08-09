@@ -1,3 +1,11 @@
+## 3.0.3
+
+*2025-08-09*
+
+**Fixed**
+
+- Downgrade the [@codemirror/view](https://npmjs.com/package/@codemirror/view) package to [v6.38.0](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.0-(2025-06-27)) to fix [macOS keyboard shortcuts with `Alt`](https://github.com/codemirror/dev/issues/1597)
+
 ## 3.0.2
 
 *2025-08-08*

@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -32,7 +32,7 @@
 		"prepublishOnly": "npm run build",
 		"bundle:core": "node build.mjs",
 		"bundle:wiki": "MODE=wiki node build.mjs",
-		"bundle:unused": "esbuild ./test/bundle.ts --charset=utf8 --bundle --drop-labels=ws --format=esm --outfile=build/unused.js",
+		"bundle:unused": "esbuild ./test/bundle.ts --charset=utf8 --bundle --format=esm --outfile=build/unused.js",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css",
 		"build:core": "npm run bundle:core && esbuild ./build/main.js --charset=utf8 --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",
 		"build:mw": "esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js",
@@ -44,7 +44,7 @@
 		"lint:css": "stylelint **/*.css",
 		"lint": "npm run lint:ts && npm run lint:css",
 		"prof": "node --prof test/dist/test/prof.js && node --prof-process isolate-0x*-v8.log > test/prof.txt && gsed -i '0,/Bottom up/d' test/prof.txt && rm isolate-0x*-v8.log",
-		"server": "WS=1 npm run build:core && npm run test:end; http-server .. -c-1 --cors -s &",
+		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
 		"test": "mocha test/dist/test/*.test.js && mocha --reporter=progress test/dist/test/test.js",
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/test/real.js"
@@ -64,10 +64,9 @@
 		"@codemirror/lang-vue": "^0.1.3",
 		"@codemirror/legacy-modes": "^6.4.2",
 		"@codemirror/lint": "^6.8.5",
-		"@codemirror/lsp-client": "^6.0.0",
 		"@codemirror/search": "^6.5.11",
 		"@codemirror/state": "^6.5.2",
-		"@codemirror/view": "^6.38.1",
+		"@codemirror/view": "6.38.0",
 		"@lezer/common": "^1.2.3",
 		"@lezer/highlight": "^1.2.1",
 		"wikiparser-node": "^1.23.0"
@@ -75,7 +74,7 @@
 	"devDependencies": {
 		"@bhsd/cm-util": "^0.0.0",
 		"@bhsd/code-standard": "^1.0.0",
-		"@bhsd/stylelint-util": "^0.0.0",
+		"@bhsd/stylelint-util": "^0.1.0",
 		"@stylistic/eslint-plugin": "^3.1.0",
 		"@stylistic/stylelint-plugin": "^4.0.0",
 		"@types/eslint": "^8.56.10",
@@ -95,7 +94,7 @@
 		"eslint-plugin-regexp": "^2.9.0",
 		"eslint-plugin-unicorn": "^56.0.1",
 		"http-server": "^14.1.1",
-		"luacheck-browserify": "^0.7.0",
+		"luacheck-browserify": "^0.8.0",
 		"mocha": "^11.7.1",
 		"monaco-editor": "^0.52.2",
 		"stylelint": "^16.23.1",
