@@ -1,6 +1,10 @@
+import {keymap} from '@codemirror/view';
+import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
+import {getLSP} from '@bhsd/browser';
 import {CodeMirror6} from './codemirror';
-import type {KeyBinding, Command} from '@codemirror/view';
+import type {Command} from '@codemirror/view';
+import type {Extension, SelectionRange} from '@codemirror/state';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
 
@@ -10,7 +14,7 @@ const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ':
  * @param cmd 原命令
  */
 const convert = (func: (str: string) => string, cmd: Command): Command => (view): boolean => {
-	if (view.state.selection.ranges.some(range => !range.empty)) {
+	if (view.state.selection.ranges.some(({empty}) => !empty)) {
 		CodeMirror6.replaceSelections(view, func);
 		return true;
 	}
@@ -33,7 +37,37 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		return encodeURIComponent(str);
 	};
 
-export default /* @__PURE__ */ (() => [
+export default (cm: CodeMirror6): Extension => keymap.of([
 	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
 	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
-] as KeyBinding[])();
+	{
+		key: 'Mod-\\',
+		run(view): boolean {
+			const {state} = view,
+				{ranges} = state.selection,
+				lsp = getLSP(view, false, cm.getWikiConfig);
+			if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
+				(async () => {
+					const replacements = new WeakMap<SelectionRange, string | undefined>();
+					for (const range of ranges) {
+						// eslint-disable-next-line no-await-in-loop
+						const [action] = await lsp.provideRefactoringAction(state.sliceDoc(range.from, range.to));
+						replacements.set(range, action?.edit!.changes!['']![0]!.newText);
+					}
+					view.dispatch(state.changeByRange(range => {
+						const insert = replacements.get(range);
+						if (insert === undefined) {
+							return {range};
+						}
+						return {
+							range: EditorSelection.range(range.from, range.from + insert.length),
+							changes: {from: range.from, to: range.to, insert},
+						};
+					}));
+				})();
+				return true;
+			}
+			return false;
+		},
+	},
+]);

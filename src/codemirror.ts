@@ -37,7 +37,7 @@ import {getLSP} from '@bhsd/browser';
 import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
 import colorPicker, {discoverColors} from './color';
 import {mediawiki, html, FullMediaWiki} from './mediawiki';
-import escapeKeymap from './escape';
+import escape from './escape';
 import codeFolding, {foldHandler, mediaWikiFold} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
@@ -174,7 +174,7 @@ export const registerMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'codeFolding', mediaWikiFold);
 	Object.assign(avail, {
 		openLinks: mediawikiOnly(openLinks),
-		escape: mediawikiOnly(keymap.of(escapeKeymap)),
+		escape: mediawikiOnly(escape),
 		refHover: mediawikiOnly(refHover),
 		hover: mediawikiOnly(magicWordHover),
 		signatureHelp: mediawikiOnly(signatureHelp),
