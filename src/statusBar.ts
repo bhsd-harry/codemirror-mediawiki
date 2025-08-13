@@ -47,7 +47,8 @@ const updateDiagnosticsCount = (diagnostics: readonly Diagnostic[], s: Severity,
 	marker.lastChild!.textContent = String(diagnostics.filter(({severity}) => severity === s).length);
 };
 
-const hasFix = (diagnostic: Diagnostic): boolean | undefined => diagnostic.actions?.some(({name}) => name === 'fix');
+const hasFix = (diagnostic: Diagnostic): boolean | undefined =>
+	diagnostic.actions?.some(({name}) => name === 'fix' || name.startsWith('Fix:'));
 
 const updateDiagnosticMessage = (
 	view: EditorView,

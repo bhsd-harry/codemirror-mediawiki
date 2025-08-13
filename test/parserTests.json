@@ -5016,6 +5016,16 @@
 		"parsed": "<convert-bracket>-{</><convert-lang>zh-Hans:</>a<convert-delimiter>;</><convert-lang>zh-Hant:</>b<convert-bracket>}-</>"
 	},
 	{
+		"desc": "Do not translate external URL",
+		"wikitext": "<translate>[<tvar name=1>http://example.net</tvar> text]</translate>\n\n[<!-- -->//example.net text]",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>[&lt;tvar name=1&gthttp://example.net&lt;/tvar&gt text]</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>[<comment>&lt;!-- --&gt</>//example.net text]"
+	},
+	{
+		"desc": "Commented <translate> tags",
+		"wikitext": "<!-- <translate><tvar name=1></tvar></translate> --><includeonly><translate><tvar name=2></tvar></translate></includeonly>",
+		"parsed": "<comment>&lt;!-- &lt;translate&gt&lt;tvar name=1&gt&lt;/tvar&gt&lt;/translate&gt --&gt</><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><tag-includeonly tag-translate exttag>&lt;tvar name=2&gt&lt;/tvar&gt</><tag-includeonly exttag-bracket>&lt;/</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

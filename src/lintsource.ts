@@ -42,7 +42,7 @@ const pos = (doc: Text, line: number, column: number, from = 0): number => {
 
 export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
 	const wikiLint = await getWikiLinter(await getOpt(opt), v);
-	return async ({doc}) => (await wikiLint(doc.toString(), await getOpt(opt, true)))
+	const lintSource: LintSource = async ({doc}) => (await wikiLint(doc.toString(), await getOpt(opt, true)))
 		.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 			source: source!,
 			from: from ?? posToIndex(doc, r!.start),
@@ -62,6 +62,10 @@ export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintS
 				},
 			})),
 		}));
+	if (wikiLint.fixer) {
+		lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
+	}
+	return lintSource;
 };
 
 const getRange = (

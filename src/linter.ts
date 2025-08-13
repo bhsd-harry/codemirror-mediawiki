@@ -89,7 +89,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
 		cssLint = await getCssLinter();
-	return async (text, config) => {
+	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(
 				({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2),
@@ -144,6 +144,11 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 				}),
 		];
 	};
+	if ('resolveCodeAction' in lsp) {
+		linter.fixer = async (_, rule): Promise<string> =>
+			(await lsp.resolveCodeAction(rule)).edit!.changes!['']![0]!.newText;
+	}
+	return linter;
 };
 
 export const jsConfig = /* #__PURE__ */ ((): Linter.Config => ({
