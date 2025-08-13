@@ -1,10 +1,11 @@
 ## 3.1.0
 
-*2025-08-12*
+*2025-08-13*
 
 **Added**
 
 - The [escape](./README.md#escape) extension now supports escaping with magic words `{{!}}` and `{{=}}` in the MediaWiki mode
+- Granular control over the bundled [extensions](./README.md#extensions)
 
 ## 3.0.3
 

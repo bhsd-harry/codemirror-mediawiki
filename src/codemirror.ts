@@ -2,15 +2,7 @@ import {
 	EditorView,
 	lineNumbers,
 	keymap,
-	highlightSpecialChars,
-	highlightActiveLine,
 	highlightActiveLineGutter,
-	highlightWhitespace,
-	highlightTrailingWhitespace,
-	drawSelection,
-	scrollPastEnd,
-	rectangularSelection,
-	crosshairCursor,
 } from '@codemirror/view';
 import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
 import {
@@ -21,23 +13,13 @@ import {
 	ensureSyntaxTree,
 } from '@codemirror/language';
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
-import {searchKeymap, highlightSelectionMatches} from '@codemirror/search';
+import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
-import {
-	closeBrackets,
-	autocompletion,
-	acceptCompletion,
-	completionKeymap,
-	startCompletion,
-} from '@codemirror/autocomplete';
-import colorPicker from './color';
-import codeFolding, {foldHandler} from './fold';
+import {foldHandler} from './fold';
 import statusBar from './statusBar';
 import {detectIndent} from './indent';
-import bracketMatching from './matchBrackets';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
-import type {Config} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
@@ -58,41 +40,7 @@ export const plain = (): Extension => EditorView.contentAttributes.of({spellchec
 export const languages: Record<string, (config?: any) => Extension> = {plain};
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const avail: Record<string, Addon<any>> = {
-	highlightSpecialChars: [highlightSpecialChars],
-	highlightActiveLine: [highlightActiveLine],
-	highlightWhitespace: [highlightWhitespace],
-	highlightTrailingWhitespace: [highlightTrailingWhitespace],
-	highlightSelectionMatches: [highlightSelectionMatches],
-	bracketMatching: [
-		([config, e = []]: [Config?, Extension?] = []): Extension => [
-			bracketMatching(config),
-			e,
-		],
-	] satisfies Addon<[Config?, Extension?]>,
-	closeBrackets: [(e: Extension = []): Extension => [closeBrackets(), e]] satisfies Addon<Extension>,
-	scrollPastEnd: [scrollPastEnd],
-	allowMultipleSelections: [
-		(): Extension => [
-			EditorState.allowMultipleSelections.of(true),
-			drawSelection(),
-			rectangularSelection(),
-			crosshairCursor(),
-		],
-	],
-	autocompletion: [
-		(): Extension => [
-			autocompletion({defaultKeymap: false}),
-			keymap.of([
-				...completionKeymap.filter(({run}) => run !== startCompletion),
-				{key: 'Shift-Enter', run: startCompletion},
-				{key: 'Tab', run: acceptCompletion},
-			]),
-		],
-	],
-	codeFolding: [codeFolding],
-	colorPicker: [colorPicker],
-};
+export const avail: Record<string, Addon<any>> = {};
 
 export const linterRegistry: Record<string, LintSourceGetter> = {};
 

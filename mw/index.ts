@@ -5,8 +5,8 @@ import {openPreference} from './preference';
 import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 
 // 每次新增插件都需要修改这里
-const baseVersion = '2.30',
-	addons = ['wikiEditor'];
+const baseVersion = '3.1',
+	addons = ['escape'];
 
 mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 

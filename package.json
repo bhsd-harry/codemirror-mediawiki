@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.0.3",
+	"version": "3.1.0",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -38,7 +38,7 @@
 		"build:mw": "esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js",
 		"build:wiki": "npm run bundle:wiki && esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
 		"build:gh-page": "bash build.sh",
-		"build:demo": "npm run bundle:unused && esbuild ./build/mediawiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
+		"build:demo": "npm run bundle:unused && esbuild ./build/demo.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && eslint --no-eslintrc -c .eslintrc.dist.cjs dist/*.min.js",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && tsc --project bundle/tsconfig.json --noEmit && eslint --cache .",

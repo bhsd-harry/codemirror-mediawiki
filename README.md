@@ -8,8 +8,8 @@
 - [Description](#description)
 - [Installation](#installation)
 - [Browser Usage](#browser-usage)
-	- [JavaScript](#javascript)
-	- [CSS](#css)
+	- [Download JavaScript](#download-javascript)
+	- [Download CSS](#download-css)
 - [Language modes](#language-modes)
 	- [css](#css)
 	- [html](#html)
@@ -101,7 +101,10 @@ import {
 
 You can download the code via CDN, for example:
 
-## JavaScript
+## Download JavaScript
+
+<details>
+	<summary>Expand</summary>
 
 ```js
 // static import
@@ -163,7 +166,12 @@ const {
 } = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
 ```
 
-## CSS
+</details>
+
+## Download CSS
+
+<details>
+	<summary>Expand</summary>
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mediawiki.css">
@@ -175,9 +183,14 @@ or
 <link rel="stylesheet" href="https://unpkg.com/@bhsd/codemirror-mediawiki/mediawiki.css">
 ```
 
+</details>
+
 # Language modes
 
 ## css
+
+<details>
+	<summary>Expand</summary>
 
 The CSS mode contains a [dialect](#dialect) for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles). You can bundle the CSS mode by importing the `registerCSS` function:
 
@@ -186,7 +199,26 @@ import {registerCSS} from '@bhsd/codemirror-mediawiki';
 registerCSS();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerCSSCore` function and the desired extensions:
+
+```js
+import {registerCSSCore} from '@bhsd/codemirror-mediawiki';
+registerCSSCore();
+```
+
+In addition to the common [extensions](#extensions), here are some CSS-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {registerColorPickerForCSS} from '@bhsd/codemirror-mediawiki';
+registerColorPickerForCSS();
+```
+
+</details>
+
 ## html
+
+<details>
+	<summary>Expand</summary>
 
 This is a mixed MediaWiki-HTML mode, which is used for [Extension:Widgets](https://www.mediawiki.org/wiki/Extension:Widgets). You can bundle the HTML mode by importing the `registerHTML` function:
 
@@ -195,7 +227,19 @@ import {registerHTML} from '@bhsd/codemirror-mediawiki';
 registerHTML();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerHTMLCore` function and the desired extensions:
+
+```js
+import {registerHTMLCore} from '@bhsd/codemirror-mediawiki';
+registerHTMLCore();
+```
+
+</details>
+
 ## javascript
+
+<details>
+	<summary>Expand</summary>
 
 You can bundle the JavaScript mode by importing the `registerJavaScript` function:
 
@@ -204,7 +248,19 @@ import {registerJavaScript} from '@bhsd/codemirror-mediawiki';
 registerJavaScript();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerJavaScriptCore` function and the desired extensions:
+
+```js
+import {registerJavaScriptCore} from '@bhsd/codemirror-mediawiki';
+registerJavaScriptCore();
+```
+
+</details>
+
 ## json
+
+<details>
+	<summary>Expand</summary>
 
 You can bundle the JSON mode by importing the `registerJSON` function:
 
@@ -213,7 +269,19 @@ import {registerJSON} from '@bhsd/codemirror-mediawiki';
 registerJSON();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerJSONCore` function and the desired extensions:
+
+```js
+import {registerJSONCore} from '@bhsd/codemirror-mediawiki';
+registerJSONCore();
+```
+
+</details>
+
 ## lua
+
+<details>
+	<summary>Expand</summary>
 
 You can bundle the Lua mode by importing the `registerLua` function:
 
@@ -222,7 +290,19 @@ import {registerLua} from '@bhsd/codemirror-mediawiki';
 registerLua();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerLuaCore` function and the desired extensions:
+
+```js
+import {registerLuaCore} from '@bhsd/codemirror-mediawiki';
+registerLuaCore();
+```
+
+</details>
+
 ## mediawiki
+
+<details>
+	<summary>Expand</summary>
 
 You can bundle the MediaWiki mode by importing the `registerMediaWiki` function:
 
@@ -231,7 +311,32 @@ import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
 registerMediaWiki();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerMediaWikiCore` function and the desired extensions:
+
+```js
+import {registerMediaWikiCore} from '@bhsd/codemirror-mediawiki';
+registerMediaWikiCore();
+```
+
+In addition to the common [extensions](#extensions), here are some MediaWiki-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {
+	registerColorPickerForMediaWiki,
+	registerBracketMatchingForMediaWiki,
+	registerCodeFoldingForMediaWiki
+} from '@bhsd/codemirror-mediawiki';
+registerColorPickerForMediaWiki();
+registerBracketMatchingForMediaWiki();
+registerCodeFoldingForMediaWiki();
+```
+
+</details>
+
 ## vue
+
+<details>
+	<summary>Expand</summary>
 
 You can bundle the Vue mode by importing the `registerVue` function:
 
@@ -240,7 +345,30 @@ import {registerVue} from '@bhsd/codemirror-mediawiki';
 registerVue();
 ```
 
+If you want a more granular control over the extensions, you can import the `registerVueCore` function and the desired extensions:
+
+```js
+import {registerVueCore} from '@bhsd/codemirror-mediawiki';
+registerVueCore();
+```
+
+In addition to the common [extensions](#extensions), here are some Vue-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {
+	registerCloseBracketsForVue,
+	registerColorPickerForVue,
+} from '@bhsd/codemirror-mediawiki';
+registerCloseBracketsForVue();
+registerColorPickerForVue();
+```
+
+</details>
+
 ## Other languages
+
+<details>
+	<summary>Expand</summary>
 
 You can also register other languages by importing the `registerLanguage` function:
 
@@ -249,6 +377,16 @@ import {registerLanguage} from '@bhsd/codemirror-mediawiki';
 import {python} from '@codemirror/lang-python';
 registerLanguage('python', python);
 ```
+
+If you want a more granular control over the extensions, you can import the `registerLanguageCore` function and the desired extensions:
+
+```js
+import {registerLanguageCore} from '@bhsd/codemirror-mediawiki';
+import {python} from '@codemirror/lang-python';
+registerLanguageCore('python', python);
+```
+
+</details>
 
 # Constructor
 
@@ -681,29 +819,80 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 
 ## allowMultipleSelections
 
+<details>
+	<summary>Expand</summary>
+
 *version added: 2.1.11*
 
 Allow multiple selections. This extension also enables rectangular selections by holding down the `Alt` key.
 
+For granular control over the bundled extensions, you can import the `registerAllowMultipleSelections` function:
+
+```js
+import {registerAllowMultipleSelections} from '@bhsd/codemirror-mediawiki';
+registerAllowMultipleSelections();
+```
+
+</details>
+
 ## autocompletion
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.5.1*
 
 Provide autocompletion for MediaWiki, CSS and JavaScript modes.
 
+For granular control over the bundled extensions, you can import the `registerAutocompletion` function:
+
+```js
+import {registerAutocompletion} from '@bhsd/codemirror-mediawiki';
+registerAutocompletion();
+```
+
+</details>
+
 ## bracketMatching
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.0.9*
 
 Matched or unmatched brackets or tags are highlighted in cyan or dark red when the cursor is next to them.
 
+For granular control over the bundled extensions, you can import the `registerBracketMatching` function:
+
+```js
+import {registerBracketMatching} from '@bhsd/codemirror-mediawiki';
+registerBracketMatching();
+```
+
+</details>
+
 ## closeBrackets
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.0.9*
 
 Automatically close brackets (`{`, `[` and `(`) and quotes (`"`, and `'` except for the MediaWiki mode).
 
+For granular control over the bundled extensions, you can import the `registerCloseBrackets` function:
+
+```js
+import {registerCloseBrackets} from '@bhsd/codemirror-mediawiki';
+registerCloseBrackets();
+```
+
+</details>
+
 ## codeFolding
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.3.0*
 
@@ -716,13 +905,37 @@ Key bindings:
 - `Ctrl` + `Alt` + `[`: Fold all
 - `Ctrl` + `Alt` + `]`: Unfold all
 
+For granular control over the bundled extensions, you can import the `registerCodeFolding` function:
+
+```js
+import {registerCodeFolding} from '@bhsd/codemirror-mediawiki';
+registerCodeFolding();
+```
+
+</details>
+
 ## colorPicker
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.18.0*
 
 Provide color pickers for CSS and MediaWiki modes.
 
+For granular control over the bundled extensions, you can import the `registerColorPicker` functions. Note that you also need to register this extension for specific languages([CSS](#css), [MediaWiki](#mediawiki) or [Vue](#vue)):
+
+```js
+import {registerColorPicker} from '@bhsd/codemirror-mediawiki';
+registerColorPicker();
+```
+
+</details>
+
 ## escape
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.2.2*
 
@@ -731,67 +944,208 @@ Key bindings:
 - `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
 
+For granular control over the bundled extensions, you can import the `registerEscape` function:
+
+```js
+import {registerEscape} from '@bhsd/codemirror-mediawiki';
+registerEscape();
+```
+
+</details>
+
 ## highlightActiveLine
+
+<details>
+	<summary>Expand</summary>
 
 Highlight the line the cursor is on in light cyan.
 
+For granular control over the bundled extensions, you can import the `registerHighlightActiveLine` function:
+
+```js
+import {registerHighlightActiveLine} from '@bhsd/codemirror-mediawiki';
+registerHighlightActiveLine();
+```
+
+</details>
+
 ## highlightSelectionMatches
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.15.3*
 
 Highlight texts that match the selection in light green.
 
+For granular control over the bundled extensions, you can import the `registerHighlightSelectionMatches` function:
+
+```js
+import {registerHighlightSelectionMatches} from '@bhsd/codemirror-mediawiki';
+registerHighlightSelectionMatches();	
+```
+
+</details>
+
 ## highlightSpecialChars
+
+<details>
+	<summary>Expand</summary>
 
 Show invisible characters as red dots.
 
+For granular control over the bundled extensions, you can import the `registerHighlightSpecialChars` function:
+
+```js
+import {registerHighlightSpecialChars} from '@bhsd/codemirror-mediawiki';
+registerHighlightSpecialChars();
+```
+
+</details>
+
 ## highlightTrailingWhitespace
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.0.9*
 
 Highlight trailing whitespace in a red-orange color.
 
+For granular control over the bundled extensions, you can import the `registerHighlightTrailingWhitespace` function:
+
+```js
+import {registerHighlightTrailingWhitespace} from '@bhsd/codemirror-mediawiki';
+registerHighlightTrailingWhitespace();
+```
+
+</details>
+
 ## highlightWhitespace
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.0.12*
 
 Show spaces and tabs as dots and arrows.
 
+For granular control over the bundled extensions, you can import the `registerHighlightWhitespace` function:
+
+```js
+import {registerHighlightWhitespace} from '@bhsd/codemirror-mediawiki';
+registerHighlightWhitespace();
+```
+
+</details>
+
 ## hover
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.21.1*
 
 Show the help information of a magic word when hovering.
 
+For granular control over the bundled extensions, you can import the `registerHover` function:
+
+```js
+import {registerHover} from '@bhsd/codemirror-mediawiki';
+registerHover();
+```
+
+</details>
+
 ## inlayHints
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.22.0*
 
 Show inlay hints for anonymous parameters.
 
+For granular control over the bundled extensions, you can import the `registerInlayHints` function:
+
+```js
+import {registerInlayHints} from '@bhsd/codemirror-mediawiki';
+registerInlayHints();
+```
+
+</details>
+
 ## openLinks
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.19.6*
 
 CTRL/CMD-click opens a link in a new tab.
 
+For granular control over the bundled extensions, you can import the `registerOpenLinks` function:
+
+```js
+import {registerOpenLinks} from '@bhsd/codemirror-mediawiki';
+registerOpenLinks();
+```
+
+</details>
+
 ## refHover
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.17.1*
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
 
+For granular control over the bundled extensions, you can import the `registerRefHover` function:
+
+```js
+import {registerRefHover} from '@bhsd/codemirror-mediawiki';
+registerRefHover();
+```
+
+</details>
+
 ## scrollPastEnd
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.15.3*
 
 Allow the editor to be scrolled down past the end of the document.
 
+For granular control over the bundled extensions, you can import the `registerScrollPastEnd` function:
+
+```js
+import {registerScrollPastEnd} from '@bhsd/codemirror-mediawiki';
+registerScrollPastEnd();
+```
+
+</details>
+
 ## signatureHelp
+
+<details>
+	<summary>Expand</summary>
 
 *version added: 2.21.1*
 
 Show the parser function signature when typing.
+
+For granular control over the bundled extensions, you can import the `registerSignatureHelp` function:
+
+```js
+import {registerSignatureHelp} from '@bhsd/codemirror-mediawiki';
+registerSignatureHelp();
+```
+
+</details>
 
 # Known issues
 
