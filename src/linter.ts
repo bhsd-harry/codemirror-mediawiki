@@ -71,6 +71,13 @@ const indexToPos = (code: string, index: number): Position => {
 };
 
 /**
+ * 判断是否为 Stylelint 设置
+ * @param config 设置
+ */
+const isStylelintConfig = (config?: Config | Config['rules']): config is Config =>
+	Boolean(config && ('extends' in config || 'rules' in config));
+
+/**
  * 获取 Wikitext LSP
  * @param opt 选项
  * @param obj 对象
@@ -92,12 +99,20 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 			return diagnostics;
 		}
 		const lines = tokens.map((token, i) => `${getPrefix(token, i)}${
-			sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
-				.replace(/\n/gu, ' ')
-		}\n}`);
+				sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
+					.replace(/\n/gu, ' ')
+			}\n}`),
+			cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
+			isConfig = isStylelintConfig(cssConfig),
+			rules: Config['rules'] = {};
+		for (const [key, value] of Object.entries((isConfig ? cssConfig.rules : cssConfig) ?? {})) {
+			if (!value) {
+				rules[key] = value;
+			}
+		}
 		return [
 			...diagnostics,
-			...(await cssLint(lines.join('\n'), config?.['css'] as Option))
+			...(await cssLint(lines.join('\n'), isConfig ? {...cssConfig, rules} : rules))
 				.map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
 					const i = Math.ceil(line / 3),
 						{length} = getPrefix(tokens[i - 1]!, i),
@@ -195,9 +210,7 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
-		if (opt && 'rules' in opt) {
-			linter.config = opt;
-		}
+		linter.config = opt && !isStylelintConfig(opt) ? {rules: opt} : opt!;
 		return warnings;
 	};
 	linter.fixer = (code, rule): Promise<string> => {
