@@ -30,44 +30,15 @@ import {
 	completionKeymap,
 	startCompletion,
 } from '@codemirror/autocomplete';
-import {json} from '@codemirror/lang-json';
-import {autoCloseTags} from '@codemirror/lang-html';
-import {css as cssParser} from '@codemirror/legacy-modes/mode/css';
-import {getLSP} from '@bhsd/browser';
-import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
-import colorPicker, {discoverColors} from './color';
-import {mediawiki, html, FullMediaWiki} from './mediawiki';
-import escape from './escape';
-import codeFolding, {foldHandler, mediaWikiFold} from './fold';
-import tagMatchingState from './matchTag';
-import refHover from './ref';
-import magicWordHover from './hover';
-import signatureHelp from './signature';
-import inlayHints from './inlay';
-import {
-	getWikiLintSource,
-	getJsLintSource,
-	getCssLintSource,
-	getJsonLintSource,
-	getLuaLintSource,
-	getVueLintSource,
-} from './lintsource';
-import openLinks from './openLinks';
-import {tagModes, getStaticMwConfig} from './static';
-import bidiIsolation from './bidi';
-import toolKeymap from './keymap';
+import colorPicker from './color';
+import codeFolding, {foldHandler} from './fold';
 import statusBar from './statusBar';
 import {detectIndent} from './indent';
 import bracketMatching from './matchBrackets';
-import javascript from './javascript';
-import css from './css';
-import lua from './lua';
-import vue from './vue';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
-import type {Config, LanguageSupport} from '@codemirror/language';
+import type {Config} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
-import type {StyleSpec} from 'style-mod';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange} from './fold';
@@ -75,30 +46,19 @@ import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSourceGetter} from './lintsource';
 import type {Text as ExtendedText} from './indent';
 
-export type {MwConfig};
-export type Addon<T> = [(config?: T, cm?: CodeMirror6) => Extension, Record<string, T>?];
+export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
+export type Addon<T> = [AddonMain<T>, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
 
-const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
+export const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const languages: Record<string, (config?: any) => Extension> = {plain};
+export const languages: Record<string, (config?: any) => Extension> = {plain};
 
-/**
- * 仅供mediawiki模式的扩展
- * @param ext 扩展
- */
-function mediawikiOnly(ext: Extension): Addon<Extension>;
-function mediawikiOnly(ext: (cm: CodeMirror6) => Extension): Addon<boolean>;
-function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon<Extension> | Addon<boolean> {
-	return typeof ext === 'function'
-		? [(enable: boolean, cm): Extension => enable ? ext(cm!) : [], {mediawiki: true}] as Addon<boolean>
-		: [(e: Extension = []): Extension => e, {mediawiki: ext}];
-}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const avail: Record<string, Addon<any>> = {
+export const avail: Record<string, Addon<any>> = {
 	highlightSpecialChars: [highlightSpecialChars],
 	highlightActiveLine: [highlightActiveLine],
 	highlightWhitespace: [highlightWhitespace],
@@ -130,119 +90,18 @@ const avail: Record<string, Addon<any>> = {
 			]),
 		],
 	],
-	codeFolding,
-	colorPicker,
+	codeFolding: [codeFolding],
+	colorPicker: [colorPicker],
 };
 
-const linterRegistry: Record<string, LintSourceGetter> = {};
+export const linterRegistry: Record<string, LintSourceGetter> = {};
 
-const destroyListeners: ((view: EditorView) => void)[] = [];
+export const destroyListeners: ((view: EditorView) => void)[] = [];
 
 const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
 
 const linters: Record<string, Extension> = {};
 const phrases: Record<string, string> = {};
-
-/**
- * 注册特定语言的扩展
- * @param lang 语言
- * @param name 扩展名
- * @param ext 扩展
- */
-const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T): void => {
-	const addon = avail[name] as Addon<T>;
-	addon[1] ??= {};
-	addon[1][lang] = ext;
-};
-
-/** Register MediaWiki language support */
-export const registerMediaWiki = (): void => {
-	languages['mediawiki'] = (config: MwConfig): Extension => [
-		mediawiki(config),
-		plain(),
-		bidiIsolation,
-		toolKeymap,
-	];
-	registerLangExtension<[Extension, StyleSpec]>('mediawiki', 'colorPicker', [
-		[makeColorPicker({discoverColors}), colorPickerTheme],
-		{marginLeft: '0.6ch'},
-	]);
-	registerLangExtension<[Config, Extension]>('mediawiki', 'bracketMatching', [
-		{brackets: '()[]{}（）【】［］｛｝'},
-		tagMatchingState,
-	]);
-	registerLangExtension('mediawiki', 'codeFolding', mediaWikiFold);
-	Object.assign(avail, {
-		openLinks: mediawikiOnly(openLinks),
-		escape: mediawikiOnly(escape),
-		refHover: mediawikiOnly(refHover),
-		hover: mediawikiOnly(magicWordHover),
-		signatureHelp: mediawikiOnly(signatureHelp),
-		inlayHints: mediawikiOnly(inlayHints),
-	});
-	linterRegistry['mediawiki'] = getWikiLintSource;
-	destroyListeners.push(view => getLSP(view)?.destroy());
-};
-
-/** Register mixed MediaWiki-HTML language support */
-export const registerHTML = (): void => {
-	Object.assign(FullMediaWiki.prototype, {
-		css() {
-			return cssParser;
-		},
-	});
-	languages['html'] = html;
-};
-
-/** Register JavaScript language support */
-export const registerJavaScript = (): void => {
-	languages['javascript'] = javascript;
-	linterRegistry['javascript'] = getJsLintSource;
-};
-
-/** Register CSS language support */
-export const registerCSS = (): void => {
-	languages['css'] = css;
-	registerLangExtension<[Extension]>('css', 'colorPicker', [cssColorPicker]);
-	linterRegistry['css'] = getCssLintSource;
-};
-
-/** Register JSON language support */
-export const registerJSON = (): void => {
-	languages['json'] = json;
-	linterRegistry['json'] = getJsonLintSource;
-};
-
-/** Register Lua language support */
-export const registerLua = (): void => {
-	languages['lua'] = lua;
-	linterRegistry['lua'] = getLuaLintSource;
-};
-
-/** Register Vue language support */
-export const registerVue = (): void => {
-	languages['vue'] = vue;
-	registerLangExtension('vue', 'closeBrackets', autoCloseTags);
-	registerLangExtension<[Extension]>('vue', 'colorPicker', [cssColorPicker]);
-	linterRegistry['vue'] = getVueLintSource;
-};
-
-/**
- * Register a custom language support
- * @param name language name
- * @param lang language support
- * @param lintSource optional linter
- */
-export const registerLanguage = (
-	name: string,
-	lang: (config?: unknown) => LanguageSupport,
-	lintSource?: LintSourceGetter,
-): void => {
-	languages[name] = lang;
-	if (lintSource) {
-		linterRegistry[name] = lintSource;
-	}
-};
 
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
@@ -681,7 +540,6 @@ export class CodeMirror6 {
 	 * to a CodeMirror-MediaWiki configuration
 	 * @param config WikiParser-Node configuration
 	 */
-	static getMwConfig(config: ConfigData): MwConfig {
-		return getStaticMwConfig(config, tagModes);
-	}
+	// @ts-expect-error abstract static method
+	abstract static getMwConfig(config: ConfigData): MwConfig;
 }

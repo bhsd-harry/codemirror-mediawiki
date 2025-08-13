@@ -10,6 +10,7 @@ on:
       - '*.js'
       - '*.css'
       - 'dist/main.min.js'
+      - 'dist/demo.min.js'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

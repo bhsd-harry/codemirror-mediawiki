@@ -8,7 +8,7 @@ import {
 	registerVue,
 } from '/codemirror-mediawiki/dist/main.min.js';
 import type {ConfigData} from 'wikiparser-node';
-import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/codemirror';
+import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
 
 registerCSS();
 registerJSON();

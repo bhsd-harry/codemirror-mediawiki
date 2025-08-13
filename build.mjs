@@ -18,7 +18,7 @@ esbuild.buildSync({
 			},
 		}
 		: {
-			entryPoints: ['src/codemirror.ts'],
+			entryPoints: ['src/index.ts'],
 			outfile: 'build/main.js',
 		},
 });

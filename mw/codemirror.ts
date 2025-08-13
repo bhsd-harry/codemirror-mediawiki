@@ -1,6 +1,6 @@
 import {CDN} from '@bhsd/browser';
+import {CodeMirror6} from '../src/codemirror';
 import {
-	CodeMirror6,
 	registerCSS,
 	registerHTML,
 	registerJSON,
@@ -8,7 +8,7 @@ import {
 	registerLua,
 	registerMediaWiki,
 	// registerVue,
-} from '../src/codemirror';
+} from '../src/index';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
 import {getMwConfig, getParserConfig} from './config';
@@ -24,7 +24,8 @@ import type {Config} from 'stylelint';
 import type * as Monaco from 'monaco-editor';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
-import type {MwConfig, Dialect} from '../src/codemirror';
+import type {MwConfig} from '../src/token';
+import type {Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSource} from '../src/lintsource';
 

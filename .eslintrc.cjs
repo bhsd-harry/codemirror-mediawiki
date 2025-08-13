@@ -86,5 +86,11 @@ module.exports = {
 				project: './test/tsconfig.json',
 			},
 		},
+		{
+			files: 'bundle/*.ts',
+			parserOptions: {
+				project: './bundle/tsconfig.json',
+			},
+		},
 	],
 };

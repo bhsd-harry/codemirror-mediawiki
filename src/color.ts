@@ -5,7 +5,7 @@ import type {Text, Extension} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {StyleSpec} from 'style-mod';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
-import type {Addon} from './codemirror';
+import type {AddonMain} from './codemirror';
 
 export const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
 	if (
@@ -40,19 +40,17 @@ export const discoverColors = (_: Tree, from: number, to: number, type: string, 
 		}).filter(Boolean) as WidgetOptions[];
 };
 
-export default [
-	([e, style]: [Extension?, StyleSpec?] = []): Extension => e
-		? [
-			e,
-			EditorView.theme({
-				[`.${wrapperClassName}`]: {
-					outline: 'none',
-					...style,
-				},
-				[`.${wrapperClassName} input[type="color"]`]: {
-					outline: '1px solid #eee',
-				},
-			}),
-		]
-		: [],
-] satisfies Addon<[Extension?, StyleSpec?]>;
+export default (([e, style]: [Extension?, StyleSpec?] = []): Extension => e
+	? [
+		e,
+		EditorView.theme({
+			[`.${wrapperClassName}`]: {
+				outline: 'none',
+				...style,
+			},
+			[`.${wrapperClassName} input[type="color"]`]: {
+				outline: '1px solid #eee',
+			},
+		}),
+	]
+	: []) satisfies AddonMain<[Extension?, StyleSpec?]>;

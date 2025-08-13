@@ -20,7 +20,7 @@ import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValu
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
-import type {Addon} from './codemirror';
+import type {AddonMain} from './codemirror';
 
 export interface DocRange {
 	from: number;
@@ -31,8 +31,8 @@ declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 
 const getExtRegex = /* @__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
-export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to);
-const updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
+const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
+	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
 
 /**
  * Check if a SyntaxNode is among the specified components
@@ -189,7 +189,7 @@ export const foldable = (
  * 创建折叠提示
  * @param state
  */
-export const create = (state: EditorState): Tooltip | null => {
+const create = (state: EditorState): Tooltip | null => {
 	const {selection: {main: {head}}} = state,
 		range = foldable(state, head);
 	if (range) {
@@ -225,7 +225,7 @@ export const create = (state: EditorState): Tooltip | null => {
  * @param effects 折叠
  * @param anchor 光标位置
  */
-export const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
+const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
 	if (effects.length > 0) {
 		view.dom.querySelector('.cm-tooltip-fold')?.remove();
 		// Fold the template(s) and update the cursor position
@@ -239,7 +239,7 @@ export const execute = (view: EditorView, effects: StateEffect<DocRange>[], anch
  * The rightmost position of all selections, to be updated with folding
  * @param state
  */
-export const getAnchor = (state: EditorState): number => Math.max(...state.selection.ranges.map(({to}) => to));
+const getAnchor = (state: EditorState): number => Math.max(...state.selection.ranges.map(({to}) => to));
 
 /**
  * 折叠所有模板
@@ -252,7 +252,7 @@ export const getAnchor = (state: EditorState): number => Math.max(...state.selec
  * @param update 更新光标位置
  * @param refOnly 是否仅检查`<ref>`标签
  */
-export const traverse = (
+const traverse = (
 	state: EditorState,
 	tree: Tree,
 	effects: StateEffect<DocRange>[],
@@ -278,7 +278,7 @@ export const traverse = (
 	return anchor;
 };
 
-export class FoldMarker extends GutterMarker {
+class FoldMarker extends GutterMarker {
 	declare readonly open;
 
 	constructor(open: boolean) {
@@ -301,7 +301,7 @@ export class FoldMarker extends GutterMarker {
 const canFold = /* @__PURE__ */ new FoldMarker(true),
 	canUnfold = /* @__PURE__ */ new FoldMarker(false);
 
-export const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
+const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
 	let found: DocRange | undefined;
 	state.field(foldState, false)?.between(line.from, line.to, (from, to) => {
 		if (!found && to === line.to) {
@@ -382,7 +382,7 @@ const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
 	return builder.finish();
 };
 
-export const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
+const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
 	declare markers;
 
 	constructor(view: EditorView) {
@@ -408,7 +408,7 @@ const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
  * 生成折叠命令
  * @param refOnly 是否仅检查`<ref>`标签
  */
-export const foldCommand = (refOnly?: boolean): Command => view => {
+const foldCommand = (refOnly?: boolean): Command => view => {
 	const {state} = view,
 		tree = syntaxTree(state),
 		effects: StateEffect<DocRange>[] = [],
@@ -427,7 +427,7 @@ export const foldCommand = (refOnly?: boolean): Command => view => {
 
 export const foldRef = /* @__PURE__ */ foldCommand(true);
 
-export default [(e = defaultFoldExtension): Extension => e] satisfies Addon<Extension>;
+export default ((e = defaultFoldExtension): Extension => e) satisfies AddonMain<Extension>;
 
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({

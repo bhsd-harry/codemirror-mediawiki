@@ -2,6 +2,7 @@
 /build
 dist/
 !/dist/main.min.js
+!/dist/demo.min.js
 /.markdownlint.json
 .eslintcache
 **/*.txt
