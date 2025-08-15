@@ -15,24 +15,28 @@ import {
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
-import {foldHandler} from './fold';
-import statusBar from './statusBar';
-import {detectIndent} from './indent';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
-import type {DocRange} from './fold';
+import type {DocRange, foldHandler} from './fold';
 import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSourceGetter} from './lintsource';
-import type {Text as ExtendedText} from './indent';
+import type {Text as ExtendedText, detectIndent} from './indent';
+import type statusBar from './statusBar';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
+
+declare interface OptionalFunctions {
+	statusBar: typeof statusBar;
+	detectIndent: typeof detectIndent;
+	foldHandler: typeof foldHandler;
+}
 
 export const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
 
@@ -45,6 +49,18 @@ export const avail: Record<string, Addon<any>> = {};
 export const linterRegistry: Record<string, LintSourceGetter> = {};
 
 export const destroyListeners: ((view: EditorView) => void)[] = [];
+
+export const optionalFunctions: OptionalFunctions = {
+	statusBar() {
+		return [];
+	},
+	detectIndent(_, indent) {
+		return indent;
+	},
+	foldHandler() {
+		return () => {};
+	},
+};
 
 const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
 
@@ -177,7 +193,7 @@ export class CodeMirror6 {
 					: [
 						history(),
 						indentOnInput(),
-						this.#indent.of(indentUnit.of(detectIndent(value, this.#indentStr, lang))),
+						this.#indent.of(indentUnit.of(optionalFunctions.detectIndent(value, this.#indentStr, lang))),
 						keymap.of([
 							...historyKeymap,
 							indentWithTab,
@@ -196,7 +212,7 @@ export class CodeMirror6 {
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
-		this.#view.dom.addEventListener('click', foldHandler(this.#view));
+		this.#view.dom.addEventListener('click', optionalFunctions.foldHandler(this.#view));
 		this.prefer({});
 	}
 
@@ -258,7 +274,7 @@ export class CodeMirror6 {
 				}),
 				lintGutter(),
 				keymap.of(lintKeymap),
-				statusBar(lintSource.fixer),
+				optionalFunctions.statusBar(lintSource.fixer),
 			]
 			: [];
 		if (lintSource) {
@@ -320,7 +336,7 @@ export class CodeMirror6 {
 	setIndent(indent: string): void {
 		if (this.#view) {
 			this.#effects(this.#indent.reconfigure(indentUnit.of(
-				detectIndent(this.#view.state.doc as ExtendedText, indent, this.#lang),
+				optionalFunctions.detectIndent(this.#view.state.doc as ExtendedText, indent, this.#lang),
 			)));
 		} else {
 			this.#indentStr = indent;

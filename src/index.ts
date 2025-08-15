@@ -26,7 +26,7 @@ import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '
 import colorPicker, {discoverColors} from './color';
 import {mediawiki, html, FullMediaWiki} from './mediawiki';
 import escape from './escape';
-import codeFolding, {mediaWikiFold} from './fold';
+import codeFolding, {mediaWikiFold, foldHandler} from './fold';
 import tagMatchingState from './matchTag';
 import refHover from './ref';
 import magicWordHover from './hover';
@@ -45,11 +45,13 @@ import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
 import toolKeymap from './keymap';
 import bracketMatching from './matchBrackets';
+import statusBar from './statusBar';
+import {detectIndent} from './indent';
 import javascript from './javascript';
 import css from './css';
 import lua from './lua';
 import vue from './vue';
-import {CodeMirror6, avail, languages, linterRegistry, destroyListeners, plain} from './codemirror';
+import {CodeMirror6, avail, languages, linterRegistry, destroyListeners, plain, optionalFunctions} from './codemirror';
 import type {Extension} from '@codemirror/state';
 import type {Config, LanguageSupport} from '@codemirror/language';
 import type {StyleSpec} from 'style-mod';
@@ -265,6 +267,17 @@ export const registerBracketMatchingForMediaWiki = (): void => {
 /** Register the `codeFolding` extension for MediaWiki */
 export const registerCodeFoldingForMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'codeFolding', mediaWikiFold);
+	optionalFunctions.foldHandler = foldHandler;
+};
+
+/**
+ * 注册LintSource
+ * @param lang 语言
+ * @param lintSource
+ */
+const registerLintSource = (lang: string, lintSource: LintSourceGetter): void => {
+	linterRegistry[lang] = lintSource;
+	optionalFunctions.statusBar = statusBar;
 };
 
 /** Register MediaWiki core language support */
@@ -276,7 +289,7 @@ export const registerMediaWikiCore = (): void => {
 		bidiIsolation,
 		toolKeymap,
 	];
-	linterRegistry['mediawiki'] = getWikiLintSource;
+	registerLintSource('mediawiki', getWikiLintSource);
 	destroyListeners.push(view => getLSP(view)?.destroy());
 };
 
@@ -305,7 +318,8 @@ export const registerJavaScript = (): void => {
 /** Register JavaScript core language support */
 export const registerJavaScriptCore = (): void => {
 	languages['javascript'] = javascript;
-	linterRegistry['javascript'] = getJsLintSource;
+	registerLintSource('javascript', getJsLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /** Register CSS language support */
@@ -323,7 +337,8 @@ export const registerColorPickerForCSS = (): void => {
 /** Register CSS core language support */
 export const registerCSSCore = (): void => {
 	languages['css'] = css;
-	linterRegistry['css'] = getCssLintSource;
+	registerLintSource('css', getCssLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /** Register JSON language support */
@@ -335,7 +350,8 @@ export const registerJSON = (): void => {
 /** Register JSON core language support */
 export const registerJSONCore = (): void => {
 	languages['json'] = json;
-	linterRegistry['json'] = getJsonLintSource;
+	registerLintSource('json', getJsonLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /** Register Lua language support */
@@ -347,7 +363,8 @@ export const registerLua = (): void => {
 /** Register Lua core language support */
 export const registerLuaCore = (): void => {
 	languages['lua'] = lua;
-	linterRegistry['lua'] = getLuaLintSource;
+	registerLintSource('lua', getLuaLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /** Register Vue language support */
@@ -371,7 +388,8 @@ export const registerColorPickerForVue = (): void => {
 /** Register Vue core language support */
 export const registerVueCore = (): void => {
 	languages['vue'] = vue;
-	linterRegistry['vue'] = getVueLintSource;
+	registerLintSource('vue', getVueLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /**
@@ -402,6 +420,6 @@ export const registerLanguageCore = (
 ): void => {
 	languages[name] = lang;
 	if (lintSource) {
-		linterRegistry[name] = lintSource;
+		registerLintSource(name, lintSource);
 	}
 };

@@ -1,4 +1,4 @@
-import {registerJavaScript} from '../src/index';
+import {registerJavaScriptCore} from '../src/index';
 export {CodeMirror6} from '../src/index';
 
-registerJavaScript();
+registerJavaScriptCore();

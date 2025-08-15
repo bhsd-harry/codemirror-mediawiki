@@ -1,4 +1,4 @@
-import {registerMediaWiki} from '../src/index';
+import {registerMediaWikiCore} from '../src/index';
 export {CodeMirror6} from '../src/index';
 
-registerMediaWiki();
+registerMediaWikiCore();

@@ -1,4 +1,4 @@
-import {registerCSS} from '../src/index';
+import {registerCSSCore} from '../src/index';
 export {CodeMirror6} from '../src/index';
 
-registerCSS();
+registerCSSCore();

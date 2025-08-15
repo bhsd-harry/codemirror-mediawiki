@@ -1,4 +1,4 @@
-import {registerLua} from '../src/index';
+import {registerLuaCore} from '../src/index';
 export {CodeMirror6} from '../src/index';
 
-registerLua();
+registerLuaCore();

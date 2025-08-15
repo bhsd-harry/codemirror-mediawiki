@@ -402,7 +402,7 @@ const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValu
 	}
 });
 
-const defaultFoldExtension = [foldGutter(), keymap.of(foldKeymap)];
+const defaultFoldExtension = /* @__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
 
 /**
  * 生成折叠命令
