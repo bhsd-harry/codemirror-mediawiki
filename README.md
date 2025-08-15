@@ -2,10 +2,17 @@
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/972fd5f6684c4fd8ac2f26e01d349948)](https://app.codacy.com/gh/bhsd-harry/codemirror-mediawiki/dashboard)
 
+# @bhsd/codemirror-mediawiki
+
+This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
+
+Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the URL.
+
+Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins/blob/master/src/plugins/code-mirror/cm6.js) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
+
 <details>
 	<summary>Expand</summary>
 
-- [Description](#description)
 - [Installation](#installation)
 - [Browser Usage](#browser-usage)
 	- [Download JavaScript](#download-javascript)
@@ -67,14 +74,6 @@
 	- [Syntax Highlighting](#syntax-highlighting)
 
 </details>
-
-# Description
-
-This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
-
-Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the URL.
-
-Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://github.com/bhsd-harry/Wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
 
 # Installation
 
@@ -636,7 +635,7 @@ cm.localize({
 
 *version added: 2.0.9*
 
-**param**: `string[] | Record<string, boolean>` the preferred [CodeMirror extensions](https://codemirror.net/docs/extensions/)  
+**param**: `string[] | Record<string, boolean>` the [extensions](#extensions) to enable  
 Set the preferred CodeMirror extensions. Available extensions are introduced [later](#extensions).
 
 ```js
@@ -1179,6 +1178,9 @@ registerSignatureHelp();
 
 ## Syntax Highlighting
 
+<details>
+	<summary>Expand</summary>
+
 ### Extension
 
 1. [Extension:Translate](https://www.mediawiki.org/wiki/Extension:Translate) is not supported.
@@ -1211,3 +1213,5 @@ registerSignatureHelp();
 ### Language conversion
 
 1. BCP 47 language codes are not supported in language conversion ([Example](https://bhsd-harry.github.io/wikiparser-node/tests.html#Explicit%20definition%20of%20language%20variant%20alternatives%20(BCP%2047%20codes))).
+
+</details>

@@ -20,10 +20,6 @@ export const tagModes = {
 	combobox: 'text/combobox',
 	combooption: 'mediawiki',
 	inputbox: 'text/inputbox',
-	templatedata: 'json',
-	mapframe: 'json',
-	maplink: 'json',
-	graph: 'json',
 };
 
 export const getStaticMwConfig = (

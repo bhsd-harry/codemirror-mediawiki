@@ -69,29 +69,26 @@ const wikiLintSource = async (
 	f = 0,
 	t?: number,
 ): Promise<Diagnostic[]> => (await wikiLint(text, opt))
-	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => {
-		console.log({from, to, range: r, start: f, end: t});
-		return {
-			source: source!,
-			severity: severity === 2 ? 'warning' : 'error',
-			message: source === 'Stylelint' ? message : `${message} (${code})`,
-			actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
-				name: title,
-				apply(view): void {
-					view.dispatch({
-						changes: {
-							from: posToIndex(doc, range.start),
-							to: posToIndex(doc, range.end),
-							insert: newText,
-						},
-					});
-				},
-			})),
-			...from === undefined
-				? getRange(doc, r!.start.line + 1, r!.start.character + 1, r!.end.line + 1, r!.end.character + 1, f, t)
-				: {from: from + f, to: (to ?? from) + f},
-		};
-	});
+	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
+		source: source!,
+		severity: severity === 2 ? 'warning' : 'error',
+		message: source === 'Stylelint' ? message : `${message} (${code})`,
+		actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
+			name: title,
+			apply(view): void {
+				view.dispatch({
+					changes: {
+						from: posToIndex(doc, range.start),
+						to: posToIndex(doc, range.end),
+						insert: newText,
+					},
+				});
+			},
+		})),
+		...from === undefined
+			? getRange(doc, r!.start.line + 1, r!.start.character + 1, r!.end.line + 1, r!.end.character + 1, f, t)
+			: {from: from + f, to: (to ?? from) + f},
+	}));
 
 export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
 	const wikiLint = await getWikiLinter(await getOpt(opt), v);

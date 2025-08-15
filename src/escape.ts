@@ -2,8 +2,7 @@ import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
-import {CodeMirror6} from './codemirror';
-import {menuRegistry} from './statusBar';
+import {CodeMirror6, menuRegistry} from './codemirror';
 import type {EditorView, Command} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 

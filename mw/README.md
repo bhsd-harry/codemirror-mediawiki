@@ -35,7 +35,7 @@ or
 mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
-The supported languages include: `mediawiki`, `html`, `css`, `javascript`, `json` and `lua`. The script also loads the [styles](../mediawiki.css), adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
+All supported [languages](../README#language-modes) are included in this bundle. The script also loads the [styles](../mediawiki.css), adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
 
 # Constructor
 

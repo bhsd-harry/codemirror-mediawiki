@@ -8,8 +8,6 @@ import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
-import {javascript, json} from '@codemirror/legacy-modes/mode/javascript';
-import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {EditorState} from '@codemirror/state';
@@ -1418,7 +1416,7 @@ export class MediaWiki {
 			} else if (stream.eat('>')) {
 				const {config: {tagModes}} = this;
 				state.extName = name;
-				state.extMode ||= name in tagModes
+				state.extMode ||= name in tagModes && (tagModes[name]!) in this
 					&& this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
 				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
@@ -2202,17 +2200,5 @@ export class MediaWiki {
 				return simpleToken(stream, state);
 			},
 		};
-	}
-
-	javascript(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
-		return javascript;
-	}
-
-	json(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
-		return json;
-	}
-
-	lua(): StreamParser<unknown> { // eslint-disable-line @typescript-eslint/class-methods-use-this
-		return lua;
 	}
 }

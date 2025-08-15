@@ -7,7 +7,7 @@ import {
 	registerJavaScript,
 	registerLua,
 	registerMediaWiki,
-	// registerVue,
+	registerVue,
 } from '../src/index';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
@@ -52,7 +52,7 @@ registerJSON();
 registerJavaScript();
 registerLua();
 registerMediaWiki();
-// registerVue();
+registerVue();
 
 const linters: Record<string, LintSource | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
@@ -401,7 +401,7 @@ export class CodeMirror extends CodeMirror6 {
 			let opt: LiveOption | undefined;
 			switch (lang) {
 				case 'mediawiki': {
-					const option = {...defaultOpt, ...this.#getBasicOpt('lang', await languages)};
+					const option = {...defaultOpt, ...this.#getBasicOpt(lang, await languages)};
 					opt = (runtime): Option => runtime ? this.#getBasicOpt(lang) : option;
 					break;
 				}
@@ -410,7 +410,7 @@ export class CodeMirror extends CodeMirror6 {
 					break;
 				case 'css':
 					opt = (): Option => {
-						const option: Config | undefined = this.#getBasicOpt('css');
+						const option: Config | undefined = this.#getBasicOpt(lang);
 						if (dialect === 'sanitized-css') {
 							const rules = option?.rules;
 							return {

@@ -1,15 +1,20 @@
 ## 3.2.0
 
-*2025-08-15*
+*2025-08-19*
 
 **Added**
 
 - New method: [`hasPreference`](./README.md#haspreference)
 - The [escape](./README.md#escape) extension now adds menu items to the status bar
+- The Vue language mode is added back to the pre-bundled version for the MediaWiki sites
 
 **Changed**
 
 - The mixed MediaWiki-HTML mode is now parsed as an [LRLanguage](https://codemirror.net/docs/ref/#language.LRLanguage) with improved language support, including a linter
+
+**Removed**
+
+- JSON inside `<templatedata>`, `<mapframe>`, `<maplink>` and `<graph>` tags in the MediaWiki mode is no longer highlighted
 
 ## 3.1.0
 
@@ -27,7 +32,7 @@
 
 **Fixed**
 
-- Downgrade the [@codemirror/view](https://npmjs.com/package/@codemirror/view) package to [v6.38.0](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.0-(2025-06-27)) to fix [macOS keyboard shortcuts with `Alt`](https://github.com/codemirror/dev/issues/1597)
+- Downgrade the [@codemirror/view](https://www.npmjs.com/package/@codemirror/view) package to [v6.38.0](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.0-(2025-06-27)) to fix [macOS keyboard shortcuts with `Alt`](https://github.com/codemirror/dev/issues/1597)
 
 ## 3.0.2
 
@@ -91,7 +96,7 @@
 
 **Changed**
 
-- Migrate from [markdown-it](https://npmjs.com/package/markdown-it) to [marked](https://npmjs.com/package/marked) for the [hover](./README.md#hover) extension
+- Migrate from [markdown-it](https://www.npmjs.com/package/markdown-it) to [marked](https://www.npmjs.com/package/marked) for the [hover](./README.md#hover) extension
 
 ## 2.30.2
 
@@ -339,7 +344,7 @@
 
 **Fixed**
 
-- Incompatibility with [WikiParser-Node](https://github.com/bhsd-harry/wikiparser-node) v1.16
+- Incompatibility with [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) v1.16
 
 ## 2.22.0
 
@@ -365,7 +370,7 @@
 
 **Changed**
 
-- The Wikitext language service for the Monaco editor on a MediaWiki site is now provided by [Monaco-Wiki](https://github.com/bhsd-harry/monaco-wiki)
+- The Wikitext language service for the Monaco editor on a MediaWiki site is now provided by [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki)
 
 **Removed**
 
@@ -532,7 +537,7 @@
 
 **Changed**
 
-- The Lua linter is now based on [Luacheck](https://github.com/mpeterv/luacheck) instead of luaparse
+- The Lua linter is now based on [Luacheck](https://github.com/lunarmodules/luacheck) instead of luaparse
 
 ## 2.18.9
 
@@ -1019,7 +1024,7 @@
 
 **Fixed**
 
-- Fix a style conflict with MediaWiki's [CodeMirror 5 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror)
+- Fix a style conflict with MediaWiki's [CodeMirror 5 extension](https://www.mediawiki.org/wiki/Extension:CodeMirror/5)
 - Fix inconsistency with [ESLint v9](https://eslint.org/blog/2024/04/eslint-v9.0.0-released/)
 
 ## 2.9.4

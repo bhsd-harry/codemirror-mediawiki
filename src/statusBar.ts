@@ -1,20 +1,13 @@
 import {showPanel} from '@codemirror/view';
 import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
+import {menuRegistry} from './codemirror';
 import type {EditorView} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
-import type {CodeMirror6} from './codemirror';
+import type {CodeMirror6, MenuItem} from './codemirror';
 import type {LintSource} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
-
-declare interface MenuItem {
-	name: string;
-	isActionable(this: void, cm: CodeMirror6): boolean;
-	getItems(this: void, cm: CodeMirror6): HTMLDivElement[];
-}
-
-export const menuRegistry: MenuItem[] = [];
 
 const optionAll = /* @__PURE__ */ (() => {
 	const ele = document.createElement('div');

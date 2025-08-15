@@ -31,6 +31,12 @@ export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
+export interface MenuItem {
+	name: string;
+	isActionable(this: void, cm: CodeMirror6): boolean;
+	getItems(this: void, cm: CodeMirror6): HTMLDivElement[];
+}
+
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
 
 declare interface OptionalFunctions {
@@ -48,6 +54,8 @@ export const languages: Record<string, (config?: any) => Extension> = {plain};
 export const avail: Record<string, Addon<any>> = {};
 
 export const linterRegistry: Record<string, LintSourceGetter> = {};
+
+export const menuRegistry: MenuItem[] = [];
 
 export const destroyListeners: ((view: EditorView) => void)[] = [];
 
