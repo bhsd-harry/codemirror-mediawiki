@@ -542,6 +542,23 @@ const tree = cm.getNodeAt(0);
 
 </details>
 
+## hasPreference
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.1.1*
+
+**param**: `string` extension name  
+**returns**: `boolean`  
+Check if the editor enables the given extension.
+
+```js
+const hasAutocompletion = cm.hasPreference('autocompletion');
+```
+
+</details>
+
 ## initialize
 
 <details>

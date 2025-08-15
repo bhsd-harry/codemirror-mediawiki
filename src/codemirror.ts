@@ -274,7 +274,7 @@ export class CodeMirror6 {
 				}),
 				lintGutter(),
 				keymap.of(lintKeymap),
-				optionalFunctions.statusBar(lintSource.fixer),
+				optionalFunctions.statusBar(this, lintSource.fixer),
 			]
 			: [];
 		if (lintSource) {
@@ -298,6 +298,10 @@ export class CodeMirror6 {
 				plugin.force();
 			}
 		}
+	}
+
+	hasPreference(name: string): boolean {
+		return this.#preferred.has(name);
 	}
 
 	/**

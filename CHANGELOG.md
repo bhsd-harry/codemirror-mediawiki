@@ -1,3 +1,12 @@
+## 3.1.1
+
+*2025-08-15*
+
+**Added**
+
+- New method: [`hasPreference`](./README.md#haspreference)
+- The [escape](./README.md#escape) extension now adds menu items to the status bar
+
 ## 3.1.0
 
 *2025-08-14*
