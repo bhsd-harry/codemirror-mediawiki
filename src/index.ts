@@ -20,11 +20,10 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
-import {css as cssParser} from '@codemirror/legacy-modes/mode/css';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
 import colorPicker, {discoverColors} from './color';
-import {mediawiki, html, FullMediaWiki} from './mediawiki';
+import {mediawiki} from './mediawiki';
 import escape from './escape';
 import codeFolding, {mediaWikiFold, foldHandler} from './fold';
 import tagMatchingState from './matchTag';
@@ -39,6 +38,7 @@ import {
 	getJsonLintSource,
 	getLuaLintSource,
 	getVueLintSource,
+	getHTMLLintSource,
 } from './lintsource';
 import openLinks from './openLinks';
 import {tagModes, getStaticMwConfig} from './static';
@@ -51,6 +51,7 @@ import javascript from './javascript';
 import css from './css';
 import lua from './lua';
 import vue from './vue';
+import html from './html';
 import {CodeMirror6, avail, languages, linterRegistry, destroyListeners, plain, optionalFunctions} from './codemirror';
 import type {Extension} from '@codemirror/state';
 import type {Config, LanguageSupport} from '@codemirror/language';
@@ -297,16 +298,25 @@ export const registerMediaWikiCore = (): void => {
 export const registerHTML = (): void => {
 	registerCommonExtensions();
 	registerHTMLCore();
+	registerCloseBracketsForHTML();
+	registerColorPickerForHTML();
 };
 
-/** Register HTML core language support */
+/** Register the `closeBrackets` extension for mixed MediaWiki-HTML */
+export const registerCloseBracketsForHTML = (): void => {
+	registerLangExtension('html', 'closeBrackets', autoCloseTags);
+};
+
+/** Register the `colorPicker` extension for mixed MediaWiki-HTML */
+export const registerColorPickerForHTML = (): void => {
+	registerLangExtension<[Extension]>('html', 'colorPicker', [cssColorPicker]);
+};
+
+/** Register mixed MediaWiki-HTML core language support */
 export const registerHTMLCore = (): void => {
-	Object.assign(FullMediaWiki.prototype, {
-		css() {
-			return cssParser;
-		},
-	});
 	languages['html'] = html;
+	registerLintSource('html', getHTMLLintSource);
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /** Register JavaScript language support */

@@ -1,6 +1,7 @@
 import {
 	CodeMirror6,
 	registerCSS,
+	registerHTML,
 	registerJSON,
 	registerJavaScript,
 	registerLua,
@@ -11,6 +12,7 @@ import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
 
 registerCSS();
+registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
@@ -40,6 +42,7 @@ registerVue();
 
 	const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'],
 		cssOnly = ['colorPicker'],
+		cssLangs = new Set(['css', 'vue', 'html']),
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | undefined,
@@ -52,7 +55,7 @@ registerVue();
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
-			cssDisplay = isMediaWiki || lang === 'css' || lang === 'vue' ? '' : 'none';
+			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
@@ -60,7 +63,7 @@ registerVue();
 		for (const id of cssOnly) {
 			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = cssDisplay;
 		}
-		if (isMediaWiki) {
+		if (isMediaWiki || lang === 'html') {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;
 			config ??= CodeMirror6.getMwConfig(parserConfig);
@@ -133,6 +136,7 @@ registerVue();
 		['lua', 'lua'],
 		['json', 'json'],
 		['vue', 'vue'],
+		['html', 'html'],
 	]);
 	addEventListener('hashchange', () => {
 		const target = hashMap.get(location.hash.slice(1).toLowerCase()),

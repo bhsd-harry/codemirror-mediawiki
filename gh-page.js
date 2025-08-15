@@ -1,5 +1,6 @@
-import { CodeMirror6, registerCSS, registerJSON, registerJavaScript, registerLua, registerMediaWiki, registerVue, } from '/codemirror-mediawiki/dist/main.min.js';
+import { CodeMirror6, registerCSS, registerHTML, registerJSON, registerJavaScript, registerLua, registerMediaWiki, registerVue, } from '/codemirror-mediawiki/dist/main.min.js';
 registerCSS();
+registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
@@ -19,10 +20,10 @@ registerVue();
     for (const extension of extensions) {
         extension.checked = search.has(extension.id);
     }
-    const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cm = new CodeMirror6(textarea), linters = {};
+    const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cssLangs = new Set(['css', 'vue', 'html']), cm = new CodeMirror6(textarea), linters = {};
     let config, fetchConfig;
     const init = async (lang) => {
-        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || lang === 'css' || lang === 'vue' ? '' : 'none';
+        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
         let parserConfig;
         for (const id of mediawikiOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = display;
@@ -30,7 +31,7 @@ registerVue();
         for (const id of cssOnly) {
             document.getElementById(id).closest('.fieldLayout').style.display = cssDisplay;
         }
-        if (isMediaWiki) {
+        if (isMediaWiki || lang === 'html') {
             fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
             parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
@@ -87,6 +88,7 @@ registerVue();
         ['lua', 'lua'],
         ['json', 'json'],
         ['vue', 'vue'],
+        ['html', 'html'],
     ]);
     addEventListener('hashchange', () => {
         const target = hashMap.get(location.hash.slice(1).toLowerCase()), element = languages.find(({ id }) => id === target);

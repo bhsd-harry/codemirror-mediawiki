@@ -70,6 +70,7 @@
 		"@codemirror/view": "6.38.0",
 		"@lezer/common": "^1.2.3",
 		"@lezer/highlight": "^1.2.1",
+		"@lezer/html": "^1.3.10",
 		"wikiparser-node": "^1.24.1"
 	},
 	"devDependencies": {

@@ -1,4 +1,4 @@
-## 3.1.1
+## 3.2.0
 
 *2025-08-15*
 
@@ -6,6 +6,10 @@
 
 - New method: [`hasPreference`](./README.md#haspreference)
 - The [escape](./README.md#escape) extension now adds menu items to the status bar
+
+**Changed**
+
+- The mixed MediaWiki-HTML mode is now parsed as an [LRLanguage](https://codemirror.net/docs/ref/#language.LRLanguage) with improved language support, including a linter
 
 ## 3.1.0
 

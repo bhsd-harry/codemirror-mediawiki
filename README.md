@@ -234,6 +234,17 @@ import {registerHTMLCore} from '@bhsd/codemirror-mediawiki';
 registerHTMLCore();
 ```
 
+In addition to the common [extensions](#extensions), here are some HTML-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {
+	registerCloseBracketsForHTML,
+	registerColorPickerForHTML,
+} from '@bhsd/codemirror-mediawiki';
+registerCloseBracketsForHTML();
+registerColorPickerForHTML();
+```
+
 </details>
 
 ## javascript
@@ -547,7 +558,7 @@ const tree = cm.getNodeAt(0);
 <details>
 	<summary>Expand</summary>
 
-*version added: 3.1.1*
+*version added: 3.2.0*
 
 **param**: `string` extension name  
 **returns**: `boolean`  

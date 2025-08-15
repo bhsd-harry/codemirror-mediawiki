@@ -17,6 +17,7 @@ import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
+import type {Language} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
@@ -87,6 +88,7 @@ export class CodeMirror6 {
 	#visible = false;
 	#preferred = new Set<string>();
 	#indentStr = '\t';
+	#nestedMWLanguage: Language | undefined;
 
 	/** textarea element */
 	get textarea(): HTMLTextAreaElement {
@@ -123,6 +125,16 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 获取语言扩展
+	 * @param config 语言设置
+	 */
+	#getLanguage(config: unknown): Extension {
+		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config);
+		this.#nestedMWLanguage = lang.nestedMWLanguage;
+		return lang;
+	}
+
+	/**
 	 * Initialize the editor
 	 * @param config language configuration
 	 */
@@ -131,7 +143,7 @@ export class CodeMirror6 {
 		const {textarea, lang} = this,
 			{value, dir: d, accessKey, tabIndex, lang: l, readOnly} = textarea,
 			extensions = [
-				this.#language.of(languages[lang]!(config)),
+				this.#language.of(this.#getLanguage(config)),
 				this.#linter.of(linters[lang] ?? []),
 				this.#extensions.of([]),
 				this.#dir.of(EditorView.editorAttributes.of({dir: d})),
@@ -246,7 +258,7 @@ export class CodeMirror6 {
 	async setLanguage(lang = 'plain', config?: unknown): Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
-			const ext = (languages[lang] ?? plain)(config);
+			const ext = this.#getLanguage(config);
 			this.#effects([
 				this.#language.reconfigure(ext),
 				this.#linter.reconfigure(linters[lang] ?? []),
@@ -300,6 +312,10 @@ export class CodeMirror6 {
 		}
 	}
 
+	/**
+	 * Check if the editor enables a specific extension
+	 * @param name extension name
+	 */
 	hasPreference(name: string): boolean {
 		return this.#preferred.has(name);
 	}
@@ -362,7 +378,7 @@ export class CodeMirror6 {
 	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		return linterRegistry[this.#lang]?.(opt, this.#view);
+		return linterRegistry[this.#lang]?.(opt, this.#view, this.#nestedMWLanguage);
 	}
 
 	/**

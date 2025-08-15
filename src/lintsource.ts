@@ -4,6 +4,7 @@ import {getWikiLinter, getJsLinter, getCssLinter, getJsonLinter, getLuaLinter} f
 import {posToIndex} from './hover';
 import type {EditorView} from '@codemirror/view';
 import type {EditorState, Text} from '@codemirror/state';
+import type {Language} from '@codemirror/language';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {QuickFixData} from 'wikiparser-node';
 import type {Option, LiveOption} from './linter';
@@ -12,7 +13,11 @@ export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnos
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
-export type LintSourceGetter = (opt?: Option | LiveOption, view?: EditorView) => LintSource | Promise<LintSource>;
+export type LintSourceGetter = (
+	opt?: Option | LiveOption,
+	view?: EditorView,
+	nestedMWLanguage?: Language,
+) => LintSource | Promise<LintSource>;
 
 /**
  * 获取Linter选项
@@ -40,34 +45,6 @@ const pos = (doc: Text, line: number, column: number, from = 0): number => {
 	});
 };
 
-export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter(await getOpt(opt), v);
-	const lintSource: LintSource = async ({doc}) => (await wikiLint(doc.toString(), await getOpt(opt, true)))
-		.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
-			source: source!,
-			from: from ?? posToIndex(doc, r!.start),
-			to: to ?? posToIndex(doc, r!.end),
-			severity: severity === 2 ? 'warning' : 'error',
-			message: source === 'Stylelint' ? message : `${message} (${code})`,
-			actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
-				name: title,
-				apply(view): void {
-					view.dispatch({
-						changes: {
-							from: posToIndex(doc, range.start),
-							to: posToIndex(doc, range.end),
-							insert: newText,
-						},
-					});
-				},
-			})),
-		}));
-	if (wikiLint.fixer) {
-		lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
-	}
-	return lintSource;
-};
-
 const getRange = (
 	doc: Text,
 	line: number,
@@ -82,6 +59,48 @@ const getRange = (
 		from: start,
 		to: endLine === undefined ? Math.min(t, start + 1) : pos(doc, endLine, endColumn!, f),
 	};
+};
+
+const wikiLintSource = async (
+	wikiLint: Awaited<ReturnType<typeof getWikiLinter>>,
+	text: string,
+	opt: Option,
+	doc: Text,
+	f = 0,
+	t?: number,
+): Promise<Diagnostic[]> => (await wikiLint(text, opt))
+	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => {
+		console.log({from, to, range: r, start: f, end: t});
+		return {
+			source: source!,
+			severity: severity === 2 ? 'warning' : 'error',
+			message: source === 'Stylelint' ? message : `${message} (${code})`,
+			actions: (data as QuickFixData[]).map(({title, range, newText}): Action => ({
+				name: title,
+				apply(view): void {
+					view.dispatch({
+						changes: {
+							from: posToIndex(doc, range.start),
+							to: posToIndex(doc, range.end),
+							insert: newText,
+						},
+					});
+				},
+			})),
+			...from === undefined
+				? getRange(doc, r!.start.line + 1, r!.start.character + 1, r!.end.line + 1, r!.end.character + 1, f, t)
+				: {from: from + f, to: (to ?? from) + f},
+		};
+	});
+
+export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
+	const wikiLint = await getWikiLinter(await getOpt(opt), v);
+	const lintSource: LintSource = async ({doc}) =>
+		wikiLintSource(wikiLint, doc.toString(), await getOpt(opt, true), doc);
+	if (wikiLint.fixer) {
+		lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
+	}
+	return lintSource;
 };
 
 const jsLintSource = (
@@ -112,6 +131,13 @@ const jsLintSource = (
 		}
 		return diagnostic;
 	});
+
+export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
+	const esLint = await getJsLinter();
+	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
+	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
+	return lintSource;
+};
 
 const cssLintSource = async (
 	styleLint: Awaited<ReturnType<typeof getCssLinter>>,
@@ -149,13 +175,6 @@ const cssLintSource = async (
 		});
 };
 
-export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const esLint = await getJsLinter();
-	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
-	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
-	return lintSource;
-};
-
 export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const styleLint = await getCssLinter();
 	const lintSource: LintSource = async ({doc}) => cssLintSource(styleLint, doc.toString(), await getOpt(opt), doc);
@@ -178,6 +197,23 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 			)).flat(),
 			...javascriptLanguage.findRegions(state)
 				.flatMap(({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js, doc, from, to)),
+		];
+	};
+};
+
+export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
+	const vueLintSource = await getVueLintSource(opt),
+		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt)}, view);
+	return async state => {
+		const {doc} = state,
+			option = await getOpt(opt) ?? {},
+			wiki = option['wiki'] as Option;
+		return [
+			...await vueLintSource(state),
+			...(await Promise.all(
+				language!.findRegions(state)
+					.map(({from, to}) => wikiLintSource(wikiLint, state.sliceDoc(from, to), wiki, doc, from, to)),
+			)).flat(),
 		];
 	};
 };

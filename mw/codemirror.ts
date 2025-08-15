@@ -173,6 +173,10 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
+	/**
+	 * 更新基于API的自动补全设置
+	 * @param config 语言设置
+	 */
 	#setLangConfig(config: MwConfig): void {
 		if (this.lang === 'mediawiki') {
 			this.langConfig = $.extend(true, {titleParser: getTitleParser(config), isbnParser}, config);
@@ -349,6 +353,26 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	/**
+	 * 获取基础 linter 选项
+	 * @param lang 语言
+	 * @param i18n I18n 语言列表
+	 */
+	#getBasicOpt(lang: string, i18n?: string[]): any { // eslint-disable-line @typescript-eslint/no-explicit-any
+		switch (lang) {
+			case 'javascript':
+				return {...jsConfig, ...codeConfigs.get('ESLint')};
+			case 'css':
+				return codeConfigs.get('Stylelint');
+			case 'mediawiki':
+				return i18n
+					? {getConfig: this.getWikiConfig, i18n}
+					: {defaultSeverity: RuleState.error, ...wikilint, css: this.#getBasicOpt('css')};
+			default:
+				return undefined;
+		}
+	}
+
+	/**
 	 * 添加或移除默认 linter
 	 * @param on 是否添加
 	 */
@@ -369,27 +393,24 @@ export class CodeMirror extends CodeMirror6 {
 				if (lang === 'mediawiki' && ns !== 10 && ns !== 828 && ns !== 2) {
 					defaultOpt = {include: false};
 				} else if (lang === 'javascript') {
-					defaultOpt = {
-						...jsConfig,
-						...ns === 8 || ns === 2300 ? {parserOptions: {ecmaVersion: 8}} : {},
-					} satisfies Linter.Config;
+					defaultOpt = (
+						ns === 8 || ns === 2300 ? {parserOptions: {ecmaVersion: 8}} : {}
+					) satisfies Linter.Config;
 				}
 			}
 			let opt: LiveOption | undefined;
 			switch (lang) {
 				case 'mediawiki': {
-					const option = {...defaultOpt, getConfig: this.getWikiConfig, i18n: await languages};
-					opt = (runtime): Option => runtime
-						? {defaultSeverity: RuleState.error, ...wikilint, css: codeConfigs.get('Stylelint')}
-						: option;
+					const option = {...defaultOpt, ...this.#getBasicOpt('lang', await languages)};
+					opt = (runtime): Option => runtime ? this.#getBasicOpt(lang) : option;
 					break;
 				}
 				case 'javascript':
-					opt = (): Option => ({...defaultOpt, ...codeConfigs.get('ESLint')});
+					opt = (): Option => ({...defaultOpt, ...this.#getBasicOpt(lang)});
 					break;
 				case 'css':
 					opt = (): Option => {
-						const option: Config | undefined = codeConfigs.get('Stylelint');
+						const option: Config | undefined = this.#getBasicOpt('css');
 						if (dialect === 'sanitized-css') {
 							const rules = option?.rules;
 							return {
@@ -414,9 +435,20 @@ export class CodeMirror extends CodeMirror6 {
 					break;
 				case 'vue':
 					opt = (): Option => ({
-						js: {...defaultOpt, ...codeConfigs.get('ESLint')},
-						css: codeConfigs.get('Stylelint'),
+						js: this.#getBasicOpt('javascript'),
+						css: this.#getBasicOpt('css'),
 					});
+					break;
+				case 'html': {
+					const option = this.#getBasicOpt('mediawiki', await languages);
+					opt = (runtime): Option => runtime
+						? {
+							wiki: this.#getBasicOpt('mediawiki'),
+							js: this.#getBasicOpt('javascript'),
+							css: this.#getBasicOpt('css'),
+						}
+						: option;
+				}
 				// no default
 			}
 			await this.getLinter(opt);

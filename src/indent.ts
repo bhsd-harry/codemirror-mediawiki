@@ -5,7 +5,7 @@ export interface Text extends TextBase {
 	text?: string[];
 }
 
-const noDetectionLangs = new Set(['plain', 'mediawiki', 'html']);
+const noDetectionLangs = new Set(['plain', 'mediawiki']);
 
 const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
 

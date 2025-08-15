@@ -1,9 +1,10 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
+import type {Extension} from '@codemirror/state';
 import type {CompletionContext, CompletionResult} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
 
-export default (dialect: Dialect): LanguageSupport => new LanguageSupport(cssLanguage, cssLanguage.data.of({
+export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.of({
 	autocomplete(context: CompletionContext) {
 		const {state, pos} = context,
 			node = syntaxTree(state).resolveInner(pos, -1),
@@ -33,4 +34,6 @@ export default (dialect: Dialect): LanguageSupport => new LanguageSupport(cssLan
 		}
 		return result;
 	},
-}));
+});
+
+export default (dialect: Dialect): LanguageSupport => new LanguageSupport(cssLanguage, cssCompletion(dialect));
