@@ -1,4 +1,4 @@
-import { CodeMirror6, registerCSS, registerHTML, registerJSON, registerJavaScript, registerLua, registerMediaWiki, registerVue, } from '/codemirror-mediawiki/dist/main.min.js';
+import { CodeMirror6, registerCSS, registerHTML, registerJSON, registerJavaScript, registerLua, registerMediaWiki, registerVue, registerTheme, nord, } from '/codemirror-mediawiki/dist/main.min.js';
 registerCSS();
 registerHTML();
 registerJSON();
@@ -6,6 +6,7 @@ registerJavaScript();
 registerLua();
 registerMediaWiki();
 registerVue();
+registerTheme('nord', nord);
 (() => {
     if (!location.pathname.startsWith('/codemirror-mediawiki')) {
         return;
@@ -61,8 +62,14 @@ registerVue();
         history.replaceState(null, '', url.toString());
     };
     const prefer = function () {
-        cm.prefer({ [this.id]: this.checked });
-        updateSearch(this.id, Number(this.checked));
+        const { id, checked } = this;
+        if (id === 'dark') {
+            cm.setTheme(checked ? 'nord' : 'light');
+        }
+        else {
+            cm.prefer({ [id]: checked });
+        }
+        updateSearch(id, Number(checked));
     };
     const indentChange = () => {
         const { value } = indent;
@@ -101,7 +108,10 @@ registerVue();
     for (const extension of extensions) {
         extension.addEventListener('change', prefer);
     }
-    cm.prefer(extensions.filter(({ checked }) => checked).map(({ id }) => id));
+    cm.prefer(extensions.filter(({ checked, id }) => checked && id !== 'dark').map(({ id }) => id));
+    if (extensions.some(({ checked, id }) => checked && id === 'dark')) {
+        cm.setTheme('nord');
+    }
     indent.addEventListener('change', indentChange);
     indentChange();
     Object.assign(globalThis, { cm });

@@ -1,7 +1,7 @@
 /**
  * @author pastakhov and others
  * @license GPL-2.0-or-later
- * @link https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
+ * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
 /* section title */
@@ -22,12 +22,12 @@
 	font-weight: bold;
 }
 .cm-mw-section-header {
-	color: #0076dd;
+	color: var(--cm-hr);
 	font-weight: normal;
 }
 
 .cm-mw-error {
-	color: #d73333;
+	color: var(--cm-error);
 }
 
 .cm-mw-pagename,
@@ -42,27 +42,27 @@
 
 /* miscellaneous */
 .cm-mw-skipformatting {
-	background-color: rgb(134, 206, 255, .3);
+	background-color: var(--cm-sp);
 }
 .cm-mw-redirect,
 .cm-mw-list {
-	color: #0076dd;
+	color: var(--cm-hr);
 	font-weight: bold;
 }
 .cm-mw-double-underscore,
 .cm-mw-signature,
 .cm-mw-hr {
-	color: #0076dd;
+	color: var(--cm-hr);
 	font-weight: bold;
-	background-color: rgb(0, 0, 0, .07);
+	background-color: var(--cm-hr-bg);
 }
 .cm-mw-comment,
 .cm-mw-ignored {
-	color: #7b8c8f;
+	color: var(--cm-comment);
 	font-weight: normal;
 }
 .cm-mw-apostrophes {
-	color: #0076dd;
+	color: var(--cm-hr);
 }
 
 /* template */
@@ -72,23 +72,23 @@
 .cm-mw-template-name,
 .cm-mw-template-delimiter,
 .cm-mw-template-bracket {
-	color: #80c;
+	color: var(--cm-tpl);
 	font-weight: bold;
 }
 .cm-mw-template-argument-name {
-	color: #b0c;
+	color: var(--cm-arg);
 	font-weight: normal;
 }
 
 /* template variable */
 .cm-mw-templatevariable {
-	color: #ad9300;
+	color: var(--cm-var);
 	font-weight: normal;
 }
 .cm-mw-templatevariable-name,
 .cm-mw-templatevariable-bracket,
 .cm-mw-templatevariable-delimiter {
-	color: #ac6600;
+	color: var(--cm-var-name);
 	font-weight: bold;
 }
 
@@ -99,7 +99,7 @@
 .cm-mw-parserfunction-name,
 .cm-mw-parserfunction-bracket,
 .cm-mw-parserfunction-delimiter {
-	color: #a11;
+	color: var(--cm-func);
 	font-weight: bold;
 }
 
@@ -111,18 +111,18 @@
 .cm-mw-extlink,
 .cm-mw-free-extlink,
 .cm-mw-magic-link {
-	color: #000aaa;
+	color: var(--cm-link);
 	font-weight: normal;
 }
 .cm-mw-image-parameter,
 .cm-mw-link-tosection {
-	color: #006fe6;
+	color: var(--cm-sect);
 	font-weight: normal;
 }
 .cm-mw-extlink-protocol,
 .cm-mw-free-extlink-protocol,
 .cm-mw-extlink-bracket {
-	color: #000aaa;
+	color: var(--cm-link);
 	font-weight: bold;
 }
 
@@ -136,35 +136,35 @@
 /* tag */
 .cm-mw-exttag-name,
 .cm-mw-htmltag-name {
-	color: #14866d;
+	color: var(--cm-tag);
 	font-weight: bold;
 }
 .cm-mw-exttag-bracket,
 .cm-mw-exttag-attribute,
 .cm-mw-htmltag-bracket,
 .cm-mw-htmltag-attribute {
-	color: #14866d;
+	color: var(--cm-tag);
 	font-weight: normal;
 }
 .cm-mw-exttag-attribute-value,
 .cm-mw-htmltag-attribute-value {
-	color: #179b1c;
+	color: var(--cm-attr);
 	font-weight: normal;
 }
 
 /* table */
 .cm-mw-table-bracket,
 .cm-mw-table-delimiter {
-	color: #d08;
+	color: var(--cm-table);
 	font-weight: bold;
 }
 .cm-mw-table-delimiter2,
 .cm-mw-table-definition {
-	color: #d08;
+	color: var(--cm-table);
 	font-weight: normal;
 }
 .cm-mw-table-definition-value {
-	color: #f500d4;
+	color: var(--table-attr);
 	font-weight: normal;
 }
 .cm-mw-table-th,
@@ -175,17 +175,17 @@
 /* convert */
 .cm-mw-convert-bracket,
 .cm-mw-convert-delimiter {
-	color: #b68;
+	color: var(--cm-convert);
 	font-weight: bold;
 }
 .cm-mw-convert-flag,
 .cm-mw-convert-lang {
-	color: #b68;
+	color: var(--cm-convert);
 }
 
 /* HTML entity */
 .cm-mw-entity {
-	color: #00a1a1;
+	color: var(--cm-entity);
 }
 
 /* backgrounds */

@@ -15,6 +15,7 @@ import {
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
+import {light} from './theme';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
@@ -59,6 +60,8 @@ export const menuRegistry: MenuItem[] = [];
 
 export const destroyListeners: ((view: EditorView) => void)[] = [];
 
+export const themes: Record<string, Extension> = {light};
+
 export const optionalFunctions: OptionalFunctions = {
 	statusBar() {
 		return [];
@@ -91,6 +94,7 @@ export class CodeMirror6 {
 	readonly #extraKeys = new Compartment();
 	readonly #phrases = new Compartment();
 	readonly #lineWrapping = new Compartment();
+	readonly #theme = new Compartment();
 	#view: EditorView | undefined;
 	#lang;
 	#visible = false;
@@ -158,6 +162,7 @@ export class CodeMirror6 {
 				this.#extraKeys.of([]),
 				this.#phrases.of(EditorState.phrases.of(phrases)),
 				this.#lineWrapping.of(EditorView.lineWrapping),
+				this.#theme.of(light),
 				syntaxHighlighting(defaultHighlightStyle),
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
@@ -498,6 +503,19 @@ export class CodeMirror6 {
 					: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
 			effects.value.isSnapshot = true;
 			this.#view.dispatch({effects});
+		}
+	}
+
+	/**
+	 * Set the editor theme
+	 * @param theme theme name
+	 * @since 3.3.0
+	 */
+	setTheme(theme: string): void {
+		if (theme in themes) {
+			this.#view?.dispatch({
+				effects: this.#theme.reconfigure(themes[theme]!),
+			});
 		}
 	}
 

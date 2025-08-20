@@ -8,13 +8,15 @@ import {
 	registerLua,
 	registerMediaWiki,
 	registerVue,
+	registerTheme,
+	nord,
 } from '../src/index';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {prefs, useMonaco, indentKey, wikilint, codeConfigs, loadJSON, RuleState} from './preference';
+import {prefs, useMonaco, indentKey, themeKey, wikilint, codeConfigs, loadJSON, RuleState} from './preference';
 import {msg, curVersion, languages} from './msg';
 import prepareSuggest from './suggest';
 import escape from './escape';
@@ -53,6 +55,8 @@ registerJavaScript();
 registerLua();
 registerMediaWiki();
 registerVue();
+registerTheme('dark', nord);
+registerTheme('nord', nord);
 
 const linters: Record<string, LintSource | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
@@ -68,6 +72,11 @@ const linters: Record<string, LintSource | undefined> = {},
 		template: 'wikitext',
 		gadget: 'javascript',
 		plain: 'plaintext',
+	},
+	monacoThemes: Record<string, string> = {
+		light: 'vs',
+		dark: 'monokai',
+		nord: 'nord',
 	},
 	avail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
@@ -86,6 +95,18 @@ const linters: Record<string, LintSource | undefined> = {},
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
 	];
+
+const {documentElement} = document,
+	mediaQuery = matchMedia('(prefers-color-scheme: dark)');
+const setTheme = (cm: CodeMirror): void => {
+	const isDark = documentElement.classList.contains('skin-theme-clientpref-night')
+		|| documentElement.classList.contains('skin-theme-clientpref-os') && mediaQuery.matches
+		|| documentElement.getAttribute('color-mode') === 'dark';
+	cm.setTheme(isDark ? 'dark' : 'light', true);
+};
+const getObserver = (cm: CodeMirror): MutationObserver => new MutationObserver(() => {
+	setTheme(cm);
+});
 
 /**
  * 判断是否为普通编辑器
@@ -108,6 +129,10 @@ export class CodeMirror extends CodeMirror6 {
 	#init: Promise<void> | undefined;
 	#indentStr = '\t';
 	#handler;
+	#observer: MutationObserver | undefined;
+	#listener = (): void => {
+		setTheme(this);
+	};
 
 	override get visible(): boolean {
 		return this.#visible && this.textarea.isConnected;
@@ -508,6 +533,24 @@ export class CodeMirror extends CodeMirror6 {
 		this.#editor.updateOptions(options);
 	}
 
+	override setTheme(theme: string, auto?: boolean): void {
+		if (theme === 'auto') {
+			this.#observer ??= getObserver(this);
+			this.#observer.observe(documentElement, {attributes: true, attributeFilter: ['class', 'color-mode']});
+			mediaQuery.addEventListener('change', this.#listener);
+			setTheme(this);
+			return;
+		} else if (!auto) {
+			this.#observer?.disconnect();
+			mediaQuery.removeEventListener('change', this.#listener);
+		}
+		if (this.#editor) {
+			this.#editor.updateOptions({theme: monacoThemes[theme] ?? theme});
+			return;
+		}
+		super.setTheme(theme);
+	}
+
 	/**
 	 * 将 textarea 替换为 CodeMirror
 	 * @param textarea textarea 元素
@@ -568,9 +611,13 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer([...prefs]);
-		const indent = localStorage.getItem(indentKey);
+		const indent = localStorage.getItem(indentKey),
+			theme = localStorage.getItem(themeKey);
 		if (indent) {
 			cm.setIndent(indent);
+		}
+		if (theme) {
+			cm.setTheme(theme);
 		}
 		return cm;
 	}

@@ -25,6 +25,11 @@ Nonetheless, this repository also provides a customized version with additional 
 	- [lua](#lua)
 	- [mediawiki](#mediawiki)
 	- [vue](#vue)
+	- [Other languages](#other-languages)
+- [Themes](#themes)
+	- [light](#light)
+	- [nord](#nord)
+	- [Other themes](#other-themes)
 - [Constructor](#constructor)
 - [Accessors](#accessors)
 	- [dialect](#dialect)
@@ -46,6 +51,7 @@ Nonetheless, this repository also provides a customized version with additional 
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
 	- [setLineWrapping](#setlinewrapping)
+	- [setTheme](#settheme)
 	- [toggle](#toggle)
 	- [update](#update)
 - [Static methods](#static-methods)
@@ -394,6 +400,41 @@ If you want a more granular control over the extensions, you can import the `reg
 import {registerLanguageCore} from '@bhsd/codemirror-mediawiki';
 import {python} from '@codemirror/lang-python';
 registerLanguageCore('python', python);
+```
+
+</details>
+
+# Themes
+
+## light
+
+This is the default theme, which is a light theme.
+
+## nord
+
+<details>
+	<summary>Expand</summary>
+
+This is a dark theme created by [Takuya Matsuyama](https://www.npmjs.com/package/cm6-theme-nord) and [鬼影233](https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/Nord). You need to register this theme before using it:
+
+```js
+import {registerTheme, nord} from '@bhsd/codemirror-mediawiki';
+registerTheme('nord', nord);
+```
+
+</details>
+
+## Other themes
+
+<details>
+	<summary>Expand</summary>
+
+You can also register other themes by importing the `registerTheme` function:
+
+```js
+import {registerTheme} from '@bhsd/codemirror-mediawiki';
+import {oneDark} from '@codemirror/theme-one-dark';
+registerTheme('one-dark', oneDark);
 ```
 
 </details>
@@ -775,6 +816,24 @@ Switch between line wrapping and no line wrapping.
 ```js
 cm.setLineWrapping(false);
 cm.setLineWrapping(true);
+```
+
+</details>
+
+## setTheme
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.3.0*
+
+**param**: `string` the theme name  
+Set the theme of the editor. The default theme is `light`, other themes need to be registered using the `registerTheme` function first:
+
+```js
+import {registerTheme, nord} from '@bhsd/codemirror-mediawiki';
+registerTheme('nord', nord);
+cm.setTheme('nord');
 ```
 
 </details>

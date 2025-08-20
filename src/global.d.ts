@@ -7,7 +7,9 @@ import {
 	registerLua,
 	registerMediaWiki,
 	registerVue,
-} from './codemirror';
+	registerTheme,
+	nord,
+} from './index';
 import type {} from 'luacheck-browserify';
 import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
@@ -27,6 +29,8 @@ declare global {
 			registerLua,
 			registerMediaWiki,
 			registerVue,
+			registerTheme,
+			nord,
 		};
 		export type {MwConfig, LintSource};
 	}

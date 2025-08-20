@@ -52,7 +52,16 @@ import css from './css';
 import lua from './lua';
 import vue from './vue';
 import html from './html';
-import {CodeMirror6, avail, languages, linterRegistry, destroyListeners, plain, optionalFunctions} from './codemirror';
+import {
+	CodeMirror6,
+	avail,
+	languages,
+	linterRegistry,
+	destroyListeners,
+	plain,
+	optionalFunctions,
+	themes,
+} from './codemirror';
 import type {Extension} from '@codemirror/state';
 import type {Config, LanguageSupport} from '@codemirror/language';
 import type {StyleSpec} from 'style-mod';
@@ -151,7 +160,7 @@ export const registerColorPicker = (): void => {
 
 /** 注册所有通用扩展（除`colorPicker`） */
 const registerExtensions = (): void => {
-	highlightSpecialChars();
+	registerHighlightSpecialChars();
 	registerHighlightActiveLine();
 	registerHighlightWhitespace();
 	registerHighlightTrailingWhitespace();
@@ -433,3 +442,9 @@ export const registerLanguageCore = (
 		registerLintSource(name, lintSource);
 	}
 };
+
+export const registerTheme = (name: string, theme: Extension): void => {
+	themes[name] = theme;
+};
+
+export {nord} from './theme';

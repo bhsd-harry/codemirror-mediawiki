@@ -12,6 +12,7 @@ declare type Preferences = {
 	addons: string[];
 	useMonaco: string[];
 	indent: string;
+	theme: string;
 	wikilint: Record<LintError.Rule, RuleState>;
 } & Record<codeKey, unknown>;
 
@@ -43,6 +44,7 @@ export const enum RuleState {
 }
 
 export const indentKey = 'codemirror-mediawiki-indent',
+	themeKey = 'codemirror-mediawiki-theme',
 	prefs = new Set(getObject(storageKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<LintError.Rule, RuleState | undefined>,
@@ -54,7 +56,9 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	monacoWidget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
-	indent = localStorage.getItem(indentKey) ?? '';
+	themeWidget: OO.ui.DropdownInputWidget,
+	indent = localStorage.getItem(indentKey) ?? '',
+	theme = localStorage.getItem(themeKey) ?? 'auto';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
 	wikilintWidgets = new Map<LintError.Rule, OO.ui.DropdownInputWidget>();
 
@@ -109,6 +113,9 @@ export const loadJSON = (async () => {
 				if (json.indent) {
 					localStorage.setItem(indentKey, json.indent);
 				}
+				if (json.theme) {
+					localStorage.setItem(themeKey, json.theme);
+				}
 				for (const key of codeKeys) {
 					if (json[key]) {
 						codeConfigs.set(key, json[key]);
@@ -139,6 +146,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		widget.setValue([...prefs] as unknown as string);
 		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
+		themeWidget.setValue(theme);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: 'cm-preference'});
 		dialog.$element.css('z-index', '801');
@@ -182,6 +190,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 					.filter(
 						k =>
 							k !== 'addon-indent'
+							&& k !== 'addon-theme'
 							&& k !== 'addon-useMonaco'
 							&& k.startsWith('addon-')
 							&& !k.endsWith('-mac'),
@@ -203,6 +212,15 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			value: [...useMonaco] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
+		themeWidget = new OO.ui.DropdownInputWidget({
+			value: theme,
+			options: [
+				{data: 'auto', label: msg('theme-auto')},
+				{data: 'light', label: 'light'},
+				{data: 'dark', label: 'dark'},
+				{data: 'nord', label: 'nord'},
+			],
+		});
 		const field = new OO.ui.FieldLayout(widget, {
 				label: msg('label'),
 				align: 'top',
@@ -211,11 +229,13 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				label: msg('addon-useMonaco'),
 				align: 'top',
 			}),
-			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')});
+			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')}),
+			themeField = new OO.ui.FieldLayout(themeWidget, {label: msg('addon-theme')});
 		panelMain.$element.append(
 			field.$element,
-			monacoField.$element,
 			indentField.$element,
+			themeField.$element,
+			monacoField.$element,
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
 		panelWikilint.$element.append(
@@ -249,6 +269,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
 		const oldIndent = indent,
+			oldTheme = theme,
 			save = prefs.has('save');
 		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
 		let changed = indent !== oldIndent;
@@ -257,6 +278,16 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 				cm?.setIndent(indent || '\t');
 			}
 			localStorage.setItem(indentKey, indent);
+		}
+
+		// 主题
+		theme = themeWidget.getValue(); // eslint-disable-line require-atomic-updates
+		if (theme !== oldTheme) {
+			changed = true;
+			for (const cm of editors) {
+				cm?.setTheme(theme);
+			}
+			localStorage.setItem(themeKey, theme);
 		}
 
 		// WikiLint
@@ -322,6 +353,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 					addons: value,
 					useMonaco: [...useMonaco],
 					indent,
+					theme,
 					wikilint,
 					ESLint: codeConfigs.get('ESLint'),
 					Stylelint: codeConfigs.get('Stylelint'),

@@ -1,3 +1,16 @@
+## 3.3.0
+
+*2025-08-23*
+
+**Added**
+
+- New method: [`setTheme`](./README.md#settheme) to set the theme of the editor
+- New theme: [nord](./README.md#nord)
+
+**Fixed**
+
+- Missing [highlightSpecialChars](./README.md#highlightspecialchars) extension
+
 ## 3.2.0
 
 *2025-08-19*

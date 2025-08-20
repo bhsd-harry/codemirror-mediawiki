@@ -7,6 +7,8 @@ import {
 	registerLua,
 	registerMediaWiki,
 	registerVue,
+	registerTheme,
+	nord,
 } from '/codemirror-mediawiki/dist/main.min.js';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
@@ -18,6 +20,7 @@ registerJavaScript();
 registerLua();
 registerMediaWiki();
 registerVue();
+registerTheme('nord', nord);
 
 (() => {
 	if (!location.pathname.startsWith('/codemirror-mediawiki')) {
@@ -100,8 +103,13 @@ registerVue();
 
 	/** 设置扩展 */
 	const prefer = function(this: HTMLInputElement): void {
-		cm.prefer({[this.id]: this.checked});
-		updateSearch(this.id, Number(this.checked));
+		const {id, checked} = this;
+		if (id === 'dark') {
+			cm.setTheme(checked ? 'nord' : 'light');
+		} else {
+			cm.prefer({[id]: checked});
+		}
+		updateSearch(id, Number(checked));
 	};
 
 	/** 设置缩进 */
@@ -152,7 +160,10 @@ registerVue();
 	for (const extension of extensions) {
 		extension.addEventListener('change', prefer);
 	}
-	cm.prefer(extensions.filter(({checked}) => checked).map(({id}) => id));
+	cm.prefer(extensions.filter(({checked, id}) => checked && id !== 'dark').map(({id}) => id));
+	if (extensions.some(({checked, id}) => checked && id === 'dark')) {
+		cm.setTheme('nord');
+	}
 
 	// 初始化缩进
 	indent.addEventListener('change', indentChange);
