@@ -1,0 +1,23 @@
+/* src/codemirror */
+.cm-panels {
+	direction: ltr;
+}
+
+input[type="color"] {
+	pointer-events: none;
+}
+
+/* src/color */
+.cm-css-color-picker-wrapper {
+	outline: none;
+	/* src/index */
+	margin-left: .6ch;
+}
+.cm-css-color-picker-wrapper input[type="color"] {
+	outline: 1px solid #eee;
+}
+
+/* src/openLinks */
+.cm-mw-extlink {
+	cursor: var(--codemirror-cursor);
+}

@@ -30,8 +30,8 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"bundle:core": "node build.mjs",
-		"bundle:wiki": "MODE=wiki node build.mjs",
+		"bundle:core": "node build.cjs",
+		"bundle:wiki": "MODE=wiki node build.cjs",
 		"bundle:unused": "esbuild ./bundle/*.ts --charset=utf8 --bundle --format=esm --outdir=build",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css",
 		"build:core": "npm run bundle:core && esbuild ./build/main.js --charset=utf8 --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",

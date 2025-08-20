@@ -1,6 +1,7 @@
 /* eslint-env node */
-import * as fs from 'fs';
-import * as esbuild from 'esbuild';
+const fs = require('fs'),
+	esbuild = require('esbuild'),
+	{version} = require('./package.json');
 
 const langs = fs.readdirSync('i18n').map(file => file.slice(0, -5));
 
@@ -15,6 +16,7 @@ esbuild.buildSync({
 			outfile: 'build/wiki.js',
 			define: {
 				$LANGS: JSON.stringify(langs),
+				$VERSION: JSON.stringify(version),
 			},
 		}
 		: {

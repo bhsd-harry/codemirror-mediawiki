@@ -2,12 +2,13 @@ import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/browser';
 import {isMac} from '../src/openLinks';
 import type {CodeMirror} from './codemirror';
 
-declare const $LANGS: string[];
+declare const $LANGS: string[],
+	$VERSION: string;
 
 const storageKey = 'codemirror-mediawiki-i18n';
 
-export const REPO_CDN = 'npm/@bhsd/codemirror-mediawiki@3.2.0',
-	curVersion = REPO_CDN.slice(REPO_CDN.lastIndexOf('@') + 1),
+export const curVersion = $VERSION,
+	REPO_CDN = `npm/@bhsd/codemirror-mediawiki@${curVersion}`,
 	languages = (async () => {
 		await mw.loader.using('mediawiki.language');
 		return mw.language.getFallbackLanguageChain();

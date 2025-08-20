@@ -80,11 +80,11 @@ const linters: Record<string, LintSource | undefined> = {},
 		['highlightSelectionMatches', 'occurrencesHighlight', 'off', 'singleFile'],
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
+		['hover', 'hover', {enabled: false}, undefined],
+		['inlayHints', 'inlayHints', {enabled: 'offUnlessPressed'}, {enabled: 'onUnlessPressed'}],
 		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
-		['hover', 'hover', {enabled: false}, undefined],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
-		['inlayHints', 'inlayHints', {enabled: 'offUnlessPressed'}, {enabled: 'onUnlessPressed'}],
 	];
 
 /**

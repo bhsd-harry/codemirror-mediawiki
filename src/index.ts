@@ -253,7 +253,7 @@ export const registerInlayHints = (): void => {
 export const registerColorPickerForMediaWiki = (): void => {
 	registerLangExtension<[Extension, StyleSpec]>('mediawiki', 'colorPicker', [
 		[makeColorPicker({discoverColors}), colorPickerTheme],
-		{marginLeft: '0.6ch'},
+		{marginLeft: '.6ch'},
 	]);
 };
 
