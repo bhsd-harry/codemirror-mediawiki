@@ -55,6 +55,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 	nord: Extension = [
 		nordBase,
 		/* @__PURE__ */ EditorView.theme({
+			'div.cm-activeLine': {
+				backgroundColor: '#4c566a44',
+			},
 			'&.cm-focused .cm-matchingTag, &.cm-focused .cm-nonmatchingTag': {
 				outline: '1px solid #8fbcbb',
 			},
@@ -62,23 +65,27 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				backgroundColor: '#eceff4',
 				color: '#434c5e',
 			},
-			'.cm-tooltip-hover code': {
+			['&.cm-focused>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground,'
+				+ '.cm-tooltip-hover code, .cm-status-fix-menu>div:hover, .cm-diagnosticAction, div.cm-tooltip-fold']: {
 				backgroundColor: '#4c566a',
 			},
-			'.cm-panel-status': {
+			'div.cm-panels': {
 				color: '#d8dee9',
 			},
 			'.cm-status-fix-menu': {
 				backgroundColor: '#252a33',
 			},
-			'.cm-status-fix-menu>div:hover': {
-				backgroundColor: '#4c566a',
-			},
 			'.cm-status-message': {
 				borderColor: '#000',
 			},
-			'.cm-tooltip-autocomplete li': {
-				color: 'inherit!important',
+			'&.cm-focused .cm-searchMatch.cm-searchMatch-selected': {
+				color: '#b48ead',
+			},
+			'div.cm-tooltip-autocomplete ul li[aria-selected]': {
+				color: 'inherit',
+			},
+			'div.cm-gutters': {
+				color: '#5e81ac',
 			},
 			'.cm-content': {
 				'--cm-arg': '#9f78a5',

@@ -164,7 +164,7 @@
 	font-weight: normal;
 }
 .cm-mw-table-definition-value {
-	color: var(--table-attr);
+	color: var(--cm-table-attr);
 	font-weight: normal;
 }
 .cm-mw-table-th,
