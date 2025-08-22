@@ -14,17 +14,12 @@ declare interface Test {
 		select = document.querySelector('select')!,
 		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,
-		pre = document.querySelector('pre')!;
-	Parser.config = await (await fetch('/wikiparser-node/config/default.json')).json();
-	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(Parser.config as ConfigData));
+		pre = document.querySelector('pre')!,
+		config: ConfigData = await (await fetch('/wikiparser-node/config/default.json')).json();
+	wikiparse.setConfig(config);
+	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(config));
 	Object.assign(globalThis, {cm});
-	/** @implements */
-	wikiparse.print = (wikitext, include, stage): Promise<[number, string, string][]> => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		const printed = Parser.parse(wikitext, include, stage).print();
-		return Promise.resolve([[stage ?? Infinity, wikitext, printed]]);
-	};
-	void wikiparse.highlight!(pre, false, true);
+	await wikiparse.highlight!(pre, false, true);
 	btn.disabled = !select.value;
 	if (!isGH) {
 		btn.style.display = '';
