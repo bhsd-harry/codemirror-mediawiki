@@ -1068,6 +1068,11 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>small</><htmltag-bracket>&gt</><list>**</> 123<htmltag-bracket>&lt;/</><htmltag-name>small</><htmltag-bracket>&gt</>"
 	},
 	{
+		"desc": "4. Category at the end of a bare <li> list item",
+		"wikitext": "<li>Broken list\n== Section ==\n* Proper list\n\n[[Category:Foo]]",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>li</><htmltag-bracket>&gt</>Broken list<section-header section--2>==</><section> Section </><section-header>==</><list>*</> Proper list<link-ground link-bracket>[[</><link-ground link-pagename pagename>Category:Foo</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "Parsoid: unknown parser function (T314524)",
 		"wikitext": "{{#tag:b|This is a known parser function}}\n\nNow show the unknown parser functions for comparison.\n\n{{#foo}}\n\n{{#foo:bar|bat}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>b</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>This is a known parser function</><ext-ground parserfunction-bracket>}}</>Now show the unknown parser functions for comparison.<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#foo</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#foo</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>bar</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>bat</><ext-ground parserfunction-bracket>}}</>"
@@ -5833,8 +5838,8 @@
 	},
 	{
 		"desc": "Templates: Wiki Tables: 7. Fosterable <ref>s should get fostered",
-		"wikitext": "{{PartialTable}}<ref>foo</ref>\n|}\n\n<references />",
-		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>PartialTable</><template-ground template-bracket>}}</><exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>foo</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>|}<exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
+		"wikitext": "{{PartialTable}}<ref>foo</ref>\n|-\n|}\n\n<references />",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>PartialTable</><template-ground template-bracket>}}</><exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>foo</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</>|-|}<exttag-bracket>&lt;</><exttag-name>references </><exttag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Template nested in extension tag in template",
@@ -6719,11 +6724,6 @@
 		"parsed": "http://[2404:130:0:1000::187:2]/index.phpExamples from <magic-link>RFC 2373</>, section 2.2:<list>*</>http://[1080::8:800:200C:417A]/unicast<list>*</>http://[FF01::101]/multicast<list>*</>http://[::1]/loopback<list>*</>http://[::]/unspecified<list>*</>http://[::13.1.68.3]/ipv4compat<list>*</>http://[::FFFF:129.144.52.38]/ipv4compatExamples from <magic-link>RFC 2732</>, section 2:<list>*</>http://[FEDC:BA98:7654:3210:FEDC:BA98:7654:3210]:80/index.html<list>*</>http://[1080:0:0:0:8:800:200C:417A]/index.html<list>*</>http://[3ffe:2a00:100:7031::1]<list>*</>http://[1080::8:800:200C:417A]/foo<list>*</>http://[::192.9.5.5]/ipng<list>*</>http://[::FFFF:129.144.52.38]:80/index.html<list>*</>http://[2010:836B:4179::836B:4179]"
 	},
 	{
-		"desc": "Ensure html2wt b/c for stashed RFC target links (T382963)",
-		"wikitext": "RFC 1234\n\nRFC 1234",
-		"parsed": "<magic-link>RFC 1234RFC 1234</>"
-	},
-	{
 		"desc": "Unicode text around autolinks",
 		"wikitext": "größhttps://foo.org\n\ngröß https://foo.org\n\n아들 고건 사진https://foo.org\n\n💩https://foo.org",
 		"parsed": "größhttps://foo.orggröß <free-extlink-protocol>https://</><free-extlink>foo.org</>아들 고건 사진https://foo.org💩<free-extlink-protocol>https://</><free-extlink>foo.org</>"
@@ -6865,9 +6865,49 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#time</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Y-m-d H:i</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> 2011-11-12 23:00 America/New_York </><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
-		"desc": "Explicitely specified output language (Dutch)",
+		"desc": "Explicitly specified output language (Dutch)",
 		"wikitext": "{{#time:d F Y|1988-02-28|nl}}",
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#time</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>d F Y</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1988-02-28</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>nl</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timel: UTC",
+		"wikitext": "{{#timel: Y-m-d H:i | 15 January 2001}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timel</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> Y-m-d H:i </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> 15 January 2001</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timel: Melbourne",
+		"wikitext": "{{#timel: Y-m-d H:i | 16 January 2001}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timel</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> Y-m-d H:i </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> 16 January 2001</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timef: one parameter",
+		"wikitext": "{{#timef:15 January 2001}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timef</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>15 January 2001</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timef: date only",
+		"wikitext": "{{#timef:15 January 2001|date}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timef</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>15 January 2001</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>date</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timef: time only",
+		"wikitext": "{{#timef:15 January 2001|time}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timef</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>15 January 2001</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>time</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timef: \"pretty\" format",
+		"wikitext": "{{#timef:15 January 2001|pretty}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timef</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>15 January 2001</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>pretty</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timef: ja parameter",
+		"wikitext": "{{#timef:15 January 2001|both|ja}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timef</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>15 January 2001</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>both</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>ja</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "#timefl: one parameter",
+		"wikitext": "{{#timefl:17 January 2001}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#timefl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>17 January 2001</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "#titleparts",
@@ -7981,6 +8021,16 @@
 		"desc": "Explicit definition of language variant alternatives (BCP 47 codes)",
 		"wikitext": "-{zh:China;zh-Hant-TW:Taiwan}-, is China",
 		"parsed": "<convert-bracket>-{</><convert-lang>zh:</>China;zh-Hant-TW:Taiwan<convert-bracket>}-</>, is China"
+	},
+	{
+		"desc": "html2wt support for edited wildcard rule (strip trailing semi where needed)",
+		"wikitext": "test: -{H|zh:content; }-",
+		"parsed": "test: <convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>content<convert-delimiter>; </><convert-bracket>}-</>"
+	},
+	{
+		"desc": "html2wt support for wildcard rule with whitespace around flag value",
+		"wikitext": "test: -{ H  |all variants}-",
+		"parsed": "test: <convert-bracket>-{ </><convert-flag>H  </><convert-delimiter>|</>all variants<convert-bracket>}-</>"
 	},
 	{
 		"desc": "Filter syntax for language variants",
@@ -11974,7 +12024,7 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|code&gt{{1x|&lt;/&gtworld&lt;tvar|code2&gt}}&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
-		"desc": "urlFragmentModes"
+		"desc": "urlFragmentModesTests"
 	},
 	{
 		"desc": "Legacy fragment encoding",

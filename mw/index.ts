@@ -8,8 +8,7 @@ import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
 const baseVersion = '3.3',
 	addons = ['theme'];
 
-// mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
-mw.loader.load('http://localhost:8080/codemirror-mediawiki/mediawiki.css', 'text/css');
+mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
 
 /**
  * jQuery.val overrides for CodeMirror.

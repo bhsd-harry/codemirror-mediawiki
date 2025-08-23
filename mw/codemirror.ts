@@ -548,7 +548,12 @@ export class CodeMirror extends CodeMirror6 {
 			this.#editor.updateOptions({theme: monacoThemes[theme] ?? theme});
 			return;
 		}
-		super.setTheme(theme);
+		super.setTheme(
+			mw.config.get('skin') === 'moeskin'
+			&& mw.loader.getState('ext.CodeMirror.v6') === 'ready'
+				? 'light'
+				: theme,
+		);
 	}
 
 	/**
