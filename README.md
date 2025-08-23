@@ -15,8 +15,6 @@ Nonetheless, this repository also provides a customized version with additional 
 
 - [Installation](#installation)
 - [Browser Usage](#browser-usage)
-	- [Download JavaScript](#download-javascript)
-	- [Download CSS](#download-css)
 - [Language modes](#language-modes)
 	- [css](#css)
 	- [html](#html)
@@ -104,12 +102,10 @@ import {
 
 # Browser Usage
 
-You can download the code via CDN, for example:
-
-## Download JavaScript
-
 <details>
 	<summary>Expand</summary>
+
+You can download the code via CDN, for example:
 
 ```js
 // static import
@@ -169,23 +165,6 @@ const {
 	registerLua,
 	registerVue,
 } = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
-```
-
-</details>
-
-## Download CSS
-
-<details>
-	<summary>Expand</summary>
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mediawiki.css">
-```
-
-or
-
-```html
-<link rel="stylesheet" href="https://unpkg.com/@bhsd/codemirror-mediawiki/mediawiki.css">
 ```
 
 </details>

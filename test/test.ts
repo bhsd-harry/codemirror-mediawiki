@@ -28,7 +28,7 @@ mochaTest(
 		}
 		return tokens.map(({name, text}) => {
 			const escaped = text.replace(/[<>&]/gu, m => entities[m as '<' | '>' | '&']);
-			return name.trim() ? `<${name}>${escaped}</>` : text;
+			return name.trim() ? `<${name}>${escaped}</>` : escaped;
 		}).join('');
 	},
 );

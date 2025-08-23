@@ -88,4 +88,12 @@ export default (cm: CodeMirror6): Extension => [
 			void updateField(update);
 		}
 	}),
+	EditorView.theme({
+		'.cm-inlay-hint': {
+			color: '#969696',
+			fontStyle: 'italic',
+			'-webkitUserSelect': 'none',
+			userSelect: 'none',
+		},
+	}),
 ];

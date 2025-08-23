@@ -1,6 +1,6 @@
-import {hoverTooltip} from '@codemirror/view';
+import {hoverTooltip, EditorView} from '@codemirror/view';
 import {loadScript, getLSP} from '@bhsd/browser';
-import type {Tooltip, TooltipView, EditorView} from '@codemirror/view';
+import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror';
@@ -44,21 +44,44 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
 	return {dom};
 };
 
-export default (cm: CodeMirror6): Extension => hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
-	const {state: {doc}} = view,
-		hover = await getLSP(view, false, cm.getWikiConfig)
-			?.provideHover(doc.toString(), indexToPos(doc, pos));
-	if (hover) {
-		await loadScript('npm/marked/lib/marked.umd.js', 'marked', true);
-		const {end} = hover.range!;
-		return {
-			pos,
-			end: posToIndex(doc, end),
-			above: true,
-			create(): TooltipView {
-				return createTooltipView(view, marked.parse((hover.contents as MarkupContent).value));
-			},
-		};
-	}
-	return null;
-});
+const selector = '.cm-tooltip-hover';
+
+export default (cm: CodeMirror6): Extension => [
+	hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
+		const {state: {doc}} = view,
+			hover = await getLSP(view, false, cm.getWikiConfig)
+				?.provideHover(doc.toString(), indexToPos(doc, pos));
+		if (hover) {
+			await loadScript('npm/marked/lib/marked.umd.js', 'marked', true);
+			const {end} = hover.range!;
+			return {
+				pos,
+				end: posToIndex(doc, end),
+				above: true,
+				create(): TooltipView {
+					return createTooltipView(view, marked.parse((hover.contents as MarkupContent).value));
+				},
+			};
+		}
+		return null;
+	}),
+	EditorView.theme({
+		[selector]: {
+			padding: '2px 5px',
+			width: 'max-content',
+			maxWidth: '60vw',
+		},
+		[`${selector} *`]: {
+			marginTop: '0!important',
+			marginBottom: '0!important',
+		},
+		[`${selector}>div`]: {
+			fontSize: '90%',
+			lineHeight: 1.4,
+		},
+		[`${selector} code`]: {
+			padding: '.1em .4em',
+			borderRadius: '.4em',
+		},
+	}),
+];

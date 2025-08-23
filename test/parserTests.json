@@ -80,12 +80,12 @@
 	{
 		"desc": "Non-word characters don't terminate tag names (T19663, T42670, T54022)",
 		"wikitext": "<blockquote|>a</blockquote>\n\n<b→> doesn't terminate </b→>\n\n<bä> doesn't terminate </bä>\n\n<boo> doesn't terminate </boo>\n\n<s.foo> doesn't terminate </s.foo>\n\n<sub-ID#1>",
-		"parsed": "<blockquote|>a<error>&lt;/blockquote&gt</><b→> doesn't terminate </b→><bä> doesn't terminate </bä><boo> doesn't terminate </boo><s.foo> doesn't terminate </s.foo><sub-ID#1>"
+		"parsed": "&lt;blockquote|&gta<error>&lt;/blockquote&gt</>&lt;b→&gt doesn't terminate &lt;/b→&gt&lt;bä&gt doesn't terminate &lt;/bä&gt&lt;boo&gt doesn't terminate &lt;/boo&gt&lt;s.foo&gt doesn't terminate &lt;/s.foo&gt&lt;sub-ID#1&gt"
 	},
 	{
 		"desc": "Isolated close tags should be treated as literal text (T54760)",
 		"wikitext": "</b>\n\n<s.foo>s</s>",
-		"parsed": "<error>&lt;/b&gt</><s.foo>s<error>&lt;/s&gt</>"
+		"parsed": "<error>&lt;/b&gt</>&lt;s.foo&gts<error>&lt;/s&gt</>"
 	},
 	{
 		"desc": "Self-closed tag hooks",
@@ -185,7 +185,7 @@
 	{
 		"desc": "T255007: French spacing in raw text elements",
 		"wikitext": "<html>\n<script>test ; 123</script>\n<style>test : 123</style>\n</html>",
-		"parsed": "<html><script>test ; 123</script><style>test : 123</style></html>"
+		"parsed": "&lt;html&gt&lt;script&gttest ; 123&lt;/script&gt&lt;style&gttest : 123&lt;/style&gt&lt;/html&gt"
 	},
 	{
 		"desc": "French spacing and spans",
@@ -1425,7 +1425,7 @@
 	{
 		"desc": "Self-closed noinclude, includeonly, onlyinclude tags",
 		"wikitext": "<noinclude />\n<includeonly />\n<onlyinclude />",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>noinclude </><exttag-bracket>/&gt&lt;</><exttag-name>includeonly </><exttag-bracket>/&gt</><onlyinclude />"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>noinclude </><exttag-bracket>/&gt&lt;</><exttag-name>includeonly </><exttag-bracket>/&gt</>&lt;onlyinclude /&gt"
 	},
 	{
 		"desc": "Unbalanced includeonly and noinclude tags",
@@ -2235,7 +2235,7 @@
 	{
 		"desc": "Extension tag in attribute value",
 		"wikitext": "<span title=\"<html><div>123</div></html>\">ok</span>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>title=</><htmltag-attribute-value>\"</><html><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>123<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</></html>\">ok<error>&lt;/span&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>title=</><htmltag-attribute-value>\"</>&lt;html&gt<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>123<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>&lt;/html&gt\"&gtok<error>&lt;/span&gt</>"
 	},
 	{
 		"desc": "table with multiple empty attribute values",
@@ -2270,17 +2270,17 @@
 	{
 		"desc": "Non-ASCII pseudo-tags are rendered as text",
 		"wikitext": "<khyô>",
-		"parsed": "<khyô>"
+		"parsed": "&lt;khyô&gt"
 	},
 	{
 		"desc": "Pseudo-tag with URL 'name' renders as url link",
 		"wikitext": "<http://example.com/>",
-		"parsed": "<<free-extlink-protocol>http://</><free-extlink>example.com/</>>"
+		"parsed": "&lt;<free-extlink-protocol>http://</><free-extlink>example.com/</>&gt"
 	},
 	{
 		"desc": "text with amp in the middle of nowhere",
 		"wikitext": "Remember AT&T?",
-		"parsed": "Remember AT&T?"
+		"parsed": "Remember AT&amp;T?"
 	},
 	{
 		"desc": "text with character entity: eacute",
@@ -2310,7 +2310,7 @@
 	{
 		"desc": "HTML tag with leading space is parsed as text",
 		"wikitext": "< div>foo< /div>",
-		"parsed": "< div>foo< /div>"
+		"parsed": "&lt; div&gtfoo&lt; /div&gt"
 	},
 	{
 		"desc": "Element with broken attribute syntax",
@@ -2595,7 +2595,7 @@
 	{
 		"desc": "Tags which are hidden from tidiers cannot pass through the Sanitizer",
 		"wikitext": "<mw:editsection><script>alert();</script></mw:editsection>\n\n<meta property=\"mw:PageProp/toc\" />",
-		"parsed": "<mw:editsection><script>alert();</script></mw:editsection><htmltag-bracket>&lt;</><htmltag-name>meta </><htmltag-attribute html-meta>property=</><htmltag-attribute-value>\"mw:PageProp/toc\"</><htmltag-attribute html-meta> </><htmltag-bracket>/&gt</>"
+		"parsed": "&lt;mw:editsection&gt&lt;script&gtalert();&lt;/script&gt&lt;/mw:editsection&gt<htmltag-bracket>&lt;</><htmltag-name>meta </><htmltag-attribute html-meta>property=</><htmltag-attribute-value>\"mw:PageProp/toc\"</><htmltag-attribute html-meta> </><htmltag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Nested template calls",
@@ -2815,7 +2815,7 @@
 	{
 		"desc": "Parsing crashing regression (fr:JavaScript)",
 		"wikitext": "</body></x>",
-		"parsed": "</body></x>"
+		"parsed": "&lt;/body&gt&lt;/x&gt"
 	},
 	{
 		"desc": "Inline wiki vs wiki block nesting",
@@ -3135,7 +3135,7 @@
 	{
 		"desc": "HTML Hex character encoding bogus encoding (T28437 regression check)",
 		"wikitext": "&#xsee;&#XSEE;",
-		"parsed": "&#xsee;&#XSEE;"
+		"parsed": "&amp;#xsee;&amp;#XSEE;"
 	},
 	{
 		"desc": "HTML Hex character encoding mixed case",
@@ -3145,7 +3145,7 @@
 	{
 		"desc": "Illegal character references (T106578, T113194)",
 		"wikitext": "; Null: &#00;\n; FF: &#xC;\n; CR: &#xD;\n; Control (low): &#8;\n; Control (high): &#x7F; &#x9F;\n; Unsupported legacy: &#128; &#130; &#131; &#150; &#159;\n; Surrogate: &#xD83D;&#xDCA9;\n; Invalid characters: &#xfffe; &#xffff;\n; This is an okay astral character: &#x1F4A9;\n; This is an okay multi-codepoint HTML5 entity: &acE;\n; This are valid wikitext-specific entities: &רלמ; &رلم;\n; Highest valid characters: &#x10fffd; &#x10fffe; &#x10ffff;",
-		"parsed": "<list>;</><strong> Null</><list>:</> <entity>&amp;#00;</><list>;</><strong> FF</><list>:</> <entity>&amp;#xC;</><list>;</><strong> CR</><list>:</> <entity>&amp;#xD;</><list>;</><strong> Control (low)</><list>:</> <entity>&amp;#8;</><list>;</><strong> Control (high)</><list>:</> <entity>&amp;#x7F;</> <entity>&amp;#x9F;</><list>;</><strong> Unsupported legacy</><list>:</> <entity>&amp;#128;</> <entity>&amp;#130;</> <entity>&amp;#131;</> <entity>&amp;#150;</> <entity>&amp;#159;</><list>;</><strong> Surrogate</><list>:</> <entity>&amp;#xD83D;&amp;#xDCA9;</><list>;</><strong> Invalid characters</><list>:</> <entity>&amp;#xfffe;</> <entity>&amp;#xffff;</><list>;</><strong> This is an okay astral character</><list>:</> <entity>&amp;#x1F4A9;</><list>;</><strong> This is an okay multi-codepoint HTML5 entity</><list>:</> <entity>&amp;acE;</><list>;</><strong> This are valid wikitext-specific entities</><list>:</> &רלמ; &رلم;<list>;</><strong> Highest valid characters</><list>:</> <entity>&amp;#x10fffd;</> <entity>&amp;#x10fffe;</> <entity>&amp;#x10ffff;</>"
+		"parsed": "<list>;</><strong> Null</><list>:</> <entity>&amp;#00;</><list>;</><strong> FF</><list>:</> <entity>&amp;#xC;</><list>;</><strong> CR</><list>:</> <entity>&amp;#xD;</><list>;</><strong> Control (low)</><list>:</> <entity>&amp;#8;</><list>;</><strong> Control (high)</><list>:</> <entity>&amp;#x7F;</> <entity>&amp;#x9F;</><list>;</><strong> Unsupported legacy</><list>:</> <entity>&amp;#128;</> <entity>&amp;#130;</> <entity>&amp;#131;</> <entity>&amp;#150;</> <entity>&amp;#159;</><list>;</><strong> Surrogate</><list>:</> <entity>&amp;#xD83D;&amp;#xDCA9;</><list>;</><strong> Invalid characters</><list>:</> <entity>&amp;#xfffe;</> <entity>&amp;#xffff;</><list>;</><strong> This is an okay astral character</><list>:</> <entity>&amp;#x1F4A9;</><list>;</><strong> This is an okay multi-codepoint HTML5 entity</><list>:</> <entity>&amp;acE;</><list>;</><strong> This are valid wikitext-specific entities</><list>:</> &amp;רלמ; &amp;رلم;<list>;</><strong> Highest valid characters</><list>:</> <entity>&amp;#x10fffd;</> <entity>&amp;#x10fffe;</> <entity>&amp;#x10ffff;</>"
 	},
 	{
 		"desc": "Another italics / bold test",
@@ -3160,17 +3160,17 @@
 	{
 		"desc": "[Before] HTML without raw HTML enabled ($wgRawHtml==false)",
 		"wikitext": "<html><script>alert(1);</script></html>",
-		"parsed": "<html><script>alert(1);</script></html>"
+		"parsed": "&lt;html&gt&lt;script&gtalert(1);&lt;/script&gt&lt;/html&gt"
 	},
 	{
 		"desc": "HTML with raw HTML ($wgRawHtml==true)",
 		"wikitext": "<html><script>alert(1);</script></html>",
-		"parsed": "<html><script>alert(1);</script></html>"
+		"parsed": "&lt;html&gt&lt;script&gtalert(1);&lt;/script&gt&lt;/html&gt"
 	},
 	{
 		"desc": "Empty tag w/ raw HTML ($wgRawHtml==true)",
 		"wikitext": "<html />",
-		"parsed": "<html />"
+		"parsed": "&lt;html /&gt"
 	},
 	{
 		"desc": "Parents of subpages, one level up",
@@ -3235,7 +3235,7 @@
 	{
 		"desc": "Always escape literal '>' in output, not just after '<'",
 		"wikitext": "><>",
-		"parsed": "><>"
+		"parsed": "&gt&lt;&gt"
 	},
 	{
 		"desc": "Template caching",
@@ -3595,7 +3595,7 @@
 	{
 		"desc": "preload: can pass tags through if we want to",
 		"wikitext": "<includeonly><</includeonly>includeonly>Hello world<includeonly><</includeonly>/includeonly>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>&lt;</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>includeonly>Hello world<exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>&lt;</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>/includeonly>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>&lt;</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>includeonly&gtHello world<exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>&lt;</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>/includeonly&gt"
 	},
 	{
 		"desc": "preload: check that it doesn't try to do tricks",
@@ -3650,7 +3650,7 @@
 	{
 		"desc": "T21052 U+3000 IDEOGRAPHIC SPACE should terminate free external links",
 		"wikitext": "http://www.example.org/　<-- U+3000 (vim: ^Vu3000)",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.org/</>　<-- U+3000 (vim: ^Vu3000)"
+		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.org/</>　&lt;-- U+3000 (vim: ^Vu3000)"
 	},
 	{
 		"desc": "T21052 U+3000 IDEOGRAPHIC SPACE should terminate bracketed external links",
@@ -3660,7 +3660,7 @@
 	{
 		"desc": "T21052 U+3000 IDEOGRAPHIC SPACE should terminate external images links",
 		"wikitext": "http://www.example.org/pic.png　<-- U+3000 (vim: ^Vu3000)",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.org/pic.png</>　<-- U+3000 (vim: ^Vu3000)"
+		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.org/pic.png</>　&lt;-- U+3000 (vim: ^Vu3000)"
 	},
 	{
 		"desc": "T33098 Template which includes system messages which includes the template",
@@ -3870,7 +3870,7 @@
 	{
 		"desc": "\nTag-like HTML structures are passed through as text",
 		"wikitext": "<x y>\n\n<x.y>\n\n<x-y>\n\n1>2\n\nx<y\n\na>b\n\n1<d e>f",
-		"parsed": "<x y><x.y><x-y>1>2x<ya>b1<d e>f"
+		"parsed": "&lt;x y&gt&lt;x.y&gt&lt;x-y&gt1&gt2x&lt;ya&gtb1&lt;d e&gtf"
 	},
 	{
 		"desc": "HTML tag with necessary entities in attributes",
@@ -4100,7 +4100,7 @@
 	{
 		"desc": "Support <object> element with .data attribute",
 		"wikitext": "<object data=\"test.swf\"></object>",
-		"parsed": "<object data=\"test.swf\"></object>"
+		"parsed": "&lt;object data=\"test.swf\"&gt&lt;/object&gt"
 	},
 	{
 		"desc": "T72867: Don't block XML namespace declaration",
@@ -4375,7 +4375,7 @@
 	{
 		"desc": "T75121: Infer extension name from typeOf if data-mw is not present",
 		"wikitext": "<foo />",
-		"parsed": "<foo />"
+		"parsed": "&lt;foo /&gt"
 	},
 	{
 		"desc": "T88318: p-wrapped dash in table.",
@@ -4705,17 +4705,17 @@
 	{
 		"desc": "Validating that <style> isn't eaten by tidy (T167349)",
 		"wikitext": "<div class=\"foo\">\n<style>.foo::before { content: \"<foo>\"; }</style>\n<style data-mw-foobar=\"baz\">.foo::after { content: \"<bar>\"; }</style>\n</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"foo\"</><htmltag-bracket>&gt</><style>.foo::before { content: \"<foo>\"; }</style><style data-mw-foobar=\"baz\">.foo::after { content: \"<bar>\"; }</style><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"foo\"</><htmltag-bracket>&gt</>&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt&lt;style data-mw-foobar=\"baz\"&gt.foo::after { content: \"&lt;bar&gt\"; }&lt;/style&gt<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Validating that <style> isn't wrapped in a paragraph (T186965)",
 		"wikitext": "A style tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph\n\n<style>.foo::before { content: \"<foo>\"; }</style>\n\n<style>.foo::before { content: \"<foo>\"; }</style> <link rel=\"foo\" href=\"bar\"/><style>.foo::before { content: \"<foo>\"; }</style>\n\nBut if it's on a line with other content, let it be wrapped.\n\n<style>.foo::before { content: \"<foo>\"; }</style> bar\n\nfoo <style>.foo::before { content: \"<foo>\"; }</style>\n\nfoo <style>.foo::before { content: \"<foo>\"; }</style> bar\n\nAnd the same if we have non-paragraph-breaking whitespace\n\nfoo\n<style>.foo::before { content: \"<foo>\"; }</style>\nbar",
-		"parsed": "A style tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph<style>.foo::before { content: \"<foo>\"; }</style><style>.foo::before { content: \"<foo>\"; }</style> <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</><style>.foo::before { content: \"<foo>\"; }</style>But if it's on a line with other content, let it be wrapped.<style>.foo::before { content: \"<foo>\"; }</style> barfoo <style>.foo::before { content: \"<foo>\"; }</style>foo <style>.foo::before { content: \"<foo>\"; }</style> barAnd the same if we have non-paragraph-breaking whitespacefoo<style>.foo::before { content: \"<foo>\"; }</style>bar"
+		"parsed": "A style tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gtBut if it's on a line with other content, let it be wrapped.&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt barfoo &lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gtfoo &lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt barAnd the same if we have non-paragraph-breaking whitespacefoo&lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gtbar"
 	},
 	{
 		"desc": "Validating that <link> isn't wrapped in a paragraph (T186965)",
 		"wikitext": "A link tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph\n\n<link rel=\"foo\" href=\"bar\"/>\n\n<link rel=\"foo\" href=\"bar\"/> <style>.foo::before { content: \"<foo>\"; }</style><link rel=\"foo\" href=\"bar\"/>\n\nBut if it's on a line with other content, let it be wrapped.\n\n<link rel=\"foo\" href=\"bar\"/> bar\n\nfoo <link rel=\"foo\" href=\"bar\"/>\n\nfoo <link rel=\"foo\" href=\"bar\"/> bar\n\nAnd the same if we have non-paragraph-breaking whitespace\n\nfoo\n<link rel=\"foo\" href=\"bar\"/>\nbar",
-		"parsed": "A link tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> <style>.foo::before { content: \"<foo>\"; }</style><htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>But if it's on a line with other content, let it be wrapped.<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> barfoo <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>foo <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> barAnd the same if we have non-paragraph-breaking whitespacefoo<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>bar"
+		"parsed": "A link tag, by itself or with other style/link tags, shouldn't be wrapped in a paragraph<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> &lt;style&gt.foo::before { content: \"&lt;foo&gt\"; }&lt;/style&gt<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>But if it's on a line with other content, let it be wrapped.<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> barfoo <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>foo <htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</> barAnd the same if we have non-paragraph-breaking whitespacefoo<htmltag-bracket>&lt;</><htmltag-name>link </><htmltag-attribute html-link>rel=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-link> href=</><htmltag-attribute-value>\"bar\"</><htmltag-bracket>/&gt</>bar"
 	},
 	{
 		"desc": "Extension returning multiple nodes starting with a style tag roundtrips",
@@ -4815,7 +4815,7 @@
 	{
 		"desc": "aside tag is not allowed directly in wikitext (T278565)",
 		"wikitext": "<aside>This aside tag in wikitext should be escaped</aside>",
-		"parsed": "<aside>This aside tag in wikitext should be escaped</aside>"
+		"parsed": "&lt;aside&gtThis aside tag in wikitext should be escaped&lt;/aside&gt"
 	},
 	{
 		"desc": "Stripped tag in list",
@@ -4835,17 +4835,17 @@
 	{
 		"desc": "Extension tag with embedded html",
 		"wikitext": "<embedtag>Content with a [[broken link]].</embedtag>",
-		"parsed": "<embedtag>Content with a <link-ground link-bracket>[[</><link-ground link-pagename pagename>broken link</><link-ground link-bracket>]]</>.</embedtag>"
+		"parsed": "&lt;embedtag&gtContent with a <link-ground link-bracket>[[</><link-ground link-pagename pagename>broken link</><link-ground link-bracket>]]</>.&lt;/embedtag&gt"
 	},
 	{
 		"desc": "Cloned formatting element with extension tag that unpacks itself in attribute name position",
 		"wikitext": "<i <sealtag>y</sealtag>>\n\nz",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </><sealtag>y</sealtag>>z"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </>&lt;sealtag&gty&lt;/sealtag&gt&gtz"
 	},
 	{
 		"desc": "Cloned formatting element with extension tag that unpacks itself in attribute value position",
 		"wikitext": "<i title=\"<sealtag>y</sealtag>\">a\n\nz",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>title=</><htmltag-attribute-value>\"</><sealtag>y</sealtag>\">az"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>title=</><htmltag-attribute-value>\"</>&lt;sealtag&gty&lt;/sealtag&gt\"&gtaz"
 	},
 	{
 		"desc": "Include directive string gluing",
@@ -6010,12 +6010,12 @@
 	{
 		"desc": "Comment semantics and delimiters: directors cut",
 		"wikitext": "<!-- ... However we like to keep things simple and somewhat XML-ish so we eat\neverything starting with < followed by !-- until the first -- and > we see,\nthat wouldn't be valid XML however, since in XML -- has to terminate a comment\n-->-->",
-		"parsed": "<comment>&lt;!-- ... However we like to keep things simple and somewhat XML-ish so we eateverything starting with &lt; followed by !-- until the first -- and &gt we see,that wouldn't be valid XML however, since in XML -- has to terminate a comment--&gt</>-->"
+		"parsed": "<comment>&lt;!-- ... However we like to keep things simple and somewhat XML-ish so we eateverything starting with &lt; followed by !-- until the first -- and &gt we see,that wouldn't be valid XML however, since in XML -- has to terminate a comment--&gt</>--&gt"
 	},
 	{
 		"desc": "Comment semantics: nesting",
 		"wikitext": "<!--<!-- no, we're not going to do anything fancy here -->-->",
-		"parsed": "<comment>&lt;!--&lt;!-- no, we're not going to do anything fancy here --&gt</>-->"
+		"parsed": "<comment>&lt;!--&lt;!-- no, we're not going to do anything fancy here --&gt</>--&gt"
 	},
 	{
 		"desc": "Comment semantics: unclosed comment at end",
@@ -6571,7 +6571,7 @@
 	{
 		"desc": "T2289: \">\"-token in URL-tail",
 		"wikitext": "http://www.example.com/<hello>",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.com/</><hello>"
+		"parsed": "<free-extlink-protocol>http://</><free-extlink>www.example.com/</>&lt;hello&gt"
 	},
 	{
 		"desc": "T2289: literal \">\"-token in URL-tail",
@@ -6942,7 +6942,7 @@
 	{
 		"desc": "Bug 19093: Default values don't fall through in switch",
 		"wikitext": "<{{#switch: foo | bar | #default = DEF }}>\n<{{#switch: foo | #default | bar = DEF }}>",
-		"parsed": "<<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> bar </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> #default =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>><<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>>"
+		"parsed": "&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> bar </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> #default =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>&gt&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>&gt"
 	},
 	{
 		"desc": "{{#ifexist}}",
@@ -6997,12 +6997,12 @@
 	{
 		"desc": "#switch #default should match next and not last named parameter",
 		"wikitext": "<{{#switch: foo | #default | bar = DEF }}>\n<{{#switch: foo | #default | bar = DEF | baz = GHI }}>",
-		"parsed": "<<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>><<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> baz =</><ext-ground parserfunction> GHI </><ext-ground parserfunction-bracket>}}</>>"
+		"parsed": "&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-bracket>}}</>&gt&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #default </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> DEF </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> baz =</><ext-ground parserfunction> GHI </><ext-ground parserfunction-bracket>}}</>&gt"
 	},
 	{
 		"desc": "#switch should not match #default as a prefix",
 		"wikitext": "<{{#switch: foo | #defaultWTF? = This is crazy }}>\n<{{#switch: foo | #defaultWTF? | bar = This is crazy }}>",
-		"parsed": "<<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> #defaultWTF? =</><ext-ground parserfunction> This is crazy </><ext-ground parserfunction-bracket>}}</>><<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #defaultWTF? </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> This is crazy </><ext-ground parserfunction-bracket>}}</>>"
+		"parsed": "&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> #defaultWTF? =</><ext-ground parserfunction> This is crazy </><ext-ground parserfunction-bracket>}}</>&gt&lt;<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#switch</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> foo </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> #defaultWTF? </><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name> bar =</><ext-ground parserfunction> This is crazy </><ext-ground parserfunction-bracket>}}</>&gt"
 	},
 	{
 		"desc": "#switch Test php truthy",
@@ -7120,7 +7120,7 @@
 	{
 		"desc": "Section headings with TOC, language conversion rules, and displaytitle\n(T306862, T331316, T26072)",
 		"wikitext": "<!--\n-->-{H|Foo=>en:Boo;Foo=>en-x-piglatin:Bob;}-<!--\n-->-{H|Bar=>en:Bat;Bar=>en-x-piglatin:Ball;}-<!--\n-->-{T|en:Foo;en-x-piglatin:Bar;}-<!--\n-->\nIntroduction.\n-{A|en:Do; en-x-piglatin:Re;}-\n== Foo ==\nFoo Do\n== Bar ==\nBar Re\n== -{Foo Bar}- ==",
-		"parsed": "<comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Foo=>en:Boo;Foo=>en-x-piglatin:Bob<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Bar=>en:Bat;Bar=>en-x-piglatin:Ball<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>en:Foo;en-x-piglatin:Bar<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</>Introduction.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>en:Do; en-x-piglatin:Re<convert-delimiter>;</><convert-bracket>}-</><section-header section--2>==</><section> Foo </><section-header>==</>Foo Do<section-header section--2>==</><section> Bar </><section-header>==</>Bar Re<section-header section--2>==</><section> </><convert-bracket>-{</><section>Foo Bar</><convert-bracket>}-</><section> </><section-header>==</>"
+		"parsed": "<comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Foo=&gten:Boo;Foo=&gten-x-piglatin:Bob<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Bar=&gten:Bat;Bar=&gten-x-piglatin:Ball<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>en:Foo;en-x-piglatin:Bar<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</>Introduction.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>en:Do; en-x-piglatin:Re<convert-delimiter>;</><convert-bracket>}-</><section-header section--2>==</><section> Foo </><section-header>==</>Foo Do<section-header section--2>==</><section> Bar </><section-header>==</>Bar Re<section-header section--2>==</><section> </><convert-bracket>-{</><section>Foo Bar</><convert-bracket>}-</><section> </><section-header>==</>"
 	},
 	{
 		"desc": "TOC anchors don't collide",
@@ -8105,17 +8105,17 @@
 	{
 		"desc": "Title with Wiki syntax",
 		"wikitext": "-{T|zh:Title ''with'' Wiki's s&uuml;ntax&copy}-\nShould be stripped!",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <apostrophes>''</><em>with</><apostrophes>''</> Wiki's s<entity>&amp;uuml;</>ntax&copy<convert-bracket>}-</>Should be stripped!"
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <apostrophes>''</><em>with</><apostrophes>''</> Wiki's s<entity>&amp;uuml;</>ntax&amp;copy<convert-bracket>}-</>Should be stripped!"
 	},
 	{
 		"desc": "Title with JavaScript injection",
 		"wikitext": "-{T|zh:Title <i onclick=\"alert(42)\">click me</i> <script>alert(43)</script>}-\nShould be stripped!",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>onclick=</><htmltag-attribute-value>\"alert(42)\"</><htmltag-bracket>&gt</>click me<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> <script>alert(43)</script><convert-bracket>}-</>Should be stripped!"
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>onclick=</><htmltag-attribute-value>\"alert(42)\"</><htmltag-bracket>&gt</>click me<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> &lt;script&gtalert(43)&lt;/script&gt<convert-bracket>}-</>Should be stripped!"
 	},
 	{
 		"desc": "Test 1 from T298401/T67747",
 		"wikitext": "-{T|zh:Title <script>a</script>&amp;<i>b</i>}-\nShould be stripped!",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <script>a</script><entity>&amp;amp;</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title &lt;script&gta&lt;/script&gt<entity>&amp;amp;</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</>b<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
 	},
 	{
 		"desc": "Test 2 from T298401/T67747",
@@ -8255,7 +8255,7 @@
 	{
 		"desc": "Language converter tricky html2wt cases (5)",
 		"wikitext": "-{H|<nowiki>a:b=>c</nowiki>=>zh-cn:<nowiki>x;foo=>zh-cn:boo</nowiki>;bar=>zh-cn:<nowiki>bat;xyz=>zh-cn:abc</nowiki>}-foobar\n\n-{H|A=><nowiki>bo:g;us</nowiki>:B}-\n\n-{A|zh-tw:xyz; zh-cn:<nowiki>0;zh-tw:bar</nowiki>}-\n\n-{<nowiki>bo:g;us</nowiki>:xyz; zh-cn:abc}-\n\na:b=>c xyz",
-		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>a:b=&gtc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>x;foo=&gtzh-cn:boo</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-delimiter>;</>bar<convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bat;xyz=&gtzh-cn:abc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}-</>foobar<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>A=><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:B<convert-bracket>}--{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh-tw:</>xyz<convert-delimiter>; </><convert-lang>zh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>0;zh-tw:bar</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}--{</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:xyz<convert-delimiter>; </><convert-lang>zh-cn:</>abc<convert-bracket>}-</>a:b=>c xyz"
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>a:b=&gtc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>x;foo=&gtzh-cn:boo</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-delimiter>;</>bar<convert-lang>=&gtzh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bat;xyz=&gtzh-cn:abc</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}-</>foobar<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>A=&gt<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:B<convert-bracket>}--{</><convert-flag>A</><convert-delimiter>|</><convert-lang>zh-tw:</>xyz<convert-delimiter>; </><convert-lang>zh-cn:</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>0;zh-tw:bar</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><convert-bracket>}--{</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>bo:g;us</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</>:xyz<convert-delimiter>; </><convert-lang>zh-cn:</>abc<convert-bracket>}-</>a:b=&gtc xyz"
 	},
 	{
 		"desc": "T239806: Trailing garbage in language converter rules (1)",
@@ -10582,7 +10582,7 @@
 	{
 		"desc": "Things that look like <pre> tags aren't treated as such",
 		"wikitext": "Barack Obama <President> of the United States\n<President></President>",
-		"parsed": "Barack Obama <President> of the United States<President></President>"
+		"parsed": "Barack Obama &lt;President&gt of the United States&lt;President&gt&lt;/President&gt"
 	},
 	{
 		"desc": "Handle broken pre-like tags (T66025)",
@@ -12302,7 +12302,7 @@
 	{
 		"desc": "Links 6. Add <nowiki/>s between text-nodes and url-links when required (T66300)",
 		"wikitext": "x<nowiki/>http://example.com<nowiki/>y\nhttp://example.com<nowiki/>?x\nhttp://example.com<nowiki/>&x\nhttp://example.com<nowiki/>'x\nhttp://example.com<nowiki/>,x\nhttp://example.com<nowiki/>.x\nhttp://example.com<nowiki/>;x\nhttp://example.com<nowiki/>:x\nhttp://example.com<nowiki/>;x\nhttp://example.com<nowiki/>!x\nhttp://example.com<nowiki/>=x\nhttp://example.com<nowiki/>(x)\nhttp://example.com(x<nowiki/>)",
-		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>?x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>&x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>'x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>,x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>.x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>:x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>!x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>=x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>(x)<free-extlink-protocol>http://</><free-extlink>example.com(x</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>)"
+		"parsed": "x<exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>y<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>?x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>&amp;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>'x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>,x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>.x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>:x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>;x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>!x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>=x<free-extlink-protocol>http://</><free-extlink>example.com</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>(x)<free-extlink-protocol>http://</><free-extlink>example.com(x</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>)"
 	},
 	{
 		"desc": "Links 7a. Don't add spurious <nowiki/>s between text-nodes and url-links (T66300)",
@@ -12322,7 +12322,7 @@
 	{
 		"desc": "Links 9. Don't add spurious <nowiki/>s between text-nodes and RFC-links (T66300)",
 		"wikitext": "RFC 123?foo\nRFC 123&foo\n-RFC 123-",
-		"parsed": "<magic-link>RFC 123</>?foo<magic-link>RFC 123</>&foo-<magic-link>RFC 123</>-"
+		"parsed": "<magic-link>RFC 123</>?foo<magic-link>RFC 123</>&amp;foo-<magic-link>RFC 123</>-"
 	},
 	{
 		"desc": "Links 10. Add <nowiki/>s between text-nodes and PMID-links when required (T66300)",
@@ -12332,7 +12332,7 @@
 	{
 		"desc": "Links 11. Don't add spurious <nowiki/>s between text-nodes and PMID-links (T66300)",
 		"wikitext": "PMID 123?foo\nPMID 123&foo\n-PMID 123-",
-		"parsed": "<magic-link>PMID 123</>?foo<magic-link>PMID 123</>&foo-<magic-link>PMID 123</>-"
+		"parsed": "<magic-link>PMID 123</>?foo<magic-link>PMID 123</>&amp;foo-<magic-link>PMID 123</>-"
 	},
 	{
 		"desc": "Links 12. Add <nowiki/>s between text-nodes and ISBN-links when required (T66300)",
@@ -12427,7 +12427,7 @@
 	{
 		"desc": "1. a tags",
 		"wikitext": "<a href=\"http://google.com\">google</a>",
-		"parsed": "<a href=\"<free-extlink-protocol>http://</><free-extlink>google.com</>\">google</a>"
+		"parsed": "&lt;a href=\"<free-extlink-protocol>http://</><free-extlink>google.com</>\"&gtgoogle&lt;/a&gt"
 	},
 	{
 		"desc": "2. other tags",

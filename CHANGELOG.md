@@ -1,3 +1,15 @@
+## 3.3.1
+
+*2025-08-25*
+
+**Fixed**
+
+- Color of the close button of panels in the dark theme
+
+**Changed**
+
+- Language-specific styles are now implemented with [`EditorView.theme`](https://codemirror.net/docs/ref/#view.EditorView^theme) instead of global CSS rules
+
 ## 3.3.0
 
 *2025-08-23*

@@ -1,7 +1,6 @@
-import {showPanel} from '@codemirror/view';
+import {showPanel, EditorView} from '@codemirror/view';
 import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import {menuRegistry} from './codemirror';
-import type {EditorView} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6, MenuItem} from './codemirror';
@@ -132,75 +131,161 @@ const updateMenu = (
 	}
 };
 
+const panelSelector = '.cm-panel-status',
+	workerSelector = '.cm-status-worker',
+	errorSelector = '.cm-status-error',
+	warningSelector = '.cm-status-warning',
+	enabledSelector = '.cm-status-fix-enabled',
+	disabledSelector = '.cm-status-fix-disabled',
+	menuSelector = '.cm-status-fix-menu',
+	messageSelector = '.cm-status-message';
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => showPanel.of(view => {
-	let diagnostics: readonly Diagnostic[] = [],
-		menu: HTMLDivElement | undefined;
-	if (!view.state.readOnly && (fixer || menuRegistry.length > 0)) {
-		menu = document.createElement('div');
-		menu.className = 'cm-status-fix-menu';
-		menu.tabIndex = -1;
-		if (fixer) {
-			menu.addEventListener('click', ({target}) => {
-				if (target === menu) {
-					return;
-				}
-				(async () => {
-					const {doc} = view.state,
-						output = await fixer(doc, (target as HTMLDivElement).dataset['rule']);
-					if (output !== doc.toString()) {
-						view.dispatch({
-							changes: {from: 0, to: doc.length, insert: output},
-						});
+export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
+	showPanel.of(view => {
+		let diagnostics: readonly Diagnostic[] = [],
+			menu: HTMLDivElement | undefined;
+		if (!view.state.readOnly && (fixer || menuRegistry.length > 0)) {
+			menu = document.createElement('div');
+			menu.className = 'cm-status-fix-menu';
+			menu.tabIndex = -1;
+			if (fixer) {
+				menu.addEventListener('click', ({target}) => {
+					if (target === menu) {
+						return;
 					}
-					view.focus();
-				})();
+					(async () => {
+						const {doc} = view.state,
+							output = await fixer(doc, (target as HTMLDivElement).dataset['rule']);
+						if (output !== doc.toString()) {
+							view.dispatch({
+								changes: {from: 0, to: doc.length, insert: output},
+							});
+						}
+						view.focus();
+					})();
+				});
+			}
+			menu.addEventListener('focusout', () => {
+				menu!.style.display = 'none';
 			});
+			view.dom.append(menu);
 		}
-		menu.addEventListener('focusout', () => {
-			menu!.style.display = 'none';
-		});
-		view.dom.append(menu);
-	}
-	const dom = document.createElement('div'),
-		worker = document.createElement('div'),
-		message = document.createElement('div'),
-		position = document.createElement('div'),
-		error = getLintMarker(view, 'error'),
-		warning = getLintMarker(view, 'warning'),
-		fix = getLintMarker(view, 'fix', menu),
-		{classList} = fix.firstChild as HTMLDivElement;
-	worker.className = 'cm-status-worker';
-	worker.append(error, warning, fix);
-	message.className = 'cm-status-message';
-	position.className = 'cm-status-line';
-	position.textContent = '0:0';
-	dom.className = 'cm-panel cm-panel-status';
-	dom.append(worker, message, position);
-	return {
-		dom,
-		update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
-			for (const tr of transactions) {
-				for (const effect of tr.effects) {
-					if (effect.is(setDiagnosticsEffect)) {
-						diagnostics = effect.value;
-						worker.classList.toggle('cm-status-worker-enabled', diagnostics.length > 0);
-						updateDiagnosticsCount(diagnostics, 'error', error);
-						updateDiagnosticsCount(diagnostics, 'warning', warning);
-						updateDiagnosticMessage(cm, diagnostics, main, message);
-						updateMenu(cm, diagnostics, main, classList, menu, fixer);
+		const dom = document.createElement('div'),
+			worker = document.createElement('div'),
+			message = document.createElement('div'),
+			position = document.createElement('div'),
+			error = getLintMarker(view, 'error'),
+			warning = getLintMarker(view, 'warning'),
+			fix = getLintMarker(view, 'fix', menu),
+			{classList} = fix.firstChild as HTMLDivElement;
+		worker.className = 'cm-status-worker';
+		worker.append(error, warning, fix);
+		message.className = 'cm-status-message';
+		position.className = 'cm-status-line';
+		position.textContent = '0:0';
+		dom.className = 'cm-panel cm-panel-status';
+		dom.append(worker, message, position);
+		return {
+			dom,
+			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
+				for (const tr of transactions) {
+					for (const effect of tr.effects) {
+						if (effect.is(setDiagnosticsEffect)) {
+							diagnostics = effect.value;
+							worker.classList.toggle('cm-status-worker-enabled', diagnostics.length > 0);
+							updateDiagnosticsCount(diagnostics, 'error', error);
+							updateDiagnosticsCount(diagnostics, 'warning', warning);
+							updateDiagnosticMessage(cm, diagnostics, main, message);
+							updateMenu(cm, diagnostics, main, classList, menu, fixer);
+						}
 					}
 				}
-			}
-			if (docChanged || selectionSet) {
-				updateDiagnosticMessage(cm, diagnostics, main, message);
-				updateMenu(cm, diagnostics, main, classList, menu, fixer);
-				const {number, from} = doc.lineAt(main.head);
-				position.textContent = `${number}:${main.head - from}`;
-				if (!main.empty) {
-					position.textContent += ` (${main.to - main.from})`;
+				if (docChanged || selectionSet) {
+					updateDiagnosticMessage(cm, diagnostics, main, message);
+					updateMenu(cm, diagnostics, main, classList, menu, fixer);
+					const {number, from} = doc.lineAt(main.head);
+					position.textContent = `${number}:${main.head - from}`;
+					if (!main.empty) {
+						position.textContent += ` (${main.to - main.from})`;
+					}
 				}
-			}
+			},
+		};
+	}),
+	EditorView.theme({
+		[panelSelector]: {
+			lineHeight: 1.4,
 		},
-	};
-});
+		[`${panelSelector}>div`]: {
+			padding: '0 .3em',
+			display: 'table-cell',
+		},
+		[workerSelector]: {
+			'-webkitUserSelect': 'none',
+			userSelect: 'none',
+		},
+		[`${workerSelector}>*`]: {
+			display: 'table-cell',
+			whiteSpace: 'nowrap',
+		},
+		[`${errorSelector},${warningSelector}`]: {
+			paddingRight: '8px',
+		},
+		[`.cm-status-worker-enabled ${errorSelector},.cm-status-worker-enabled ${warningSelector}`]: {
+			cursor: 'pointer',
+		},
+		[`${workerSelector}>*>div`]: {
+			display: 'inline-block',
+			verticalAlign: 'middle',
+		},
+		[`${workerSelector}>*>div:first-child`]: {
+			marginRight: '4px',
+			width: '1em',
+			height: '1em',
+		},
+		[`${disabledSelector},${enabledSelector}`]: {
+			maskImage: "url('data:image/svg+xml,"
+				+ '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">'
+				// eslint-disable-next-line @stylistic/max-len
+				+ '<path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"/>'
+				+ '</svg>'
+				+ "')",
+			maskSize: '100%',
+			maskRepeat: 'no-repeat',
+			maskPosition: 'center',
+		},
+		[disabledSelector]: {
+			backgroundColor: '#dadde3',
+		},
+		[enabledSelector]: {
+			backgroundColor: '#ffce31',
+			cursor: 'pointer',
+		},
+		[menuSelector]: {
+			display: 'none',
+			position: 'absolute',
+			zIndex: 301,
+			border: '1px solid #ddd',
+			borderRadius: '2px',
+			outline: 'none',
+			whiteSpace: 'nowrap',
+		},
+		[`${menuSelector}>div`]: {
+			padding: '1px 5px',
+			cursor: 'pointer',
+		},
+		[messageSelector]: {
+			borderStyle: 'solid',
+			borderWidth: '0 1px',
+			width: '100%',
+		},
+		[`${messageSelector} .cm-diagnosticAction`]: {
+			paddingTop: 0,
+			paddingBottom: 0,
+		},
+		'.cm-status-line': {
+			whiteSpace: 'nowrap',
+		},
+	}),
+];

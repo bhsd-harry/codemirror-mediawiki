@@ -185,7 +185,18 @@ export class CodeMirror6 {
 					},
 				]),
 				EditorView.theme({
-					'.cm-panels': {direction: document.dir},
+					'.cm-panels': {
+						direction: document.dir,
+					},
+					'& .cm-lineNumbers .cm-gutterElement': {
+						textAlign: 'end',
+					},
+					'.cm-textfield, .cm-button, .cm-panel.cm-search label, .cm-panel.cm-gotoLine label': {
+						fontSize: 'inherit',
+					},
+					'.cm-panel [name="close"]': {
+						color: 'inherit',
+					},
 				}),
 				EditorView.updateListener.of(({
 					state: {doc},
@@ -212,7 +223,9 @@ export class CodeMirror6 {
 						EditorState.readOnly.of(true),
 						EditorState.transactionFilter.of(tr => tr.docChanged ? [] : tr),
 						EditorView.theme({
-							'input[type="color"]': {pointerEvents: 'none'},
+							'input[type="color"]': {
+								pointerEvents: 'none',
+							},
 						}),
 					]
 					: [

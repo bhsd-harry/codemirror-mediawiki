@@ -98,4 +98,13 @@ export default (cm: CodeMirror6): Extension => [
 			}
 		}
 	}),
+	EditorView.theme({
+		'.cm-tooltip-ref': {
+			padding: '2px 5px',
+			width: 'max-content',
+			maxWidth: '60vw',
+			cursor: 'pointer',
+			whiteSpace: 'pre-wrap',
+		},
+	}),
 ] as Extension;

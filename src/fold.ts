@@ -1,4 +1,4 @@
-import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin} from '@codemirror/view';
+import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin, EditorView} from '@codemirror/view';
 import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
 import {
 	syntaxTree,
@@ -16,7 +16,7 @@ import {
 import {getRegex} from '@bhsd/common';
 import {tokens} from './config';
 import {matchTag, getTag} from './matchTag';
-import type {EditorView, Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
+import type {Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './token';
@@ -429,6 +429,8 @@ export const foldRef = /* @__PURE__ */ foldCommand(true);
 
 export default ((e = defaultFoldExtension): Extension => e) satisfies AddonMain<Extension>;
 
+const selector = '.cm-tooltip-fold';
+
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
@@ -546,6 +548,17 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 				}
 				return false;
 			},
+		},
+	}),
+	EditorView.theme({
+		[selector]: {
+			cursor: 'pointer',
+			lineHeight: 1.2,
+			padding: '0 1px',
+			opacity: 0.6,
+		},
+		[`${selector}:hover`]: {
+			opacity: 1,
 		},
 	}),
 ])();

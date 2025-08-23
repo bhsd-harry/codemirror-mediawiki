@@ -17,6 +17,7 @@ esbuild.buildSync({
 			define: {
 				$LANGS: JSON.stringify(langs),
 				$VERSION: JSON.stringify(version),
+				$STYLE: JSON.stringify(fs.readFileSync('mediawiki.css', 'utf8').trim()),
 			},
 		}
 		: {

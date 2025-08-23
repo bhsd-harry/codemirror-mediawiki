@@ -15,14 +15,13 @@
 	"files": [
 		"/i18n/",
 		"/dist/*.js",
-		"/dist/*.d.ts",
-		"/mediawiki.css"
+		"!/dist/demo.min.js",
+		"/dist/*.d.ts"
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
-	"style": "mediawiki.css",
 	"sideEffects": false,
 	"repository": {
 		"type": "git",

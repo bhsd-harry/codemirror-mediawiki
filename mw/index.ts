@@ -2,13 +2,15 @@ import {CDN} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
 import {instances} from './textSelection';
 import {openPreference} from './preference';
-import {msg, setI18N, welcome, REPO_CDN, localize} from './msg';
+import {msg, setI18N, welcome, localize} from './msg';
+
+declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
 const baseVersion = '3.3',
 	addons = ['theme'];
 
-mw.loader.load(`${CDN}/${REPO_CDN}/mediawiki.css`, 'text/css');
+mw.loader.addStyleTag($STYLE);
 
 /**
  * jQuery.val overrides for CodeMirror.
