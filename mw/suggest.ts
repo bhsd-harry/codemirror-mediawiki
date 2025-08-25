@@ -1,4 +1,4 @@
-import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki/api_params';
+import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
 
 declare interface TemplateParam {

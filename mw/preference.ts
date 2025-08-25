@@ -4,7 +4,7 @@ import {CodeMirror} from './codemirror';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
 import type {LintError} from 'wikiparser-node';
-import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki/api_params';
+import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki-api';
 
 declare type codeKey = typeof codeKeys[number];
 

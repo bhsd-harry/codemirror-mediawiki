@@ -70,7 +70,7 @@
 		"@lezer/highlight": "^1.2.1",
 		"@lezer/html": "^1.3.10",
 		"cm6-theme-nord": "^0.2.0",
-		"wikiparser-node": "^1.25.0"
+		"wikiparser-node": "^1.25.1"
 	},
 	"devDependencies": {
 		"@bhsd/cm-util": "^0.0.1",
@@ -90,7 +90,7 @@
 		"eslint": "^8.57.1",
 		"eslint-plugin-es-x": "^8.7.0",
 		"eslint-plugin-eslint-comments": "^3.2.0",
-		"eslint-plugin-jsdoc": "^52.0.2",
+		"eslint-plugin-jsdoc": "^54.1.1",
 		"eslint-plugin-json-es": "^1.6.0",
 		"eslint-plugin-promise": "^7.2.1",
 		"eslint-plugin-regexp": "^2.9.0",
@@ -101,7 +101,7 @@
 		"monaco-editor": "^0.52.2",
 		"stylelint": "^16.23.1",
 		"stylelint-config-recommended": "^17.0.0",
-		"types-mediawiki": "^1.10.1",
+		"types-mediawiki": "^2.0.0",
 		"typescript": "^5.8.2"
 	}
 }

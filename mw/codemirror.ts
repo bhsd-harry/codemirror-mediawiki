@@ -23,17 +23,12 @@ import escape from './escape';
 import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint';
-import type * as Monaco from 'monaco-editor';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 import type {Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSource} from '../src/lintsource';
-
-declare global {
-	const monaco: typeof Monaco;
-}
 
 declare interface IWikitextModel extends editor.ITextModel {
 	linter?: {option?: Option | LiveOption};

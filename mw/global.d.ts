@@ -1,4 +1,5 @@
 import type {} from 'types-mediawiki';
+import type * as Monaco from 'monaco-editor';
 
 declare global {
 	namespace mw {
@@ -39,4 +40,6 @@ declare global {
 	interface JQuery {
 		wikiEditor(method: 'addModule' | 'addToToolbar', config: object): JQuery;
 	}
+
+	const monaco: typeof Monaco;
 }
