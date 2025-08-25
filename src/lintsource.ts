@@ -184,7 +184,7 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 		esLint = await getJsLinter();
 	return async state => {
 		const {doc} = state,
-			option = await getOpt(opt) ?? {},
+			option = await getOpt(opt, true) ?? {},
 			js = option['js'] as Option,
 			css = option['css'] as Option;
 		return [
@@ -203,7 +203,7 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
 		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt)}, view);
 	return async state => {
 		const {doc} = state,
-			option = await getOpt(opt) ?? {},
+			option = await getOpt(opt, true) ?? {},
 			wiki = option['wiki'] as Option;
 		return [
 			...await vueLintSource(state),

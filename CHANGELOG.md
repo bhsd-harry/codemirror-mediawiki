@@ -1,10 +1,12 @@
-## 3.3.1
+## 3.4.0
 
 *2025-08-25*
 
 **Fixed**
 
 - Color of the close button of panels in the dark theme
+- Linter configurations for the mixed MediaWiki-HTML mode
+- Conflicting styles between [highlightWhitespace](./README.md#highlightwhitespace) and [bracketMatching](./README.md#bracketmatching) in the MediaWiki mode and the dark theme
 
 **Changed**
 

@@ -56,14 +56,14 @@ export const light = /* @__PURE__ */ EditorView.theme({
 		nordBase,
 		/* @__PURE__ */ EditorView.theme({
 			'div.cm-activeLine': {
-				backgroundColor: '#4c566a44',
-			},
-			'&.cm-focused .cm-matchingTag, &.cm-focused .cm-nonmatchingTag': {
-				outline: '1px solid #8fbcbb',
+				backgroundColor: 'rgb(76,86,106,.27)',
 			},
 			'&.cm-focused .cm-matchingTag': {
 				backgroundColor: '#eceff4',
 				color: '#434c5e',
+			},
+			'&.cm-focused .cm-nonmatchingTag': {
+				backgroundColor: 'rgb(235,203,139,.32)',
 			},
 			['&.cm-focused>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground,'
 				+ '.cm-tooltip-hover code, .cm-status-fix-menu>div:hover, .cm-diagnosticAction, div.cm-tooltip-fold']: {
