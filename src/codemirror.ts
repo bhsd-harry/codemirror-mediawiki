@@ -32,7 +32,7 @@ export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
-export interface MenuItem {
+declare interface MenuItem {
 	name: string;
 	isActionable(this: void, cm: CodeMirror6): boolean;
 	getItems(this: void, cm: CodeMirror6): HTMLDivElement[];
@@ -501,7 +501,7 @@ export class CodeMirror6 {
 	 * @param position position
 	 */
 	getNodeAt(position: number): SyntaxNode | undefined {
-		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolve(position, 1);
+		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolveInner(position, 1);
 	}
 
 	/**

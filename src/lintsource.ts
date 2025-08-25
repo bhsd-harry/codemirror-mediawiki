@@ -1,5 +1,7 @@
+import {ensureSyntaxTree} from '@codemirror/language';
 import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
+import {sanitizeInlineStyle} from '@bhsd/common';
 import {getWikiLinter, getJsLinter, getCssLinter, getJsonLinter, getLuaLinter} from './linter';
 import {posToIndex} from './hover';
 import type {EditorView} from '@codemirror/view';
@@ -189,8 +191,25 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 			css = option['css'] as Option;
 		return [
 			...(await Promise.all(
-				cssLanguage.findRegions(state)
-					.map(({from, to}) => cssLintSource(styleLint, state.sliceDoc(from, to), css, doc, from, to)),
+				cssLanguage.findRegions(state).map(async ({from, to}): Promise<Diagnostic[]> => {
+					const node = ensureSyntaxTree(state, from)?.resolve(from, 1);
+					if (node?.name === 'AttributeValue') {
+						return (await cssLintSource(
+							styleLint,
+							`a {${sanitizeInlineStyle(state.sliceDoc(from, to))}}`,
+							css,
+							doc,
+							from - 3,
+							to + 1,
+						)).filter(({from: f, to: t}) => f <= to && t >= from)
+							.map((diagnostic): Diagnostic => {
+								diagnostic.from = Math.max(diagnostic.from, from);
+								diagnostic.to = Math.min(diagnostic.to, to);
+								return diagnostic;
+							});
+					}
+					return node ? cssLintSource(styleLint, state.sliceDoc(from, to), css, doc, from, to) : [];
+				}),
 			)).flat(),
 			...javascriptLanguage.findRegions(state)
 				.flatMap(({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js, doc, from, to)),

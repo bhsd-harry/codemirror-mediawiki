@@ -1,4 +1,4 @@
-## 3.4.0
+## 3.4.1
 
 *2025-08-25*
 
@@ -7,10 +7,13 @@
 - Color of the close button of panels in the dark theme
 - Linter configurations for the mixed MediaWiki-HTML mode
 - Conflicting styles between [highlightWhitespace](./README.md#highlightwhitespace) and [bracketMatching](./README.md#bracketmatching) in the MediaWiki mode and the dark theme
+- Stylelint for inline CSS in the Vue mode and the mixed MediaWiki-HTML mode
+- Stylelint quick fixes for the MediaWiki mode
 
 **Changed**
 
 - Language-specific styles are now implemented with [`EditorView.theme`](https://codemirror.net/docs/ref/#view.EditorView^theme) instead of global CSS rules
+- [`getNodeAt`](./README.md#getnodeat) now returns the [innermost overlaid node](https://lezer.codemirror.net/docs/ref/#common.Tree.resolveInner) in the Vue mode and the mixed MediaWiki-HTML mode
 
 ## 3.3.0
 
@@ -1128,7 +1131,7 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 - Anchors in file links are now highlighted as errors in the MediaWiki mode
-- The replacement function passed to [`CodeMirror6.replaceSelections`](./README.md#replaceselections) now has an expanded signature
+- The replacement function passed to [`replaceSelections`](./README.md#replaceselections) now has an expanded signature
 
 ## v2.7.4
 

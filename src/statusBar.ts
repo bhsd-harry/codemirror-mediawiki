@@ -3,7 +3,7 @@ import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import {menuRegistry} from './codemirror';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
-import type {CodeMirror6, MenuItem} from './codemirror';
+import type {CodeMirror6} from './codemirror';
 import type {LintSource} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
@@ -54,12 +54,6 @@ const updateDiagnosticsCount = (diagnostics: readonly Diagnostic[], s: Severity,
 	marker.lastChild!.textContent = String(diagnostics.filter(({severity}) => severity === s).length);
 };
 
-const hasFix = (diagnostic: Diagnostic): boolean | undefined =>
-	diagnostic.actions?.some(({name}) => name === 'fix' || name.startsWith('Fix:'));
-
-const isItemActionable = (cm: CodeMirror6, {name, isActionable}: MenuItem): boolean =>
-	cm.hasPreference(name) && isActionable(cm);
-
 const toggleClass = (classList: DOMTokenList, enabled: boolean): void => {
 	classList.toggle('cm-status-fix-enabled', enabled);
 	classList.toggle('cm-status-fix-disabled', !enabled);
@@ -106,10 +100,12 @@ const updateMenu = (
 	fixer?: LintSource['fixer'],
 ): void => {
 	if (menu) {
-		const actionable = menuRegistry.filter(item => isItemActionable(cm, item)),
+		const actionable = menuRegistry.filter(({name, isActionable}) => cm.hasPreference(name) && isActionable(cm)),
 			fixable = new Set(
-				fixer && getDiagnostics(allDiagnostics, main).filter(hasFix)
-					.map(({message}) => / \(([^()]+)\)$/u.exec(message)?.[1])
+				fixer && getDiagnostics(allDiagnostics, main).filter(
+					({actions}) => actions?.some(({name}) => name === 'fix'
+						|| name !== 'Fix: Stylelint' && name.startsWith('Fix:')),
+				).map(({message}) => / \(([^()]+)\)$/u.exec(message)?.[1])
 					.filter(Boolean) as string[],
 			);
 		if (actionable.length === 0 && fixable.size === 0) {

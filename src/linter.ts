@@ -127,7 +127,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 							message,
 						};
 					if (fix) {
-						const before = lines.slice(0, i - 1).join('\n').length + 1 + length;
+						const before = lines.slice(0, i - 1).join('\n').length + length;
 						diagnostic.data = [
 							{
 								range: {
