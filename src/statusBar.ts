@@ -218,8 +218,14 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			display: 'table-cell',
 		},
 		[workerSelector]: {
-			'-webkitUserSelect': 'none',
+			WebkitUserSelect: 'none',
 			userSelect: 'none',
+			'--fix-icon': "url('data:image/svg+xml,"
+				+ '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">'
+				// eslint-disable-next-line @stylistic/max-len
+				+ '<path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"/>'
+				+ '</svg>'
+				+ "')",
 		},
 		[`${workerSelector}>*`]: {
 			display: 'table-cell',
@@ -241,14 +247,13 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			height: '1em',
 		},
 		[`${disabledSelector},${enabledSelector}`]: {
-			maskImage: "url('data:image/svg+xml,"
-				+ '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">'
-				// eslint-disable-next-line @stylistic/max-len
-				+ '<path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"/>'
-				+ '</svg>'
-				+ "')",
+			WebkitMaskImage: 'var(--fix-icon)',
+			maskImage: 'var(--fix-icon)',
+			WebkitMaskSize: '100%',
 			maskSize: '100%',
+			WebkitMaskRepeat: 'no-repeat',
 			maskRepeat: 'no-repeat',
+			WebkitMaskPosition: 'center',
 			maskPosition: 'center',
 		},
 		[disabledSelector]: {

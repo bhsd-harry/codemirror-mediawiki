@@ -1,3 +1,11 @@
+## 3.4.2
+
+*2025-08-21*
+
+**Fixed**
+
+- Vendor prefix for [`mask`](https://developer.mozilla.org/en-US/docs/Web/CSS/mask) CSS properties
+
 ## 3.4.1
 
 *2025-08-25*
