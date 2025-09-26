@@ -28,7 +28,7 @@ import type {
 import type {StyleSpec} from 'style-mod';
 import type {MwConfig, TagName} from './token';
 
-const re = new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u');
+export const re = /* @__PURE__ */ (() => new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u'))();
 
 /**
  * 检查首字母大小写并插入正确的自动填充内容

@@ -118,6 +118,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 	]);
 	if (hasCodeEditor) {
 		try {
+			await mw.loader.using('mediawiki.api');
 			await new mw.Api().loadMessagesIfMissing([
 				'codeeditor-indent',
 				'codeeditor-outdent',

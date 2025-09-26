@@ -24,7 +24,7 @@ import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 import type {DocRange, foldHandler} from './fold';
 import type {Option, LiveOption} from './linter';
-import type {LintSource, LintSourceGetter} from './lintsource';
+import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
 import type {Text as ExtendedText, detectIndent} from './indent';
 import type statusBar from './statusBar';
 
@@ -298,21 +298,22 @@ export class CodeMirror6 {
 	 * Start syntax checking
 	 * @param lintSource function for syntax checking
 	 */
-	lint(lintSource?: LintSource): void {
-		const linterExtension = lintSource
+	lint(lintSource?: LintSources): void {
+		const lintSources = typeof lintSource === 'function' ? [lintSource] : lintSource;
+		const linterExtension = lintSources
 			? [
-				linter(async ({state}) => {
-					const diagnostics = await lintSource(state);
+				...lintSources.map(source => linter(async ({state}) => {
+					const diagnostics = await source!(state);
 					if (state.readOnly) {
 						for (const diagnostic of diagnostics) {
 							delete diagnostic.actions;
 						}
 					}
 					return diagnostics;
-				}),
+				})),
 				lintGutter(),
 				keymap.of(lintKeymap),
-				optionalFunctions.statusBar(this, lintSource.fixer),
+				optionalFunctions.statusBar(this, lintSources[0].fixer),
 			]
 			: [];
 		if (lintSource) {

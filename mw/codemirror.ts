@@ -13,6 +13,7 @@ import {
 } from '../src/index';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
+import {re} from '../src/mediawiki';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
@@ -21,6 +22,7 @@ import {msg, curVersion, languages} from './msg';
 import prepareSuggest from './suggest';
 import escape from './escape';
 import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
+import getParsoidLintSource from './lintsource';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint';
 import type {editor, IRange} from 'monaco-editor';
@@ -28,7 +30,7 @@ import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
 import type {Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
-import type {LintSource} from '../src/lintsource';
+import type {LintSources} from '../src/lintsource';
 
 declare interface IWikitextModel extends editor.ITextModel {
 	linter?: {option?: Option | LiveOption};
@@ -53,7 +55,7 @@ registerVue();
 registerTheme('dark', nord);
 registerTheme('nord', nord);
 
-const linters: Record<string, LintSource | undefined> = {},
+const linters: Record<string, LintSources | undefined> = {},
 	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
 	langMap: Record<string, string> = {
 		'sanitized-css': 'css',
@@ -361,9 +363,16 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	override async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
+	// @ts-expect-error override return type
+	override async getLinter(opt?: Option | LiveOption): Promise<LintSources | undefined> {
 		if (this.view) {
 			const linter = await super.getLinter(opt);
+			if (this.lang === 'mediawiki' && re.test(location.hostname)) {
+				const parsoidLinter = await getParsoidLintSource(),
+					lintersources: LintSources = linter ? [linter, parsoidLinter] : parsoidLinter;
+				linters[this.lang] = lintersources;
+				return lintersources;
+			}
 			linters[this.lang] = linter;
 			return linter;
 		} else if (this.#model?.linter) {

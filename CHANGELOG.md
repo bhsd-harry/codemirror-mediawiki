@@ -1,10 +1,11 @@
 ## 3.5.0
 
-*2025-09-26*
+*2025-09-27*
 
 **Added**
 
 - Content inside `<translate>` tags is now highlighted in the MediaWiki mode
+- Wikitext linting with [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) on a WMF-hosted site
 
 ## 3.4.2
 
