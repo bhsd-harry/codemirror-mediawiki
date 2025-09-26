@@ -12,10 +12,11 @@ import type {QuickFixData} from 'wikiparser-node';
 import type {Option, LiveOption} from './linter';
 
 export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>) & {
+	delay?: number;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
-export type LintSources = LintSource | [LintSource, LintSource?];
+export type LintSources = LintSource | [LintSource] | [LintSource, LintSource];
 export type LintSourceGetter = (
 	opt?: Option | LiveOption,
 	view?: EditorView,

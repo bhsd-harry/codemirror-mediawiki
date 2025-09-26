@@ -5,43 +5,46 @@ declare interface ParsoidError {
 	type: string;
 	dsr: [number, number];
 }
+declare interface ApiResponse {
+	query: {
+		general: {
+			linter: {
+				high: string[];
+			};
+		};
+	};
+}
 
-const error = new Set([
-	'deletable-table-tag',
-	'duplicate-ids',
-	'html5-misnesting',
-	'misc-tidy-replacement-issues',
-	'multiline-html-table-in-list',
-	'multiple-unclosed-formatting-tags',
-	'pwrap-bug-workaround',
-	'self-closed-tag',
-	'tidy-font-bug',
-	'tidy-whitespace-bug',
-	'unclosed-quotes-in-heading',
-]);
+let high: Promise<Set<string>> | undefined;
 
 const getMsgKey = (type: string): string => `linter-category-${type}`;
 
 export default async (): Promise<LintSource> => {
 	await mw.loader.using('mediawiki.api');
-	const api = new mw.Api();
-	return async ({doc}): Promise<Diagnostic[]> => {
-		const form = new FormData();
-		form.append('wikitext', doc.toString());
-		const errors: ParsoidError[] = await (await fetch(
-			`${location.origin}/api/rest_v1/transform/wikitext/to/lint`,
-			{
-				method: 'POST',
-				body: form,
-			},
-		)).json();
+	const api = new mw.Api(),
+		rest = new mw.Rest();
+	high ??= (async () => {
+		const r = await api.get({
+			action: 'query',
+			meta: 'siteinfo',
+			siprop: 'general',
+		}) as ApiResponse;
+		return new Set(r.query.general.linter.high);
+	})();
+	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
+		const errors = await rest.post('/v1/transform/wikitext/to/lint', {
+				wikitext: doc.toString(),
+			}) as ParsoidError[],
+			error = await high!;
 		await api.loadMessagesIfMissing(errors.map(({type}) => getMsgKey(type)));
-		return errors.map(({type, dsr}): Diagnostic => ({
+		return errors.map(({type, dsr: [from, to]}): Diagnostic => ({
 			severity: error.has(type) ? 'error' : 'warning',
-			source: 'Extension:Linter',
+			source: 'Parsoid',
 			message: mw.msg(getMsgKey(type)),
-			from: dsr[0] - 1,
-			to: dsr[1] - 1,
-		})).filter(({to}) => to <= doc.length);
+			from,
+			to,
+		}));
 	};
+	linter.delay = 3e3;
+	return linter;
 };

@@ -299,18 +299,21 @@ export class CodeMirror6 {
 	 * @param lintSource function for syntax checking
 	 */
 	lint(lintSource?: LintSources): void {
-		const lintSources = typeof lintSource === 'function' ? [lintSource] : lintSource;
+		const lintSources: LintSources | undefined = typeof lintSource === 'function' ? [lintSource] : lintSource;
 		const linterExtension = lintSources
 			? [
-				...lintSources.map(source => linter(async ({state}) => {
-					const diagnostics = await source!(state);
-					if (state.readOnly) {
-						for (const diagnostic of diagnostics) {
-							delete diagnostic.actions;
+				...lintSources.map(source => linter(
+					async ({state}) => {
+						const diagnostics = await source(state);
+						if (state.readOnly) {
+							for (const diagnostic of diagnostics) {
+								delete diagnostic.actions;
+							}
 						}
-					}
-					return diagnostics;
-				})),
+						return diagnostics;
+					},
+					source.delay ? {delay: source.delay} : undefined,
+				)),
 				lintGutter(),
 				keymap.of(lintKeymap),
 				optionalFunctions.statusBar(this, lintSources[0].fixer),
