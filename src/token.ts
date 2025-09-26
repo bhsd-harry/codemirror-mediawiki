@@ -1040,7 +1040,10 @@ export class MediaWiki {
 			} else if (stream.match(re) || space) {
 				return makeStyle(style, state);
 			} else if (
-				stream.match(/^<(?!(?:includeonly|noinclude)(?:\/?>|\s|$))[/a-z]/iu, false)
+				stream.match(
+					/^<(?!(?:includeonly|noinclude)(?:\/?>|\s|$)|tvar(?:\s|$))[/a-z]/iu,
+					false,
+				)
 				&& !stream.match(/^<onlyinclude>/u, false)
 			) {
 				lt = stream.pos + 1;
@@ -1410,6 +1413,10 @@ export class MediaWiki {
 		};
 		return (stream, state) => {
 			if (stream.match('/>')) {
+				if (name === 'tvar') {
+					stream.backUp(1);
+					return makeLocalTagStyle('error', state);
+				}
 				state.extMode = false;
 				pop(state);
 				return makeLocalTagStyle('extTagBracket', state);
@@ -1417,7 +1424,10 @@ export class MediaWiki {
 				const {config: {tagModes}} = this;
 				state.extName = name;
 				state.extMode ||= name in tagModes && (tagModes[name]!) in this
-					&& this[tagModes[name] as MimeTypes](state.data.tags.filter(tag => tag !== name));
+					&& this[tagModes[name] as MimeTypes]([
+						...state.data.tags.filter(tag => tag !== name),
+						...name === 'translate' ? ['tvar'] : [],
+					]);
 				if (state.extMode) {
 					state.extState = state.extMode.startState!(0);
 				}
@@ -1710,6 +1720,8 @@ export class MediaWiki {
 				|| stream.match(
 					/^<(?:(?:includeonly|noinclude)(?:\s[^>]*)?\/?>|\/(?:includeonly|noinclude)\s*>)/iu,
 				)
+				|| state.data.tags.includes('tvar')
+				&& stream.match(/^<(?:tvar\s[^>]*>|\/tvar\s*>)/iu)
 			) {
 				return makeLocalTagStyle('comment', state);
 			} else if (stream.eat('|')) {

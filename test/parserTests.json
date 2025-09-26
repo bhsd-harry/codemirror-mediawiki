@@ -4928,7 +4928,7 @@
 	{
 		"desc": "New tvar syntax",
 		"wikitext": "<translate><tvar name=\"name\">contents</tvar></translate>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;tvar name=\"name\"&gtcontents&lt;/tvar&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag-bracket>&lt;</><tag-translate exttag-name>tvar </><tag-translate exttag-attribute ext-tvar>name=</><tag-translate exttag-attribute-value>\"name\"</><tag-translate exttag-bracket>&gt</><tag-translate tag-tvar>contents</><tag-translate exttag-bracket>&lt;/</><tag-translate exttag-name>tvar</><tag-translate exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Unicode number before autolinks",
@@ -5018,12 +5018,12 @@
 	{
 		"desc": "Do not translate external URL",
 		"wikitext": "<translate>[<tvar name=1>http://example.net</tvar> text]</translate>\n\n[<!-- -->//example.net text]",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>[&lt;tvar name=1&gthttp://example.net&lt;/tvar&gt text]</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>[<comment>&lt;!-- --&gt</>//example.net text]"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate>[</><tag-translate exttag-bracket>&lt;</><tag-translate exttag-name>tvar </><tag-translate exttag-attribute ext-tvar>name=</><tag-translate exttag-attribute-value>1</><tag-translate exttag-bracket>&gt</><tag-translate tag-tvar free-extlink-protocol>http://</><tag-translate tag-tvar free-extlink>example.net</><tag-translate exttag-bracket>&lt;/</><tag-translate exttag-name>tvar</><tag-translate exttag-bracket>&gt</><tag-translate> text]</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>[<comment>&lt;!-- --&gt</>//example.net text]"
 	},
 	{
 		"desc": "Commented <translate> tags",
 		"wikitext": "<!-- <translate><tvar name=1></tvar></translate> --><includeonly><translate><tvar name=2></tvar></translate></includeonly>",
-		"parsed": "<comment>&lt;!-- &lt;translate&gt&lt;tvar name=1&gt&lt;/tvar&gt&lt;/translate&gt --&gt</><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><tag-includeonly tag-translate exttag>&lt;tvar name=2&gt&lt;/tvar&gt</><tag-includeonly exttag-bracket>&lt;/</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>"
+		"parsed": "<comment>&lt;!-- &lt;translate&gt&lt;tvar name=1&gt&lt;/tvar&gt&lt;/translate&gt --&gt</><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><tag-includeonly tag-translate exttag-bracket>&lt;</><tag-includeonly tag-translate exttag-name>tvar </><tag-includeonly tag-translate exttag-attribute ext-tvar>name=</><tag-includeonly tag-translate exttag-attribute-value>2</><tag-includeonly tag-translate exttag-bracket>&gt&lt;/</><tag-includeonly tag-translate exttag-name>tvar</><tag-includeonly tag-translate exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;/</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "badCharacters"
@@ -11996,27 +11996,27 @@
 	{
 		"desc": "Old tvar syntax should not break too hard.",
 		"wikitext": "<translate><tvar|plop>pouet</></translate>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;tvar|plop&gtpouet&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate>&lt;tvar|plop&gtpouet&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Old tvar syntax should not pull content in cell attributes",
 		"wikitext": "{|\n|<translate>hello <tvar|var>variable</></translate>\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|</><exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|var&gtvariable&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-delimiter>|</><exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate>hello &lt;tvar|var&gtvariable&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Annotation markers starting lines should neither insert pre nor merge ranges",
 		"wikitext": "<translate><!--T:1--> translate 1</translate>\n<translate><!--T:2--> translate 2</translate>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;!--T:1--&gt translate 1</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>&lt;!--T:2--&gt translate 2</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate comment>&lt;!--T:1--&gt</><tag-translate> translate 1</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate comment>&lt;!--T:2--&gt</><tag-translate> translate 2</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "tvar in a template should get stripped",
 		"wikitext": "<translate>{{1x|<tvar|var>hello</>}}</translate>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>{{1x|&lt;tvar|var&gthello&lt;/&gt}}</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate template-ground template-bracket>{{</><tag-translate template-ground template-name pagename>1x</><tag-translate template-ground template-delimiter>|</><tag-translate template-ground template>&lt;tvar</><tag-translate template-ground template-delimiter>|</><tag-translate template-ground template>var&gthello&lt;/&gt</><tag-translate template-ground template-bracket>}}</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "tvar with old syntax containing template markup should not break",
 		"wikitext": "<translate>hello <tvar|code>{{1x|</>world<tvar|code2>}}</></translate>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate exttag>hello &lt;tvar|code&gt{{1x|&lt;/&gtworld&lt;tvar|code2&gt}}&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>translate</><exttag-bracket>&gt</><tag-translate>hello &lt;tvar|code&gt</><tag-translate template-ground template-bracket>{{</><tag-translate template-ground template-name pagename>1x</><tag-translate template-ground template-delimiter>|</><tag-translate template-ground template>&lt;/&gtworld&lt;tvar</><tag-translate template-ground template-delimiter>|</><tag-translate template-ground template>code2&gt</><tag-translate template-ground template-bracket>}}</><tag-translate>&lt;/&gt</><exttag-bracket>&lt;/</><exttag-name>translate</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "urlFragmentModesTests"

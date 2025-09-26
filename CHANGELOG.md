@@ -1,3 +1,11 @@
+## 3.5.0
+
+*2025-09-26*
+
+**Added**
+
+- Content inside `<translate>` tags is now highlighted in the MediaWiki mode
+
 ## 3.4.2
 
 *2025-08-21*
