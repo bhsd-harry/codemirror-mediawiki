@@ -1221,7 +1221,6 @@ registerSignatureHelp();
 
 ### Extension
 
-1. [Extension:Translate](https://www.mediawiki.org/wiki/Extension:Translate) is not supported.
 1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should prevent preformatted text ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
 
 ### Transclusion

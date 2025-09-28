@@ -214,10 +214,11 @@ export class FullMediaWiki extends MediaWiki {
 				types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
-				start = pos - search.length;
+				start = pos - search.length,
+				isWMF = re.test(location.hostname);
 			let {prevSibling} = node;
-			if (explicit || isParserFunction && search.includes('#') || re.test(location.hostname)) {
-				const validFor = /^[^|{}<>[\]#]*$/u;
+			if (explicit || isParserFunction && search.includes('#') || isWMF) {
+				const validFor = isWMF ? null : {validFor: /^[^|{}<>[\]#]*$/u};
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
@@ -227,13 +228,13 @@ export class FullMediaWiki extends MediaWiki {
 						: {
 							from: start + suggestions.offset,
 							options,
-							validFor,
+							...validFor,
 						};
 				} else if (explicit && hasTag(types, 'templateBracket') && context.matchBefore(/\{\{$/u)) {
 					return {
 						from: pos,
 						options: this.functionSynonyms,
-						validFor,
+						...validFor,
 					};
 				}
 				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
@@ -258,7 +259,7 @@ export class FullMediaWiki extends MediaWiki {
 						// eslint-disable-next-line unicorn/explicit-length-check
 						from: start + suggestions.offset - (isPage && prefix.length),
 						options: suggestions.options,
-						validFor,
+						...validFor,
 					};
 				}
 				const isArgument = hasTag(types, 'templateArgumentName'),

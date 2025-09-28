@@ -1,11 +1,15 @@
 ## 3.5.0
 
-*2025-09-27*
+*2025-09-29*
 
 **Added**
 
 - Content inside `<translate>` tags is now highlighted in the MediaWiki mode
 - Wikitext linting with [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) on a WMF-hosted site
+
+**Changed**
+
+- Link or template suggestions in the [autocompletion](./README.md#autocompletion) extension are now re-triggered on typing on a WMF-hosted site
 
 ## 3.4.2
 

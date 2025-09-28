@@ -13,27 +13,39 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest =>
-	async (search: string, namespace = 0, subpage?: boolean) => {
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
+	let promise: Promise<ApiSuggestions> | undefined;
+	return async (search: string, namespace = 0, subpage?: boolean) => {
 		if (subpage) {
 			search = title + search; // eslint-disable-line no-param-reassign
 		}
-		try {
-			const [, pages] = await api.get({
-				action: 'opensearch',
-				search,
-				namespace,
-				limit: 'max',
-			} satisfies ApiOpenSearchParams) as [string, string[]];
-			if (subpage) {
-				const {length} = title;
-				return pages.map(page => [page.slice(length)]);
+		promise ??= (async () => {
+			try {
+				api.abort();
+				const [, pages] = await api.get({
+					action: 'opensearch',
+					search,
+					namespace,
+					limit: 'max',
+				} satisfies ApiOpenSearchParams) as [string, string[]];
+				if (subpage) {
+					const {length} = title;
+					return pages.map(page => [page.slice(length)]);
+				}
+				return namespace === 0
+					? pages.map(page => [page])
+					: pages.map(page => [new mw.Title(page).getMainText()]);
+			} catch {
+				return [];
 			}
-			return namespace === 0 ? pages.map(page => [page]) : pages.map(page => [new mw.Title(page).getMainText()]);
-		} catch {
-			return [];
-		}
+		})();
+		const result = await promise;
+		setTimeout(() => {
+			promise = undefined;
+		}, 120);
+		return result;
 	};
+};
 
 /**
  * 获取模板参数建议
@@ -50,6 +62,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
 		}
+		api.abort();
 		/* eslint-enable no-param-reassign */
 		const {pages} = await api.get({
 			action: 'templatedata',

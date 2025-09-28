@@ -32,6 +32,7 @@ export default async (): Promise<LintSource> => {
 		return new Set(r.query.general.linter.high);
 	})();
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
+		rest.abort();
 		const errors = await rest.post('/v1/transform/wikitext/to/lint', {
 				wikitext: doc.toString(),
 			}) as ParsoidError[],
