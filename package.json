@@ -101,7 +101,7 @@
 		"monaco-editor": "^0.53.0",
 		"stylelint": "^16.24.0",
 		"stylelint-config-recommended": "^17.0.0",
-		"stylelint-plugin-use-baseline": "^0.9.1",
+		"stylelint-plugin-use-baseline": "^1.0.0",
 		"types-mediawiki": "^2.0.0",
 		"typescript": "^5.8.2"
 	}
