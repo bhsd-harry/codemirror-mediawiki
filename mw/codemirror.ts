@@ -13,7 +13,7 @@ import {
 } from '../src/index';
 import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
-import {re} from '../src/mediawiki';
+import {isWMFSite} from '../src/mediawiki';
 import {getMwConfig, getParserConfig} from './config';
 import {getTitleParser, isbnParser} from './openLinks';
 import {instances, textSelection, monacoTextSelection} from './textSelection';
@@ -367,8 +367,8 @@ export class CodeMirror extends CodeMirror6 {
 	override async getLinter(opt?: Option | LiveOption): Promise<LintSources | undefined> {
 		if (this.view) {
 			const linter = await super.getLinter(opt);
-			if (this.lang === 'mediawiki' && re.test(location.hostname)) {
-				const parsoidLinter = await getParsoidLintSource(),
+			if (this.lang === 'mediawiki' && isWMFSite()) {
+				const parsoidLinter = await getParsoidLintSource(opt),
 					lintersources: LintSources = linter ? [linter, parsoidLinter] : parsoidLinter;
 				linters[this.lang] = lintersources;
 				return lintersources;

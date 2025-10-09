@@ -1,3 +1,11 @@
+## 3.5.1
+
+*2025-10-11*
+
+**Added**
+
+- The preference dialog now includes configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) on a WMF-hosted site
+
 ## 3.5.0
 
 *2025-09-29*

@@ -28,7 +28,7 @@ export type LintSourceGetter = (
  * @param opt Linter选项
  * @param runtime 是否为运行时选项
  */
-const getOpt = (opt: Option | LiveOption, runtime?: boolean): Option | Promise<Option> =>
+export const getOpt = (opt: Option | LiveOption, runtime?: boolean): Option | Promise<Option> =>
 	typeof opt === 'function' ? opt(runtime) : opt;
 
 /**

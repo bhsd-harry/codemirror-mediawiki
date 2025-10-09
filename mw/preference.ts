@@ -1,8 +1,10 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
+import {isWMFSite} from '../src/mediawiki';
 import {CodeMirror} from './codemirror';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
+import {parsoidRules} from './lintsource';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki-api';
 
@@ -47,7 +49,9 @@ export const indentKey = 'codemirror-mediawiki-indent',
 	themeKey = 'codemirror-mediawiki-theme',
 	prefs = new Set(getObject(storageKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
-	wikilint = (getObject(wikilintKey) ?? {}) as Record<LintError.Rule, RuleState | undefined>,
+	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
+	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
+	panelLinter: {$element?: JQuery} = {},
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
@@ -59,8 +63,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	themeWidget: OO.ui.DropdownInputWidget,
 	indent = localStorage.getItem(indentKey) ?? '',
 	theme = localStorage.getItem(themeKey) ?? 'auto';
-const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {},
-	wikilintWidgets = new Map<LintError.Rule, OO.ui.DropdownInputWidget>();
+const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 
 /**
  * 处理Api请求错误
@@ -129,6 +132,41 @@ export const loadJSON = (async () => {
 		apiErr,
 	);
 })();
+
+export const buildWidgets = (ruleArr: readonly string[]): JQuery[] => {
+	if (ruleArr.length === 0) {
+		return [];
+	}
+	const isWikiLint = ruleArr === rules,
+		defaultSeverity = isWikiLint ? RuleState.error : RuleState.on;
+	return [
+		...isWMFSite() ? [$('<h2>', {text: isWikiLint ? 'WikiLint' : 'Parsoid'})] : [],
+		...ruleArr.map(label => {
+			const state = label === 'no-arg' ? RuleState.off : defaultSeverity,
+				dropdown = new OO.ui.DropdownInputWidget({
+					options: [
+						{data: RuleState.off, label: msg('wikilint-off')},
+						...isWikiLint ? [{data: RuleState.error, label: msg('wikilint-error')}] : [],
+						{data: RuleState.on, label: msg('wikilint-on')},
+					],
+					value: wikilint[label] ?? state,
+				}),
+				text = isWikiLint ? label : label.slice(8),
+				f = new OO.ui.FieldLayout(dropdown, {
+					label: $('<a>', {
+						text,
+						href: isWikiLint
+							? `https://github.com/bhsd-harry/wikiparser-node/wiki/${text}`
+							: `https://www.mediawiki.org/wiki/Help:Lint_errors/${text}`,
+						target: '_blank',
+					}),
+				});
+			wikilintWidgets.set(label, dropdown);
+			wikilint[label] ??= state;
+			return f.$element;
+		}),
+	];
+};
 
 /**
  * 打开设置对话框
@@ -239,23 +277,11 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
 		panelWikilint.$element.append(
-			...rules.map(label => {
-				const state = label === 'no-arg' ? RuleState.off : RuleState.error,
-					dropdown = new OO.ui.DropdownInputWidget({
-						options: [
-							{data: RuleState.off, label: msg('wikilint-off')},
-							{data: RuleState.error, label: msg('wikilint-error')},
-							{data: RuleState.on, label: msg('wikilint-on')},
-						],
-						value: wikilint[label] ?? state,
-					}),
-					f = new OO.ui.FieldLayout(dropdown, {label});
-				wikilintWidgets.set(label, dropdown);
-				wikilint[label] ??= state;
-				return f.$element;
-			}),
+			...buildWidgets(rules),
 			$('<p>', {html: msg('feedback', 'wikiparser-node')}),
+			...buildWidgets(parsoidRules),
 		);
+		panelLinter.$element = panelWikilint.$element;
 	}
 
 	const data = await (dialog.open({

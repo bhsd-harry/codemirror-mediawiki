@@ -28,7 +28,8 @@ import type {
 import type {StyleSpec} from 'style-mod';
 import type {MwConfig, TagName} from './token';
 
-export const re = /* @__PURE__ */ (() => new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u'))();
+export const isWMFSite = (): boolean => typeof location === 'object'
+	&& new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname);
 
 /**
  * 检查首字母大小写并插入正确的自动填充内容
@@ -208,14 +209,14 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
+		const isWMF = isWMFSite();
 		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
 				types = new Set(node.name.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
-				start = pos - search.length,
-				isWMF = re.test(location.hostname);
+				start = pos - search.length;
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#') || isWMF) {
 				const validFor = isWMF ? null : {validFor: /^[^|{}<>[\]#]*$/u};
