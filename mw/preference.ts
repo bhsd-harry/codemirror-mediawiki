@@ -1,6 +1,6 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
-import {isWMFSite} from '../src/mediawiki';
+import {isWMF} from '../src/mediawiki';
 import {CodeMirror} from './codemirror';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
@@ -140,7 +140,7 @@ export const buildWidgets = (ruleArr: readonly string[]): JQuery[] => {
 	const isWikiLint = ruleArr === rules,
 		defaultSeverity = isWikiLint ? RuleState.error : RuleState.on;
 	return [
-		...isWMFSite() ? [$('<h2>', {text: isWikiLint ? 'WikiLint' : 'Parsoid'})] : [],
+		...isWMF ? [$('<h2>', {text: isWikiLint ? 'WikiLint' : 'Parsoid'})] : [],
 		...ruleArr.map(label => {
 			const state = label === 'no-arg' ? RuleState.off : defaultSeverity,
 				dropdown = new OO.ui.DropdownInputWidget({
