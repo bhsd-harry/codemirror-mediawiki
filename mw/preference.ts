@@ -291,7 +291,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			{action: 'accept', label: mw.msg('ooui-dialog-message-accept'), flags: 'progressive'},
 		],
 		size: 'medium',
-	}).closing as unknown as Promise<{action?: unknown} | undefined>);
+	}).closing as PromiseLike<{action?: unknown} | undefined>);
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
 		const oldIndent = indent,

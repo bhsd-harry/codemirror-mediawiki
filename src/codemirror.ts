@@ -302,18 +302,15 @@ export class CodeMirror6 {
 		const lintSources: LintSources | undefined = typeof lintSource === 'function' ? [lintSource] : lintSource;
 		const linterExtension = lintSources
 			? [
-				...lintSources.map(source => linter(
-					async ({state}) => {
-						const diagnostics = await source(state);
-						if (state.readOnly) {
-							for (const diagnostic of diagnostics) {
-								delete diagnostic.actions;
-							}
+				...lintSources.map(source => linter(async ({state}) => {
+					const diagnostics = await source(state);
+					if (state.readOnly) {
+						for (const diagnostic of diagnostics) {
+							delete diagnostic.actions;
 						}
-						return diagnostics;
-					},
-					source.delay ? {delay: source.delay} : undefined,
-				)),
+					}
+					return diagnostics;
+				})),
 				lintGutter(),
 				keymap.of(lintKeymap),
 				optionalFunctions.statusBar(this, lintSources[0].fixer),

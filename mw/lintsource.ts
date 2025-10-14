@@ -43,11 +43,39 @@ export default async (opt?: Option | LiveOption): Promise<LintSource> => {
 		}
 		return new Set(high);
 	})();
-	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
+	let timeout: Promise<ParsoidError[]> | undefined,
+		waiting: string | undefined;
+	const execute = async (wikitext: string): Promise<ParsoidError[]> => {
 		rest.abort();
-		const errors = await rest.post('/v1/transform/wikitext/to/lint', {
-				wikitext: doc.toString(),
-			}) as ParsoidError[],
+		if (timeout) {
+			waiting = wikitext;
+			return timeout;
+		}
+		timeout = new Promise<ParsoidError[]>(resolve => {
+			setTimeout(() => {
+				timeout = undefined;
+				if (waiting === undefined) {
+					resolve([]);
+				} else {
+					const text = waiting;
+					waiting = undefined;
+					resolve(execute(text));
+				}
+			}, 3e3);
+		});
+		// eslint-disable-next-line promise/prefer-await-to-then
+		return rest.post('/v1/transform/wikitext/to/lint', {wikitext}).then(
+			errors => errors as ParsoidError[],
+			(_, e) => {
+				if (e.textStatus !== 'abort') {
+					console.error('Parsoid linting failed:', e);
+				}
+				return [];
+			},
+		);
+	};
+	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
+		const errors = await execute(doc.toString()),
 			config = await getOpt(opt, true),
 			defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			error = await highSet!;
@@ -62,6 +90,5 @@ export default async (opt?: Option | LiveOption): Promise<LintSource> => {
 			to,
 		}));
 	};
-	linter.delay = 3e3;
 	return linter;
 };
