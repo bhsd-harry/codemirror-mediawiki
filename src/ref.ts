@@ -1,6 +1,7 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
+import elt from 'crelt';
 import {getTag} from './matchTag';
 import {tokens} from './config';
 import {indexToPos, posToIndex} from './hover';
@@ -64,8 +65,7 @@ export default (cm: CodeMirror6): Extension => [
 							end: to,
 							above: true,
 							create(): TooltipView {
-								const dom = document.createElement('div');
-								dom.className = 'cm-tooltip-ref';
+								const dom = elt('div', {class: 'cm-tooltip-ref'});
 								dom.style.font = getComputedStyle(view.contentDOM).font;
 								if (ref) {
 									const {range: {start, end}} = ref[0]!,

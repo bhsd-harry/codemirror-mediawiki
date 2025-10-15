@@ -1,5 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {loadScript, getLSP} from '@bhsd/browser';
+import elt from 'crelt';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
@@ -35,10 +36,8 @@ export const posToIndex = (doc: Text, pos: Position): number => {
  * @param innerHTML 提示内容
  */
 export const createTooltipView = (view: EditorView, innerHTML: string): TooltipView => {
-	const dom = document.createElement('div'),
-		inner = document.createElement('div');
-	dom.append(inner);
-	dom.className = 'cm-tooltip-hover';
+	const inner = elt('div'),
+		dom = elt('div', {class: 'cm-tooltip-hover'}, inner);
 	dom.style.font = getComputedStyle(view.contentDOM).font;
 	inner.innerHTML = innerHTML;
 	return {dom};

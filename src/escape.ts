@@ -2,6 +2,7 @@ import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
+import elt from 'crelt';
 import {CodeMirror6, menuRegistry} from './codemirror';
 import type {EditorView, Command} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
@@ -71,24 +72,22 @@ const handlerBase = (view: EditorView, e: MouseEvent): void => {
 	view.focus();
 };
 
-let items: HTMLDivElement[] | undefined;
+let items: HTMLElement[] | undefined;
 
 menuRegistry.push({
 	name: 'escape',
 	isActionable({lang, view}): boolean {
 		return lang === 'mediawiki' && view!.state.selection.ranges.some(({empty}) => !empty);
 	},
-	getItems(cm): HTMLDivElement[] {
+	getItems(cm): HTMLElement[] {
 		if (!items) {
 			const view = cm.view!,
-				btnHTML = document.createElement('div'),
-				btnURI = document.createElement('div');
-			btnHTML.textContent = 'HTML escape';
+				btnHTML = elt('div', 'HTML escape'),
+				btnURI = elt('div', 'URI encode/decode');
 			btnHTML.addEventListener('click', e => {
 				CodeMirror6.replaceSelections(view, escapeHTML);
 				handlerBase(view, e);
 			});
-			btnURI.textContent = 'URI encode/decode';
 			btnURI.addEventListener('click', e => {
 				CodeMirror6.replaceSelections(view, escapeURI);
 				handlerBase(view, e);
@@ -96,8 +95,7 @@ menuRegistry.push({
 			items = [btnHTML, btnURI];
 			const lsp = getLSP(view, false, cm.getWikiConfig);
 			if (lsp && 'provideRefactoringAction' in lsp) {
-				const btnWiki = document.createElement('div');
-				btnWiki.textContent = 'Escape with magic words';
+				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {
 					escapeWiki(cm);
 					handlerBase(view, e);

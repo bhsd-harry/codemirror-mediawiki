@@ -1,6 +1,7 @@
 import {StateField, StateEffect} from '@codemirror/state';
 import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
+import elt from 'crelt';
 import {posToIndex} from './hover';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -20,11 +21,8 @@ class InlayHintWidget extends WidgetType {
 		this.label = label;
 	}
 
-	toDOM(): HTMLSpanElement {
-		const element = document.createElement('span');
-		element.textContent = this.label;
-		element.className = 'cm-inlay-hint';
-		return element;
+	toDOM(): HTMLElement {
+		return elt('span', {class: 'cm-inlay-hint'}, this.label);
 	}
 }
 

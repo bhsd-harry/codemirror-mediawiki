@@ -14,6 +14,7 @@ import {
 	language,
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
+import elt from 'crelt';
 import {tokens} from './config';
 import {matchTag, getTag} from './matchTag';
 import type {Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
@@ -206,10 +207,11 @@ const create = (state: EditorState): Tooltip | null => {
 				pos: head,
 				above: true,
 				create(): TooltipView {
-					const dom = document.createElement('div');
-					dom.className = 'cm-tooltip-fold';
-					dom.textContent = '\uff0d';
-					dom.title = state.phrase('Fold template or extension tag');
+					const dom = elt(
+						'div',
+						{class: 'cm-tooltip-fold', title: state.phrase('Fold template or extension tag')},
+						'\uff0d',
+					);
 					dom.dataset['from'] = String(from);
 					dom.dataset['to'] = String(to);
 					return {dom};
@@ -293,11 +295,8 @@ class FoldMarker extends GutterMarker {
 		return this.open === other.open;
 	}
 
-	override toDOM({state}: EditorView): HTMLSpanElement {
-		const span = document.createElement('span');
-		span.textContent = this.open ? '⌄' : '›';
-		span.title = state.phrase(this.open ? 'Fold line' : 'Unfold line');
-		return span;
+	override toDOM({state}: EditorView): HTMLElement {
+		return elt('span', {title: state.phrase(this.open ? 'Fold line' : 'Unfold line')}, this.open ? '⌄' : '›');
 	}
 }
 
@@ -437,11 +436,11 @@ const selector = '.cm-tooltip-fold';
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
-			const element = document.createElement('span');
-			element.textContent = '…';
-			element.setAttribute('aria-label', 'folded code');
-			element.title = view.state.phrase('unfold');
-			element.className = 'cm-foldPlaceholder';
+			const element = elt(
+				'span',
+				{'aria-label': 'folded code', title: view.state.phrase('unfold'), class: 'cm-foldPlaceholder'},
+				'…',
+			);
 			element.addEventListener('click', ({target}) => {
 				const pos = view.posAtDOM(target as Node),
 					{state} = view,

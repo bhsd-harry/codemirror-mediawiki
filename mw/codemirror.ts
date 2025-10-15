@@ -1,4 +1,5 @@
 import {CDN} from '@bhsd/browser';
+import elt from 'crelt';
 import {CodeMirror6} from '../src/codemirror';
 import {
 	registerCSS,
@@ -120,7 +121,7 @@ export class CodeMirror extends CodeMirror6 {
 	declare page;
 	declare $textarea;
 	#visible = true;
-	#container: HTMLDivElement | undefined;
+	#container: HTMLElement | undefined;
 	#model: IWikitextModel | undefined;
 	#editor: editor.IStandaloneCodeEditor | undefined;
 	#init: Promise<void> | undefined;
@@ -245,8 +246,7 @@ export class CodeMirror extends CodeMirror6 {
 			}
 		}
 		this.#model = monaco.editor.createModel(textarea.value, language);
-		this.#container = document.createElement('div');
-		this.#container.className = container;
+		this.#container = elt('div', {class: container});
 		this.#refresh();
 		textarea.before(this.#container);
 		textarea.style.display = 'none';
