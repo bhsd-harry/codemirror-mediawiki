@@ -1,5 +1,6 @@
 import {CDN, setObject, getObject, compareVersion} from '@bhsd/browser';
 import {
+	cleanAliases,
 	getParserConfig as getParserConfigBase,
 	getConfig,
 	getVariants,
@@ -94,6 +95,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		if (config && !isIPE) { // 情形2或3
 			const {functionSynonyms: [insensitive]} = config;
 			if (!('subst' in insensitive)) {
+				cleanAliases(insensitive);
 				Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));
 			}
 		} else { // 情形4：`config === null`
@@ -112,6 +114,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 				),
 			};
 		}
+		cleanAliases(config!.functionSynonyms[1]);
 		Object.assign(config!, {
 			...getKeywords(magicwords, true),
 			tagModes: modes,

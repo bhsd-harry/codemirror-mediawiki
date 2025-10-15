@@ -15,10 +15,12 @@ import {
 import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
+import elt from 'crelt';
 import {light} from './theme';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
+import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
@@ -35,7 +37,7 @@ export type Dialect = 'sanitized-css' | undefined;
 declare interface MenuItem {
 	name: string;
 	isActionable(this: void, cm: CodeMirror6): boolean;
-	getItems(this: void, cm: CodeMirror6): HTMLDivElement[];
+	getItems(this: void, cm: CodeMirror6): HTMLElement[];
 }
 
 declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
@@ -303,7 +305,22 @@ export class CodeMirror6 {
 		const linterExtension = lintSources
 			? [
 				...lintSources.map(source => linter(async ({state}) => {
-					const diagnostics = await source(state);
+					const diagnostics = (await source(state)).map((diagnostic): Diagnostic => ({
+						...diagnostic,
+						renderMessage(view): HTMLElement {
+							const span = elt(
+								'span',
+								{class: 'cm-diagnosticText-clickable'},
+								diagnostic.message,
+							);
+							span.addEventListener('click', () => {
+								view.dispatch({
+									selection: {anchor: diagnostic.from, head: diagnostic.to},
+								});
+							});
+							return span;
+						},
+					}));
 					if (state.readOnly) {
 						for (const diagnostic of diagnostics) {
 							delete diagnostic.actions;
@@ -527,9 +544,7 @@ export class CodeMirror6 {
 	 */
 	setTheme(theme: string): void {
 		if (theme in themes) {
-			this.#view?.dispatch({
-				effects: this.#theme.reconfigure(themes[theme]!),
-			});
+			this.#view?.dispatch({effects: this.#theme.reconfigure(themes[theme]!)});
 		}
 	}
 

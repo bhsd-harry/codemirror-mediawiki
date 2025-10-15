@@ -1,5 +1,6 @@
 import {showPanel, EditorView} from '@codemirror/view';
 import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
+import elt from 'crelt';
 import {menuRegistry} from './codemirror';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
@@ -8,18 +9,13 @@ import type {LintSource} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
 
-const optionAll = /* @__PURE__ */ (() => {
-	const ele = document.createElement('div');
-	ele.textContent = 'Fix all auto-fixable problems';
-	return ele;
-})();
+const optionAll = elt('div', 'Fix all auto-fixable problems');
 
-function getLintMarker(view: EditorView, severity: Severity): HTMLDivElement;
-function getLintMarker(view: EditorView, severity: 'fix', menu?: HTMLDivElement): HTMLDivElement;
-function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTMLDivElement): HTMLDivElement {
-	const marker = document.createElement('div'),
-		icon = document.createElement('div');
-	marker.className = `cm-status-${severity}`;
+function getLintMarker(view: EditorView, severity: Severity): HTMLElement;
+function getLintMarker(view: EditorView, severity: 'fix', menu?: HTMLElement): HTMLElement;
+function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTMLElement): HTMLElement {
+	const marker = elt('div', {class: `cm-status-${severity}`}),
+		icon = elt('div');
 	if (severity === 'fix') {
 		icon.className = 'cm-status-fix-disabled';
 		marker.title = 'Fix all';
@@ -37,9 +33,7 @@ function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTML
 		}
 	} else {
 		icon.className = `cm-lint-marker-${severity}`;
-		const count = document.createElement('div');
-		count.textContent = '0';
-		marker.append(icon, count);
+		marker.append(icon, elt('div', '0'));
 		marker.addEventListener('click', () => {
 			if (marker.parentElement?.classList.contains('cm-status-worker-enabled')) {
 				nextDiagnostic(view);
@@ -50,7 +44,7 @@ function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTML
 	return marker;
 }
 
-const updateDiagnosticsCount = (diagnostics: readonly Diagnostic[], s: Severity, marker: HTMLDivElement): void => {
+const updateDiagnosticsCount = (diagnostics: readonly Diagnostic[], s: Severity, marker: HTMLElement): void => {
 	marker.lastChild!.textContent = String(diagnostics.filter(({severity}) => severity === s).length);
 };
 
@@ -66,7 +60,7 @@ const updateDiagnosticMessage = (
 	cm: CodeMirror6,
 	allDiagnostics: readonly Diagnostic[],
 	main: SelectionRange,
-	msg: HTMLDivElement,
+	msg: HTMLElement,
 ): void => {
 	const diagnostics = getDiagnostics(allDiagnostics, main);
 	if (diagnostics.length === 0) {
@@ -77,10 +71,7 @@ const updateDiagnosticMessage = (
 		msg.textContent = diagnostic.message;
 		if (diagnostic.actions) {
 			msg.append(...diagnostic.actions.map(({name, apply}) => {
-				const button = document.createElement('button');
-				button.type = 'button';
-				button.className = 'cm-diagnosticAction';
-				button.textContent = name;
+				const button = elt('button', {type: 'button', class: 'cm-diagnosticAction'}, name);
 				button.addEventListener('click', e => {
 					e.preventDefault();
 					apply(view, diagnostic.from, diagnostic.to);
@@ -96,7 +87,7 @@ const updateMenu = (
 	allDiagnostics: readonly Diagnostic[],
 	main: SelectionRange,
 	classList: DOMTokenList,
-	menu?: HTMLDivElement,
+	menu?: HTMLElement,
 	fixer?: LintSource['fixer'],
 ): void => {
 	if (menu) {
@@ -115,8 +106,7 @@ const updateMenu = (
 		toggleClass(classList, true);
 		const actions = actionable.flatMap(({getItems}) => getItems(cm)),
 			quickfix = [...fixable].map(rule => {
-				const option = document.createElement('div');
-				option.textContent = `Fix all ${rule} problems`;
+				const option = elt('div', `Fix all ${rule} problems`);
 				option.dataset['rule'] = rule;
 				return option;
 			});
@@ -140,11 +130,9 @@ const panelSelector = '.cm-panel-status',
 export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [],
-			menu: HTMLDivElement | undefined;
+			menu: HTMLElement | undefined;
 		if (!view.state.readOnly && (fixer || menuRegistry.length > 0)) {
-			menu = document.createElement('div');
-			menu.className = 'cm-status-fix-menu';
-			menu.tabIndex = -1;
+			menu = elt('div', {class: 'cm-status-fix-menu', tabIndex: -1});
 			if (fixer) {
 				menu.addEventListener('click', ({target}) => {
 					if (target === menu) {
@@ -167,21 +155,14 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			});
 			view.dom.append(menu);
 		}
-		const dom = document.createElement('div'),
-			worker = document.createElement('div'),
-			message = document.createElement('div'),
-			position = document.createElement('div'),
-			error = getLintMarker(view, 'error'),
+		const error = getLintMarker(view, 'error'),
 			warning = getLintMarker(view, 'warning'),
 			fix = getLintMarker(view, 'fix', menu),
+			worker = elt('div', {class: 'cm-status-worker'}, error, warning, fix),
+			message = elt('div', {class: 'cm-status-message'}),
+			position = elt('div', {class: 'cm-status-line'}, '0:0'),
+			dom = elt('div', {class: 'cm-panel cm-panel-status'}, worker, message, position),
 			{classList} = fix.firstChild as HTMLDivElement;
-		worker.className = 'cm-status-worker';
-		worker.append(error, warning, fix);
-		message.className = 'cm-status-message';
-		position.className = 'cm-status-line';
-		position.textContent = '0:0';
-		dom.className = 'cm-panel cm-panel-status';
-		dom.append(worker, message, position);
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
@@ -287,6 +268,9 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		},
 		'.cm-status-line': {
 			whiteSpace: 'nowrap',
+		},
+		'.cm-diagnosticText-clickable': {
+			cursor: 'pointer',
 		},
 	}),
 ];
