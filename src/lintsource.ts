@@ -125,7 +125,9 @@ const jsLintSource = (
 			].map(({name, fix: {range: [from, to], text}}): Action => ({
 				name,
 				apply(view): void {
-					view.dispatch({changes: {from: from + f, to: to + f, insert: text}});
+					view.dispatch({
+						changes: {from: from + f, to: to + f, insert: text},
+					});
 				},
 			}));
 		}

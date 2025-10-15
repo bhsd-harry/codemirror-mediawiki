@@ -1,3 +1,11 @@
+## 3.5.2
+
+*2025-10-16*
+
+**Added**
+
+- New [Scribunto library](https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Scribunto_libraries) functions in the Lua mode
+
 ## 3.5.1
 
 *2025-10-15*

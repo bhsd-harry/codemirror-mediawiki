@@ -229,7 +229,10 @@ const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: num
 	if (effects.length > 0) {
 		view.dom.querySelector('.cm-tooltip-fold')?.remove();
 		// Fold the template(s) and update the cursor position
-		view.dispatch({effects, selection: {anchor}});
+		view.dispatch({
+			effects,
+			selection: {anchor},
+		});
 		return true;
 	}
 	return false;
