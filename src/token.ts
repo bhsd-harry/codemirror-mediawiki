@@ -237,6 +237,7 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
 		'<': comment ? '<(?!!--)' : '<(?!!--|/?[a-z])',
 		'~': '~~?(?!~)',
 		_: '_(?!_)',
+		'＿': '＿(?!＿)',
 		'[': String.raw`\[(?!\[)`,
 		']': String.raw`\](?!\])`,
 		'/': '/(?!>)',
@@ -429,14 +430,14 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	substs = new Set(['subst', 'safesubst']),
 	headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu'),
 	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
-	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
-	styleRegex = new RegExp(`^(?:[^|[&}{<~'_-]|${lookahead("}{<~'_-")})+`, 'iu'),
-	wikiRegex = new RegExp(`^(?:[^&'{[<~_:-]|${lookahead("'{[<~_-")})+`, 'iu'),
+	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_＿-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
+	styleRegex = new RegExp(`^(?:[^|[&}{<~'_＿-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
+	wikiRegex = new RegExp(`^(?:[^&'{[<~_＿:-]|${lookahead("'{[<~_＿-")})+`, 'iu'),
 	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
 	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u,
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
-	tableCellChars = "'<~_{-",
+	tableCellChars = "'<~_＿{-",
 	htmlAttrChars = '{/',
 	freeRegex = [false, true].map(lpar => {
 		const punctuations = getPunctuations(lpar),
@@ -465,13 +466,17 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		'iu',
 	)) as [RegExp, RegExp],
 	variableRegex = [false, true].map(
-		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? "[&~'_:-" : ''}]|\}(?!\}\})|${
-			isDefault ? lookahead("{<~'_-") : lookahead('{<', true)
+		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? "[&~'_＿:-" : ''}]|\}(?!\}\})|${
+			isDefault ? lookahead("{<~'_＿-") : lookahead('{<', true)
 		})+`, 'iu'),
 	) as [RegExp, RegExp],
 	parserFunctionRegex = ['', '[&', '[&:'].map(
 		s => getRegex(chars => new RegExp(`^(?:[^|${s}${chars}]|${lookahead(chars)})+`, 'iu')),
 	),
+	doubleUnderscoreRegex = {
+		_: /^[\p{L}\p{N}_]+?__/u,
+		'＿': /^[\p{L}\p{N}_＿]+?＿{2}/u,
+	},
 	getExtLinkTextRegex = getRegex(
 		pipe => new RegExp(String.raw`^(?:[^\]&${pipe}${extLinkChars}]|${lookahead(extLinkChars)})+`, 'iu'),
 	),
@@ -566,7 +571,7 @@ export class MediaWiki {
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.convertRegex = new RegExp(
-			String.raw`^(?:[^}|;&='{[<~_-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_-")})+`,
+			String.raw`^(?:[^}|;&='{[<~_＿-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_＿-")})+`,
 			'iu',
 		);
 		this.convertSemicolon = variants && new RegExp(
@@ -830,14 +835,15 @@ export class MediaWiki {
 					}
 					break;
 				}
-				case '_': {
+				case '_':
+				case '＿': {
 					const {pos} = stream;
-					stream.eatWhile('_');
+					stream.eatWhile(ch);
 					switch (stream.pos - pos) {
 						case 0:
 							break;
 						case 1:
-							return this.eatDoubleUnderscore(style, stream, state);
+							return this.eatDoubleUnderscore(style, ch, stream, state);
 						default:
 							if (!stream.eol()) {
 								stream.backUp(2);
@@ -893,12 +899,12 @@ export class MediaWiki {
 				// no default
 			}
 			if (state.stack.length === 0) {
-				if (ch !== '_') {
+				if (ch !== '_' && ch !== '＿') {
 					// highlight free external links, bug T108448
 					if (/[\p{L}\p{N}]/u.test(ch)) {
 						stream.backUp(1);
 					} else {
-						stream.eatWhile(/[^\p{L}\p{N}_&'{[<~:-]/u);
+						stream.eatWhile(/[^\p{L}\p{N}_＿&'{[<~:-]/u);
 					}
 					const mt = stream.match(this.urlProtocols, false);
 					if (mt) {
@@ -1126,13 +1132,14 @@ export class MediaWiki {
 		return makeLocalTagStyle('list', state);
 	}
 
-	eatDoubleUnderscore(style: string, stream: StringStream, state: State): Style {
+	eatDoubleUnderscore(style: string, ch: '_' | '＿', stream: StringStream, state: State): Style {
 		const {config: {doubleUnderscore}} = this,
-			name = stream.match(/^[\p{L}\p{N}_]+?__/u);
+			underscore = ch.repeat(2),
+			name = stream.match(doubleUnderscoreRegex[ch]);
 		if (name) {
 			if (
-				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], `__${name[0].toLowerCase()}`)
-				|| Object.prototype.hasOwnProperty.call(doubleUnderscore[1], `__${name[0]}`)
+				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], underscore + name[0].toLowerCase())
+				|| Object.prototype.hasOwnProperty.call(doubleUnderscore[1], underscore + name[0])
 			) {
 				return tokens.doubleUnderscore;
 			} else if (!stream.eol()) {
@@ -1764,7 +1771,7 @@ export class MediaWiki {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}
-		const chars = n === 2 ? '}{<' : "}{<~'_-"; // `#invoke`/`#tag`
+		const chars = n === 2 ? '}{<' : "}{<~'_＿-"; // `#invoke`/`#tag`
 		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
 		switch (module) {
 			case 1:

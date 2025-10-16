@@ -13,6 +13,7 @@ import {
 } from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {wmf} from '@bhsd/common';
+import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
@@ -86,7 +87,7 @@ export class FullMediaWiki extends MediaWiki {
 			type: i ? 'constant' : 'function',
 			label,
 		})));
-		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).map((label): Completion => ({
+		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).filter(isUnderscore).map((label): Completion => ({
 			type: 'constant',
 			label,
 		}));

@@ -1,3 +1,4 @@
+import {isUnderscore} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
@@ -42,8 +43,12 @@ export const getStaticMwConfig = (
 	tags: Object.fromEntries(ext.map(s => [s, true])),
 	tagModes: modes,
 	doubleUnderscore: [
-		Object.fromEntries((d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [`__${s}__`, true])),
-		Object.fromEntries((d3 && d1.length === 0 ? Object.keys(d3) : d1).map(s => [`__${s}__`, true])),
+		Object.fromEntries(
+			(d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [isUnderscore(s) ? `__${s}__` : s, true]),
+		),
+		Object.fromEntries(
+			(d3 && d1.length === 0 ? Object.keys(d3) : d1).map(s => [isUnderscore(s) ? `__${s}__` : s, true]),
+		),
 	],
 	functionHooks: functionHook,
 	variableIDs: variable,

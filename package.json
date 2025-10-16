@@ -67,10 +67,10 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/view": "^6.38.2",
 		"cm6-theme-nord": "^0.2.0",
-		"wikiparser-node": "^1.28.0"
+		"wikiparser-node": "^1.28.1"
 	},
 	"devDependencies": {
-		"@bhsd/cm-util": "^0.0.1",
+		"@bhsd/cm-util": "^0.1.0",
 		"@bhsd/code-standard": "^1.2.0",
 		"@bhsd/stylelint-util": "^0.1.0",
 		"@bhsd/test-util": "^0.1.0",
