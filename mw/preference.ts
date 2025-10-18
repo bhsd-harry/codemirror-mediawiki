@@ -1,6 +1,5 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
-import {isWMF} from '../src/mediawiki';
 import {CodeMirror} from './codemirror';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './textSelection';
@@ -51,12 +50,11 @@ export const indentKey = 'codemirror-mediawiki-indent',
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
 	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
-	panelLinter: {$element?: JQuery} = {},
+	preferenceDialog: {layout?: OO.ui.IndexLayout} = {},
 	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,
-	layout: OO.ui.IndexLayout,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	monacoWidget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
@@ -133,25 +131,25 @@ export const loadJSON = (async () => {
 	);
 })();
 
-export const buildWidgets = (ruleArr: readonly string[]): JQuery[] => {
+export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.TabPanelLayout[] => {
 	if (ruleArr.length === 0) {
 		return [];
 	}
-	const isWikiLint = ruleArr === rules,
+	const panel = new OO.ui.TabPanelLayout(label.toLowerCase(), {label}),
+		isWikiLint = label === 'WikiLint',
 		defaultSeverity = isWikiLint ? RuleState.error : RuleState.on;
-	return [
-		...isWMF ? [$('<h2>', {text: isWikiLint ? 'WikiLint' : 'Parsoid'})] : [],
-		...ruleArr.map(label => {
-			const state = label === 'no-arg' ? RuleState.off : defaultSeverity,
+	panel.$element.append(
+		...ruleArr.filter(rule => rule !== 'invalid-math').map(rule => {
+			const state = rule === 'no-arg' ? RuleState.off : defaultSeverity,
 				dropdown = new OO.ui.DropdownInputWidget({
 					options: [
 						{data: RuleState.off, label: msg('wikilint-off')},
 						...isWikiLint ? [{data: RuleState.error, label: msg('wikilint-error')}] : [],
 						{data: RuleState.on, label: msg('wikilint-on')},
 					],
-					value: wikilint[label] ?? state,
+					value: wikilint[rule] ?? state,
 				}),
-				text = isWikiLint ? label : label.slice(8),
+				text = isWikiLint ? rule : rule.slice(8),
 				f = new OO.ui.FieldLayout(dropdown, {
 					label: $('<a>', {
 						text,
@@ -161,11 +159,12 @@ export const buildWidgets = (ruleArr: readonly string[]): JQuery[] => {
 						target: '_blank',
 					}),
 				});
-			wikilintWidgets.set(label, dropdown);
-			wikilint[label] ??= state;
+			wikilintWidgets.set(rule, dropdown);
+			wikilint[rule] ??= state;
 			return f.$element;
 		}),
-	];
+	);
+	return [panel];
 };
 
 /**
@@ -191,9 +190,10 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		const windowManager = new OO.ui.WindowManager();
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
-		layout = new OO.ui.IndexLayout();
+		preferenceDialog.layout = new OO.ui.IndexLayout();
 		const panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')}),
-			panelWikilint = new OO.ui.TabPanelLayout('wikilint', {label: 'WikiLint'}),
+			panelWikilint = buildPanel('WikiLint', rules),
+			panelParsoid = buildPanel('Parsoid', parsoidRules),
 			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
 		for (const label of codeKeys) {
 			const c = codeConfigs.get(label);
@@ -220,7 +220,10 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			});
 			panels[label] = panel;
 		}
-		layout.addTabPanels([panelMain, panelWikilint, ...Object.values(panels)], 0);
+		preferenceDialog.layout.addTabPanels(
+			[panelMain, ...panelWikilint, ...panelParsoid, ...Object.values(panels)],
+			0,
+		);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({
 			options: [
 				{disabled: true},
@@ -276,16 +279,11 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 			monacoField.$element,
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
 		);
-		panelWikilint.$element.append(
-			...buildWidgets(rules),
-			$('<p>', {html: msg('feedback', 'wikiparser-node')}),
-			...buildWidgets(parsoidRules),
-		);
-		panelLinter.$element = panelWikilint.$element;
+		panelWikilint[0]!.$element.append($('<p>', {html: msg('feedback', 'wikiparser-node')}));
 	}
 
 	const data = await (dialog.open({
-		message: layout!.$element,
+		message: preferenceDialog.layout!.$element,
 		actions: [
 			{action: 'reject', label: mw.msg('ooui-dialog-message-reject')},
 			{action: 'accept', label: mw.msg('ooui-dialog-message-accept'), flags: 'progressive'},

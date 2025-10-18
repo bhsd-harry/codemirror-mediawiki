@@ -1,12 +1,16 @@
 ## 3.5.2
 
-*2025-10-16*
+*2025-10-18*
 
 **Added**
 
 - New [Scribunto library](https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Scribunto_libraries) functions in the Lua mode
 - When clicking on a lint tooltip, the associated range is now selected
 - Behavior switches with full-width underscores (`＿＿`) in the MediaWiki mode
+
+**Changed**
+
+- Configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) are now listed in a dedicated tab in the preference dialog on a WMF-hosted site
 
 ## 3.5.1
 

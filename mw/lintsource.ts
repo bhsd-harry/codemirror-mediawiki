@@ -1,5 +1,5 @@
 import {getOpt} from '../src/lintsource';
-import {buildWidgets, panelLinter} from './preference';
+import {buildPanel, preferenceDialog} from './preference';
 import type {Diagnostic} from '@codemirror/lint';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSource} from '../src/lintsource';
@@ -38,8 +38,8 @@ export default async (opt?: Option | LiveOption): Promise<LintSource> => {
 			siprop: 'general',
 		}) as ApiResponse;
 		parsoidRules.push(...[...high, ...medium, ...low].map(getRuleKey));
-		if (panelLinter.$element) {
-			panelLinter.$element.append(...buildWidgets(parsoidRules));
+		if (preferenceDialog.layout) {
+			preferenceDialog.layout.addTabPanels(buildPanel('Parsoid', parsoidRules), 2);
 		}
 		return new Set(high);
 	})();
