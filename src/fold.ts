@@ -221,6 +221,8 @@ const create = (state: EditorState): Tooltip | null => {
 	return null;
 };
 
+export const selector = '.cm-tooltip-fold';
+
 /**
  * 执行折叠
  * @param view
@@ -229,7 +231,7 @@ const create = (state: EditorState): Tooltip | null => {
  */
 const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
 	if (effects.length > 0) {
-		view.dom.querySelector('.cm-tooltip-fold')?.remove();
+		view.dom.querySelector(selector)?.remove();
 		// Fold the template(s) and update the cursor position
 		view.dispatch({
 			effects,
@@ -431,8 +433,6 @@ export const foldRef = /* @__PURE__ */ foldCommand(true);
 
 export default ((e = defaultFoldExtension): Extension => e) satisfies AddonMain<Extension>;
 
-const selector = '.cm-tooltip-fold';
-
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
@@ -570,7 +570,7 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
  * @param view
  */
 export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
-	const dom = (e.target as Element).closest<HTMLElement>('.cm-tooltip-fold');
+	const dom = (e.target as Element).closest<HTMLElement>(selector);
 	if (dom) {
 		e.preventDefault();
 		const {dataset} = dom,

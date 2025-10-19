@@ -9,7 +9,7 @@ import type {LintSource} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
 
-const optionAll = elt('div', 'Fix all auto-fixable problems');
+const optionAll = /* @__PURE__ */ elt('div', 'Fix all auto-fixable problems');
 
 function getLintMarker(view: EditorView, severity: Severity): HTMLElement;
 function getLintMarker(view: EditorView, severity: 'fix', menu?: HTMLElement): HTMLElement;
@@ -122,9 +122,10 @@ const panelSelector = '.cm-panel-status',
 	errorSelector = '.cm-status-error',
 	warningSelector = '.cm-status-warning',
 	enabledSelector = '.cm-status-fix-enabled',
-	disabledSelector = '.cm-status-fix-disabled',
-	menuSelector = '.cm-status-fix-menu',
-	messageSelector = '.cm-status-message';
+	disabledSelector = '.cm-status-fix-disabled';
+export const menuSelector = '.cm-status-fix-menu',
+	messageSelector = '.cm-status-message',
+	actionSelector = '.cm-diagnosticAction';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
@@ -262,7 +263,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			borderWidth: '0 1px',
 			width: '100%',
 		},
-		[`${messageSelector} .cm-diagnosticAction`]: {
+		[`${messageSelector} ${actionSelector}`]: {
 			paddingTop: 0,
 			paddingBottom: 0,
 		},

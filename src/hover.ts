@@ -3,6 +3,7 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {tokens} from './config';
+import {isWMF} from './mediawiki';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
@@ -45,7 +46,7 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
 	return {dom};
 };
 
-const selector = '.cm-tooltip-hover';
+export const selector = '.cm-tooltip-hover';
 
 export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
@@ -54,7 +55,7 @@ export default (cm: CodeMirror6): Extension => [
 			{paramSuggest, tags} = cm.langConfig!;
 		let hover = await getLSP(view, false, cm.getWikiConfig)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
-		if (!hover && paramSuggest && 'templatedata' in tags) {
+		if (isWMF && !hover && paramSuggest && 'templatedata' in tags) {
 			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
 			if (node?.name.includes(tokens.templateName)) {
 				const result = await paramSuggest(state.sliceDoc(node.from, node.to));
@@ -91,6 +92,7 @@ export default (cm: CodeMirror6): Extension => [
 			padding: '2px 5px',
 			width: 'max-content',
 			maxWidth: '60vw',
+			overflowY: 'auto',
 		},
 		[`${selector} *`]: {
 			marginTop: '0!important',

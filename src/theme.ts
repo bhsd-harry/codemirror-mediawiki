@@ -1,6 +1,15 @@
 import {EditorView} from '@codemirror/view';
 import {nord as nordBase} from 'cm6-theme-nord';
+import {selector as hoverSelector} from './hover';
+import {selector as foldSelector} from './fold';
+import {menuSelector, messageSelector, actionSelector} from './statusBar';
 import type {Extension} from '@codemirror/state';
+
+const focused = '&.cm-focused',
+	matching = `${focused} .cm-matchingTag`,
+	nonmatching = `${focused} .cm-nonmatchingTag`,
+	code = `${hoverSelector} code`,
+	menuHover = `${menuSelector}>div:hover`;
 
 export const light = /* @__PURE__ */ EditorView.theme({
 		'&': {
@@ -24,23 +33,23 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var': '#ad9300',
 			'--cm-var-name': '#ac6600',
 		},
-		'&.cm-focused .cm-matchingTag': {
+		[matching]: {
 			backgroundColor: 'rgb(50,140,130,.32)',
 		},
-		'&.cm-focused .cm-nonmatchingTag': {
+		[nonmatching]: {
 			backgroundColor: 'rgb(187,85,85,.27)',
 		},
-		'.cm-tooltip-hover code': {
+		[code]: {
 			backgroundColor: '#e0e6eb',
 		},
-		'.cm-status-fix-menu': {
+		[menuSelector]: {
 			backgroundColor: '#f5f5f5',
 			boxShadow: '0 2px 2px 0 rgb(0,0,0,.25)',
 		},
-		'.cm-status-fix-menu>div:hover': {
+		[menuHover]: {
 			backgroundColor: '#e2f2ff',
 		},
-		'.cm-status-message': {
+		[messageSelector]: {
 			borderColor: '#c8ccd1',
 		},
 	}),
@@ -50,9 +59,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 	 * @author Bhsd
 	 * @see https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/nord-moeskin.css
 	 */
-	nord: Extension = [
+	nord = /* @__PURE__ */ ((): Extension => [
 		nordBase,
-		/* @__PURE__ */ EditorView.theme({
+		EditorView.theme({
 			'&': {
 				'--cm-arg': '#9f78a5',
 				'--cm-attr': '#97b757',
@@ -76,27 +85,28 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'div.cm-activeLine': {
 				backgroundColor: 'rgb(76,86,106,.27)',
 			},
-			'&.cm-focused .cm-matchingTag': {
+			[matching]: {
 				backgroundColor: '#eceff4',
 				color: '#434c5e',
 			},
-			'&.cm-focused .cm-nonmatchingTag': {
+			[nonmatching]: {
 				backgroundColor: 'rgb(235,203,139,.32)',
 			},
-			['&.cm-focused>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground,'
-				+ '.cm-tooltip-hover code, .cm-status-fix-menu>div:hover, .cm-diagnosticAction, div.cm-tooltip-fold']: {
+			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground, ${
+				code
+			}, ${menuHover}, ${actionSelector}, div${foldSelector}`]: {
 				backgroundColor: '#4c566a',
 			},
 			'div.cm-panels': {
 				color: '#d8dee9',
 			},
-			'.cm-status-fix-menu': {
+			[menuSelector]: {
 				backgroundColor: '#252a33',
 			},
-			'.cm-status-message': {
+			[messageSelector]: {
 				borderColor: '#000',
 			},
-			'&.cm-focused .cm-searchMatch.cm-searchMatch-selected': {
+			[`${focused} .cm-searchMatch.cm-searchMatch-selected`]: {
 				color: '#b48ead',
 			},
 			'div.cm-tooltip-autocomplete ul li[aria-selected]': {
@@ -106,4 +116,4 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				color: '#5e81ac',
 			},
 		}),
-	];
+	])();
