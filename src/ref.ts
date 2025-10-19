@@ -3,9 +3,9 @@ import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language'
 import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {getTag} from './matchTag';
 import {tokens} from './config';
-import {indexToPos, posToIndex} from './hover';
+import {getTag} from './matchTag';
+import {indexToPos, posToIndex, escHTML} from './util';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -15,7 +15,8 @@ import type {CodeMirror6} from './codemirror';
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
 const trees = new WeakMap<EditorView, Tree>(),
-	dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
+	selector = '.cm-tooltip-ref',
+	noDef = '.cm-tooltip-no-def';
 
 /**
  * 获取节点内容
@@ -25,12 +26,6 @@ const trees = new WeakMap<EditorView, Tree>(),
  * @param node.to 结束位置
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
-
-/**
- * 转义HTML字符串
- * @param text 原字符串
- */
-export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => dict[ch]!);
 
 export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
@@ -73,7 +68,7 @@ export default (cm: CodeMirror6): Extension => [
 							end: to,
 							above: true,
 							create(): TooltipView {
-								const dom = elt('div', {class: 'cm-tooltip-ref'});
+								const dom = elt('div', {class: selector.slice(1)});
 								dom.style.font = getComputedStyle(view.contentDOM).font;
 								if (ref) {
 									const {range: {start, end}} = ref[0]!,
@@ -107,6 +102,7 @@ export default (cm: CodeMirror6): Extension => [
 									});
 								} else {
 									dom.textContent = state.phrase('No definition found');
+									dom.classList.add(noDef.slice(1));
 								}
 								return {dom};
 							},
@@ -126,12 +122,15 @@ export default (cm: CodeMirror6): Extension => [
 		}
 	}),
 	EditorView.theme({
-		'.cm-tooltip-ref': {
+		[selector]: {
 			padding: '2px 5px',
 			width: 'max-content',
 			maxWidth: '60vw',
 			cursor: 'pointer',
 			whiteSpace: 'pre-wrap',
+		},
+		[noDef]: {
+			color: 'var(--cm-comment)',
 		},
 	}),
 ] as Extension;

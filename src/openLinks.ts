@@ -1,29 +1,24 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config';
-import {hasTag} from './mediawiki';
+import {isMac} from './constants';
+import {hasTag} from './util';
 import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {CodeMirror6} from './codemirror';
 import type {TagName, MwConfig} from './token';
 
-const {vendor, userAgent, maxTouchPoints, platform} = navigator;
-
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-export const isMac = vendor?.includes('Apple Computer')
-	&& (userAgent.includes('Mobile/') || maxTouchPoints > 2)
-	|| platform.includes('Mac');
-
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
 	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
+	pagename = '.cm-mw-pagename',
 	wikiLinks = [
 		'template-name',
 		'link-pagename',
-		'parserfunction.cm-mw-pagename',
-		'exttag-attribute-value.cm-mw-pagename',
-		'file-text.cm-mw-pagename',
+		`parserfunction${pagename}`,
+		`exttag-attribute-value${pagename}`,
+		`file-text${pagename}`,
 	];
 
 const toggleOpenLinks = (toggle?: boolean): void => {

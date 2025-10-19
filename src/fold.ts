@@ -16,12 +16,14 @@ import {
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config';
+import {foldSelector} from './constants';
 import {matchTag, getTag} from './matchTag';
+import {braceStackUpdate} from './util';
 import type {Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
-import type {TagName} from './token';
 import type {AddonMain} from './codemirror';
+import type {TagName} from './token';
 
 export interface DocRange {
 	from: number;
@@ -74,16 +76,6 @@ const isComponent = (keys: TagName[]) =>
 	 */
 	isExt = (node: SyntaxNode, refOnly: boolean): boolean =>
 		node.name.includes(`mw-tag-${refOnly ? 'ref' : ''}`);
-
-/**
- * Update the stack of opening (+) or closing (-) brackets
- * @param state
- * @param node 语法树节点
- */
-export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
-	const brackets = state.sliceDoc(node.from, node.to);
-	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
-};
 
 const refNames = new Set<string | undefined>(['ref', 'references']);
 
@@ -209,7 +201,10 @@ const create = (state: EditorState): Tooltip | null => {
 				create(): TooltipView {
 					const dom = elt(
 						'div',
-						{class: 'cm-tooltip-fold', title: state.phrase('Fold template or extension tag')},
+						{
+							class: foldSelector.slice(1),
+							title: state.phrase('Fold template or extension tag'),
+						},
 						'\uff0d',
 					);
 					dom.dataset['from'] = String(from);
@@ -221,8 +216,6 @@ const create = (state: EditorState): Tooltip | null => {
 	return null;
 };
 
-export const selector = '.cm-tooltip-fold';
-
 /**
  * 执行折叠
  * @param view
@@ -231,7 +224,7 @@ export const selector = '.cm-tooltip-fold';
  */
 const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
 	if (effects.length > 0) {
-		view.dom.querySelector(selector)?.remove();
+		view.dom.querySelector(foldSelector)?.remove();
 		// Fold the template(s) and update the cursor position
 		view.dispatch({
 			effects,
@@ -553,13 +546,13 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 		},
 	}),
 	EditorView.theme({
-		[selector]: {
+		[foldSelector]: {
 			cursor: 'pointer',
 			lineHeight: 1.2,
 			padding: '0 1px',
 			opacity: 0.6,
 		},
-		[`${selector}:hover`]: {
+		[`${foldSelector}:hover`]: {
 			opacity: 1,
 		},
 	}),
@@ -570,7 +563,7 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
  * @param view
  */
 export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
-	const dom = (e.target as Element).closest<HTMLElement>(selector);
+	const dom = (e.target as Element).closest<HTMLElement>(foldSelector);
 	if (dom) {
 		e.preventDefault();
 		const {dataset} = dom,

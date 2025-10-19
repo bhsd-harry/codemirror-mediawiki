@@ -1,9 +1,10 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {msg, parseMsg, i18n} from './msg';
-import {instances} from './textSelection';
+import {preferenceId, indentKey, themeKey, RuleState} from './constants';
 import {parsoidRules} from './lintsource';
+import {msg, parseMsg, i18n} from './msg';
+import {instances} from './util';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki-api';
 
@@ -38,15 +39,7 @@ const storageKey = 'codemirror-mediawiki-addons',
 		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
-export const enum RuleState {
-	off = '0',
-	error = '1',
-	on = '2',
-}
-
-export const indentKey = 'codemirror-mediawiki-indent',
-	themeKey = 'codemirror-mediawiki-theme',
-	prefs = new Set(getObject(storageKey) as string[] | null),
+export const prefs = new Set(getObject(storageKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
 	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
@@ -185,7 +178,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		indentWidget.setValue(indent);
 		themeWidget.setValue(theme);
 	} else {
-		dialog = new OO.ui.MessageDialog({id: 'cm-preference'});
+		dialog = new OO.ui.MessageDialog({id: preferenceId});
 		dialog.$element.css('z-index', 801);
 		const windowManager = new OO.ui.WindowManager();
 		windowManager.$element.appendTo(document.body);

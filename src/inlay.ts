@@ -2,7 +2,7 @@ import {StateField, StateEffect} from '@codemirror/state';
 import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {posToIndex} from './hover';
+import {posToIndex} from './util';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
@@ -13,6 +13,8 @@ declare interface InlayHintEffect {
 	text: string;
 }
 
+const cls = 'cm-inlay-hint';
+
 class InlayHintWidget extends WidgetType {
 	declare label: string;
 
@@ -22,7 +24,7 @@ class InlayHintWidget extends WidgetType {
 	}
 
 	toDOM(): HTMLElement {
-		return elt('span', {class: 'cm-inlay-hint'}, this.label);
+		return elt('span', {class: cls}, this.label);
 	}
 }
 
@@ -87,7 +89,7 @@ export default (cm: CodeMirror6): Extension => [
 		}
 	}),
 	EditorView.theme({
-		'.cm-inlay-hint': {
+		[`.${cls}`]: {
 			color: '#969696',
 			fontStyle: 'italic',
 			'-webkitUserSelect': 'none',

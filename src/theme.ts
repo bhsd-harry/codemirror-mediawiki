@@ -1,13 +1,20 @@
 import {EditorView} from '@codemirror/view';
 import {nord as nordBase} from 'cm6-theme-nord';
-import {selector as hoverSelector} from './hover';
-import {selector as foldSelector} from './fold';
-import {menuSelector, messageSelector, actionSelector} from './statusBar';
+import {
+	foldSelector,
+	hoverSelector,
+	matchingCls,
+	nonmatchingCls,
+	menuSelector,
+	messageSelector,
+	actionSelector,
+	panelsSelector,
+} from './constants';
 import type {Extension} from '@codemirror/state';
 
 const focused = '&.cm-focused',
-	matching = `${focused} .cm-matchingTag`,
-	nonmatching = `${focused} .cm-nonmatchingTag`,
+	matching = `${focused} .${matchingCls}`,
+	nonmatching = `${focused} .${nonmatchingCls}`,
 	code = `${hoverSelector} code`,
 	menuHover = `${menuSelector}>div:hover`;
 
@@ -97,7 +104,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			}, ${menuHover}, ${actionSelector}, div${foldSelector}`]: {
 				backgroundColor: '#4c566a',
 			},
-			'div.cm-panels': {
+			[`div${panelsSelector}`]: {
 				color: '#d8dee9',
 			},
 			[menuSelector]: {

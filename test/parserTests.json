@@ -5026,6 +5026,36 @@
 		"parsed": "<comment>&lt;!-- &lt;translate&gt&lt;tvar name=1&gt&lt;/tvar&gt&lt;/translate&gt --&gt</><exttag-bracket>&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><tag-includeonly tag-translate exttag-bracket>&lt;</><tag-includeonly tag-translate exttag-name>tvar </><tag-includeonly tag-translate exttag-attribute ext-tvar>name=</><tag-includeonly tag-translate exttag-attribute-value>2</><tag-includeonly tag-translate exttag-bracket>&gt&lt;/</><tag-includeonly tag-translate exttag-name>tvar</><tag-includeonly tag-translate exttag-bracket>&gt</><tag-includeonly exttag-bracket>&lt;/</><tag-includeonly exttag-name>translate</><tag-includeonly exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "Subpage in #ifexist",
+		"wikitext": "{{#ifexist:/ifexist|yes|no}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>/ifexist</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>yes</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>no</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Parent directory in #ifexist",
+		"wikitext": "{{#ifexist:../ifexist|yes|no}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#ifexist</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0>../ifexist</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>yes</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>no</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Subpage in redirect",
+		"wikitext": "#redirect [[/redirect]]",
+		"parsed": "<redirect>#redirect </><link-ground link-bracket>[[</><link-ground link-pagename pagename>/redirect</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Parent directory in redirect",
+		"wikitext": "#redirect [[../test]]",
+		"parsed": "<redirect>#redirect </><link-ground link-bracket>[[</><link-ground link-pagename pagename>../test</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Subpage in image link",
+		"wikitext": "[[File:Foobar.jpg|link=/image]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>/image</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "Parent directory in image link",
+		"wikitext": "[[File:Foobar.jpg|link=../test]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>link=</><link-ground file-text pagename>../test</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

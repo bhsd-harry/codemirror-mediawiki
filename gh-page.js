@@ -24,20 +24,22 @@ registerTheme('nord', nord);
     const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'], cssOnly = ['colorPicker'], cssLangs = new Set(['css', 'vue', 'html']), cm = new CodeMirror6(textarea), linters = {};
     let config, fetchConfig;
     const init = async (lang) => {
-        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
+        const isMediaWiki = lang === 'mediawiki', display = isMediaWiki ? '' : 'none', cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none', selector = '.fieldLayout';
         let parserConfig;
         for (const id of mediawikiOnly) {
-            document.getElementById(id).closest('.fieldLayout').style.display = display;
+            document.getElementById(id).closest(selector).style.display = display;
         }
         for (const id of cssOnly) {
-            document.getElementById(id).closest('.fieldLayout').style.display = cssDisplay;
+            document.getElementById(id).closest(selector).style.display = cssDisplay;
         }
         if (isMediaWiki || lang === 'html') {
             fetchConfig !== null && fetchConfig !== void 0 ? fetchConfig : (fetchConfig = (async () => (await fetch('/wikiparser-node/config/default.json')).json())());
             parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
             config.linkSuggest = (s) => [[`${s} (article)`], [`${s} (user)`]];
-            config.paramSuggest = () => [['param1'], ['param2', 'another parameter']];
+            config.paramSuggest = (s) => Object.assign(s.includes(':')
+                ? []
+                : [['param1'], ['param2', 'another parameter']], { description: 'Example template' });
             Object.assign(cm, { config });
         }
         await cm.setLanguage(lang, config);

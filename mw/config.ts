@@ -10,8 +10,8 @@ import {
 import {getStaticMwConfig} from '../src/static';
 import type {MagicWord, MagicRule} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
-import type {MwConfig} from '../src/token';
 import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';
+import type {MwConfig} from '../src/token';
 
 const others = new Set([...otherParserFunctions, 'msgnw']);
 

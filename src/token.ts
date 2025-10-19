@@ -63,10 +63,10 @@ export type ApiSuggestions = [string, string?][] & {description?: string};
 /**
  * 获取维基链接建议
  * @param search 搜索字符串，开头不包含` `
- * @param namespace 命名空间
  * @param subpage 是否为子页面
+ * @param namespace 命名空间
  */
-export type ApiSuggest = (search: string, namespace?: number, subpage?: boolean) =>
+export type ApiSuggest = (search: string, subpage?: boolean, namespace?: number) =>
 	ApiSuggestions | Promise<ApiSuggestions>;
 
 export interface MwConfig extends MwConfigBase {

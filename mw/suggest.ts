@@ -1,3 +1,4 @@
+import {isWMF} from '../src/constants';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
 
@@ -16,7 +17,7 @@ const templateParameters = new Map<string, ApiSuggestions>();
  */
 const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
 	let promise: Promise<ApiSuggestions> | undefined;
-	return async (search: string, namespace = 0, subpage?: boolean) => {
+	return async (search: string, subpage?: boolean, namespace = 0) => {
 		if (subpage) {
 			search = title + search; // eslint-disable-line no-param-reassign
 		}
@@ -53,7 +54,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
  * @param api mw.Api 实例
  * @param page 页面标题
  */
-const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string) => {
+const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string, force = true) => {
 	if (!titles || /[|{}<>[\]]/u.test(titles)) {
 		return [];
 	} else if (titles.startsWith('/')) {
@@ -63,6 +64,8 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		titles = new mw.Title(titles, 10).getPrefixedDb(); // eslint-disable-line no-param-reassign
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
+		} else if (!force && !isWMF) {
+			return [];
 		}
 		api.abort();
 		const {pages} = await api.get({

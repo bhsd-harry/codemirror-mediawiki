@@ -2,8 +2,9 @@ import {indentMore, indentLess} from '@codemirror/commands';
 import {gotoLine, openSearchPanel} from '@codemirror/search';
 import {unfoldAll} from '@codemirror/language';
 import {foldRef} from '../src/fold';
+import {settingsId} from './constants';
 import {msg} from './msg';
-import {getInstance} from './textSelection';
+import {getInstance} from './util';
 import type {Command} from '@codemirror/view';
 import type {CodeMirror} from './codemirror';
 
@@ -240,7 +241,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					preferences: getTool(
 						'settings',
 						() => {
-							document.getElementById('cm-settings')!.click();
+							document.getElementById(settingsId)!.click();
 						},
 						msg('title'),
 					),

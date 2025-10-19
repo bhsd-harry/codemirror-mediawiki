@@ -1,18 +1,13 @@
 import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/browser';
-import {isMac} from '../src/openLinks';
+import {isMac} from '../src/constants';
+import {settingsId, curVersion, languages} from './constants';
 import type {CodeMirror} from './codemirror';
 
-declare const $LANGS: string[],
-	$VERSION: string;
+declare const $LANGS: string[];
 
 const storageKey = 'codemirror-mediawiki-i18n';
 
-export const curVersion = $VERSION,
-	REPO_CDN = `npm/@bhsd/codemirror-mediawiki@${curVersion}`,
-	languages = (async () => {
-		await mw.loader.using('mediawiki.language');
-		return mw.language.getFallbackLanguageChain();
-	})(),
+export const REPO_CDN = `npm/@bhsd/codemirror-mediawiki@${curVersion}`,
 
 	/** 预存的I18N，可以用于判断是否是首次安装 */
 	i18n: Record<string, string> = getObject(storageKey) ?? {};
@@ -108,7 +103,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 	}
 	notification?.find('#settings').click(e => {
 		e.preventDefault();
-		document.getElementById('cm-settings')!.dispatchEvent(new MouseEvent('click'));
+		document.getElementById(settingsId)!.dispatchEvent(new MouseEvent('click'));
 	});
 };
 

@@ -22,36 +22,7 @@ import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
-import colorPicker, {discoverColors} from './color';
-import {mediawiki} from './mediawiki';
-import escape from './escape';
-import codeFolding, {mediaWikiFold, foldHandler} from './fold';
-import tagMatchingState from './matchTag';
-import refHover from './ref';
-import magicWordHover from './hover';
-import signatureHelp from './signature';
-import inlayHints from './inlay';
-import {
-	getWikiLintSource,
-	getJsLintSource,
-	getCssLintSource,
-	getJsonLintSource,
-	getLuaLintSource,
-	getVueLintSource,
-	getHTMLLintSource,
-} from './lintsource';
-import openLinks from './openLinks';
-import {tagModes, getStaticMwConfig} from './static';
 import bidiIsolation from './bidi';
-import toolKeymap from './keymap';
-import bracketMatching from './matchBrackets';
-import statusBar from './statusBar';
-import {detectIndent} from './indent';
-import javascript from './javascript';
-import css from './css';
-import lua from './lua';
-import vue from './vue';
-import html from './html';
 import {
 	CodeMirror6,
 	avail,
@@ -62,12 +33,41 @@ import {
 	optionalFunctions,
 	themes,
 } from './codemirror';
+import colorPicker, {discoverColors} from './color';
+import escape from './escape';
+import codeFolding, {mediaWikiFold, foldHandler} from './fold';
+import magicWordHover from './hover';
+import {detectIndent} from './indent';
+import inlayHints from './inlay';
+import toolKeymap from './keymap';
+import {
+	getWikiLintSource,
+	getJsLintSource,
+	getCssLintSource,
+	getJsonLintSource,
+	getLuaLintSource,
+	getVueLintSource,
+	getHTMLLintSource,
+} from './lintsource';
+import bracketMatching from './matchBrackets';
+import tagMatchingState from './matchTag';
+import {mediawiki} from './mediawiki';
+import openLinks from './openLinks';
+import refHover from './ref';
+import signatureHelp from './signature';
+import {tagModes, getStaticMwConfig} from './static';
+import statusBar from './statusBar';
+import css from './css';
+import html from './html';
+import javascript from './javascript';
+import lua from './lua';
+import vue from './vue';
 import type {Extension} from '@codemirror/state';
 import type {Config, LanguageSupport} from '@codemirror/language';
 import type {StyleSpec} from 'style-mod';
-import type {MwConfig} from './token';
-import type {LintSourceGetter} from './lintsource';
 import type {Addon, AddonMain} from './codemirror';
+import type {LintSourceGetter} from './lintsource';
+import type {MwConfig} from './token';
 
 export type {MwConfig};
 export {CodeMirror6};

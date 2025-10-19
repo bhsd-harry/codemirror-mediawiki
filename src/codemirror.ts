@@ -16,6 +16,7 @@ import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codem
 import {searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
+import {panelSelector, panelsSelector, diagnosticSelector} from './constants';
 import {light} from './theme';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
@@ -23,12 +24,12 @@ import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
-import type {MwConfig} from './token';
 import type {DocRange, foldHandler} from './fold';
+import type {Text as ExtendedText, detectIndent} from './indent';
 import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
-import type {Text as ExtendedText, detectIndent} from './indent';
 import type statusBar from './statusBar';
+import type {MwConfig} from './token';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
@@ -190,16 +191,16 @@ export class CodeMirror6 {
 					},
 				]),
 				EditorView.theme({
-					'.cm-panels': {
+					[panelsSelector]: {
 						direction: document.dir,
 					},
 					'& .cm-lineNumbers .cm-gutterElement': {
 						textAlign: 'end',
 					},
-					'.cm-textfield, .cm-button, .cm-panel.cm-search label, .cm-panel.cm-gotoLine label': {
+					[`.cm-textfield,.cm-button,${panelSelector}.cm-search label,${panelSelector}.cm-gotoLine label`]: {
 						fontSize: 'inherit',
 					},
-					'.cm-panel [name="close"]': {
+					[`${panelSelector} [name="close"]`]: {
 						color: 'inherit',
 					},
 				}),
@@ -313,13 +314,14 @@ export class CodeMirror6 {
 						renderMessage(view): HTMLElement {
 							const span = elt(
 								'span',
-								{class: 'cm-diagnosticText-clickable'},
+								{class: diagnosticSelector.slice(1)},
 								diagnostic.message,
 							);
 							span.addEventListener('click', () => {
 								view.dispatch({
 									selection: {anchor: diagnostic.from, head: diagnostic.to},
 								});
+								view.focus();
 							});
 							return span;
 						},

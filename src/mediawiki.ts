@@ -12,12 +12,12 @@ import {
 	syntaxTree,
 } from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
-import {wmf} from '@bhsd/common';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
-import {MediaWiki} from './token';
 import {htmlTags, tokens} from './config';
-import {braceStackUpdate} from './fold';
+import {isolateSelector, ltrSelector, isWMF} from './constants';
+import {MediaWiki} from './token';
+import {braceStackUpdate, hasTag} from './util';
 import {EditorView} from '@codemirror/view';
 import type {StreamParser, TagStyle} from '@codemirror/language';
 import type {
@@ -27,11 +27,7 @@ import type {
 	CompletionResult,
 } from '@codemirror/autocomplete';
 import type {StyleSpec} from 'style-mod';
-import type {MwConfig, TagName} from './token';
-
-export const isWMF = /* @__PURE__ */ (
-	() => typeof location === 'object' && new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname)
-)();
+import type {MwConfig} from './token';
 
 /**
  * 检查首字母大小写并插入正确的自动填充内容
@@ -51,14 +47,6 @@ const apply = (view: EditorView, completion: Completion, from: number, to: numbe
 		annotations: pickedCompletion.of(completion),
 	});
 };
-
-/**
- * 判断节点是否包含指定类型
- * @param types 节点类型
- * @param names 指定类型
- */
-export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly nsRegex;
@@ -182,7 +170,7 @@ export class FullMediaWiki extends MediaWiki {
 		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,
-			options: (await linkSuggest(search, ns, subpage)).map(([label]): Completion => ({
+			options: (await linkSuggest(search, subpage, ns)).map(([label]): Completion => ({
 				type: 'text',
 				label: underscore ? label.replace(/ /gu, '_') : label,
 			})),
@@ -617,10 +605,10 @@ const theme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},
-	'.cm-bidi-isolate, &[dir="rtl"] .cm-mw-template-name': {
+	[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
 		unicodeBidi: 'isolate',
 	},
-	'.cm-bidi-ltr': {
+	[ltrSelector]: {
 		direction: 'ltr',
 		display: 'inline-block',
 	},

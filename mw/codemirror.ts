@@ -1,6 +1,7 @@
 import {CDN} from '@bhsd/browser';
 import elt from 'crelt';
 import {CodeMirror6} from '../src/codemirror';
+import {isWMF} from '../src/constants';
 import {
 	registerCSS,
 	registerHTML,
@@ -12,26 +13,27 @@ import {
 	registerTheme,
 	nord,
 } from '../src/index';
-import {tagModes} from '../src/static';
 import {jsConfig} from '../src/linter';
-import {isWMF} from '../src/mediawiki';
+import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
-import {getTitleParser, isbnParser} from './openLinks';
-import {instances, textSelection, monacoTextSelection} from './textSelection';
-import {prefs, useMonaco, indentKey, themeKey, wikilint, codeConfigs, loadJSON, RuleState} from './preference';
-import {msg, curVersion, languages} from './msg';
-import prepareSuggest from './suggest';
+import {preferenceId, indentKey, themeKey, RuleState, curVersion, languages} from './constants';
 import escape from './escape';
-import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import getParsoidLintSource from './lintsource';
+import {msg} from './msg';
+import {getTitleParser, isbnParser} from './openLinks';
+import {prefs, useMonaco, wikilint, codeConfigs, loadJSON} from './preference';
+import prepareSuggest from './suggest';
+import {textSelection, monacoTextSelection} from './textSelection';
+import {instances} from './util';
+import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
-import type {MwConfig} from '../src/token';
 import type {Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSources} from '../src/lintsource';
+import type {MwConfig} from '../src/token';
 
 declare interface IWikitextModel extends editor.ITextModel {
 	linter?: {option?: Option | LiveOption};
@@ -92,10 +94,10 @@ const linters: Record<string, LintSources | undefined> = {},
 		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
-	];
-
-const {documentElement} = document,
+	],
+	{documentElement} = document,
 	mediaQuery = matchMedia('(prefers-color-scheme: dark)');
+
 const setTheme = (cm: CodeMirror): void => {
 	const isDark = documentElement.classList.contains('skin-theme-clientpref-night')
 		|| documentElement.classList.contains('skin-theme-clientpref-os') && mediaQuery.matches
@@ -110,7 +112,7 @@ const getObserver = (cm: CodeMirror): MutationObserver => new MutationObserver((
  * 判断是否为普通编辑器
  * @param textarea 文本框
  */
-const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest('#cm-preference');
+const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest(`#${preferenceId}`);
 
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {

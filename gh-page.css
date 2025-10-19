@@ -122,6 +122,9 @@ textarea, .cm-editor {
 	border: 1.5px solid #dedede;
 	margin-top: .5em;
 }
+.cm-tooltip-hover ul {
+	padding-left: 1.6em;
+}
 
 @media screen and (max-width: 720px) {
 	main {

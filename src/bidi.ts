@@ -7,16 +7,18 @@
 import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec, RangeSetBuilder} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
-import {getTag} from './matchTag';
 import {tokens} from './config';
+import {isolateSelector, ltrSelector} from './constants';
+import {getTag} from './matchTag';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
 import type {SyntaxNode} from '@lezer/common';
 
-const isolateLTR = Decoration.mark({
-		class: 'cm-bidi-isolate cm-bidi-ltr',
+const cls = isolateSelector.slice(1),
+	isolateLTR = Decoration.mark({
+		class: `${cls} ${ltrSelector.slice(1)}`,
 		bidiIsolate: Direction.LTR,
 	}),
-	isolate = Decoration.mark({class: 'cm-bidi-isolate'});
+	isolate = Decoration.mark({class: cls});
 
 export const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
 	const set = new RangeSetBuilder<Decoration>();

@@ -46,6 +46,6 @@
 	"and": " and ",
 	"json-error": "Invalid JSON: $1",
 	"phrase-Fold-template-or-extension-tag": "Fold template, parser function or extension tag",
-	"phrase-No-definition-found": "No definition found: ",
+	"phrase-No-definition-found": "No definition found",
 	"toolbar-fold-ref": "Fold/Unfold references"
 }

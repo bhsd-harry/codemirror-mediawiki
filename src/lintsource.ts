@@ -3,7 +3,7 @@ import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {getWikiLinter, getJsLinter, getCssLinter, getJsonLinter, getLuaLinter} from './linter';
-import {posToIndex} from './hover';
+import {posToIndex} from './util';
 import type {EditorView} from '@codemirror/view';
 import type {EditorState, Text} from '@codemirror/state';
 import type {Language} from '@codemirror/language';

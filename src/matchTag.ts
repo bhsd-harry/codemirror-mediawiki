@@ -2,6 +2,7 @@ import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {voidHtmlTags, selfClosingTags} from './config';
+import {matchingCls, nonmatchingCls} from './constants';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
@@ -145,8 +146,8 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 	return end ? {matched: true, start, end} : {matched: false, start};
 };
 
-const matchingMark = /* @__PURE__ */ Decoration.mark({class: 'cm-matchingTag'}),
-	nonmatchingMark = /* @__PURE__ */ Decoration.mark({class: 'cm-nonmatchingTag'});
+const matchingMark = /* @__PURE__ */ Decoration.mark({class: matchingCls}),
+	nonmatchingMark = /* @__PURE__ */ Decoration.mark({class: nonmatchingCls});
 
 export default /* @__PURE__ */ StateField.define<DecorationSet>({
 	create() {

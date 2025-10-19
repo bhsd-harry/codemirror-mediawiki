@@ -1,4 +1,5 @@
 import {CodeMirror} from './codemirror';
+import {getInstance} from './util';
 import type {editor, Selection} from 'monaco-editor';
 
 declare interface EncapsulateOptions {
@@ -27,17 +28,9 @@ declare interface TextSelection {
 	scrollToCaretPosition(this: JQuery<HTMLTextAreaElement>): JQuery<HTMLTextAreaElement>;
 }
 
-export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
-
 const split = (selText: string, pre: string, post: string, splitlines?: boolean): string => splitlines
 	? selText.split('\n').map(line => pre + line + post).join('\n')
 	: pre + selText + post;
-
-/**
- * 获取CodeMirror实例
- * @param $ele textarea元素的jQuery对象
- */
-export const getInstance = ($ele: JQuery<HTMLTextAreaElement>): CodeMirror => instances.get($ele[0]!)!;
 
 /**
  * jQuery.textSelection overrides for CodeMirror.

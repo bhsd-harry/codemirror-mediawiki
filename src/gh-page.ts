@@ -58,20 +58,26 @@ registerTheme('nord', nord);
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
-			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
+			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none',
+			selector = '.fieldLayout';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
-			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = display;
+			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display = display;
 		}
 		for (const id of cssOnly) {
-			document.getElementById(id)!.closest<HTMLElement>('.fieldLayout')!.style.display = cssDisplay;
+			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display = cssDisplay;
 		}
 		if (isMediaWiki || lang === 'html') {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;
 			config ??= CodeMirror6.getMwConfig(parserConfig);
 			config.linkSuggest = (s): [string][] => [[`${s} (article)`], [`${s} (user)`]];
-			config.paramSuggest = (): [string, string?][] => [['param1'], ['param2', 'another parameter']];
+			config.paramSuggest = (s): [string, string?][] => Object.assign(
+				s.includes(':')
+					? []
+					: [['param1'], ['param2', 'another parameter']] as [string, string?][],
+				{description: 'Example template'},
+			);
 			Object.assign(cm, {config});
 		}
 		await cm.setLanguage(lang, config);

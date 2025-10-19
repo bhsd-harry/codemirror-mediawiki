@@ -1,8 +1,9 @@
 import {CDN} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {instances} from './textSelection';
-import {openPreference} from './preference';
+import {settingsId} from './constants';
 import {msg, setI18N, welcome, localize} from './msg';
+import {openPreference} from './preference';
+import {instances} from './util';
 
 declare const $STYLE: string;
 
@@ -53,11 +54,13 @@ document.body.addEventListener('click', e => {
 		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
 		'#',
 		msg('title'),
-		'cm-settings',
+		settingsId,
 	)!.addEventListener('click', e => {
 		e.preventDefault();
-		const selector = '.cm-editor+textarea,.monaco-container+textarea',
-			textareas = [...document.querySelectorAll<HTMLTextAreaElement>(selector)];
+		const textareas = [
+			...document
+				.querySelectorAll<HTMLTextAreaElement>('.cm-editor+textarea,.monaco-container+textarea'),
+		];
 		void openPreference(textareas.map(textarea => instances.get(textarea)));
 	});
 	void welcome(baseVersion, addons);
