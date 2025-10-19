@@ -1,3 +1,11 @@
+## 3.6.0
+
+*2025-10-20*
+
+**Added**
+
+- The [refHover](./README.md#refhover) extension now highlights the Wikitext syntax in the tooltip in the MediaWiki mode
+
 ## 3.5.2
 
 *2025-10-18*

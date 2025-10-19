@@ -1,5 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
-import {ensureSyntaxTree} from '@codemirror/language';
+import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language';
+import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {getTag} from './matchTag';
@@ -13,7 +14,8 @@ import type {CodeMirror6} from './codemirror';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
-const trees = new WeakMap<EditorView, Tree>();
+const trees = new WeakMap<EditorView, Tree>(),
+	dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 
 /**
  * 获取节点内容
@@ -70,13 +72,32 @@ export default (cm: CodeMirror6): Extension => [
 								if (ref) {
 									const {range: {start, end}} = ref[0]!,
 										anchor = posToIndex(doc, start),
-										head = posToIndex(doc, end);
-									dom.textContent = state.sliceDoc(anchor, head);
+										head = posToIndex(doc, end),
+										text = state.sliceDoc(anchor, head);
+									let result = '';
+									highlightCode(
+										text,
+										state.facet(language)!.parser.parse(text),
+										{
+											style(tags) {
+												return highlightingFor(state, tags);
+											},
+										},
+										(code, classes) => {
+											const escaped = code.replace(/[\n<&]/gu, ch => dict[ch]!);
+											result += classes ? `<span class="${classes}">${escaped}</span>` : escaped;
+										},
+										() => {
+											result += '<br>';
+										},
+									);
+									dom.innerHTML = result;
 									dom.addEventListener('click', () => {
 										view.dispatch({
 											selection: {anchor, head},
 											scrollIntoView: true,
 										});
+										view.focus();
 									});
 								} else {
 									dom.textContent = state.phrase('No definition found');
