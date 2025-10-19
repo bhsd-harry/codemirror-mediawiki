@@ -37,7 +37,7 @@ registerTheme('nord', nord);
             parserConfig = await fetchConfig;
             config !== null && config !== void 0 ? config : (config = CodeMirror6.getMwConfig(parserConfig));
             config.linkSuggest = (s) => [[`${s} (article)`], [`${s} (user)`]];
-            config.paramSuggest = () => [['param1'], ['param2']];
+            config.paramSuggest = () => [['param1'], ['param2', 'another parameter']];
             Object.assign(cm, { config });
         }
         await cm.setLanguage(lang, config);

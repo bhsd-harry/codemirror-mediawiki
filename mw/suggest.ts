@@ -53,17 +53,17 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
  * @param page 页面标题
  */
 const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string) => {
-	/* eslint-disable no-param-reassign */
-	if (titles.startsWith('/')) {
-		titles = page + titles;
+	if (!titles || /[|{}<>[\]]/u.test(titles)) {
+		return [];
+	} else if (titles.startsWith('/')) {
+		titles = page + titles; // eslint-disable-line no-param-reassign
 	}
 	try {
-		titles = new mw.Title(titles, 10).getPrefixedDb();
+		titles = new mw.Title(titles, 10).getPrefixedDb(); // eslint-disable-line no-param-reassign
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
 		}
 		api.abort();
-		/* eslint-enable no-param-reassign */
 		const {pages} = await api.get({
 			action: 'templatedata',
 			titles,

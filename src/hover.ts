@@ -1,6 +1,8 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
+import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
 import elt from 'crelt';
+import {tokens} from './config';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
@@ -46,10 +48,26 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
 const selector = '.cm-tooltip-hover';
 
 export default (cm: CodeMirror6): Extension => [
-	hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
-		const {state: {doc}} = view,
-			hover = await getLSP(view, false, cm.getWikiConfig)
-				?.provideHover(doc.toString(), indexToPos(doc, pos));
+	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
+		const {state} = view,
+			{doc} = state,
+			{paramSuggest, tags} = cm.langConfig!;
+		let hover = await getLSP(view, false, cm.getWikiConfig)
+			?.provideHover(doc.toString(), indexToPos(doc, pos));
+		if (!hover && paramSuggest && 'templatedata' in tags) {
+			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
+			if (node?.name.includes(tokens.templateName)) {
+				const result = await paramSuggest(state.sliceDoc(node.from, node.to));
+				if (result.length > 0) {
+					// eslint-disable-next-line require-atomic-updates
+					hover = {
+						contents: result.map(([key, details]) => `\`${key}\`${details ? ` — ${details}` : ''}`)
+							.join('\n\n'),
+						range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
+					};
+				}
+			}
+		}
 		if (hover) {
 			await loadScript('npm/marked/lib/marked.umd.js', 'marked', true);
 			const {end} = hover.range!;
@@ -58,7 +76,11 @@ export default (cm: CodeMirror6): Extension => [
 				end: posToIndex(doc, end),
 				above: true,
 				create(): TooltipView {
-					return createTooltipView(view, marked.parse((hover.contents as MarkupContent).value));
+					const {contents} = hover;
+					return createTooltipView(
+						view,
+						marked.parse(typeof contents === 'string' ? contents : (contents as MarkupContent).value),
+					);
 				},
 			};
 		}

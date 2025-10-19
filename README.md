@@ -1111,7 +1111,7 @@ registerHighlightWhitespace();
 
 *version added: 2.21.1*
 
-Show the help information of a magic word when hovering.
+Show the help information of a magic word or a template name when hovering.
 
 For granular control over the bundled extensions, you can import the `registerHover` function:
 

@@ -145,6 +145,9 @@ export class CodeMirror6 {
 	#getLanguage(config: unknown): Extension {
 		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config);
 		this.#nestedMWLanguage = lang.nestedMWLanguage;
+		if (this.#lang === 'mediawiki') {
+			this.langConfig = config as MwConfig;
+		}
 		return lang;
 	}
 

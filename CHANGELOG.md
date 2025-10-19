@@ -5,6 +5,7 @@
 **Added**
 
 - The [refHover](./README.md#refhover) extension now highlights the Wikitext syntax in the tooltip in the MediaWiki mode
+- The [hover](./README.md#hover) extension now also supports template names if [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
 
 ## 3.5.2
 

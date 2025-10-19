@@ -199,12 +199,12 @@ export class FullMediaWiki extends MediaWiki {
 		offset: number;
 		options: Completion[];
 	} | undefined> {
-		const {config: {paramSuggest}} = this;
-		return page && typeof paramSuggest === 'function' && !/[|{}<>[\]]/u.test(page)
+		const {config: {paramSuggest}} = this,
+			result = await paramSuggest?.(page);
+		return result?.length
 			? {
 				offset: /^\s*/u.exec(search)![0].length,
-				options: (await paramSuggest(page))
-					.map(([key, detail]) => ({type: 'variable', label: key + equal, detail} as Completion)),
+				options: result.map(([key, detail]) => ({type: 'variable', label: key + equal, detail} as Completion)),
 			}
 			: undefined;
 	}
