@@ -3,6 +3,7 @@ import type {ApiSuggest, ApiSuggestions} from '../src/token';
 
 declare interface TemplateParam {
 	label: string | null;
+	description: string | null;
 	aliases: string[];
 }
 
@@ -71,13 +72,18 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			converttitles: true,
 			lang: mw.config.get('wgUserLanguage'),
 		} satisfies TemplateDataApiTemplateDataParams) as {
-				pages: Record<number, {params: Record<string, TemplateParam>}>;
+				pages: Record<number, {description?: string, params: Record<string, TemplateParam>}>;
 			},
-			params = Object.entries(Object.values(pages)[0]?.params ?? {}),
+			[pageObj] = Object.values(pages),
+			desc = pageObj?.description,
+			params = Object.entries(pageObj?.params ?? {}),
 			result: ApiSuggestions = [];
-		for (const [key, {aliases, label}] of params) {
-			const detail = label ?? '';
+		for (const [key, {aliases, label, description}] of params) {
+			const detail = description ?? label ?? '';
 			result.push([key, detail], ...aliases.map((alias): [string, string] => [alias, detail]));
+		}
+		if (desc) {
+			result.description = desc;
 		}
 		templateParameters.set(titles, result);
 		return result;

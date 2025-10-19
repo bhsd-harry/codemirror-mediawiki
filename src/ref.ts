@@ -26,6 +26,12 @@ const trees = new WeakMap<EditorView, Tree>(),
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
 
+/**
+ * 转义HTML字符串
+ * @param text 原字符串
+ */
+export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => dict[ch]!);
+
 export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 		const {state} = view,
@@ -84,7 +90,7 @@ export default (cm: CodeMirror6): Extension => [
 											},
 										},
 										(code, classes) => {
-											const escaped = code.replace(/[\n<&]/gu, ch => dict[ch]!);
+											const escaped = escHTML(code);
 											result += classes ? `<span class="${classes}">${escaped}</span>` : escaped;
 										},
 										() => {

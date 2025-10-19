@@ -4,6 +4,7 @@ import {loadScript, getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {tokens} from './config';
 import {isWMF} from './mediawiki';
+import {escHTML} from './ref';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Text, Extension} from '@codemirror/state';
 import type {MarkupContent, Position} from 'vscode-languageserver-types';
@@ -58,12 +59,23 @@ export default (cm: CodeMirror6): Extension => [
 		if (isWMF && !hover && paramSuggest && 'templatedata' in tags) {
 			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
 			if (node?.name.includes(tokens.templateName)) {
-				const result = await paramSuggest(state.sliceDoc(node.from, node.to));
-				if (result.length > 0) {
+				const result = await paramSuggest(state.sliceDoc(node.from, node.to)),
+					{description, length} = result;
+				if (description || length > 0) {
 					// eslint-disable-next-line require-atomic-updates
 					hover = {
-						contents: result.map(([key, details]) => `\`${key}\`${details ? ` — ${details}` : ''}`)
-							.join('\n\n'),
+						contents: {
+							kind: 'plaintext',
+							value: (description ? `<p>${escHTML(description)}</p>` : '') + (
+								length === 0
+									? ''
+									: `<ul>${
+										result.map(([key, details]) => `<li><code>${escHTML(key)}</code>${
+											details ? ` — ${escHTML(details)}` : ''
+										}</li>`).join('')
+									}</ul>`
+							),
+						},
 						range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
 					};
 				}
@@ -77,11 +89,8 @@ export default (cm: CodeMirror6): Extension => [
 				end: posToIndex(doc, end),
 				above: true,
 				create(): TooltipView {
-					const {contents} = hover;
-					return createTooltipView(
-						view,
-						marked.parse(typeof contents === 'string' ? contents : (contents as MarkupContent).value),
-					);
+					const {kind, value} = hover.contents as MarkupContent;
+					return createTooltipView(view, kind === 'plaintext' ? value : marked.parse(value));
 				},
 			};
 		}

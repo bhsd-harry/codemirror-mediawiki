@@ -58,7 +58,7 @@ declare interface StringStream extends StringStreamBase {
 }
 
 export type TagName = keyof typeof tokens;
-export type ApiSuggestions = [string, string?][];
+export type ApiSuggestions = [string, string?][] & {description?: string};
 
 /**
  * 获取维基链接建议
