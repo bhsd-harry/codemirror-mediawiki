@@ -9,10 +9,7 @@
 .codemirror-coding .group-format,
 .codemirror-coding .group-insert,
 .codemirror-coding .tabs,
-.codemirror-coding .sections {
-	display: none;
-}
-
+.codemirror-coding .sections,
 .codeEditor-ui-toolbar .group-codemirror6,
 .codeEditor-ui-toolbar .group-codemirror6-search {
 	display: none;

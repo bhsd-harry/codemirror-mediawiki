@@ -67,7 +67,7 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/view": "^6.38.6",
 		"cm6-theme-nord": "^0.2.0",
-		"wikiparser-node": "^1.28.1"
+		"wikiparser-node": "^1.29.0"
 	},
 	"devDependencies": {
 		"@bhsd/cm-util": "^0.1.0",

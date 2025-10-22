@@ -1,7 +1,7 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
-import {createTooltipView, indexToPos} from './util';
+import {createTooltipView, indexToPos, escHTML} from './util';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
@@ -73,13 +73,14 @@ export default (cm: CodeMirror6): Extension => [
 				return createTooltipView(
 					view,
 					signatures.map(({label, parameters, activeParameter = active}) => {
+						const safeLabel = escHTML(label);
 						if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
-							return label;
+							return safeLabel;
 						}
-						const colon = label.indexOf(':'),
-							parts = label.slice(colon + 1, -2).split('|');
+						const colon = safeLabel.indexOf(':'),
+							parts = safeLabel.slice(colon + 1, -2).split('|');
 						parts[activeParameter!] = `<b>${parts[activeParameter!]}</b>`;
-						return `${label.slice(0, colon)}:${parts.join('|')}}}`;
+						return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
 					}).join('<br>'),
 				);
 			},
