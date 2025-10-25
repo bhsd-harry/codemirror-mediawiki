@@ -1,3 +1,11 @@
+## 3.6.1
+
+*2025-10-26*
+
+**Changed**
+
+- The preference dialog on a MediaWiki site is now styled as `z-index: 1002`
+
 ## 3.6.0
 
 *2025-10-22*

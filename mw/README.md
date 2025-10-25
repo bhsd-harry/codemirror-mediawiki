@@ -18,6 +18,10 @@
 	- [wikiEditor](#wikieditor)
 	- [save](#save)
 	- [useMonaco](#usemonaco)
+- [Integration with editors](#integration-with-editors)
+	- [Native WikiEditor](#native-wikieditor)
+	- [Wikiplus](#wikiplus)
+	- [InPageEdit-Next](#inpageedit-next)
 
 </details>
 
@@ -204,3 +208,35 @@ Save preferences as JSON on a user subpage (`Special:Mypage/codemirror-mediawiki
 *version added: 2.11.1*
 
 Use the Monaco editor instead of the CodeMirror editor.
+
+# Integration with editors
+
+## Native WikiEditor
+
+```js
+mw.hook('wikipage.editform').add($form => {
+	CodeMirror6.fromTextArea($form.find('textarea')[0]);
+});
+```
+
+## [Wikiplus](https://www.npmjs.com/package/wikiplus-core)
+
+Please see [Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight).
+
+## [InPageEdit Next](https://www.npmjs.com/package/@inpageedit/core)
+
+```js
+ipe.plugin(ctx => {
+	ctx.on(
+		'quick-edit/wiki-page',
+		({modal, wikiPage: {contentmodel, ns, title}}) => {
+			CodeMirror6.fromTextArea(
+				modal.get$content().querySelector('textarea'),
+				contentmodel,
+				ns,
+				title,
+			);
+		},
+	);
+});
+```

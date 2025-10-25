@@ -179,7 +179,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		themeWidget.setValue(theme);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: preferenceId});
-		dialog.$element.css('z-index', 801);
+		dialog.$element.css('z-index', 1002);
 		const windowManager = new OO.ui.WindowManager();
 		windowManager.$element.appendTo(document.body);
 		windowManager.addWindows([dialog]);
