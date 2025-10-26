@@ -6,18 +6,7 @@ const mediawiki = new FullMediaWiki(mwConfig);
 const mockTest = autocompletionTest(mediawiki.completionSource);
 
 describe('autocompletion', () => {
-	it('parser function name', async () => {
-		await mockTest(
-			'{{ uc',
-			{
-				from: 3,
-				options: [
-					{label: 'ucfirst', type: 'function'},
-					{label: 'uc', type: 'function'},
-				],
-				validFor: /^[^|{}<>[\]#]*$/u,
-			},
-		);
+	it('parser function/template name', async () => {
 		await mockTest(
 			'{{ full',
 			{
@@ -27,6 +16,7 @@ describe('autocompletion', () => {
 					{label: 'fullurle', type: 'function'},
 					{label: 'FULLPAGENAME', type: 'constant'},
 					{label: 'FULLPAGENAMEE', type: 'constant'},
+					{label: 'full', type: 'text'},
 				],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
@@ -39,16 +29,133 @@ describe('autocompletion', () => {
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
 		);
-	});
-	it('tag attribute', async () => {
 		await mockTest(
-			'<p da',
+			'{{ :a',
+			{
+				from: 4,
+				options: [
+					{label: 'a (article)', type: 'text'},
+					{label: 'a (user)', type: 'text'},
+				],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{ help:a',
+			{
+				from: 8,
+				options: [{label: 'a (help)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest('{{ >', null);
+	});
+	it('page', async () => {
+		await mockTest(
+			'{{#ifexist: a',
+			{
+				from: 12,
+				options: [
+					{label: 'a (article)', type: 'text'},
+					{label: 'a (user)', type: 'text'},
+				],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{filepath: a',
+			{
+				from: 12,
+				options: [{label: 'a (file)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{int: a',
+			{
+				from: 7,
+				options: [{label: 'a (mediawiki)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{raw: a',
+			{
+				from: 7,
+				options: [{label: 'a (template)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{#widget: a',
+			{
+				from: 11,
+				options: [{label: 'a (widget)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'{{#invoke: a',
+			{
+				from: 11,
+				options: [{label: 'a (module)', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'[[ a',
 			{
 				from: 3,
 				options: [
-					{label: 'datatype', type: 'property'},
-					{label: 'data-', type: 'variable', detail: '*'},
+					{label: 'a (article)', type: 'text'},
+					{label: 'a (user)', type: 'text'},
 				],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest('[[ >', null);
+	});
+	it('template parameter', async () => {
+		await mockTest(
+			'{{template|',
+			{
+				from: 11,
+				options: [
+					// @ts-expect-error explicit undefined
+					{label: 'param1=', type: 'variable', detail: undefined},
+					{label: 'param2=', type: 'variable', detail: 'another parameter'},
+				],
+				validFor: /^[^|{}=]*$/u,
+			},
+		);
+		await mockTest(
+			'{{template| p',
+			{
+				from: 12,
+				options: [
+					// @ts-expect-error explicit undefined
+					{label: 'param1=', type: 'variable', detail: undefined},
+					{label: 'param2=', type: 'variable', detail: 'another parameter'},
+				],
+				validFor: /^[^|{}=]*$/u,
+			},
+		);
+		await mockTest('{{template| p=', null);
+	});
+	it('tag attribute', async () => {
+		await mockTest(
+			'<meta i',
+			{
+				from: 6,
+				options: [{label: 'itemprop', type: 'property'}],
+				validFor: /^[a-z]*$/iu,
+			},
+		);
+		await mockTest(
+			'<langconvert t',
+			{
+				from: 13,
+				options: [{label: 'to', type: 'property'}],
 				validFor: /^[a-z]*$/iu,
 			},
 		);
@@ -64,29 +171,44 @@ describe('autocompletion', () => {
 			},
 		);
 		await mockTest(
-			'<ref n',
+			'<time da',
 			{
-				from: 5,
-				options: [{label: 'name', type: 'property'}],
+				from: 6,
+				options: [
+					{label: 'datatype', type: 'property'},
+					{label: 'data-', type: 'variable', detail: '*'},
+					{label: 'datetime', type: 'property'},
+				],
+				validFor: /^[a-z]*$/iu,
+			},
+		);
+		await mockTest(
+			'<p x',
+			{
+				from: 3,
+				options: [{label: 'xmlns:', type: 'namespace', detail: '*'}],
 				validFor: /^[a-z]*$/iu,
 			},
 		);
 	});
 	it('table attribute', async () => {
 		await mockTest(
-			'{| st',
+			'{| b',
 			{
 				from: 3,
-				options: [{label: 'style', type: 'property'}],
+				options: [
+					{label: 'bgcolor', type: 'property'},
+					{label: 'border', type: 'property'},
+				],
 				validFor: /^[a-z]*$/iu,
 			},
 		);
 		await mockTest(
 			`{|
-|- cl`,
+|- v`,
 			{
 				from: 6,
-				options: [{label: 'class', type: 'property'}],
+				options: [{label: 'valign', type: 'property'}],
 				validFor: /^[a-z]*$/iu,
 			},
 		);
@@ -102,53 +224,39 @@ describe('autocompletion', () => {
 				validFor: /^[a-z]*$/iu,
 			},
 		);
+		await mockTest(
+			`{|
+|+ ro`,
+			{
+				from: 6,
+				options: [{label: 'role', type: 'property'}],
+				validFor: /^[a-z]*$/iu,
+			},
+		);
 	});
 	it('behavior switch', async () => {
 		await mockTest(
-			'__t',
+			'__nog',
 			{
 				from: 0,
-				options: [{label: '__toc__', type: 'constant'}],
-				validFor: /^[\p{L}\p{N}]*$/u,
-			},
-		);
-		await mockTest(
-			'__in',
-			{
-				from: 0,
-				options: [{label: '__INDEX__', type: 'constant'}],
+				options: [
+					{label: '__nogallery__', type: 'constant'},
+					{label: '__NOGLOBAL__', type: 'constant'},
+				],
 				validFor: /^[\p{L}\p{N}]*$/u,
 			},
 		);
 	});
 	it('closing tag', async () => {
 		await mockTest(
-			'<poem><p></p',
+			'<indicator><i></i',
 			{
-				from: 11,
+				from: 16,
 				options: [
-					{label: 'p', type: 'type', boost: 99, apply: 'p>'},
-					{label: 'poem', type: 'type', boost: 50, apply: 'poem>'},
+					{label: 'i', type: 'type', boost: 99, apply: 'i>'},
+					{label: 'ins', type: 'type', apply: 'ins>'},
+					{label: 'indicator', type: 'type', boost: 50, apply: 'indicator>'},
 				],
-				validFor: /^[a-z\d]*$/iu,
-			},
-		);
-		await mockTest(
-			'<poem></p',
-			{
-				from: 8,
-				options: [
-					{label: 'p', type: 'type', apply: 'p>'},
-					{label: 'poem', type: 'type', boost: 50, apply: 'poem>'},
-				],
-				validFor: /^[a-z\d]*$/iu,
-			},
-		);
-		await mockTest(
-			'<references></re',
-			{
-				from: 14,
-				options: [{label: 'references', type: 'type', boost: 50, apply: 'references>'}],
 				validFor: /^[a-z\d]*$/iu,
 			},
 		);

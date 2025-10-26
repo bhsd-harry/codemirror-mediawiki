@@ -4,11 +4,17 @@ import {CompletionContext} from '@codemirror/autocomplete';
 import * as config from 'wikiparser-node/config/default.json';
 import {mediawiki} from '../src/mediawiki';
 import {tagModes, getStaticMwConfig} from '../src/static';
+import {linkSuggest, paramSuggest} from '../src/suggest.test';
 import type {CompletionResult, CompletionSource} from '@codemirror/autocomplete';
 import type {LanguageSupport} from '@codemirror/language';
 import type {ConfigData} from 'wikiparser-node';
+import type {MwConfig} from '../src/token';
 
-export const mwConfig = getStaticMwConfig(config as unknown as ConfigData, tagModes);
+export const mwConfig: MwConfig = {
+	...getStaticMwConfig(config as unknown as ConfigData, tagModes),
+	linkSuggest,
+	paramSuggest,
+};
 
 export const createState = (doc: string, lang = mediawiki(mwConfig)): EditorState => EditorState.create({
 	doc,

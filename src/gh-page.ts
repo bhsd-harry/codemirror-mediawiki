@@ -10,6 +10,7 @@ import {
 	registerTheme,
 	nord,
 } from '/codemirror-mediawiki/dist/main.min.js';
+import {linkSuggest, paramSuggest} from './suggest.test';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
 
@@ -71,13 +72,8 @@ registerTheme('nord', nord);
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;
 			config ??= CodeMirror6.getMwConfig(parserConfig);
-			config.linkSuggest = (s): [string][] => [[`${s} (article)`], [`${s} (user)`]];
-			config.paramSuggest = (s): [string, string?][] => Object.assign(
-				s.includes(':')
-					? []
-					: [['param1'], ['param2', 'another parameter']] as [string, string?][],
-				{description: 'Example template'},
-			);
+			config.linkSuggest = linkSuggest;
+			config.paramSuggest = paramSuggest;
 			Object.assign(cm, {config});
 		}
 		await cm.setLanguage(lang, config);
