@@ -37,14 +37,22 @@ import type {MwConfig} from './token';
  * @param to 结束位置
  */
 const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
-	let {label} = completion;
-	const initial = label.charAt(0).toLowerCase();
-	if (view.state.sliceDoc(from, from + 1) === initial) {
+	let {label} = completion,
+		selection;
+	const initial = label.charAt(0).toLowerCase(),
+		{state} = view,
+		after = state.sliceDoc(to);
+	if (state.sliceDoc(from, from + 1) === initial) {
 		label = initial + label.slice(1);
 	}
+	if (!/^\s*\|/u.test(after)) {
+		selection = {anchor: from + label.length + 1, head: from + label.length * 2 + 1};
+		label += `|${label}${/^\s*\]\]/u.test(after) ? '' : ']]'}`;
+	}
 	view.dispatch({
-		...insertCompletionText(view.state, label, from, to),
+		...insertCompletionText(state, label, from, to),
 		annotations: pickedCompletion.of(completion),
+		selection,
 	});
 };
 

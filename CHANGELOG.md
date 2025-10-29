@@ -1,3 +1,11 @@
+## 3.6.2
+
+*2025-11-01*
+
+**Changed**
+
+- Improved link suggestions in the [autocompletion](./README.md#autocompletion) extension on a MediaWiki site
+
 ## 3.6.1
 
 *2025-10-26*
