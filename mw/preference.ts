@@ -150,6 +150,7 @@ export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.Tab
 							? `https://github.com/bhsd-harry/wikiparser-node/wiki/${text}`
 							: `https://www.mediawiki.org/wiki/Help:Lint_errors/${text}`,
 						target: '_blank',
+						rel: 'noopener noreferrer nofollow',
 					}),
 				});
 			wikilintWidgets.set(rule, dropdown);

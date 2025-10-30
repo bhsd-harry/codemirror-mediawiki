@@ -1,9 +1,9 @@
 {
-	"version": "3.6.0",
+	"version": "3.6.1",
 	"lang": "en",
 	"title": "CodeMirror Addons",
 	"label": "Please select the addons you wish to load",
-	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\">GitHub</a> .",
+	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">GitHub</a> .",
 	"contentmodel": "Please indicate the content model:",
 	"addon-allowMultipleSelections": "Allow multiple selections",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">Autocompletion</span>",

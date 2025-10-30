@@ -105,7 +105,7 @@ export default ({langConfig}: CodeMirror6): Extension => [
 			}
 			const url = mouseEventListener(e, view, langConfig);
 			if (url) {
-				open(url, '_blank');
+				open(url, '_blank', 'noopener noreferrer');
 				return true;
 			}
 			return undefined;

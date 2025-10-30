@@ -1,9 +1,9 @@
 {
-	"version": "3.6.0",
+	"version": "3.6.1",
 	"lang": "zh-hant",
 	"title": "CodeMirror外掛程式",
 	"label": "請選擇您希望載入的外掛程式",
-	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\">GitHub</a> ！",
+	"feedback": "歡迎將錯誤報告或是改進建議提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">GitHub</a> ！",
 	"contentmodel": "請輸入內容模型：",
 	"addon-allowMultipleSelections": "允許選擇多個片段",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">自動填入</span>",
