@@ -1,4 +1,5 @@
-/* eslint-env node */
+'use strict';
+
 const fs = require('fs'),
 	esbuild = require('esbuild'),
 	{version} = require('./package.json');
