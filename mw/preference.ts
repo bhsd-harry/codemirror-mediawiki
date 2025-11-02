@@ -289,7 +289,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		const oldIndent = indent,
 			oldTheme = theme,
 			save = prefs.has('save');
-		indent = indentWidget.getValue(); // eslint-disable-line require-atomic-updates
+		indent = indentWidget.getValue();
 		let changed = indent !== oldIndent;
 		if (changed) {
 			for (const cm of editors) {
@@ -299,7 +299,7 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		}
 
 		// 主题
-		theme = themeWidget.getValue(); // eslint-disable-line require-atomic-updates
+		theme = themeWidget.getValue();
 		if (theme !== oldTheme) {
 			changed = true;
 			for (const cm of editors) {

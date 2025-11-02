@@ -151,7 +151,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	return linter;
 };
 
-export const jsConfig = /* #__PURE__ */ ((): Linter.Config => ({
+export const jsConfig = /* #__PURE__ */ ((): Option => ({
 	env: {browser: true, es2024: true, jquery: true},
 	globals: {
 		mw: 'readonly',
@@ -163,7 +163,7 @@ export const jsConfig = /* #__PURE__ */ ((): Linter.Config => ({
 		importStylesheet: 'readonly',
 		importStylesheetURI: 'readonly',
 	},
-}))();
+} satisfies Linter.BaseConfig))();
 
 /**
  * 获取 ESLint
@@ -175,7 +175,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
-		conf: Linter.Config = {
+		conf: Linter.BaseConfig = {
 			env: {browser: true, es2024: true},
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 		},
@@ -185,8 +185,11 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 			recommended[name] = 2;
 		}
 	}
-	const linter: asyncLinter<Linter.LintMessage[], Linter.Config> = (text, opt: Linter.Config | null | undefined) => {
-		const config: Linter.Config = {...conf, ...opt};
+	const linter: asyncLinter<Linter.LintMessage[], Linter.BaseConfig> = (
+		text,
+		opt: Linter.BaseConfig | null | undefined,
+	) => {
+		const config: Linter.BaseConfig = {...conf, ...opt};
 		if (
 			!('rules' in config)
 			|| config.extends === 'eslint:recommended'

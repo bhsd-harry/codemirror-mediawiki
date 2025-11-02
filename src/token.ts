@@ -179,7 +179,7 @@ const copyState = (state: State): State => {
 			result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
 		} else if (key !== 'data' && val && typeof val === 'object') {
 			// @ts-expect-error initial value
-			result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
+			result[key] = {...val};
 		}
 	}
 	return result;
@@ -614,7 +614,6 @@ export class MediaWiki {
 	 * @param parent
 	 */
 	addToken(token: string, hidden = false, parent?: Tag): void {
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		this[hidden ? 'hiddenTable' : 'tokenTable'][`mw-${token}`] ??= Tag.define(parent);
 	}
 

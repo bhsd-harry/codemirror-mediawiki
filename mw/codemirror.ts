@@ -426,7 +426,7 @@ export class CodeMirror extends CodeMirror6 {
 				} else if (lang === 'javascript') {
 					defaultOpt = (
 						ns === 8 || ns === 2300 ? {parserOptions: {ecmaVersion: 8}} : {}
-					) satisfies Linter.Config;
+					) satisfies Linter.BaseConfig;
 				}
 			}
 			let opt: LiveOption | undefined;
@@ -491,7 +491,6 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	// @ts-expect-error convert a function property to a method
 	override async getWikiConfig(this: void): Promise<ConfigData> {
 		const [mwConfig, minConfig] = await Promise.all([getMwConfig(tagModes), wikiparse.getConfig()]);

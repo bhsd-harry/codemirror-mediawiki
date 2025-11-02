@@ -16,7 +16,7 @@ export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: s
 				return {start: firstChild, end: lastChild, matched: true};
 			}
 		}
-		({parent} = parent); // eslint-disable-line no-param-reassign
+		({parent} = parent);
 	}
 	return undefined;
 };

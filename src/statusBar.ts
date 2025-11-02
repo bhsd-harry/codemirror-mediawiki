@@ -126,7 +126,6 @@ const updateMenu = (
 	}
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [],
