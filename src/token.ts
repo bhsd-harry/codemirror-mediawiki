@@ -3,7 +3,7 @@
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
-
+/* eslint-disable @typescript-eslint/class-methods-use-this */
 import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
@@ -190,7 +190,6 @@ const copyState = (state: State): State => {
  * @param str 字符串
  */
 const isHtmlEntity = (str: string): boolean =>
-	// eslint-disable-next-line @typescript-eslint/no-misused-spread
 	typeof document !== 'object' || str.startsWith('#') || [...decodeHTML(`&${str}`)].length === 1;
 
 /**
@@ -249,7 +248,6 @@ const lookahead = (chars: string, comment?: boolean | State): string => {
 			tags.filter(tag => tag !== 'onlyinclude').join('|')
 		})(?:[\s/>]|$))`;
 	}
-	// eslint-disable-next-line @typescript-eslint/no-misused-spread
 	return [...chars].map(ch => table[ch as keyof typeof table]).join('|');
 };
 
@@ -669,7 +667,7 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
-		for (const i in this.autocompleteNamespaces) {
+		for (const i of Object.keys(this.autocompleteNamespaces)) {
 			if (Number.isInteger(Number(i))) {
 				this.addToken(`function-${i}`, true);
 			}
@@ -677,7 +675,6 @@ export class MediaWiki {
 	}
 
 	@getTokenizer<string>
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	inChars({length}: string, tag: TagName): Tokenizer<string> {
 		return (stream, state) => {
 			stream.pos += length;
@@ -687,7 +684,6 @@ export class MediaWiki {
 	}
 
 	@getTokenizer<string>
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	inStr(str: string, tag: TagName | false, errorTag: TagName = 'error'): Tokenizer<string> {
 		return (stream, state) => {
 			if (stream.match(str, Boolean(tag))) {
@@ -703,7 +699,7 @@ export class MediaWiki {
 	@getTokenizer
 	eatWikiText(style: string): Tokenizer {
 		if (style in tokens) {
-			style = tokens[style as TagName]; // eslint-disable-line no-param-reassign
+			style = tokens[style as TagName];
 		}
 		const regex =
 			/^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
@@ -923,7 +919,6 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatApostrophes(obj: Pick<State, 'bold' | 'italic'>): Tokenizer<string | false> {
 		return (stream, state) => {
 			// skip the irrelevant apostrophes ( >5 or =4 )
@@ -985,7 +980,6 @@ export class MediaWiki {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatFreeExternalLink(this: void, stream: StringStream, state: State): Style {
 		const mt = stream.match(freeRegex[0])!;
 		if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
@@ -1120,7 +1114,6 @@ export class MediaWiki {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatList(stream: StringStream, state: State): string {
 		const mt = stream.match(/^[*#;:]*/u)!,
 			{dt} = state;
@@ -1319,8 +1312,8 @@ export class MediaWiki {
 			if (dt.n && dt.html) {
 				dt.html--;
 			}
-			if (tagname === inHtmlTag[0]) {
-				inHtmlTag.shift();
+			if (tagname === inHtmlTag[inHtmlTag.length - 1]) {
+				inHtmlTag.pop();
 			} else {
 				chain(state, this.inStr('>', 'error'));
 				const i = inHtmlTag.lastIndexOf(tagname);
@@ -1364,7 +1357,7 @@ export class MediaWiki {
 			const mt = stream.match(/^\/?>/u);
 			if (mt) {
 				if (!this.voidHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
-					state.inHtmlTag.unshift(name);
+					state.inHtmlTag.push(name);
 					state.dt.html++;
 				}
 				pop(state);
@@ -1498,7 +1491,6 @@ export class MediaWiki {
 	}
 
 	@getTokenizer<string>
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	inExtTokens(origString: string): Tokenizer<string> {
 		return (stream, state) => {
 			let ret: string;
@@ -1879,7 +1871,6 @@ export class MediaWiki {
 		};
 	}
 
-	// eslint-disable-next-line @typescript-eslint/class-methods-use-this
 	eatEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu);
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;

@@ -1,6 +1,16 @@
+## 3.6.2
+
+*2025-11-04*
+
+**Fixed**
+
+- Stylelint quick fixes for the MediaWiki mode
+
 ## 3.6.1
 
 *2025-10-30*
+
+**Changed**
 
 - The preference dialog on a MediaWiki site is now styled as `z-index: 1002`
 - Improved link suggestions in the [autocompletion](./README.md#autocompletion) extension on a MediaWiki site

@@ -10,6 +10,7 @@ export default extend(
 	{
 		rules: {
 			'no-await-in-loop': 2,
+			'no-param-reassign': 0,
 			'no-restricted-globals': [
 				2,
 				'history',
@@ -25,13 +26,6 @@ export default extend(
 					builtinGlobals: false,
 				},
 			],
-			'@stylistic/max-len': [
-				2,
-				{
-					ignoreRegExpLiterals: true,
-					code: 120,
-				},
-			],
 			'jsdoc/require-jsdoc': 0,
 			'jsdoc/require-param-description': 0,
 		},
@@ -45,6 +39,13 @@ export default extend(
 	{
 		files: ['**/*.ts'],
 		rules: {
+			'@typescript-eslint/class-methods-use-this': [
+				2,
+				{
+					ignoreOverrideMethods: true,
+					ignoreClassesThatImplementAnInterface: 'public-fields',
+				},
+			],
 			'@typescript-eslint/no-shadow': [
 				2,
 				{

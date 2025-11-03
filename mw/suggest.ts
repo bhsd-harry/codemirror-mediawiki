@@ -19,7 +19,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
 	let promise: Promise<ApiSuggestions> | undefined;
 	return async (search: string, subpage?: boolean, namespace = 0) => {
 		if (subpage) {
-			search = title + search; // eslint-disable-line no-param-reassign
+			search = title + search;
 		}
 		promise ??= (async () => {
 			try {
@@ -58,10 +58,10 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 	if (!titles || /[|{}<>[\]]/u.test(titles)) {
 		return [];
 	} else if (titles.startsWith('/')) {
-		titles = page + titles; // eslint-disable-line no-param-reassign
+		titles = page + titles;
 	}
 	try {
-		titles = new mw.Title(titles, 10).getPrefixedDb(); // eslint-disable-line no-param-reassign
+		titles = new mw.Title(titles, 10).getPrefixedDb();
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
 		} else if (!force && !isWMF) {

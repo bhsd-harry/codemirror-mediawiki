@@ -84,7 +84,7 @@ export default (cm: CodeMirror6): Extension => [
 			}, 100);
 		}
 
-		update(update: ViewUpdate): void { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		update(update: ViewUpdate): void {
 			void updateField(update);
 		}
 	}),

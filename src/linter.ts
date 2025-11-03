@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/no-unreadable-iife */
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
@@ -115,7 +114,6 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 			...(await cssLint(lines.join('\n'), isConfig ? {...cssConfig, rules} : rules))
 				.map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
 					const i = Math.ceil(line / 3),
-						{length} = getPrefix(tokens[i - 1]!, i),
 						{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
 						from = offsetAt(range, line - 3 * i, column - 1),
 						diagnostic: MixedDiagnostic = {
@@ -127,7 +125,8 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 							message,
 						};
 					if (fix) {
-						const before = lines.slice(0, i - 1).join('\n').length + length;
+						const {length} = getPrefix(tokens[i - 1]!, i),
+							before = lines.slice(0, i - 1).join('\n').length + length + (i - 1 && 1);
 						diagnostic.data = [
 							{
 								range: {
@@ -151,7 +150,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	return linter;
 };
 
-export const jsConfig = /* #__PURE__ */ ((): Option => ({
+export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line unicorn/no-unreadable-iife
 	env: {browser: true, es2024: true, jquery: true},
 	globals: {
 		mw: 'readonly',

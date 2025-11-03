@@ -78,11 +78,11 @@ export const textSelection: TextSelection = {
 				end = 0;
 			if (ownline) {
 				if (from > 0 && !/[\n\r]/u.test(state.sliceDoc(from - 1, from))) {
-					text = `\n${text}`; // eslint-disable-line no-param-reassign
+					text = `\n${text}`;
 					start = 1;
 				}
 				if (!/[\n\r]/u.test(state.sliceDoc(to, to + 1))) {
-					text += '\n'; // eslint-disable-line no-param-reassign
+					text += '\n';
 					end = 1;
 				}
 			}

@@ -93,7 +93,7 @@ export const foldable = (
 	refOnly = false,
 ): DocRange | false => {
 	if (typeof posOrNode === 'number') {
-		tree = ensureSyntaxTree(state, posOrNode); // eslint-disable-line no-param-reassign
+		tree = ensureSyntaxTree(state, posOrNode);
 	}
 	if (!tree) {
 		return false;
@@ -263,7 +263,6 @@ const traverse = (
 	refOnly?: boolean,
 ): number => {
 	while (node && node.from <= end) {
-		/* eslint-disable no-param-reassign */
 		const range = foldable(state, node, tree, refOnly);
 		if (range) {
 			effects.push(foldEffect.of(range));
@@ -273,7 +272,6 @@ const traverse = (
 			continue;
 		}
 		node = node.nextSibling;
-		/* eslint-enable no-param-reassign */
 	}
 	return anchor;
 };

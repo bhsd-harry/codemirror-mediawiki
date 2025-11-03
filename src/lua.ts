@@ -1,3 +1,4 @@
+/* eslint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
@@ -256,7 +257,6 @@ const map = {
 			'not',
 			'function',
 		].map(label => ({label, type: 'keyword'})),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('function ${name}(${})\n\t${}\nend', {
 			label: 'function',
 			detail: 'definition',
@@ -282,37 +282,31 @@ const map = {
 			'for',
 			'local',
 		].map(label => ({label, type: 'keyword'})),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('if ${condition} then\n\t${}\nend', {
 			label: 'if',
 			detail: 'block',
 			type: 'keyword',
 		}),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('if ${condition} then\n\t${}\nelse\n\t${}\nend', {
 			label: 'if',
 			detail: '/ else block',
 			type: 'keyword',
 		}),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('while ${condition} do\n\t${}\nend', {
 			label: 'while',
 			detail: 'loop',
 			type: 'keyword',
 		}),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('repeat \n\t${}\nuntil ${condition}', {
 			label: 'repeat',
 			detail: 'loop',
 			type: 'keyword',
 		}),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('for ${name} = ${from}, ${to}, ${step} do\n\t${}\nend', {
 			label: 'for',
 			detail: 'loop',
 			type: 'keyword',
 		}),
-		// eslint-disable-next-line no-template-curly-in-string
 		snippetCompletion('for ${...} in ${...} do\n\t${}\nend', {
 			label: 'for',
 			detail: 'in loop',

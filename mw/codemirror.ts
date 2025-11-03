@@ -499,7 +499,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	override prefer(extensions: string[] | Record<string, boolean>): void {
 		if (!isEditor(this.textarea) && Array.isArray(extensions)) {
-			extensions = extensions.filter(ext => ext !== 'scrollPastEnd'); // eslint-disable-line no-param-reassign
+			extensions = extensions.filter(ext => ext !== 'scrollPastEnd');
 		}
 		const hasExtension = Array.isArray(extensions)
 			? (ext: string): boolean => extensions.includes(ext)
@@ -574,7 +574,6 @@ export class CodeMirror extends CodeMirror6 {
 		ns?: number,
 		page?: string,
 	): Promise<CodeMirror> {
-		/* eslint-disable no-param-reassign */
 		if (!lang && ns === undefined) {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {
@@ -610,7 +609,6 @@ export class CodeMirror extends CodeMirror6 {
 				prefs.delete('wikiEditor');
 			}
 		}
-		/* eslint-enable no-param-reassign */
 		const isCM = !useMonaco.has(langs.has(lang) ? lang! : 'wiki'),
 			isCMWiki = isCM && isWiki,
 			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);

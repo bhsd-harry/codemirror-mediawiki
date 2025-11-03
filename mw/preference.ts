@@ -64,8 +64,7 @@ const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescript-eslint/no-explicit-any
 	const message = code === 'http' || code === 'okay-but-empty'
 		? `MediaWiki API request failed: ${code}`
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-		: $('<ul>', {html: (e.errors as {html: string}[]).map(({html}) => $('<li>', {html}))});
+		: $('<ul>', {html: (e as {errors: {html: string}[]}).errors.map(({html}) => $('<li>', {html}))});
 	void mw.notify(message as string | HTMLElement[], {type: 'error', autoHideSeconds: 'long'});
 };
 

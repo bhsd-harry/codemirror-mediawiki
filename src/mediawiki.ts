@@ -148,7 +148,6 @@ export class FullMediaWiki extends MediaWiki {
 		let subpage = false,
 			search = str,
 			offset = 0;
-		/* eslint-disable no-param-reassign */
 		if (search.startsWith('/')) {
 			ns = 0;
 			subpage = true;
@@ -174,7 +173,6 @@ export class FullMediaWiki extends MediaWiki {
 				search = `${ns === -2 ? 'File' : prefix}:${search.slice(length)}`;
 			}
 		}
-		/* eslint-enable no-param-reassign */
 		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,

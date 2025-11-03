@@ -29,7 +29,6 @@ export const findEnclosingPlainBrackets = (
 	const {brackets, maxScanDistance} = config,
 		re = new RegExp(
 			`[${
-				// eslint-disable-next-line @typescript-eslint/no-misused-spread
 				[...brackets].filter((_, i) => i % 2).map(c => c === ']' ? String.raw`\]` : c).join('')
 			}]`,
 			'gu',
