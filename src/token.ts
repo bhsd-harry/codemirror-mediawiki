@@ -779,7 +779,6 @@ export class MediaWiki {
 								ch === ' '
 								&& !/^ \s*(?=<!--)(?:\s|<!--(?:(?!-->).)*-->)+$/u.test(stream.string)
 							) {
-								/** @todo indent-pre is sometimes suppressed */
 								return tokens.skipFormatting;
 							}
 						}

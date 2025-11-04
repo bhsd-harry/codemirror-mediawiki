@@ -138,8 +138,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 		}
 	}
 	if (context) {
-		/** @todo 萌娘百科小工具更新后删除 */
-		context.modules.toolbar.$toolbar.find('.group-insert>.tool:not([rel])').hide();
+		//
 	} else if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
 		mw.addWikiEditor($textarea);
 	} else { // MW <= 1.33
