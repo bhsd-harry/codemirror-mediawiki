@@ -1,3 +1,11 @@
+## 3.6.3
+
+*2025-11-08*
+
+**Added**
+
+- Background color for `<ref>` tags in the MediaWiki mode
+
 ## 3.6.2
 
 *2025-11-04*

@@ -5136,6 +5136,31 @@
 		"parsed": "<double-underscore>＿＿目次非表示＿＿</>"
 	},
 	{
+		"desc": "Basic {{nse:}} test",
+		"wikitext": "{{nse:1}}\n\n{{nse:01}}\n\n{{nse:0}}\n\n{{nse:00}}\n\n{{nse:-1}}\n\n{{nse:User}}\n\n{{nse:User_talk}}\n\n{{nse:uSeR tAlK}}\n\n{{nse:File}}\n\n{{nse:Image}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>01</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>0</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>00</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-1</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>User</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>User_talk</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>uSeR tAlK</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>File</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>nse</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Image</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Basic {{localurle:}} test",
+		"wikitext": "{{localurle: media:top%20level#fragment }}\n\n{{localurle: file:top%20level#fragment | action=edit&preload=\n\n\" }}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>localurle</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> media:top%20level#fragment </><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>localurle</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> file:top%20level#fragment </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> action=edit&amp;preload=\" </><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Basic {{fullurl:}} test",
+		"wikitext": "{{fullurl: media:top%20level#fragment }}\n\n{{fullurle: file:top%20level#fragment | action=edit&preload=\n\n\" }}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>fullurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> media:top%20level#fragment </><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>fullurle</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> file:top%20level#fragment </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> action=edit&amp;preload=\" </><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Basic {{canonicalurl:}} test",
+		"wikitext": "{{canonicalurl: media:top%20level#fragment }}\n\n{{canonicalurle: file:top%20level#fragment | action=edit&preload=\n\n\" }}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>canonicalurl</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> media:top%20level#fragment </><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>canonicalurle</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-0> file:top%20level#fragment </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> action=edit&amp;preload=\" </><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Basic {{GENDER:}} test",
+		"wikitext": "{{GENDER:username|gender-neutral text applicable to all genders}}\n\n{{GENDER:username|text if user is male|text if user is female|text for unspecified gender}}\n\n{{GENDER:|text if user is male|text if user is female|text for unspecified gender}}\n\n{{GENDER:.|text if user is male|text if user is female|text for unspecified gender}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>username</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>gender-neutral text applicable to all genders</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>username</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>.</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

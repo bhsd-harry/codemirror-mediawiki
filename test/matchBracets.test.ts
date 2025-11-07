@@ -16,7 +16,7 @@ const javascriptLanguage = javascript(),
 	luaLanguage = lua(),
 	config: Config = {
 		brackets: '()[]{}',
-		maxScanDistance: 10_000,
+		maxScanDistance: 1e4,
 	};
 
 const mockTest = (bracket: MatchResult | null | undefined, result?: Result | null): void => {

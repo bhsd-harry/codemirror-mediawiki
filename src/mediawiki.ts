@@ -611,6 +611,9 @@ const theme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},
+	'.cm-mw-tag-ref': {
+		backgroundColor: 'var(--cm-ref)',
+	},
 	[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
 		unicodeBidi: 'isolate',
 	},

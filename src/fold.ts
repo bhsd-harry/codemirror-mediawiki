@@ -405,7 +405,7 @@ const defaultFoldExtension = /* @__PURE__ */ (() => [foldGutter(), keymap.of(fol
  */
 const foldCommand = (refOnly?: boolean): Command => view => {
 	const {state} = view,
-		tree = syntaxTree(state),
+		tree = ensureSyntaxTree(state, state.doc.length, 1e3) ?? syntaxTree(state),
 		effects: StateEffect<DocRange>[] = [],
 		anchor = traverse(
 			state,

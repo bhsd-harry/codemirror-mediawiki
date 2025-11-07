@@ -661,7 +661,7 @@ export class MediaWiki {
 			this.addToken(`section--${i}`);
 		}
 		for (const tag of this.tags) {
-			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre');
+			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre' && tag !== 'ref');
 			this.addToken(`ext-${tag}`, true);
 		}
 		for (const tag of this.permittedHtmlTags) {
