@@ -6,6 +6,10 @@
 
 - Background color for `<ref>` tags in the MediaWiki mode
 
+**Fixed**
+
+- Diagnostics from [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) are now deduplicated on a WMF-hosted site
+
 ## 3.6.2
 
 *2025-11-04*

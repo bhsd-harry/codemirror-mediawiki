@@ -23,7 +23,9 @@ declare interface ApiResponse {
 let highSet: Promise<Set<string>> | undefined;
 
 const getMsgKey = (type: string): string => `linter-category-${type}`,
-	getRuleKey = (type: string): string => `parsoid-${type}`;
+	getRuleKey = (type: string): string => `parsoid-${type}`,
+	isEqualError = (a: ParsoidError, b: ParsoidError): boolean =>
+		a.type === b.type && a.dsr[0] === b.dsr[0] && a.dsr[1] === b.dsr[1];
 
 export const parsoidRules: string[] = [];
 
@@ -80,15 +82,21 @@ export default async (opt?: Option | LiveOption): Promise<LintSource> => {
 			defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			error = await highSet!;
 		await api.loadMessagesIfMissing(errors.map(({type}) => getMsgKey(type)));
-		return errors.filter(
-			({type}) => Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)),
-		).map(({type, dsr: [from, to]}): Diagnostic => ({
-			severity: error.has(type) ? 'error' : 'warning',
-			source: 'Parsoid',
-			message: mw.msg(getMsgKey(type)),
-			from,
-			to,
-		}));
+		return errors
+			.filter(({type}) => Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)))
+			.reduce<ParsoidError[]>((acc, cur) => { // eslint-disable-line unicorn/no-array-reduce
+				if (!acc.some(err => isEqualError(err, cur))) {
+					acc.push(cur);
+				}
+				return acc;
+			}, [])
+			.map(({type, dsr: [from, to]}): Diagnostic => ({
+				severity: error.has(type) ? 'error' : 'warning',
+				source: 'Parsoid',
+				message: mw.msg(getMsgKey(type)),
+				from,
+				to,
+			}));
 	};
 	return linter;
 };
