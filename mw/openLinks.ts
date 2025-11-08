@@ -1,5 +1,6 @@
 import {normalizeTitle} from '@bhsd/browser';
 import {tokens} from '../src/config';
+import {isWikiLink} from '../src/mediawiki';
 import type {MwConfig} from '../src/token';
 
 export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'] => {
@@ -17,6 +18,10 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		let ns = 0;
 		if (isTemplateStyles || name.includes(tokens.templateName)) {
 			ns = 10;
+		} else if (
+			name.includes('mw-tag-gallery') && name.includes(tokens.linkPageName) && !isWikiLink(name)
+		) {
+			ns = 6;
 		} else if (name.includes(tokens.parserFunction)) {
 			ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {

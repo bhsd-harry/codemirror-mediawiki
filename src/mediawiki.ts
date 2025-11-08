@@ -30,6 +30,12 @@ import type {StyleSpec} from 'style-mod';
 import type {MwConfig} from './token';
 
 /**
+ * 是否是普通维基链接
+ * @param name 节点名称
+ */
+export const isWikiLink = (name: string): boolean => /mw-[\w-]*link-ground/u.test(name);
+
+/**
  * 检查首字母大小写并插入正确的自动填充内容
  * @param view
  * @param completion 自动填充内容
@@ -140,7 +146,7 @@ export class FullMediaWiki extends MediaWiki {
 	 * @param str 搜索字符串，开头不包含` `，但可能包含`_`
 	 * @param ns 命名空间
 	 */
-	async #linkSuggest(str: string, ns = 0): Promise<{offset: number, options: Completion[]} | undefined> {
+	async #linkSuggest(str: string, ns: number): Promise<{offset: number, options: Completion[]} | undefined> {
 		const {config: {linkSuggest, nsid}, nsRegex} = this;
 		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(str)) {
 			return undefined;
@@ -208,9 +214,10 @@ export class FullMediaWiki extends MediaWiki {
 		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
-				types = new Set(node.name.split('_')),
+				{name: n, from: f, to: t} = node,
+				types = new Set(n.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
-				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(node.from, pos).trimStart(),
+				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#') || isWMF) {
@@ -235,17 +242,21 @@ export class FullMediaWiki extends MediaWiki {
 				}
 				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
 				if (isPage && search.trim() || hasTag(types, 'linkPageName')) {
-					let prefix = '';
+					const isLink = isWikiLink(n);
+					let prefix = '',
+						ns = 0;
 					if (isPage) {
 						prefix = this.autocompleteNamespaces[
-							[...types].find(t => t.startsWith('mw-function-'))!
+							[...types].find(type => type.startsWith('mw-function-'))!
 								.slice(12) as unknown as keyof typeof this.autocompleteNamespaces
 						];
+					} else if (hasTag(types, 'mw-tag-gallery') && !isLink) {
+						ns = 6;
 					}
-					const suggestions = await this.#linkSuggest(prefix + search);
+					const suggestions = await this.#linkSuggest(prefix + search, ns);
 					if (!suggestions) {
 						return null;
-					} else if (!isPage) {
+					} else if (!isPage && isLink) {
 						suggestions.options = suggestions.options.map((option): Completion => ({...option, apply}));
 					} else if (prefix === 'Module:') {
 						suggestions.options = suggestions.options
@@ -290,7 +301,7 @@ export class FullMediaWiki extends MediaWiki {
 						({prevSibling} = prevSibling);
 					}
 					if (prevSibling && page) {
-						const equal = isArgument && state.sliceDoc(pos, node.to).trim() === '=' ? '' : '=',
+						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
 							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
 						if (suggestions && suggestions.options.length > 0) {
 							return {
@@ -309,7 +320,7 @@ export class FullMediaWiki extends MediaWiki {
 				isTagName && explicitMatch
 				|| hasTag(types, ['htmlTagAttribute', 'extTagAttribute', 'tableDefinition'])
 			) {
-				const tagName = isTagName ? search.trim() : /mw-(?:ext|html)-([a-z]+)/u.exec(node.name)![1]!,
+				const tagName = isTagName ? search.trim() : /mw-(?:ext|html)-([a-z]+)/u.exec(n)![1]!,
 					mt = explicitMatch || context.matchBefore(
 						hasTag(types, 'tableDefinition') ? /[\s|-][a-z]+$/iu : /\s[a-z]+$/iu,
 					);
@@ -328,7 +339,7 @@ export class FullMediaWiki extends MediaWiki {
 					}
 					: null;
 			} else if (explicit && hasTag(types, ['tableTd', 'tableTh', 'tableCaption'])) {
-				const [, tagName] = /mw-table-([a-z]+)/u.exec(node.name) as string[] as [string, string],
+				const [, tagName] = /mw-table-([a-z]+)/u.exec(n) as string[] as [string, string],
 					mt = context.matchBefore(/[\s|!+][a-z]*$/iu);
 				if (mt && (mt.from < start || /^\s/u.test(mt.text))) {
 					return {
@@ -359,7 +370,7 @@ export class FullMediaWiki extends MediaWiki {
 				};
 			}
 			mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-			const extTags = [...types].filter(t => t.startsWith('mw-tag-'))
+			const extTags = [...types].filter(type => type.startsWith('mw-tag-'))
 				.map(s => s.slice(7));
 			if (mt && (explicit || mt.to - mt.from > 1)) {
 				const validFor = /^[a-z\d]*$/iu;
