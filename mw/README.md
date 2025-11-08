@@ -174,6 +174,7 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 **param**: `string` the language mode to be used, default as plain text  
 **param**: `number` the namespace id associated with the content, default as the current namespace  
 **param**: `string` the optional page title, default as the current page title  
+**param**: `string[]` the optional list of additional extensions to be enabled  
 Replace the textarea with a CodeMirror or Monaco editor.
 
 ```js
@@ -225,18 +226,4 @@ Please see [Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight
 
 ## [InPageEdit Next](https://www.npmjs.com/package/@inpageedit/core)
 
-```js
-ipe.plugin(ctx => {
-	ctx.on(
-		'quick-edit/wiki-page',
-		({modal, wikiPage: {contentmodel, ns, title}}) => {
-			CodeMirror6.fromTextArea(
-				modal.get$content().querySelector('textarea'),
-				contentmodel,
-				ns,
-				title,
-			);
-		},
-	);
-});
-```
+Please enable the CodeMirror integration in the plugin store.

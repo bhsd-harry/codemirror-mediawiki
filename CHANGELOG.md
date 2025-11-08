@@ -1,3 +1,11 @@
+## 3.6.4
+
+*2025-11-09*
+
+**Added**
+
+- On a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now takes an optional parameter to specify additional extensions to be enabled
+
 ## 3.6.3
 
 *2025-11-08*

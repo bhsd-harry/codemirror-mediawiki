@@ -567,12 +567,14 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param lang 语言
 	 * @param ns 命名空间
 	 * @param page 页面标题
+	 * @param extensions 扩展名列表
 	 */
 	static async fromTextArea(
 		textarea: HTMLTextAreaElement,
 		lang?: string,
 		ns?: number,
 		page?: string,
+		extensions: string[] = [],
 	): Promise<CodeMirror> {
 		if (!lang && ns === undefined) {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
@@ -598,8 +600,9 @@ export class CodeMirror extends CodeMirror6 {
 			lang = langMap[lang];
 		}
 		const $textarea = $(textarea),
+			allPrefs = [...prefs, ...extensions],
 			isWiki = lang === 'mediawiki' || lang === 'html';
-		if (prefs.has('wikiEditor') && isEditor(textarea)) {
+		if (allPrefs.includes('wikiEditor') && isEditor(textarea)) {
 			try {
 				await wikiEditor($textarea, textarea.readOnly, isWiki);
 			} catch (e) {
@@ -618,7 +621,7 @@ export class CodeMirror extends CodeMirror6 {
 			await cm.setLanguage(lang, await getMwConfig(tagModes));
 		}
 		await Promise.all([loadJSON, cm.#init]);
-		cm.prefer([...prefs]);
+		cm.prefer(allPrefs);
 		const indent = localStorage.getItem(indentKey),
 			theme = localStorage.getItem(themeKey);
 		if (indent) {
