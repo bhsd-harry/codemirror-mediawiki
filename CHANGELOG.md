@@ -1,6 +1,6 @@
 ## 3.6.3
 
-*2025-11-08*
+*2025-11-09*
 
 **Added**
 
@@ -9,6 +9,7 @@
 **Fixed**
 
 - Diagnostics from [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) are now deduplicated on a WMF-hosted site
+- The [WikiEditor](./mw/README.md#wikieditor) toolbar button to fold all `<ref>` and `<references>` tags now only unfolds all `<ref>` and `<references>` tags on a second click in the MediaWiki mode on a MediaWiki site
 
 ## 3.6.2
 

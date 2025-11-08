@@ -1,7 +1,6 @@
 import {indentMore, indentLess} from '@codemirror/commands';
 import {gotoLine, openSearchPanel} from '@codemirror/search';
-import {unfoldAll} from '@codemirror/language';
-import {foldRef} from '../src/fold';
+import {foldRef, unfoldRef} from '../src/fold';
 import {settingsId} from './constants';
 import {msg} from './msg';
 import {getInstance} from './util';
@@ -230,7 +229,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 									if (isNormal) {
 										foldRef(view);
 									} else {
-										unfoldAll(view);
+										unfoldRef(view);
 									}
 								},
 								msg('toolbar-fold-ref'),
