@@ -5161,6 +5161,21 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>username</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>gender-neutral text applicable to all genders</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>username</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>GENDER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>.</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is male</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text if user is female</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>text for unspecified gender</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "Basic {{NAMESPACE}} test",
+		"wikitext": "{{NAMESPACE:Template talk:Main Page}}\n\n{{NAMESPACEE:Template talk:Main Page}}\n\n{{NAMESPACENUMBER:Template talk:Main Page}}\n\n{{TALKSPACE:Template:Main Page}}\n\n{{TALKSPACEE:Template:Main Page}}\n\n{{SUBJECTSPACE:Template talk:Main Page}}\n\n{{SUBJECTSPACEE:Template talk:Main Page}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>NAMESPACE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template talk:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>NAMESPACEE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template talk:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>NAMESPACENUMBER</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template talk:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>TALKSPACE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>TALKSPACEE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>SUBJECTSPACE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template talk:Main Page</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>SUBJECTSPACEE</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Template talk:Main Page</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Basic {{DIRMARK}} test",
+		"wikitext": "{{DIRMARK}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DIRMARK</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "T401099",
+		"wikitext": "{{#tag:pre|CLICK|data-/onclick=alert(\"CLICKED\")}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>pre</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>CLICK</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>data-/onclick=</><ext-ground parserfunction>alert(\"CLICKED\")</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

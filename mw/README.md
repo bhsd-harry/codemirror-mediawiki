@@ -175,6 +175,7 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 **param**: `number` the namespace id associated with the content, default as the current namespace  
 **param**: `string` the optional page title, default as the current page title  
 **param**: `string[]` the optional list of additional extensions to be enabled  
+**returns**: `Promise<CodeMirror>`  
 Replace the textarea with a CodeMirror or Monaco editor.
 
 ```js

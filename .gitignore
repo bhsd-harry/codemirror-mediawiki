@@ -3,7 +3,6 @@
 dist/
 !/dist/main.min.js
 !/dist/demo.min.js
-/.markdownlint.json
 /mediawiki.css
 .eslintcache
 **/*.txt
