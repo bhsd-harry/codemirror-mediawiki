@@ -97,9 +97,14 @@ class MediaWikiData {
 	declare firstMultiLetterWord: number | null;
 	declare firstSpace: number | null;
 	declare readonly tags;
+	declare readonly urlProtocols;
 
-	constructor(tags: string[]) {
+	constructor(tags: string[], urlProtocols: string) {
 		this.tags = tags.includes('translate') ? tags.filter(tag => tag !== 'tvar') : tags;
+		this.urlProtocols = new RegExp(
+			String.raw`^(${this.tags.includes('tvar') ? '<tvar name=[^>]+>' : ''})?${urlProtocols}`,
+			'iu',
+		);
 		this.firstSingleLetterWord = null;
 		this.firstMultiLetterWord = null;
 		this.firstSpace = null;
@@ -143,7 +148,7 @@ const simpleToken: Tokenizer<string> = (stream, state): string => {
 	return Array.isArray(style) ? style[0] : style;
 };
 
-const startState = (tokenize: Tokenizer, tags: string[], sof = false): State => ({
+const startState = (tokenize: Tokenizer, tags: string[], urlProtocols: RegExp, sof = false): State => ({
 	tokenize,
 	stack: [],
 	inHtmlTag: [],
@@ -162,7 +167,7 @@ const startState = (tokenize: Tokenizer, tags: string[], sof = false): State => 
 	sof,
 	redirect: false,
 	imgLink: false,
-	data: new MediaWikiData(tags),
+	data: new MediaWikiData(tags, `(${urlProtocols.source.slice(4)}`),
 });
 
 /**
@@ -862,10 +867,19 @@ export class MediaWiki {
 							return makeStyle(style, state);
 						}
 					} else {
-						const mt = stream.match(this.urlProtocols, false);
+						const mt = stream.match(state.data.urlProtocols, false);
 						if (mt) {
 							state.nExtLink++;
-							chain(state, this.eatExternalLinkProtocol(mt[0], false));
+							if (mt[1]) {
+								chain(
+									state,
+									this.inChars('<', 'extTagBracket'),
+									this.eatTagName('tvar'),
+									this.inExternalLink(true),
+								);
+							} else {
+								chain(state, this.eatExternalLinkProtocol(mt[2]!, false));
+							}
 							return makeLocalTagStyle('extLinkBracket', state);
 						}
 					}
@@ -1884,7 +1898,12 @@ export class MediaWiki {
 	 */
 	mediawiki(tags?: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.eatWikiText(''), tags ?? this.tags, tags === undefined),
+			startState: () => startState(
+				this.eatWikiText(''),
+				tags ?? this.tags,
+				this.urlProtocols,
+				tags === undefined,
+			),
 
 			copyState,
 
@@ -2097,7 +2116,7 @@ export class MediaWiki {
 
 	'text/pre'(): StreamParser<State> {
 		return {
-			startState: () => startState(this.inPre(), []),
+			startState: () => startState(this.inPre(), [], this.urlProtocols),
 
 			token: simpleToken,
 		};
@@ -2131,7 +2150,7 @@ export class MediaWiki {
 
 	'text/references'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inNested('ref'), tags),
+			startState: () => startState(this.inNested('ref'), tags, this.urlProtocols),
 
 			token: simpleToken,
 		};
@@ -2139,7 +2158,7 @@ export class MediaWiki {
 
 	'text/choose'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inNested('option'), tags),
+			startState: () => startState(this.inNested('option'), tags, this.urlProtocols),
 
 			token: simpleToken,
 		};
@@ -2147,7 +2166,7 @@ export class MediaWiki {
 
 	'text/combobox'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inNested('combooption'), tags),
+			startState: () => startState(this.inNested('combooption'), tags, this.urlProtocols),
 
 			token: simpleToken,
 		};
@@ -2168,7 +2187,7 @@ export class MediaWiki {
 
 	'text/inputbox'(): StreamParser<State> {
 		return {
-			startState: () => startState(this.inInputbox, []),
+			startState: () => startState(this.inInputbox, [], this.urlProtocols),
 
 			token: simpleToken,
 		};
@@ -2199,11 +2218,11 @@ export class MediaWiki {
 
 	'text/gallery'(tags: string[]): StreamParser<State> {
 		return {
-			startState: () => startState(this.inGallery(), tags),
+			startState: () => startState(this.inGallery(), tags, this.urlProtocols),
 
 			token: (stream: StringStream, state): string => {
 				if (stream.sol()) {
-					Object.assign(state, startState(this.inGallery(), state.data.tags));
+					Object.assign(state, startState(this.inGallery(), state.data.tags, this.urlProtocols));
 				}
 				return simpleToken(stream, state);
 			},
