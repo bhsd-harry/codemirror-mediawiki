@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.6.5
 
-*2025-11-13*
+*2025-11-15*
 
 **Fixed**
 

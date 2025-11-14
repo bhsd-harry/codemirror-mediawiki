@@ -134,7 +134,7 @@ import {
 	registerJSON,
 	registerLua,
 	registerVue,
-} from 'https://unpkg.com/@bhsd/codemirror-mediawiki';
+} from 'https://unpkg.com/@bhsd/codemirror-mediawiki/dist/main.min.js';
 ```
 
 or
@@ -165,7 +165,7 @@ const {
 	registerJSON,
 	registerLua,
 	registerVue,
-} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki');
+} = await import('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/main.min.js');
 ```
 
 </details>

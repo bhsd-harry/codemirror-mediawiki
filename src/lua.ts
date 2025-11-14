@@ -115,6 +115,8 @@ const map = {
 				isValidBuiltInCode: 2,
 				isValidCode: 2,
 				new: 2,
+				FALLBACK_MESSAGES: 1,
+				FALLBACK_STRICT: 1,
 			},
 			message: {
 				new: 2,
