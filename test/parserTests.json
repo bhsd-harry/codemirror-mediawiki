@@ -5211,6 +5211,11 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#explode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>And if you tolerate this</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>2</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#explode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>String/Functions/Code</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>/</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>-1</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#explode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Split%By%Percentage%Signs</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>%</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>2</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#explode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>And if you tolerate this thing and expect no more</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>3</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>#explode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Žmržlina</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>ž</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>1</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "Basic {{PLURAL:}} test",
+		"wikitext": "{{PLURAL:2|is}} → is\n{{PLURAL:0|is|are}} → are\n{{PLURAL:1*1|is|are}} → is\n{{PLURAL:21 mod 10|is|are}} → are\n{{PLURAL:{{#expr:21 mod 10}}|is|are}} → is\n{{PLURAL:1|is|are}} → is\n{{PLURAL:2|is|are}} → are\n{{PLURAL:-1|is|are}} → is\n{{PLURAL:-2|is|are}} → are\n{{PLURAL:0.5|is|are}} → are\n{{PLURAL:1.5|is|are}} → are\n{{PLURAL:-0.5|is|are}} → are\n{{PLURAL:-1.5|is|are}} → are",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-bracket>}}</> → is<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>0</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1*1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → is<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>21 mod 10</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext2-ground parserfunction-bracket>{{</><ext2-ground parserfunction-name>#expr</><ext2-ground parserfunction-delimiter>:</><ext2-ground parserfunction>21 mod 10</><ext2-ground parserfunction-bracket>}}</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → is<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → is<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → is<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-2</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>0.5</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1.5</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-0.5</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>PLURAL</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>-1.5</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>is</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>are</><ext-ground parserfunction-bracket>}}</> → are"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
@@ -11849,6 +11854,94 @@
 		"desc": "Synthetic main refs from VE dont convert to list defined refs",
 		"wikitext": "<ref details=\"page 1\" name=\"miller\">Miller</ref>\n<ref name=\"smith\" />\n\n<references>\n<ref name=\"smith\">Smith</ref>\n</references>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>details=</><exttag-attribute-value>\"page 1\"</><exttag-attribute ext-ref> name=</><exttag-attribute-value>\"miller\"</><exttag-bracket>&gt</><tag-ref>Miller</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"smith\"</><exttag-attribute ext-ref> </><exttag-bracket>/&gt&lt;</><exttag-name>references</><exttag-bracket>&gt</><tag-references exttag-bracket>&lt;</><tag-references exttag-name>ref </><tag-references exttag-attribute ext-ref>name=</><tag-references exttag-attribute-value>\"smith\"</><tag-references exttag-bracket>&gt</><tag-references tag-ref>Smith</><tag-references exttag-bracket>&lt;/</><tag-references exttag-name>ref</><tag-references exttag-bracket>&gt</><exttag-bracket>&lt;/</><exttag-name>references</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "syntaxhighlight"
+	},
+	{
+		"desc": "Non-existent language",
+		"wikitext": "<source lang=\"doesnotexist\">\nfoobar\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"doesnotexist\"</><exttag-bracket>&gt</><tag-source exttag>foobar</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "No language specified",
+		"wikitext": "<source>\nfoo\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source</><exttag-bracket>&gt</><tag-source exttag>foo</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "No language specified (no wellformed xml)",
+		"wikitext": "<source>\nbar\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source</><exttag-bracket>&gt</><tag-source exttag>bar</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "XSS is escaped",
+		"wikitext": "<source lang=\"doesnotexist\">\n<script>alert(\"pwnd\")</script>\n<IMG SRC=`javascript:alert(\"RSnake says, 'XSS'\")`>\n<IMG\nSRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;\n&#39;&#88;&#83;&#83;&#39;&#41;\n\\\";alert('XSS');//\n</script><script>alert('XSS');</script>\n%253cscript%253ealert(document.cookie)%253c/script%253e\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"doesnotexist\"</><exttag-bracket>&gt</><tag-source exttag>&lt;script&gtalert(\"pwnd\")&lt;/script&gt&lt;IMG SRC=`javascript:alert(\"RSnake says, 'XSS'\")`&gt&lt;IMGSRC=&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;\\\";alert('XSS');//&lt;/script&gt&lt;script&gtalert('XSS');&lt;/script&gt%253cscript%253ealert(document.cookie)%253c/script%253e</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "XSS is escaped (inline)",
+		"wikitext": "<source lang=\"doesnotexist\" inline=\"\">\n<script>alert(\"pwnd\")</script>\n<IMG SRC=`javascript:alert(\"RSnake says, 'XSS'\")`>\n<IMG\nSRC=&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;&#97;&#108;&#101;&#114;&#116;&#40;\n&#39;&#88;&#83;&#83;&#39;&#41;\n\\\";alert('XSS');//\n</script><script>alert('XSS');</script>\n%253cscript%253ealert(document.cookie)%253c/script%253e\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"doesnotexist\"</><exttag-attribute ext-source> inline=</><exttag-attribute-value>\"\"</><exttag-bracket>&gt</><tag-source exttag>&lt;script&gtalert(\"pwnd\")&lt;/script&gt&lt;IMG SRC=`javascript:alert(\"RSnake says, 'XSS'\")`&gt&lt;IMGSRC=&amp;#106;&amp;#97;&amp;#118;&amp;#97;&amp;#115;&amp;#99;&amp;#114;&amp;#105;&amp;#112;&amp;#116;&amp;#58;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#39;&amp;#88;&amp;#83;&amp;#83;&amp;#39;&amp;#41;\\\";alert('XSS');//&lt;/script&gt&lt;script&gtalert('XSS');&lt;/script&gt%253cscript%253ealert(document.cookie)%253c/script%253e</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Default behaviour (inner is pre)",
+		"wikitext": "<source lang=\"javascript\">\nvar a;\n</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Multiline <source/> in lists",
+		"wikitext": "*<source>a\nb</source>\n\n*foo <source>a\nb</source>",
+		"parsed": "<list>*</><exttag-bracket>&lt;</><exttag-name>source</><exttag-bracket>&gt</><tag-source exttag>ab</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</><list>*</>foo <exttag-bracket>&lt;</><exttag-name>source</><exttag-bracket>&gt</><tag-source exttag>ab</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Custom attributes",
+		"wikitext": "<source lang=\"javascript\" id=\"foo\" class=\"bar\" dir=\"rtl\" style=\"font-size: larger;\">var a;</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-source> id=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-source> class=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-source> dir=</><exttag-attribute-value>\"rtl\"</><exttag-attribute ext-source> style=</><exttag-attribute-value>\"font-size: larger;\"</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Inline attribute (inline code)",
+		"wikitext": "Text <source lang=\"javascript\" inline>var a;</source>.",
+		"parsed": "Text <exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-source> inline</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>."
+	},
+	{
+		"desc": "Enclose none (inline code)",
+		"wikitext": "Text <source lang=\"javascript\" enclose=\"none\">var a;</source>.",
+		"parsed": "Text <exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-source> enclose=</><exttag-attribute-value>\"none\"</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>."
+	},
+	{
+		"desc": "Enclose with nowiki\nparsoid={ \"modes\": [\"wt2html\",\"wt2wt\"], \"normalizePhp\": true }",
+		"wikitext": "{{#tag:syntaxhighlight|<nowiki>foo</nowiki>|lang=\"text\"|inline=none}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#tag</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>syntaxhighlight</><ext-ground parserfunction-delimiter>|</><ext-ground exttag-bracket>&lt;</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><tag-nowiki>foo</><ext-ground exttag-bracket>&lt;/</><ext-ground exttag-name>nowiki</><ext-ground exttag-bracket>&gt</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>lang=</><ext-ground parserfunction>\"text\"</><ext-ground parserfunction-delimiter>|</><ext-ground template-argument-name>inline=</><ext-ground parserfunction>none</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Self-closing tag",
+		"wikitext": "<syntaxhighlight lang=\"CSharp\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"CSharp\"</><exttag-attribute ext-syntaxhighlight> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "No code",
+		"wikitext": "<source lang=\"CSharp\"></source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"CSharp\"</><exttag-bracket>&gt&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Just whitespace",
+		"wikitext": "<source lang=\"CSharp\"> </source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"CSharp\"</><exttag-bracket>&gt</><tag-source exttag> </><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "tabs plus tidy (T32930, T59826)",
+		"wikitext": "<syntaxhighlight lang=\"javascript\" enclose=\"pre\" highlight=\"2-3\">\nfunction doSomething() {\n\tvar\tfoo,\n\t\tbar;\n\tif (baz) {\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-syntaxhighlight> enclose=</><exttag-attribute-value>\"pre\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"2-3\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>function doSomething() {\tvar\tfoo,\t\tbar;\tif (baz) {</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "deprecated source tag adds tracking category",
+		"wikitext": "<source lang=\"python\">print('Hi')</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-source exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "deprecated enclose option adds tracking category",
+		"wikitext": "<syntaxhighlight enclose=\"none\" lang=\"python\">print('Hi')</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>enclose=</><exttag-attribute-value>\"none\"</><exttag-attribute ext-syntaxhighlight> lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "tables"

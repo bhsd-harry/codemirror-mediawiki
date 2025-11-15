@@ -1,11 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.6.5
 
-*2025-11-15*
+*2025-11-20*
 
 **Fixed**
 
 - External links with `<tvar>` tags in the MediaWiki mode
+- [Autocompletion](./README.md#autocompletion) for `<math>` and `<chem>` tags should not suggest HTML attributes except `id` in the MediaWiki mode
+- The [wikiEditor](./mw/README.md#wikieditor) extension may add duplicate buttons to the toolbar in some cases on a MediaWiki site
 
 ## 3.6.4
 

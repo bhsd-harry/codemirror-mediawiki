@@ -136,6 +136,8 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 			});
 		}
 	}
+	// `id="wpTextbox1"`的textarea可能由`ext.wikiEditor`直接添加工具栏
+	context ??= $textarea.data('wikiEditorContext') as WikiEditorContext | undefined;
 	if (context) {
 		//
 	} else if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
