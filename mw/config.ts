@@ -1,4 +1,4 @@
-import {CDN, setObject, getObject, compareVersion} from '@bhsd/browser';
+import {CDN, setObject, getObject} from '@bhsd/browser';
 import {
 	cleanAliases,
 	getParserConfig as getParserConfigBase,
@@ -139,7 +139,7 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		return config;
 	}
 	const {nsid, variants, functionSynonyms, img} = mwConfig,
-		[insensitive, sensitive] = functionSynonyms;
+		[insensitive] = functionSynonyms;
 	config = {
 		...getParserConfigBase(minConfig, mwConfig),
 		namespaces: mw.config.get('wgFormattedNamespaces'),
@@ -154,12 +154,6 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		} else if (noCM && !key.startsWith('#')) {
 			config.parserFunction[0][`#${key}`] = val;
 		}
-	}
-	if (
-		typeof wikiparse !== 'object' || !compareVersion(wikiparse.version, '1.15')
-		|| Object.values(sensitive as Record<string, unknown>).includes(true)
-	) {
-		config.parserFunction[1] = Object.keys(config.parserFunction[1]);
 	}
 	for (const [key, val] of Object.entries(img!)) {
 		config.img[key] = val.slice(4).replace(/_/gu, '-');

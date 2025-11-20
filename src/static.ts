@@ -57,7 +57,7 @@ export const getStaticMwConfig = (
 			...p0,
 			...Object.fromEntries(p2.flat().map(s => [s, s])),
 		},
-		Array.isArray(p1) ? Object.fromEntries(p1.map(s => [s, s.toLowerCase()])) : {...p1},
+		{...p1},
 	],
 	urlProtocols: `${protocol}|//`,
 	nsid,
