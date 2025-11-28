@@ -13,5 +13,4 @@ export const curVersion = $VERSION,
 	})(),
 	indentKey = 'codemirror-mediawiki-indent',
 	themeKey = 'codemirror-mediawiki-theme',
-	settingsId = 'cm-settings',
 	preferenceId = 'cm-preference';

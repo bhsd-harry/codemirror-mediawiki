@@ -214,14 +214,14 @@ export class CodeMirror6 {
 						clearTimeout(timer);
 						timer = setTimeout(() => {
 							textarea.value = doc.toString();
-							textarea.dispatchEvent(new Event('input'));
+							textarea.dispatchEvent(new InputEvent('input'));
 						}, 400);
 						if (!startDoc.toString().trim()) {
 							this.setIndent(this.#indentStr);
 						}
 					}
 					if (focusChanged) {
-						textarea.dispatchEvent(new Event(this.#view!.hasFocus ? 'focus' : 'blur'));
+						textarea.dispatchEvent(new FocusEvent(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
 				}),
 				...readOnly
@@ -364,6 +364,7 @@ export class CodeMirror6 {
 	/**
 	 * Check if the editor enables a specific extension
 	 * @param name extension name
+	 * @since 3.2.0
 	 */
 	hasPreference(name: string): boolean {
 		return this.#preferred.has(name);

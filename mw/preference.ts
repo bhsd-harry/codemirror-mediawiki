@@ -160,11 +160,8 @@ export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.Tab
 	return [panel];
 };
 
-/**
- * 打开设置对话框
- * @param editors CodeMirror实例
- */
-export const openPreference = async (editors: (CodeMirror | undefined)[]): Promise<void> => {
+/** 打开设置对话框 */
+export const openPreference = async (): Promise<void> => {
 	await mw.loader.using([
 		'oojs-ui-windows',
 		'oojs-ui-widgets',
@@ -287,7 +284,11 @@ export const openPreference = async (editors: (CodeMirror | undefined)[]): Promi
 		// 缩进
 		const oldIndent = indent,
 			oldTheme = theme,
-			save = prefs.has('save');
+			save = prefs.has('save'),
+			editors = [
+				...document
+					.querySelectorAll<HTMLTextAreaElement>('.cm-editor+textarea,.monaco-container+textarea'),
+			].map(textarea => instances.get(textarea));
 		indent = indentWidget.getValue();
 		let changed = indent !== oldIndent;
 		if (changed) {

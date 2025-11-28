@@ -576,7 +576,7 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
  * 点击提示折叠模板参数
  * @param view
  */
-export const foldHandler = (view: EditorView) => (e: MouseEvent): void => {
+export const foldHandler = (view: EditorView) => (e: PointerEvent): void => {
 	const dom = (e.target as Element).closest<HTMLElement>(foldSelector);
 	if (dom) {
 		e.preventDefault();

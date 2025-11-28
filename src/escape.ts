@@ -66,7 +66,7 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	return false;
 };
 
-const handlerBase = (view: EditorView, e: MouseEvent): void => {
+const handlerBase = (view: EditorView, e: PointerEvent): void => {
 	e.stopPropagation();
 	view.focus();
 };

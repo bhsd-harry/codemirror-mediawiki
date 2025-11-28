@@ -1,6 +1,7 @@
 import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/browser';
 import {isMac} from '../src/constants';
-import {settingsId, curVersion, languages} from './constants';
+import {curVersion, languages} from './constants';
+import {openPreference} from './preference';
 import type {CodeMirror} from './codemirror';
 
 declare const $LANGS: string[];
@@ -103,7 +104,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 	}
 	notification?.find('#settings').click(e => {
 		e.preventDefault();
-		document.getElementById(settingsId)!.dispatchEvent(new MouseEvent('click'));
+		void openPreference();
 	});
 };
 

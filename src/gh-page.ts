@@ -156,7 +156,7 @@ registerTheme('nord', nord);
 			element.dispatchEvent(new Event('change'));
 		}
 	});
-	dispatchEvent(new Event('hashchange'));
+	dispatchEvent(new HashChangeEvent('hashchange'));
 
 	// 初始化扩展
 	for (const extension of extensions) {

@@ -14,6 +14,7 @@
 	- [version](#version)
 - [Static methods](#static-methods)
 	- [fromTextArea](#fromtextarea)
+	- [openPreference](#openpreference)
 - [Extensions](#extensions)
 	- [wikiEditor](#wikieditor)
 	- [save](#save)
@@ -185,6 +186,22 @@ CodeMirror6.fromTextArea(textarea, 'css');
 CodeMirror6.fromTextArea(textarea, 'javascript');
 CodeMirror6.fromTextArea(textarea, 'json');
 CodeMirror6.fromTextArea(textarea, 'lua');
+```
+
+</details>
+
+## openPreference
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.7.0*
+
+**returns**: `Promise<void>`  
+Open the user preference dialog.
+
+```js
+CodeMirror6.openPreference();
 ```
 
 </details>

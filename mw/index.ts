@@ -1,6 +1,5 @@
 import {CDN} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {settingsId} from './constants';
 import {msg, setI18N, welcome, localize} from './msg';
 import {openPreference} from './preference';
 import {instances} from './util';
@@ -54,14 +53,15 @@ document.body.addEventListener('click', e => {
 		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
 		'#',
 		msg('title'),
-		settingsId,
+		'cm-settings',
 	)!.addEventListener('click', e => {
 		e.preventDefault();
-		const textareas = [
-			...document
-				.querySelectorAll<HTMLTextAreaElement>('.cm-editor+textarea,.monaco-container+textarea'),
-		];
-		void openPreference(textareas.map(textarea => instances.get(textarea)));
+		void openPreference();
+	});
+	addEventListener('hashchange', () => {
+		if (location.hash === '#cm-settings') {
+			void openPreference();
+		}
 	});
 	void welcome(baseVersion, addons);
 })();

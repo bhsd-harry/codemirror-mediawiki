@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.7.0
+
+*2025-11-30*
+
+**Added**
+
+- New static method: [`openPreference`](./mw/README.md#openpreference)
+
 ## 3.6.5
 
 *2025-11-20*
