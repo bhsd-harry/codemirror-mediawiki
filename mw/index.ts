@@ -58,11 +58,6 @@ document.body.addEventListener('click', e => {
 		e.preventDefault();
 		void openPreference();
 	});
-	addEventListener('hashchange', () => {
-		if (location.hash === '#cm-settings') {
-			void openPreference();
-		}
-	});
 	void welcome(baseVersion, addons);
 })();
 

@@ -21,7 +21,7 @@ import escape from './escape';
 import getParsoidLintSource from './lintsource';
 import {msg} from './msg';
 import {getTitleParser, isbnParser} from './openLinks';
-import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from './preference';
+import {prefs, useMonaco, wikilint, codeConfigs, loadJSON} from './preference';
 import prepareSuggest from './suggest';
 import {textSelection, monacoTextSelection} from './textSelection';
 import {instances} from './util';
@@ -118,12 +118,6 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest(`
 export class CodeMirror extends CodeMirror6 {
 	static readonly version = curVersion;
 	static readonly instances = instances;
-
-	/**
-	 * 打开设置对话框
-	 * @since 3.7.0
-	 */
-	static openPreference = openPreference;
 
 	declare ns;
 	declare page;

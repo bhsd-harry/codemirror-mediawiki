@@ -83,7 +83,8 @@ export class FullMediaWiki extends MediaWiki {
 			doubleUnderscore,
 		} = config;
 		this.nsRegex = new RegExp(String.raw`^(${
-			Object.keys(nsid).filter(Boolean).join('|').replace(/_/gu, ' ')
+			Object.keys(nsid).filter(ns => ns !== '').join('|')
+				.replace(/_/gu, ' ')
 		})\s*:\s*`, 'iu');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
 			type: i ? 'constant' : 'function',

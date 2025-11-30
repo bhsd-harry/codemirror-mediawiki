@@ -37,7 +37,7 @@ export const discoverColors = (_: Tree, from: number, to: number, type: string, 
 				from: from + start,
 				to: from + end,
 			};
-		}).filter(Boolean) as WidgetOptions[];
+		}).filter(options => options !== null);
 };
 
 export default (([e, style]: [Extension?, StyleSpec?] = []): Extension => e

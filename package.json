@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.7.0",
+	"version": "3.6.5",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -68,7 +68,7 @@
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/view": "^6.38.6",
 		"cm6-theme-nord": "^0.2.0",
-		"wikiparser-node": "^1.31.0"
+		"wikiparser-node": "^1.32.0"
 	},
 	"devDependencies": {
 		"@bhsd/cm-util": "^0.1.0",

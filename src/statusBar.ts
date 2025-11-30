@@ -106,7 +106,7 @@ const updateMenu = (
 					({actions}) => actions?.some(({name}) => name === 'fix'
 						|| name !== 'Fix: Stylelint' && name.startsWith('Fix:')),
 				).map(({message}) => / \(([^()]+)\)$/u.exec(message)?.[1])
-					.filter(Boolean) as string[],
+					.filter(message => message !== undefined),
 			);
 		if (actionable.length === 0 && fixable.size === 0) {
 			toggleClass(classList, false);

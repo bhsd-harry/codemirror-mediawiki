@@ -114,6 +114,14 @@ describe('autocompletion', () => {
 			},
 		);
 		await mockTest('[[ >', null);
+		await mockTest(
+			'<gallery> a',
+			{
+				from: 10,
+				options: [{label: 'a', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
 	});
 	it('template parameter', async () => {
 		await mockTest(
