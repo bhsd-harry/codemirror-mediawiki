@@ -31,33 +31,6 @@ function findButton($toolbar: JQuery | undefined, name: string, children?: boole
 const isActive = ($toolbar: JQuery, name: string): boolean =>
 	findButton($toolbar, name).hasClass('tool-active');
 
-export const getGroup = (name: GroupName | GroupName[]): string => Array.isArray(name)
-	? name.map(n => getGroup(n)).join()
-	: `.group-codemirror6${name && `-${name}`}`;
-
-/**
- * 切换WikiEditor工具栏按钮状态
- * @param $toolbar WikiEditor工具栏
- * @param name 按钮名称
- * @param toggle 是否激活
- */
-export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?: boolean): void => {
-	findButton($toolbar, name, true)?.toggleClass('tool-active', toggle);
-};
-
-/**
- * 设置工具栏按钮状态
- * @param $toolbar WikiEditor工具栏
- * @param active 是否激活
- */
-export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
-	if ($toolbar) {
-		toggleButton($toolbar, 'toggle', active);
-		$toolbar.find(getGroup(['format', 'more'])).toggle(active);
-		$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
-	}
-};
-
 /**
  * 创建工具栏按钮
  * @returns CodeMirror 6工具
@@ -88,6 +61,33 @@ const getTool = (oouiIcon: string, execute: Action | [Command, string, Action<vo
 		},
 	},
 });
+
+export const getGroup = (name: GroupName | GroupName[]): string => Array.isArray(name)
+	? name.map(n => getGroup(n)).join()
+	: `.group-codemirror6${name && `-${name}`}`;
+
+/**
+ * 切换WikiEditor工具栏按钮状态
+ * @param $toolbar WikiEditor工具栏
+ * @param name 按钮名称
+ * @param toggle 是否激活
+ */
+export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?: boolean): void => {
+	findButton($toolbar, name, true)?.toggleClass('tool-active', toggle);
+};
+
+/**
+ * 设置工具栏按钮状态
+ * @param $toolbar WikiEditor工具栏
+ * @param active 是否激活
+ */
+export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
+	if ($toolbar) {
+		toggleButton($toolbar, 'toggle', active);
+		$toolbar.find(getGroup(['format', 'more'])).toggle(active);
+		$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
+	}
+};
 
 /**
  * 添加WikiEditor工具栏

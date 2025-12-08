@@ -1,4 +1,16 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.6.6
+
+*2025-12-08*
+
+**Changed**
+
+- [WikiEditor](./mw/README.md#wikieditor) toolbar buttons should always be added if there is already a toolbar on a MediaWiki site
+
+**Removed**
+
+- The [lint](./README.md#lint) extension no longer supports [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) before v1.16
+
 ## 3.6.5
 
 *2025-11-20*

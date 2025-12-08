@@ -602,7 +602,10 @@ export class CodeMirror extends CodeMirror6 {
 		const $textarea = $(textarea),
 			allPrefs = [...prefs, ...extensions],
 			isWiki = lang === 'mediawiki' || lang === 'html';
-		if (allPrefs.includes('wikiEditor') && isEditor(textarea)) {
+		if (
+			$textarea.data('wikiEditorContext')
+			|| allPrefs.includes('wikiEditor') && isEditor(textarea)
+		) {
 			try {
 				await wikiEditor($textarea, textarea.readOnly, isWiki);
 			} catch (e) {
@@ -630,6 +633,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (theme) {
 			cm.setTheme(theme);
 		}
+		cm.$toolbar?.find('.group-codemirror').hide();
 		return cm;
 	}
 }
