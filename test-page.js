@@ -47,5 +47,5 @@ import { CodeMirror6 } from "/codemirror-mediawiki/dist/demo.min.js";
       select.dispatchEvent(new Event("change"));
     }
   });
-  dispatchEvent(new Event("hashchange"));
+  dispatchEvent(new HashChangeEvent("hashchange"));
 })();

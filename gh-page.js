@@ -133,7 +133,7 @@ registerTheme("nord", nord);
       element.dispatchEvent(new Event("change"));
     }
   });
-  dispatchEvent(new Event("hashchange"));
+  dispatchEvent(new HashChangeEvent("hashchange"));
   for (const extension of extensions) {
     extension.addEventListener("change", prefer);
   }
