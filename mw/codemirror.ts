@@ -633,7 +633,6 @@ export class CodeMirror extends CodeMirror6 {
 		if (theme) {
 			cm.setTheme(theme);
 		}
-		cm.$toolbar?.find('.group-codemirror').hide();
 		return cm;
 	}
 }

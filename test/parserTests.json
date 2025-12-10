@@ -4948,6 +4948,149 @@
 		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>%</><table-delimiter>|</><entity>&amp;nbsp;</><table-td>%</><table-delimiter>|</><table-td>%</><table-delimiter>|</><entity>&amp;nbsp;</><table-td>%</><table-delimiter>|</><entity>&amp;nbsp;</><table-td> %</><table-delimiter>|</><table-td>%</><table-delimiter>|</><table-td>%</><table-bracket>|}</><list>*</>%<list>*</><entity>&amp;nbsp;</>%<list>*</>%<list>*</><entity>&amp;nbsp;</>%<list>*</><entity>&amp;nbsp;</> %<list>*</>%<list>*</>%<skipformatting> </>  % pre 1<apostrophes>'''</><strong> % BOLD </><apostrophes>'''</>"
 	},
 	{
+		"desc": "DynamicPageList"
+	},
+	{
+		"desc": "basic, single category list, ordered by cat add, desc.",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtest</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "basic, single category list, but ascending",
+		"wikitext": "<DynamicPageList>\norder =   ascending\ncategory=DPLtest\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>order =   ascendingcategory=DPLtest</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "nofollow",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nnofollow=true\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestnofollow=true</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "supresserrors",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\ncategory=DPLtest1\ncategory=DPLtest2\ncategory=DPLtest3\ncategory=DPLtest4\ncategory=DPLtest5\ncategory=DPLtest7\ncategory=DPLtest6\ncategory=DPLtest8\ncategory=DPLtest9\ncategory=DPLtest10\nsuppresserrors=true\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestcategory=DPLtest1category=DPLtest2category=DPLtest3category=DPLtest4category=DPLtest5category=DPLtest7category=DPLtest6category=DPLtest8category=DPLtest9category=DPLtest10suppresserrors=true</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Negation with namespace.",
+		"wikitext": "<DynamicPageList>\nnamespace=talk\nnotcategory=DPLtest3\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>namespace=talknotcategory=DPLtest3</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Namespace limited to category.",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nnamespace=talk\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestnamespace=talk</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Namespace no category.",
+		"wikitext": "<DynamicPageList>\nnamespace=help\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>namespace=help</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Don't show namespace name. (shownamespace=false)",
+		"wikitext": "<DynamicPageList>\nnamespace=help\nshownamespace=false\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>namespace=helpshownamespace=false</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Invalid ns treated as main namespace",
+		"wikitext": "<DynamicPageList>\nnamespace=Look mummy, this totally isn't a namespace\ncount=2\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>namespace=Look mummy, this totally isn't a namespacecount=2</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "count and offset combined.",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\ncount=1\noffset=1\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestcount=1offset=1</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "include redirects",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nredirects=include\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestredirects=include</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "only redirect",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nredirects=only\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestredirects=only</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "addfirstcategorydate=INVALID",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\naddfirstcategorydate=INVALID\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestaddfirstcategorydate=INVALID</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "addfirstcategorydate=false",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\naddfirstcategorydate=false\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestaddfirstcategorydate=false</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=unordered (default)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=unordered\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=unordered</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=INVALID",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=INVALID\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=INVALID</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=ordered",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=ordered\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=ordered</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=none (line breaks)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=none\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=none</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=inline (comma list)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=inline\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=inline</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=gallery (complex, no image)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nimagewidth=70\ngalleryshowfilesize=yes\ngalleryshowfilename=yes\nimagesperrow=7\ngallerycaption=Look at my pretty gallery. {{SERVER}}\nmode=gallery\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestimagewidth=70galleryshowfilesize=yesgalleryshowfilename=yesimagesperrow=7gallerycaption=Look at my pretty gallery. {{SERVER}}mode=gallery</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=gallery (simple, no image)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=gallery\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=gallery</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=gallery (complex, with image + bad image)",
+		"wikitext": "<DynamicPageList>\nmode=gallery\nnamespace=file\naddfirstcategorydate=ymd\nimagewidth=70\ngalleryshowfilesize=yes\ngalleryshowfilename=yes\nimagesperrow=7\ngallerycaption=I love Captions\nordermethod=sortkey\norder=descending\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>mode=gallerynamespace=fileaddfirstcategorydate=ymdimagewidth=70galleryshowfilesize=yesgalleryshowfilename=yesimagesperrow=7gallerycaption=I love Captionsordermethod=sortkeyorder=descending</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "mode=gallery (simple showfilesize, no image)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nmode=gallery\ngalleryshowfilesize=yes\ngalleryshowfilename=no\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestmode=gallerygalleryshowfilesize=yesgalleryshowfilename=no</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "ordermethod=created (by article id)",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nordermethod=created\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestordermethod=created</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "ordermethod=length",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nordermethod=length\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestordermethod=length</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "ordermethod=sortkey",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nordermethod=sortkey\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestordermethod=sortkey</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "ordermethod=categorysortkey",
+		"wikitext": "<DynamicPageList>\ncategory=DPLtest\nordermethod=categorysortkey\norder=ascending\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category=DPLtestordermethod=categorysortkeyorder=ascending</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Magic word in category clause",
+		"wikitext": "<DynamicPageList>\ncategory={{PAGENAME:DPLtest}}\n</DynamicPageList>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList</><exttag-bracket>&gt</><tag-dynamicpagelist exttag>category={{PAGENAME:DPLtest}}</><exttag-bracket>&lt;/</><exttag-name>DynamicPageList</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "additionalTests"
 	},
 	{
@@ -5221,6 +5364,11 @@
 		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>filepath</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-6>Wiki.png</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>filepath</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-6>Wiki.png</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>nowiki</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>filepath</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-6>Example.svg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>300</><ext-ground parserfunction-bracket>}}{{</><ext-ground parserfunction-name>filepath</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction pagename function-6>Example.svg</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>nowiki</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>300</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
+		"desc": "Attributes of a closing tag",
+		"wikitext": "<div>a</div id=a>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>div </><error>id=a</><htmltag-bracket>&gt</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
@@ -5257,6 +5405,64 @@
 		"desc": "Stray carriage return in text",
 		"wikitext": "hiho",
 		"parsed": "hiho"
+	},
+	{
+		"desc": "categorytree"
+	},
+	{
+		"desc": "Self-closing tag: <categorytree />",
+		"wikitext": "<categorytree />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Empty tag: <categorytree></categorytree>",
+		"wikitext": "<categorytree></categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree</><exttag-bracket>&gt&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Empty function: {{#categorytree:}}",
+		"wikitext": "{{#categorytree:}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#categorytree</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Tag with Unknown category: <categorytree>Unknown category</categorytree>",
+		"wikitext": "<categorytree>Unknown category</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree</><exttag-bracket>&gt</><tag-categorytree exttag>Unknown category</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Function with Unknown category: {{#categorytree:Unknown category}}",
+		"wikitext": "{{#categorytree:Unknown category}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#categorytree</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>Unknown category</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Tag with Unknown category and parameters: <categorytree mode=all depth=2 showcount=1>Unknown category</categorytree>",
+		"wikitext": "<categorytree mode=all depth=2 showcount=1>Unknown category</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree </><exttag-attribute ext-categorytree>mode=</><exttag-attribute-value>all</><exttag-attribute ext-categorytree> depth=</><exttag-attribute-value>2</><exttag-attribute ext-categorytree> showcount=</><exttag-attribute-value>1</><exttag-bracket>&gt</><tag-categorytree exttag>Unknown category</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag with Category:CategoryTree test category",
+		"wikitext": "<categorytree>CategoryTree test category</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree</><exttag-bracket>&gt</><tag-categorytree exttag>CategoryTree test category</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag with Category:CategoryTree test category 2 and hideroot=1",
+		"wikitext": "<categorytree hideroot=1>CategoryTree test category 2</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree </><exttag-attribute ext-categorytree>hideroot=</><exttag-attribute-value>1</><exttag-bracket>&gt</><tag-categorytree exttag>CategoryTree test category 2</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag with CategoryTree root and two subcategories",
+		"wikitext": "<categorytree>CategoryTree root</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree</><exttag-bracket>&gt</><tag-categorytree exttag>CategoryTree root</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag with CategoryTree root and two subcategories and showcount=on",
+		"wikitext": "<categorytree showcount=on>CategoryTree root</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree </><exttag-attribute ext-categorytree>showcount=</><exttag-attribute-value>on</><exttag-bracket>&gt</><tag-categorytree exttag>CategoryTree root</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag with CategoryTree root and two subcategories and depth=0",
+		"wikitext": "<categorytree depth=0>CategoryTree root</categorytree>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>categorytree </><exttag-attribute ext-categorytree>depth=</><exttag-attribute-value>0</><exttag-bracket>&gt</><tag-categorytree exttag>CategoryTree root</><exttag-bracket>&lt;/</><exttag-name>categorytree</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "citeParserTests"
@@ -7723,6 +7929,109 @@
 		"parsed": "<section-header section--2>==</><section> </><section-header>==</>"
 	},
 	{
+		"desc": "imageMapParserTests"
+	},
+	{
+		"desc": "imagemap test 1",
+		"wikitext": "<imagemap>\nImage:Foobar.jpg\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Image:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "imagemap test 2",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg\n\npoly 10.1 10.9 10 30 -30 15 [[Main Page]]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpgpoly 10.1 10.9 10 30 -30 15 [[Main Page]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "imagemap test 3",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg|150px|alt=Alt text\ndefault [[Main Page|Go to main page]]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg|150px|alt=Alt textdefault [[Main Page|Go to main page]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Empty imagemap",
+		"wikitext": "<imagemap>\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Invalid image title",
+		"wikitext": "<imagemap>\n[[x|xx]]]]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>[[x|xx]]]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Image does not exist",
+		"wikitext": "<imagemap>\nFile:Nopenopenope.jpg\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Nopenopenope.jpg</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Invalid description type",
+		"wikitext": "<imagemap>\nImage:Foobar.jpg\ndesc nopenopenope\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Image:Foobar.jpgdesc nopenopenope</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Empty description type",
+		"wikitext": "<imagemap>\nImage:Foobar.jpg\ndesc\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Image:Foobar.jpgdesc</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Non-default description type",
+		"wikitext": "<imagemap>\nImage:Foobar.jpg\ndesc top-left\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Image:Foobar.jpgdesc top-left</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "None description type",
+		"wikitext": "<imagemap>\nImage:Foobar.jpg\ndesc none\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Image:Foobar.jpgdesc none</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "No link title",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg\n123\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg123</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Invalid link title",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg\n[[<]]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg[[&lt;]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Link with wikitext syntax in content",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg|150px|alt=Alt text\ndefault [[Main Page|Go to ''main page'']]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg|150px|alt=Alt textdefault [[Main Page|Go to ''main page'']]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "File with link= option",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg|link=|Hi ho\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg|link=|Hi ho</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "File with <br> in caption (T113791)",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg|thumb|a<br>b\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg|thumb|a&lt;br&gtb</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "File with <br /> in caption (T113791)",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg|thumb|a<br />b\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpg|thumb|a&lt;br /&gtb</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Imagemap without file namespace",
+		"wikitext": "<imagemap>\nFoobar.jpg\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Imagemap with external link",
+		"wikitext": "<imagemap>\nFile:Foobar.jpg\ndefault [http://google.com]\n</imagemap>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpgdefault [http://google.com]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Imagemap with interlanguage link",
+		"wikitext": "[[es:Lalala]]\n\n<imagemap>\nFile:Foobar.jpg\ndefault [[es:Lalala]]\n</imagemap>",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>es:Lalala</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpgdefault [[es:Lalala]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Imagemap with category link",
+		"wikitext": "[[category:Lalala]]\n\n<imagemap>\nFile:Foobar.jpg\ndefault [[category:Lalala]]\n</imagemap>",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>category:Lalala</><link-ground link-bracket>]]</><exttag-bracket>&lt;</><exttag-name>imagemap</><exttag-bracket>&gt</><tag-imagemap exttag>File:Foobar.jpgdefault [[category:Lalala]]</><exttag-bracket>&lt;/</><exttag-name>imagemap</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "indentPre"
 	},
 	{
@@ -8022,6 +8331,139 @@
 		"desc": "Indicator shouldn't prevent addition of link classes",
 		"wikitext": "<indicator name=\"link\">[http://www.example.com Example]</indicator>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>indicator </><exttag-attribute ext-indicator>name=</><exttag-attribute-value>\"link\"</><exttag-bracket>&gt</><tag-indicator link-ground extlink-bracket>[</><tag-indicator link-ground extlink-protocol>http://</><tag-indicator link-ground extlink>www.example.com</><tag-indicator link-ground extlink-text> Example</><tag-indicator link-ground extlink-bracket>]</><exttag-bracket>&lt;/</><exttag-name>indicator</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "inputBoxParserTests"
+	},
+	{
+		"desc": "InputBox type=search",
+		"wikitext": "<inputbox>\ntype=search\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=search</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create",
+		"wikitext": "<inputbox>\ntype=create\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=create</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with minor",
+		"wikitext": "<inputbox>\ntype=create\nminor=1\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createminor=1</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with minor=0",
+		"wikitext": "<inputbox>\ntype=create\nminor=0\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createminor=0</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with preloadparams",
+		"wikitext": "<inputbox>\ntype=create\npreloadparams[]=param1\npreloadparams[]=param2\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createpreloadparams[]=param1preloadparams[]=param2</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty preloadparams",
+		"wikitext": "<inputbox>\ntype=create\npreloadparams[]=\npreloadparams[]=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createpreloadparams[]=preloadparams[]=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with editintro",
+		"wikitext": "<inputbox>\ntype=create\neditintro=MediaWiki:Test\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createeditintro=MediaWiki:Test</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty editintro",
+		"wikitext": "<inputbox>\ntype=create\neditintro=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createeditintro=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with summary",
+		"wikitext": "<inputbox>\ntype=create\nsummary=Summary test\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createsummary=Summary test</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty summary",
+		"wikitext": "<inputbox>\ntype=create\nsummary=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createsummary=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with nosummary",
+		"wikitext": "<inputbox>\ntype=create\nnosummary=true\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createnosummary=true</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty nosummary",
+		"wikitext": "<inputbox>\ntype=create\nnosummary=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createnosummary=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with prefix",
+		"wikitext": "<inputbox>\ntype=create\nprefix=Test/\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createprefix=Test/</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty prefix",
+		"wikitext": "<inputbox>\ntype=create\nprefix=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createprefix=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with preload",
+		"wikitext": "<inputbox>\ntype=create\npreload=test\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createpreload=test</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=create with empty preload",
+		"wikitext": "<inputbox>\ntype=create\npreload=\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=createpreload=</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=comment",
+		"wikitext": "<inputbox>\ntype=comment\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=comment</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=comment with preloadtitle",
+		"wikitext": "<inputbox>\ntype=comment\npreloadtitle=My title\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=commentpreloadtitle=My title</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=commenttitle",
+		"wikitext": "<inputbox>\ntype=commenttitle\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=commenttitle</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=commenttitle with preloadtitle",
+		"wikitext": "<inputbox>\ntype=commenttitle\npreloadtitle=This should be ignored\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=commenttitlepreloadtitle=This should be ignored</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=fulltext",
+		"wikitext": "<inputbox>\ntype=fulltext\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=fulltext</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=move",
+		"wikitext": "<inputbox>\ntype=move\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=move</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=search with tour",
+		"wikitext": "<inputbox>\ntype=search\ntour=test\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=searchtour=test</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox type=search with aria label",
+		"wikitext": "<inputbox>\ntype=search\narialabel=Search this wiki\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=searcharialabel=Search this wiki</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox with different search-special-page preference value",
+		"wikitext": "<inputbox>\ntype=search\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=search</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "InputBox searchengine",
+		"wikitext": "<inputbox>\ntype=search\nsearchengine=MediaSearch\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=searchsearchengine=MediaSearch</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "interlanguageLinks"
@@ -12441,6 +12883,59 @@
 		"desc": "Multiple, partly encoded spaces in HTML5 mode",
 		"wikitext": "<ref name=\"a_ %20a\" group=\"b_ %20b\">A</ref>\n<references group=\"b_ %20b\" />",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>ref </><exttag-attribute ext-ref>name=</><exttag-attribute-value>\"a_ %20a\"</><exttag-attribute ext-ref> group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-bracket>&gt</><tag-ref>A</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt&lt;</><exttag-name>references </><exttag-attribute ext-references>group=</><exttag-attribute-value>\"b_ %20b\"</><exttag-attribute ext-references> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "wikihiero"
+	},
+	{
+		"desc": "WikiHiero - basics",
+		"wikitext": "<hiero>A1 - B2 D3</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1 - B2 D3</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - XSS protection",
+		"wikitext": "<hiero><script>alert(\"FAIL\")</script></hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>&lt;script&gtalert(\"FAIL\")&lt;/script&gt</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - prefabs",
+		"wikitext": "<hiero>a:A1</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>a:A1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - Horus name",
+		"wikitext": "<hiero><h1 A h1></hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>&lt;h1 A h1&gt</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - cartouche",
+		"wikitext": "<hiero>< A ></hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>&lt; A &gt</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - EOL",
+		"wikitext": "<hiero>A1!B1 ! C1</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1!B1 ! C1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - complex text with EOL",
+		"wikitext": "<hiero>M23-X1:R4-X8-Q2:D4-W17-R14-G4-R8-O29:V30-U23 !\nN26-D58-O49:Z1-F13:N31-V30:N16:N21*Z1-D45:N25</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>M23-X1:R4-X8-Q2:D4-W17-R14-G4-R8-O29:V30-U23 !N26-D58-O49:Z1-F13:N31-V30:N16:N21*Z1-D45:N25</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - image mirroring",
+		"wikitext": "<hiero>A1\\-A1</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1\\-A1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - void blocks",
+		"wikitext": "<hiero>A1..B1.C1</hiero>\n<hiero>A1 .. B1 . C1</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1..B1.C1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1 .. B1 . C1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "WikiHiero - HTML comments",
+		"wikitext": "<hiero>A1<!-- B1 --> C1 D<!--\nfooooo -->1</hiero>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>hiero</><exttag-bracket>&gt</><tag-hiero exttag>A1&lt;!-- B1 --&gt C1 D&lt;!--fooooo --&gt1</><exttag-bracket>&lt;/</><exttag-name>hiero</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "wtEscaping"
