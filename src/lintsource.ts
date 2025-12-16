@@ -121,7 +121,7 @@ const jsLintSource = (
 		if (fix || suggestions.length > 0) {
 			diagnostic.actions = [
 				...fix ? [{name: 'fix', fix}] : [],
-				...suggestions.map(suggestion => ({name: 'suggestion', fix: suggestion.fix})),
+				...suggestions.map(suggestion => ({name: suggestion.messageId || 'suggestion', fix: suggestion.fix})),
 			].map(({name, fix: {range: [from, to], text}}): Action => ({
 				name,
 				apply(view): void {

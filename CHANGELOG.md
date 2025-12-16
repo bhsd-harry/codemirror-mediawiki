@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.6.7
+
+*2025-12-17*
+
+**Changed**
+
+- The [lint](./README.md#lint) extension now uses [`messageId`](https://eslint.org/docs/v8.x/extend/custom-rules#suggestion-messageids) as labels for auto-fix suggestions in the JavaScript mode
+
 ## 3.6.6
 
 *2025-12-08*
