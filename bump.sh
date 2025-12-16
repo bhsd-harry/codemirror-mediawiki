@@ -14,7 +14,7 @@ else
 	do
 		sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" "$x"
 	done
-	npm run lint && npm run build:test && npm run test:real && npm run build && npm run build:gh-page
+	npm run lint && npm run build:test && npm run test:real && npm run build
 	if [[ $? -eq 0 ]]
 	then
 		git add -A

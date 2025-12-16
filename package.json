@@ -36,7 +36,7 @@
 		"build:core": "npm run bundle:core && esbuild ./build/main.js --charset=utf8 --minify --target=es2019 --format=esm --sourcemap --outfile=dist/main.min.js && tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*{-page,.test}.{js,d.ts}",
 		"build:mw": "esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/mw.min.js && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js",
 		"build:wiki": "npm run bundle:wiki && esbuild ./build/wiki.js --charset=utf8 --minify --target=es2019 --format=iife --sourcemap --outfile=dist/wiki.min.js",
-		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --outdir=. --external:/codemirror-mediawiki/dist/main.min.js --external:/codemirror-mediawiki/dist/demo.min.js",
+		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --outdir=. --external:/codemirror-mediawiki/dist/main.min.js --external:/codemirror-mediawiki/dist/demo.min.js --external:/wikiparser-node/extensions/dist/test-page-common.js",
 		"build:demo": "npm run bundle:unused && esbuild ./build/mediawiki.js --charset=utf8 --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && eslint --no-config-lookup -c eslint.dist.mjs dist/*.min.js",

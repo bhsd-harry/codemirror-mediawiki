@@ -1,4 +1,11 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/demo.min.js';
+import {
+	prepareDoneBtn,
+	addOption,
+	changeHandler,
+	hashChangeHandler,
+	inputHandler,
+} from '/wikiparser-node/extensions/dist/test-page-common.js';
 import type {ConfigData} from 'wikiparser-node';
 
 declare interface Test {
@@ -10,59 +17,25 @@ declare interface Test {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
 		key = 'codemirror-mediawiki-done',
 		dones = new Set(JSON.parse(localStorage.getItem(key)!) as string[]),
-		isGH = location.hostname.endsWith('.github.io'),
+		input = document.getElementById('search') as HTMLInputElement,
 		select = document.querySelector('select')!,
 		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,
 		pre = document.querySelector('pre')!,
 		config: ConfigData = await (await fetch('/wikiparser-node/config/default.json')).json();
-	wikiparse.setConfig(config);
 	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(config));
 	Object.assign(globalThis, {cm});
+	wikiparse.setConfig(config);
 	await wikiparse.highlight!(pre, false, true);
-	btn.disabled = !select.value;
-	if (!isGH) {
-		btn.style.display = '';
-	}
-	let optgroup: HTMLOptGroupElement;
+	let optgroup: HTMLOptGroupElement | undefined;
 	for (let i = 0; i < tests.length; i++) {
-		const {desc, wikitext} = tests[i]!;
-		if (wikitext === undefined) {
-			optgroup = document.createElement('optgroup');
-			optgroup.label = desc;
-			select.append(optgroup);
-		} else if (isGH || !dones.has(desc)) {
-			const option = document.createElement('option');
-			option.value = String(i);
-			option.textContent = desc;
-			// @ts-expect-error already assigned
-			optgroup.append(option);
-		}
+		optgroup = addOption(optgroup, select, tests, dones, i);
 	}
 	select.addEventListener('change', () => {
-		const {wikitext, desc} = tests[Number(select.value)]!;
-		cm.setContent(wikitext!, true);
-		pre.textContent = wikitext!;
-		pre.classList.remove('wikiparser');
-		void wikiparse.highlight!(pre, false, true);
-		select.selectedOptions[0]!.disabled = true;
-		btn.disabled = false;
-		// eslint-disable-next-line no-restricted-globals
-		history.replaceState(null, '', `#${encodeURIComponent(desc)}`);
+		cm.setContent(tests[Number(select.value)]!.wikitext!, true);
+		changeHandler(pre, btn, select, tests);
 	});
-	btn.addEventListener('click', () => {
-		dones.add(tests[Number(select.value)]!.desc);
-		localStorage.setItem(key, JSON.stringify([...dones]));
-		select.selectedIndex++;
-		select.dispatchEvent(new Event('change'));
-	});
-	addEventListener('hashchange', () => {
-		const hash = decodeURIComponent(location.hash.slice(1)),
-			i = tests.findIndex(({desc}) => desc === hash);
-		if (i !== -1) {
-			select.value = String(i);
-			select.dispatchEvent(new Event('change'));
-		}
-	});
-	dispatchEvent(new HashChangeEvent('hashchange'));
+	prepareDoneBtn(btn, select, tests, dones, key);
+	inputHandler(input, select, dones);
+	hashChangeHandler(select, tests);
 })();
