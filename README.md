@@ -1229,6 +1229,7 @@ registerSignatureHelp();
 1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
 1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
+1. Template-like syntax without a template name ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#T408631%3A%20Invalid%20templates%20inside%20template%20parameters)).
 
 ### Heading
 
@@ -1237,6 +1238,7 @@ registerSignatureHelp();
 ### Table
 
 1. Comments at the SOL should not break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
+1. `!!` in links should start a new `<th>` ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Precedence%20of%20table%20over%20links)).
 
 ### External link
 
