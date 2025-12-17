@@ -19,8 +19,8 @@ const mockTest = (doc: string, pos: number, result: string | undefined): void =>
 		state = createState(doc),
 		view = {
 			state,
-			posAtCoords() {
-				return pos;
+			posAndSideAtCoords() {
+				return {pos, assoc: -1};
 			},
 		} as Partial<EditorView> as EditorView;
 	Object.defineProperty(e, 'target', {value: element});

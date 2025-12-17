@@ -78,7 +78,7 @@ const updateDiagnosticMessage = (
 			view = cm.view!;
 		msg.textContent = diagnostic.message;
 		if (diagnostic.actions) {
-			msg.append(...(diagnostic.actions as ExtendedAction[]).map(({name, apply, tooltip}) => {
+			msg.append(...(diagnostic.actions as ExtendedAction[]).map(({name, tooltip, apply}) => {
 				const button = elt('button', {type: 'button', class: actionSelector.slice(1)}, name);
 				if (tooltip) {
 					button.title = tooltip;

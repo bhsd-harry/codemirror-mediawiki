@@ -132,12 +132,12 @@ const jsLintSource = (
 				})),
 			].map(({name, fix: {range: [from, to], text}, tooltip}): ExtendedAction => ({
 				name,
+				tooltip,
 				apply(view): void {
 					view.dispatch({
 						changes: {from: from + f, to: to + f, insert: text},
 					});
 				},
-				tooltip,
 			}));
 		}
 		return diagnostic;

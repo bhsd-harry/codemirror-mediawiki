@@ -1,9 +1,14 @@
-import {Decoration} from '@codemirror/view';
+import {Decoration, EditorView} from '@codemirror/view';
 import {bracketMatching, matchBrackets, syntaxTree} from '@codemirror/language';
 import type {DecorationSet} from '@codemirror/view';
 import type {Extension, StateField, Transaction, Range, Facet, EditorState} from '@codemirror/state';
 import type {Config, MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
+
+export interface Selection {
+	anchor: number;
+	head: number;
+}
 
 export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
 	let parent: SyntaxNode | null = node;
@@ -46,6 +51,33 @@ export const findEnclosingPlainBrackets = (
 	return null;
 };
 
+export const trySelectMatchingBrackets = (
+	state: EditorState,
+	pos: number,
+	dir: 1 | -1,
+	config?: Config,
+	inside = false,
+): Selection | false => {
+	if (pos < 0) {
+		return false;
+	}
+	const match = matchBrackets(state, pos, dir, config) || false,
+		rightInside = dir === 1 === inside;
+	return match && match.matched && {
+		anchor: match.start[rightInside ? 'to' : 'from'],
+		head: match.end![rightInside ? 'from' : 'to'],
+	};
+};
+
+export const selectMatchingBrackets = (
+	state: EditorState,
+	pos: number,
+	config?: Config,
+): Selection | false => trySelectMatchingBrackets(state, pos, -1, config)
+	|| trySelectMatchingBrackets(state, pos, 1, config)
+	|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
+	|| trySelectMatchingBrackets(state, pos - 1, 1, config, true);
+
 export default (configs?: Config): Extension => {
 	const extension = bracketMatching(configs) as [
 			Extension & {facet: Facet<Config, Required<Config>>},
@@ -81,5 +113,27 @@ export default (configs?: Config): Extension => {
 			return Decoration.set(decorations, true);
 		},
 	});
-	return extension;
+	return [
+		extension,
+		EditorView.domEventHandlers({
+
+			/**
+			 * @ignore
+			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
+			 */
+			dblclick(e, view) {
+				const pos = view.posAtCoords(e);
+				if (pos === null) {
+					return false;
+				}
+				const {state} = view,
+					selection = selectMatchingBrackets(state, pos, state.facet(facet));
+				if (selection) {
+					view.dispatch({selection});
+					return true;
+				}
+				return false;
+			},
+		}),
+	];
 };

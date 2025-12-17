@@ -19,10 +19,6 @@ input[type="color"] {
 	pointer-events: none;
 }
 
-.cm-gutter-lint {
-	order: 0;
-}
-
 /* src/color */
 .cm-css-color-picker-wrapper {
 	outline: none;

@@ -64,7 +64,7 @@ export const mouseEventListener = (
 		return undefined;
 	}
 	const {state} = view,
-		tree = ensureSyntaxTree(state, posAndSide.pos + (posAndSide.assoc === 1 ? 1 : 0));
+		tree = ensureSyntaxTree(state, posAndSide.pos);
 	if (!tree) {
 		return undefined;
 	}

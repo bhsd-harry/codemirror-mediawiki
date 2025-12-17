@@ -12526,11 +12526,6 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-syntaxhighlight> enclose=</><exttag-attribute-value>\"pre\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"2-3\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>function doSomething() {\tvar\tfoo,\t\tbar;\tif (baz) {</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
 	},
 	{
-		"desc": "deprecated source tag adds tracking category",
-		"wikitext": "<source lang=\"python\">print('Hi')</source>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-source exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
-	},
-	{
 		"desc": "deprecated enclose option adds tracking category",
 		"wikitext": "<syntaxhighlight enclose=\"none\" lang=\"python\">print('Hi')</syntaxhighlight>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>enclose=</><exttag-attribute-value>\"none\"</><exttag-attribute ext-syntaxhighlight> lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"

@@ -30,6 +30,7 @@ import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
 import type statusBar from './statusBar';
 import type {MwConfig} from './token';
+import type {Selection} from './matchBrackets';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
@@ -334,11 +335,6 @@ export class CodeMirror6 {
 					return diagnostics;
 				})),
 				lintGutter(),
-				EditorView.theme({
-					'.cm-gutter-lint': {
-						order: 0,
-					},
-				}),
 				keymap.of(lintKeymap),
 				optionalFunctions.statusBar(this, lintSources[0].fixer),
 			]
@@ -537,7 +533,7 @@ export class CodeMirror6 {
 	 * Scroll to the specified position
 	 * @param position position or selection range
 	 */
-	scrollTo(position?: number | {anchor: number, head: number}): void {
+	scrollTo(position?: number | Selection): void {
 		if (this.#view) {
 			const r = position ?? this.#view.state.selection.main,
 				effects = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange

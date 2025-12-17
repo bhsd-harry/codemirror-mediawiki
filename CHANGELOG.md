@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.6.8
+## 3.7.0
 
 *2025-12-18*
 
 **Added**
 
 - When enabling the [lint](./README.md#lint) extension, the action buttons in the status bar now show tooltips for auto-fix suggestions in the JavaScript mode
+- The [bracketMatching](./README.md#bracketmatching) extension now partially supports selecting the content inside matching brackets with double-click
 
 **Fixed**
 
