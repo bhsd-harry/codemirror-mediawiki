@@ -7,6 +7,10 @@
 
 - When enabling the [lint](./README.md#lint) extension, the action buttons in the status bar now show tooltips for auto-fix suggestions in the JavaScript mode
 
+**Fixed**
+
+- The [openLinks](./README.md#openlinks) extension now uses a more precise method to detect the position of the click event in the MediaWiki mode
+
 **Changed**
 
 - The gutter marker for the [codeFolding](./README.md#codefolding) extension is now placed closest to the content area
