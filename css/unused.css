@@ -19,6 +19,10 @@ input[type="color"] {
 	pointer-events: none;
 }
 
+.cm-gutter-lint {
+	order: 0;
+}
+
 /* src/color */
 .cm-css-color-picker-wrapper {
 	outline: none;
@@ -30,6 +34,9 @@ input[type="color"] {
 }
 
 /* src/fold */
+.cm-foldGutter {
+	order: 2;
+}
 .cm-tooltip-fold {
 	cursor: pointer;
 	line-height: 1.2;

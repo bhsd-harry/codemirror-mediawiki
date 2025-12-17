@@ -334,6 +334,11 @@ export class CodeMirror6 {
 					return diagnostics;
 				})),
 				lintGutter(),
+				EditorView.theme({
+					'.cm-gutter-lint': {
+						order: 0,
+					},
+				}),
 				keymap.of(lintKeymap),
 				optionalFunctions.statusBar(this, lintSources[0].fixer),
 			]

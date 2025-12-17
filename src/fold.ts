@@ -438,7 +438,14 @@ export const foldRef = /* @__PURE__ */ foldCommand(true),
 		return false;
 	};
 
-export default ((e = defaultFoldExtension): Extension => e) satisfies AddonMain<Extension>;
+export default ((e = defaultFoldExtension): Extension => [
+	e,
+	EditorView.theme({
+		'.cm-foldGutter': {
+			order: 2,
+		},
+	}),
+]) satisfies AddonMain<Extension>;
 
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({

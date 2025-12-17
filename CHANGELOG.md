@@ -7,6 +7,10 @@
 
 - When enabling the [lint](./README.md#lint) extension, the action buttons in the status bar now show tooltips for auto-fix suggestions in the JavaScript mode
 
+**Changed**
+
+- The gutter marker for the [codeFolding](./README.md#codefolding) extension is now placed closest to the content area
+
 ## 3.6.7
 
 *2025-12-16*
