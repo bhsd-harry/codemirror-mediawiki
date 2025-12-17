@@ -6,7 +6,7 @@ import {panelSelector, diagnosticSelector, menuSelector, messageSelector, action
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
-import type {LintSource} from './lintsource';
+import type {LintSource, ExtendedAction} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
 
@@ -78,8 +78,11 @@ const updateDiagnosticMessage = (
 			view = cm.view!;
 		msg.textContent = diagnostic.message;
 		if (diagnostic.actions) {
-			msg.append(...diagnostic.actions.map(({name, apply}) => {
+			msg.append(...(diagnostic.actions as ExtendedAction[]).map(({name, apply, tooltip}) => {
 				const button = elt('button', {type: 'button', class: actionSelector.slice(1)}, name);
+				if (tooltip) {
+					button.title = tooltip;
+				}
 				button.addEventListener('click', e => {
 					e.preventDefault();
 					apply(view, diagnostic.from, diagnostic.to);

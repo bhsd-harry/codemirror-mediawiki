@@ -9,6 +9,7 @@ import type {EditorState, Text} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic, Action} from '@codemirror/lint';
 import type {QuickFixData} from 'wikiparser-node';
+import type {Rule} from 'eslint';
 import type {Option, LiveOption} from './linter';
 
 export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>) & {
@@ -21,6 +22,9 @@ export type LintSourceGetter = (
 	view?: EditorView,
 	nestedMWLanguage?: Language,
 ) => LintSource | Promise<LintSource>;
+export interface ExtendedAction extends Action {
+	tooltip: string | undefined;
+}
 
 /**
  * 获取Linter选项
@@ -120,15 +124,20 @@ const jsLintSource = (
 		};
 		if (fix || suggestions.length > 0) {
 			diagnostic.actions = [
-				...fix ? [{name: 'fix', fix}] : [],
-				...suggestions.map(suggestion => ({name: suggestion.messageId || 'suggestion', fix: suggestion.fix})),
-			].map(({name, fix: {range: [from, to], text}}): Action => ({
+				...fix ? [{name: 'fix', fix} as {name: string, fix: Rule.Fix, tooltip?: string}] : [],
+				...suggestions.map(suggestion => ({
+					name: suggestion.messageId || 'suggestion',
+					fix: suggestion.fix,
+					tooltip: suggestion.desc,
+				})),
+			].map(({name, fix: {range: [from, to], text}, tooltip}): ExtendedAction => ({
 				name,
 				apply(view): void {
 					view.dispatch({
 						changes: {from: from + f, to: to + f, insert: text},
 					});
 				},
+				tooltip,
 			}));
 		}
 		return diagnostic;

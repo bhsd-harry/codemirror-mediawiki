@@ -1,7 +1,15 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.6.8
+
+*2025-12-18*
+
+**Added**
+
+- When enabling the [lint](./README.md#lint) extension, the action buttons in the status bar now show tooltips for auto-fix suggestions in the JavaScript mode
+
 ## 3.6.7
 
-*2025-12-17*
+*2025-12-16*
 
 **Changed**
 
