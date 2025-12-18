@@ -5,7 +5,8 @@ import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languag
 import type {Linter} from 'eslint';
 import type {Warning, Config} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
-import type {ConfigData, QuickFixData, AST} from 'wikiparser-node';
+import type {ConfigGetter} from '@bhsd/browser';
+import type {QuickFixData, AST} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
@@ -83,7 +84,7 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
 	await getWikiparse(
-		opt?.['getConfig'] as (() => Promise<ConfigData>) | undefined,
+		opt?.['getConfig'] as ConfigGetter | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,

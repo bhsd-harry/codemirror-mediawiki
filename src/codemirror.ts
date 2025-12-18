@@ -23,6 +23,7 @@ import type {Extension, StateEffect} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
+import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
 import type {DocRange, foldHandler} from './fold';
 import type {Text as ExtendedText, detectIndent} from './indent';
@@ -80,14 +81,14 @@ export const optionalFunctions: OptionalFunctions = {
 
 const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
 
-const linters: Record<string, Extension> = {};
+const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
 const phrases: Record<string, string> = {};
 
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
 	/** only for sanitized-css */
 	declare dialect: Dialect;
-	declare getWikiConfig?: () => Promise<ConfigData>;
+	declare getWikiConfig?: ConfigGetter;
 	declare langConfig: MwConfig | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
@@ -163,7 +164,7 @@ export class CodeMirror6 {
 			{value, dir: d, accessKey, tabIndex, lang: l, readOnly} = textarea,
 			extensions = [
 				this.#language.of(this.#getLanguage(config)),
-				this.#linter.of(linters[lang] ?? []),
+				this.#linter.of(linters[lang]?.(this) ?? []),
 				this.#extensions.of([]),
 				this.#dir.of(EditorView.editorAttributes.of({dir: d})),
 				this.#extraKeys.of([]),
@@ -294,9 +295,9 @@ export class CodeMirror6 {
 			const ext = this.#getLanguage(config);
 			this.#effects([
 				this.#language.reconfigure(ext),
-				this.#linter.reconfigure(linters[lang] ?? []),
+				this.#linter.reconfigure(linters[lang]?.(this) ?? []),
 			]);
-			this.#minHeight(Boolean(linters[lang]));
+			this.#minHeight(lang in linters);
 			this.prefer({});
 		}
 	}
@@ -307,7 +308,7 @@ export class CodeMirror6 {
 	 */
 	lint(lintSource?: LintSources): void {
 		const lintSources: LintSources | undefined = typeof lintSource === 'function' ? [lintSource] : lintSource;
-		const linterExtension = lintSources
+		const linterExtension = (cm: CodeMirror6): Extension => lintSources
 			? [
 				...lintSources.map(source => linter(async ({state}) => {
 					const diagnostics = (await source(state)).map((diagnostic): Diagnostic => ({
@@ -336,7 +337,7 @@ export class CodeMirror6 {
 				})),
 				lintGutter(),
 				keymap.of(lintKeymap),
-				optionalFunctions.statusBar(this, lintSources[0].fixer),
+				optionalFunctions.statusBar(cm, lintSources[0].fixer),
 			]
 			: [];
 		if (lintSource) {
@@ -345,7 +346,7 @@ export class CodeMirror6 {
 			delete linters[this.#lang];
 		}
 		if (this.#view) {
-			this.#effects(this.#linter.reconfigure(linterExtension));
+			this.#effects(this.#linter.reconfigure(linterExtension(this)));
 			this.#minHeight(Boolean(lintSource));
 		}
 	}

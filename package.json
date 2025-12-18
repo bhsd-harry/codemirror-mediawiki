@@ -51,7 +51,7 @@
 		"test:real": "node test/dist/test/real.js"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.0.1",
+		"@bhsd/browser": "^0.1.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
 		"@bhsd/common": "^1.0.1",
 		"@codemirror/autocomplete": "^6.20.0",

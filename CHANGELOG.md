@@ -6,6 +6,7 @@
 **Fixed**
 
 - Show correct [WikiEditor](./mw/README.md#wikieditor) toolbar buttons for non-MediaWiki modes on a MediaWiki site
+- The [linter](./README.md#lint) extension when there have been multiple editors with the same language mode
 
 ## 3.7.0
 
