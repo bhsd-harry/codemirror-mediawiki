@@ -318,6 +318,7 @@ export class CodeMirror extends CodeMirror6 {
 			.find(getGroup(['', 'format', 'more', 'search']))
 			.remove();
 		mw.hook('ext.CodeMirror.ready').remove(this.#handler);
+		this.#removeThemeListener();
 		super.destroy();
 	}
 
@@ -538,6 +539,11 @@ export class CodeMirror extends CodeMirror6 {
 		this.#editor.updateOptions(options);
 	}
 
+	#removeThemeListener(): void {
+		this.#observer?.disconnect();
+		mediaQuery.removeEventListener('change', this.#listener);
+	}
+
 	override setTheme(theme: string, auto?: boolean): void {
 		if (theme === 'auto') {
 			this.#observer ??= getObserver(this);
@@ -546,8 +552,7 @@ export class CodeMirror extends CodeMirror6 {
 			setTheme(this);
 			return;
 		} else if (!auto) {
-			this.#observer?.disconnect();
-			mediaQuery.removeEventListener('change', this.#listener);
+			this.#removeThemeListener();
 		}
 		if (this.#editor) {
 			this.#editor.updateOptions({theme: monacoThemes[theme] ?? theme});
