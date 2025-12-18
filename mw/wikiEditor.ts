@@ -84,6 +84,7 @@ export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?
 export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
 	if ($toolbar) {
 		toggleButton($toolbar, 'toggle', active);
+		$toolbar.find(getGroup(['', 'search'])).show();
 		$toolbar.find(getGroup(['format', 'more'])).toggle(active);
 		$toolbar.find('.group-codeeditor-main').toggle(active === undefined ? undefined : !active);
 	}

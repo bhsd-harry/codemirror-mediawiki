@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.7.1
+
+*2025-12-19*
+
+**Fixed**
+
+- Show correct [WikiEditor](./mw/README.md#wikieditor) toolbar buttons for non-MediaWiki modes on a MediaWiki site
+
 ## 3.7.0
 
 *2025-12-18*
@@ -231,7 +239,7 @@
 
 **Fixed**
 
-- Load the [WikiEditor](./mw/README.md#wikieditor) extension even when the API request fails on a MediaWiki site
+- Load the [wikiEditor](./mw/README.md#wikieditor) extension even when the API request fails on a MediaWiki site
 
 **Changed**
 
