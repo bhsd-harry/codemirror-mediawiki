@@ -3,6 +3,10 @@
 
 *2025-12-19*
 
+**Added**
+
+- New [WikiEditor](./mw/README.md#wikieditor) toolbar button to toggle the [autocompletion](./README.md#autocompletion) extension on a MediaWiki site
+
 **Fixed**
 
 - Show correct [WikiEditor](./mw/README.md#wikieditor) toolbar buttons for non-MediaWiki modes on a MediaWiki site

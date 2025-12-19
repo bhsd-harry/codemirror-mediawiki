@@ -10,6 +10,21 @@ import type {CodeMirror} from './codemirror';
 declare type Action<T = CodeMirror> = (ctx: WikiEditorContext, cm: T) => void;
 declare type GroupName = '' | 'format' | 'more' | 'search';
 
+const messages = {
+	'codeeditor-indent': 'Indent',
+	'codeeditor-outdent': 'Outdent',
+	'codeeditor-invisibleChars-toggle': 'Toggle invisible characters',
+	'codeeditor-lineWrapping-toggle': 'Toggle line wrapping',
+	'codeeditor-gotoline': 'Go to line number...',
+	'codemirror-prefs-autocomplete': 'Enable autocompletion',
+};
+
+/**
+ * 获取消息
+ * @param key 消息键
+ */
+const msgFallback = (key: keyof typeof messages): string => mw.messages.exists(key) ? mw.msg(key) : messages[key];
+
 /**
  * 查找WikiEditor工具栏按钮
  * @param $toolbar WikiEditor工具栏
@@ -126,16 +141,9 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				'codeeditor-invisibleChars-toggle',
 				'codeeditor-lineWrapping-toggle',
 				'codeeditor-gotoline',
+				'codemirror-prefs-autocomplete',
 			]);
-		} catch {
-			mw.messages.set({
-				'codeeditor-indent': 'Indent',
-				'codeeditor-outdent': 'Outdent',
-				'codeeditor-invisibleChars-toggle': 'Toggle invisible characters',
-				'codeeditor-lineWrapping-toggle': 'Toggle line wrapping',
-				'codeeditor-gotoline': 'Go to line number...',
-			});
-		}
+		} catch {}
 	}
 	// `id="wpTextbox1"`的textarea可能由`ext.wikiEditor`直接添加工具栏
 	context ??= $textarea.data('wikiEditorContext') as WikiEditorContext | undefined;
@@ -176,12 +184,12 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 							indent: getTool(
 								'indent',
 								[indentMore, 'editor.action.indentLines'],
-								hasCodeEditor ? mw.msg('codeeditor-indent') : 'Indent',
+								msgFallback('codeeditor-indent'),
 							),
 							outdent: getTool(
 								'outdent',
 								[indentLess, 'editor.action.outdentLines'],
-								hasCodeEditor ? mw.msg('codeeditor-outdent') : 'Outdent',
+								msgFallback('codeeditor-outdent'),
 							),
 						},
 					},
@@ -199,24 +207,31 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 										highlightWhitespace: state,
 									});
 								},
-								mw.msg('codeeditor-invisibleChars-toggle'),
+								msgFallback('codeeditor-invisibleChars-toggle'),
 							),
 							lineWrapping: getTool(
 								'wrapping',
 								(_, cm) => {
 									const state = !isActive($toolbar, 'lineWrapping');
 									cm.setLineWrapping(state);
-									toggleButton($toolbar, 'lineWrapping', state);
 								},
-								mw.msg('codeeditor-lineWrapping-toggle'),
+								msgFallback('codeeditor-lineWrapping-toggle'),
 							),
 							gotoLine: getTool(
 								'gotoLine',
 								[gotoLine, 'editor.action.gotoLine'],
-								mw.msg('codeeditor-gotoline'),
+								msgFallback('codeeditor-gotoline'),
 							),
 						}
 						: {},
+					autocomplete: getTool(
+						'checkAll',
+						(_, cm) => {
+							const state = !isActive($toolbar, 'autocomplete');
+							cm.prefer({autocompletion: state});
+						},
+						msgFallback('codemirror-prefs-autocomplete'),
+					),
 					...isWiki
 						? {
 							foldRef: getTool(

@@ -364,6 +364,7 @@ export class CodeMirror extends CodeMirror6 {
 		} else {
 			super.setLineWrapping(wrapping);
 		}
+		toggleButton(this.$toolbar, 'lineWrapping', wrapping);
 	}
 
 	// @ts-expect-error override return type
@@ -507,12 +508,16 @@ export class CodeMirror extends CodeMirror6 {
 			: (ext: string): boolean | undefined => extensions[ext];
 		const hasLint = hasExtension('lint'),
 			hasSpecialChars = hasExtension('highlightSpecialChars') && hasExtension('highlightWhitespace'),
+			autocompletion = hasExtension('autocompletion'),
 			isWiki = this.lang === 'mediawiki';
 		if (hasLint !== undefined) {
 			void this.defaultLint(hasLint);
 		}
 		if (hasSpecialChars !== undefined) {
 			toggleButton(this.$toolbar, 'invisibleChars', hasSpecialChars);
+		}
+		if (autocompletion !== undefined) {
+			toggleButton(this.$toolbar, 'autocomplete', autocompletion);
 		}
 		if (this.view) {
 			super.prefer(extensions);
