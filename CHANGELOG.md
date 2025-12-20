@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.7.2
+
+*2025-12-25*
+
+**Added**
+
+- Clicking on the position indicator in the status bar now opens the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
+
 ## 3.7.1
 
 *2025-12-19*

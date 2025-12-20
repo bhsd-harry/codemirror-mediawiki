@@ -434,6 +434,7 @@ input[type="color"] {
 	padding-bottom: 0;
 }
 .cm-status-line {
+	cursor: pointer;
 	white-space: nowrap;
 }
 .cm-diagnosticText-clickable {

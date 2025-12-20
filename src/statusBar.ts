@@ -1,5 +1,6 @@
 import {showPanel, EditorView} from '@codemirror/view';
 import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
+import {gotoLine} from '@codemirror/search';
 import elt from 'crelt';
 import {menuRegistry} from './codemirror';
 import {panelSelector, diagnosticSelector, menuSelector, messageSelector, actionSelector} from './constants';
@@ -172,6 +173,9 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 				position,
 			),
 			{classList} = fix.firstChild as HTMLDivElement;
+		position.addEventListener('click', () => {
+			gotoLine(view);
+		});
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
@@ -276,6 +280,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			paddingBottom: 0,
 		},
 		[`.${lineCls}`]: {
+			cursor: 'pointer',
 			whiteSpace: 'nowrap',
 		},
 		[diagnosticSelector]: {

@@ -229,7 +229,7 @@ export class CodeMirror6 {
 				...readOnly
 					? [
 						EditorState.readOnly.of(true),
-						EditorState.transactionFilter.of(tr => tr.docChanged ? [] : tr),
+						EditorState.changeFilter.of(({docChanged}) => !docChanged),
 						EditorView.theme({
 							'input[type="color"]': {
 								pointerEvents: 'none',
@@ -537,9 +537,11 @@ export class CodeMirror6 {
 	scrollTo(position?: number | Selection): void {
 		if (this.#view) {
 			const r = position ?? this.#view.state.selection.main,
-				effects = EditorView.scrollIntoView(typeof r === 'number' || r instanceof SelectionRange
-					? r
-					: EditorSelection.range(r.anchor, r.head)) as StateEffect<{isSnapshot: boolean}>;
+				effects = EditorView.scrollIntoView(
+					typeof r === 'number' || r instanceof SelectionRange
+						? r
+						: EditorSelection.range(r.anchor, r.head),
+				) as StateEffect<{isSnapshot: boolean}>;
 			effects.value.isSnapshot = true;
 			this.#view.dispatch({effects});
 		}
