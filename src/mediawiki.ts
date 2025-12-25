@@ -636,7 +636,7 @@ const theme = /* @__PURE__ */ EditorView.theme({
 });
 
 /**
- * Gets a LanguageSupport instance for the MediaWiki mode.
+ * Get a LanguageSupport instance for the MediaWiki mode.
  * @param config Configuration for the MediaWiki mode
  */
 export const mediawiki = (config: MwConfig): LanguageSupport => {
