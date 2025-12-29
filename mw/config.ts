@@ -8,6 +8,7 @@ import {
 	otherParserFunctions,
 } from '@bhsd/cm-util';
 import {getStaticMwConfig} from '../src/static';
+import {wikilintRepo} from '../src/linter';
 import type {MagicWord, MagicRule} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';
@@ -61,7 +62,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: ConfigData = await (await fetch(
-			`${CDN}/npm/wikiparser-node/config/moegirl.json`,
+			`${CDN}/${wikilintRepo}/config/moegirl.json`,
 		)).json();
 		setObject('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig, modes);

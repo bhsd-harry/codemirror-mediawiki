@@ -2,7 +2,16 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
 import {sanitizeInlineStyle} from '@bhsd/common';
-import {getWikiLinter, getJsLinter, getCssLinter, getJsonLinter, getLuaLinter} from './linter';
+import {
+	getWikiLinter,
+	getJsLinter,
+	getCssLinter,
+	getJsonLinter,
+	getLuaLinter,
+	stylelintRepo,
+	eslintRepo,
+	luacheckRepo,
+} from './linter';
 import {posToIndex} from './util';
 import type {EditorView} from '@codemirror/view';
 import type {EditorState, Text} from '@codemirror/state';
@@ -145,7 +154,7 @@ const jsLintSource = (
 	});
 
 export const getJsLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
-	const esLint = await getJsLinter(cdn && `${cdn}/npm/@bhsd/eslint-browserify`);
+	const esLint = await getJsLinter(cdn && `${cdn}/${eslintRepo}`);
 	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
 	return lintSource;
@@ -188,15 +197,15 @@ const cssLintSource = async (
 };
 
 export const getCssLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
-	const styleLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`);
+	const styleLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const lintSource: LintSource = async ({doc}) => cssLintSource(styleLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
 	return lintSource;
 };
 
 export const getVueLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
-	const styleLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`),
-		esLint = await getJsLinter(cdn && `${cdn}/npm/@bhsd/eslint-browserify`);
+	const styleLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`),
+		esLint = await getJsLinter(cdn && `${cdn}/${eslintRepo}`);
 	return async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
@@ -266,7 +275,7 @@ export const getJsonLintSource: LintSourceGetter = (): LintSource => {
 };
 
 export const getLuaLintSource: LintSourceGetter = async (cdn): Promise<LintSource> => {
-	const luaLint = await getLuaLinter(cdn && `${cdn}/npm/luacheck-browserify`);
+	const luaLint = await getLuaLinter(cdn && `${cdn}/${luacheckRepo}`);
 	return async ({doc}) => (await luaLint(doc.toString()))
 		.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
 			source: 'Luacheck',

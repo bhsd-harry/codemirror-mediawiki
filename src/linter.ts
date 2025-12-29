@@ -36,6 +36,11 @@ declare interface JsonError {
 	position: string | undefined;
 }
 
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify',
+	eslintRepo = 'npm/@bhsd/eslint-browserify',
+	luacheckRepo = 'npm/luacheck-browserify',
+	wikilintRepo = 'npm/wikiparser-node';
+
 /**
  * 计算位置
  * @param range 范围
@@ -87,10 +92,10 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	await getWikiparse(
 		opt?.['getConfig'] as ConfigGetter | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
-		cdn && `${cdn}/npm/wikiparser-node`,
+		cdn && `${cdn}/${wikilintRepo}`,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
-		cssLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`);
+		cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(
@@ -171,9 +176,7 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
  * 获取 ESLint
  * @param cdn CDN 地址
  */
-export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
-	cdn = 'npm/@bhsd/eslint-browserify',
-) => {
+export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
 	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
@@ -214,9 +217,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
  * 获取 Stylelint
  * @param cdn CDN 地址
  */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (
-	cdn = 'npm/@bhsd/stylelint-browserify',
-) => {
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
@@ -241,9 +242,7 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (
  * 获取 Luacheck
  * @param cdn CDN 地址
  */
-export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (
-	cdn = 'npm/luacheck-browserify',
-) => {
+export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (cdn = luacheckRepo) => {
 	await loadScript(cdn, 'luacheck');
 	// eslint-disable-next-line @typescript-eslint/await-thenable
 	const luachecker = await luacheck(undefined as unknown as string);
