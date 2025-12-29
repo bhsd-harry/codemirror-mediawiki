@@ -3,11 +3,11 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
 import {tokens} from './config';
 import {hoverSelector} from './constants';
+import {CodeMirror6} from './codemirror';
 import {escHTML, indexToPos, posToIndex, createTooltipView} from './util';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror';
 
 declare const marked: {
 	parse(source: string): string;
@@ -46,7 +46,12 @@ export default (cm: CodeMirror6): Extension => [
 			}
 		}
 		if (hover) {
-			await loadScript('npm/marked/lib/marked.umd.js', 'marked', true);
+			const {CDN = ''} = CodeMirror6;
+			await loadScript(
+				`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
+				'marked',
+				true,
+			);
 			const {end} = hover.range!;
 			return {
 				pos,

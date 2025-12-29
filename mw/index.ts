@@ -45,7 +45,7 @@ document.body.addEventListener('click', e => {
 	};
 	await Promise.all([
 		mw.loader.using('mediawiki.util'),
-		setI18N(CDN),
+		setI18N(mw.libs.wphl?.CDN || CDN),
 	]);
 	mw.hook('wiki-codemirror6').add(localize);
 	mw.hook('wiki-codemirror6.setting').add(localize);

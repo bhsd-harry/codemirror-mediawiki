@@ -86,6 +86,16 @@ const phrases: Record<string, string> = {};
 
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
+	static #CDN: string | undefined;
+
+	static get CDN(): string | undefined {
+		return CodeMirror6.#CDN;
+	}
+
+	static set CDN(url: string | undefined) {
+		CodeMirror6.#CDN = url;
+	}
+
 	/** only for sanitized-css */
 	declare dialect: Dialect;
 	declare getWikiConfig?: ConfigGetter;
@@ -440,7 +450,7 @@ export class CodeMirror6 {
 	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		return linterRegistry[this.#lang]?.(opt, this.#view, this.#nestedMWLanguage);
+		return linterRegistry[this.#lang]?.(CodeMirror6.CDN, opt, this.#view, this.#nestedMWLanguage);
 	}
 
 	/**

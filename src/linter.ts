@@ -83,12 +83,14 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
  * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
+	const cdn = opt?.['cdn'] as string | undefined;
 	await getWikiparse(
 		opt?.['getConfig'] as ConfigGetter | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
+		cdn && `${cdn}/npm/wikiparser-node`,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
-		cssLint = await getCssLinter();
+		cssLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(

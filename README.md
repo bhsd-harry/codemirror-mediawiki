@@ -53,6 +53,8 @@ Nonetheless, this repository also provides a customized version with additional 
 	- [setTheme](#settheme)
 	- [toggle](#toggle)
 	- [update](#update)
+- [Static accessors](#static-accessors)
+	- [CDN](#cdn)
 - [Static methods](#static-methods)
 	- [getMwConfig](#getmwconfig)
 	- [replaceSelections](#replaceselections)
@@ -842,6 +844,24 @@ cm.toggle(false); // hide CodeMirror
 	<summary>Expand</summary>
 
 Refresh linting immediately.
+
+</details>
+
+# Static accessors
+
+## CDN
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.8.0*
+
+**type**: `string`  
+By default, libraries such as [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) are loaded from `testingcf.jsdelivr.net`. You can change the [jsDelivr CDN](https://www.jsdelivr.com/network) by setting this property.
+
+```js
+CodeMirror6.CDN = 'https://cdn.jsdelivr.net';
+```
 
 </details>
 

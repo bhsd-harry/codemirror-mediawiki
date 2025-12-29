@@ -18,6 +18,7 @@ export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnos
 };
 export type LintSources = LintSource | [LintSource] | [LintSource, LintSource];
 export type LintSourceGetter = (
+	cdn?: string,
 	opt?: Option | LiveOption,
 	view?: EditorView,
 	nestedMWLanguage?: Language,
@@ -97,8 +98,8 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter(await getOpt(opt), v);
+export const getWikiLintSource: LintSourceGetter = async (cdn, opt, v): Promise<LintSource> => {
+	const wikiLint = await getWikiLinter({...await getOpt(opt), cdn}, v);
 	const lintSource: LintSource = async ({doc}) =>
 		wikiLintSource(wikiLint, doc.toString(), await getOpt(opt, true), doc);
 	if (wikiLint.fixer) {
@@ -143,8 +144,8 @@ const jsLintSource = (
 		return diagnostic;
 	});
 
-export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const esLint = await getJsLinter();
+export const getJsLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
+	const esLint = await getJsLinter(cdn && `${cdn}/npm/@bhsd/eslint-browserify`);
 	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
 	return lintSource;
@@ -186,16 +187,16 @@ const cssLintSource = async (
 		});
 };
 
-export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const styleLint = await getCssLinter();
+export const getCssLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
+	const styleLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`);
 	const lintSource: LintSource = async ({doc}) => cssLintSource(styleLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
 	return lintSource;
 };
 
-export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const styleLint = await getCssLinter(),
-		esLint = await getJsLinter();
+export const getVueLintSource: LintSourceGetter = async (cdn, opt): Promise<LintSource> => {
+	const styleLint = await getCssLinter(cdn && `${cdn}/npm/@bhsd/stylelint-browserify`),
+		esLint = await getJsLinter(cdn && `${cdn}/npm/@bhsd/eslint-browserify`);
 	return async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
@@ -229,9 +230,9 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 	};
 };
 
-export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
-	const vueLintSource = await getVueLintSource(opt),
-		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt)}, view);
+export const getHTMLLintSource: LintSourceGetter = async (cdn, opt, view, language): Promise<LintSource> => {
+	const vueLintSource = await getVueLintSource(cdn, opt),
+		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn}, view);
 	return async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
@@ -264,8 +265,8 @@ export const getJsonLintSource: LintSourceGetter = (): LintSource => {
 	};
 };
 
-export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
-	const luaLint = await getLuaLinter();
+export const getLuaLintSource: LintSourceGetter = async (cdn): Promise<LintSource> => {
+	const luaLint = await getLuaLinter(cdn && `${cdn}/npm/luacheck-browserify`);
 	return async ({doc}) => (await luaLint(doc.toString()))
 		.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
 			source: 'Luacheck',

@@ -6,7 +6,7 @@ declare global {
 		const addWikiEditor: ($textarea: JQuery<HTMLTextAreaElement>) => void;
 	}
 	namespace mw.libs {
-		const wphl: {monacoVersion?: string} | undefined;
+		const wphl: {CDN?: string} | undefined;
 	}
 
 	interface WikiEditorContext {

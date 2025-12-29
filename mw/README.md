@@ -148,6 +148,18 @@ cm.getContent();
 
 # Static properties
 
+## monacoVersion
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.8.0*
+
+**type**: `string`  
+You can set this property to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) to be used. The default value is `latest`.
+
+</details>
+
 ## version
 
 <details>

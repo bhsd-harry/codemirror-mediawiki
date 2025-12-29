@@ -1,11 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.7.2
+## 3.8.0
 
-*2025-12-29*
+*2025-12-30*
 
 **Added**
 
 - Clicking on the position indicator in the status bar now opens the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
+- Allow users to specify the [jsDelivr CDN](https://www.jsdelivr.com/network)
+- Allow users to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) when using the Monaco editor on a MediaWiki site
 
 **Fixed**
 

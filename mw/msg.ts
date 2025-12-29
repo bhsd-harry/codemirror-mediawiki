@@ -17,12 +17,12 @@ const {version} = i18n;
 
 /**
  * 加载 I18N
- * @param CDN CDN地址
+ * @param cdn CDN地址
  */
-export const setI18N = async (CDN: string): Promise<void> => {
+export const setI18N = async (cdn: string): Promise<void> => {
 	try {
 		await setI18NBase(
-			`${CDN}/${REPO_CDN}/i18n`,
+			`${cdn}/${REPO_CDN}/i18n`,
 			curVersion,
 			await languages,
 			$LANGS,

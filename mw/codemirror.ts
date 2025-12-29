@@ -1,4 +1,4 @@
-import {CDN} from '@bhsd/browser';
+import {CDN as baseCDN} from '@bhsd/browser';
 import elt from 'crelt';
 import {CodeMirror6} from '../src/codemirror';
 import {isWMF} from '../src/constants';
@@ -118,6 +118,7 @@ const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest(`
 export class CodeMirror extends CodeMirror6 {
 	static readonly version = curVersion;
 	static readonly instances = instances;
+	declare static monacoVersion: string | undefined;
 
 	declare ns;
 	declare page;
@@ -227,9 +228,11 @@ export class CodeMirror extends CodeMirror6 {
 
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
-		if (typeof monaco !== 'object') {
+		if (typeof monaco !== 'object' || typeof monaco.editor !== 'object') {
+			const CDN = CodeMirror.CDN || baseCDN;
+			Object.assign(globalThis, {monaco: {CDN}});
 			await $.ajax(
-				`${CDN}/npm/monaco-wiki@${mw.libs.wphl?.monacoVersion ?? 'latest'}/dist/all.min.js`,
+				`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/all.min.js`,
 				{dataType: 'script', cache: true},
 			);
 		}
