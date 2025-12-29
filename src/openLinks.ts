@@ -2,12 +2,14 @@ import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config';
 import {isMac} from './constants';
+import {hasTag} from './util';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
-import type {MwConfig} from './token';
+import type {TagName, MwConfig} from './token';
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
+	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	pagename = '.cm-mw-pagename',
 	wikiLinks = [
@@ -59,18 +61,20 @@ export const mouseEventListener = (
 	) {
 		return undefined;
 	}
-	const posAndSide = view.posAndSideAtCoords(e);
-	if (!posAndSide) {
+	const position = view.posAtCoords(e);
+	if (!position) {
 		return undefined;
 	}
 	const {state} = view,
-		tree = ensureSyntaxTree(state, posAndSide.pos);
+		tree = ensureSyntaxTree(state, position);
 	if (!tree) {
 		return undefined;
 	}
-	let node = tree.resolve(posAndSide.pos, posAndSide.assoc);
+	let node = tree.resolve(position, -1);
 	if (node.name.includes(tokens.linkToSection)) {
 		node = node.prevSibling!;
+	} else if (!hasTag(new Set(node.name.split('_')), tags)) {
+		node = tree.resolve(position, 1);
 	}
 	const {name, from, to} = node;
 	if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {

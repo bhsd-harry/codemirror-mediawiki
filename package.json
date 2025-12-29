@@ -66,7 +66,7 @@
 		"@codemirror/lint": "^6.9.2",
 		"@codemirror/search": "^6.5.11",
 		"@codemirror/state": "^6.5.3",
-		"@codemirror/view": "^6.39.7",
+		"@codemirror/view": "^6.38.8",
 		"cm6-theme-nord": "^0.2.0",
 		"wikiparser-node": "^1.32.0"
 	},

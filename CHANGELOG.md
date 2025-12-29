@@ -1,11 +1,15 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.7.2
 
-*2025-12-25*
+*2025-12-29*
 
 **Added**
 
 - Clicking on the position indicator in the status bar now opens the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
+
+**Fixed**
+
+- Temporarily fix an upstream issue when composing text with an IME next to a [matched bracket](./README.md#bracketmatching)
 
 ## 3.7.1
 
