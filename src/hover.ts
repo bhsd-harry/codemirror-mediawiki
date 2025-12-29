@@ -18,7 +18,7 @@ export default (cm: CodeMirror6): Extension => [
 		const {state} = view,
 			{doc} = state,
 			{paramSuggest, tags} = cm.langConfig!;
-		let hover = await getLSP(view, false, cm.getWikiConfig)
+		let hover = await getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
 		if (!hover && paramSuggest && 'templatedata' in tags) {
 			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);

@@ -3,10 +3,10 @@ import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {posToIndex} from './util';
+import {CodeMirror6} from './codemirror';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror';
 
 declare interface InlayHintEffect {
 	inlayHints: InlayHint[] | undefined;
@@ -77,7 +77,7 @@ export default (cm: CodeMirror6): Extension => [
 	ViewPlugin.fromClass(class implements PluginValue {
 		constructor(view: EditorView) {
 			const timer = setInterval(() => {
-				if (getLSP(view, false, cm.getWikiConfig)) {
+				if (getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN)) {
 					clearInterval(timer);
 					void updateField({view, docChanged: true});
 				}

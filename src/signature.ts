@@ -2,10 +2,10 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
 import {createTooltipView, indexToPos, escHTML} from './util';
+import {CodeMirror6} from './codemirror';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror';
 
 declare interface SignatureEffect {
 	signatureHelp?: SignatureHelp | undefined;
@@ -50,7 +50,7 @@ export default (cm: CodeMirror6): Extension => [
 					effects: stateEffect.of({
 						text,
 						cursor,
-						signatureHelp: await getLSP(view, false, cm.getWikiConfig)
+						signatureHelp: await getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN)
 							?.provideSignatureHelp(text, indexToPos(doc, cursor)),
 					}),
 				});

@@ -41,7 +41,7 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	const view = cm.view!,
 		{state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, cm.getWikiConfig);
+		lsp = getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -92,7 +92,7 @@ menuRegistry.push({
 				handlerBase(view, e);
 			});
 			items = [btnHTML, btnURI];
-			const lsp = getLSP(view, false, cm.getWikiConfig);
+			const lsp = getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN);
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {
