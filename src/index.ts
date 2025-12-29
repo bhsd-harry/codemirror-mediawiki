@@ -300,7 +300,11 @@ export const registerMediaWikiCore = (): void => {
 		toolKeymap,
 	];
 	registerLintSource('mediawiki', getWikiLintSource);
-	destroyListeners.push(view => getLSP(view)?.destroy());
+	destroyListeners.push(view => {
+		if (typeof wikiparse === 'object' && wikiparse.LanguageService) {
+			getLSP(view)?.destroy();
+		}
+	});
 };
 
 /** Register mixed MediaWiki-HTML language support */
