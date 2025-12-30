@@ -3,8 +3,14 @@ import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {CodeMirror6, menuRegistry} from './codemirror';
-import type {EditorView, Command} from '@codemirror/view';
+import {
+	CodeMirror6,
+	menuRegistry,
+} from './codemirror';
+import type {
+	Command,
+	EditorView,
+} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};

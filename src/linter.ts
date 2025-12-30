@@ -11,7 +11,12 @@ import type {QuickFixData, AST} from 'wikiparser-node';
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
 declare type getLinter<T> = () => (text: string) => T;
-declare type asyncLinter<T, S = Record<string, unknown>> = ((text: string, config?: Option) => T) & {
+declare type asyncLinter<
+	T,
+	S = Record<string, unknown>,
+> = (
+	(text: string, config?: Option) => T
+) & {
 	config?: S;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (code: string, rule?: string) => string | Promise<string>;
@@ -38,8 +43,7 @@ declare interface JsonError {
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify',
 	eslintRepo = 'npm/@bhsd/eslint-browserify',
-	luacheckRepo = 'npm/luacheck-browserify',
-	wikilintRepo = 'npm/wikiparser-node';
+	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
  * 计算位置
@@ -220,7 +224,10 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
  */
 export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
-	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
+	const linter: asyncLinter<
+		Promise<Warning[]>,
+		Config
+	> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
 		linter.config = opt && !isStylelintConfig(opt) ? {rules: opt} : opt!;
 		return warnings;

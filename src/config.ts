@@ -96,31 +96,33 @@ export const htmlTags = /* @__PURE__ */ html.flat(),
 		templateVariableBracket: 'mw-templatevariable-bracket',
 		templateVariableDelimiter: 'mw-templatevariable-delimiter',
 		templateVariableName: 'mw-templatevariable-name',
-	},
+	};
 
-	/**
-	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
-	 *
-	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
-	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
-	 */
-	tokenTable = /* @__PURE__ */ (() => {
-		const table: Record<string, Tag> = {
-			variable: tags.variableName,
-			'variable-2': tags.special(tags.variableName),
-			'string-2': tags.special(tags.string),
-			def: tags.definition(tags.variableName),
-			tag: tags.tagName,
-			attribute: tags.attributeName,
-			type: tags.typeName,
-			builtin: tags.standard(tags.variableName),
-			qualifier: tags.modifier,
-			error: tags.invalid,
-			header: tags.heading,
-			property: tags.propertyName,
-		};
-		for (const className of Object.values(tokens)) {
-			table[className] = Tag.define();
-		}
-		return table;
-	})();
+export type TagName = keyof typeof tokens;
+
+/**
+ * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
+ *
+ * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
+ * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
+ */
+export const tokenTable = /* @__PURE__ */ (() => {
+	const table: Record<string, Tag> = {
+		variable: tags.variableName,
+		'variable-2': tags.special(tags.variableName),
+		'string-2': tags.special(tags.string),
+		def: tags.definition(tags.variableName),
+		tag: tags.tagName,
+		attribute: tags.attributeName,
+		type: tags.typeName,
+		builtin: tags.standard(tags.variableName),
+		qualifier: tags.modifier,
+		error: tags.invalid,
+		header: tags.heading,
+		property: tags.propertyName,
+	};
+	for (const className of Object.values(tokens)) {
+		table[className] = Tag.define();
+	}
+	return table;
+})();

@@ -5,7 +5,8 @@ import {isMac} from './constants';
 import {hasTag} from './util';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
-import type {TagName, MwConfig} from './token';
+import type {MwConfig} from './token';
+import type {TagName} from './config';
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',

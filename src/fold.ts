@@ -1,5 +1,16 @@
-import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin, EditorView} from '@codemirror/view';
-import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
+import {
+	keymap,
+	GutterMarker,
+	gutter,
+	ViewPlugin,
+	EditorView,
+	showTooltip,
+} from '@codemirror/view';
+import {
+	RangeSetBuilder,
+	RangeSet,
+	StateField,
+} from '@codemirror/state';
 import {
 	syntaxTree,
 	ensureSyntaxTree,
@@ -19,11 +30,18 @@ import {tokens} from './config';
 import {foldSelector} from './constants';
 import {matchTag, getTag} from './matchTag';
 import {braceStackUpdate} from './util';
-import type {Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
+import type {
+	ViewUpdate,
+	BlockInfo,
+	PluginValue,
+	Command,
+	Tooltip,
+	TooltipView,
+} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {AddonMain} from './codemirror';
-import type {TagName} from './token';
+import type {TagName} from './config';
 
 export interface DocRange {
 	from: number;

@@ -21,7 +21,9 @@ import type {QuickFixData} from 'wikiparser-node';
 import type {Rule} from 'eslint';
 import type {Option, LiveOption} from './linter';
 
-export type LintSource = ((state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>) & {
+export type LintSource = (
+	(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>
+) & {
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };

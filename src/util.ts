@@ -5,7 +5,7 @@ import type {EditorView, TooltipView} from '@codemirror/view';
 import type {Text, EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
-import type {TagName} from './token';
+import type {TagName} from './config';
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 

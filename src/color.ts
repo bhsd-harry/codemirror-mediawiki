@@ -1,7 +1,15 @@
 import {splitColors, numToHex} from '@bhsd/common';
 import {EditorView} from '@codemirror/view';
-import {parseCallExpression, parseColorLiteral, ColorType, wrapperClassName} from '@bhsd/codemirror-css-color-picker';
-import type {Text, Extension} from '@codemirror/state';
+import {
+	parseCallExpression,
+	parseColorLiteral,
+	ColorType,
+	wrapperClassName,
+} from '@bhsd/codemirror-css-color-picker';
+import type {
+	Text,
+	Extension,
+} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {StyleSpec} from 'style-mod';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';

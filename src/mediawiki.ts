@@ -15,11 +15,18 @@ import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config';
-import {isolateSelector, ltrSelector, isWMF} from './constants';
+import {
+	isWMF,
+	isolateSelector,
+	ltrSelector,
+} from './constants';
 import {MediaWiki} from './token';
 import {braceStackUpdate, hasTag} from './util';
 import {EditorView} from '@codemirror/view';
-import type {StreamParser, TagStyle} from '@codemirror/language';
+import type {
+	StreamParser,
+	TagStyle,
+} from '@codemirror/language';
 import type {
 	CloseBracketConfig,
 	CompletionSource,
