@@ -1,5 +1,5 @@
 import {indentMore, indentLess} from '@codemirror/commands';
-import {gotoLine, openSearchPanel} from '@codemirror/search';
+import {gotoLine, openSearchPanel, closeSearchPanel, searchPanelOpen} from '@codemirror/search';
 import {foldRef, unfoldRef} from '../src/fold';
 import {msg} from './msg';
 import {getInstance} from './util';
@@ -271,7 +271,8 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 							cmSearch: getTool(
 								'articleSearch',
 								[
-									openSearchPanel,
+									(view): boolean =>
+										(searchPanelOpen(view.state) ? closeSearchPanel : openSearchPanel)(view),
 									'editor.action.startFindReplaceAction',
 									(ctx): void => {
 										$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
