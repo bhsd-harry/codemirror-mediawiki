@@ -1,5 +1,5 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.8.0
+## 3.8.1
 
 *2025-12-30*
 

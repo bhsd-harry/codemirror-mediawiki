@@ -85,6 +85,7 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
 /**
  * 获取 Wikitext LSP
  * @param opt 选项
+ * @param opt.cdn jsDelivr CDN，不含库名
  * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
@@ -92,7 +93,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 	await getWikiparse(
 		opt?.['getConfig'] as ConfigGetter | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
-		cdn && `${cdn}/${wikilintRepo}`,
+		cdn,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
 		cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
