@@ -8,6 +8,7 @@
 - Clicking on the position indicator in the status bar now opens the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
 - Allow users to specify the [jsDelivr CDN](https://www.jsdelivr.com/network)
 - Allow users to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) when using the Monaco editor on a MediaWiki site
+- New keyboard shortcut to open the preference dialog on a MediaWiki site: `Ctrl` + `Shift` + `,`/`Cmd` + `Shift` + `,`
 
 **Fixed**
 

@@ -1,5 +1,7 @@
 import {CDN as baseCDN} from '@bhsd/browser';
 import elt from 'crelt';
+import {StateEffect} from '@codemirror/state';
+import {keymap} from '@codemirror/view';
 import {CodeMirror6} from '../src/codemirror';
 import {isWMF} from '../src/constants';
 import {
@@ -21,7 +23,7 @@ import escape from './escape';
 import getParsoidLintSource from './lintsource';
 import {msg} from './msg';
 import {getTitleParser, isbnParser} from './openLinks';
-import {prefs, useMonaco, wikilint, codeConfigs, loadJSON} from './preference';
+import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from './preference';
 import prepareSuggest from './suggest';
 import {textSelection, monacoTextSelection} from './textSelection';
 import {instances} from './util';
@@ -218,6 +220,19 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		}
 		super.initialize(config);
+		this.view!.dispatch({
+			effects: StateEffect.appendConfig.of(
+				keymap.of([
+					{
+						key: 'Mod-Shift-,',
+						run(): boolean {
+							void openPreference();
+							return true;
+						},
+					},
+				]),
+			),
+		});
 		this.#setLangConfig(config as MwConfig);
 		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
 		if (font) {
@@ -270,6 +285,10 @@ export class CodeMirror extends CodeMirror6 {
 				ambiguousCharacters: !isWiki && language !== 'html' && language !== 'plaintext',
 			},
 			multiCursorModifier: 'ctrlCmd',
+		});
+		// eslint-disable-next-line no-bitwise
+		this.#editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Comma, () => {
+			void openPreference();
 		});
 		let timer: NodeJS.Timeout;
 		this.#model.onDidChangeContent(() => {
