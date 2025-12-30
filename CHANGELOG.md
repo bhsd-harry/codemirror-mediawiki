@@ -12,6 +12,7 @@
 **Fixed**
 
 - Temporarily fix an upstream issue when composing text with an IME next to a [matched bracket](./README.md#bracketmatching)
+- Diagnostics from [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) now [match the page title](https://en.wikipedia.org/api/rest_v1/#/Transforms/post_transform_wikitext_to_html__title_) on a WMF-hosted site
 
 ## 3.7.1
 

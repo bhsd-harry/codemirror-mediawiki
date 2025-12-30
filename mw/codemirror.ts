@@ -375,7 +375,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (this.view) {
 			const linter = await super.getLinter(opt);
 			if (isWMF && this.lang === 'mediawiki') {
-				const parsoidLinter = await getParsoidLintSource(opt),
+				const parsoidLinter = await getParsoidLintSource(this.page, opt),
 					lintersources: LintSources = linter ? [linter, parsoidLinter] : parsoidLinter;
 				linters[this.lang] = lintersources;
 				return lintersources;

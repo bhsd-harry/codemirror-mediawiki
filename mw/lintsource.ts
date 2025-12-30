@@ -29,7 +29,7 @@ const getMsgKey = (type: string): string => `linter-category-${type}`,
 
 export const parsoidRules: string[] = [];
 
-export default async (opt?: Option | LiveOption): Promise<LintSource> => {
+export default async (title: string, opt?: Option | LiveOption): Promise<LintSource> => {
 	await mw.loader.using('mediawiki.api');
 	const api = new mw.Api(),
 		rest = new mw.Rest();
@@ -65,8 +65,12 @@ export default async (opt?: Option | LiveOption): Promise<LintSource> => {
 				}
 			}, 3e3);
 		});
-		// eslint-disable-next-line promise/prefer-await-to-then
-		return rest.post('/v1/transform/wikitext/to/lint', {wikitext}).then(
+		return rest.post(
+			`/v1/transform/wikitext/to/lint${title && '/'}${
+				encodeURIComponent(title.replace(/\s+/gu, '_'))
+			}`,
+			{wikitext},
+		).then( // eslint-disable-line promise/prefer-await-to-then
 			errors => errors as ParsoidError[],
 			(_, e) => {
 				if (e.textStatus !== 'abort') {
