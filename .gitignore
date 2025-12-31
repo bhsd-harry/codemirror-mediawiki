@@ -1,8 +1,6 @@
 /.vscode/
 /build
 dist/
-!/dist/main.min.js
-!/dist/demo.min.js
 /mediawiki.css
 .eslintcache
 **/*.txt

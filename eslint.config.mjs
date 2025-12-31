@@ -1,5 +1,4 @@
 import {jsDoc, browser, extend} from '@bhsd/code-standard';
-import globals from 'globals';
 
 export default extend(
 	jsDoc,
@@ -31,12 +30,6 @@ export default extend(
 		},
 	},
 	{
-		files: ['**/*.json'],
-		rules: {
-			'no-irregular-whitespace': 0,
-		},
-	},
-	{
 		files: ['**/*.ts'],
 		rules: {
 			'@typescript-eslint/class-methods-use-this': [
@@ -55,44 +48,9 @@ export default extend(
 		},
 	},
 	{
-		files: ['*.cjs'],
-		languageOptions: {
-			globals: globals.node,
-		},
-	},
-	{
 		files: ['src/*.ts'],
 		rules: {
 			'jsdoc/no-bad-blocks': 0,
-		},
-	},
-	{
-		files: ['mw/*.ts'],
-		languageOptions: {
-			globals: {
-				...globals.jquery,
-				mw: 'readonly',
-				OO: 'readonly',
-			},
-			parserOptions: {
-				project: './mw/tsconfig.json',
-			},
-		},
-	},
-	{
-		files: ['test/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './test/tsconfig.json',
-			},
-		},
-	},
-	{
-		files: ['bundle/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './bundle/tsconfig.json',
-			},
 		},
 	},
 );
