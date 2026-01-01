@@ -2,9 +2,13 @@ import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
-import elt from 'crelt';
-import {CodeMirror6, menuRegistry} from './codemirror';
-import type {EditorView, Command} from '@codemirror/view';
+import {base} from './constants';
+import {
+	CodeMirror6,
+} from './codemirror';
+import type {
+	Command,
+} from '@codemirror/view';
 import type {Extension, SelectionRange} from '@codemirror/state';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
@@ -41,7 +45,7 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	const view = cm.view!,
 		{state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, cm.getWikiConfig);
+		lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -65,46 +69,6 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	}
 	return false;
 };
-
-const handlerBase = (view: EditorView, e: PointerEvent): void => {
-	e.stopPropagation();
-	view.focus();
-};
-
-let items: HTMLElement[] | undefined;
-
-menuRegistry.push({
-	name: 'escape',
-	isActionable({lang, view}): boolean {
-		return lang === 'mediawiki' && view!.state.selection.ranges.some(({empty}) => !empty);
-	},
-	getItems(cm): HTMLElement[] {
-		if (!items) {
-			const view = cm.view!,
-				btnHTML = elt('div', 'HTML escape'),
-				btnURI = elt('div', 'URI encode/decode');
-			btnHTML.addEventListener('click', e => {
-				CodeMirror6.replaceSelections(view, escapeHTML);
-				handlerBase(view, e);
-			});
-			btnURI.addEventListener('click', e => {
-				CodeMirror6.replaceSelections(view, escapeURI);
-				handlerBase(view, e);
-			});
-			items = [btnHTML, btnURI];
-			const lsp = getLSP(view, false, cm.getWikiConfig);
-			if (lsp && 'provideRefactoringAction' in lsp) {
-				const btnWiki = elt('div', 'Escape with magic words');
-				btnWiki.addEventListener('click', e => {
-					escapeWiki(cm);
-					handlerBase(view, e);
-				});
-				items.unshift(btnWiki);
-			}
-		}
-		return items;
-	},
-});
 
 export default (cm: CodeMirror6): Extension => keymap.of([
 	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},

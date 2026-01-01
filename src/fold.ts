@@ -1,5 +1,13 @@
-import {showTooltip, keymap, GutterMarker, gutter, ViewPlugin, EditorView} from '@codemirror/view';
-import {StateField, RangeSetBuilder, RangeSet} from '@codemirror/state';
+import {
+	keymap,
+	GutterMarker,
+	gutter,
+	ViewPlugin,
+} from '@codemirror/view';
+import {
+	RangeSetBuilder,
+	RangeSet,
+} from '@codemirror/state';
 import {
 	syntaxTree,
 	ensureSyntaxTree,
@@ -8,22 +16,24 @@ import {
 	foldedRanges,
 	unfoldAll,
 	codeFolding,
-	foldGutter,
-	foldKeymap,
 	foldState,
 	language,
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config';
-import {foldSelector} from './constants';
 import {matchTag, getTag} from './matchTag';
 import {braceStackUpdate} from './util';
-import type {Tooltip, TooltipView, ViewUpdate, BlockInfo, PluginValue, Command} from '@codemirror/view';
+import type {
+	ViewUpdate,
+	BlockInfo,
+	PluginValue,
+	Command,
+	EditorView,
+} from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
-import type {AddonMain} from './codemirror';
-import type {TagName} from './token';
+import type {TagName} from './config';
 
 export interface DocRange {
 	from: number;
@@ -179,44 +189,6 @@ export const foldable = (
 };
 
 /**
- * 创建折叠提示
- * @param state
- */
-const create = (state: EditorState): Tooltip | null => {
-	const {selection: {main: {head}}} = state,
-		range = foldable(state, head);
-	if (range) {
-		const {from, to} = range;
-		let folded = false;
-		foldedRanges(state).between(from, to, (i, j) => {
-			if (i === from && j === to) {
-				folded = true;
-			}
-		});
-		return folded // eslint-disable-line @typescript-eslint/no-unnecessary-condition
-			? null
-			: {
-				pos: head,
-				above: true,
-				create(): TooltipView {
-					const dom = elt(
-						'div',
-						{
-							class: foldSelector.slice(1),
-							title: state.phrase('Fold template or extension tag'),
-						},
-						'\uff0d',
-					);
-					dom.dataset['from'] = String(from);
-					dom.dataset['to'] = String(to);
-					return {dom};
-				},
-			};
-	}
-	return null;
-};
-
-/**
  * 执行折叠
  * @param view
  * @param effects 折叠
@@ -224,7 +196,6 @@ const create = (state: EditorState): Tooltip | null => {
  */
 const execute = (view: EditorView, effects: StateEffect<DocRange>[], anchor: number): boolean => {
 	if (effects.length > 0) {
-		view.dom.querySelector(foldSelector)?.remove();
 		// Fold the template(s) and update the cursor position
 		view.dispatch({
 			effects,
@@ -397,8 +368,6 @@ const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValu
 	}
 });
 
-const defaultFoldExtension = /* @__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
-
 /**
  * 生成折叠命令
  * @param refOnly 是否仅检查`<ref>`标签
@@ -438,15 +407,6 @@ export const foldRef = /* @__PURE__ */ foldCommand(true),
 		return false;
 	};
 
-export default ((e = defaultFoldExtension): Extension => [
-	e,
-	EditorView.theme({
-		'.cm-foldGutter': {
-			order: 2,
-		},
-	}),
-]) satisfies AddonMain<Extension>;
-
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
@@ -467,19 +427,6 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 				});
 			});
 			return element;
-		},
-	}),
-	/** @see https://codemirror.net/examples/tooltip/ */
-	StateField.define<Tooltip | null>({
-		create,
-		update(tooltip, {state, docChanged, selection}) {
-			if (docChanged) {
-				return null;
-			}
-			return selection ? create(state) : tooltip;
-		},
-		provide(f) {
-			return showTooltip.from(f);
 		},
 	}),
 	keymap.of([
@@ -566,34 +513,4 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 			},
 		},
 	}),
-	EditorView.theme({
-		[foldSelector]: {
-			cursor: 'pointer',
-			lineHeight: 1.2,
-			padding: '0 1px',
-			opacity: 0.6,
-		},
-		[`${foldSelector}:hover`]: {
-			opacity: 1,
-		},
-	}),
 ])();
-
-/**
- * 点击提示折叠模板参数
- * @param view
- */
-export const foldHandler = (view: EditorView) => (e: PointerEvent): void => {
-	const dom = (e.target as Element).closest<HTMLElement>(foldSelector);
-	if (dom) {
-		e.preventDefault();
-		const {dataset} = dom,
-			from = Number(dataset['from']),
-			to = Number(dataset['to']);
-		view.dispatch({
-			effects: foldEffect.of({from, to}),
-			selection: {anchor: to},
-		});
-		dom.remove();
-	}
-};

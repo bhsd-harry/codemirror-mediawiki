@@ -3,6 +3,7 @@ import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language'
 import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
+import {base} from './constants';
 import {tokens} from './config';
 import {getTag} from './matchTag';
 import {indexToPos, posToIndex, escHTML} from './util';
@@ -61,7 +62,7 @@ export default (cm: CodeMirror6): Extension => [
 					}
 					if (target) {
 						const {doc} = state,
-							ref = await getLSP(view, false, cm.getWikiConfig)
+							ref = await getLSP(view, false, cm.getWikiConfig, base.CDN)
 								?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 						return {
 							pos,

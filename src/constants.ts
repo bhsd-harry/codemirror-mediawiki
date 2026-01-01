@@ -1,17 +1,10 @@
 import {wmf} from '@bhsd/common';
 
-export const panelSelector = '.cm-panel',
-	panelsSelector = '.cm-panels',
+export const base: Record<'CDN', string | undefined> = {CDN: undefined},
 	diagnosticSelector = '.cm-diagnosticText-clickable',
-	foldSelector = '.cm-tooltip-fold',
 	hoverSelector = '.cm-tooltip-hover',
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag',
-	isolateSelector = '.cm-bidi-isolate',
-	ltrSelector = '.cm-bidi-ltr',
-	menuSelector = '.cm-status-fix-menu',
-	messageSelector = '.cm-status-message',
-	actionSelector = '.cm-diagnosticAction',
 	isWMF = /* @__PURE__ */ (
 		() => typeof location === 'object'
 			&& new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname)

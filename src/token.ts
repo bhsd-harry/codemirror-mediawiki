@@ -13,6 +13,7 @@ import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
+import type {TagName} from './config';
 
 declare type MimeTypes = 'mediawiki'
 	| 'text/mediawiki'
@@ -57,7 +58,6 @@ declare interface StringStream extends StringStreamBase {
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
 
-export type TagName = keyof typeof tokens;
 export type ApiSuggestions = [string, string?][] & {description?: string};
 
 /**

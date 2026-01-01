@@ -2,19 +2,16 @@ import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
-import type {Linter} from 'eslint';
 import type {Warning, Config} from 'stylelint';
-import type {Diagnostic} from 'luacheck-browserify';
-import type {ConfigData, QuickFixData, AST} from 'wikiparser-node';
+import type {ConfigGetter} from '@bhsd/browser';
+import type {QuickFixData, AST} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
-declare type getLinter<T> = () => (text: string) => T;
-declare type asyncLinter<T, S = Record<string, unknown>> = ((text: string, config?: Option) => T) & {
-	config?: S;
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	fixer?: (code: string, rule?: string) => string | Promise<string>;
-};
+declare type asyncLinter<
+	T,
+> =
+	(text: string, config?: Option) => T;
 
 /**
  * @param opt 初始化选项
@@ -27,13 +24,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	to?: number;
 }
 
-declare interface JsonError {
-	message: string;
-	severity: 'error';
-	line: string | undefined;
-	column: string | undefined;
-	position: string | undefined;
-}
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 
 /**
  * 计算位置
@@ -79,15 +70,18 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
 /**
  * 获取 Wikitext LSP
  * @param opt 选项
+ * @param opt.cdn jsDelivr CDN，不含库名
  * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
+	const cdn = opt?.['cdn'] as string | undefined;
 	await getWikiparse(
-		opt?.['getConfig'] as (() => Promise<ConfigData>) | undefined,
+		opt?.['getConfig'] as ConfigGetter | undefined,
 		opt?.['i18n'] as string | string[] | undefined,
+		cdn,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
-		cssLint = await getCssLinter();
+		cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(
@@ -143,132 +137,20 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 				}),
 		];
 	};
-	if ('resolveCodeAction' in lsp) {
-		linter.fixer = async (_, rule): Promise<string> =>
-			(await lsp.resolveCodeAction(rule)).edit!.changes!['']![0]!.newText;
-	}
 	return linter;
-};
-
-export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line unicorn/no-unreadable-iife
-	env: {browser: true, es2024: true, jquery: true},
-	globals: {
-		mw: 'readonly',
-		mediaWiki: 'readonly',
-		OO: 'readonly',
-		addOnloadHook: 'readonly',
-		importScriptURI: 'readonly',
-		importScript: 'readonly',
-		importStylesheet: 'readonly',
-		importStylesheetURI: 'readonly',
-	},
-} satisfies Linter.BaseConfig))();
-
-/**
- * 获取 ESLint
- * @param cdn CDN 地址
- */
-export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
-	cdn = 'npm/@bhsd/eslint-browserify',
-) => {
-	await loadScript(cdn, 'eslint');
-	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
-	const esLinter = new eslint.Linter(),
-		conf: Linter.BaseConfig = {
-			env: {browser: true, es2024: true},
-			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
-		},
-		recommended: Linter.RulesRecord = {};
-	for (const [name, {meta}] of esLinter.getRules()) {
-		if (meta?.docs?.recommended) {
-			recommended[name] = 2;
-		}
-	}
-	const linter: asyncLinter<Linter.LintMessage[], Linter.BaseConfig> = (
-		text,
-		opt: Linter.BaseConfig | null | undefined,
-	) => {
-		const config: Linter.BaseConfig = {...conf, ...opt};
-		if (
-			!('rules' in config)
-			|| config.extends === 'eslint:recommended'
-			|| Array.isArray(config.extends) && config.extends.includes('eslint:recommended')
-		) {
-			config.rules = {...recommended, ...config.rules};
-		}
-		delete config.extends;
-		linter.config = config as Record<string, unknown>;
-		return esLinter.verify(text, config);
-	};
-	linter.fixer = (code, rule): string => esLinter.verifyAndFix(
-		code,
-		rule ? {...linter.config, rules: {[rule]: linter.config!.rules?.[rule] ?? 2}} : linter.config!,
-	).output;
-	return linter as asyncLinter<Linter.LintMessage[]>;
 };
 
 /**
  * 获取 Stylelint
  * @param cdn CDN 地址
  */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (
-	cdn = 'npm/@bhsd/stylelint-browserify',
-) => {
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
-	const linter: asyncLinter<Promise<Warning[]>, Config> = async (code, opt) => {
+	const linter: asyncLinter<
+		Promise<Warning[]>
+	> = async (code, opt) => {
 		const warnings = await styleLint(stylelint, code, opt);
-		linter.config = opt && !isStylelintConfig(opt) ? {rules: opt} : opt!;
 		return warnings;
 	};
-	linter.fixer = (code, rule): Promise<string> => {
-		if (!linter.config) {
-			throw new Error('Fixer unavailable!');
-		}
-		return styleLint(
-			stylelint,
-			code,
-			rule ? {extends: [], rules: {[rule]: linter.config.rules?.[rule] ?? true}} : linter.config,
-			true,
-		);
-	};
 	return linter;
-};
-
-/**
- * 获取 Luacheck
- * @param cdn CDN 地址
- */
-export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (
-	cdn = 'npm/luacheck-browserify',
-) => {
-	await loadScript(cdn, 'luacheck');
-	// eslint-disable-next-line @typescript-eslint/await-thenable
-	const luachecker = await luacheck(undefined as unknown as string);
-	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
-};
-
-/** JSON.parse */
-export const getJsonLinter: getLinter<JsonError[]> = () => str => {
-	try {
-		if (str.trim()) {
-			JSON.parse(str);
-		}
-	} catch (e) {
-		if (e instanceof SyntaxError) {
-			const {message} = e,
-				line = /\bline (\d+)/u.exec(message)?.[1],
-				column = /\bcolumn (\d+)/u.exec(message)?.[1],
-				position = /\bposition (\d+)/u.exec(message)?.[1];
-			return [
-				{
-					message,
-					severity: 'error',
-					line,
-					column,
-					position,
-				},
-			];
-		}
-	}
-	return [];
 };
