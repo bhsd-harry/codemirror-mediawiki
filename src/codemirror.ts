@@ -16,7 +16,7 @@ import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codem
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
-import {panelSelector, panelsSelector, diagnosticSelector} from './constants';
+import {base, panelSelector, panelsSelector, diagnosticSelector} from './constants';
 import {light} from './theme';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
@@ -86,14 +86,12 @@ const phrases: Record<string, string> = {};
 
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
-	static #CDN: string | undefined;
-
 	static get CDN(): string | undefined {
-		return CodeMirror6.#CDN;
+		return base.CDN;
 	}
 
 	static set CDN(url: string | undefined) {
-		CodeMirror6.#CDN = url;
+		base.CDN = url;
 	}
 
 	/** only for sanitized-css */
@@ -450,7 +448,7 @@ export class CodeMirror6 {
 	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		return linterRegistry[this.#lang]?.(CodeMirror6.CDN, opt, this.#view, this.#nestedMWLanguage);
+		return linterRegistry[this.#lang]?.(base.CDN, opt, this.#view, this.#nestedMWLanguage);
 	}
 
 	/**

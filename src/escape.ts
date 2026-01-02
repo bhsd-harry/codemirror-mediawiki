@@ -3,6 +3,7 @@ import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
+import {base} from './constants';
 import {
 	CodeMirror6,
 	menuRegistry,
@@ -47,7 +48,7 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	const view = cm.view!,
 		{state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN);
+		lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -98,7 +99,7 @@ menuRegistry.push({
 				handlerBase(view, e);
 			});
 			items = [btnHTML, btnURI];
-			const lsp = getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN);
+			const lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {

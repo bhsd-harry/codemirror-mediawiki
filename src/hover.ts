@@ -2,7 +2,7 @@ import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
 import {tokens} from './config';
-import {hoverSelector} from './constants';
+import {base, hoverSelector} from './constants';
 import {CodeMirror6} from './codemirror';
 import {escHTML, indexToPos, posToIndex, createTooltipView} from './util';
 import type {Tooltip, TooltipView} from '@codemirror/view';
@@ -18,7 +18,7 @@ export default (cm: CodeMirror6): Extension => [
 		const {state} = view,
 			{doc} = state,
 			{paramSuggest, tags} = cm.langConfig!;
-		let hover = await getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN)
+		let hover = await getLSP(view, false, cm.getWikiConfig, base.CDN)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
 		if (!hover && paramSuggest && 'templatedata' in tags) {
 			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);

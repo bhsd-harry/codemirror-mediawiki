@@ -3,7 +3,7 @@ import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
 import {keymap} from '@codemirror/view';
 import {CodeMirror6} from '../src/codemirror';
-import {isWMF} from '../src/constants';
+import {base, isWMF} from '../src/constants';
 import {
 	registerCSS,
 	registerHTML,
@@ -244,7 +244,7 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		if (typeof monaco !== 'object' || typeof monaco.editor !== 'object') {
-			const CDN = CodeMirror.CDN || baseCDN;
+			const CDN = base.CDN || baseCDN;
 			Object.assign(globalThis, {monaco: {CDN}});
 			await $.ajax(
 				`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/all.min.js`,

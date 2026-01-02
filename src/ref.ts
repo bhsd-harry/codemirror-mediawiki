@@ -3,14 +3,15 @@ import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language'
 import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
+import {base} from './constants';
 import {tokens} from './config';
 import {getTag} from './matchTag';
-import {CodeMirror6} from './codemirror';
 import {indexToPos, posToIndex, escHTML} from './util';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {AST} from 'wikiparser-node';
+import type {CodeMirror6} from './codemirror';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
@@ -61,7 +62,7 @@ export default (cm: CodeMirror6): Extension => [
 					}
 					if (target) {
 						const {doc} = state,
-							ref = await getLSP(view, false, cm.getWikiConfig, CodeMirror6.CDN)
+							ref = await getLSP(view, false, cm.getWikiConfig, base.CDN)
 								?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 						return {
 							pos,

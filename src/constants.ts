@@ -1,6 +1,7 @@
 import {wmf} from '@bhsd/common';
 
-export const panelSelector = '.cm-panel',
+export const base: Record<'CDN', string | undefined> = {CDN: undefined},
+	panelSelector = '.cm-panel',
 	panelsSelector = '.cm-panels',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	foldSelector = '.cm-tooltip-fold',
