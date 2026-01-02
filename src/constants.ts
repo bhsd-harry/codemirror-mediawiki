@@ -3,8 +3,8 @@ import {wmf} from '@bhsd/common';
 export const base: Record<'CDN', string | undefined> = {CDN: undefined},
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	hoverSelector = '.cm-tooltip-hover',
-	matchingCls = 'cm-matchingTag',
-	nonmatchingCls = 'cm-nonmatchingTag',
+	matchingCls = 'cm-matchingBracket',
+	nonmatchingCls = 'cm-nonmatchingBracket',
 	isWMF = /* @__PURE__ */ (
 		() => typeof location === 'object'
 			&& new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname)
