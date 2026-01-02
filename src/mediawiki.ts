@@ -14,14 +14,17 @@ import {
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
-import {htmlTags, tokens} from './config';
+import {htmlTags, tokens} from './config.js';
 import {
 	isWMF,
 	isolateSelector,
 	ltrSelector,
-} from './constants';
-import {MediaWiki} from './token';
-import {braceStackUpdate, hasTag} from './util';
+} from './constants.js';
+import {MediaWiki} from './token.js';
+import {
+	hasTag,
+	braceStackUpdate,
+} from './util.js';
 import {EditorView} from '@codemirror/view';
 import type {
 	StreamParser,
@@ -222,14 +225,18 @@ export class FullMediaWiki extends MediaWiki {
 		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolve(pos, -1),
-				{name: n, from: f, to: t} = node,
+				{
+					name: n,
+					from: f,
+					to: t,
+				} = node,
 				types = new Set(n.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#') || isWMF) {
-				const validFor = isWMF ? null : {validFor: /^[^|{}<>[\]#]*$/u};
+				const obj = isWMF ? null : {validFor: /^[^|{}<>[\]#]*$/u};
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
@@ -239,13 +246,13 @@ export class FullMediaWiki extends MediaWiki {
 						: {
 							from: start + suggestions.offset,
 							options,
-							...validFor,
+							...obj,
 						};
 				} else if (explicit && hasTag(types, 'templateBracket') && context.matchBefore(/\{\{$/u)) {
 					return {
 						from: pos,
 						options: this.functionSynonyms,
-						...validFor,
+						...obj,
 					};
 				}
 				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
@@ -274,7 +281,7 @@ export class FullMediaWiki extends MediaWiki {
 						// eslint-disable-next-line unicorn/explicit-length-check
 						from: start + suggestions.offset - (isPage && prefix.length),
 						options: suggestions.options,
-						...validFor,
+						...obj,
 					};
 				}
 				const isArgument = hasTag(types, 'templateArgumentName'),

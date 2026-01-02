@@ -7,9 +7,9 @@
 import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec, RangeSetBuilder} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
-import {tokens} from './config';
-import {isolateSelector, ltrSelector} from './constants';
-import {getTag} from './matchTag';
+import {tokens} from './config.js';
+import {isolateSelector, ltrSelector} from './constants.js';
+import {getTag} from './matchTag.js';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
 import type {SyntaxNode} from '@lezer/common';
 

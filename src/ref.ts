@@ -3,10 +3,10 @@ import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language'
 import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {base} from './constants';
-import {tokens} from './config';
-import {getTag} from './matchTag';
-import {indexToPos, posToIndex, escHTML} from './util';
+import {base} from './constants.js';
+import {tokens} from './config.js';
+import {getTag} from './matchTag.js';
+import {indexToPos, posToIndex, escHTML} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';

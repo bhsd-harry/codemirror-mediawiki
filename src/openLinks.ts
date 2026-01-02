@@ -1,8 +1,8 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {tokens} from './config';
-import {isMac} from './constants';
-import {hasTag} from './util';
+import {tokens} from './config.js';
+import {isMac} from './constants.js';
+import {hasTag} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
 import type {MwConfig} from './token';
@@ -78,10 +78,10 @@ export const mouseEventListener = (
 		node = tree.resolve(position, 1);
 	}
 	const {name, from, to} = node;
-	if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
-		return langConfig.titleParser(state, node);
-	} else if (name.includes('-extlink-protocol')) {
+	if (name.includes('-extlink-protocol')) {
 		return wrapURL(state.sliceDoc(from, node.nextSibling!.to));
+	} else if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
+		return langConfig.titleParser(state, node);
 	} else if (/-extlink(?:_|$)/u.test(name)) {
 		return wrapURL(state.sliceDoc(node.prevSibling!.from, to));
 	} else if (name.includes(tokens.magicLink)) {
@@ -97,13 +97,19 @@ export const mouseEventListener = (
 	return undefined;
 };
 
-export default ({langConfig}: CodeMirror6): Extension => [
+export default (
+	{langConfig}: CodeMirror6,
+): Extension => [
 	EditorView.domEventHandlers({
 		mousedown(e, view) {
 			if (e.button !== 0) {
 				return undefined;
 			}
-			const url = mouseEventListener(e, view, langConfig);
+			const url = mouseEventListener(
+				e,
+				view,
+				langConfig,
+			);
 			if (url) {
 				open(url, '_blank', 'noopener noreferrer');
 				return true;
@@ -112,7 +118,10 @@ export default ({langConfig}: CodeMirror6): Extension => [
 		},
 	}),
 	EditorView.theme({
-		[[...links, ...langConfig?.titleParser ? wikiLinks : []].map(type => `.cm-mw-${type}`).join()]: {
+		[
+		[...links, ...langConfig?.titleParser ? wikiLinks : []]
+			.map(type => `.cm-mw-${type}`).join()
+		]: {
 			cursor: 'var(--codemirror-cursor)',
 		},
 	}),

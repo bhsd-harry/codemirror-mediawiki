@@ -9,7 +9,7 @@ import {
 	messageSelector,
 	actionSelector,
 	panelsSelector,
-} from './constants';
+} from './constants.js';
 import type {Extension} from '@codemirror/state';
 
 const focused = '&.cm-focused',

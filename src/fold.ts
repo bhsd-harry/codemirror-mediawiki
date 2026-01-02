@@ -26,10 +26,10 @@ import {
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
-import {tokens} from './config';
-import {foldSelector} from './constants';
-import {matchTag, getTag} from './matchTag';
-import {braceStackUpdate} from './util';
+import {tokens} from './config.js';
+import {foldSelector} from './constants.js';
+import {matchTag, getTag} from './matchTag.js';
+import {braceStackUpdate} from './util.js';
 import type {
 	ViewUpdate,
 	BlockInfo,

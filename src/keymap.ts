@@ -1,6 +1,6 @@
 import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
-import {keybindings, encapsulateLines} from './keybindings';
+import {keybindings, encapsulateLines} from './keybindings.js';
 import type {KeyBinding} from '@codemirror/view';
 import type {KeymapConfig} from './keybindings';
 

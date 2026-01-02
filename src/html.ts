@@ -3,9 +3,9 @@ import {htmlLanguage, htmlCompletionSourceWith} from '@codemirror/lang-html';
 import {javascript, javascriptLanguage} from '@codemirror/lang-javascript';
 import {cssLanguage} from '@codemirror/lang-css';
 import {LanguageSupport} from '@codemirror/language';
-import {cssCompletion} from './css';
-import {jsCompletion} from './javascript';
-import {mediawiki} from './mediawiki';
+import {cssCompletion} from './css.js';
+import {jsCompletion} from './javascript.js';
+import {mediawiki} from './mediawiki.js';
 import type {MwConfig} from './token';
 
 export default (config: MwConfig): LanguageSupport => {

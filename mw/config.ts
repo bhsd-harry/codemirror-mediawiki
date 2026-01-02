@@ -145,6 +145,7 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		namespaces: mw.config.get('wgFormattedNamespaces'),
 		nsid,
 		variants: variants!,
+		articlePath: mw.config.get('wgArticlePath'),
 	};
 	const noCM = mw.loader.getState('ext.CodeMirror') === null;
 	for (const [key, val] of Object.entries(insensitive)) {

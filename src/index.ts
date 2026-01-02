@@ -22,7 +22,7 @@ import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
-import bidiIsolation from './bidi';
+import bidiIsolation from './bidi.js';
 import {
 	CodeMirror6,
 	avail,
@@ -32,14 +32,14 @@ import {
 	plain,
 	optionalFunctions,
 	themes,
-} from './codemirror';
-import colorPicker, {discoverColors} from './color';
-import escape from './escape';
-import codeFolding, {mediaWikiFold, foldHandler} from './fold';
-import magicWordHover from './hover';
-import {detectIndent} from './indent';
-import inlayHints from './inlay';
-import toolKeymap from './keymap';
+} from './codemirror.js';
+import colorPicker, {discoverColors} from './color.js';
+import escape from './escape.js';
+import codeFolding, {mediaWikiFold, foldHandler} from './fold.js';
+import magicWordHover from './hover.js';
+import {detectIndent} from './indent.js';
+import inlayHints from './inlay.js';
+import toolKeymap from './keymap.js';
 import {
 	getWikiLintSource,
 	getJsLintSource,
@@ -48,20 +48,20 @@ import {
 	getLuaLintSource,
 	getVueLintSource,
 	getHTMLLintSource,
-} from './lintsource';
-import bracketMatching from './matchBrackets';
-import tagMatchingState from './matchTag';
-import {mediawiki} from './mediawiki';
-import openLinks from './openLinks';
-import refHover from './ref';
-import signatureHelp from './signature';
-import {tagModes, getStaticMwConfig} from './static';
-import statusBar from './statusBar';
-import css from './css';
-import html from './html';
-import javascript from './javascript';
-import lua from './lua';
-import vue from './vue';
+} from './lintsource.js';
+import bracketMatching from './matchBrackets.js';
+import tagMatchingState from './matchTag.js';
+import {mediawiki} from './mediawiki.js';
+import openLinks from './openLinks.js';
+import refHover from './ref.js';
+import signatureHelp from './signature.js';
+import {tagModes, getStaticMwConfig} from './static.js';
+import statusBar from './statusBar.js';
+import css from './css.js';
+import html from './html.js';
+import javascript from './javascript.js';
+import lua from './lua.js';
+import vue from './vue.js';
 import type {Extension} from '@codemirror/state';
 import type {Config, LanguageSupport} from '@codemirror/language';
 import type {StyleSpec} from 'style-mod';
@@ -451,4 +451,4 @@ export const registerTheme = (name: string, theme: Extension): void => {
 	themes[name] = theme;
 };
 
-export {nord} from './theme';
+export {nord} from './theme.js';

@@ -16,8 +16,8 @@ import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codem
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
-import {base, panelSelector, panelsSelector, diagnosticSelector} from './constants';
-import {light} from './theme';
+import {base, panelSelector, panelsSelector, diagnosticSelector} from './constants.js';
+import {light} from './theme.js';
 import type {ViewPlugin, KeyBinding} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
