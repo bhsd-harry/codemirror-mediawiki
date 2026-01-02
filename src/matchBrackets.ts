@@ -5,12 +5,12 @@ import type {Extension, StateField, Transaction, Range, Facet, EditorState} from
 import type {Config, MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 
-export interface Selection {
+declare interface Selection {
 	anchor: number;
 	head: number;
 }
 
-export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
+const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
 	let parent: SyntaxNode | null = node;
 	while (parent) {
 		const {firstChild, lastChild} = parent;
@@ -26,7 +26,7 @@ export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: s
 	return undefined;
 };
 
-export const findEnclosingPlainBrackets = (
+const findEnclosingPlainBrackets = (
 	state: EditorState,
 	pos: number,
 	config: Required<Config>,
@@ -51,7 +51,7 @@ export const findEnclosingPlainBrackets = (
 	return null;
 };
 
-export const trySelectMatchingBrackets = (
+const trySelectMatchingBrackets = (
 	state: EditorState,
 	pos: number,
 	dir: 1 | -1,
@@ -69,7 +69,7 @@ export const trySelectMatchingBrackets = (
 	};
 };
 
-export const selectMatchingBrackets = (
+const selectMatchingBrackets = (
 	state: EditorState,
 	pos: number,
 	config?: Config,

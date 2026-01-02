@@ -24,7 +24,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	to?: number;
 }
 
-export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
+const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 
 /**
  * 计算位置
@@ -144,7 +144,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
  * 获取 Stylelint
  * @param cdn CDN 地址
  */
-export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
+const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<
 		Promise<Warning[]>

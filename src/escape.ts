@@ -25,7 +25,7 @@ const convert = (func: (str: string) => string, cmd: Command): Command => (view)
 	}
 	return cmd(view);
 };
-export const escapeHTML = (str: string): string => [...str].map(c => {
+const escapeHTML = (str: string): string => [...str].map(c => {
 		if (c in entity) {
 			return `&${entity[c as keyof typeof entity]};`;
 		}

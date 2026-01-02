@@ -10,9 +10,7 @@ import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
-import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
-import type {SyntaxNode} from '@lezer/common';
 import type {TagName} from './config';
 
 declare type MimeTypes = 'mediawiki'
@@ -58,29 +56,12 @@ declare interface StringStream extends StringStreamBase {
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
 
-export type ApiSuggestions = [string, string?][] & {description?: string};
-
-/**
- * 获取维基链接建议
- * @param search 搜索字符串，开头不包含` `
- * @param subpage 是否为子页面
- * @param namespace 命名空间
- */
-export type ApiSuggest = (search: string, subpage?: boolean, namespace?: number) =>
-	ApiSuggestions | Promise<ApiSuggestions>;
-
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
 	variants?: string[];
 	img?: Record<string, string>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
-	linkSuggest?: ApiSuggest;
-	paramSuggest?: ApiSuggest;
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	isbnParser?: (link: string) => string;
 }
 
 class MediaWikiData {

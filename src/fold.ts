@@ -96,7 +96,7 @@ const refNames = new Set<string | undefined>(['ref', 'references']);
  * @param tree 语法树
  * @param refOnly 是否仅检查`<ref>`标签
  */
-export const foldable = (
+const foldable = (
 	state: EditorState,
 	posOrNode: number | SyntaxNode,
 	tree?: Tree | null,
@@ -277,7 +277,7 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 	return found;
 };
 
-export const foldableLine = (
+const foldableLine = (
 	{state, viewport: {to: end}, viewportLineBlocks}: EditorView,
 	{from: f, to: t}: DocRange,
 ): DocRange | false => {
@@ -389,23 +389,7 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 	return execute(view, effects, anchor);
 };
 
-export const foldRef = /* @__PURE__ */ foldCommand(true),
-	unfoldRef: Command = (view): boolean => {
-		const {state} = view,
-			tree = syntaxTree(state),
-			effects: StateEffect<DocRange>[] = [];
-		foldedRanges(state).between(0, state.doc.length, (i, j) => {
-			const node = tree.resolve(i, -1);
-			if (isExtBracket(node) && isExt(node.nextSibling!, true)) {
-				effects.push(unfoldEffect.of({from: i, to: j}));
-			}
-		});
-		if (effects.length > 0) {
-			view.dispatch({effects});
-			return true;
-		}
-		return false;
-	};
+const foldRef = /* @__PURE__ */ foldCommand(true);
 
 export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({

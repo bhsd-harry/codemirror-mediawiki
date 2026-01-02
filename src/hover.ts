@@ -1,52 +1,24 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
-import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
-import {tokens} from './config.js';
 import {base, hoverSelector} from './constants.js';
-import {CodeMirror6} from './codemirror.js';
-import {escHTML, indexToPos, posToIndex, createTooltipView} from './util.js';
+import {indexToPos, posToIndex, createTooltipView} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
+import type {CodeMirror6} from './codemirror.js';
 
 declare const marked: {
 	parse(source: string): string;
 };
 
 export default (cm: CodeMirror6): Extension => [
-	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
+	hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
 		const {state} = view,
-			{doc} = state,
-			{paramSuggest, tags} = cm.langConfig!;
-		let hover = await getLSP(view, false, cm.getWikiConfig, base.CDN)
+			{doc} = state;
+		const hover = await getLSP(view, false, cm.getWikiConfig, base.CDN)
 			?.provideHover(doc.toString(), indexToPos(doc, pos));
-		if (!hover && paramSuggest && 'templatedata' in tags) {
-			const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
-			if (node?.name.includes(tokens.templateName)) {
-				const result = await paramSuggest(state.sliceDoc(node.from, node.to), false),
-					{description, length} = result;
-				if (description || length > 0) {
-					// eslint-disable-next-line require-atomic-updates
-					hover = {
-						contents: {
-							kind: 'plaintext',
-							value: (description ? `<p>${escHTML(description)}</p>` : '') + (
-								length === 0
-									? ''
-									: `<ul>${
-										result.map(([key, details]) => `<li><code>${escHTML(key)}</code>${
-											details ? ` — ${escHTML(details)}` : ''
-										}</li>`).join('')
-									}</ul>`
-							),
-						},
-						range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
-					};
-				}
-			}
-		}
 		if (hover) {
-			const {CDN = ''} = CodeMirror6;
+			const {CDN = ''} = base;
 			await loadScript(
 				`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
 				'marked',

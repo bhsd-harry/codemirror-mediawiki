@@ -1,4 +1,5 @@
 import {LanguageSupport} from '@codemirror/language';
+import {autocompletion} from '@codemirror/autocomplete';
 import {tagModes, getStaticMwConfig} from './static.js';
 import {mediawiki as mediawikiBase} from './mediawiki.js';
 import bracketMatchingBase from './matchBrackets.js';
@@ -23,5 +24,8 @@ export const bracketMatching = (): Extension =>
  */
 export const mediawiki = (configData: ConfigData): LanguageSupport => new LanguageSupport(
 	mediawikiLanguage(configData),
-	[bracketMatching()],
+	[
+		bracketMatching(),
+		autocompletion(),
+	],
 );
