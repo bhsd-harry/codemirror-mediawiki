@@ -2,10 +2,10 @@ import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
-import {base} from './constants';
+import {base} from './constants.js';
 import {
 	CodeMirror6,
-} from './codemirror';
+} from './codemirror.js';
 import type {
 	Command,
 } from '@codemirror/view';

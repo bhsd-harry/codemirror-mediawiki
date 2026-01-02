@@ -1,8 +1,8 @@
 import {LanguageSupport} from '@codemirror/language';
-import {tagModes, getStaticMwConfig} from './static';
-import {mediawiki as mediawikiBase} from './mediawiki';
-import bracketMatchingBase from './matchBrackets';
-import tagMatchingState from './matchTag';
+import {tagModes, getStaticMwConfig} from './static.js';
+import {mediawiki as mediawikiBase} from './mediawiki.js';
+import bracketMatchingBase from './matchBrackets.js';
+import tagMatchingState from './matchTag.js';
 import type {Extension} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {ConfigData} from 'wikiparser-node';

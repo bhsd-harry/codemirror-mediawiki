@@ -1,8 +1,8 @@
 import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {voidHtmlTags, selfClosingTags} from './config';
-import {matchingCls, nonmatchingCls} from './constants';
+import {voidHtmlTags, selfClosingTags} from './config.js';
+import {matchingCls, nonmatchingCls} from './constants.js';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';

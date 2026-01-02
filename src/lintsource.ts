@@ -1,7 +1,7 @@
 import {
 	getWikiLinter,
-} from './linter';
-import {posToIndex} from './util';
+} from './linter.js';
+import {posToIndex} from './util.js';
 import type {EditorView} from '@codemirror/view';
 import type {EditorState, Text} from '@codemirror/state';
 import type {Language} from '@codemirror/language';

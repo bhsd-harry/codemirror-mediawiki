@@ -1,10 +1,10 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {loadScript, getLSP} from '@bhsd/browser';
-import {tokens} from './config';
-import {base, hoverSelector} from './constants';
-import {CodeMirror6} from './codemirror';
-import {escHTML, indexToPos, posToIndex, createTooltipView} from './util';
+import {tokens} from './config.js';
+import {base, hoverSelector} from './constants.js';
+import {CodeMirror6} from './codemirror.js';
+import {escHTML, indexToPos, posToIndex, createTooltipView} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';

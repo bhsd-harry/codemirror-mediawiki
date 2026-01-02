@@ -11,12 +11,12 @@ import {
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
-import {htmlTags, tokens} from './config';
+import {htmlTags, tokens} from './config.js';
 import {
 	isWMF,
-} from './constants';
-import {MediaWiki} from './token';
-import {braceStackUpdate, hasTag} from './util';
+} from './constants.js';
+import {MediaWiki} from './token.js';
+import {braceStackUpdate, hasTag} from './util.js';
 import type {EditorView} from '@codemirror/view';
 import type {
 	StreamParser,

@@ -1,8 +1,8 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {tokens} from './config';
-import {isMac} from './constants';
-import {hasTag} from './util';
+import {tokens} from './config.js';
+import {isMac} from './constants.js';
+import {hasTag} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
 import type {MwConfig} from './token';

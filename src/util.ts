@@ -1,6 +1,6 @@
 import elt from 'crelt';
-import {tokens} from './config';
-import {hoverSelector} from './constants';
+import {tokens} from './config.js';
+import {hoverSelector} from './constants.js';
 import type {EditorView, TooltipView} from '@codemirror/view';
 import type {Text, EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
