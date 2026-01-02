@@ -96,31 +96,81 @@ export const htmlTags = /* @__PURE__ */ html.flat(),
 		templateVariableBracket: 'mw-templatevariable-bracket',
 		templateVariableDelimiter: 'mw-templatevariable-delimiter',
 		templateVariableName: 'mw-templatevariable-name',
-	},
+	};
 
-	/**
-	 * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
-	 *
-	 * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
-	 * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
-	 */
-	tokenTable = /* @__PURE__ */ (() => {
-		const table: Record<string, Tag> = {
-			variable: tags.variableName,
-			'variable-2': tags.special(tags.variableName),
-			'string-2': tags.special(tags.string),
-			def: tags.definition(tags.variableName),
-			tag: tags.tagName,
-			attribute: tags.attributeName,
-			type: tags.typeName,
-			builtin: tags.standard(tags.variableName),
-			qualifier: tags.modifier,
-			error: tags.invalid,
-			header: tags.heading,
-			property: tags.propertyName,
-		};
-		for (const className of Object.values(tokens)) {
+export type TagName = keyof typeof tokens;
+
+const highlight = new Map<Tag, TagName[]>([
+	[tags.strong, ['section', 'strong']],
+	[tags.link, ['pageName']],
+	[tags.emphasis, ['em']],
+	[
+		tags.definition(tags.propertyName),
+		[
+			'apostrophes',
+			'list',
+			'redirect',
+			'sectionHeader',
+			'doubleUnderscore',
+			'signature',
+			'hr',
+		],
+	],
+	[tags.invalid, ['error', 'parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
+	[tags.comment, ['comment', 'ignored']],
+	[tags.keyword, ['templateName', 'templateDelimiter', 'templateBracket', 'templateArgumentName']],
+	[
+		tags.regexp,
+		['tableBracket', 'tableDelimiter', 'tableDelimiter2', 'tableDefinition', 'tableDefinitionValue'],
+	],
+	[
+		tags.string,
+		['templateVariable', 'templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
+	],
+	[
+		tags.url,
+		[
+			'linkPageName',
+			'linkBracket',
+			'linkDelimiter',
+			'fileDelimiter',
+			'magicLink',
+			'extLink',
+			'extLinkProtocol',
+			'extLinkBracket',
+			'freeExtLink',
+			'freeExtLinkProtocol',
+			'imageParameter',
+			'linkToSection',
+		],
+	],
+	[
+		tags.namespace,
+		['extTagName', 'extTagBracket', 'extTagAttribute', 'htmlTagName', 'htmlTagBracket', 'htmlTagAttribute'],
+	],
+	[tags.className, ['convertBracket', 'convertDelimiter', 'convertFlag', 'convertLang']],
+	[tags.literal, ['htmlEntity']],
+]);
+
+/**
+ * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
+ *
+ * @see https://codemirror.net/docs/ref/#language.StreamParser.tokenTable
+ * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
+ */
+export const tokenTable = /* @__PURE__ */ (() => {
+	const table: Record<string, Tag> = {
+		//
+	};
+	for (const [tag, types] of highlight) {
+		for (const type of types) {
+			table[tokens[type]] = tag;
+		}
+	}
+	for (const className of Object.values(tokens)) {
+		if (!(className in table)) {
 			table[className] = Tag.define();
 		}
-		return table;
-	})();
+	}
+	return table;
+})();

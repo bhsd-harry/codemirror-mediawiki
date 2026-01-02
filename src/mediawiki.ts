@@ -5,28 +5,29 @@
  */
 
 import {
-	HighlightStyle,
-	LanguageSupport,
 	StreamLanguage,
-	syntaxHighlighting,
 	syntaxTree,
 } from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config';
-import {isolateSelector, ltrSelector, isWMF} from './constants';
+import {
+	isWMF,
+} from './constants';
 import {MediaWiki} from './token';
 import {braceStackUpdate, hasTag} from './util';
-import {EditorView} from '@codemirror/view';
-import type {StreamParser, TagStyle} from '@codemirror/language';
+import type {EditorView} from '@codemirror/view';
+import type {
+	StreamParser,
+	Language,
+} from '@codemirror/language';
 import type {
 	CloseBracketConfig,
 	CompletionSource,
 	Completion,
 	CompletionResult,
 } from '@codemirror/autocomplete';
-import type {StyleSpec} from 'style-mod';
 import type {MwConfig} from './token';
 
 /**
@@ -119,18 +120,6 @@ export class FullMediaWiki extends MediaWiki {
 			key,
 			[...value].map((label): Completion => ({type: 'property', label})),
 		]));
-	}
-
-	/**
-	 * This defines the actual CSS class assigned to each tag/token.
-	 *
-	 * @see https://codemirror.net/docs/ref/#language.TagStyle
-	 */
-	getTagStyles(): TagStyle[] {
-		return Object.keys(this.tokenTable).map((className): TagStyle => ({
-			tag: this.tokenTable[className]!,
-			class: `cm-${className}`,
-		}));
 	}
 
 	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -439,209 +428,12 @@ export class FullMediaWiki extends MediaWiki {
 	}
 }
 
-const getSelector = (cls: string[], prefix: string | string[] = ''): string => typeof prefix === 'string'
-	? cls.map(c => `.cm-mw-${prefix}${c}`).join()
-	: prefix.map(p => getSelector(cls, p)).join();
-
-const getGround = (type: string, ground?: number): string => ground ? `${type}${ground === 1 ? '' : ground}-` : '';
-
-const getGrounds = (
-	grounds: [number?, number?, number?][],
-	r: number,
-	g: number,
-	b: number,
-	a: number,
-): Record<string, StyleSpec> => ({
-	[grounds.map(
-		([template, ext, link]) => `.cm-mw-${
-			getGround('template', template)
-		}${
-			getGround('exttag', ext)
-		}${
-			getGround('link', link)
-		}ground`,
-	).join()]: {
-		backgroundColor: `rgb(${r},${g},${b},${a})`,
-	},
-});
-
 /**
- * @author pastakhov and others
- * @license GPL-2.0-or-later
- * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
- */
-const theme = /* @__PURE__ */ EditorView.theme({
-	[getSelector(['', '~*'], 'section--1')]: {
-		fontSize: '1.8em',
-		lineHeight: '1.2em',
-	},
-	[getSelector(['', '~*'], 'section--2')]: {
-		fontSize: '1.5em',
-		lineHeight: '1.2em',
-	},
-	[getSelector(['3~*', '4~*', '5~*', '6~*'], 'section--')]: {
-		fontWeight: 'bold',
-	},
-	[`${
-		getSelector(['section-header', 'template', 'parserfunction', 'file-delimiter', 'magic-link'])
-	},${
-		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
-	},${
-		getSelector(['extlink'], ['', 'free-'])
-	},${
-		getSelector(['bracket', 'attribute'], ['exttag-', 'htmltag-'])
-	},${
-		getSelector(['delimiter2', 'definition'], 'table-')
-	}`]: {
-		fontWeight: 'normal',
-	},
-	[`${
-		getSelector(['redirect', 'list', 'free-extlink-protocol', 'strong'])
-	},${
-		getSelector(['protocol', 'bracket'], 'extlink-')
-	},${
-		getSelector(['tag-name'], ['ext', 'html'])
-	},${
-		getSelector(['bracket', 'delimiter', 'th', 'caption'], 'table-')
-	},${
-		getSelector(['bracket', 'delimiter'], 'convert-')
-	}`]: {
-		fontWeight: 'bold',
-	},
-	[`${
-		getSelector(['pagename', 'link-tosection', 'magic-link'])
-	},${
-		getSelector(['extlink', 'extlink-protocol'], ['', 'free-'])
-	}`]: {
-		textDecoration: 'underline',
-	},
-	'.cm-mw-em': {
-		fontStyle: 'italic',
-	},
-	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
-		color: 'var(--cm-hr)',
-	},
-	'.cm-mw-error': {
-		color: 'var(--cm-error)',
-	},
-	'.cm-mw-skipformatting': {
-		backgroundColor: 'var(--cm-sp)',
-	},
-	[getSelector(['double-underscore', 'signature', 'hr'])]: {
-		color: 'var(--cm-hr)',
-		fontWeight: 'bold',
-		backgroundColor: 'var(--cm-hr-bg)',
-	},
-	[getSelector(['comment', 'ignored'])]: {
-		color: 'var(--cm-comment)',
-		fontWeight: 'normal',
-	},
-	[getSelector(['name', 'delimiter', 'bracket'], 'template-')]: {
-		color: 'var(--cm-tpl)',
-		fontWeight: 'bold',
-	},
-	'.cm-mw-template-argument-name': {
-		color: 'var(--cm-arg)',
-		fontWeight: 'normal',
-	},
-	'.cm-mw-templatevariable': {
-		color: 'var(--cm-var)',
-		fontWeight: 'normal',
-	},
-	[getSelector(['name', 'bracket', 'delimiter'], 'templatevariable-')]: {
-		color: 'var(--cm-var-name)',
-		fontWeight: 'bold',
-	},
-	[getSelector(['name', 'bracket', 'delimiter'], 'parserfunction-')]: {
-		color: 'var(--cm-func)',
-		fontWeight: 'bold',
-	},
-	[`${
-		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
-	},${
-		getSelector(['file-delimiter', 'magic-link'])
-	},${
-		getSelector(['', '-protocol', '-bracket'], 'extlink')
-	},${
-		getSelector(['', '-protocol'], 'free-extlink')
-	}`]: {
-		color: 'var(--cm-link)',
-	},
-	[getSelector(['image-parameter', 'link-tosection'])]: {
-		color: 'var(--cm-sect)',
-		fontWeight: 'normal',
-	},
-	[getSelector(['name', 'bracket', 'attribute'], ['exttag-', 'htmltag-'])]: {
-		color: 'var(--cm-tag)',
-	},
-	[getSelector(['tag-attribute-value'], ['ext', 'html'])]: {
-		color: 'var(--cm-attr)',
-		fontWeight: 'normal',
-	},
-	[getSelector(['bracket', 'delimiter', 'delimiter2', 'definition'], 'table-')]: {
-		color: 'var(--cm-table)',
-	},
-	'.cm-mw-table-definition-value': {
-		color: 'var(--cm-table-attr)',
-		fontWeight: 'normal',
-	},
-	[getSelector(['bracket', 'delimiter', 'flag', 'lang'], 'convert-')]: {
-		color: 'var(--cm-convert)',
-	},
-	'.cm-mw-entity': {
-		color: 'var(--cm-entity)',
-	},
-	'.cm-mw-exttag': {
-		backgroundColor: 'rgb(119,0,170,.04)',
-	},
-	/* eslint-disable no-sparse-arrays */
-	...getGrounds([[1]], 170, 17, 17, 0.04),
-	...getGrounds([[2]], 170, 17, 17, 0.08),
-	...getGrounds([[3]], 170, 17, 17, 0.12),
-	...getGrounds([[1, 1], [, 1]], 119, 0, 170, 0.04),
-	...getGrounds([[1, 2], [, 2]], 119, 0, 170, 0.08),
-	...getGrounds([[1, 3], [, 3]], 119, 0, 170, 0.12),
-	...getGrounds([[1,, 1], [, 1, 1], [,, 1]], 34, 17, 153, 0.04),
-	...getGrounds([[1, 1, 1], [, 2, 1]], 77, 9, 162, 0.08),
-	...getGrounds([[1, 2, 1], [, 3, 1]], 91, 6, 164, 0.12),
-	...getGrounds([[1, 3, 1]], 98, 4, 166, 0.16),
-	...getGrounds([[2, 1]], 145, 9, 94, 0.08),
-	...getGrounds([[2, 2]], 136, 6, 119, 0.12),
-	...getGrounds([[2, 3]], 132, 4, 132, 0.16),
-	...getGrounds([[2,, 1]], 102, 17, 85, 0.08),
-	...getGrounds([[2, 1, 1]], 108, 11, 113, 0.12),
-	...getGrounds([[2, 2, 1]], 111, 9, 128, 0.16),
-	...getGrounds([[2, 3, 1]], 112, 7, 136, 0.2),
-	...getGrounds([[3, 1]], 153, 11, 68, 0.12),
-	...getGrounds([[3, 2]], 145, 9, 94, 0.16),
-	...getGrounds([[3, 3]], 139, 7, 109, 0.2),
-	...getGrounds([[3,, 1]], 125, 17, 62, 0.12),
-	...getGrounds([[3, 1, 1]], 123, 13, 89, 0.16),
-	...getGrounds([[3, 2, 1]], 122, 10, 105, 0.2),
-	...getGrounds([[3, 3, 1]], 122, 9, 116, 0.24),
-	/* eslint-enable no-sparse-arrays */
-	[getSelector(['pre', 'nowiki'], 'tag-')]: {
-		backgroundColor: 'rgb(0,0,0,.04)',
-	},
-	'.cm-mw-tag-ref': {
-		backgroundColor: 'var(--cm-ref)',
-	},
-	[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
-		unicodeBidi: 'isolate',
-	},
-	[ltrSelector]: {
-		direction: 'ltr',
-		display: 'inline-block',
-	},
-});
-
-/**
- * Gets a LanguageSupport instance for the MediaWiki mode.
+ * Get the stream language for Wikitext.
  * @param config Configuration for the MediaWiki mode
  */
-export const mediawiki = (config: MwConfig): LanguageSupport => {
+export const mediawiki = (config: MwConfig): Language => {
 	const mode = new FullMediaWiki(config),
-		lang = StreamLanguage.define(mode.mediawiki()),
-		highlighter = syntaxHighlighting(HighlightStyle.define(mode.getTagStyles()));
-	return new LanguageSupport(lang, [highlighter, theme]);
+		lang = StreamLanguage.define(mode.mediawiki());
+	return lang;
 };
