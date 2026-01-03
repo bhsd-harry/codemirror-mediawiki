@@ -100,58 +100,6 @@ export const htmlTags = /* @__PURE__ */ html.flat(),
 
 export type TagName = keyof typeof tokens;
 
-const highlight = new Map<Tag, TagName[]>([
-	[tags.strong, ['section', 'strong']],
-	[tags.link, ['pageName']],
-	[tags.emphasis, ['em']],
-	[
-		tags.definition(tags.propertyName),
-		[
-			'apostrophes',
-			'list',
-			'redirect',
-			'sectionHeader',
-			'doubleUnderscore',
-			'signature',
-			'hr',
-		],
-	],
-	[tags.invalid, ['error', 'parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
-	[tags.comment, ['comment', 'ignored']],
-	[tags.keyword, ['templateName', 'templateDelimiter', 'templateBracket', 'templateArgumentName']],
-	[
-		tags.regexp,
-		['tableBracket', 'tableDelimiter', 'tableDelimiter2', 'tableDefinition', 'tableDefinitionValue'],
-	],
-	[
-		tags.string,
-		['templateVariable', 'templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
-	],
-	[
-		tags.url,
-		[
-			'linkPageName',
-			'linkBracket',
-			'linkDelimiter',
-			'fileDelimiter',
-			'magicLink',
-			'extLink',
-			'extLinkProtocol',
-			'extLinkBracket',
-			'freeExtLink',
-			'freeExtLinkProtocol',
-			'imageParameter',
-			'linkToSection',
-		],
-	],
-	[
-		tags.namespace,
-		['extTagName', 'extTagBracket', 'extTagAttribute', 'htmlTagName', 'htmlTagBracket', 'htmlTagAttribute'],
-	],
-	[tags.className, ['convertBracket', 'convertDelimiter', 'convertFlag', 'convertLang']],
-	[tags.literal, ['htmlEntity']],
-]);
-
 /**
  * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
  *
@@ -162,6 +110,57 @@ export const tokenTable = /* @__PURE__ */ (() => {
 	const table: Record<string, Tag> = {
 		//
 	};
+	const highlight = new Map<Tag, TagName[]>([
+		[tags.strong, ['section', 'strong']],
+		[tags.link, ['pageName']],
+		[tags.emphasis, ['em']],
+		[
+			tags.definition(tags.propertyName),
+			[
+				'apostrophes',
+				'list',
+				'redirect',
+				'sectionHeader',
+				'doubleUnderscore',
+				'signature',
+				'hr',
+			],
+		],
+		[tags.invalid, ['error', 'parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
+		[tags.comment, ['comment', 'ignored']],
+		[tags.keyword, ['templateName', 'templateDelimiter', 'templateBracket', 'templateArgumentName']],
+		[
+			tags.regexp,
+			['tableBracket', 'tableDelimiter', 'tableDelimiter2', 'tableDefinition', 'tableDefinitionValue'],
+		],
+		[
+			tags.string,
+			['templateVariable', 'templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
+		],
+		[
+			tags.url,
+			[
+				'linkPageName',
+				'linkBracket',
+				'linkDelimiter',
+				'fileDelimiter',
+				'magicLink',
+				'extLink',
+				'extLinkProtocol',
+				'extLinkBracket',
+				'freeExtLink',
+				'freeExtLinkProtocol',
+				'imageParameter',
+				'linkToSection',
+			],
+		],
+		[
+			tags.namespace,
+			['extTagName', 'extTagBracket', 'extTagAttribute', 'htmlTagName', 'htmlTagBracket', 'htmlTagAttribute'],
+		],
+		[tags.className, ['convertBracket', 'convertDelimiter', 'convertFlag', 'convertLang']],
+		[tags.literal, ['htmlEntity']],
+	]);
 	for (const [tag, types] of highlight) {
 		for (const type of types) {
 			table[tokens[type]] = tag;

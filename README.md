@@ -48,8 +48,14 @@ You can simply import the `mediawiki` function to get the Wikitext language with
 import {mediawiki} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const langSupport: LanguageSupport = mediawiki(config);
+const langSupport: LanguageSupport = mediawiki(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
+
+Here is an online [demo](https://bhsd-harry.github.io/codemirror-mediawiki/wikitext).
 
 # Language
 
@@ -86,7 +92,11 @@ Key bindings:
 import {escapeKeymap} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const keymap: KeyBinding[] = escapeKeymap(config);
+const keymap: KeyBinding[] = escapeKeymap(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
@@ -187,7 +197,11 @@ Show the help information of a magic word when hovering.
 import {hover} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const extension: Extension = hover(config);
+const extension: Extension = hover(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
@@ -203,7 +217,11 @@ Show inlay hints for anonymous parameters.
 import {inlayHints} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const extension: Extension = inlayHints(config);
+const extension: Extension = inlayHints(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
@@ -219,7 +237,11 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 import {refHover} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const extension: Extension = refHover(config);
+const extension: Extension = refHover(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
@@ -235,7 +257,11 @@ Show the parser function signature when typing.
 import {signatureHelp} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const extension: Extension = signatureHelp(config);
+const extension: Extension = signatureHelp(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
@@ -251,7 +277,11 @@ Provide syntax diagnostics using [WikiParser-Node](https://www.npmjs.com/package
 import {wikilint} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
-const extension: Extension = wikilint(config);
+const extension: Extension = wikilint(
+	config,
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	'https://cdn.jsdelivr.net',
+);
 ```
 
 </details>
