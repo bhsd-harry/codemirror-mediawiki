@@ -1,6 +1,9 @@
 import {LanguageSupport} from '@codemirror/language';
 import {autocompletion} from '@codemirror/autocomplete';
+import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {keymap} from '@codemirror/view';
+import elt from 'crelt';
+import {base, diagnosticSelector} from './constants.js';
 import {tagModes, getStaticMwConfig} from './static.js';
 import {mediawiki as mediawikiBase} from './mediawiki.js';
 import bracketMatchingBase from './matchBrackets.js';
@@ -13,8 +16,10 @@ import inlayHints from './inlay.js';
 import formatKeymap from './keymap';
 import colorPicker from './color.js';
 import codeFolding from './fold.js';
+import {getWikiLintSource} from './lintsource.js';
 import type {Extension} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
+import type {Diagnostic} from '@codemirror/lint';
 import type {ConfigData} from 'wikiparser-node';
 
 /**
@@ -31,6 +36,44 @@ export const mediawikiLanguage = (configData: ConfigData): Language =>
  */
 export const bracketMatching = (): Extension =>
 	[bracketMatchingBase({brackets: '()[]{}（）【】［］｛｝'}), tagMatchingState];
+
+/**
+ * Get the [wikilint](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#wikilint)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export const wikilint = (configData: ConfigData): Extension => {
+	const source = getWikiLintSource(base.CDN, configData);
+	return [
+		linter(async v => {
+			const diagnostics = (await (await source)(v)).map((diagnostic): Diagnostic => ({
+				...diagnostic,
+				renderMessage(view): HTMLElement {
+					const span = elt(
+						'span',
+						{class: diagnosticSelector.slice(1)},
+						diagnostic.message,
+					);
+					span.addEventListener('click', () => {
+						view.dispatch({
+							selection: {anchor: diagnostic.from, head: diagnostic.to},
+						});
+						view.focus();
+					});
+					return span;
+				},
+			}));
+			if (v.state.readOnly) {
+				for (const diagnostic of diagnostics) {
+					delete diagnostic.actions;
+				}
+			}
+			return diagnostics;
+		}),
+		lintGutter(),
+		keymap.of(lintKeymap),
+	];
+};
 
 /**
  * Get full language support for Wikitext.
@@ -51,6 +94,7 @@ export const mediawiki = (configData: ConfigData): LanguageSupport => new Langua
 		inlayHints(configData),
 		colorPicker(),
 		codeFolding(),
+		wikilint(configData),
 	],
 );
 

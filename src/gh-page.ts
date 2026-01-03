@@ -14,6 +14,7 @@ import {
 	formatKeymap,
 	colorPicker,
 	codeFolding,
+	wikilint,
 } from './index';
 import type {ConfigData} from 'wikiparser-node';
 
@@ -36,6 +37,7 @@ import type {ConfigData} from 'wikiparser-node';
 					inlayHints(configData),
 					colorPicker(),
 					codeFolding(),
+					wikilint(configData),
 				],
 			),
 			syntaxHighlighting(defaultHighlightStyle),

@@ -2,26 +2,30 @@ import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
-import type {Warning, Config} from 'stylelint';
+import type {
+	Warning,
+} from 'stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {QuickFixData, AST} from 'wikiparser-node';
 
-export type Option = Record<string, unknown> | null | undefined;
-export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
 declare type asyncLinter<
 	T,
 > =
-	(text: string, config?: Option) => T;
+	(text: string, obj?: object) => T;
 
 /**
  * @param opt 初始化选项
- * @param obj 仅用于wikiparse.LanguageService
  */
-declare type getAsyncLinter<T, S = never, R = never> = (opt?: S, obj?: R) => Promise<asyncLinter<T>>;
+declare type getAsyncLinter<T, S = never> = (opt?: S) => Promise<asyncLinter<T>>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
 	to?: number;
+}
+
+declare interface WikiLintOption {
+	cdn: string | undefined;
+	getConfig: ConfigGetter;
 }
 
 const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
@@ -61,80 +65,64 @@ const indexToPos = (code: string, index: number): Position => {
 };
 
 /**
- * 判断是否为 Stylelint 设置
- * @param config 设置
- */
-const isStylelintConfig = (config?: Config | Config['rules']): config is Config =>
-	Boolean(config && ('extends' in config || 'rules' in config));
-
-/**
  * 获取 Wikitext LSP
  * @param opt 选项
  * @param opt.cdn jsDelivr CDN，不含库名
- * @param obj 对象
  */
-export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
-	const cdn = opt?.['cdn'] as string | undefined;
+export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, WikiLintOption> = async opt => {
+	const cdn = opt?.cdn;
 	await getWikiparse(
-		opt?.['getConfig'] as ConfigGetter | undefined,
-		opt?.['i18n'] as string | string[] | undefined,
+		opt?.getConfig,
+		undefined,
 		cdn,
 	);
-	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
-		cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
+	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
-		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
-			diagnostics = (await lsp.provideDiagnostics(text)).filter(
-				({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2),
-			),
-			tokens = 'findStyleTokens' in lsp && config?.['invalid-css'] !== '0' ? await lsp.findStyleTokens() : [];
+		const lsp = getLSP(config!)!,
+			diagnostics = await lsp.provideDiagnostics(text),
+			tokens = 'findStyleTokens' in lsp
+				? await lsp.findStyleTokens()
+				: [];
 		if (tokens.length === 0) {
 			return diagnostics;
 		}
 		const lines = tokens.map((token, i) => `${getPrefix(token, i)}${
-				sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
-					.replace(/\n/gu, ' ')
-			}\n}`),
-			cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
-			isConfig = isStylelintConfig(cssConfig),
-			rules: Config['rules'] = {};
-		for (const [key, value] of Object.entries((isConfig ? cssConfig.rules : cssConfig) ?? {})) {
-			if (!value) {
-				rules[key] = value;
-			}
-		}
+			sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
+				.replace(/\n/gu, ' ')
+		}\n}`);
 		return [
 			...diagnostics,
-			...(await cssLint(lines.join('\n'), isConfig ? {...cssConfig, rules} : rules))
-				.map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
-					const i = Math.ceil(line / 3),
-						{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
-						from = offsetAt(range, line - 3 * i, column - 1),
-						diagnostic: MixedDiagnostic = {
-							from,
-							to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
-							severity: severity === 'error' ? 1 : 2,
-							source: 'Stylelint',
-							code: rule,
-							message,
-						};
-					if (fix) {
-						const {length} = getPrefix(tokens[i - 1]!, i),
-							before = lines.slice(0, i - 1).join('\n').length + length + (i - 1 && 1);
-						diagnostic.data = [
-							{
-								range: {
-									start: indexToPos(text, offsetAt(range, fix.range[0] - before)),
-									end: indexToPos(text, offsetAt(range, fix.range[1] - before)),
-								},
-								newText: fix.text,
-								title: 'Fix: Stylelint',
-								fix: true,
-							} satisfies QuickFixData,
-						];
-					}
-					return diagnostic;
-				}),
+			...(await cssLint(
+				lines.join('\n'),
+			)).map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
+				const i = Math.ceil(line / 3),
+					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
+					from = offsetAt(range, line - 3 * i, column - 1),
+					diagnostic: MixedDiagnostic = {
+						from,
+						to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
+						severity: severity === 'error' ? 1 : 2,
+						source: 'Stylelint',
+						code: rule,
+						message,
+					};
+				if (fix) {
+					const {length} = getPrefix(tokens[i - 1]!, i),
+						before = lines.slice(0, i - 1).join('\n').length + length + (i - 1 && 1);
+					diagnostic.data = [
+						{
+							range: {
+								start: indexToPos(text, offsetAt(range, fix.range[0] - before)),
+								end: indexToPos(text, offsetAt(range, fix.range[1] - before)),
+							},
+							newText: fix.text,
+							title: 'Fix: Stylelint',
+							fix: true,
+						} satisfies QuickFixData,
+					];
+				}
+				return diagnostic;
+			}),
 		];
 	};
 	return linter;
@@ -148,8 +136,8 @@ const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = st
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<
 		Promise<Warning[]>
-	> = async (code, opt) => {
-		const warnings = await styleLint(stylelint, code, opt);
+	> = async code => {
+		const warnings = await styleLint(stylelint, code);
 		return warnings;
 	};
 	return linter;

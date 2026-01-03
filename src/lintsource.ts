@@ -1,31 +1,16 @@
 import {
 	getWikiLinter,
 } from './linter.js';
-import {posToIndex} from './util.js';
+import {posToIndex, toConfigGetter} from './util.js';
 import type {EditorView} from '@codemirror/view';
-import type {EditorState, Text} from '@codemirror/state';
-import type {Language} from '@codemirror/language';
-import type {Diagnostic, Action} from '@codemirror/lint';
-import type {QuickFixData} from 'wikiparser-node';
-import type {Option, LiveOption} from './linter';
+import type {Text} from '@codemirror/state';
+import type {Diagnostic, Action, LintSource} from '@codemirror/lint';
+import type {QuickFixData, ConfigData} from 'wikiparser-node';
 
-export type LintSource =
-	(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>;
-export type LintSources = LintSource | [LintSource] | [LintSource, LintSource];
-export type LintSourceGetter = (
-	cdn?: string,
-	opt?: Option | LiveOption,
-	view?: EditorView,
-	nestedMWLanguage?: Language,
+declare type LintSourceGetter = (
+	cdn: string | undefined,
+	opt: ConfigData,
 ) => LintSource | Promise<LintSource>;
-
-/**
- * 获取Linter选项
- * @param opt Linter选项
- * @param runtime 是否为运行时选项
- */
-const getOpt = (opt: Option | LiveOption, runtime?: boolean): Option | Promise<Option> =>
-	typeof opt === 'function' ? opt(runtime) : opt;
 
 /**
  * 获取指定行列的位置
@@ -64,11 +49,11 @@ const getRange = (
 const wikiLintSource = async (
 	wikiLint: Awaited<ReturnType<typeof getWikiLinter>>,
 	text: string,
-	opt: Option,
 	doc: Text,
+	v: EditorView,
 	f = 0,
 	t?: number,
-): Promise<Diagnostic[]> => (await wikiLint(text, opt))
+): Promise<Diagnostic[]> => (await wikiLint(text, v))
 	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 		source: source!,
 		severity: severity === 2 ? 'warning' : 'error',
@@ -90,9 +75,11 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (cdn, opt, v): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter({...await getOpt(opt), cdn}, v);
-	const lintSource: LintSource = async ({doc}) =>
-		wikiLintSource(wikiLint, doc.toString(), await getOpt(opt, true), doc);
+export const getWikiLintSource: LintSourceGetter = async (cdn, configData): Promise<LintSource> => {
+	const wikiLint = await getWikiLinter({getConfig: toConfigGetter(configData), cdn});
+	const lintSource: LintSource = async view => {
+		const {doc} = view.state;
+		return wikiLintSource(wikiLint, doc.toString(), doc, view);
+	};
 	return lintSource;
 };

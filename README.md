@@ -22,6 +22,7 @@ This repository contains a modified Wikitext [language](#mediawikilanguage) from
 	- [inlayHints](#inlayhints)
 	- [refHover](#refhover)
 	- [signatureHelp](#signaturehelp)
+	- [wikilint](#wikilint)
 
 </details>
 
@@ -235,6 +236,22 @@ import {signatureHelp} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
 const extension: Extension = signatureHelp(config);
+```
+
+</details>
+
+## wikilint
+
+<details>
+	<summary>Expand</summary>
+
+Provide syntax diagnostics using [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node).
+
+```ts
+import {wikilint} from '@bhsd/codemirror-wikitext';
+import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+
+const extension: Extension = wikilint(config);
 ```
 
 </details>

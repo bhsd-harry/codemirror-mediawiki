@@ -3,7 +3,7 @@ import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
 import {base} from './constants.js';
 import {
-	CodeMirror6,
+	replaceSelections,
 } from './codemirror.js';
 import {toConfigGetter} from './util.js';
 import type {
@@ -26,7 +26,7 @@ const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ':
  */
 const convert = (func: (str: string) => string, cmd: Command): Command => (view): boolean => {
 	if (view.state.selection.ranges.some(({empty}) => !empty)) {
-		CodeMirror6.replaceSelections(view, func);
+		replaceSelections(view, func);
 		return true;
 	}
 	return cmd(view);
