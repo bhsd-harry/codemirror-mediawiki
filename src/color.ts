@@ -4,9 +4,9 @@ import {
 	parseCallExpression,
 	parseColorLiteral,
 	ColorType,
+	wrapperClassName,
 	colorPickerTheme,
 	makeColorPicker,
-	wrapperClassName,
 } from '@bhsd/codemirror-css-color-picker';
 import type {
 	Text,
@@ -15,7 +15,7 @@ import type {
 import type {Tree} from '@lezer/common';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 
-const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
+export const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
 	if (
 		!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)
 		&& (

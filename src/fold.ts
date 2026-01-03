@@ -96,7 +96,7 @@ const refNames = new Set<string | undefined>(['ref', 'references']);
  * @param tree 语法树
  * @param refOnly 是否仅检查`<ref>`标签
  */
-const foldable = (
+export const foldable = (
 	state: EditorState,
 	posOrNode: number | SyntaxNode,
 	tree?: Tree | null,
@@ -277,7 +277,7 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 	return found;
 };
 
-const foldableLine = (
+export const foldableLine = (
 	{state, viewport: {to: end}, viewportLineBlocks}: EditorView,
 	{from: f, to: t}: DocRange,
 ): DocRange | false => {
@@ -389,7 +389,7 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 	return execute(view, effects, anchor);
 };
 
-const foldRef = /* @__PURE__ */ foldCommand(true);
+export const foldRef = /* @__PURE__ */ foldCommand(true);
 
 /**
  * Get the [codeFolding](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#codefolding)

@@ -111,38 +111,49 @@ export const tokenTable = /* @__PURE__ */ (() => {
 		//
 	};
 	const highlight = new Map<Tag, TagName[]>([
-		[tags.strong, ['section', 'strong']],
+		[tags.strong, ['section', 'strong', 'tableCaption', 'tableTh']],
 		[tags.link, ['pageName']],
 		[tags.emphasis, ['em']],
-		[
-			tags.definition(tags.propertyName),
-			[
-				'apostrophes',
-				'list',
-				'redirect',
-				'sectionHeader',
-				'doubleUnderscore',
-				'signature',
-				'hr',
-			],
-		],
-		[tags.invalid, ['error', 'parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
+		// #940
 		[tags.comment, ['comment', 'ignored']],
-		[tags.keyword, ['templateName', 'templateDelimiter', 'templateBracket', 'templateArgumentName']],
+		// #f00
+		[tags.invalid, ['error']],
+		// #a11
+		[tags.character, ['htmlEntity']],
+		// #404740
+		[tags.processingInstruction, ['apostrophes', 'list', 'sectionHeader', 'signature', 'hr']],
+		// #219
+		[tags.labelName, ['redirect', 'doubleUnderscore']],
+		// #708
+		[tags.operatorKeyword, ['parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
+		// #256
+		[tags.special(tags.variableName), ['templateName', 'templateDelimiter', 'templateBracket']],
+		// #00f
+		[tags.definition(tags.variableName), ['templateArgumentName']],
+		// #30a
 		[
-			tags.regexp,
-			['tableBracket', 'tableDelimiter', 'tableDelimiter2', 'tableDefinition', 'tableDefinitionValue'],
+			tags.local(tags.variableName),
+			['templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
 		],
+		// #085
+		[tags.tagName, ['extTagName', 'extTagBracket', 'htmlTagName', 'htmlTagBracket']],
+		// #e40
+		[tags.special(tags.string), ['tableBracket', 'tableDelimiter', 'tableDelimiter2']],
+		// #00c
 		[
-			tags.string,
-			['templateVariable', 'templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
+			tags.definition(tags.attributeName),
+			['extTagAttribute', 'htmlTagAttribute', 'tableDefinition', 'imageParameter'],
 		],
+		// #a11
+		[tags.attributeValue, ['extTagAttributeValue', 'htmlTagAttributeValue', 'tableDefinitionValue']],
+		// #219
 		[
 			tags.url,
 			[
 				'linkPageName',
 				'linkBracket',
 				'linkDelimiter',
+				'linkToSection',
 				'fileDelimiter',
 				'magicLink',
 				'extLink',
@@ -150,16 +161,12 @@ export const tokenTable = /* @__PURE__ */ (() => {
 				'extLinkBracket',
 				'freeExtLink',
 				'freeExtLinkProtocol',
-				'imageParameter',
-				'linkToSection',
 			],
 		],
-		[
-			tags.namespace,
-			['extTagName', 'extTagBracket', 'extTagAttribute', 'htmlTagName', 'htmlTagBracket', 'htmlTagAttribute'],
-		],
-		[tags.className, ['convertBracket', 'convertDelimiter', 'convertFlag', 'convertLang']],
-		[tags.literal, ['htmlEntity']],
+		// #164
+		[tags.literal, ['convertBracket', 'convertDelimiter', 'convertFlag']],
+		// #00c
+		[tags.definition(tags.propertyName), ['convertLang']],
 	]);
 	for (const [tag, types] of highlight) {
 		for (const type of types) {

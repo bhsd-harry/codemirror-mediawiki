@@ -1,8 +1,12 @@
+import {
+	EditorSelection,
+} from '@codemirror/state';
 import type {
 	EditorView,
 } from '@codemirror/view';
-import {EditorSelection} from '@codemirror/state';
-import type {DocRange} from './fold';
+import type {
+	DocRange,
+} from './fold';
 
 export const replaceSelections = (
 	view: EditorView,
