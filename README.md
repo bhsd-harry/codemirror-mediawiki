@@ -309,6 +309,23 @@ import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
 registerMediaWiki();
 ```
 
+The MediaWiki mode provides the following key bindings for quick formatting:
+
+- `Ctrl` + `0`: Plain paragraph
+- `Ctrl` + `1-6`: Headings level 1 to 6
+- `Ctrl` + `7`: Preformatted text
+- `Ctrl` + `8`: Blockquote
+- `Ctrl`/`Cmd` + `/`: Comment
+- `Ctrl`/`Cmd` + `.`: Superscript
+- `Ctrl`/`Cmd` + `,`: Subscript
+- `Ctrl`/`Cmd` + `B`: Bold
+- `Ctrl`/`Cmd` + `I`: Italic
+- `Ctrl`/`Cmd` + `U`: Underline
+- `Ctrl`/`Cmd` + `K`: Wiki link
+- `Ctrl` + `Shift` + `5`: Strikethrough
+- `Ctrl`/`Cmd` + `Shift` + `6`: Inline code
+- `Ctrl`/`Cmd` + `Shift` + `K`: Ref tag
+
 If you want a more granular control over the extensions, you can import the `registerMediaWikiCore` function and the desired extensions:
 
 ```js
@@ -930,6 +947,11 @@ registerAllowMultipleSelections();
 
 Provide autocompletion for MediaWiki, CSS and JavaScript modes.
 
+Key bindings:
+
+- `Shift` + `Enter`: Trigger autocompletion
+- `Tab`: Accept the selected suggestion
+
 For granular control over the bundled extensions, you can import the `registerAutocompletion` function:
 
 ```js
@@ -990,6 +1012,7 @@ Key bindings:
 - `Ctrl` + `Shift` + `]`/`Cmd` + `Alt` + `]`: Unfold at the selected text
 - `Ctrl` + `Alt` + `[`: Fold all
 - `Ctrl` + `Alt` + `]`: Unfold all
+- `Ctrl` + `Alt` + `.`: Fold all `<ref>` tags
 
 For granular control over the bundled extensions, you can import the `registerCodeFolding` function:
 
@@ -1029,6 +1052,7 @@ Key bindings:
 
 - `Ctrl`/`Cmd` + `[`: Escape the selected text with HTML entities
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
+- `Ctrl`/`Cmd` + `\`: Escape the selected text with [magic words](https://www.mediawiki.org/wiki/Help:Magic_words#Escaped_characters)
 
 For granular control over the bundled extensions, you can import the `registerEscape` function:
 
