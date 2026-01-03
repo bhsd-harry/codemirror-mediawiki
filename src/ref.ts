@@ -78,7 +78,7 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 						}
 						if (target) {
 							const {doc} = state,
-								ref = await getLSP(view, false, toConfigGetter(configData), base.CDN)
+								ref = await getLSP(view, true, toConfigGetter(configData), base.CDN)
 									?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 							return {
 								pos,

@@ -32,7 +32,7 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 			): Promise<Tooltip | null> => {
 				const {state} = view,
 					{doc} = state;
-				const hover = await getLSP(view, false, toConfigGetter(configData), base.CDN)
+				const hover = await getLSP(view, true, toConfigGetter(configData), base.CDN)
 					?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
 					const {end} = hover.range!;

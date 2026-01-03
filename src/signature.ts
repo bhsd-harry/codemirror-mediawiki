@@ -65,7 +65,7 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 						effects: stateEffect.of({
 							text,
 							cursor,
-							signatureHelp: await getLSP(view, false, toConfigGetter(configData), base.CDN)
+							signatureHelp: await getLSP(view, true, toConfigGetter(configData), base.CDN)
 								?.provideSignatureHelp(text, indexToPos(doc, cursor)),
 						}),
 					});

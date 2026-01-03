@@ -71,7 +71,7 @@ const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docCha
 		view.dispatch({
 			effects: stateEffect.of({
 				text,
-				inlayHints: await getLSP(view)?.provideInlayHints(text),
+				inlayHints: await getLSP(view, true)?.provideInlayHints(text),
 			}),
 		});
 	}
@@ -90,7 +90,7 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 		ViewPlugin.fromClass(class implements PluginValue {
 			constructor(view: EditorView) {
 				const timer = setInterval(() => {
-					if (getLSP(view, false, toConfigGetter(configData), base.CDN)) {
+					if (getLSP(view, true, toConfigGetter(configData), base.CDN)) {
 						clearInterval(timer);
 						void updateField({view, docChanged: true});
 					}

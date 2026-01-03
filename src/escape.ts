@@ -50,7 +50,7 @@ const escapeHTML = (str: string): string => [...str].map(c => {
 const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
 	const {state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, getConfig, base.CDN);
+		lsp = getLSP(view, true, getConfig, base.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();

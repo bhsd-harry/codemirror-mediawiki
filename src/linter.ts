@@ -78,7 +78,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, WikiLintO
 	);
 	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
-		const lsp = getLSP(config!)!,
+		const lsp = getLSP(config!, true)!,
 			diagnostics = await lsp.provideDiagnostics(text),
 			tokens = 'findStyleTokens' in lsp
 				? await lsp.findStyleTokens()
