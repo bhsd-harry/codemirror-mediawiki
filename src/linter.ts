@@ -3,7 +3,10 @@ import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
 import type {Linter} from 'eslint';
-import type {Warning, Config} from 'stylelint';
+import type {
+	Warning,
+	Config,
+} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {QuickFixData, AST} from 'wikiparser-node';
@@ -99,22 +102,25 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		opt?.['i18n'] as string | string[] | undefined,
 		cdn,
 	);
-	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!,
-		cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
+	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
+	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			diagnostics = (await lsp.provideDiagnostics(text)).filter(
 				({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2),
 			),
-			tokens = 'findStyleTokens' in lsp && config?.['invalid-css'] !== '0' ? await lsp.findStyleTokens() : [];
+			tokens = 'findStyleTokens' in lsp
+				&& config?.['invalid-css'] !== '0'
+				? await lsp.findStyleTokens()
+				: [];
 		if (tokens.length === 0) {
 			return diagnostics;
 		}
 		const lines = tokens.map((token, i) => `${getPrefix(token, i)}${
-				sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
-					.replace(/\n/gu, ' ')
-			}\n}`),
-			cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
+			sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
+				.replace(/\n/gu, ' ')
+		}\n}`);
+		const cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
 			isConfig = isStylelintConfig(cssConfig),
 			rules: Config['rules'] = {};
 		for (const [key, value] of Object.entries((isConfig ? cssConfig.rules : cssConfig) ?? {})) {
@@ -124,36 +130,38 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		}
 		return [
 			...diagnostics,
-			...(await cssLint(lines.join('\n'), isConfig ? {...cssConfig, rules} : rules))
-				.map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
-					const i = Math.ceil(line / 3),
-						{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
-						from = offsetAt(range, line - 3 * i, column - 1),
-						diagnostic: MixedDiagnostic = {
-							from,
-							to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
-							severity: severity === 'error' ? 1 : 2,
-							source: 'Stylelint',
-							code: rule,
-							message,
-						};
-					if (fix) {
-						const {length} = getPrefix(tokens[i - 1]!, i),
-							before = lines.slice(0, i - 1).join('\n').length + length + (i - 1 && 1);
-						diagnostic.data = [
-							{
-								range: {
-									start: indexToPos(text, offsetAt(range, fix.range[0] - before)),
-									end: indexToPos(text, offsetAt(range, fix.range[1] - before)),
-								},
-								newText: fix.text,
-								title: 'Fix: Stylelint',
-								fix: true,
-							} satisfies QuickFixData,
-						];
-					}
-					return diagnostic;
-				}),
+			...(await cssLint(
+				lines.join('\n'),
+				isConfig ? {...cssConfig, rules} : rules,
+			)).map(({line, column, endLine, endColumn, rule, severity, text: message, fix}): MixedDiagnostic => {
+				const i = Math.ceil(line / 3),
+					{range} = tokens[i - 1]!.childNodes![1]!.childNodes![0]!,
+					from = offsetAt(range, line - 3 * i, column - 1),
+					diagnostic: MixedDiagnostic = {
+						from,
+						to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
+						severity: severity === 'error' ? 1 : 2,
+						source: 'Stylelint',
+						code: rule,
+						message,
+					};
+				if (fix) {
+					const {length} = getPrefix(tokens[i - 1]!, i),
+						before = lines.slice(0, i - 1).join('\n').length + length + (i - 1 && 1);
+					diagnostic.data = [
+						{
+							range: {
+								start: indexToPos(text, offsetAt(range, fix.range[0] - before)),
+								end: indexToPos(text, offsetAt(range, fix.range[1] - before)),
+							},
+							newText: fix.text,
+							title: 'Fix: Stylelint',
+							fix: true,
+						} satisfies QuickFixData,
+					];
+				}
+				return diagnostic;
+			}),
 		];
 	};
 	if ('resolveCodeAction' in lsp) {

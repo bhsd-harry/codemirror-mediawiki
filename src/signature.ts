@@ -2,7 +2,11 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
 import {base} from './constants.js';
-import {createTooltipView, indexToPos, escHTML} from './util.js';
+import {
+	createTooltipView,
+	indexToPos,
+	escHTML,
+} from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
@@ -87,4 +91,4 @@ export default (cm: CodeMirror6): Extension => [
 			},
 		};
 	}),
-] as Extension;
+];

@@ -6,11 +6,17 @@ import elt from 'crelt';
 import {base} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
-import {indexToPos, posToIndex, escHTML} from './util.js';
+import {
+	indexToPos,
+	posToIndex,
+	escHTML,
+} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
-import type {AST} from 'wikiparser-node';
+import type {
+	AST,
+} from 'wikiparser-node';
 import type {CodeMirror6} from './codemirror';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
@@ -87,7 +93,9 @@ export default (cm: CodeMirror6): Extension => [
 										},
 										(code, classes) => {
 											const escaped = escHTML(code);
-											result += classes ? `<span class="${classes}">${escaped}</span>` : escaped;
+											result += classes
+												? `<span class="${classes}">${escaped}</span>`
+												: escaped;
 										},
 										() => {
 											result += '<br>';
@@ -134,4 +142,4 @@ export default (cm: CodeMirror6): Extension => [
 			color: 'var(--cm-comment)',
 		},
 	}),
-] as Extension;
+];

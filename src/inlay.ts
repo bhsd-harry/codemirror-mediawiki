@@ -3,7 +3,9 @@ import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {base} from './constants.js';
-import {posToIndex} from './util.js';
+import {
+	posToIndex,
+} from './util.js';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
@@ -85,8 +87,8 @@ export default (cm: CodeMirror6): Extension => [
 			}, 100);
 		}
 
-		update(update: ViewUpdate): void {
-			void updateField(update);
+		update(viewUpdate: ViewUpdate): void {
+			void updateField(viewUpdate);
 		}
 	}),
 	EditorView.theme({

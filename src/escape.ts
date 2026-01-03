@@ -9,10 +9,14 @@ import {
 	menuRegistry,
 } from './codemirror.js';
 import type {
-	Command,
 	EditorView,
+	Command,
 } from '@codemirror/view';
-import type {Extension, SelectionRange} from '@codemirror/state';
+import type {
+	SelectionRange,
+	Extension,
+} from '@codemirror/state';
+import type {ConfigGetter} from '@bhsd/browser';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
 
@@ -44,11 +48,10 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		return encodeURIComponent(str);
 	};
 
-const escapeWiki = (cm: CodeMirror6): boolean => {
-	const view = cm.view!,
-		{state} = view,
+const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
+	const {state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
+		lsp = getLSP(view, false, getConfig, base.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -103,7 +106,7 @@ menuRegistry.push({
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {
-					escapeWiki(cm);
+					escapeWiki(view, cm.getWikiConfig);
 					handlerBase(view, e);
 				});
 				items.unshift(btnWiki);
@@ -118,8 +121,8 @@ export default (cm: CodeMirror6): Extension => keymap.of([
 	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
 	{
 		key: 'Mod-\\',
-		run(): boolean {
-			return escapeWiki(cm);
+		run(view): boolean {
+			return escapeWiki(view, cm.getWikiConfig);
 		},
 	},
 ]);
