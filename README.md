@@ -42,7 +42,7 @@ npm install wikiparser-node
 
 # Basic Usage
 
-You can simply import the `mediawiki` function to get the Wikitext language with full [language support](https://codemirror.net/docs/ref/#language.LanguageSupport):
+You can simply import the `mediawiki` function to get the Wikitext language with full [language support](#extensions):
 
 ```ts
 import {mediawiki} from '@bhsd/codemirror-wikitext';
