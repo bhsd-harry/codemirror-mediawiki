@@ -1,5 +1,8 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
-import {loadScript, getLSP} from '@bhsd/browser';
+import {
+	getLSP,
+} from '@bhsd/browser';
+import {marked} from 'marked';
 import {base, hoverSelector} from './constants.js';
 import {
 	indexToPos,
@@ -12,10 +15,6 @@ import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
-
-declare const marked: {
-	parse(source: string): string;
-};
 
 /**
  * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
@@ -36,12 +35,6 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 				const hover = await getLSP(view, false, toConfigGetter(configData), base.CDN)
 					?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
-					const {CDN = ''} = base;
-					await loadScript(
-						`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
-						'marked',
-						true,
-					);
 					const {end} = hover.range!;
 					return {
 						pos,
@@ -49,7 +42,10 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 						above: true,
 						create(): TooltipView {
 							const {kind, value} = hover.contents as MarkupContent;
-							return createTooltipView(view, kind === 'plaintext' ? value : marked.parse(value));
+							return createTooltipView(
+								view,
+								kind === 'plaintext' ? value : marked.parse(value) as string,
+							);
 						},
 					};
 				}

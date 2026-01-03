@@ -48,6 +48,7 @@
 		"@codemirror/lint": "^6.9.2",
 		"@codemirror/state": "^6.5.3",
 		"@codemirror/view": "^6.38.8",
+		"marked": "^17.0.1",
 		"wikiparser-node": "^1.33.0"
 	},
 	"devDependencies": {
