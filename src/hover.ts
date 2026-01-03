@@ -1,42 +1,57 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {loadScript, getLSP} from '@bhsd/browser';
 import {base, hoverSelector} from './constants.js';
-import {indexToPos, posToIndex, createTooltipView} from './util.js';
+import {
+	indexToPos,
+	posToIndex,
+	createTooltipView,
+	toConfigGetter,
+} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror.js';
+import type {ConfigData} from 'wikiparser-node';
 
 declare const marked: {
 	parse(source: string): string;
 };
 
-export default (cm: CodeMirror6): Extension => [
-	hoverTooltip(async (view, pos): Promise<Tooltip | null> => {
-		const {state} = view,
-			{doc} = state;
-		const hover = await getLSP(view, false, cm.getWikiConfig, base.CDN)
-			?.provideHover(doc.toString(), indexToPos(doc, pos));
-		if (hover) {
-			const {CDN = ''} = base;
-			await loadScript(
-				`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
-				'marked',
-				true,
-			);
-			const {end} = hover.range!;
-			return {
-				pos,
-				end: posToIndex(doc, end),
-				above: true,
-				create(): TooltipView {
-					const {kind, value} = hover.contents as MarkupContent;
-					return createTooltipView(view, kind === 'plaintext' ? value : marked.parse(value));
-				},
-			};
-		}
-		return null;
-	}),
+/**
+ * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export default (configData: ConfigData): Extension => [
+	hoverTooltip(
+		async (
+			view,
+			pos,
+		): Promise<Tooltip | null> => {
+			const {state} = view,
+				{doc} = state;
+			const hover = await getLSP(view, false, toConfigGetter(configData), base.CDN)
+				?.provideHover(doc.toString(), indexToPos(doc, pos));
+			if (hover) {
+				const {CDN = ''} = base;
+				await loadScript(
+					`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
+					'marked',
+					true,
+				);
+				const {end} = hover.range!;
+				return {
+					pos,
+					end: posToIndex(doc, end),
+					above: true,
+					create(): TooltipView {
+						const {kind, value} = hover.contents as MarkupContent;
+						return createTooltipView(view, kind === 'plaintext' ? value : marked.parse(value));
+					},
+				};
+			}
+			return null;
+		},
+	),
 	EditorView.theme({
 		[hoverSelector]: {
 			padding: '2px 5px',

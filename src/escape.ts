@@ -1,4 +1,3 @@
-import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
@@ -6,10 +5,17 @@ import {base} from './constants.js';
 import {
 	CodeMirror6,
 } from './codemirror.js';
+import {toConfigGetter} from './util.js';
 import type {
+	EditorView,
 	Command,
+	KeyBinding,
 } from '@codemirror/view';
-import type {Extension, SelectionRange} from '@codemirror/state';
+import type {
+	SelectionRange,
+} from '@codemirror/state';
+import type {ConfigGetter} from '@bhsd/browser';
+import type {ConfigData} from 'wikiparser-node';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
 
@@ -41,11 +47,10 @@ const escapeHTML = (str: string): string => [...str].map(c => {
 		return encodeURIComponent(str);
 	};
 
-const escapeWiki = (cm: CodeMirror6): boolean => {
-	const view = cm.view!,
-		{state} = view,
+const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
+	const {state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
+		lsp = getLSP(view, false, getConfig, base.CDN);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -70,13 +75,18 @@ const escapeWiki = (cm: CodeMirror6): boolean => {
 	return false;
 };
 
-export default (cm: CodeMirror6): Extension => keymap.of([
+/**
+ * Get the [escape](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#escapekeymap)
+ * key bindings for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export default (configData: ConfigData): KeyBinding[] => [
 	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
 	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
 	{
 		key: 'Mod-\\',
-		run(): boolean {
-			return escapeWiki(cm);
+		run(view): boolean {
+			return escapeWiki(view, toConfigGetter(configData));
 		},
 	},
-]);
+];

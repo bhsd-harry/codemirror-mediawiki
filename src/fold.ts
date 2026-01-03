@@ -391,7 +391,11 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 
 const foldRef = /* @__PURE__ */ foldCommand(true);
 
-export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
+/**
+ * Get the [codeFolding](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#codefolding)
+ * extension for Wikitext.
+ */
+export default (): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
 			const element = elt(
@@ -497,4 +501,4 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 			},
 		},
 	}),
-])();
+];

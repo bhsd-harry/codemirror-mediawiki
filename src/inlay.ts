@@ -3,11 +3,14 @@ import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {base} from './constants.js';
-import {posToIndex} from './util.js';
+import {
+	posToIndex,
+	toConfigGetter,
+} from './util.js';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror';
+import type {ConfigData} from 'wikiparser-node';
 
 declare interface InlayHintEffect {
 	inlayHints: InlayHint[] | undefined;
@@ -73,12 +76,17 @@ const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docCha
 	}
 };
 
-export default (cm: CodeMirror6): Extension => [
+/**
+ * Get the [inlayHints](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#inlayhints)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export default (configData: ConfigData): Extension => [
 	field,
 	ViewPlugin.fromClass(class implements PluginValue {
 		constructor(view: EditorView) {
 			const timer = setInterval(() => {
-				if (getLSP(view, false, cm.getWikiConfig, base.CDN)) {
+				if (getLSP(view, false, toConfigGetter(configData), base.CDN)) {
 					clearInterval(timer);
 					void updateField({view, docChanged: true});
 				}

@@ -2,11 +2,16 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
 import {base} from './constants.js';
-import {createTooltipView, indexToPos, escHTML} from './util.js';
+import {
+	createTooltipView,
+	indexToPos,
+	escHTML,
+	toConfigGetter,
+} from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {SignatureHelp} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror';
+import type {ConfigData} from 'wikiparser-node';
 
 declare interface SignatureEffect {
 	signatureHelp?: SignatureHelp | undefined;
@@ -33,7 +38,12 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 		},
 	});
 
-export default (cm: CodeMirror6): Extension => [
+/**
+ * Get the [signatureHelp](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#signaturehelp)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export default (configData: ConfigData): Extension => [
 	field,
 	EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {
 		if (docChanged || selectionSet && state.field(field)?.signatureHelp?.signatures.length) {
@@ -51,7 +61,7 @@ export default (cm: CodeMirror6): Extension => [
 					effects: stateEffect.of({
 						text,
 						cursor,
-						signatureHelp: await getLSP(view, false, cm.getWikiConfig, base.CDN)
+						signatureHelp: await getLSP(view, false, toConfigGetter(configData), base.CDN)
 							?.provideSignatureHelp(text, indexToPos(doc, cursor)),
 					}),
 				});

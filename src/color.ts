@@ -1,16 +1,21 @@
 import {splitColors, numToHex} from '@bhsd/common';
+import {EditorView} from '@codemirror/view';
 import {
 	parseCallExpression,
 	parseColorLiteral,
 	ColorType,
+	colorPickerTheme,
+	makeColorPicker,
+	wrapperClassName,
 } from '@bhsd/codemirror-css-color-picker';
 import type {
 	Text,
+	Extension,
 } from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 
-export const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
+const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
 	if (
 		!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)
 		&& (
@@ -42,3 +47,21 @@ export const discoverColors = (_: Tree, from: number, to: number, type: string, 
 			};
 		}).filter(options => options !== null);
 };
+
+/**
+ * Get the [colorPicker](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#colorpicker)
+ * extension for Wikitext.
+ */
+export default (): Extension => [
+	makeColorPicker({discoverColors}),
+	colorPickerTheme,
+	EditorView.theme({
+		[`.${wrapperClassName}`]: {
+			outline: 'none',
+			marginLeft: '.6ch',
+		},
+		[`.${wrapperClassName} input[type="color"]`]: {
+			outline: '1px solid #eee',
+		},
+	}),
+];

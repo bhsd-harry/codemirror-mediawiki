@@ -3,7 +3,18 @@ import {syntaxHighlighting, defaultHighlightStyle, LanguageSupport} from '@codem
 import {defaultKeymap, history, historyKeymap, indentWithTab} from '@codemirror/commands';
 import {autocompletion} from '@codemirror/autocomplete';
 import {searchKeymap} from '@codemirror/search';
-import {mediawikiLanguage, bracketMatching, escape} from './entry';
+import {
+	mediawikiLanguage,
+	bracketMatching,
+	escapeKeymap,
+	refHover,
+	hover,
+	signatureHelp,
+	inlayHints,
+	formatKeymap,
+	colorPicker,
+	codeFolding,
+} from './index';
 import type {ConfigData} from 'wikiparser-node';
 
 (async () => {
@@ -13,9 +24,18 @@ import type {ConfigData} from 'wikiparser-node';
 			new LanguageSupport(
 				mediawikiLanguage(configData),
 				[
+					keymap.of([
+						...formatKeymap,
+						...escapeKeymap(configData),
+					]),
 					bracketMatching(),
 					autocompletion(),
-					escape(configData),
+					refHover(configData),
+					hover(configData),
+					signatureHelp(configData),
+					inlayHints(configData),
+					colorPicker(),
+					codeFolding(),
 				],
 			),
 			syntaxHighlighting(defaultHighlightStyle),

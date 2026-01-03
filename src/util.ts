@@ -5,6 +5,8 @@ import type {EditorView, TooltipView} from '@codemirror/view';
 import type {Text, EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
+import type {ConfigGetter} from '@bhsd/browser';
+import type {ConfigData} from 'wikiparser-node';
 import type {TagName} from './config';
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
@@ -65,3 +67,9 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
  */
 export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
+
+/**
+ * 将解析设置转换为返回Promise的函数
+ * @param configData 解析设置
+ */
+export const toConfigGetter = (configData: ConfigData): ConfigGetter => () => Promise.resolve(configData);

@@ -6,12 +6,19 @@ import elt from 'crelt';
 import {base} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
-import {indexToPos, posToIndex, escHTML} from './util.js';
+import {
+	indexToPos,
+	posToIndex,
+	escHTML,
+	toConfigGetter,
+} from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
-import type {AST} from 'wikiparser-node';
-import type {CodeMirror6} from './codemirror';
+import type {
+	AST,
+	ConfigData,
+} from 'wikiparser-node';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
@@ -28,7 +35,12 @@ const trees = new WeakMap<EditorView, Tree>(),
  */
 const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
 
-export default (cm: CodeMirror6): Extension => [
+/**
+ * Get the [refHover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#refhover)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export default (configData: ConfigData): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 		const {state} = view,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
@@ -62,7 +74,7 @@ export default (cm: CodeMirror6): Extension => [
 					}
 					if (target) {
 						const {doc} = state,
-							ref = await getLSP(view, false, cm.getWikiConfig, base.CDN)
+							ref = await getLSP(view, false, toConfigGetter(configData), base.CDN)
 								?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 						return {
 							pos,
