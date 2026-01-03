@@ -6,6 +6,7 @@ import {base} from './constants.js';
 import {
 	posToIndex,
 	toConfigGetter,
+	update,
 } from './util.js';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -80,29 +81,33 @@ const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docCha
  * Get the [inlayHints](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#inlayhints)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData): Extension => [
-	field,
-	ViewPlugin.fromClass(class implements PluginValue {
-		constructor(view: EditorView) {
-			const timer = setInterval(() => {
-				if (getLSP(view, false, toConfigGetter(configData), base.CDN)) {
-					clearInterval(timer);
-					void updateField({view, docChanged: true});
-				}
-			}, 100);
-		}
+export default (configData: ConfigData, cdn?: string): Extension => {
+	update(cdn);
+	return [
+		field,
+		ViewPlugin.fromClass(class implements PluginValue {
+			constructor(view: EditorView) {
+				const timer = setInterval(() => {
+					if (getLSP(view, false, toConfigGetter(configData), base.CDN)) {
+						clearInterval(timer);
+						void updateField({view, docChanged: true});
+					}
+				}, 100);
+			}
 
-		update(update: ViewUpdate): void {
-			void updateField(update);
-		}
-	}),
-	EditorView.theme({
-		[`.${cls}`]: {
-			color: '#969696',
-			fontStyle: 'italic',
-			'-webkitUserSelect': 'none',
-			userSelect: 'none',
-		},
-	}),
-];
+			update(viewUpdate: ViewUpdate): void {
+				void updateField(viewUpdate);
+			}
+		}),
+		EditorView.theme({
+			[`.${cls}`]: {
+				color: '#969696',
+				fontStyle: 'italic',
+				'-webkitUserSelect': 'none',
+				userSelect: 'none',
+			},
+		}),
+	];
+};

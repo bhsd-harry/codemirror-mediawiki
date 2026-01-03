@@ -5,7 +5,7 @@ import {base} from './constants.js';
 import {
 	replaceSelections,
 } from './codemirror.js';
-import {toConfigGetter} from './util.js';
+import {toConfigGetter, update} from './util.js';
 import type {
 	EditorView,
 	Command,
@@ -79,14 +79,18 @@ const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
  * Get the [escape](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#escapekeymap)
  * key bindings for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData): KeyBinding[] => [
-	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
-	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
-	{
-		key: 'Mod-\\',
-		run(view): boolean {
-			return escapeWiki(view, toConfigGetter(configData));
+export default (configData: ConfigData, cdn?: string): KeyBinding[] => {
+	update(cdn);
+	return [
+		{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
+		{key: 'Mod-]', run: convert(escapeURI, indentMore)},
+		{
+			key: 'Mod-\\',
+			run(view): boolean {
+				return escapeWiki(view, toConfigGetter(configData));
+			},
 		},
-	},
-];
+	];
+};

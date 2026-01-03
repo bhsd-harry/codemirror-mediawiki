@@ -17,6 +17,7 @@ import formatKeymap from './keymap';
 import colorPicker from './color.js';
 import codeFolding from './fold.js';
 import {getWikiLintSource} from './lintsource.js';
+import {update} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
@@ -41,8 +42,10 @@ export const bracketMatching = (): Extension =>
  * Get the [wikilint](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#wikilint)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export const wikilint = (configData: ConfigData): Extension => {
+export const wikilint = (configData: ConfigData, cdn?: string): Extension => {
+	update(cdn);
 	const source = getWikiLintSource(base.CDN, configData);
 	return [
 		linter(async v => {
@@ -78,25 +81,29 @@ export const wikilint = (configData: ConfigData): Extension => {
 /**
  * Get full language support for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export const mediawiki = (configData: ConfigData): LanguageSupport => new LanguageSupport(
-	mediawikiLanguage(configData),
-	[
-		keymap.of([
-			...formatKeymap,
-			...escapeKeymap(configData),
-		]),
-		bracketMatching(),
-		autocompletion(),
-		refHover(configData),
-		hover(configData),
-		signatureHelp(configData),
-		inlayHints(configData),
-		colorPicker(),
-		codeFolding(),
-		wikilint(configData),
-	],
-);
+export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport => {
+	update(cdn);
+	return new LanguageSupport(
+		mediawikiLanguage(configData),
+		[
+			keymap.of([
+				...formatKeymap,
+				...escapeKeymap(configData),
+			]),
+			bracketMatching(),
+			autocompletion(),
+			refHover(configData),
+			hover(configData),
+			signatureHelp(configData),
+			inlayHints(configData),
+			colorPicker(),
+			codeFolding(),
+			wikilint(configData),
+		],
+	);
+};
 
 export {
 	escapeKeymap,

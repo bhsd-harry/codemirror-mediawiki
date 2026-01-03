@@ -1,6 +1,9 @@
 import elt from 'crelt';
 import {tokens} from './config.js';
-import {hoverSelector} from './constants.js';
+import {
+	hoverSelector,
+	base,
+} from './constants.js';
 import type {EditorView, TooltipView} from '@codemirror/view';
 import type {Text, EditorState} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
@@ -73,3 +76,13 @@ export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
  * @param configData 解析设置
  */
 export const toConfigGetter = (configData: ConfigData): ConfigGetter => () => Promise.resolve(configData);
+
+/**
+ * 更新 CDN 地址
+ * @param cdn jsDelivr CDN
+ */
+export const update = (cdn?: string): void => {
+	if (cdn) {
+		base.CDN = cdn;
+	}
+};
