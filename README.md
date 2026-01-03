@@ -11,6 +11,8 @@ Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experime
 
 Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins/blob/master/src/plugins/code-mirror/cm6.js) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
 
+If you are just looking for a CodeMirror 6 language mode and language support extensions for MediaWiki Wikitext, you can use [@bhsd/codemirror-wikitext](https://www.npmjs.com/package/@bhsd/codemirror-wikitext) instead.
+
 <details>
 	<summary>Expand</summary>
 
