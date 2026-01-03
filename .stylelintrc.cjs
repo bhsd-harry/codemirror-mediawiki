@@ -4,4 +4,5 @@ const config = require('@bhsd/code-standard/stylelintrc.cjs');
 
 module.exports = {
 	...config,
+	ignoreFiles: ['mediawiki.css'],
 };
