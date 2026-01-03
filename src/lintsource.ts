@@ -1,14 +1,26 @@
 import {
 	getWikiLinter,
 } from './linter.js';
-import {posToIndex, toConfigGetter} from './util.js';
+import {
+	posToIndex,
+	toConfigGetter,
+} from './util.js';
+import {base} from './constants.js';
 import type {EditorView} from '@codemirror/view';
-import type {Text} from '@codemirror/state';
-import type {Diagnostic, Action, LintSource} from '@codemirror/lint';
-import type {QuickFixData, ConfigData} from 'wikiparser-node';
+import type {
+	Text,
+} from '@codemirror/state';
+import type {
+	Diagnostic,
+	Action,
+	LintSource,
+} from '@codemirror/lint';
+import type {
+	QuickFixData,
+	ConfigData,
+} from 'wikiparser-node';
 
 declare type LintSourceGetter = (
-	cdn: string | undefined,
 	opt: ConfigData,
 ) => LintSource | Promise<LintSource>;
 
@@ -49,11 +61,11 @@ const getRange = (
 const wikiLintSource = async (
 	wikiLint: Awaited<ReturnType<typeof getWikiLinter>>,
 	text: string,
+	opt: EditorView,
 	doc: Text,
-	v: EditorView,
 	f = 0,
 	t?: number,
-): Promise<Diagnostic[]> => (await wikiLint(text, v))
+): Promise<Diagnostic[]> => (await wikiLint(text, opt))
 	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 		source: source!,
 		severity: severity === 2 ? 'warning' : 'error',
@@ -75,11 +87,11 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (cdn, configData): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter({getConfig: toConfigGetter(configData), cdn});
+export const getWikiLintSource: LintSourceGetter = async (configData): Promise<LintSource> => {
+	const wikiLint = await getWikiLinter({getConfig: toConfigGetter(configData), cdn: base.CDN});
 	const lintSource: LintSource = async view => {
 		const {doc} = view.state;
-		return wikiLintSource(wikiLint, doc.toString(), doc, view);
+		return wikiLintSource(wikiLint, doc.toString(), view, doc);
 	};
 	return lintSource;
 };

@@ -3,7 +3,7 @@ import {autocompletion} from '@codemirror/autocomplete';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import {keymap} from '@codemirror/view';
 import elt from 'crelt';
-import {base, diagnosticSelector} from './constants.js';
+import {diagnosticSelector} from './constants.js';
 import {tagModes, getStaticMwConfig} from './static.js';
 import {mediawiki as mediawikiBase} from './mediawiki.js';
 import bracketMatchingBase from './matchBrackets.js';
@@ -46,7 +46,7 @@ export const bracketMatching = (): Extension =>
  */
 export const wikilint = (configData: ConfigData, cdn?: string): Extension => {
 	update(cdn);
-	const source = getWikiLintSource(base.CDN, configData);
+	const source = getWikiLintSource(configData);
 	return [
 		linter(async v => {
 			const diagnostics = (await (await source)(v)).map((diagnostic): Diagnostic => ({
