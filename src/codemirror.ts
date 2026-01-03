@@ -154,9 +154,13 @@ export class CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	#getLanguage(config: unknown): Extension {
+		const isMW = this.#lang === 'mediawiki';
+		if (isMW || this.#lang === 'html') {
+			config ??= this.langConfig;
+		}
 		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config);
 		this.#nestedMWLanguage = lang.nestedMWLanguage;
-		if (this.#lang === 'mediawiki') {
+		if (isMW) {
 			this.langConfig = config as MwConfig;
 		}
 		return lang;
@@ -448,7 +452,7 @@ export class CodeMirror6 {
 	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		return linterRegistry[this.#lang]?.(base.CDN, opt, this.#view, this.#nestedMWLanguage);
+		return linterRegistry[this.#lang]?.(opt, this.#view, this.#nestedMWLanguage);
 	}
 
 	/**

@@ -350,6 +350,7 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		const isWiki = lang === 'mediawiki' || lang === 'html';
 		if (isWiki) {
+			config ??= this.langConfig;
 			Object.assign(config as MwConfig, await prepareSuggest(this.page));
 		}
 		void super.setLanguage(lang, config);

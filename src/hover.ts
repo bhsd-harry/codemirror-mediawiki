@@ -1,6 +1,9 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {loadScript, getLSP} from '@bhsd/browser';
+import {
+	loadScript,
+	getLSP,
+} from '@bhsd/browser';
 import {tokens} from './config.js';
 import {base, hoverSelector} from './constants.js';
 import {
@@ -69,7 +72,10 @@ export default (cm: CodeMirror6): Extension => [
 					above: true,
 					create(): TooltipView {
 						const {kind, value} = hover.contents as MarkupContent;
-						return createTooltipView(view, kind === 'plaintext' ? value : marked.parse(value));
+						return createTooltipView(
+							view,
+							kind === 'plaintext' ? value : marked.parse(value),
+						);
 					},
 				};
 			}

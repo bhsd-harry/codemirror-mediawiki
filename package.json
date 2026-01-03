@@ -15,8 +15,8 @@
 	"files": [
 		"/i18n/",
 		"/dist/*.js",
-		"!/dist/demo.min.js",
-		"/dist/*.d.ts"
+		"/dist/*.d.ts",
+		"!/dist/demo.min.js"
 	],
 	"browser": "dist/main.min.js",
 	"main": "./dist/index.js",
