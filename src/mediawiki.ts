@@ -5,21 +5,17 @@
  */
 
 import {
+	StreamLanguage,
+	syntaxTree,
 	HighlightStyle,
 	LanguageSupport,
-	StreamLanguage,
 	syntaxHighlighting,
-	syntaxTree,
 } from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
-import {
-	isWMF,
-	isolateSelector,
-	ltrSelector,
-} from './constants.js';
+import {isWMF, isolateSelector, ltrSelector} from './constants.js';
 import {MediaWiki} from './token.js';
 import {
 	hasTag,
@@ -30,12 +26,7 @@ import type {
 	StreamParser,
 	TagStyle,
 } from '@codemirror/language';
-import type {
-	CloseBracketConfig,
-	CompletionSource,
-	Completion,
-	CompletionResult,
-} from '@codemirror/autocomplete';
+import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {StyleSpec} from 'style-mod';
 import type {MwConfig} from './token';
 
@@ -236,7 +227,11 @@ export class FullMediaWiki extends MediaWiki {
 				start = pos - search.length;
 			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#') || isWMF) {
-				const obj = isWMF ? null : {validFor: /^[^|{}<>[\]#]*$/u};
+				const obj = isWMF
+					? null
+					: {
+						validFor: /^[^|{}<>[\]#]*$/u,
+					};
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};

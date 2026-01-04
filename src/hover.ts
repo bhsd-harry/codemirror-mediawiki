@@ -1,8 +1,8 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {
-	loadScript,
 	getLSP,
+	loadScript,
 } from '@bhsd/browser';
 import {tokens} from './config.js';
 import {base, hoverSelector} from './constants.js';
@@ -18,7 +18,7 @@ import type {MarkupContent} from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror.js';
 
 declare const marked: {
-	parse(source: string): string;
+	parse(source: string): string | Promise<string>;
 };
 
 export default (cm: CodeMirror6): Extension => [
@@ -29,8 +29,8 @@ export default (cm: CodeMirror6): Extension => [
 			side,
 		): Promise<Tooltip | null> => {
 			const {state} = view,
-				{paramSuggest, tags} = cm.langConfig!,
 				{doc} = state;
+			const {paramSuggest, tags} = cm.langConfig!;
 			let hover = await getLSP(view, false, cm.getWikiConfig, base.CDN)
 				?.provideHover(doc.toString(), indexToPos(doc, pos));
 			if (!hover && paramSuggest && 'templatedata' in tags) {
@@ -74,7 +74,7 @@ export default (cm: CodeMirror6): Extension => [
 						const {kind, value} = hover.contents as MarkupContent;
 						return createTooltipView(
 							view,
-							kind === 'plaintext' ? value : marked.parse(value),
+							kind === 'plaintext' ? value : marked.parse(value) as string,
 						);
 					},
 				};

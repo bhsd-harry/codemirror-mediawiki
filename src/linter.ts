@@ -9,7 +9,10 @@ import type {
 } from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigGetter} from '@bhsd/browser';
-import type {QuickFixData, AST} from 'wikiparser-node';
+import type {
+	QuickFixData,
+	AST,
+} from 'wikiparser-node';
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
@@ -29,7 +32,14 @@ declare type asyncLinter<
  * @param opt 初始化选项
  * @param obj 仅用于wikiparse.LanguageService
  */
-declare type getAsyncLinter<T, S = never, R = never> = (opt?: S, obj?: R) => Promise<asyncLinter<T>>;
+declare type getAsyncLinter<
+	T,
+	S = never,
+	R = never,
+> = (
+	opt?: S,
+	obj?: R,
+) => Promise<asyncLinter<T>>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
@@ -44,8 +54,8 @@ declare interface JsonError {
 	position: string | undefined;
 }
 
-export const stylelintRepo = 'npm/@bhsd/stylelint-browserify',
-	eslintRepo = 'npm/@bhsd/eslint-browserify',
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
+export const eslintRepo = 'npm/@bhsd/eslint-browserify',
 	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
@@ -95,7 +105,11 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
  * @param opt.cdn jsDelivr CDN，不含库名
  * @param obj 对象
  */
-export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, object> = async (opt, obj) => {
+export const getWikiLinter: getAsyncLinter<
+	Promise<MixedDiagnostic[]>,
+	Option,
+	object
+> = async (opt, obj) => {
 	const cdn = opt?.['cdn'] as string | undefined;
 	await getWikiparse(
 		opt?.['getConfig'] as ConfigGetter | undefined,
@@ -103,12 +117,15 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 		cdn,
 	);
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
-	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
-	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
+	const cssLint =
+		await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
+	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (
+		text,
+		config,
+	) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
-			diagnostics = (await lsp.provideDiagnostics(text)).filter(
-				({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2),
-			),
+			diagnostics = (await lsp.provideDiagnostics(text))
+				.filter(({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2)),
 			tokens = 'findStyleTokens' in lsp
 				&& config?.['invalid-css'] !== '0'
 				? await lsp.findStyleTokens()
@@ -140,7 +157,9 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, Option, o
 					diagnostic: MixedDiagnostic = {
 						from,
 						to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
-						severity: severity === 'error' ? 1 : 2,
+						severity: severity === 'error'
+							? 1
+							: 2,
 						source: 'Stylelint',
 						code: rule,
 						message,

@@ -6,7 +6,7 @@ import {base} from './constants.js';
 import {
 	posToIndex,
 } from './util.js';
-import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
+import type {DecorationSet, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror';
@@ -63,7 +63,7 @@ const stateEffect = StateEffect.define<InlayHintEffect>(),
 		},
 	});
 
-const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'>): Promise<void> => {
+const update = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'>): Promise<void> => {
 	if (docChanged) {
 		const text = view.state.doc.toString();
 		view.dispatch({
@@ -77,19 +77,14 @@ const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docCha
 
 export default (cm: CodeMirror6): Extension => [
 	field,
-	ViewPlugin.fromClass(class implements PluginValue {
-		constructor(view: EditorView) {
-			const timer = setInterval(() => {
-				if (getLSP(view, false, cm.getWikiConfig, base.CDN)) {
-					clearInterval(timer);
-					void updateField({view, docChanged: true});
-				}
-			}, 100);
-		}
-
-		update(viewUpdate: ViewUpdate): void {
-			void updateField(viewUpdate);
-		}
+	ViewPlugin.define(view => {
+		const timer = setInterval(() => {
+			if (getLSP(view, false, cm.getWikiConfig, base.CDN)) {
+				clearInterval(timer);
+				void update({view, docChanged: true});
+			}
+		}, 100);
+		return {update};
 	}),
 	EditorView.theme({
 		[`.${cls}`]: {

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.8.2
+
+*2026-01-05*
+
+**Fixed**
+
+- Duplicate [highlighting styles](https://codemirror.net/docs/ref/#language.HighlightStyle) in the dark theme
+
 ## 3.8.1
 
 *2025-12-30*
