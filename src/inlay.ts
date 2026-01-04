@@ -6,9 +6,9 @@ import {base} from './constants.js';
 import {
 	posToIndex,
 	toConfigGetter,
-	update,
+	updateCDN,
 } from './util.js';
-import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
+import type {DecorationSet, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {InlayHint} from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
@@ -65,13 +65,13 @@ const stateEffect = StateEffect.define<InlayHintEffect>(),
 		},
 	});
 
-const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'>): Promise<void> => {
+const update = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'>): Promise<void> => {
 	if (docChanged) {
 		const text = view.state.doc.toString();
 		view.dispatch({
 			effects: stateEffect.of({
 				text,
-				inlayHints: await getLSP(view, true)?.provideInlayHints(text),
+				inlayHints: await getLSP(view)?.provideInlayHints(text),
 			}),
 		});
 	}
@@ -84,22 +84,17 @@ const updateField = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docCha
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export default (configData: ConfigData, cdn?: string): Extension => {
-	update(cdn);
+	updateCDN(cdn);
 	return [
 		field,
-		ViewPlugin.fromClass(class implements PluginValue {
-			constructor(view: EditorView) {
-				const timer = setInterval(() => {
-					if (getLSP(view, true, toConfigGetter(configData), base.CDN)) {
-						clearInterval(timer);
-						void updateField({view, docChanged: true});
-					}
-				}, 100);
-			}
-
-			update(viewUpdate: ViewUpdate): void {
-				void updateField(viewUpdate);
-			}
+		ViewPlugin.define(view => {
+			const timer = setInterval(() => {
+				if (getLSP(view, true, toConfigGetter(configData), base.CDN)) {
+					clearInterval(timer);
+					void update({view, docChanged: true});
+				}
+			}, 100);
+			return {update};
 		}),
 		EditorView.theme({
 			[`.${cls}`]: {

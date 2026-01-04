@@ -19,15 +19,10 @@ import type {
 	StreamParser,
 	Language,
 } from '@codemirror/language';
-import type {
-	CloseBracketConfig,
-	CompletionSource,
-	Completion,
-	CompletionResult,
-} from '@codemirror/autocomplete';
+import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {MwConfig} from './token';
 
-class FullMediaWiki extends MediaWiki {
+export class FullMediaWiki extends MediaWiki {
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
 	declare readonly extTags: Completion[];
@@ -249,7 +244,7 @@ class FullMediaWiki extends MediaWiki {
  * Get the stream language for Wikitext.
  * @param config Configuration for the MediaWiki mode
  */
-export const mediawiki = (config: MwConfig): Language => {
+export const mediawikiBase = (config: MwConfig): Language => {
 	const mode = new FullMediaWiki(config),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return lang;

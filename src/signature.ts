@@ -7,7 +7,7 @@ import {
 	indexToPos,
 	escHTML,
 	toConfigGetter,
-	update,
+	updateCDN,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -46,7 +46,7 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export default (configData: ConfigData, cdn?: string): Extension => {
-	update(cdn);
+	updateCDN(cdn);
 	return [
 		field,
 		EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {

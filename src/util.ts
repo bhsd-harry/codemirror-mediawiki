@@ -81,7 +81,7 @@ export const toConfigGetter = (configData: ConfigData): ConfigGetter => () => Pr
  * 更新 CDN 地址
  * @param cdn jsDelivr CDN
  */
-export const update = (cdn?: string): void => {
+export const updateCDN = (cdn?: string): void => {
 	if (cdn) {
 		base.CDN = cdn;
 	}

@@ -5,7 +5,7 @@ import {keymap} from '@codemirror/view';
 import elt from 'crelt';
 import {diagnosticSelector} from './constants.js';
 import {tagModes, getStaticMwConfig} from './static.js';
-import {mediawiki as mediawikiBase} from './mediawiki.js';
+import {mediawikiBase} from './mediawiki.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
 import escapeKeymap from './escape.js';
@@ -17,7 +17,7 @@ import formatKeymap from './keymap';
 import colorPicker from './color.js';
 import codeFolding from './fold.js';
 import {getWikiLintSource} from './lintsource.js';
-import {update} from './util.js';
+import {updateCDN} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
@@ -45,7 +45,7 @@ export const bracketMatching = (): Extension =>
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export const wikilint = (configData: ConfigData, cdn?: string): Extension => {
-	update(cdn);
+	updateCDN(cdn);
 	const source = getWikiLintSource(configData);
 	return [
 		linter(async v => {
@@ -84,7 +84,7 @@ export const wikilint = (configData: ConfigData, cdn?: string): Extension => {
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport => {
-	update(cdn);
+	updateCDN(cdn);
 	return new LanguageSupport(
 		mediawikiLanguage(configData),
 		[

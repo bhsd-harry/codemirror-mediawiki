@@ -5,7 +5,6 @@ import {
 	posToIndex,
 	toConfigGetter,
 } from './util.js';
-import {base} from './constants.js';
 import type {EditorView} from '@codemirror/view';
 import type {
 	Text,
@@ -88,7 +87,7 @@ const wikiLintSource = async (
 	}));
 
 export const getWikiLintSource: LintSourceGetter = async (configData): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter({getConfig: toConfigGetter(configData), cdn: base.CDN});
+	const wikiLint = await getWikiLinter(toConfigGetter(configData));
 	const lintSource: LintSource = async view => {
 		const {doc} = view.state;
 		return wikiLintSource(wikiLint, doc.toString(), view, doc);

@@ -9,7 +9,7 @@ import {
 	posToIndex,
 	createTooltipView,
 	toConfigGetter,
-	update,
+	updateCDN,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -23,7 +23,7 @@ import type {ConfigData} from 'wikiparser-node';
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export default (configData: ConfigData, cdn?: string): Extension => {
-	update(cdn);
+	updateCDN(cdn);
 	return [
 		hoverTooltip(
 			async (

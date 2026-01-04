@@ -11,7 +11,7 @@ import {
 	posToIndex,
 	escHTML,
 	toConfigGetter,
-	update,
+	updateCDN,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {EditorState, Extension} from '@codemirror/state';
@@ -43,7 +43,7 @@ const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sl
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export default (configData: ConfigData, cdn?: string): Extension => {
-	update(cdn);
+	updateCDN(cdn);
 	return [
 		hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 			const {state} = view,

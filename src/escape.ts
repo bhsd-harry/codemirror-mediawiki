@@ -5,7 +5,7 @@ import {base} from './constants.js';
 import {
 	replaceSelections,
 } from './codemirror.js';
-import {toConfigGetter, update} from './util.js';
+import {toConfigGetter, updateCDN} from './util.js';
 import type {
 	EditorView,
 	Command,
@@ -82,7 +82,7 @@ const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
 export default (configData: ConfigData, cdn?: string): KeyBinding[] => {
-	update(cdn);
+	updateCDN(cdn);
 	return [
 		{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
 		{key: 'Mod-]', run: convert(escapeURI, indentMore)},

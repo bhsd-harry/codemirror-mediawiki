@@ -1,6 +1,7 @@
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
+import {base} from './constants.js';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
 import type {
 	Warning,
@@ -16,19 +17,19 @@ declare type asyncLinter<
 /**
  * @param opt 初始化选项
  */
-declare type getAsyncLinter<T, S = never> = (opt?: S) => Promise<asyncLinter<T>>;
+declare type getAsyncLinter<
+	T,
+	S = never,
+> = (
+	opt?: S,
+) => Promise<asyncLinter<T>>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
 	to?: number;
 }
 
-declare interface WikiLintOption {
-	cdn: string | undefined;
-	getConfig: ConfigGetter;
-}
-
-const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 
 /**
  * 计算位置
@@ -67,18 +68,23 @@ const indexToPos = (code: string, index: number): Position => {
 /**
  * 获取 Wikitext LSP
  * @param opt 选项
- * @param opt.cdn jsDelivr CDN，不含库名
  */
-export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, WikiLintOption> = async opt => {
-	const cdn = opt?.cdn;
+export const getWikiLinter: getAsyncLinter<
+	Promise<MixedDiagnostic[]>,
+	ConfigGetter
+> = async opt => {
+	const cdn = base.CDN;
 	await getWikiparse(
-		opt?.getConfig,
+		opt,
 		undefined,
 		cdn,
 	);
 	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
-	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (text, config) => {
-		const lsp = getLSP(config!, true)!,
+	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (
+		text,
+		view,
+	) => {
+		const lsp = getLSP(view!, true)!,
 			diagnostics = await lsp.provideDiagnostics(text),
 			tokens = 'findStyleTokens' in lsp
 				? await lsp.findStyleTokens()
@@ -132,7 +138,7 @@ export const getWikiLinter: getAsyncLinter<Promise<MixedDiagnostic[]>, WikiLintO
  * 获取 Stylelint
  * @param cdn CDN 地址
  */
-const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
+export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<
 		Promise<Warning[]>
