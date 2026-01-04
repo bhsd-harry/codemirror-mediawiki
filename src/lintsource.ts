@@ -17,10 +17,12 @@ import type {
 import type {
 	QuickFixData,
 	ConfigData,
+	LintConfig,
 } from 'wikiparser-node';
 
 declare type LintSourceGetter = (
 	opt: ConfigData,
+	lintConfig?: LintConfig,
 ) => LintSource | Promise<LintSource>;
 
 /**
@@ -86,8 +88,8 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (configData): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter(toConfigGetter(configData));
+export const getWikiLintSource: LintSourceGetter = async (configData, lintConfig): Promise<LintSource> => {
+	const wikiLint = await getWikiLinter(toConfigGetter(configData), lintConfig);
 	const lintSource: LintSource = async view => {
 		const {doc} = view.state;
 		return wikiLintSource(wikiLint, doc.toString(), view, doc);

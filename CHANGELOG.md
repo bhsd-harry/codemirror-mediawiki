@@ -1,16 +1,20 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.1.0
+
+*2026-01-04*
+
+**Added**
+
+- Optional argument to specify linting rules in [wikilint](./README#wikilint) extension
+
+**Changed**
+
+- Use semantic highlighting tags
+
 ## 0.0.0
 
 *2026-01-03*
 
-### Added
+**Added**
 
 - Initial release
-
-## 0.0.1
-
-*2026-01-04*
-
-### Changed
-
-- Use semantic highlighting tags

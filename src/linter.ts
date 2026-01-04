@@ -7,7 +7,11 @@ import type {
 	Warning,
 } from 'stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
-import type {QuickFixData, AST} from 'wikiparser-node';
+import type {
+	QuickFixData,
+	AST,
+	LintConfig,
+} from 'wikiparser-node';
 
 declare type asyncLinter<
 	T,
@@ -20,8 +24,10 @@ declare type asyncLinter<
 declare type getAsyncLinter<
 	T,
 	S = never,
+	R = never,
 > = (
 	opt?: S,
+	obj?: R,
 ) => Promise<asyncLinter<T>>;
 declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
@@ -68,18 +74,32 @@ const indexToPos = (code: string, index: number): Position => {
 /**
  * 获取 Wikitext LSP
  * @param opt 选项
+ * @param obj 对象
  */
 export const getWikiLinter: getAsyncLinter<
 	Promise<MixedDiagnostic[]>,
-	ConfigGetter
-> = async opt => {
+	ConfigGetter,
+	LintConfig
+> = async (opt, obj) => {
 	const cdn = base.CDN;
 	await getWikiparse(
 		opt,
 		undefined,
 		cdn,
 	);
-	const cssLint = await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
+	const isFull = obj && 'rules' in obj,
+		cssConfig = isFull ? obj.rules['invalid-css'] : obj?.['invalid-css'],
+		isWarning = cssConfig === 1 || cssConfig === 'warning';
+	if (isFull) {
+		delete obj.rules['invalid-css'];
+	} else if (obj) {
+		delete obj['invalid-css'];
+	}
+	wikiparse.setLintConfig(obj);
+	const cssLint =
+		cssConfig === 0 || cssConfig === false || cssConfig === 'off'
+			? (): never[] => [] : // eslint-disable-line @stylistic/operator-linebreak
+			await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (
 		text,
 		view,
@@ -107,7 +127,10 @@ export const getWikiLinter: getAsyncLinter<
 					diagnostic: MixedDiagnostic = {
 						from,
 						to: endLine === undefined ? from : offsetAt(range, endLine - 3 * i, endColumn! - 1),
-						severity: severity === 'error' ? 1 : 2,
+						severity: severity === 'error'
+							&& !isWarning
+							? 1
+							: 2,
 						source: 'Stylelint',
 						code: rule,
 						message,

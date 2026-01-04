@@ -21,7 +21,7 @@ import {updateCDN} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
-import type {ConfigData} from 'wikiparser-node';
+import type {ConfigData, LintConfig} from 'wikiparser-node';
 
 /**
  * Get the stream [language](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#mediawikilanguage)
@@ -42,11 +42,12 @@ export const bracketMatching = (): Extension =>
  * Get the [wikilint](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#wikilint)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param lintConfig [Lint configuration](https://github.com/bhsd-harry/wikiparser-node/wiki/Rules#configuration).
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export const wikilint = (configData: ConfigData, cdn?: string): Extension => {
+export const wikilint = (configData: ConfigData, lintConfig?: LintConfig, cdn?: string): Extension => {
 	updateCDN(cdn);
-	const source = getWikiLintSource(configData);
+	const source = getWikiLintSource(configData, lintConfig);
 	return [
 		linter(async v => {
 			const diagnostics = (await (await source)(v)).map((diagnostic): Diagnostic => ({

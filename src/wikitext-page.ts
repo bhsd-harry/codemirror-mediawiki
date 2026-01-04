@@ -37,7 +37,7 @@ import type {ConfigData} from 'wikiparser-node';
 					inlayHints(configData),
 					colorPicker(),
 					codeFolding(),
-					wikilint(configData),
+					wikilint(configData, {'invalid-css': 1, 'arg-in-ext': 2}),
 				],
 			),
 			syntaxHighlighting(defaultHighlightStyle),

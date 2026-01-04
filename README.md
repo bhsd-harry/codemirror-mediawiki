@@ -280,6 +280,9 @@ import config from 'wikiparser-node/config/default.json' with {type: 'json'};
 
 const extension: Extension = wikilint(
 	config,
+	// (optional) specify the linting rules; see https://github.com/bhsd-harry/wikiparser-node/wiki/Rules#configuration
+	// In particular, Stylelint will not be loaded if the 'invalid-css' rule is disabled.
+	{'invalid-css': 0},
 	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
