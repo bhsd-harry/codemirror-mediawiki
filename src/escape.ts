@@ -5,7 +5,7 @@ import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
 import {base} from './constants.js';
 import {
-	CodeMirror6,
+	replaceSelections,
 	menuRegistry,
 } from './codemirror.js';
 import type {
@@ -17,6 +17,7 @@ import type {
 	Extension,
 } from '@codemirror/state';
 import type {ConfigGetter} from '@bhsd/browser';
+import type {CodeMirror6} from './codemirror';
 
 const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
 
@@ -27,7 +28,7 @@ const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ':
  */
 const convert = (func: (str: string) => string, cmd: Command): Command => (view): boolean => {
 	if (view.state.selection.ranges.some(({empty}) => !empty)) {
-		CodeMirror6.replaceSelections(view, func);
+		replaceSelections(view, func);
 		return true;
 	}
 	return cmd(view);
@@ -94,11 +95,11 @@ menuRegistry.push({
 				btnHTML = elt('div', 'HTML escape'),
 				btnURI = elt('div', 'URI encode/decode');
 			btnHTML.addEventListener('click', e => {
-				CodeMirror6.replaceSelections(view, escapeHTML);
+				replaceSelections(view, escapeHTML);
 				handlerBase(view, e);
 			});
 			btnURI.addEventListener('click', e => {
-				CodeMirror6.replaceSelections(view, escapeURI);
+				replaceSelections(view, escapeURI);
 				handlerBase(view, e);
 			});
 			items = [btnHTML, btnURI];

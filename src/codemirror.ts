@@ -1,10 +1,10 @@
+import {EditorView, lineNumbers, keymap, highlightActiveLineGutter} from '@codemirror/view';
 import {
-	EditorView,
-	lineNumbers,
-	keymap,
-	highlightActiveLineGutter,
-} from '@codemirror/view';
-import {Compartment, EditorState, EditorSelection, SelectionRange} from '@codemirror/state';
+	EditorSelection,
+	Compartment,
+	EditorState,
+	SelectionRange,
+} from '@codemirror/state';
 import {
 	syntaxHighlighting,
 	defaultHighlightStyle,
@@ -18,14 +18,20 @@ import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
 import {base, panelSelector, panelsSelector, diagnosticSelector} from './constants.js';
 import {light} from './theme.js';
-import type {ViewPlugin, KeyBinding} from '@codemirror/view';
+import type {
+	ViewPlugin,
+	KeyBinding,
+} from '@codemirror/view';
 import type {Extension, StateEffect} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
-import type {DocRange, foldHandler} from './fold';
+import type {
+	DocRange,
+	foldHandler,
+} from './fold';
 import type {Text as ExtendedText, detectIndent} from './indent';
 import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
@@ -83,6 +89,27 @@ const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHel
 
 const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
 const phrases: Record<string, string> = {};
+
+export const replaceSelections = (
+	view: EditorView,
+	func: (str: string, range: DocRange) => string | [string, number, number?],
+): void => {
+	const {state} = view;
+	view.dispatch(state.changeByRange(({from, to}) => {
+		const result = func(state.sliceDoc(from, to), {from, to});
+		if (typeof result === 'string') {
+			return {
+				range: EditorSelection.range(from, from + result.length),
+				changes: {from, to, insert: result},
+			};
+		}
+		const [insert, start, end = start] = result;
+		return {
+			range: EditorSelection.range(start, end),
+			changes: {from, to, insert},
+		};
+	}));
+};
 
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
@@ -183,7 +210,7 @@ export class CodeMirror6 {
 				this.#phrases.of(EditorState.phrases.of(phrases)),
 				this.#lineWrapping.of(EditorView.lineWrapping),
 				this.#theme.of(light),
-				syntaxHighlighting(defaultHighlightStyle),
+				syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
 					tabindex: String(tabIndex),
@@ -585,26 +612,7 @@ export class CodeMirror6 {
 	 * @param view EditorView instance
 	 * @param func function to produce the replacement text
 	 */
-	static replaceSelections(
-		view: EditorView,
-		func: (str: string, range: DocRange) => string | [string, number, number?],
-	): void {
-		const {state} = view;
-		view.dispatch(state.changeByRange(({from, to}) => {
-			const result = func(state.sliceDoc(from, to), {from, to});
-			if (typeof result === 'string') {
-				return {
-					range: EditorSelection.range(from, from + result.length),
-					changes: {from, to, insert: result},
-				};
-			}
-			const [insert, start, end = start] = result;
-			return {
-				range: EditorSelection.range(start, end),
-				changes: {from, to, insert},
-			};
-		}));
-	}
+	static replaceSelections = replaceSelections;
 
 	/**
 	 * Convert a [WikiParser-Node](https://npmjs.com/package/wikiparser-node) configuration

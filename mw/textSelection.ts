@@ -1,4 +1,4 @@
-import {CodeMirror} from './codemirror';
+import {replaceSelections} from '../src/codemirror';
 import {getInstance} from './util';
 import type {editor, Selection} from 'monaco-editor';
 
@@ -100,7 +100,7 @@ export const textSelection: TextSelection = {
 			});
 			return this;
 		}
-		CodeMirror.replaceSelections(view!, (_, {from, to}) => {
+		replaceSelections(view!, (_, {from, to}) => {
 			const isSample = selectPeri && from === to,
 				selText = replace || from === to ? peri : state.sliceDoc(from, to),
 				[insertText, start, end] = handleOwnline(

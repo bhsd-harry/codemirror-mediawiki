@@ -19,10 +19,10 @@ import {
 	foldedRanges,
 	unfoldAll,
 	codeFolding,
-	foldGutter,
-	foldKeymap,
 	foldState,
 	language,
+	foldGutter,
+	foldKeymap,
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
@@ -438,23 +438,23 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 	return execute(view, effects, anchor);
 };
 
-export const foldRef = /* @__PURE__ */ foldCommand(true),
-	unfoldRef: Command = (view): boolean => {
-		const {state} = view,
-			tree = syntaxTree(state),
-			effects: StateEffect<DocRange>[] = [];
-		foldedRanges(state).between(0, state.doc.length, (i, j) => {
-			const node = tree.resolve(i, -1);
-			if (isExtBracket(node) && isExt(node.nextSibling!, true)) {
-				effects.push(unfoldEffect.of({from: i, to: j}));
-			}
-		});
-		if (effects.length > 0) {
-			view.dispatch({effects});
-			return true;
+export const foldRef = /* @__PURE__ */ foldCommand(true);
+export const unfoldRef: Command = (view): boolean => {
+	const {state} = view,
+		tree = syntaxTree(state),
+		effects: StateEffect<DocRange>[] = [];
+	foldedRanges(state).between(0, state.doc.length, (i, j) => {
+		const node = tree.resolve(i, -1);
+		if (isExtBracket(node) && isExt(node.nextSibling!, true)) {
+			effects.push(unfoldEffect.of({from: i, to: j}));
 		}
-		return false;
-	};
+	});
+	if (effects.length > 0) {
+		view.dispatch({effects});
+		return true;
+	}
+	return false;
+};
 
 export default ((e = defaultFoldExtension): Extension => [
 	e,
