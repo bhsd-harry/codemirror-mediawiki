@@ -68,6 +68,7 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 				lineHeight: 1.4,
 			},
 			[`${hoverSelector} code`]: {
+				color: 'inherit',
 				padding: '.1em .4em',
 				borderRadius: '.4em',
 			},
