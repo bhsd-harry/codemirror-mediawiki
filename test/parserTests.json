@@ -4380,7 +4380,7 @@
 	{
 		"desc": "WTS of autolinks with trailing/surrounding context",
 		"wikitext": "http://cscott.net'''foo'''\n\nhttp://cscott.net<b>foo</b>\n\n'''http://cscott.net'''\n\n'''http://cscott.net '''\n\n'''http://cscott.net<nowiki/>x'''\n\nhttp://cscott.net<nowiki/>x",
-		"parsed": "<free-extlink-protocol>http://</><free-extlink>cscott.net</><apostrophes>'''</><strong>foo</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><apostrophes>''''''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><strong> </><apostrophes>''''''</><free-extlink-protocol>http://</><free-extlink strong>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><strong>x</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
+		"parsed": "<free-extlink-protocol>http://</><free-extlink>cscott.net</><apostrophes>'''</><strong>foo</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><apostrophes>'''</><free-extlink-protocol strong>http://</><free-extlink strong>cscott.net</><apostrophes>''''''</><free-extlink-protocol strong>http://</><free-extlink strong>cscott.net</><strong> </><apostrophes>''''''</><free-extlink-protocol strong>http://</><free-extlink strong>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</><strong>x</><apostrophes>'''</><free-extlink-protocol>http://</><free-extlink>cscott.net</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>/&gt</>x"
 	},
 	{
 		"desc": "WTS of autolinks with nowikis (round-trip)",
@@ -6519,7 +6519,7 @@
 	{
 		"desc": "Definition list with URL link",
 		"wikitext": ";http://example.com/ :definition",
-		"parsed": "<list>;</><free-extlink-protocol>http://</><free-extlink strong>example.com/</><strong> </><list>:</>definition"
+		"parsed": "<list>;</><free-extlink-protocol strong>http://</><free-extlink strong>example.com/</><strong> </><list>:</>definition"
 	},
 	{
 		"desc": "Definition list with bracketed URL link",
@@ -6534,12 +6534,12 @@
 	{
 		"desc": "Definition list with news link containing colon",
 		"wikitext": ";news:alt.wikipedia.rox :This isn't even a real newsgroup!",
-		"parsed": "<list>;</><free-extlink-protocol>news:</><free-extlink strong>alt.wikipedia.rox</><strong> </><list>:</>This isn't even a real newsgroup!"
+		"parsed": "<list>;</><free-extlink-protocol strong>news:</><free-extlink strong>alt.wikipedia.rox</><strong> </><list>:</>This isn't even a real newsgroup!"
 	},
 	{
 		"desc": "Malformed definition list with colon",
 		"wikitext": ";news:alt.wikipedia.rox -- don't crash or enter an infinite loop",
-		"parsed": "<list>;</><free-extlink-protocol>news:</><free-extlink strong>alt.wikipedia.rox</><strong> -- don't crash or enter an infinite loop</>"
+		"parsed": "<list>;</><free-extlink-protocol strong>news:</><free-extlink strong>alt.wikipedia.rox</><strong> -- don't crash or enter an infinite loop</>"
 	},
 	{
 		"desc": "Definition lists: colon in external link text",
@@ -6872,7 +6872,7 @@
 	{
 		"desc": "External links: Free with trailing quotes (T113666)",
 		"wikitext": "'''News:''' Stuff here\n\nnews:'a'b''c''d e",
-		"parsed": "<apostrophes>'''</><free-extlink-protocol>News:</><apostrophes>'''</> Stuff here<free-extlink-protocol>news:</><free-extlink>'a'b</><apostrophes>''</><em>c</><apostrophes>''</>d e"
+		"parsed": "<apostrophes>'''</><free-extlink-protocol strong>News:</><apostrophes>'''</> Stuff here<free-extlink-protocol>news:</><free-extlink>'a'b</><apostrophes>''</><em>c</><apostrophes>''</>d e"
 	},
 	{
 		"desc": "External links: with entity",

@@ -6,6 +6,7 @@
 **Fixed**
 
 - Duplicate [highlighting styles](https://codemirror.net/docs/ref/#language.HighlightStyle) in the dark theme
+- Italic free external link protocols in the MediaWiki mode
 
 ## 3.8.1
 
