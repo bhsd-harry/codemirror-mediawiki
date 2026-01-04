@@ -7,6 +7,10 @@
 
 - Optional argument to specify linting rules in [wikilint](./README#wikilint) extension
 
+**Fixed**
+
+- Italic free external link protocols in the MediaWiki mode
+
 **Changed**
 
 - Use semantic highlighting tags

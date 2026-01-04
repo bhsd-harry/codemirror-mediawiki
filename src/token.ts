@@ -936,12 +936,14 @@ export class MediaWiki {
 		};
 	}
 
-	@getTokenizer<string>
-	eatExternalLinkProtocol({length}: string, free = true): Tokenizer<string> {
+	@getTokenizer
+	eatExternalLinkProtocol({length}: string, free = true): Tokenizer {
 		return (stream, state) => {
 			stream.pos += length;
 			state.tokenize = free ? this.eatFreeExternalLink : this.inExternalLink();
-			return makeLocalTagStyle(free ? 'freeExtLinkProtocol' : 'extLinkProtocol', state);
+			return free
+				? makeTagStyle('freeExtLinkProtocol', state)
+				: makeLocalTagStyle('extLinkProtocol', state);
 		};
 	}
 
