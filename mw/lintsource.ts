@@ -8,8 +8,13 @@ declare interface ParsoidError {
 	type: string;
 	dsr: [number, number];
 }
+declare interface ApiValidateError {
+	message: string;
+	line?: number;
+	column?: number;
+}
 declare interface ApiResponse {
-	query: {
+	query?: {
 		general: {
 			linter: {
 				high: string[];
@@ -18,7 +23,13 @@ declare interface ApiResponse {
 			};
 		};
 	};
+	'codemirror-validate'?: {
+		valid: boolean;
+		errors?: ApiValidateError[];
+	};
 }
+
+declare type Executer<T> = (text: string) => Promise<T[]>;
 
 let highSet: Promise<Set<string>> | undefined;
 
@@ -29,31 +40,19 @@ const getMsgKey = (type: string): string => `linter-category-${type}`,
 
 export const parsoidRules: string[] = [];
 
-export default async (title: string, opt?: Option | LiveOption): Promise<LintSource> => {
-	await mw.loader.using('mediawiki.api');
-	const api = new mw.Api(),
-		rest = new mw.Rest();
-	highSet ??= (async () => {
-		const {query: {general: {linter: {high, medium, low}}}} = await api.get({
-			action: 'query',
-			meta: 'siteinfo',
-			siprop: 'general',
-		}) as ApiResponse;
-		parsoidRules.push(...[...high, ...medium, ...low].map(getRuleKey));
-		if (preferenceDialog.layout) {
-			preferenceDialog.layout.addTabPanels(buildPanel('Parsoid', parsoidRules), 2);
-		}
-		return new Set(high);
-	})();
-	let timeout: Promise<ParsoidError[]> | undefined,
+const getExecuter = <T = ApiValidateError>(
+	api: mw.Api | mw.Rest,
+	post: (content: string) => ReturnType<mw.Api['get']>,
+): Executer<T> => {
+	let timeout: Promise<T[]> | undefined,
 		waiting: string | undefined;
-	const execute = async (wikitext: string): Promise<ParsoidError[]> => {
-		rest.abort();
+	const execute: Executer<T> = async (content: string): Promise<T[]> => {
+		api.abort();
 		if (timeout) {
-			waiting = wikitext;
+			waiting = content;
 			return timeout;
 		}
-		timeout = new Promise<ParsoidError[]>(resolve => {
+		timeout = new Promise<T[]>(resolve => {
 			setTimeout(() => {
 				timeout = undefined;
 				if (waiting === undefined) {
@@ -65,21 +64,56 @@ export default async (title: string, opt?: Option | LiveOption): Promise<LintSou
 				}
 			}, 3e3);
 		});
-		return rest.post(
+		return content
+			? post(content).then( // eslint-disable-line promise/prefer-await-to-then
+				errors => errors as T[],
+				(_, e) => {
+					if (typeof e !== 'object' || e.textStatus !== 'abort') {
+						console.error('API linting failed:', e);
+					}
+					return [];
+				},
+			)
+			: [];
+	};
+	return execute;
+};
+
+const codemirrorValidate = (
+	api: mw.Api,
+	content: string,
+	title: string,
+	contentmodel: 'javascript' | 'sanitized-css' | 'Scribunto',
+): ReturnType<mw.Api['get']> =>
+	api.get({action: 'codemirror-validate', contentmodel, content, title, formatversion: 2})
+		// eslint-disable-next-line promise/prefer-await-to-then
+		.then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>;
+
+export const getParsoidLintSource = async (title: string, opt?: Option | LiveOption): Promise<LintSource> => {
+	await mw.loader.using('mediawiki.api');
+	const api = new mw.Api(),
+		rest = new mw.Rest();
+	highSet ??= (async () => {
+		const {general: {linter: {high, medium, low}}} = (await api.get({
+			action: 'query',
+			meta: 'siteinfo',
+			siprop: 'general',
+		}) as ApiResponse).query!;
+		parsoidRules.push(...[...high, ...medium, ...low].map(getRuleKey));
+		if (preferenceDialog.layout) {
+			preferenceDialog.layout.addTabPanels(buildPanel('Parsoid', parsoidRules), 2);
+		}
+		return new Set(high);
+	})();
+	const execute = getExecuter<ParsoidError>(
+		rest,
+		wikitext => rest.post(
 			`/v1/transform/wikitext/to/lint${title && '/'}${
 				encodeURIComponent(title.replace(/\s+/gu, '_'))
 			}`,
 			{wikitext},
-		).then( // eslint-disable-line promise/prefer-await-to-then
-			errors => errors as ParsoidError[],
-			(_, e) => {
-				if (e.textStatus !== 'abort') {
-					console.error('Parsoid linting failed:', e);
-				}
-				return [];
-			},
-		);
-	};
+		),
+	);
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
 		const errors = await execute(doc.toString()),
 			config = await getOpt(opt, true),
@@ -102,5 +136,70 @@ export default async (title: string, opt?: Option | LiveOption): Promise<LintSou
 				to,
 			}));
 	};
+	return linter;
+};
+
+export const getTemplateStylesLintSource = (title: string): LintSource => {
+	const api = new mw.Api(),
+		execute = getExecuter(
+			api,
+			content => codemirrorValidate(api, content, title, 'sanitized-css'),
+		);
+	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
+		(await execute(doc.toString())).map(({message, line, column}): Diagnostic => {
+			const from = doc.line(line!).from + column! - 1;
+			return {
+				severity: 'error',
+				source: 'TemplateStyles',
+				message,
+				renderMessage(): HTMLSpanElement {
+					const span = document.createElement('span');
+					span.append(...$.parseHTML(message));
+					return span;
+				},
+				from,
+				to: from,
+			};
+		});
+	return linter;
+};
+
+export const getScribuntoLintSource = (title: string): LintSource => {
+	const api = new mw.Api(),
+		execute = getExecuter(
+			api,
+			content => codemirrorValidate(api, content, title, 'Scribunto'),
+		);
+	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
+		(await execute(doc.toString())).map(({message, line}): Diagnostic => {
+			const {from, to} = line === undefined ? {from: 0, to: 0} : doc.line(line);
+			return {
+				severity: 'error',
+				source: 'Scribunto',
+				message,
+				from,
+				to,
+			};
+		});
+	return linter;
+};
+
+export const getPeastLintSource = (title: string): LintSource => {
+	const api = new mw.Api(),
+		execute = getExecuter(
+			api,
+			content => codemirrorValidate(api, content, title, 'javascript'),
+		);
+	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
+		(await execute(doc.toString())).map(({message, line, column}): Diagnostic => {
+			const from = doc.line(line!).from + column!;
+			return {
+				severity: 'error',
+				source: 'Peast',
+				message,
+				from,
+				to: from,
+			};
+		});
 	return linter;
 };

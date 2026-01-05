@@ -98,6 +98,7 @@ export default (cm: CodeMirror6): Extension => [
 			lineHeight: 1.4,
 		},
 		[`${hoverSelector} code`]: {
+			color: 'inherit',
 			padding: '.1em .4em',
 			borderRadius: '.4em',
 		},

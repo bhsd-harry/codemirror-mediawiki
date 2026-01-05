@@ -44,21 +44,22 @@ input[type="color"] {
 }
 
 /* src/hover */
-.cm-tooltip-hover {
+.cm-tooltip-hover-mw {
 	padding: 2px 5px;
 	width: max-content;
 	max-width: 60vw;
 	overflow-y: auto;
 }
-.cm-tooltip-hover * {
+.cm-tooltip-hover-mw * {
 	margin-top: 0 !important;
 	margin-bottom: 0 !important;
 }
-.cm-tooltip-hover > div {
+.cm-tooltip-hover-mw > div {
 	font-size: 90%;
 	line-height: 1.4;
 }
-.cm-tooltip-hover code {
+.cm-tooltip-hover-mw code {
+	color: inherit;
 	padding: .1em .4em;
 	border-radius: .4em;
 }

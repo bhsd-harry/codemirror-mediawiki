@@ -366,7 +366,7 @@ export class CodeMirror6 {
 							const span = elt(
 								'span',
 								{class: diagnosticSelector.slice(1)},
-								diagnostic.message,
+								diagnostic.renderMessage?.(view) ?? diagnostic.message,
 							);
 							span.addEventListener('click', () => {
 								view.dispatch({

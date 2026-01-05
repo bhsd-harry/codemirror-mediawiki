@@ -20,7 +20,12 @@ import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
 import {preferenceId, indentKey, themeKey, RuleState, curVersion, languages} from './constants';
 import escape from './escape';
-import getParsoidLintSource from './lintsource';
+import {
+	getParsoidLintSource,
+	getTemplateStylesLintSource,
+	getScribuntoLintSource,
+	getPeastLintSource,
+} from './lintsource';
 import {msg} from './msg';
 import {getTitleParser, isbnParser} from './openLinks';
 import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from './preference';
@@ -34,7 +39,7 @@ import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {Dialect} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
-import type {LintSources} from '../src/lintsource';
+import type {LintSources, LintSource} from '../src/lintsource';
 import type {MwConfig} from '../src/token';
 
 declare interface IWikitextModel extends editor.ITextModel {
@@ -98,17 +103,50 @@ const linters: Record<string, LintSources | undefined> = {},
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
 	],
 	{documentElement} = document,
+	userModuleRegex = new RegExp(
+		String.raw`^User:[^/]+/(?:common|global|${mw.config.get('skin')})\.js$`,
+		'u',
+	),
 	mediaQuery = matchMedia('(prefers-color-scheme: dark)');
 
+/**
+ * 自动设置主题
+ * @param cm CodeMirror 实例
+ */
 const setTheme = (cm: CodeMirror): void => {
 	const isDark = documentElement.classList.contains('skin-theme-clientpref-night')
 		|| documentElement.classList.contains('skin-theme-clientpref-os') && mediaQuery.matches
 		|| documentElement.getAttribute('color-mode') === 'dark';
 	cm.setTheme(isDark ? 'dark' : 'light', true);
 };
+
+/**
+ * 获取主题变更 MutationObserver
+ * @param cm CodeMirror 实例
+ */
 const getObserver = (cm: CodeMirror): MutationObserver => new MutationObserver(() => {
 	setTheme(cm);
 });
+
+/**
+ * 获取全部 LintSource
+ * @param lang 语言
+ * @param linter 基础 LintSource
+ * @param linter2 基于 API 的 LintSource
+ */
+const getLintSources = (lang: string, linter: LintSource | undefined, linter2: LintSource): LintSources => {
+	const lintersources: LintSources = linter ? [linter, linter2] : linter2;
+	linters[lang] = lintersources;
+	return lintersources;
+};
+
+/**
+ * 判断是否为 ResourceLoader 模块
+ * @param title 标题
+ * @param ns 命名空间
+ */
+const isRLModule = (title: string, ns = 2): boolean =>
+	ns === 8 || ns === 2300 || ns === 2 && userModuleRegex.test(title);
 
 /**
  * 判断是否为普通编辑器
@@ -392,15 +430,28 @@ export class CodeMirror extends CodeMirror6 {
 
 	// @ts-expect-error override return type
 	override async getLinter(opt?: Option | LiveOption): Promise<LintSources | undefined> {
-		if (this.view) {
+		const {view, lang, dialect, page, ns} = this;
+		if (view) {
 			const linter = await super.getLinter(opt);
-			if (isWMF && this.lang === 'mediawiki') {
-				const parsoidLinter = await getParsoidLintSource(this.page, opt),
-					lintersources: LintSources = linter ? [linter, parsoidLinter] : parsoidLinter;
-				linters[this.lang] = lintersources;
-				return lintersources;
+			if (isWMF) {
+				switch (lang) {
+					case 'mediawiki':
+						return getLintSources(lang, linter, await getParsoidLintSource(page, opt));
+					case 'lua':
+						return getLintSources(lang, linter, getScribuntoLintSource(page));
+					case 'css':
+						if (dialect === 'sanitized-css') {
+							return getLintSources(lang, linter, getTemplateStylesLintSource(page));
+						}
+						break;
+					case 'javascript':
+						if (isRLModule(page, ns)) {
+							return getLintSources(lang, linter, getPeastLintSource(page));
+						}
+					// no default
+				}
 			}
-			linters[this.lang] = linter;
+			linters[lang] = linter;
 			return linter;
 		} else if (this.#model?.linter) {
 			this.#model.linter.option = opt;
@@ -441,7 +492,7 @@ export class CodeMirror extends CodeMirror6 {
 			}
 			return;
 		}
-		const {lang, ns, dialect} = this,
+		const {lang, ns, dialect, page} = this,
 			loaded = lang in linters;
 		if (!loaded) {
 			let defaultOpt: Option;
@@ -450,7 +501,7 @@ export class CodeMirror extends CodeMirror6 {
 					defaultOpt = {include: false};
 				} else if (lang === 'javascript') {
 					defaultOpt = (
-						ns === 8 || ns === 2300 ? {parserOptions: {ecmaVersion: 8}} : {}
+						isRLModule(page, ns) ? {parserOptions: {ecmaVersion: 8}} : {}
 					) satisfies Linter.BaseConfig;
 				}
 			}

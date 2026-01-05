@@ -88,7 +88,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 				...config?.variableIDs ? [] : ['variables'],
 				...config?.functionHooks ? [] : ['functionhooks'],
 			],
-			formatversion: '2',
+			formatversion: 2,
 		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 		// 先处理魔术字和状态开关

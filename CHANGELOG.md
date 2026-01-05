@@ -1,7 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.8.2
 
-*2026-01-05*
+*2026-01-07*
+
+**Added**
+
+- JavaScript linting with [Peast](https://github.com/mck89/peast) on a WMF-hosted site
+- CSS linting with [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles) on a WMF-hosted site
+- Lua linting with [Extension:Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto) on a WMF-hosted site
 
 **Fixed**
 
