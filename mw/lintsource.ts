@@ -84,10 +84,13 @@ const codemirrorValidate = (
 	content: string,
 	title: string,
 	contentmodel: 'javascript' | 'sanitized-css' | 'Scribunto',
-): ReturnType<mw.Api['get']> =>
-	api.get({action: 'codemirror-validate', contentmodel, content, title, formatversion: 2})
-		// eslint-disable-next-line promise/prefer-await-to-then
-		.then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>;
+): ReturnType<mw.Api['get']> => api.get({
+	action: 'codemirror-validate',
+	contentmodel,
+	content,
+	title: title || 'Extension:CodeMirror',
+	formatversion: 2, // eslint-disable-next-line promise/prefer-await-to-then
+}).then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>;
 
 export const getParsoidLintSource = async (title: string, opt?: Option | LiveOption): Promise<LintSource> => {
 	await mw.loader.using('mediawiki.api');
@@ -139,7 +142,8 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 	return linter;
 };
 
-export const getTemplateStylesLintSource = (title: string): LintSource => {
+export const getTemplateStylesLintSource = async (title: string): Promise<LintSource> => {
+	await mw.loader.using('mediawiki.api');
 	const api = new mw.Api(),
 		execute = getExecuter(
 			api,
@@ -164,7 +168,8 @@ export const getTemplateStylesLintSource = (title: string): LintSource => {
 	return linter;
 };
 
-export const getScribuntoLintSource = (title: string): LintSource => {
+export const getScribuntoLintSource = async (title: string): Promise<LintSource> => {
+	await mw.loader.using('mediawiki.api');
 	const api = new mw.Api(),
 		execute = getExecuter(
 			api,
@@ -184,7 +189,8 @@ export const getScribuntoLintSource = (title: string): LintSource => {
 	return linter;
 };
 
-export const getPeastLintSource = (title: string): LintSource => {
+export const getPeastLintSource = async (title: string): Promise<LintSource> => {
+	await mw.loader.using('mediawiki.api');
 	const api = new mw.Api(),
 		execute = getExecuter(
 			api,

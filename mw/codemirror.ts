@@ -245,6 +245,7 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	#setLangConfig(config: MwConfig): void {
 		if (this.lang === 'mediawiki') {
+			mw.loader.load('mediawiki.Title');
 			this.langConfig = $.extend(true, {titleParser: getTitleParser(config), isbnParser}, config);
 		}
 	}
@@ -438,15 +439,15 @@ export class CodeMirror extends CodeMirror6 {
 					case 'mediawiki':
 						return getLintSources(lang, linter, await getParsoidLintSource(page, opt));
 					case 'lua':
-						return getLintSources(lang, linter, getScribuntoLintSource(page));
+						return getLintSources(lang, linter, await getScribuntoLintSource(page));
 					case 'css':
 						if (dialect === 'sanitized-css') {
-							return getLintSources(lang, linter, getTemplateStylesLintSource(page));
+							return getLintSources(lang, linter, await getTemplateStylesLintSource(page));
 						}
 						break;
 					case 'javascript':
 						if (isRLModule(page, ns)) {
-							return getLintSources(lang, linter, getPeastLintSource(page));
+							return getLintSources(lang, linter, await getPeastLintSource(page));
 						}
 					// no default
 				}

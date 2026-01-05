@@ -14,6 +14,10 @@
 - Duplicate [highlighting styles](https://codemirror.net/docs/ref/#language.HighlightStyle) in the dark theme
 - Italic free external link protocols in the MediaWiki mode
 
+**Changed**
+
+- ESLint no longer reports undefined rules
+
 ## 3.8.1
 
 *2025-12-30*

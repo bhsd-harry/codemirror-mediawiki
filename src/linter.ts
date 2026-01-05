@@ -236,7 +236,8 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 		}
 		delete config.extends;
 		linter.config = config as Record<string, unknown>;
-		return esLinter.verify(text, config);
+		return esLinter.verify(text, config)
+			.filter(({ruleId, message}) => message !== `Definition for rule '${ruleId}' was not found.`);
 	};
 	linter.fixer = (code, rule): string => esLinter.verifyAndFix(
 		code,

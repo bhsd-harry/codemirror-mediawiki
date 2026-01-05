@@ -95,6 +95,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 	if (!version) { // 首次安装
 		notification = await notify('welcome');
 	} else if (addons.length > 0 && !compareVersion(version, baseVersion)) { // 更新版本
+		await mw.loader.using('mediawiki.jqueryMsg');
 		notification = await notify(
 			'welcome-addons',
 			`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${

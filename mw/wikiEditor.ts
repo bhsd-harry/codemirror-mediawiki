@@ -130,11 +130,10 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 		'ext.wikiEditor',
 		'oojs-ui.styles.icons-interactions',
 		'oojs-ui.styles.icons-layout',
-		...hasCodeEditor ? ['ext.codeEditor.icons'] : ['oojs-ui.styles.icons-editing-list'],
+		...hasCodeEditor ? ['ext.codeEditor.icons', 'mediawiki.api'] : ['oojs-ui.styles.icons-editing-list'],
 	]);
 	if (hasCodeEditor) {
 		try {
-			await mw.loader.using('mediawiki.api');
 			await new mw.Api().loadMessagesIfMissing([
 				'codeeditor-indent',
 				'codeeditor-outdent',
