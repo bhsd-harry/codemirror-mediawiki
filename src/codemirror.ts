@@ -8,10 +8,9 @@ import type {
 	DocRange,
 } from './fold';
 
-export const replaceSelections = (
-	view: EditorView,
-	func: (str: string, range: DocRange) => string | [string, number, number?],
-): void => {
+export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
+
+export const replaceSelections = (view: EditorView, func: ReplaceFunction): void => {
 	const {state} = view;
 	view.dispatch(state.changeByRange(({from, to}) => {
 		const result = func(state.sliceDoc(from, to), {from, to});
