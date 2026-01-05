@@ -43,6 +43,8 @@ export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Record<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
+export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
+
 declare interface MenuItem {
 	name: string;
 	isActionable(this: void, cm: CodeMirror6): boolean;
@@ -90,10 +92,7 @@ const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHel
 const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
 const phrases: Record<string, string> = {};
 
-export const replaceSelections = (
-	view: EditorView,
-	func: (str: string, range: DocRange) => string | [string, number, number?],
-): void => {
+export const replaceSelections = (view: EditorView, func: ReplaceFunction): void => {
 	const {state} = view;
 	view.dispatch(state.changeByRange(({from, to}) => {
 		const result = func(state.sliceDoc(from, to), {from, to});
@@ -604,6 +603,17 @@ export class CodeMirror6 {
 	setTheme(theme: string): void {
 		if (theme in themes) {
 			this.#view?.dispatch({effects: this.#theme.reconfigure(themes[theme]!)});
+		}
+	}
+
+	/**
+	 * Replace the current selection with the result of a function
+	 * @param func function to produce the replacement text
+	 * @since 3.9.0
+	 */
+	replaceSelections(func: ReplaceFunction): void {
+		if (this.#view) {
+			replaceSelections(this.#view, func);
 		}
 	}
 

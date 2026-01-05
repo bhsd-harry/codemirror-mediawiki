@@ -1,5 +1,5 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.8.2
+## 3.9.0
 
 *2026-01-07*
 
@@ -8,11 +8,13 @@
 - JavaScript linting with [Peast](https://github.com/mck89/peast) on a WMF-hosted site
 - CSS linting with [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles) on a WMF-hosted site
 - Lua linting with [Extension:Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto) on a WMF-hosted site
+- New method: [`replaceSelections`](./README.md#replaceselections)
 
 **Fixed**
 
 - Duplicate [highlighting styles](https://codemirror.net/docs/ref/#language.HighlightStyle) in the dark theme
 - Italic free external link protocols in the MediaWiki mode
+- The [`replaceSelection`](https://doc.wikimedia.org/mediawiki-core/master/js/module-jquery.textSelection.html#.replaceSelection) command of `jquery.textSelection` should work for multiple cursors when using the Monaco editor on a MediaWiki site
 
 **Changed**
 
@@ -1318,7 +1320,7 @@
 
 - Now any Wikitext syntax will end the url of an external link in the MediaWiki mode
 - Anchors in file links are now highlighted as errors in the MediaWiki mode
-- The replacement function passed to [`replaceSelections`](./README.md#replaceselections) now has an expanded signature
+- The replacement function passed to [`replaceSelections`](./README.md#replaceselections-static) now has an expanded signature
 
 ## v2.7.4
 
@@ -1585,7 +1587,7 @@
 
 - New extension option for the MediaWiki mode: [escape](./README.md#escape)
 - New method: [`extraKeys`](./README.md#extrakeys)
-- New static method: [`replaceSelections`](./README.md#replaceselections)
+- New static method: [`replaceSelections`](./README.md#replaceselections-static)
 - Now on a MediaWiki site, a user can toggle extensions on and off with a dialog
 
 **Changed**

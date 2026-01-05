@@ -37,7 +37,7 @@ import type {Linter} from 'eslint';
 import type {Config} from 'stylelint';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
-import type {Dialect} from '../src/codemirror';
+import type {Dialect, ReplaceFunction} from '../src/codemirror';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSources, LintSource} from '../src/lintsource';
 import type {MwConfig} from '../src/token';
@@ -644,6 +644,21 @@ export class CodeMirror extends CodeMirror6 {
 				? 'light'
 				: theme,
 		);
+	}
+
+	override replaceSelections(func: ReplaceFunction): void {
+		if (this.#editor) {
+			const edits = this.#editor.getSelections()!.map((range): editor.ISingleEditOperation => {
+				const result = func(this.#model!.getValueInRange(range), {
+					from: this.#model!.getOffsetAt(range.getStartPosition()),
+					to: this.#model!.getOffsetAt(range.getEndPosition()),
+				});
+				return {range, text: typeof result === 'string' ? result : result[0]};
+			});
+			this.#editor.executeEdits('replaceSelection', edits);
+			return;
+		}
+		super.replaceSelections(func);
 	}
 
 	/**

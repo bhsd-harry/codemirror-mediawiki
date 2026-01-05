@@ -149,7 +149,7 @@ export const monacoTextSelection: TextSelection = {
 		const {editor} = getInstance(this);
 		editor!.executeEdits(
 			'replaceSelection',
-			[{range: editor!.getSelection()!, text, forceMoveMarkers: true}],
+			editor!.getSelections()!.map(range => ({range, text, forceMoveMarkers: true})),
 		);
 		return this;
 	},

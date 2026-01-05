@@ -47,6 +47,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [lint](#lint)
 	- [localize](#localize)
 	- [prefer](#prefer)
+	- [replaceSelections](#replaceselections)
 	- [scrollTo](#scrollto)
 	- [setContent](#setcontent)
 	- [setIndent](#setindent)
@@ -59,7 +60,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [CDN](#cdn)
 - [Static methods](#static-methods)
 	- [getMwConfig](#getmwconfig)
-	- [replaceSelections](#replaceselections)
+	- [replaceSelections](#replaceselections-static)
 - [Extensions](#extensions)
 	- [allowMultipleSelections](#allowmultipleselections)
 	- [autocompletion](#autocompletion)
@@ -733,6 +734,22 @@ cm.prefer({
 
 </details>
 
+## replaceSelections
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.9.0*
+
+**param**: `(str: string, range: {from: number, to: number}) => string | [string, number, number?]` the replacement function  
+Replace the selected text with the return value of the replacement function.
+
+```js
+cm.replaceSelections(str => str.toUpperCase());
+```
+
+</details>
+
 ## scrollTo
 
 <details>
@@ -903,7 +920,7 @@ const mwConfig = CodeMirror6.getMwConfig(config);
 
 </details>
 
-## replaceSelections
+## replaceSelections (static)
 
 <details>
 	<summary>Expand</summary>
