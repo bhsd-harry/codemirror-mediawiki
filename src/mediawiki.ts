@@ -11,6 +11,7 @@ import {
 	LanguageSupport,
 	syntaxHighlighting,
 } from '@codemirror/language';
+import {EditorView} from '@codemirror/view';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
@@ -21,7 +22,6 @@ import {
 	hasTag,
 	braceStackUpdate,
 } from './util.js';
-import {EditorView} from '@codemirror/view';
 import type {
 	StreamParser,
 	TagStyle,

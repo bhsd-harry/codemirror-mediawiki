@@ -1,5 +1,6 @@
 /.vscode/
 /build
+/diff.html
 dist/
 !/dist/main.min.js
 !/dist/demo.min.js

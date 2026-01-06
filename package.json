@@ -55,7 +55,7 @@
 	"dependencies": {
 		"@bhsd/browser": "^0.2.1",
 		"@bhsd/codemirror-css-color-picker": "^6.3.0",
-		"@bhsd/common": "^1.0.1",
+		"@bhsd/common": "^1.2.0",
 		"@codemirror/autocomplete": "^6.20.0",
 		"@codemirror/commands": "^6.10.1",
 		"@codemirror/language": "^6.12.1",

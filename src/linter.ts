@@ -16,7 +16,6 @@ import type {
 
 export type Option = Record<string, unknown> | null | undefined;
 export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
-declare type getLinter<T> = () => (text: string) => T;
 declare type asyncLinter<
 	T,
 	S = Record<string, unknown>,
@@ -44,14 +43,6 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	range?: Range;
 	from?: number;
 	to?: number;
-}
-
-declare interface JsonError {
-	message: string;
-	severity: 'error';
-	line: string | undefined;
-	column: string | undefined;
-	position: string | undefined;
 }
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
@@ -283,30 +274,4 @@ export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async
 	// eslint-disable-next-line @typescript-eslint/await-thenable
 	const luachecker = await luacheck(undefined as unknown as string);
 	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
-};
-
-/** JSON.parse */
-export const getJsonLinter: getLinter<JsonError[]> = () => str => {
-	try {
-		if (str.trim()) {
-			JSON.parse(str);
-		}
-	} catch (e) {
-		if (e instanceof SyntaxError) {
-			const {message} = e,
-				line = /\bline (\d+)/u.exec(message)?.[1],
-				column = /\bcolumn (\d+)/u.exec(message)?.[1],
-				position = /\bposition (\d+)/u.exec(message)?.[1];
-			return [
-				{
-					message,
-					severity: 'error',
-					line,
-					column,
-					position,
-				},
-			];
-		}
-	}
-	return [];
 };

@@ -1,13 +1,14 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.9.0
 
-*2026-01-07*
+*2026-01-09*
 
 **Added**
 
 - JavaScript linting with [Peast](https://github.com/mck89/peast) on a WMF-hosted site
 - CSS linting with [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles) on a WMF-hosted site
 - Lua linting with [Extension:Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto) on a WMF-hosted site
+- JSON linter now also reports duplicate object keys
 - New method: [`replaceSelections`](./README.md#replaceselections)
 
 **Fixed**

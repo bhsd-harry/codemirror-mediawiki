@@ -1,12 +1,11 @@
 import {ensureSyntaxTree} from '@codemirror/language';
 import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
-import {sanitizeInlineStyle} from '@bhsd/common';
+import {sanitizeInlineStyle, lintJSON} from '@bhsd/common';
 import {
 	getWikiLinter,
 	getJsLinter,
 	getCssLinter,
-	getJsonLinter,
 	getLuaLinter,
 	stylelintRepo,
 	eslintRepo,
@@ -271,23 +270,8 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
 	};
 };
 
-export const getJsonLintSource: LintSourceGetter = (): LintSource => {
-	const jsonLint = getJsonLinter();
-	return ({doc}) => {
-		const [e] = jsonLint(doc.toString());
-		if (e) {
-			const {message, severity, line, column, position} = e;
-			let from = 0;
-			if (position) {
-				from = Number(position);
-			} else if (line && column) {
-				from = pos(doc, Number(line), Number(column));
-			}
-			return [{message, severity, from, to: from}];
-		}
-		return [];
-	};
-};
+export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => lintJSON(doc.toString())
+	.map(({message, position, severity}): Diagnostic => ({message, severity, from: position, to: position}));
 
 export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
 	const {CDN} = base,
