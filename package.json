@@ -35,7 +35,7 @@
 		"lint:css": "stylelint **/*.css",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
-		"diff": "git diff --ignore-all-space --color-moved --minimal npm wikitext"
+		"diff": "bash diff.sh"
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.2.1",
@@ -60,6 +60,7 @@
 		"@types/node": "^24.10.1",
 		"@typescript-eslint/eslint-plugin": "^8.46.4",
 		"@typescript-eslint/parser": "^8.46.4",
+		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.25.12",
 		"eslint": "^9.39.1",
 		"eslint-plugin-es-x": "^9.1.2",
