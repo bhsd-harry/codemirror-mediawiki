@@ -1,25 +1,33 @@
+import {
+	keymap,
+} from '@codemirror/view';
+import {
+	autocompletion,
+} from '@codemirror/autocomplete';
 import {LanguageSupport} from '@codemirror/language';
-import {autocompletion} from '@codemirror/autocomplete';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
-import {keymap} from '@codemirror/view';
 import elt from 'crelt';
+import mediawikiColorPicker from './color.js';
 import {diagnosticSelector} from './constants.js';
-import {tagModes, getStaticMwConfig} from './static.js';
-import {mediawikiBase} from './mediawiki.js';
+import escapeKeymap from './escape.js';
+import codeFolding from './fold.js';
+import magicWordHover from './hover.js';
+import inlayHints from './inlay.js';
+import formatKeymap from './keymap.js';
+import {
+	getWikiLintSource,
+} from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import escapeKeymap from './escape.js';
+import {mediawikiBase} from './mediawiki.js';
 import refHover from './ref.js';
-import hover from './hover.js';
 import signatureHelp from './signature.js';
-import inlayHints from './inlay.js';
-import formatKeymap from './keymap';
-import colorPicker from './color.js';
-import codeFolding from './fold.js';
-import {getWikiLintSource} from './lintsource.js';
+import {tagModes, getStaticMwConfig} from './static.js';
 import {updateCDN} from './util.js';
 import type {Extension} from '@codemirror/state';
-import type {Language} from '@codemirror/language';
+import type {
+	Language,
+} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {ConfigData, LintConfig} from 'wikiparser-node';
 
@@ -96,10 +104,10 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 			bracketMatching(),
 			autocompletion(),
 			refHover(configData),
-			hover(configData),
+			magicWordHover(configData),
 			signatureHelp(configData),
 			inlayHints(configData),
-			colorPicker(),
+			mediawikiColorPicker(),
 			codeFolding(),
 			wikilint(configData),
 		],
@@ -109,10 +117,10 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 export {
 	escapeKeymap,
 	refHover,
-	hover,
+	magicWordHover as hover,
 	signatureHelp,
 	inlayHints,
 	formatKeymap,
-	colorPicker,
+	mediawikiColorPicker as colorPicker,
 	codeFolding,
 };

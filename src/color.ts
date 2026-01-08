@@ -1,17 +1,12 @@
 import {splitColors, numToHex} from '@bhsd/common';
-import {EditorView} from '@codemirror/view';
 import {
 	parseCallExpression,
 	parseColorLiteral,
 	ColorType,
-	wrapperClassName,
 	colorPickerTheme,
 	makeColorPicker,
 } from '@bhsd/codemirror-css-color-picker';
-import type {
-	Text,
-	Extension,
-} from '@codemirror/state';
+import type {Text, Extension} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 
@@ -55,13 +50,4 @@ export const discoverColors = (_: Tree, from: number, to: number, type: string, 
 export default (): Extension => [
 	makeColorPicker({discoverColors}),
 	colorPickerTheme,
-	EditorView.theme({
-		[`.${wrapperClassName}`]: {
-			outline: 'none',
-			marginLeft: '.6ch',
-		},
-		[`.${wrapperClassName} input[type="color"]`]: {
-			outline: '1px solid #eee',
-		},
-	}),
 ];
