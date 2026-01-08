@@ -648,7 +648,7 @@ const theme = /* @__PURE__ */ EditorView.theme({
  * Get a LanguageSupport instance for the MediaWiki mode.
  * @param config Configuration for the MediaWiki mode
  */
-export const mediawiki = (config: MwConfig): LanguageSupport => {
+export const mediawikiBase = (config: MwConfig): LanguageSupport => {
 	const mode = new FullMediaWiki(config),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())), theme]);

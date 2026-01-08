@@ -2,14 +2,14 @@ import {configureNesting} from '@lezer/html';
 import {htmlLanguage, htmlCompletionSourceWith} from '@codemirror/lang-html';
 import {javascript, javascriptLanguage} from '@codemirror/lang-javascript';
 import {cssLanguage} from '@codemirror/lang-css';
-import {LanguageSupport} from '@codemirror/language';
+import {LanguageSupport, syntaxHighlighting, defaultHighlightStyle} from '@codemirror/language';
 import {cssCompletion} from './css.js';
 import {jsCompletion} from './javascript.js';
-import {mediawiki} from './mediawiki.js';
+import {mediawikiBase} from './mediawiki.js';
 import type {MwConfig} from './token';
 
 export default (config: MwConfig): LanguageSupport => {
-	const {language, support} = mediawiki(config),
+	const {language, support} = mediawikiBase(config),
 		lang = new LanguageSupport(
 			htmlLanguage.configure({
 				wrap: configureNesting(
@@ -33,6 +33,7 @@ export default (config: MwConfig): LanguageSupport => {
 				jsCompletion,
 				cssCompletion(),
 				support,
+				syntaxHighlighting(defaultHighlightStyle),
 			],
 		);
 	Object.assign(lang, {nestedMWLanguage: language});

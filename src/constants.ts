@@ -1,11 +1,11 @@
 import {wmf} from '@bhsd/common';
 
 export const base: Record<'CDN', string | undefined> = {CDN: undefined},
+	hoverSelector = '.cm-tooltip-hover-mw',
+	diagnosticSelector = '.cm-diagnosticText-clickable',
 	panelSelector = '.cm-panel',
 	panelsSelector = '.cm-panels',
-	diagnosticSelector = '.cm-diagnosticText-clickable',
 	foldSelector = '.cm-tooltip-fold',
-	hoverSelector = '.cm-tooltip-hover-mw',
 	isolateSelector = '.cm-bidi-isolate',
 	ltrSelector = '.cm-bidi-ltr',
 	menuSelector = '.cm-status-fix-menu',

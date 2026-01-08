@@ -12,8 +12,8 @@ import {
 import {EditorState} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
 import {
-	closeBrackets,
 	autocompletion,
+	closeBrackets,
 	acceptCompletion,
 	completionKeymap,
 	startCompletion,
@@ -21,7 +21,7 @@ import {
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
 import {getLSP} from '@bhsd/browser';
-import {colorPicker as cssColorPicker, colorPickerTheme, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
+import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolation from './bidi.js';
 import {
 	CodeMirror6,
@@ -33,13 +33,13 @@ import {
 	optionalFunctions,
 	themes,
 } from './codemirror.js';
-import colorPicker, {discoverColors} from './color.js';
-import escape from './escape.js';
+import mediawikiColorPicker from './color.js';
+import escapeKeymap from './escape.js';
 import codeFolding, {mediaWikiFold, foldHandler} from './fold.js';
 import magicWordHover from './hover.js';
 import {detectIndent} from './indent.js';
 import inlayHints from './inlay.js';
-import toolKeymap from './keymap.js';
+import formatKeymap from './keymap.js';
 import {
 	getWikiLintSource,
 	getJsLintSource,
@@ -49,9 +49,9 @@ import {
 	getVueLintSource,
 	getHTMLLintSource,
 } from './lintsource.js';
-import bracketMatching from './matchBrackets.js';
+import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {mediawiki} from './mediawiki.js';
+import {mediawikiBase} from './mediawiki.js';
 import openLinks from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelp from './signature.js';
@@ -63,8 +63,10 @@ import javascript from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
 import type {Extension} from '@codemirror/state';
-import type {Config, LanguageSupport} from '@codemirror/language';
-import type {StyleSpec} from 'style-mod';
+import type {
+	Config,
+	LanguageSupport,
+} from '@codemirror/language';
 import type {Addon, AddonMain} from './codemirror';
 import type {LintSourceGetter} from './lintsource';
 import type {MwConfig} from './token';
@@ -111,7 +113,7 @@ export const registerHighlightSelectionMatches = (): void => {
 /** Register the `bracketMatching` extension */
 export const registerBracketMatching = (): void => {
 	registerExtension('bracketMatching', ([config, e = []]: [Config?, Extension?] = []): Extension => [
-		bracketMatching(config),
+		bracketMatchingBase(config),
 		e,
 	]);
 };
@@ -155,7 +157,7 @@ export const registerCodeFolding = (): void => {
 
 /** Register the `colorPicker` extension */
 export const registerColorPicker = (): void => {
-	registerExtension('colorPicker', colorPicker);
+	registerExtension('colorPicker', (e: Extension = []): Extension => e);
 };
 
 /** 注册所有通用扩展（除`colorPicker`） */
@@ -235,7 +237,7 @@ export const registerOpenLinks = (): void => {
 
 /** Register the `escape` extension */
 export const registerEscape = (): void => {
-	registerExtensionForMediaWiki('escape', escape);
+	registerExtensionForMediaWiki('escape', escapeKeymap);
 };
 
 /** Register the `refHover` extension */
@@ -260,10 +262,7 @@ export const registerInlayHints = (): void => {
 
 /** Register the `colorPicker` extension for MediaWiki */
 export const registerColorPickerForMediaWiki = (): void => {
-	registerLangExtension<[Extension, StyleSpec]>('mediawiki', 'colorPicker', [
-		[makeColorPicker({discoverColors}), colorPickerTheme],
-		{marginLeft: '.6ch'},
-	]);
+	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker());
 };
 
 /** Register the `bracketMatching` extension for MediaWiki */
@@ -294,10 +293,10 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
 export const registerMediaWikiCore = (): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
 	languages['mediawiki'] = (config: MwConfig): Extension => [
-		mediawiki(config),
+		mediawikiBase(config),
 		plain(),
 		bidiIsolation,
-		toolKeymap,
+		formatKeymap,
 	];
 	registerLintSource('mediawiki', getWikiLintSource);
 	destroyListeners.push(view => {
@@ -322,7 +321,7 @@ export const registerCloseBracketsForHTML = (): void => {
 
 /** Register the `colorPicker` extension for mixed MediaWiki-HTML */
 export const registerColorPickerForHTML = (): void => {
-	registerLangExtension<[Extension]>('html', 'colorPicker', [cssColorPicker]);
+	registerLangExtension('html', 'colorPicker', colorPicker);
 };
 
 /** Register mixed MediaWiki-HTML core language support */
@@ -354,7 +353,7 @@ export const registerCSS = (): void => {
 
 /** Register the `colorPicker` extension for CSS */
 export const registerColorPickerForCSS = (): void => {
-	registerLangExtension<[Extension]>('css', 'colorPicker', [cssColorPicker]);
+	registerLangExtension('css', 'colorPicker', colorPicker);
 };
 
 /** Register CSS core language support */
@@ -405,7 +404,7 @@ export const registerCloseBracketsForVue = (): void => {
 
 /** Register the `colorPicker` extension for Vue */
 export const registerColorPickerForVue = (): void => {
-	registerLangExtension<[Extension]>('vue', 'colorPicker', [cssColorPicker]);
+	registerLangExtension('vue', 'colorPicker', colorPicker);
 };
 
 /** Register Vue core language support */
