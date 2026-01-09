@@ -67,3 +67,9 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
  */
 export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
+
+/**
+ * 获取字符串开头的空白字符
+ * @param str 字符串
+ */
+export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];

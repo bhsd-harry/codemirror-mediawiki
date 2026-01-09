@@ -2,6 +2,7 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
+import {leadingSpaces} from './util.js';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
@@ -432,7 +433,7 @@ const support = foldService.of(({doc, tabSize}, start, from) => {
 		return null;
 	}
 	const getIndent = (line: string): number =>
-		/^\s*/u.exec(line)![0].replace(/\t/gu, ' '.repeat(tabSize)).length;
+		leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
 	const indent = getIndent(text);
 	let j = number,
 		empty = true;

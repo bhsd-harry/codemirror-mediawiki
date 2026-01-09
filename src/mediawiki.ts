@@ -21,6 +21,7 @@ import {MediaWiki} from './token.js';
 import {
 	hasTag,
 	braceStackUpdate,
+	leadingSpaces,
 } from './util.js';
 import type {
 	StreamParser,
@@ -161,8 +162,7 @@ export class FullMediaWiki extends MediaWiki {
 			subpage = true;
 		} else {
 			search = search.replace(/_/gu, ' ');
-			const mt = /^\s*/u.exec(search)!;
-			[{length: offset}] = mt;
+			offset = leadingSpaces(search).length;
 			search = search.slice(offset);
 			if (search.startsWith(':')) {
 				const [{length}] = /^:\s*/u.exec(search)!;
@@ -205,7 +205,7 @@ export class FullMediaWiki extends MediaWiki {
 			result = await paramSuggest?.(page);
 		return result?.length
 			? {
-				offset: /^\s*/u.exec(search)![0].length,
+				offset: leadingSpaces(search).length,
 				options: result.map(([key, detail]) => ({type: 'variable', label: key + equal, detail} as Completion)),
 			}
 			: undefined;

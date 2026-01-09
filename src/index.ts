@@ -296,7 +296,7 @@ export const registerMediaWikiCore = (): void => {
 		mediawikiBase(config),
 		plain(),
 		bidiIsolation,
-		formatKeymap,
+		keymap.of(formatKeymap),
 	];
 	registerLintSource('mediawiki', getWikiLintSource);
 	destroyListeners.push(view => {

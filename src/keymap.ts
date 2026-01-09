@@ -1,4 +1,3 @@
-import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {keybindings, encapsulateLines} from './keybindings.js';
 import type {KeyBinding} from '@codemirror/view';
@@ -40,4 +39,4 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 	preventDefault: true,
 });
 
-export default keymap.of(keybindings.map(getKeymap));
+export default keybindings.map(getKeymap);
