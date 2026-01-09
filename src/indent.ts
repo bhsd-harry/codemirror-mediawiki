@@ -1,11 +1,10 @@
+import {noDetectionLangs} from './constants.js';
 import type {Text as TextBase} from '@codemirror/state';
 
 export interface Text extends TextBase {
 	children: readonly Text[] | null;
 	text?: string[];
 }
-
-const noDetectionLangs = new Set(['plain', 'mediawiki']);
 
 const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
 

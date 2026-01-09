@@ -11,6 +11,7 @@ export const base: Record<'CDN', string | undefined> = {CDN: undefined},
 	menuSelector = '.cm-status-fix-menu',
 	messageSelector = '.cm-status-message',
 	actionSelector = '.cm-diagnosticAction',
+	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';
 

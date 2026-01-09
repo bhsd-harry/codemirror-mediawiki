@@ -16,7 +16,7 @@ import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codem
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
-import {base, panelSelector, panelsSelector, diagnosticSelector} from './constants.js';
+import {base, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
 import {light} from './theme.js';
 import type {
 	ViewPlugin,
@@ -266,7 +266,7 @@ export class CodeMirror6 {
 							textarea.value = doc.toString();
 							textarea.dispatchEvent(new InputEvent('input'));
 						}, 400);
-						if (!startDoc.toString().trim()) {
+						if (!noDetectionLangs.has(this.#lang) && !startDoc.toString().trim()) {
 							this.setIndent(this.#indentStr);
 						}
 					}
