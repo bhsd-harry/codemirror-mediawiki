@@ -20,6 +20,7 @@
 **Changed**
 
 - ESLint no longer reports undefined rules
+- Pressing `Enter` now inserts a new line with identical indentation (spaces or tabs) as the current line in the MediaWiki mode
 
 ## 3.8.1
 

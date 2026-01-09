@@ -12,7 +12,15 @@ import {
 	indentUnit,
 	ensureSyntaxTree,
 } from '@codemirror/language';
-import {defaultKeymap, historyKeymap, history, redo, indentWithTab} from '@codemirror/commands';
+import {
+	defaultKeymap,
+	historyKeymap,
+	history,
+	redo,
+	indentWithTab,
+	insertNewlineKeepIndent,
+	deleteCharBackwardStrict,
+} from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
@@ -59,7 +67,13 @@ declare interface OptionalFunctions {
 	foldHandler: typeof foldHandler;
 }
 
-export const plain = (): Extension => EditorView.contentAttributes.of({spellcheck: 'true'});
+export const plain = (): Extension => [
+	EditorView.contentAttributes.of({spellcheck: 'true'}),
+	keymap.of([
+		{key: 'Enter', run: insertNewlineKeepIndent, shift: insertNewlineKeepIndent},
+		{key: 'Backspace', run: deleteCharBackwardStrict, preventDefault: true},
+	]),
+];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const languages: Record<string, (config?: any) => Extension> = {plain};

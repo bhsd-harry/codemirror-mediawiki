@@ -5,7 +5,9 @@
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 
-import {tags, Tag} from '@lezer/highlight';
+import {
+	Tag,
+} from '@lezer/highlight';
 import {html} from 'wikiparser-node/config/default.json';
 
 /**
@@ -108,18 +110,7 @@ export type TagName = keyof typeof tokens;
  */
 export const tokenTable = /* @__PURE__ */ (() => {
 	const table: Record<string, Tag> = {
-		variable: tags.variableName,
-		'variable-2': tags.special(tags.variableName),
-		'string-2': tags.special(tags.string),
-		def: tags.definition(tags.variableName),
-		tag: tags.tagName,
-		attribute: tags.attributeName,
-		type: tags.typeName,
-		builtin: tags.standard(tags.variableName),
-		qualifier: tags.modifier,
-		error: tags.invalid,
-		header: tags.heading,
-		property: tags.propertyName,
+		//
 	};
 	for (const className of Object.values(tokens)) {
 		table[className] = Tag.define();

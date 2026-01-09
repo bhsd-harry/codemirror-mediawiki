@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import {EditorState} from '@codemirror/state';
 import {CompletionContext} from '@codemirror/autocomplete';
 import * as config from 'wikiparser-node/config/default.json';
-import {mediawiki} from '../src/mediawiki';
+import {mediawikiBase} from '../src/mediawiki';
 import {tagModes, getStaticMwConfig} from '../src/static';
 import {linkSuggest, paramSuggest} from '../src/suggest.test';
 import type {CompletionResult, CompletionSource} from '@codemirror/autocomplete';
@@ -16,7 +16,7 @@ export const mwConfig: MwConfig = {
 	paramSuggest,
 };
 
-export const createState = (doc: string, lang = mediawiki(mwConfig)): EditorState => EditorState.create({
+export const createState = (doc: string, lang = mediawikiBase(mwConfig)): EditorState => EditorState.create({
 	doc,
 	extensions: [lang],
 });
