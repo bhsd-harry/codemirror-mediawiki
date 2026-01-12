@@ -23,11 +23,7 @@ registerMediaWiki();
 registerVue();
 registerTheme('nord', nord);
 
-(() => {
-	if (!location.pathname.startsWith('/codemirror-mediawiki')) {
-		return;
-	}
-
+if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	// 初始化DOM元素
 	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!,
 		languages = [...document.querySelectorAll<HTMLInputElement>('input[name="language"]')],
@@ -172,4 +168,4 @@ registerTheme('nord', nord);
 	indentChange();
 
 	Object.assign(globalThis, {cm});
-})();
+}

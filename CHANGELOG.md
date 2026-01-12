@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.9.1
+
+*2026-01-13*
+
+**Fixed**
+
+- Press `Enter` to accept the selected suggestion in the [autocompletion](./README.md#autocompletion) extension
+
 ## 3.9.0
 
 *2026-01-09*

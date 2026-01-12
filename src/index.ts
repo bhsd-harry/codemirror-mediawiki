@@ -9,7 +9,7 @@ import {
 	rectangularSelection,
 	crosshairCursor,
 } from '@codemirror/view';
-import {EditorState} from '@codemirror/state';
+import {EditorState, Prec} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
 import {
 	autocompletion,
@@ -142,11 +142,11 @@ export const registerAllowMultipleSelections = (): void => {
 export const registerAutocompletion = (): void => {
 	registerExtension('autocompletion', (): Extension => [
 		autocompletion({defaultKeymap: false}),
-		keymap.of([
+		Prec.high(keymap.of([
 			...completionKeymap.filter(({run}) => run !== startCompletion),
 			{key: 'Shift-Enter', run: startCompletion},
 			{key: 'Tab', run: acceptCompletion},
-		]),
+		])),
 	]);
 };
 

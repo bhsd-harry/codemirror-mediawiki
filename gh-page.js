@@ -34,10 +34,7 @@ registerLua();
 registerMediaWiki();
 registerVue();
 registerTheme("nord", nord);
-(() => {
-  if (!location.pathname.startsWith("/codemirror-mediawiki")) {
-    return;
-  }
+if (location.pathname.startsWith("/codemirror-mediawiki")) {
   const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), search = new URLSearchParams(location.search);
   if (search.has("rtl")) {
     textarea.dir = "rtl";
@@ -144,4 +141,4 @@ registerTheme("nord", nord);
   indent.addEventListener("change", indentChange);
   indentChange();
   Object.assign(globalThis, { cm });
-})();
+}
