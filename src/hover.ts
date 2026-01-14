@@ -3,7 +3,7 @@ import {
 	getLSP,
 } from '@bhsd/browser';
 import {marked} from 'marked';
-import {base, hoverSelector} from './constants.js';
+import {base, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
 	posToIndex,
@@ -15,6 +15,8 @@ import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
+
+const code = `${hoverSelector} code`;
 
 /**
  * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
@@ -67,10 +69,18 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 				fontSize: '90%',
 				lineHeight: 1.4,
 			},
-			[`${hoverSelector} code`]: {
+			[code]: {
 				color: 'inherit',
 				padding: '.1em .4em',
 				borderRadius: '.4em',
+			},
+		}),
+		EditorView.baseTheme({
+			[`&light ${code}`]: {
+				backgroundColor: '#e0e6eb',
+			},
+			[`&dark ${code}`]: {
+				backgroundColor: bgDark,
 			},
 		}),
 	];

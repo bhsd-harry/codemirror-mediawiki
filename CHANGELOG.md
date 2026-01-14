@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.1.1
+
+*2026-01-15*
+
+**Changed**
+
+- Highlighting styles for templates
+
 ## 0.1.0
 
 *2026-01-04*
@@ -9,7 +17,7 @@
 
 **Fixed**
 
-- Italic free external link protocols in the MediaWiki mode
+- Italic free external link protocols
 
 **Changed**
 

@@ -129,10 +129,10 @@ export const tokenTable = /* @__PURE__ */ (() => {
 		[tags.labelName, ['redirect', 'doubleUnderscore']],
 		// #708
 		[tags.operatorKeyword, ['parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
-		// #256
-		[tags.special(tags.variableName), ['templateName', 'templateDelimiter', 'templateBracket']],
 		// #00f
-		[tags.definition(tags.variableName), ['templateArgumentName']],
+		[tags.definition(tags.variableName), ['templateName', 'templateDelimiter', 'templateBracket']],
+		// #256
+		[tags.special(tags.variableName), ['templateArgumentName']],
 		// #30a
 		[
 			tags.local(tags.variableName),
