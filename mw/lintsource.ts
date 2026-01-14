@@ -84,7 +84,7 @@ const codemirrorValidate = (
 	content: string,
 	title: string,
 	contentmodel: 'javascript' | 'sanitized-css' | 'Scribunto',
-): ReturnType<mw.Api['get']> => api.get({
+): ReturnType<mw.Api['get']> => api.post({
 	action: 'codemirror-validate',
 	contentmodel,
 	content,
@@ -145,6 +145,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 export const getTemplateStylesLintSource = async (title: string): Promise<LintSource> => {
 	await mw.loader.using('mediawiki.api');
 	const api = new mw.Api(),
+		map = new mw.Map<Record<string, string>>(),
 		execute = getExecuter(
 			api,
 			content => codemirrorValidate(api, content, title, 'sanitized-css'),
@@ -157,8 +158,9 @@ export const getTemplateStylesLintSource = async (title: string): Promise<LintSo
 				source: 'TemplateStyles',
 				message,
 				renderMessage(): HTMLSpanElement {
+					map.set('', message);
 					const span = document.createElement('span');
-					span.append(...$.parseHTML(message));
+					span.innerHTML = new mw.Message(map, '').parse();
 					return span;
 				},
 				from,
