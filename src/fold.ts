@@ -27,7 +27,7 @@ import {
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
-import {foldSelector} from './constants.js';
+import {bgDark} from './constants.js';
 import {matchTag, getTag} from './matchTag.js';
 import {braceStackUpdate} from './util.js';
 import type {
@@ -195,6 +195,8 @@ export const foldable = (
 	const /** The end of the first delimiter */ from = delimiter?.to;
 	return from && from < to ? {from, to} : false;
 };
+
+const foldSelector = '.cm-tooltip-fold';
 
 /**
  * 创建折叠提示
@@ -593,6 +595,11 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 		},
 		[`${foldSelector}:hover`]: {
 			opacity: 1,
+		},
+	}),
+	EditorView.baseTheme({
+		[`&dark div${foldSelector}`]: {
+			backgroundColor: bgDark,
 		},
 	}),
 ])();

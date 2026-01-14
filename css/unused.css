@@ -19,16 +19,6 @@ input[type="color"] {
 	pointer-events: none;
 }
 
-/* src/color */
-.cm-css-color-picker-wrapper {
-	outline: none;
-	/* src/index */
-	margin-left: .6ch;
-}
-.cm-css-color-picker-wrapper input[type="color"] {
-	outline: 1px solid #eee;
-}
-
 /* src/fold */
 .cm-foldGutter {
 	order: 2;
@@ -41,6 +31,11 @@ input[type="color"] {
 }
 .cm-tooltip-fold:hover {
 	opacity: 1;
+}
+@media (prefers-color-scheme: dark) {
+	div.cm-tooltip-fold {
+		background-color: #4c566a;
+	}
 }
 
 /* src/hover */
@@ -62,6 +57,16 @@ input[type="color"] {
 	color: inherit;
 	padding: .1em .4em;
 	border-radius: .4em;
+}
+@media (prefers-color-scheme: light) {
+	.cm-tooltip-hover-mw code {
+		background-color: #e0e6eb;
+	}
+}
+@media (prefers-color-scheme: dark) {
+	.cm-tooltip-hover-mw code {
+		background-color: #4c566a;
+	}
 }
 
 /* src/inlay */
@@ -440,4 +445,108 @@ input[type="color"] {
 }
 .cm-diagnosticText-clickable {
 	cursor: pointer;
+}
+@media (prefers-color-scheme: light) {
+	.cm-status-fix-menu {
+		background-color: #f5f5f5;
+		box-shadow: 0 2px 2px 0 rgb(0, 0, 0, .25);
+	}
+	.cm-status-fix-menu > div:hover {
+		background-color: #e2f2ff;
+	}
+	.cm-status-message {
+		border-color: #c8ccd1;
+	}
+}
+@media (prefers-color-scheme: dark) {
+	.cm-status-fix-menu {
+		background-color: #252a33;
+	}
+	.cm-status-fix-menu > div:hover {
+		background-color: #4c566a;
+	}
+	.cm-status-message {
+		border-color: #000;
+	}
+}
+
+/* src/theme */
+@media (prefers-color-scheme: light) {
+	.cm-editor {
+		background-color: #fff;
+		--cm-arg: #b0c;
+		--cm-attr: #179b1c;
+		--cm-comment: #7b8c8f;
+		--cm-convert: #b68;
+		--cm-entity: #00a1a1;
+		--cm-error: #d73333;
+		--cm-func: #a11;
+		--cm-hr: #0076dd;
+		--cm-hr-bg: rgb(0, 0, 0, .07);
+		--cm-link: #000aaa;
+		--cm-sect: #006fe6;
+		--cm-sp: rgb(134, 206, 255, .3);
+		--cm-table: #d08;
+		--cm-table-attr: #f500d4;
+		--cm-tag: #14866d;
+		--cm-tpl: #80c;
+		--cm-var: #ad9300;
+		--cm-var-name: #ac6600;
+		--cm-ref: rgb(223, 242, 235, .5);
+	}
+	.cm-editor.cm-focused .cm-matchingTag {
+		background-color: rgb(50, 140, 130, .32);
+	}
+	.cm-editor.cm-focused .cm-nonmatchingTag {
+		background-color: rgb(187, 85, 85, .27);
+	}
+}
+@media (prefers-color-scheme: dark) {
+	.cm-editor {
+		--cm-arg: #9f78a5;
+		--cm-attr: #97b757;
+		--comment: #4c566a;
+		--cm-convert: #b68;
+		--cm-entity: #00a1a1;
+		--cm-error: #bf616a;
+		--cm-func: #bf616a;
+		--cm-hr: #5e81ac;
+		--cm-hr-bg: #3b4252;
+		--cm-link: #5e81ac;
+		--cm-sect: #81a1c1;
+		--cm-sp: #88c0d0;
+		--cm-table: #b48ead;
+		--cm-table-attr: #9f78a5;
+		--cm-tag: #a3be8c;
+		--cm-tpl: #9f78a5;
+		--cm-var: #d08770;
+		--cm-var-name: #d08770;
+		--cm-ref: rgb(60, 90, 80, .5);
+	}
+	div.cm-activeLine {
+		background-color: rgb(76, 86, 106, .27);
+	}
+	.cm-editor.cm-focused .cm-matchingTag {
+		background-color: #eceff4;
+		color: #434c5e;
+	}
+	.cm-editor.cm-focused .cm-nonmatchingTag {
+		background-color: rgb(235, 203, 139, .32);
+	}
+	.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer div.cm-selectionBackground,
+	.cm-diagnosticAction {
+		background-color: #4c566a;
+	}
+	div.cm-panels {
+		color: #d8dee9;
+	}
+	.cm-editor.cm-focused .cm-searchMatch.cm-searchMatch-selected {
+		color: #b48ead;
+	}
+	div.cm-tooltip-autocomplete ul li[aria-selected] {
+		color: inherit;
+	}
+	div.cm-gutters {
+		color: #5e81ac;
+	}
 }

@@ -1,22 +1,17 @@
 import {EditorView} from '@codemirror/view';
 import {nord as nordBase} from 'cm6-theme-nord';
 import {
-	foldSelector,
-	hoverSelector,
 	matchingCls,
 	nonmatchingCls,
-	menuSelector,
-	messageSelector,
 	actionSelector,
 	panelsSelector,
+	bgDark,
 } from './constants.js';
 import type {Extension} from '@codemirror/state';
 
 const focused = '&.cm-focused',
 	matching = `${focused} .${matchingCls}`,
-	nonmatching = `${focused} .${nonmatchingCls}`,
-	code = `${hoverSelector} code`,
-	menuHover = `${menuSelector}>div:hover`;
+	nonmatching = `${focused} .${nonmatchingCls}`;
 
 export const light = /* @__PURE__ */ EditorView.theme({
 		'&': {
@@ -46,19 +41,6 @@ export const light = /* @__PURE__ */ EditorView.theme({
 		},
 		[nonmatching]: {
 			backgroundColor: 'rgb(187,85,85,.27)',
-		},
-		[code]: {
-			backgroundColor: '#e0e6eb',
-		},
-		[menuSelector]: {
-			backgroundColor: '#f5f5f5',
-			boxShadow: '0 2px 2px 0 rgb(0,0,0,.25)',
-		},
-		[menuHover]: {
-			backgroundColor: '#e2f2ff',
-		},
-		[messageSelector]: {
-			borderColor: '#c8ccd1',
 		},
 	}),
 
@@ -101,19 +83,11 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			[nonmatching]: {
 				backgroundColor: 'rgb(235,203,139,.32)',
 			},
-			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground, ${
-				code
-			}, ${menuHover}, ${actionSelector}, div${foldSelector}`]: {
-				backgroundColor: '#4c566a',
+			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground, ${actionSelector}`]: {
+				backgroundColor: bgDark,
 			},
 			[`div${panelsSelector}`]: {
 				color: '#d8dee9',
-			},
-			[menuSelector]: {
-				backgroundColor: '#252a33',
-			},
-			[messageSelector]: {
-				borderColor: '#000',
 			},
 			[`${focused} .cm-searchMatch.cm-searchMatch-selected`]: {
 				color: '#b48ead',

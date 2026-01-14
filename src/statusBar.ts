@@ -3,7 +3,7 @@ import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import {gotoLine} from '@codemirror/search';
 import elt from 'crelt';
 import {menuRegistry} from './codemirror.js';
-import {panelSelector, diagnosticSelector, menuSelector, messageSelector, actionSelector} from './constants.js';
+import {panelSelector, diagnosticSelector, actionSelector, bgDark} from './constants.js';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
@@ -17,6 +17,9 @@ const statusSelector = '.cm-panel-status',
 	warningSelector = '.cm-status-warning',
 	enabledSelector = '.cm-status-fix-enabled',
 	disabledSelector = '.cm-status-fix-disabled',
+	menuSelector = '.cm-status-fix-menu',
+	menuHover = `${menuSelector}>div:hover`,
+	messageSelector = '.cm-status-message',
 	workerCls = 'cm-status-worker-enabled',
 	lineCls = 'cm-status-line';
 
@@ -289,6 +292,27 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		},
 		[diagnosticSelector]: {
 			cursor: 'pointer',
+		},
+	}),
+	EditorView.baseTheme({
+		[`&light ${menuSelector}`]: {
+			backgroundColor: '#f5f5f5',
+			boxShadow: '0 2px 2px 0 rgb(0,0,0,.25)',
+		},
+		[`&light ${menuHover}`]: {
+			backgroundColor: '#e2f2ff',
+		},
+		[`&light ${messageSelector}`]: {
+			borderColor: '#c8ccd1',
+		},
+		[`&dark ${menuSelector}`]: {
+			backgroundColor: '#252a33',
+		},
+		[`&dark ${menuHover}`]: {
+			backgroundColor: bgDark,
+		},
+		[`&dark ${messageSelector}`]: {
+			borderColor: '#000',
 		},
 	}),
 ];

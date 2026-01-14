@@ -5,7 +5,7 @@ import {
 	loadScript,
 } from '@bhsd/browser';
 import {tokens} from './config.js';
-import {base, hoverSelector} from './constants.js';
+import {base, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
 	posToIndex,
@@ -20,6 +20,8 @@ import type {CodeMirror6} from './codemirror.js';
 declare const marked: {
 	parse(source: string): string | Promise<string>;
 };
+
+const code = `${hoverSelector} code`;
 
 export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(
@@ -97,10 +99,18 @@ export default (cm: CodeMirror6): Extension => [
 			fontSize: '90%',
 			lineHeight: 1.4,
 		},
-		[`${hoverSelector} code`]: {
+		[code]: {
 			color: 'inherit',
 			padding: '.1em .4em',
 			borderRadius: '.4em',
+		},
+	}),
+	EditorView.baseTheme({
+		[`&light ${code}`]: {
+			backgroundColor: '#e0e6eb',
+		},
+		[`&dark ${code}`]: {
+			backgroundColor: bgDark,
 		},
 	}),
 ];
