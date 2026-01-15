@@ -108,8 +108,9 @@ const phrases: Record<string, string> = {};
 
 export const replaceSelections = (view: EditorView, func: ReplaceFunction): void => {
 	const {state} = view;
-	view.dispatch(state.changeByRange(({from, to}) => {
-		const result = func(state.sliceDoc(from, to), {from, to});
+	view.dispatch(state.changeByRange(range => {
+		const {from, to} = range,
+			result = func(state.sliceDoc(from, to), range);
 		if (typeof result === 'string') {
 			return {
 				range: EditorSelection.range(from, from + result.length),

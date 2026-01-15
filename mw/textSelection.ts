@@ -1,4 +1,5 @@
 import {replaceSelections} from '../src/codemirror';
+import {sliceDoc} from '../src/util';
 import {getInstance} from './util';
 import type {editor, Selection} from 'monaco-editor';
 
@@ -45,9 +46,8 @@ export const textSelection: TextSelection = {
 		return this;
 	},
 	getSelection() {
-		const {state} = getInstance(this).view!,
-			{selection: {main: {from, to}}} = state;
-		return state.sliceDoc(from, to);
+		const {state} = getInstance(this).view!;
+		return sliceDoc(state, state.selection.main);
 	},
 	setSelection({start, end = start}) {
 		getInstance(this).view!.dispatch({

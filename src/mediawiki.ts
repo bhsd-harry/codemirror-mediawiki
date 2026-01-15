@@ -22,6 +22,7 @@ import {
 	hasTag,
 	braceStackUpdate,
 	leadingSpaces,
+	sliceDoc,
 } from './util.js';
 import type {
 	StreamParser,
@@ -294,7 +295,7 @@ export class FullMediaWiki extends MediaWiki {
 					let stack = -1,
 						/** 可包含`_`、`:`等 */ page = '';
 					while (prevSibling) {
-						const {name, from, to} = prevSibling;
+						const {name} = prevSibling;
 						if (name.includes(tokens.templateBracket)) {
 							const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
 							stack += lbrace;
@@ -303,7 +304,7 @@ export class FullMediaWiki extends MediaWiki {
 							}
 							stack += rbrace;
 						} else if (stack === -1 && name.includes(tokens.templateName)) {
-							page = state.sliceDoc(from, to) + page;
+							page = sliceDoc(state, prevSibling) + page;
 						} else if (page && !name.includes(tokens.comment)) {
 							prevSibling = null;
 							break;

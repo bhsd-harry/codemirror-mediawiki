@@ -8,6 +8,9 @@ import {
 	replaceSelections,
 	menuRegistry,
 } from './codemirror.js';
+import {
+	sliceDoc,
+} from './util.js';
 import type {
 	EditorView,
 	Command,
@@ -58,7 +61,7 @@ const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
 			for (const range of ranges) {
 				// eslint-disable-next-line no-await-in-loop
-				const [action] = await lsp.provideRefactoringAction(state.sliceDoc(range.from, range.to));
+				const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
 				replacements.set(range, action?.edit!.changes!['']![0]!.newText);
 			}
 			view.dispatch(state.changeByRange(range => {

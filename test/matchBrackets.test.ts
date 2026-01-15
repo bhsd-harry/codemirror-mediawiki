@@ -99,7 +99,7 @@ describe('bracketMatching (plain)', () => {
 	});
 });
 
-describe('trySelectMatchingBrackets', () => {
+describe('select bracket pair on one side', () => {
 	it('outside', () => {
 		trySelectTest(' [text] ', 1, 1, false, {anchor: 1, head: 7});
 		trySelectTest(' [text] ', 1, -1, false, false);
@@ -118,7 +118,7 @@ describe('trySelectMatchingBrackets', () => {
 	});
 });
 
-describe('selectMatchingBrackets', () => {
+describe('select bracket pair on both sides', () => {
 	it('outside', () => {
 		selectTest(' [text] ', 1, {anchor: 1, head: 7});
 		selectTest(' [text] ', 7, {anchor: 7, head: 1});

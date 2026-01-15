@@ -2,7 +2,7 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
-import {leadingSpaces} from './util.js';
+import {leadingSpaces, sliceDoc} from './util.js';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
@@ -91,7 +91,9 @@ const map = {
 			addWarning: 2,
 			allToString: 2,
 			clone: 2,
+			getContentLanguage: 2,
 			getCurrentFrame: 2,
+			getLanguage: 2,
 			incrementExpensiveFunctionCount: 2,
 			isSubsting: 2,
 			loadData: 2,
@@ -417,7 +419,7 @@ lua.languageData!['autocomplete'] = (context => {
 				return {
 					from,
 					options: prevSibling?.name !== 'keyword'
-						|| builtin.includes(state.sliceDoc(prevSibling.from, prevSibling.to))
+						|| builtin.includes(sliceDoc(state, prevSibling))
 						? [...binary, ...blocks]
 						: [...builtins, ...constants, ...tables, ...unary, ...blocks],
 					validFor,

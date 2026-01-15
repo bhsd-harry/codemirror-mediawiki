@@ -29,7 +29,7 @@ import elt from 'crelt';
 import {tokens} from './config.js';
 import {bgDark} from './constants.js';
 import {matchTag, getTag} from './matchTag.js';
-import {braceStackUpdate} from './util.js';
+import {braceStackUpdate, sliceDoc} from './util.js';
 import type {
 	ViewUpdate,
 	BlockInfo,
@@ -161,7 +161,7 @@ export const foldable = (
 			if (stack <= 0) {
 				// The closing bracket of the current template
 				to = nextSibling.from
-					+ state.sliceDoc(nextSibling.from, nextSibling.to)
+					+ sliceDoc(state, nextSibling)
 						.split('}}').slice(0, stack - 1).join('}}').length;
 				break;
 			}
@@ -286,7 +286,7 @@ const traverse = (
 		node && (
 			node.from < end
 			|| node.from === end
-			&& !(isTemplateBracket(node) && state.sliceDoc(node.from, node.to).startsWith('}}'))
+			&& !(isTemplateBracket(node) && sliceDoc(state, node).startsWith('}}'))
 		)
 	) {
 		const range = foldable(state, node, tree, refOnly);

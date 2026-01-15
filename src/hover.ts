@@ -11,6 +11,7 @@ import {
 	posToIndex,
 	createTooltipView,
 	escHTML,
+	sliceDoc,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -38,7 +39,7 @@ export default (cm: CodeMirror6): Extension => [
 			if (!hover && paramSuggest && 'templatedata' in tags) {
 				const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
 				if (node?.name.includes(tokens.templateName)) {
-					const result = await paramSuggest(state.sliceDoc(node.from, node.to), false),
+					const result = await paramSuggest(sliceDoc(state, node), false),
 						{description, length} = result;
 					if (description || length > 0) {
 						// eslint-disable-next-line require-atomic-updates

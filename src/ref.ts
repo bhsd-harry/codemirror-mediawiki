@@ -7,6 +7,7 @@ import {base} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
 import {
+	sliceDoc,
 	indexToPos,
 	posToIndex,
 	escHTML,
@@ -29,10 +30,8 @@ const trees = new WeakMap<EditorView, Tree>(),
  * 获取节点内容
  * @param state
  * @param node 语法树节点
- * @param node.from 起始位置
- * @param node.to 结束位置
  */
-const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
+const getName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim();
 
 export default (cm: CodeMirror6): Extension => [
 	hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {

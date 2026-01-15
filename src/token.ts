@@ -31,7 +31,7 @@ declare interface Nesting extends Record<NestCount, number> {
 	extName: string | false;
 	extState: object | false;
 }
-declare interface State extends Nesting {
+export interface State extends Nesting {
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
 	tokenize: Tokenizer;
@@ -53,7 +53,7 @@ declare interface Token {
 	pos: number;
 	style: Style;
 }
-declare interface StringStream extends StringStreamBase {
+export interface StringStream extends StringStreamBase {
 	match(pattern: string, consume?: boolean, caseInsensitive?: boolean): true | null;
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
@@ -221,7 +221,7 @@ const pop = (state: State): void => {
  * @param table 是否允许表格
  * @param file 是否为文件
  */
-const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unknown =>
+export const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unknown =>
 	stream.sol() && (
 		table && stream.match(/^\s*(?::+\s*)?\{\|/u, false)
 		|| stream.match(/^(?:-{4}|=)/u, false)
@@ -233,7 +233,7 @@ const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unk
  * @param chars
  * @param comment 是否仅排除注释
  */
-const lookahead = (chars: string, comment?: boolean | State): string => {
+export const lookahead = (chars: string, comment?: boolean | State): string => {
 	const table = {
 		"'": "'(?!')",
 		'{': String.raw`\{(?!\{)`,

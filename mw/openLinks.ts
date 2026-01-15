@@ -1,13 +1,14 @@
 import {normalizeTitle} from '@bhsd/browser';
 import {tokens} from '../src/config';
 import {isWikiLink} from '../src/mediawiki';
+import {sliceDoc} from '../src/util';
 import type {MwConfig} from '../src/token';
 
 export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'] => {
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
 	return (state, node) => {
-		const {from, to, name, nextSibling} = node;
-		let page = state.sliceDoc(from, to).trim();
+		const {name, nextSibling} = node;
+		let page = sliceDoc(state, node).trim();
 		if (name.includes(tokens.fileText) && re.test(page)) {
 			return page;
 		}
@@ -25,7 +26,7 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		} else if (name.includes(tokens.parserFunction)) {
 			ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
-			page += state.sliceDoc(nextSibling.from, nextSibling.to).trim();
+			page += sliceDoc(state, nextSibling).trim();
 		}
 		return mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
 	};

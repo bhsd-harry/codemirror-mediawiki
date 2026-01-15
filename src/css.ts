@@ -1,5 +1,6 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
+import {sliceDoc} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
@@ -23,7 +24,7 @@ export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.
 				if (prevSibling) {
 					for (let i = 0; i < options.length; i++) {
 						const option = options[i]!;
-						if (CSS.supports(state.sliceDoc(prevSibling.from, prevSibling.to), option.label)) {
+						if (CSS.supports(sliceDoc(state, prevSibling), option.label)) {
 							options.splice(i, 1, {...option, boost: 50});
 						}
 					}
