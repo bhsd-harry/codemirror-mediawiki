@@ -5,7 +5,7 @@ import {
 	base,
 } from './constants.js';
 import type {EditorView, TooltipView} from '@codemirror/view';
-import type {Text, EditorState} from '@codemirror/state';
+import type {Text, EditorState, SelectionRange} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
@@ -54,12 +54,20 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
 };
 
 /**
+ * 获取节点对应的字符串
+ * @param state EditorState 实例
+ * @param node 语法树节点
+ */
+export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange): string =>
+	state.sliceDoc(node.from, node.to);
+
+/**
  * Update the stack of opening (+) or closing (-) brackets
  * @param state
  * @param node 语法树节点
  */
 export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
-	const brackets = state.sliceDoc(node.from, node.to);
+	const brackets = sliceDoc(state, node);
 	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
 };
 
@@ -75,7 +83,9 @@ export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
  * 将解析设置转换为返回Promise的函数
  * @param configData 解析设置
  */
-export const toConfigGetter = (configData: ConfigData): ConfigGetter => () => Promise.resolve(configData);
+export const toConfigGetter = (
+	configData: ConfigData,
+): ConfigGetter => () => Promise.resolve(configData);
 
 /**
  * 更新 CDN 地址

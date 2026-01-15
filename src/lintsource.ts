@@ -88,11 +88,21 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (configData, lintConfig): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter(toConfigGetter(configData), lintConfig);
-	const lintSource: LintSource = async view => {
-		const {doc} = view.state;
-		return wikiLintSource(wikiLint, doc.toString(), view, doc);
-	};
+export const getWikiLintSource: LintSourceGetter = async (
+	opt,
+	v,
+): Promise<LintSource> => {
+	const options = toConfigGetter(opt);
+	const wikiLint = await getWikiLinter(options, v);
+	const lintSource: LintSource =
+		async view => {
+			const {doc} = view.state;
+			return wikiLintSource(
+				wikiLint,
+				doc.toString(),
+				view,
+				doc,
+			);
+		};
 	return lintSource;
 };

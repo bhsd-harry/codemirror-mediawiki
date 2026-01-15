@@ -48,6 +48,7 @@ You can simply import the `mediawiki` function to get the Wikitext language with
 ```ts
 import {mediawiki} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {LanguageSupport} from '@codemirror/language';
 
 const langSupport: LanguageSupport = mediawiki(
 	config,
@@ -70,6 +71,7 @@ You can import the [stream language](https://codemirror.net/docs/ref/#language.S
 ```ts
 import {mediawikiLanguage} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {StreamLanguage} from '@codemirror/language';
 
 const lang: StreamLanguage = mediawikiLanguage(config);
 ```
@@ -92,6 +94,7 @@ Key bindings:
 ```ts
 import {escapeKeymap} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {KeyBinding} from '@codemirror/view';
 
 const keymap: KeyBinding[] = escapeKeymap(
 	config,
@@ -126,6 +129,7 @@ Formatting key bindings:
 
 ```ts
 import {formatKeymap} from '@bhsd/codemirror-wikitext';
+import type {KeyBinding} from '@codemirror/view';
 
 const keymap: KeyBinding[] = formatKeymap;
 ```
@@ -143,6 +147,7 @@ Matched or unmatched brackets or tags are highlighted in cyan or dark red when t
 
 ```ts
 import {bracketMatching} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = bracketMatching();
 ```
@@ -166,6 +171,7 @@ Key bindings:
 
 ```ts
 import {codeFolding} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = codeFolding();
 ```
@@ -181,6 +187,7 @@ Provide color pickers.
 
 ```ts
 import {colorPicker} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = colorPicker();
 ```
@@ -197,6 +204,7 @@ Show the help information of a magic word when hovering.
 ```ts
 import {hover} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = hover(
 	config,
@@ -217,6 +225,7 @@ Show inlay hints for anonymous parameters.
 ```ts
 import {inlayHints} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = inlayHints(
 	config,
@@ -237,6 +246,7 @@ Show the content of the `<ref>` tag defined elsewhere when hovering.
 ```ts
 import {refHover} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = refHover(
 	config,
@@ -257,6 +267,7 @@ Show the parser function signature when typing.
 ```ts
 import {signatureHelp} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = signatureHelp(
 	config,
@@ -277,6 +288,7 @@ Provide syntax diagnostics using [WikiParser-Node](https://www.npmjs.com/package
 ```ts
 import {wikilint} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
 
 const extension: Extension = wikilint(
 	config,

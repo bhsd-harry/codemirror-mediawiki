@@ -31,6 +31,4 @@
 
 *2026-01-03*
 
-**Added**
-
 - Initial release

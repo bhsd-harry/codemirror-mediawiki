@@ -5,7 +5,11 @@ import {base} from './constants.js';
 import {
 	replaceSelections,
 } from './codemirror.js';
-import {toConfigGetter, updateCDN} from './util.js';
+import {
+	sliceDoc,
+	toConfigGetter,
+	updateCDN,
+} from './util.js';
 import type {
 	EditorView,
 	Command,
@@ -50,13 +54,18 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
 	const {state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, true, getConfig, base.CDN);
+		lsp = getLSP(
+			view,
+			true,
+			getConfig,
+			base.CDN,
+		);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
 			for (const range of ranges) {
 				// eslint-disable-next-line no-await-in-loop
-				const [action] = await lsp.provideRefactoringAction(state.sliceDoc(range.from, range.to));
+				const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
 				replacements.set(range, action?.edit!.changes!['']![0]!.newText);
 			}
 			view.dispatch(state.changeByRange(range => {
@@ -81,7 +90,10 @@ const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData, cdn?: string): KeyBinding[] => {
+export default (
+	configData: ConfigData,
+	cdn?: string,
+): KeyBinding[] => {
 	updateCDN(cdn);
 	return [
 		{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
@@ -89,7 +101,12 @@ export default (configData: ConfigData, cdn?: string): KeyBinding[] => {
 		{
 			key: 'Mod-\\',
 			run(view): boolean {
-				return escapeWiki(view, toConfigGetter(configData));
+				return escapeWiki(
+					view,
+					toConfigGetter(
+						configData,
+					),
+				);
 			},
 		},
 	];

@@ -3,6 +3,7 @@ import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {voidHtmlTags, selfClosingTags} from './config.js';
 import {matchingCls, nonmatchingCls} from './constants.js';
+import {sliceDoc} from './util.js';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
@@ -59,8 +60,8 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
 	isBracket = isTagComponent('bracket'),
 	isName = isTagComponent('name'),
 	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean => isBracket(node, type)
-		&& state.sliceDoc(node.from, node.to)[first ? 'endsWith' : 'startsWith']('/'),
-	getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim().toLowerCase();
+		&& sliceDoc(state, node)[first ? 'endsWith' : 'startsWith']('/'),
+	getName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim().toLowerCase();
 
 /**
  * 获取标签信息，破损的HTML标签会返回`null`

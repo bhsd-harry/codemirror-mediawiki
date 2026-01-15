@@ -7,6 +7,7 @@ import {base} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
 import {
+	sliceDoc,
 	indexToPos,
 	posToIndex,
 	escHTML,
@@ -31,10 +32,8 @@ const trees = new WeakMap<EditorView, Tree>(),
  * 获取节点内容
  * @param state
  * @param node 语法树节点
- * @param node.from 起始位置
- * @param node.to 结束位置
  */
-const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sliceDoc(from, to).trim();
+const getName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim();
 
 /**
  * Get the [refHover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#refhover)
@@ -42,7 +41,10 @@ const getName = (state: EditorState, {from, to}: SyntaxNode): string => state.sl
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData, cdn?: string): Extension => {
+export default (
+	configData: ConfigData,
+	cdn?: string,
+): Extension => {
 	updateCDN(cdn);
 	return [
 		hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
@@ -78,8 +80,14 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 						}
 						if (target) {
 							const {doc} = state,
-								ref = await getLSP(view, true, toConfigGetter(configData), base.CDN)
-									?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
+								ref = await getLSP(
+									view,
+									true,
+									toConfigGetter(
+										configData,
+									),
+									base.CDN,
+								)?.provideDefinition(doc.toString(), indexToPos(doc, first.to));
 							return {
 								pos,
 								end: to,

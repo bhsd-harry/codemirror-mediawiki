@@ -83,13 +83,25 @@ const update = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData, cdn?: string): Extension => {
+export default (
+	configData: ConfigData,
+	cdn?: string,
+): Extension => {
 	updateCDN(cdn);
 	return [
 		field,
 		ViewPlugin.define(view => {
 			const timer = setInterval(() => {
-				if (getLSP(view, true, toConfigGetter(configData), base.CDN)) {
+				if (
+					getLSP(
+						view,
+						true,
+						toConfigGetter(
+							configData,
+						),
+						base.CDN,
+					)
+				) {
 					clearInterval(timer);
 					void update({view, docChanged: true});
 				}

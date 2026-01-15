@@ -45,7 +45,10 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData, cdn?: string): Extension => {
+export default (
+	configData: ConfigData,
+	cdn?: string,
+): Extension => {
 	updateCDN(cdn);
 	return [
 		field,
@@ -65,8 +68,14 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 						effects: stateEffect.of({
 							text,
 							cursor,
-							signatureHelp: await getLSP(view, true, toConfigGetter(configData), base.CDN)
-								?.provideSignatureHelp(text, indexToPos(doc, cursor)),
+							signatureHelp: await getLSP(
+								view,
+								true,
+								toConfigGetter(
+									configData,
+								),
+								base.CDN,
+							)?.provideSignatureHelp(text, indexToPos(doc, cursor)),
 						}),
 					});
 				})();

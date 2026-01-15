@@ -24,7 +24,10 @@ const code = `${hoverSelector} code`;
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
  */
-export default (configData: ConfigData, cdn?: string): Extension => {
+export default (
+	configData: ConfigData,
+	cdn?: string,
+): Extension => {
 	updateCDN(cdn);
 	return [
 		hoverTooltip(
@@ -34,8 +37,14 @@ export default (configData: ConfigData, cdn?: string): Extension => {
 			): Promise<Tooltip | null> => {
 				const {state} = view,
 					{doc} = state;
-				const hover = await getLSP(view, true, toConfigGetter(configData), base.CDN)
-					?.provideHover(doc.toString(), indexToPos(doc, pos));
+				const hover = await getLSP(
+					view,
+					true,
+					toConfigGetter(
+						configData,
+					),
+					base.CDN,
+				)?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
 					const {end} = hover.range!;
 					return {

@@ -58,7 +58,7 @@
 		"@bhsd/code-standard": "^1.3.2",
 		"@codemirror/search": "^6.5.11",
 		"@stylistic/eslint-plugin": "^5.5.0",
-		"@stylistic/stylelint-plugin": "^4.0.0",
+		"@stylistic/stylelint-plugin": "^4.0.1",
 		"@types/node": "^24.10.1",
 		"@typescript-eslint/eslint-plugin": "^8.46.4",
 		"@typescript-eslint/parser": "^8.46.4",
