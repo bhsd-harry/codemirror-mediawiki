@@ -282,7 +282,13 @@ const traverse = (
 	update: AnchorUpdate,
 	refOnly?: boolean,
 ): number => {
-	while (node && node.from <= end) {
+	while (
+		node && (
+			node.from < end
+			|| node.from === end
+			&& !(isTemplateBracket(node) && state.sliceDoc(node.from, node.to).startsWith('}}'))
+		)
+	) {
 		const range = foldable(state, node, tree, refOnly);
 		if (range) {
 			effects.push(foldEffect.of(range));
@@ -426,17 +432,28 @@ const defaultFoldExtension = /* @__PURE__ */ (() => [foldGutter(), keymap.of(fol
 const foldCommand = (refOnly?: boolean): Command => view => {
 	const {state} = view,
 		tree = ensureSyntaxTree(state, state.doc.length, 1e3) ?? syntaxTree(state),
-		effects: StateEffect<DocRange>[] = [],
-		anchor = traverse(
-			state,
-			tree,
-			effects,
-			tree.topNode.firstChild,
-			Infinity,
-			getAnchor(state),
-			updateAll,
-			refOnly,
-		);
+		effects: StateEffect<DocRange>[] = [];
+	let anchor = traverse(
+		state,
+		tree,
+		effects,
+		tree.topNode.firstChild,
+		Infinity,
+		getAnchor(state),
+		updateAll,
+		refOnly,
+	);
+	if (!refOnly) {
+		for (let pos = 0; pos < state.doc.length;) {
+			const line = view.lineBlockAt(pos),
+				range = foldableLine(view, line);
+			if (range) {
+				effects.push(foldEffect.of(range));
+				anchor = updateAll(anchor, range);
+			}
+			pos = (range ? view.lineBlockAt(range.to) : line).to + 1;
+		}
+	}
 	return execute(view, effects, anchor);
 };
 
@@ -456,6 +473,31 @@ export const unfoldRef: Command = (view): boolean => {
 		return true;
 	}
 	return false;
+};
+
+const selectedLines = (view: EditorView): BlockInfo[] => {
+	const lines: BlockInfo[] = [];
+	for (const {head} of view.state.selection.ranges) {
+		if (lines.some(({from, to}) => from <= head && to >= head)) {
+			continue;
+		}
+		lines.push(view.lineBlockAt(head));
+	}
+	return lines;
+};
+
+const foldCode = (view: EditorView, line: BlockInfo): boolean => {
+	const range = foldableLine(view, line);
+	if (range) {
+		view.dispatch({effects: foldEffect.of(range)});
+		return true;
+	}
+	return false;
+};
+
+const unfoldCode = (view: EditorView, line: BlockInfo): StateEffect<DocRange> | undefined => {
+	const folded = findFold(view, line);
+	return folded && unfoldEffect.of(folded);
 };
 
 export default ((e = defaultFoldExtension): Extension => [
@@ -523,7 +565,15 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 					}
 					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
 				}
-				return execute(view, effects, anchor);
+				if (effects.length > 0) {
+					return execute(view, effects, anchor);
+				}
+				for (const line of selectedLines(view)) {
+					if (foldCode(view, line)) {
+						return true;
+					}
+				}
+				return false;
 			},
 		},
 		{
@@ -556,6 +606,16 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 					view.dispatch({effects, selection});
 					return true;
 				}
+				for (const line of selectedLines(view)) {
+					const effect = unfoldCode(view, line);
+					if (effect) {
+						effects.push(effect);
+					}
+				}
+				if (effects.length > 0) {
+					view.dispatch({effects});
+					return true;
+				}
 				return false;
 			},
 		},
@@ -572,17 +632,12 @@ export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
 		},
 		domEventHandlers: {
 			click(view, line) {
-				const folded = findFold(view, line);
-				if (folded) {
-					view.dispatch({effects: unfoldEffect.of(folded)});
+				const effects = unfoldCode(view, line);
+				if (effects) {
+					view.dispatch({effects});
 					return true;
 				}
-				const range = foldableLine(view, line);
-				if (range) {
-					view.dispatch({effects: foldEffect.of(range)});
-					return true;
-				}
-				return false;
+				return foldCode(view, line);
 			},
 		},
 	}),

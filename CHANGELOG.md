@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.10.0
+
+*2026-01-16*
+
+**Added**
+
+- [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables in the MediaWiki mode
+
 ## 3.9.2
 
 *2026-01-14*

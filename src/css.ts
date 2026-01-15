@@ -1,8 +1,12 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
 import type {Extension} from '@codemirror/state';
-import type {CompletionContext, CompletionResult} from '@codemirror/autocomplete';
+import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
+
+const cssWideKeywords = /* @__PURE__ */ (
+	() => ['revert', 'revert-layer'].map((label): Completion => ({label, type: 'keyword'}))
+)();
 
 export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.of({
 	autocomplete(context: CompletionContext) {
@@ -11,7 +15,7 @@ export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.
 			result = cssCompletionSource(context) as CompletionResult | null;
 		if (result) {
 			if (node.name === 'ValueName') {
-				const options = [{label: 'revert', type: 'keyword'}, ...result.options];
+				const options = [...cssWideKeywords, ...result.options];
 				let {prevSibling} = node;
 				while (prevSibling && prevSibling.name !== 'PropertyName') {
 					({prevSibling} = prevSibling);
@@ -19,7 +23,7 @@ export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.
 				if (prevSibling) {
 					for (let i = 0; i < options.length; i++) {
 						const option = options[i]!;
-						if (CSS.supports(state.sliceDoc(prevSibling.from, node.from) + option.label)) {
+						if (CSS.supports(state.sliceDoc(prevSibling.from, prevSibling.to), option.label)) {
 							options.splice(i, 1, {...option, boost: 50});
 						}
 					}
