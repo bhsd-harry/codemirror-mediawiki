@@ -32,7 +32,7 @@ declare type LintSourceGetter = (
  * @param column 列号
  * @param from 子语言起始位置
  */
-const pos = (doc: Text, line: number, column: number, from = 0): number => {
+export const pos = (doc: Text, line: number, column: number, from = 0): number => {
 	if (from === 0) {
 		return posToIndex(doc, {line: line - 1, character: column - 1});
 	}
@@ -43,7 +43,7 @@ const pos = (doc: Text, line: number, column: number, from = 0): number => {
 	});
 };
 
-const getRange = (
+export const getRange = (
 	doc: Text,
 	line: number,
 	column: number,

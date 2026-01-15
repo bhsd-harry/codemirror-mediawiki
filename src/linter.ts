@@ -43,7 +43,7 @@ export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
  * @param lineOrOffset 行号或相对位置
  * @param column 列号
  */
-const offsetAt = (range: [number, number], lineOrOffset: number, column?: number): number => {
+export const offsetAt = (range: [number, number], lineOrOffset: number, column?: number): number => {
 	if (column === undefined) {
 		return Math.min(range[1], range[0] + Math.max(0, lineOrOffset));
 	} else if (lineOrOffset === -2) {
@@ -66,7 +66,7 @@ const getPrefix = ({type, tag}: AST, i: number): string => `${type === 'ext-attr
  * @param code 代码字符串
  * @param index 偏移量
  */
-const indexToPos = (code: string, index: number): Position => {
+export const indexToPos = (code: string, index: number): Position => {
 	const lines = code.slice(0, index).split('\n');
 	return {line: lines.length - 1, character: lines[lines.length - 1]!.length};
 };

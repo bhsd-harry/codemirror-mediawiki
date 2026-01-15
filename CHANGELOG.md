@@ -3,6 +3,10 @@
 
 *2026-01-15*
 
+**Added**
+
+- [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables
+
 **Changed**
 
 - Highlighting styles for templates
