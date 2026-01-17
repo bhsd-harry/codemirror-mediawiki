@@ -71,9 +71,9 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		// 情形3：新加载的 ext.CodeMirror.data
 		// 情形4：`config === null`
 		await mw.loader.using('mediawiki.api');
-		const {query: {general: {variants}, magicwords, extensiontags, functionhooks, variables}}: {
+		const {query: {general: {variants, langconversion}, magicwords, extensiontags, functionhooks, variables}}: {
 			query: {
-				general: {variants?: {code: string}[]};
+				general: {langconversion: boolean, variants?: {code: string}[]};
 				magicwords: MagicWord[];
 				extensiontags: string[];
 				functionhooks: string[];
@@ -118,7 +118,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		Object.assign(config!, {
 			...getKeywords(magicwords, true),
 			tagModes: modes,
-			variants: getVariants(variants),
+			variants: langconversion ? getVariants(variants) : [],
 			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
 		});
 		config!.variableIDs ??= variables;

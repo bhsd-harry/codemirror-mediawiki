@@ -111,7 +111,7 @@ export default (
 				langConfig,
 			);
 			if (url) {
-				open(url, '_blank', 'noopener noreferrer');
+				open(url, '_blank', 'noreferrer');
 				return true;
 			}
 			return undefined;

@@ -100,7 +100,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 			'welcome-addons',
 			`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
 				curVersion.replace(/\./gu, '')
-			}" target="_blank" rel="noopener noreferrer nofollow">${curVersion}</a>`,
+			}" rel="noreferrer">${curVersion}</a>`,
 			String(addons.length),
 			addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
 		);

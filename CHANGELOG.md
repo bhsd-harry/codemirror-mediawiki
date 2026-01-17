@@ -1,11 +1,15 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.10.0
 
-*2026-01-16*
+*2026-01-17*
 
 **Added**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables in the MediaWiki mode
+
+**Fixed**
+
+- Do not highlight language conversion-like syntax (i.e., `-{}-`) on a MediaWiki site where language conversion is disabled
 
 ## 3.9.2
 

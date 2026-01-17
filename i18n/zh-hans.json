@@ -3,7 +3,7 @@
 	"lang": "zh-hans",
 	"title": "CodeMirror插件",
 	"label": "请选择您希望加载的插件",
-	"feedback": "欢迎将错误报告或是改进建议提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\" rel=\"noopener noreferrer nofollow\">GitHub</a> ！",
+	"feedback": "欢迎将错误报告或是改进建议提交到 <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\" rel=\"noreferrer\">GitHub</a> ！",
 	"contentmodel": "请输入内容模型：",
 	"addon-allowMultipleSelections": "允许选择多个片段",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">自动填充</span>",
