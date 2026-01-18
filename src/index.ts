@@ -20,6 +20,7 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
+import {abusefilter} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
@@ -440,6 +441,17 @@ export const registerVueCore = (): void => {
 	languages['vue'] = vue;
 	registerLintSource('vue', getVueLintSource);
 	optionalFunctions.detectIndent = detectIndent;
+};
+
+/** Register AbuseFilter language support */
+export const registerAbuseFilter = (): void => {
+	registerExtensions();
+	registerAbuseFilterCore();
+};
+
+/** Register AbuseFilter core language support */
+export const registerAbuseFilterCore = (): void => {
+	languages['abusefilter'] = abusefilter;
 };
 
 /**

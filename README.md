@@ -19,6 +19,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 - [Installation](#installation)
 - [Browser Usage](#browser-usage)
 - [Language modes](#language-modes)
+	- [abusefilter](#abusefilter)
 	- [css](#css)
 	- [html](#html)
 	- [javascript](#javascript)
@@ -104,6 +105,7 @@ import {
 	registerJSON,
 	registerLua,
 	registerVue,
+	registerAbuseFilter,
 } from '@bhsd/codemirror-mediawiki';
 ```
 
@@ -125,6 +127,7 @@ import {
 	registerJSON,
 	registerLua,
 	registerVue,
+	registerAbuseFilter,
 } from 'https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki';
 ```
 
@@ -140,6 +143,7 @@ import {
 	registerJSON,
 	registerLua,
 	registerVue,
+	registerAbuseFilter,
 } from 'https://unpkg.com/@bhsd/codemirror-mediawiki/dist/main.min.js';
 ```
 
@@ -156,6 +160,7 @@ const {
 	registerJSON,
 	registerLua,
 	registerVue,
+	registerAbuseFilter,
 } = await import('https://cdn.jsdelivr.net/npm/@bhsd/codemirror-mediawiki');
 ```
 
@@ -171,12 +176,36 @@ const {
 	registerJSON,
 	registerLua,
 	registerVue,
+	registerAbuseFilter,
 } = await import('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/main.min.js');
 ```
 
 </details>
 
 # Language modes
+
+## abusefilter
+
+*version added: 3.10.0*
+
+<details>
+	<summary>Expand</summary>
+
+You can bundle the [AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter) mode by importing the `registerAbuseFilter` function:
+
+```js
+import {registerAbuseFilter} from '@bhsd/codemirror-mediawiki';
+registerAbuseFilter();
+```
+
+If you want a more granular control over the extensions, you can import the `registerAbuseFilterCore` function and the desired extensions:
+
+```js
+import {registerAbuseFilterCore} from '@bhsd/codemirror-mediawiki';
+registerAbuseFilterCore();
+```
+
+</details>
 
 ## css
 
@@ -335,7 +364,8 @@ If you want a more granular control over the extensions, you can import the `reg
 
 ```js
 import {registerMediaWikiCore} from '@bhsd/codemirror-mediawiki';
-registerMediaWikiCore();
+// optionally pass the article path of a MediaWiki site
+registerMediaWikiCore('https://www.mediawiki.org/wiki/');
 ```
 
 In addition to the common [extensions](#extensions), here are some MediaWiki-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
@@ -450,7 +480,7 @@ registerTheme('one-dark', oneDark);
 
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `unknown` the language configuration, only required for the MediaWiki mode and the mixed MediaWiki-HTML mode  
+**param**: `unknown` the language configuration, only required for the [MediaWiki](#mediawiki) mode and the [mixed MediaWiki-HTML](#html) mode  
 **param**: `boolean` whether to initialize immediately, default as true  
 
 ```js
@@ -463,6 +493,7 @@ cm = new CodeMirror6(textarea, 'javascript');
 cm = new CodeMirror6(textarea, 'json');
 cm = new CodeMirror6(textarea, 'lua');
 cm = new CodeMirror6(textarea, 'vue');
+cm = new CodeMirror6(textarea, 'abusefilter', dialect);
 ```
 
 </details>
@@ -808,7 +839,7 @@ cm.setIndent('\t');
 	<summary>Expand</summary>
 
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `unknown` the optional language configuration  
+**param**: `unknown` the language configuration, only required for the [MediaWiki](#mediawiki) mode and the [mixed MediaWiki-HTML](#html) mode  
 Set the language mode.
 
 ```js
@@ -819,6 +850,7 @@ cm.setLanguage('javascript');
 cm.setLanguage('json');
 cm.setLanguage('lua');
 cm.setLanguage('vue');
+cm.setLanguage('abusefilter', dialect);
 ```
 
 </details>
@@ -966,7 +998,7 @@ registerAllowMultipleSelections();
 
 *version added: 2.5.1*
 
-Provide autocompletion for MediaWiki, CSS and JavaScript modes.
+Provide autocompletion.
 
 Key bindings:
 
