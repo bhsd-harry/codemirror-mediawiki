@@ -3,11 +3,19 @@ import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
 import {gotoLine} from '@codemirror/search';
 import elt from 'crelt';
 import {menuRegistry} from './codemirror.js';
-import {panelSelector, diagnosticSelector, actionSelector, bgDark} from './constants.js';
+import {
+	panelSelector,
+	diagnosticSelector,
+	actionSelector,
+	bgDark,
+} from './constants.js';
 import type {Extension, SelectionRange} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
-import type {LintSource, ExtendedAction} from './lintsource';
+import type {
+	ExtendedAction,
+	LintSource,
+} from './lintsource';
 
 declare type Severity = 'error' | 'warning';
 
@@ -25,7 +33,11 @@ const statusSelector = '.cm-panel-status',
 
 function getLintMarker(view: EditorView, severity: Severity): HTMLElement;
 function getLintMarker(view: EditorView, severity: 'fix', menu?: HTMLElement): HTMLElement;
-function getLintMarker(view: EditorView, severity: Severity | 'fix', menu?: HTMLElement): HTMLElement {
+function getLintMarker(
+	view: EditorView,
+	severity: Severity | 'fix',
+	menu?: HTMLElement,
+): HTMLElement {
 	const marker = elt('div', {class: `cm-status-${severity}`}),
 		icon = elt('div');
 	if (severity === 'fix') {
@@ -69,7 +81,7 @@ const getDiagnostics = (all: readonly Diagnostic[], main: SelectionRange): Diagn
 	all.filter(({from, to}) => from <= main.to && to >= main.from);
 
 const updateDiagnosticMessage = (
-	cm: CodeMirror6,
+	view: EditorView,
 	allDiagnostics: readonly Diagnostic[],
 	main: SelectionRange,
 	msg: HTMLElement,
@@ -78,8 +90,7 @@ const updateDiagnosticMessage = (
 	if (diagnostics.length === 0) {
 		msg.textContent = '';
 	} else {
-		const diagnostic = diagnostics.find(({from, to}) => from <= main.head && to >= main.head) ?? diagnostics[0]!,
-			view = cm.view!;
+		const diagnostic = diagnostics.find(({from, to}) => from <= main.head && to >= main.head) ?? diagnostics[0]!;
 		if (diagnostic.renderMessage) {
 			msg.replaceChildren(diagnostic.renderMessage(view));
 		} else {
@@ -139,8 +150,8 @@ const updateMenu = (
 
 export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 	showPanel.of(view => {
-		let diagnostics: readonly Diagnostic[] = [],
-			menu: HTMLElement | undefined;
+		let diagnostics: readonly Diagnostic[] = [];
+		let menu: HTMLElement | undefined;
 		if (!view.state.readOnly && (fixer || menuRegistry.length > 0)) {
 			menu = elt('div', {class: menuSelector.slice(1), tabIndex: -1});
 			if (fixer) {
@@ -168,8 +179,15 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		const error = getLintMarker(view, 'error'),
 			warning = getLintMarker(view, 'warning'),
 			fix = getLintMarker(view, 'fix', menu),
+			{classList} = fix.firstChild as HTMLDivElement,
 			optionAll = elt('div', 'Fix all auto-fixable problems'),
-			worker = elt('div', {class: workerSelector.slice(1)}, error, warning, fix),
+			worker = elt(
+				'div',
+				{class: workerSelector.slice(1)},
+				error,
+				warning,
+				fix,
+			),
 			message = elt('div', {class: messageSelector.slice(1)}),
 			position = elt('div', {class: lineCls}, '0:0'),
 			dom = elt(
@@ -178,8 +196,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 				worker,
 				message,
 				position,
-			),
-			{classList} = fix.firstChild as HTMLDivElement;
+			);
 		position.addEventListener('click', () => {
 			gotoLine(view);
 		});
@@ -193,13 +210,13 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 							worker.classList.toggle(workerCls, diagnostics.length > 0);
 							updateDiagnosticsCount(diagnostics, 'error', error);
 							updateDiagnosticsCount(diagnostics, 'warning', warning);
-							updateDiagnosticMessage(cm, diagnostics, main, message);
+							updateDiagnosticMessage(view, diagnostics, main, message);
 							updateMenu(cm, diagnostics, main, classList, optionAll, menu, fixer);
 						}
 					}
 				}
 				if (docChanged || selectionSet) {
-					updateDiagnosticMessage(cm, diagnostics, main, message);
+					updateDiagnosticMessage(view, diagnostics, main, message);
 					updateMenu(cm, diagnostics, main, classList, optionAll, menu, fixer);
 					const {number, from} = doc.lineAt(main.head);
 					position.textContent = `${number}:${main.head - from}`;

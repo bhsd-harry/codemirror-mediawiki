@@ -10,9 +10,7 @@ import type {TagName} from './config';
 
 declare type ISBNParser = (link: string) => string;
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	key = isMac ? 'Meta' : 'Control',
-	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
+const tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	pagename = '.cm-mw-pagename',
 	wikiLinks = [
@@ -21,35 +19,13 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		`parserfunction${pagename}`,
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
-	];
+	],
+	modKey = isMac ? 'metaKey' : 'ctrlKey',
+	key = isMac ? 'Meta' : 'Control';
 
-const toggleOpenLinks = (toggle?: boolean): void => {
-	for (const ele of document.querySelectorAll<HTMLDivElement>('.cm-content')) {
-		if (toggle) {
-			ele.style.setProperty('--codemirror-cursor', 'pointer');
-		} else {
-			ele.style.removeProperty('--codemirror-cursor');
-		}
-	}
+const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
+	contentDOM.style[toggle ? 'setProperty' : 'removeProperty']('--codemirror-cursor', 'pointer');
 };
-
-/* eslint-disable @typescript-eslint/no-unnecessary-condition */
-globalThis.document?.addEventListener('keydown', e => {
-	if (e.key === key) {
-		toggleOpenLinks(true);
-	}
-});
-globalThis.document?.addEventListener('keyup', e => {
-	if (e.key === key) {
-		toggleOpenLinks();
-	}
-});
-globalThis.document?.addEventListener('visibilitychange', () => {
-	if (document.hidden) {
-		toggleOpenLinks();
-	}
-});
-/* eslint-enable @typescript-eslint/no-unnecessary-condition */
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
@@ -136,6 +112,19 @@ export default (
 					return true;
 				}
 				return undefined;
+			},
+			keydown(e, view) {
+				if (e.key === key) {
+					toggleOpenLinks(view, true);
+				}
+			},
+			keyup(e, view) {
+				if (e.key === key) {
+					toggleOpenLinks(view);
+				}
+			},
+			mousemove(e, view) {
+				toggleOpenLinks(view, e[modKey]);
 			},
 		}),
 		EditorView.theme({
