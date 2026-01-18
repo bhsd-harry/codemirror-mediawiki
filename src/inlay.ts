@@ -5,6 +5,7 @@ import elt from 'crelt';
 import {base} from './constants.js';
 import {
 	posToIndex,
+	toConfigGetter,
 } from './util.js';
 import type {DecorationSet, ViewUpdate} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -75,23 +76,39 @@ const update = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'
 	}
 };
 
-export default (cm: CodeMirror6): Extension => [
-	field,
-	ViewPlugin.define(view => {
-		const timer = setInterval(() => {
-			if (getLSP(view, false, cm.getWikiConfig, base.CDN)) {
-				clearInterval(timer);
-				void update({view, docChanged: true});
-			}
-		}, 100);
-		return {update};
-	}),
-	EditorView.theme({
-		[`.${cls}`]: {
-			color: '#969696',
-			fontStyle: 'italic',
-			'-webkitUserSelect': 'none',
-			userSelect: 'none',
-		},
-	}),
-];
+export default (
+	articlePath?: string,
+) => (
+	cm: CodeMirror6,
+): Extension => {
+	return [
+		field,
+		ViewPlugin.define(view => {
+			const timer = setInterval(() => {
+				if (
+					getLSP(
+						view,
+						false,
+						toConfigGetter(
+							cm.getWikiConfig,
+							articlePath,
+						),
+						base.CDN,
+					)
+				) {
+					clearInterval(timer);
+					void update({view, docChanged: true});
+				}
+			}, 100);
+			return {update};
+		}),
+		EditorView.theme({
+			[`.${cls}`]: {
+				color: '#969696',
+				fontStyle: 'italic',
+				'-webkitUserSelect': 'none',
+				userSelect: 'none',
+			},
+		}),
+	];
+};

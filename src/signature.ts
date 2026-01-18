@@ -6,6 +6,7 @@ import {
 	createTooltipView,
 	indexToPos,
 	escHTML,
+	toConfigGetter,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -37,58 +38,71 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 		},
 	});
 
-export default (cm: CodeMirror6): Extension => [
-	field,
-	EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {
-		if (docChanged || selectionSet && state.field(field)?.signatureHelp?.signatures.length) {
-			const {doc, selection: {main}} = state,
-				{head: cursor} = main,
-				text = doc.toString();
-			if (!main.empty) {
-				view.dispatch({
-					effects: stateEffect.of({text, cursor}),
-				});
-				return;
+export default (
+	articlePath?: string,
+) => (
+	cm: CodeMirror6,
+): Extension => {
+	return [
+		field,
+		EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {
+			if (docChanged || selectionSet && state.field(field)?.signatureHelp?.signatures.length) {
+				const {doc, selection: {main}} = state,
+					{head: cursor} = main,
+					text = doc.toString();
+				if (!main.empty) {
+					view.dispatch({
+						effects: stateEffect.of({text, cursor}),
+					});
+					return;
+				}
+				(async () => {
+					view.dispatch({
+						effects: stateEffect.of({
+							text,
+							cursor,
+							signatureHelp: await getLSP(
+								view,
+								false,
+								toConfigGetter(
+									cm.getWikiConfig,
+									articlePath,
+								),
+								base.CDN,
+							)?.provideSignatureHelp(text, indexToPos(doc, cursor)),
+						}),
+					});
+				})();
 			}
-			(async () => {
-				view.dispatch({
-					effects: stateEffect.of({
-						text,
-						cursor,
-						signatureHelp: await getLSP(view, false, cm.getWikiConfig, base.CDN)
-							?.provideSignatureHelp(text, indexToPos(doc, cursor)),
-					}),
-				});
-			})();
-		}
-	}),
-	showTooltip.from(field, (value): Tooltip | null => {
-		if (!value) {
-			return null;
-		}
-		const {cursor, signatureHelp} = value;
-		if (!signatureHelp || signatureHelp.signatures.length === 0) {
-			return null;
-		}
-		const {signatures, activeParameter: active} = signatureHelp;
-		return {
-			pos: cursor,
-			above: true,
-			create(view): TooltipView {
-				return createTooltipView(
-					view,
-					signatures.map(({label, parameters, activeParameter = active}) => {
-						const safeLabel = escHTML(label);
-						if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
-							return safeLabel;
-						}
-						const colon = safeLabel.indexOf(':'),
-							parts = safeLabel.slice(colon + 1, -2).split('|');
-						parts[activeParameter!] = `<b>${parts[activeParameter!]}</b>`;
-						return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
-					}).join('<br>'),
-				);
-			},
-		};
-	}),
-];
+		}),
+		showTooltip.from(field, (value): Tooltip | null => {
+			if (!value) {
+				return null;
+			}
+			const {cursor, signatureHelp} = value;
+			if (!signatureHelp || signatureHelp.signatures.length === 0) {
+				return null;
+			}
+			const {signatures, activeParameter: active} = signatureHelp;
+			return {
+				pos: cursor,
+				above: true,
+				create(view): TooltipView {
+					return createTooltipView(
+						view,
+						signatures.map(({label, parameters, activeParameter = active}) => {
+							const safeLabel = escHTML(label);
+							if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
+								return safeLabel;
+							}
+							const colon = safeLabel.indexOf(':'),
+								parts = safeLabel.slice(colon + 1, -2).split('|');
+							parts[activeParameter!] = `<b>${parts[activeParameter!]}</b>`;
+							return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
+						}).join('<br>'),
+					);
+				},
+			};
+		}),
+	];
+};

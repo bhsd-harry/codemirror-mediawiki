@@ -7,6 +7,8 @@ import type {EditorView, TooltipView} from '@codemirror/view';
 import type {Text, EditorState, SelectionRange} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
+import type {ConfigGetter} from '@bhsd/browser';
+import type {ConfigData} from 'wikiparser-node';
 import type {TagName} from './config';
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
@@ -81,3 +83,10 @@ export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
  * @param str 字符串
  */
 export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
+
+export const toConfigGetter = (
+	configGetter?: ConfigGetter,
+	articlePath?: string,
+): ConfigGetter | undefined => articlePath
+	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
+	: configGetter;

@@ -63,6 +63,7 @@ export default extend(
 	{
 		files: ['src/*.ts'],
 		rules: {
+			'arrow-body-style': 0,
 			'jsdoc/no-bad-blocks': 0,
 		},
 	},

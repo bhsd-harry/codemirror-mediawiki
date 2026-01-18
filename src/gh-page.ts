@@ -19,7 +19,7 @@ registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
-registerMediaWiki();
+registerMediaWiki('https://www.mediawiki.org/wiki/');
 registerVue();
 registerTheme('nord', nord);
 
@@ -76,7 +76,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		if (search.get('lint') !== '0' && !(lang in linters)) {
 			linters[lang] = await cm.getLinter();
 			if (isMediaWiki && typeof wikiparse === 'object') {
-				wikiparse.setConfig(parserConfig!);
+				wikiparse.setConfig(Object.assign(await wikiparse.getConfig(), parserConfig!));
 			}
 			if (linters[lang]) {
 				cm.lint(linters[lang]);

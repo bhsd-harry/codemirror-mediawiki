@@ -13,6 +13,7 @@ import {
 } from './linter.js';
 import {
 	posToIndex,
+	toConfigGetter,
 } from './util.js';
 import {base} from './constants.js';
 import type {EditorView} from '@codemirror/view';
@@ -29,6 +30,7 @@ import type {
 	QuickFixData,
 } from 'wikiparser-node';
 import type {Rule} from 'eslint';
+import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
 
 export type LintSource = (
@@ -118,10 +120,27 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
-export const getWikiLintSource: LintSourceGetter = async (opt, v): Promise<LintSource> => {
-	const wikiLint = await getWikiLinter({...await getOpt(opt), cdn: base.CDN}, v);
-	const lintSource: LintSource = async ({doc}) =>
-		wikiLintSource(wikiLint, doc.toString(), await getOpt(opt, true), doc);
+export const getWikiLintSource = (articlePath?: string): LintSourceGetter => async (
+	opt,
+	v,
+): Promise<LintSource> => {
+	const options = {...await getOpt(opt), cdn: base.CDN} as {
+		getConfig?: ConfigGetter | undefined;
+		cdn: string | undefined;
+	};
+	if (articlePath) {
+		options.getConfig = toConfigGetter(options.getConfig, articlePath);
+	}
+	const wikiLint = await getWikiLinter(options, v);
+	const lintSource: LintSource =
+		async ({doc}) => {
+			return wikiLintSource(
+				wikiLint,
+				doc.toString(),
+				await getOpt(opt, true),
+				doc,
+			);
+		};
 	if (wikiLint.fixer) {
 		lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
 	}

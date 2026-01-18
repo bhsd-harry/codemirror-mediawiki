@@ -10,6 +10,7 @@ import {
 } from './codemirror.js';
 import {
 	sliceDoc,
+	toConfigGetter,
 } from './util.js';
 import type {
 	EditorView,
@@ -55,7 +56,12 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
 	const {state} = view,
 		{ranges} = state.selection,
-		lsp = getLSP(view, false, getConfig, base.CDN);
+		lsp = getLSP(
+			view,
+			false,
+			getConfig,
+			base.CDN,
+		);
 	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
 		(async () => {
 			const replacements = new WeakMap<SelectionRange, string | undefined>();
@@ -120,13 +126,21 @@ menuRegistry.push({
 	},
 });
 
-export default (cm: CodeMirror6): Extension => keymap.of([
+export default (
+	articlePath?: string,
+) => (cm: CodeMirror6): Extension => keymap.of([
 	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
 	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
 	{
 		key: 'Mod-\\',
 		run(view): boolean {
-			return escapeWiki(view, cm.getWikiConfig);
+			return escapeWiki(
+				view,
+				toConfigGetter(
+					cm.getWikiConfig,
+					articlePath,
+				),
+			);
 		},
 	},
 ]);

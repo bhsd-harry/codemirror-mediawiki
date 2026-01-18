@@ -206,16 +206,19 @@ const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T
 	addon[1][lang] = ext;
 };
 
-/** Register MediaWiki language support */
-export const registerMediaWiki = (): void => {
+/**
+ * Register MediaWiki language support
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerMediaWiki = (articlePath?: string): void => {
 	registerCommonExtensions();
-	registerMediaWikiCore();
-	registerOpenLinks();
-	registerEscape();
-	registerRefHover();
-	registerHover();
-	registerSignatureHelp();
-	registerInlayHints();
+	registerMediaWikiCore(articlePath);
+	registerOpenLinks(articlePath);
+	registerEscape(articlePath);
+	registerRefHover(articlePath);
+	registerHover(articlePath);
+	registerSignatureHelp(articlePath);
+	registerInlayHints(articlePath);
 	registerColorPickerForMediaWiki();
 	registerBracketMatchingForMediaWiki();
 	registerCodeFoldingForMediaWiki();
@@ -230,34 +233,52 @@ const registerExtensionForMediaWiki = (name: string, ext: Extension | ((cm: Code
 	avail[name] ??= mediawikiOnly(ext as Extension);
 };
 
-/** Register the `openLinks` extension */
-export const registerOpenLinks = (): void => {
-	registerExtensionForMediaWiki('openLinks', openLinks);
+/**
+ * Register the `openLinks` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerOpenLinks = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('openLinks', openLinks(articlePath));
 };
 
-/** Register the `escape` extension */
-export const registerEscape = (): void => {
-	registerExtensionForMediaWiki('escape', escapeKeymap);
+/**
+ * Register the `escape` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerEscape = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('escape', escapeKeymap(articlePath));
 };
 
-/** Register the `refHover` extension */
-export const registerRefHover = (): void => {
-	registerExtensionForMediaWiki('refHover', refHover);
+/**
+ * Register the `refHover` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerRefHover = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('refHover', refHover(articlePath));
 };
 
-/** Register the `hover` extension */
-export const registerHover = (): void => {
-	registerExtensionForMediaWiki('hover', magicWordHover);
+/**
+ * Register the `hover` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerHover = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('hover', magicWordHover(articlePath));
 };
 
-/** Register the `signatureHelp` extension */
-export const registerSignatureHelp = (): void => {
-	registerExtensionForMediaWiki('signatureHelp', signatureHelp);
+/**
+ * Register the `signatureHelp` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerSignatureHelp = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('signatureHelp', signatureHelp(articlePath));
 };
 
-/** Register the `inlayHints` extension */
-export const registerInlayHints = (): void => {
-	registerExtensionForMediaWiki('inlayHints', inlayHints);
+/**
+ * Register the `inlayHints` extension
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerInlayHints = (articlePath?: string): void => {
+	registerExtensionForMediaWiki('inlayHints', inlayHints(articlePath));
 };
 
 /** Register the `colorPicker` extension for MediaWiki */
@@ -289,8 +310,11 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
 	optionalFunctions.statusBar = statusBar;
 };
 
-/** Register MediaWiki core language support */
-export const registerMediaWikiCore = (): void => {
+/**
+ * Register MediaWiki core language support
+ * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ */
+export const registerMediaWikiCore = (articlePath?: string): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
 	languages['mediawiki'] = (config: MwConfig): Extension => [
 		mediawikiBase(config),
@@ -298,7 +322,7 @@ export const registerMediaWikiCore = (): void => {
 		bidiIsolation,
 		keymap.of(formatKeymap),
 	];
-	registerLintSource('mediawiki', getWikiLintSource);
+	registerLintSource('mediawiki', getWikiLintSource(articlePath));
 	destroyListeners.push(view => {
 		if (typeof wikiparse === 'object' && wikiparse.LanguageService) {
 			getLSP(view)?.destroy();
