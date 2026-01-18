@@ -3,6 +3,7 @@ import {syntaxHighlighting, defaultHighlightStyle, LanguageSupport} from '@codem
 import {defaultKeymap, history, historyKeymap, indentWithTab} from '@codemirror/commands';
 import {autocompletion} from '@codemirror/autocomplete';
 import {searchKeymap} from '@codemirror/search';
+import {lintGutter} from '@codemirror/lint';
 import {
 	mediawikiLanguage,
 	bracketMatching,
@@ -53,6 +54,7 @@ import type {ConfigData} from 'wikiparser-node';
 				indentWithTab,
 			]),
 			history(),
+			lintGutter(),
 		],
 		view = new EditorView({parent, extensions});
 	Object.assign(globalThis, {view});

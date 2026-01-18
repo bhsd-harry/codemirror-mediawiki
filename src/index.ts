@@ -5,7 +5,7 @@ import {
 	autocompletion,
 } from '@codemirror/autocomplete';
 import {LanguageSupport} from '@codemirror/language';
-import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
+import {linter} from '@codemirror/lint';
 import elt from 'crelt';
 import bidiIsolates from './bidi.js';
 import mediawikiColorPicker from './color.js';
@@ -25,13 +25,17 @@ import openLinks from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelp from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
+import statusBar from './statusBar.js';
 import {updateCDN} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {
 	Language,
 } from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
-import type {ConfigData, LintConfig} from 'wikiparser-node';
+import type {ConfigData, LintConfig as LintConfigBase} from 'wikiparser-node';
+
+declare type LintConfig = Extract<LintConfigBase, {h1?: unknown}>
+	| Extract<LintConfigBase, {rules: unknown}> & {statusBar?: boolean};
 
 /**
  * Get the stream [language](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#mediawikilanguage)
@@ -84,8 +88,7 @@ export const wikilint = (configData: ConfigData, lintConfig?: LintConfig, cdn?: 
 			}
 			return diagnostics;
 		}),
-		lintGutter(),
-		keymap.of(lintKeymap),
+		lintConfig && 'statusBar' in lintConfig && !lintConfig.statusBar ? [] : statusBar(),
 	];
 };
 

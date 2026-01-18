@@ -1,6 +1,8 @@
 export const base: Record<'CDN', string | undefined> = {CDN: undefined},
 	hoverSelector = '.cm-tooltip-hover-mw',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
+	panelSelector = '.cm-panel',
+	actionSelector = '.cm-diagnosticAction',
 	bgDark = '#4c566a',
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';

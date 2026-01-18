@@ -7,11 +7,16 @@
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables
 - New extensions: [openLinks](./README.md#openlinks) and [bidiIsolates](./README.md#bidiisolates)
+- The [wikilint](./README.md#wikilint) extension now includes a status bar which can be hidden via configuration
 - External links are now highlighted with underline
 
 **Changed**
 
 - Highlighting styles for templates
+
+**Removed**
+
+- The [wikilint](./README.md#wikilint) extension no longer includes [lintGutter](https://codemirror.net/docs/ref/#lint.lintGutter) and [lintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
 
 ## 0.1.0
 

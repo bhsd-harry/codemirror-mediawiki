@@ -24,6 +24,9 @@ declare type LintSourceGetter = (
 	opt: ConfigData,
 	lintConfig?: LintConfig,
 ) => LintSource | Promise<LintSource>;
+export interface ExtendedAction extends Action {
+	tooltip: string | undefined;
+}
 
 /**
  * 获取指定行列的位置
