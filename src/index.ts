@@ -7,6 +7,7 @@ import {
 import {LanguageSupport} from '@codemirror/language';
 import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
 import elt from 'crelt';
+import bidiIsolates from './bidi.js';
 import mediawikiColorPicker from './color.js';
 import {diagnosticSelector} from './constants.js';
 import escapeKeymap from './escape.js';
@@ -123,4 +124,5 @@ export {
 	formatKeymap,
 	mediawikiColorPicker as colorPicker,
 	codeFolding,
+	bidiIsolates,
 };

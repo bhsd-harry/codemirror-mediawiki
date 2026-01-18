@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 0.1.1
+## 0.2.0
 
 *2026-01-15*
 
 **Added**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables
+- New extension: [bidiIsolates](./README.md#bidiisolates)
 
 **Changed**
 

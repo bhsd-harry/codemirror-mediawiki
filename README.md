@@ -16,6 +16,7 @@ This repository contains a modified Wikitext [language](#mediawikilanguage) from
 	- [escapeKeymap](#escapekeymap)
 	- [formatKeymap](#formatkeymap)
 - [Extensions](#extensions)
+	- [bidiIsolates](#bidiisolates)
 	- [bracketMatching](#bracketmatching)
 	- [codeFolding](#codefolding)
 	- [colorPicker](#colorpicker)
@@ -137,6 +138,24 @@ const keymap: KeyBinding[] = formatKeymap;
 </details>
 
 # Extensions
+
+## bidiIsolates
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 0.2.0*
+
+When the editor contains right-to-left text, isolate bidirectional text from the surrounding text. This extension is not included in the default [`mediawiki`](#basic-usage) language support.
+
+```ts
+import {bidiIsolates} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = bidiIsolates();
+```
+
+</details>
 
 ## bracketMatching
 
