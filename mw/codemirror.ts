@@ -27,7 +27,7 @@ import {
 	getPeastLintSource,
 } from './lintsource';
 import {msg} from './msg';
-import {getTitleParser, isbnParser} from './openLinks';
+import {getTitleParser} from './openLinks';
 import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from './preference';
 import prepareSuggest from './suggest';
 import {textSelection, monacoTextSelection} from './textSelection';
@@ -246,7 +246,14 @@ export class CodeMirror extends CodeMirror6 {
 	#setLangConfig(config: MwConfig): void {
 		if (this.lang === 'mediawiki') {
 			mw.loader.load('mediawiki.Title');
-			this.langConfig = $.extend(true, {titleParser: getTitleParser(config), isbnParser}, config);
+			this.langConfig = $.extend(
+				true,
+				{
+					titleParser: getTitleParser(config),
+					articlePath: mw.config.get('wgArticlePath'),
+				},
+				config,
+			);
 		}
 	}
 

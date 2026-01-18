@@ -6,6 +6,7 @@
 **Added**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables in the MediaWiki mode
+- New optional argument for [`registerMediaWiki`](./README.md#mediawiki) to specify the article path of a MediaWiki site
 
 **Fixed**
 

@@ -31,7 +31,3 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 		return mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
 	};
 };
-
-export const isbnParser = (link: string): string => new mw.Title(`Special:Booksources/${
-	link.slice(4).replace(/[\p{Zs}\t-]/gu, '').replace(/x$/u, 'X')
-}`).getUrl(undefined);

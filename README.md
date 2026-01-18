@@ -309,7 +309,8 @@ You can bundle the MediaWiki mode by importing the `registerMediaWiki` function:
 
 ```js
 import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
-registerMediaWiki();
+// optionally pass the article path of a MediaWiki site
+registerMediaWiki('https://www.mediawiki.org/wiki/');
 ```
 
 The MediaWiki mode provides the following key bindings for quick formatting:
@@ -1217,7 +1218,8 @@ For granular control over the bundled extensions, you can import the `registerOp
 
 ```js
 import {registerOpenLinks} from '@bhsd/codemirror-mediawiki';
-registerOpenLinks();
+// optionally pass the article path of a MediaWiki site
+registerOpenLinks('https://www.mediawiki.org/wiki/');
 ```
 
 </details>

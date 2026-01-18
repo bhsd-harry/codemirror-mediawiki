@@ -8,6 +8,8 @@ import type {CodeMirror6} from './codemirror';
 import type {MwConfig} from './token';
 import type {TagName} from './config';
 
+declare type ISBNParser = (link: string) => string;
+
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
 	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
@@ -51,10 +53,23 @@ globalThis.document?.addEventListener('visibilitychange', () => {
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
+export const getISBNParser = (articlePath?: string): ISBNParser | undefined => articlePath
+	? (link: string): string => {
+		const page = `Special:Booksources/${
+			link.slice(4).replace(/[\p{Zs}\t-]/gu, '')
+				.replace(/x$/u, 'X')
+		}`;
+		return articlePath.includes('$1')
+			? articlePath.replace('$1', page)
+			: articlePath + (articlePath.endsWith('/') ? '' : '/') + page;
+	}
+	: undefined;
+
 export const mouseEventListener = (
 	e: MouseEvent,
 	view: EditorView,
-	langConfig: MwConfig | undefined,
+	isbnParser?: ISBNParser,
+	titleParser?: MwConfig['titleParser'],
 ): string | undefined => {
 	if (
 		!e[modKey]
@@ -80,8 +95,8 @@ export const mouseEventListener = (
 	const {name, from, to} = node;
 	if (name.includes('-extlink-protocol')) {
 		return wrapURL(state.sliceDoc(from, node.nextSibling!.to));
-	} else if (name.includes(tokens.pageName) && typeof langConfig?.titleParser === 'function') {
-		return langConfig.titleParser(state, node);
+	} else if (name.includes(tokens.pageName) && typeof titleParser === 'function') {
+		return titleParser(state, node);
 	} else if (/-extlink(?:_|$)/u.test(name)) {
 		return wrapURL(state.sliceDoc(node.prevSibling!.from, to));
 	} else if (name.includes(tokens.magicLink)) {
@@ -90,39 +105,49 @@ export const mouseEventListener = (
 			return `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`;
 		} else if (link.startsWith('PMID')) {
 			return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
-		} else if (typeof langConfig?.isbnParser === 'function') {
-			return langConfig.isbnParser(link);
 		}
+		return isbnParser?.(link);
 	}
 	return undefined;
 };
 
 export default (
+	articlePath?: string,
+) => (
 	{langConfig}: CodeMirror6,
-): Extension => [
-	EditorView.domEventHandlers({
-		mousedown(e, view) {
-			if (e.button !== 0) {
+): Extension => {
+	const isbnParser = getISBNParser(
+		articlePath || langConfig?.articlePath,
+	);
+	return [
+		EditorView.domEventHandlers({
+			mousedown(e, view) {
+				if (e.button !== 0) {
+					return undefined;
+				}
+				const url = mouseEventListener(
+					e,
+					view,
+					isbnParser,
+					langConfig?.titleParser,
+				);
+				if (url) {
+					open(url, '_blank', 'noreferrer');
+					return true;
+				}
 				return undefined;
-			}
-			const url = mouseEventListener(
-				e,
-				view,
-				langConfig,
-			);
-			if (url) {
-				open(url, '_blank', 'noreferrer');
-				return true;
-			}
-			return undefined;
-		},
-	}),
-	EditorView.theme({
-		[
-		[...links, ...langConfig?.titleParser ? wikiLinks : []]
-			.map(type => `.cm-mw-${type}`).join()
-		]: {
-			cursor: 'var(--codemirror-cursor)',
-		},
-	}),
-];
+			},
+		}),
+		EditorView.theme({
+			[
+			[
+				...links,
+				...langConfig?.titleParser ? wikiLinks : [],
+			]
+				.map(type => `.cm-mw-${type}`).join()
+			]: {
+				cursor: 'var(--codemirror-cursor)',
+			},
+		}),
+	];
+};
