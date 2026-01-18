@@ -452,6 +452,7 @@ export const registerAbuseFilter = (): void => {
 /** Register AbuseFilter core language support */
 export const registerAbuseFilterCore = (): void => {
 	languages['abusefilter'] = abusefilter;
+	optionalFunctions.detectIndent = detectIndent;
 };
 
 /**
