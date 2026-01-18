@@ -21,6 +21,7 @@ import {
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
 import {mediawikiBase} from './mediawiki.js';
+import openLinks from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelp from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
@@ -110,6 +111,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 			inlayHints(configData),
 			mediawikiColorPicker(),
 			codeFolding(),
+			openLinks(configData),
 			wikilint(configData),
 		],
 	);
@@ -124,5 +126,6 @@ export {
 	formatKeymap,
 	mediawikiColorPicker as colorPicker,
 	codeFolding,
+	openLinks,
 	bidiIsolates,
 };

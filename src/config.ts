@@ -110,10 +110,10 @@ export type TagName = keyof typeof tokens;
  * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
  */
 export const tokenTable = /* @__PURE__ */ (() => {
-	const table: Record<string, Tag> = {
+	const table: Record<string, Tag | Tag[]> = {
 		//
 	};
-	const highlight = new Map<Tag, TagName[]>([
+	const highlight = new Map<Tag | Tag[], TagName[]>([
 		[tags.strong, ['section', 'strong', 'tableCaption', 'tableTh']],
 		[tags.link, ['pageName']],
 		[tags.emphasis, ['em']],
@@ -150,18 +150,14 @@ export const tokenTable = /* @__PURE__ */ (() => {
 		// #a11
 		[tags.attributeValue, ['extTagAttributeValue', 'htmlTagAttributeValue', 'tableDefinitionValue']],
 		// #219
+		[tags.url, ['linkPageName', 'linkBracket', 'linkDelimiter', 'fileDelimiter', 'extLinkBracket']],
 		[
-			tags.url,
+			[tags.url, tags.link],
 			[
-				'linkPageName',
-				'linkBracket',
-				'linkDelimiter',
 				'linkToSection',
-				'fileDelimiter',
 				'magicLink',
 				'extLink',
 				'extLinkProtocol',
-				'extLinkBracket',
 				'freeExtLink',
 				'freeExtLinkProtocol',
 			],

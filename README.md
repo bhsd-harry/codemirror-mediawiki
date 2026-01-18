@@ -22,6 +22,7 @@ This repository contains a modified Wikitext [language](#mediawikilanguage) from
 	- [colorPicker](#colorpicker)
 	- [hover](#hover)
 	- [inlayHints](#inlayhints)
+	- [openLinks](#openlinks)
 	- [refHover](#refhover)
 	- [signatureHelp](#signaturehelp)
 	- [wikilint](#wikilint)
@@ -251,6 +252,25 @@ const extension: Extension = inlayHints(
 	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
+```
+
+</details>
+
+## openLinks
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 0.2.0*
+
+CTRL/CMD-click opens a link in a new tab.
+
+```ts
+import {openLinks} from '@bhsd/codemirror-wikitext';
+import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = openLinks(config);
 ```
 
 </details>

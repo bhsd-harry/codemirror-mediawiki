@@ -1,12 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.2.0
 
-*2026-01-15*
+*2026-01-19*
 
 **Added**
 
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables
-- New extension: [bidiIsolates](./README.md#bidiisolates)
+- New extensions: [openLinks](./README.md#openlinks) and [bidiIsolates](./README.md#bidiisolates)
+- External links are now highlighted with underline
 
 **Changed**
 
@@ -18,7 +19,7 @@
 
 **Added**
 
-- Optional argument to specify linting rules in [wikilint](./README#wikilint) extension
+- Optional argument to specify linting rules in [wikilint](./README.md#wikilint) extension
 
 **Fixed**
 
