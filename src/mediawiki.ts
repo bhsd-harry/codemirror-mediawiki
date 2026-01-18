@@ -16,7 +16,7 @@ import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
-import {isWMF, isolateSelector, ltrSelector} from './constants.js';
+import {isWMF} from './constants.js';
 import {MediaWiki} from './token.js';
 import {
 	hasTag,
@@ -635,13 +635,6 @@ const theme = /* @__PURE__ */ EditorView.theme({
 	},
 	'.cm-mw-tag-ref': {
 		backgroundColor: 'var(--cm-ref)',
-	},
-	[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
-		unicodeBidi: 'isolate',
-	},
-	[ltrSelector]: {
-		direction: 'ltr',
-		display: 'inline-block',
 	},
 });
 

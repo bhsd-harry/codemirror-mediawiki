@@ -9,6 +9,7 @@ import {
   registerMediaWiki,
   registerVue,
   registerTheme,
+  registerBidiIsolates,
   nord
 } from "/codemirror-mediawiki/dist/main.min.js";
 
@@ -34,6 +35,7 @@ registerLua();
 registerMediaWiki("https://www.mediawiki.org/wiki/");
 registerVue();
 registerTheme("nord", nord);
+registerBidiIsolates();
 if (location.pathname.startsWith("/codemirror-mediawiki")) {
   const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), search = new URLSearchParams(location.search);
   if (search.has("rtl")) {
@@ -135,6 +137,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     extension.addEventListener("change", prefer);
   }
   cm.prefer(extensions.filter(({ checked, id }) => checked && id !== "dark").map(({ id }) => id));
+  cm.prefer({ bidiIsolates: true });
   if (extensions.some(({ checked, id }) => checked && id === "dark")) {
     cm.setTheme("nord");
   }

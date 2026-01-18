@@ -64,6 +64,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 - [Extensions](#extensions)
 	- [allowMultipleSelections](#allowmultipleselections)
 	- [autocompletion](#autocompletion)
+	- [bidiIsolates](#bidiisolates)
 	- [bracketMatching](#bracketmatching)
 	- [closeBrackets](#closebrackets)
 	- [codeFolding](#codefolding)
@@ -977,6 +978,24 @@ For granular control over the bundled extensions, you can import the `registerAu
 ```js
 import {registerAutocompletion} from '@bhsd/codemirror-mediawiki';
 registerAutocompletion();
+```
+
+</details>
+
+## bidiIsolates
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.10.0*
+
+When Wikitext contains right-to-left text, isolate bidirectional text from the surrounding text.
+
+This extension is not included in the [`mediawiki`](#mediawiki) language support by default. You need to import the `registerBidiIsolates` function:
+
+```js
+import {registerBidiIsolates} from '@bhsd/codemirror-mediawiki';
+registerBidiIsolates();
 ```
 
 </details>

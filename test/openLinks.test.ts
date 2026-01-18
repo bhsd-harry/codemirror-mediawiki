@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 import * as assert from 'assert';
-import {mouseEventListener} from '../src/openLinks';
+import {mouseEventListener, getISBNParser} from '../src/openLinks';
 import {createState} from './util';
 import type {EditorView} from '@codemirror/view';
 
@@ -26,6 +26,23 @@ const mockTest = (doc: string, pos: number, result: string | undefined): void =>
 	Object.defineProperty(e, 'target', {value: element});
 	assert.strictEqual(mouseEventListener(e as MouseEvent, view, undefined), result);
 };
+
+describe('ISBN parser', () => {
+	it('with $1', () => {
+		const parser = getISBNParser('/wiki/$1')!;
+		assert.strictEqual(
+			parser('ISBN 1-234-56789-x'),
+			'/wiki/Special:Booksources/123456789X',
+		);
+	});
+	it('without $1', () => {
+		const parser = getISBNParser('/wiki/')!;
+		assert.strictEqual(
+			parser('ISBN 1-234-56789-x'),
+			'/wiki/Special:Booksources/123456789X',
+		);
+	});
+});
 
 describe('openLinks', () => {
 	it('extlink-protocol', () => {

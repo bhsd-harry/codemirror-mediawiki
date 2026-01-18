@@ -22,7 +22,7 @@ import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
-import bidiIsolation from './bidi.js';
+import bidiIsolates from './bidi.js';
 import {
 	CodeMirror6,
 	avail,
@@ -35,7 +35,7 @@ import {
 } from './codemirror.js';
 import mediawikiColorPicker from './color.js';
 import escapeKeymap from './escape.js';
-import codeFolding, {mediaWikiFold, foldHandler} from './fold.js';
+import codeFolding, {mediawikiFold, foldHandler} from './fold.js';
 import magicWordHover from './hover.js';
 import {detectIndent} from './indent.js';
 import inlayHints from './inlay.js';
@@ -281,6 +281,11 @@ export const registerInlayHints = (articlePath?: string): void => {
 	registerExtensionForMediaWiki('inlayHints', inlayHints(articlePath));
 };
 
+/** Register the `bidiIsolates` extension */
+export const registerBidiIsolates = (): void => {
+	registerExtensionForMediaWiki('bidiIsolates', bidiIsolates);
+};
+
 /** Register the `colorPicker` extension for MediaWiki */
 export const registerColorPickerForMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker());
@@ -296,7 +301,7 @@ export const registerBracketMatchingForMediaWiki = (): void => {
 
 /** Register the `codeFolding` extension for MediaWiki */
 export const registerCodeFoldingForMediaWiki = (): void => {
-	registerLangExtension('mediawiki', 'codeFolding', mediaWikiFold);
+	registerLangExtension('mediawiki', 'codeFolding', mediawikiFold);
 	optionalFunctions.foldHandler = foldHandler;
 };
 
@@ -319,7 +324,6 @@ export const registerMediaWikiCore = (articlePath?: string): void => {
 	languages['mediawiki'] = (config: MwConfig): Extension => [
 		mediawikiBase(config),
 		plain(),
-		bidiIsolation,
 		keymap.of(formatKeymap),
 	];
 	registerLintSource('mediawiki', getWikiLintSource(articlePath));

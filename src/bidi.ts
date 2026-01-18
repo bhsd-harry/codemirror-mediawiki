@@ -8,12 +8,14 @@ import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec, RangeSetBuilder} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
-import {isolateSelector, ltrSelector} from './constants.js';
 import {getTag} from './matchTag.js';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
+import type {Extension} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
-const cls = isolateSelector.slice(1),
+const isolateSelector = '.cm-bidi-isolate',
+	ltrSelector = '.cm-bidi-ltr',
+	cls = isolateSelector.slice(1),
 	isolateLTR = Decoration.mark({
 		class: `${cls} ${ltrSelector.slice(1)}`,
 		bidiIsolate: Direction.LTR,
@@ -65,35 +67,46 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 	return set.finish();
 };
 
-export default ViewPlugin.fromClass(
-	class implements PluginValue {
-		declare isolates;
-		declare tree;
-		declare dir;
+export default [
+	ViewPlugin.fromClass(
+		class implements PluginValue {
+			declare isolates;
+			declare tree;
+			declare dir;
 
-		constructor(view: EditorView) {
-			this.isolates = computeIsolates(view);
-			this.tree = syntaxTree(view.state);
-			this.dir = view.textDirection;
-		}
-
-		update({docChanged, viewportChanged, state, view}: ViewUpdate): void {
-			const tree = syntaxTree(state),
-				{textDirection} = view;
-			if (docChanged || viewportChanged || tree !== this.tree || textDirection !== this.dir) {
+			constructor(view: EditorView) {
 				this.isolates = computeIsolates(view);
-				this.tree = tree;
-				this.dir = textDirection;
+				this.tree = syntaxTree(view.state);
+				this.dir = view.textDirection;
 			}
-		}
-	},
-	{
-		provide(plugin) {
-			const access = (view: EditorView): DecorationSet => view.plugin(plugin)?.isolates ?? Decoration.none;
-			return Prec.lowest([
-				EditorView.decorations.of(access),
-				EditorView.bidiIsolatedRanges.of(access),
-			]);
+
+			update({docChanged, viewportChanged, state, view}: ViewUpdate): void {
+				const tree = syntaxTree(state),
+					{textDirection} = view;
+				if (docChanged || viewportChanged || tree !== this.tree || textDirection !== this.dir) {
+					this.isolates = computeIsolates(view);
+					this.tree = tree;
+					this.dir = textDirection;
+				}
+			}
 		},
-	},
-);
+		{
+			provide(plugin) {
+				const access = (view: EditorView): DecorationSet => view.plugin(plugin)?.isolates ?? Decoration.none;
+				return Prec.lowest([
+					EditorView.decorations.of(access),
+					EditorView.bidiIsolatedRanges.of(access),
+				]);
+			},
+		},
+	),
+	EditorView.theme({
+		[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
+			unicodeBidi: 'isolate',
+		},
+		[ltrSelector]: {
+			direction: 'ltr',
+			display: 'inline-block',
+		},
+	}),
+] satisfies Extension;

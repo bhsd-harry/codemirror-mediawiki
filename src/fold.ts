@@ -509,7 +509,7 @@ export default ((e = defaultFoldExtension): Extension => [
 	}),
 ]) satisfies AddonMain<Extension>;
 
-export const mediaWikiFold = /* @__PURE__ */ ((): Extension => [
+export const mediawikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
 			const element = elt(

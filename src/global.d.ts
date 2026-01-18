@@ -8,6 +8,7 @@ import {
 	registerMediaWiki,
 	registerVue,
 	registerTheme,
+	registerBidiIsolates,
 	nord,
 } from './index';
 import type {} from 'luacheck-browserify';
@@ -30,6 +31,7 @@ declare global {
 			registerMediaWiki,
 			registerVue,
 			registerTheme,
+			registerBidiIsolates,
 			nord,
 		};
 		export type {MwConfig, LintSource};

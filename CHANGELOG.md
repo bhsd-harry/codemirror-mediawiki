@@ -12,6 +12,10 @@
 
 - Do not highlight language conversion-like syntax (i.e., `-{}-`) on a MediaWiki site where language conversion is disabled
 
+**Changed**
+
+- The [bidiIsolates](./README.md#bidiisolates) extension is no longer bundled with the MediaWiki mode by default
+
 ## 3.9.2
 
 *2026-01-14*

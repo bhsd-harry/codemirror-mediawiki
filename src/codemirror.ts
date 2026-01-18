@@ -101,7 +101,7 @@ export const optionalFunctions: OptionalFunctions = {
 	},
 };
 
-const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp']);
+const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHelp', 'escape']);
 
 const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
 const phrases: Record<string, string> = {};

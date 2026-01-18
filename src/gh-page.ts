@@ -8,6 +8,7 @@ import {
 	registerMediaWiki,
 	registerVue,
 	registerTheme,
+	registerBidiIsolates,
 	nord,
 } from '/codemirror-mediawiki/dist/main.min.js';
 import {linkSuggest, paramSuggest} from './suggest.test';
@@ -22,6 +23,7 @@ registerLua();
 registerMediaWiki('https://www.mediawiki.org/wiki/');
 registerVue();
 registerTheme('nord', nord);
+registerBidiIsolates();
 
 if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	// 初始化DOM元素
@@ -159,6 +161,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		extension.addEventListener('change', prefer);
 	}
 	cm.prefer(extensions.filter(({checked, id}) => checked && id !== 'dark').map(({id}) => id));
+	cm.prefer({bidiIsolates: true});
 	if (extensions.some(({checked, id}) => checked && id === 'dark')) {
 		cm.setTheme('nord');
 	}
