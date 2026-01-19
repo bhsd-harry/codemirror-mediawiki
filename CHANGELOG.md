@@ -10,6 +10,10 @@
 - The [wikilint](./README.md#wikilint) extension now includes a status bar which can be hidden via configuration
 - External links are now highlighted with underline
 
+**Fixed**
+
+- Non-width image keywords starting with `$1` (e.g., `$1页` in Chinese)
+
 **Changed**
 
 - Highlighting styles for templates

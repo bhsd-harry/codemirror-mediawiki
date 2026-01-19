@@ -544,13 +544,20 @@ export class MediaWiki {
 			'iu',
 		);
 		this.img = Object.keys(img).filter(word => !/\$1./u.test(word));
+		const spImgKeys = Object.keys(img).filter(word => word.startsWith('$1'));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2))
 					.join('|')
 			}|(?:${
 				this.img.filter(word => !word.endsWith('$1')).join('|')
-			}|(?:\d+x?|\d*x\d+)\s*(?:px)?px)\s*(?=\||\]\]|$))`,
+			}|(?:(?:\d+x?|\d*x\d+)\s*(?:px)?(?:${
+				spImgKeys.filter(word => img[word] === 'img_width').map(word => word.slice(2))
+					.join('|')
+			}))|\d+\s*(?:${
+				spImgKeys.filter(word => img[word] !== 'img_width').map(word => word.slice(2))
+					.join('|')
+			}))\s*(?=\||\]\]|$))`,
 			'u',
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
