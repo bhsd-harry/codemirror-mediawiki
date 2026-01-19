@@ -34,7 +34,7 @@ import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
 
 export type LintSource = (
-	(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>
+	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>
 ) & {
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;

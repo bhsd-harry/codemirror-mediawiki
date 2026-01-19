@@ -20,7 +20,7 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
-import {abusefilter} from '@bhsd/lezer-abusefilter';
+import {abusefilter, analyzer} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
@@ -63,13 +63,14 @@ import html from './html.js';
 import javascript from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
+import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {
 	Config,
 	LanguageSupport,
 } from '@codemirror/language';
 import type {Addon, AddonMain} from './codemirror';
-import type {LintSourceGetter} from './lintsource';
+import type {LintSourceGetter, LintSource} from './lintsource';
 import type {MwConfig} from './token';
 
 export type {MwConfig};
@@ -452,6 +453,7 @@ export const registerAbuseFilter = (): void => {
 /** Register AbuseFilter core language support */
 export const registerAbuseFilterCore = (): void => {
 	languages['abusefilter'] = abusefilter;
+	registerLintSource('abusefilter', (): LintSource => state => analyzer({state} as EditorView));
 	optionalFunctions.detectIndent = detectIndent;
 };
 
