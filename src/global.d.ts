@@ -17,6 +17,7 @@ import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
+import type {Dialect} from '@bhsd/lezer-abusefilter';
 import type {LintSource} from './lintsource';
 import type {MwConfig} from './token';
 
@@ -37,6 +38,10 @@ declare global {
 			nord,
 		};
 		export type {MwConfig, LintSource};
+	}
+	module '/lezer-abusefilter/*' {
+		const dialect: Dialect;
+		export default dialect;
 	}
 
 	const eslint: {
