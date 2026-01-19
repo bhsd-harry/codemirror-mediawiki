@@ -57,7 +57,7 @@
 		"@bhsd/cm-util": "^0.1.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.1",
 		"@bhsd/common": "^1.2.0",
-		"@bhsd/lezer-abusefilter": "^0.0.0",
+		"@bhsd/lezer-abusefilter": "^0.1.0",
 		"@bhsd/stylelint-util": "^0.1.0",
 		"@codemirror/autocomplete": "^6.20.0",
 		"@codemirror/commands": "^6.10.1",

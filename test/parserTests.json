@@ -5389,6 +5389,11 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>a<htmltag-bracket>&lt;/</><htmltag-name>div </><error>id=a</><htmltag-bracket>&gt</>"
 	},
 	{
+		"desc": "Chinese image keywords",
+		"wikitext": "[[File:LoremIpsum.djvu|2页]]\n\n[[File:foobar.jpg|50像素]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground file-delimiter>|</><link-ground image-parameter>2页</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>50像素</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

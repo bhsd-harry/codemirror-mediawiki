@@ -12,6 +12,7 @@
 **Fixed**
 
 - Do not highlight language conversion-like syntax (i.e., `-{}-`) on a MediaWiki site where language conversion is disabled
+- Non-width image keywords starting with `$1` (e.g., `$1页` in Chinese)
 
 **Changed**
 
