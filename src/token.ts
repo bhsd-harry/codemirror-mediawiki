@@ -403,6 +403,12 @@ const getQuote = (stream: StringStream): string => {
 const getEqual = (t: Tokenizer): string => t.name === 'inTemplateArgument' && t.args![0] ? '=' : '';
 
 /**
+ * 转义字符类中的特殊字符
+ * @param chars 字符类
+ */
+const escapeCharClass = (chars: string): string => chars.replace(/[\]-]/gu, String.raw`\$&`);
+
+/**
  * 下一个字符是否为空白字符
  * @param stream StringStream
  * @param sol 是否在行首
@@ -430,13 +436,13 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		'msgnw',
 	]),
 	substs = new Set(['subst', 'safesubst']),
-	headerRegex = new RegExp(`^(?:[^&[<{~'-]|${lookahead("<{~'-")})+`, 'iu'),
+	headerRegex = new RegExp(String.raw`^(?:[^&[<{~'\-]|${lookahead("<{~'-")})+`, 'iu'),
 	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
-	argumentRegex = new RegExp(`^(?:[^|[&:}{<~'_＿-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
-	styleRegex = new RegExp(`^(?:[^|[&}{<~'_＿-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
-	wikiRegex = new RegExp(`^(?:[^&'{[<~_＿:-]|${lookahead("'{[<~_＿-")})+`, 'iu'),
+	argumentRegex = new RegExp(String.raw`^(?:[^|[&:}{<~'_＿\-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
+	styleRegex = new RegExp(String.raw`^(?:[^|[&}{<~'_＿\-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
+	wikiRegex = new RegExp(String.raw`^(?:[^&:'{[<~_＿\-]|${lookahead("'{[<~_＿-")})+`, 'iu'),
 	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
-	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)+-]?\s*\}\})/u,
+	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)\-+]?\s*\}\})/u,
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
 	tableCellChars = "'<~_＿{-",
@@ -456,7 +462,10 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	) as [RegExp, RegExp],
 	linkTextRegex = [false, true].map(file => {
 		const chars = `]'{<${file ? '~' : '['}-`;
-		return new RegExp(`^(?:[^&${file ? '[|' : ''}\\${chars}]|${lookahead(chars)})+`, 'iu');
+		return new RegExp(
+			`^(?:[^&${file ? '[|' : ''}${escapeCharClass(chars)}]|${lookahead(chars)})+`,
+			'iu',
+		);
 	}) as [RegExp, RegExp],
 	linkErrorRegex = [
 		new RegExp(String.raw`^(?:[<>{}]|%(?:3[ce]|[57][bd])|${lookahead('[]')})+`, 'iu'),
@@ -468,28 +477,30 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		'iu',
 	)) as [RegExp, RegExp],
 	variableRegex = [false, true].map(
-		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? "[&~'_＿:-" : ''}]|\}(?!\}\})|${
+		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? String.raw`[&~'_＿:\-` : ''}]|\}(?!\}\})|${
 			isDefault ? lookahead("{<~'_＿-") : lookahead('{<', true)
 		})+`, 'iu'),
 	) as [RegExp, RegExp],
-	parserFunctionRegex = ['', '[&', '[&:'].map(
-		s => getRegex(chars => new RegExp(`^(?:[^|${s}${chars}]|${lookahead(chars)})+`, 'iu')),
-	),
+	parserFunctionRegex = ['', '[&', '[&:'].map(s => getRegex(
+		chars => new RegExp(`^(?:[^|${s}${escapeCharClass(chars)}]|${lookahead(chars)})+`, 'iu'),
+	)),
 	doubleUnderscoreRegex = {
 		_: /^[\p{L}\p{N}_]+?__/u,
 		'＿': /^[\p{L}\p{N}_＿]+?＿{2}/u,
 	},
-	getExtLinkTextRegex = getRegex(
-		pipe => new RegExp(String.raw`^(?:[^\]&${pipe}${extLinkChars}]|${lookahead(extLinkChars)})+`, 'iu'),
-	),
+	getExtLinkTextRegex = getRegex(pipe => new RegExp(
+		String.raw`^(?:[^\]&${pipe}${escapeCharClass(extLinkChars)}]|${lookahead(extLinkChars)})+`,
+		'iu',
+	)),
 	getExtLinkRegex = getRegex(pipe => new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u')),
 	getTableDefinitionRegex = getRegex(s => new RegExp(
 		`^(?:[^&${tableDefinitionChars}${s}]|${lookahead(tableDefinitionChars)})+`,
 		'iu',
 	)),
-	getTableCellRegex = getRegex(
-		s => new RegExp(`^(?:[^[&${s}${tableCellChars}]|${lookahead(tableCellChars)})+`, 'iu'),
-	),
+	getTableCellRegex = getRegex(s => new RegExp(
+		`^(?:[^[&${s}${escapeCharClass(tableCellChars)}]|${lookahead(tableCellChars)})+`,
+		'iu',
+	)),
 	getHtmlAttrRegex = getRegex(
 		s => new RegExp(`^(?:[^<>&${htmlAttrChars}${s}]|${lookahead(htmlAttrChars)})+`, 'u'),
 	),
@@ -580,7 +591,7 @@ export class MediaWiki {
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.convertRegex = new RegExp(
-			String.raw`^(?:[^}|;&='{[<~_＿-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_＿-")})+`,
+			String.raw`^(?:[^}|;&='{[<~_＿\-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_＿-")})+`,
 			'iu',
 		);
 		this.convertSemicolon = variants && new RegExp(
@@ -591,7 +602,7 @@ export class MediaWiki {
 			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'iu');
 		this.hasVariants = Boolean(variants?.length);
 		this.preRegex = [false, true].map(
-			begin => new RegExp(String.raw`^(?:[^<&-]|-${
+			begin => new RegExp(String.raw`^(?:[^<&\-]|-${
 				this.hasVariants ? String.raw`(?!\{)` : ''
 			}|<(?!${begin ? '/' : ''}nowiki>))+`, 'iu'),
 		) as [RegExp, RegExp];
@@ -918,7 +929,7 @@ export class MediaWiki {
 					if (/[\p{L}\p{N}]/u.test(ch)) {
 						stream.backUp(1);
 					} else {
-						stream.eatWhile(/[^\p{L}\p{N}_＿&'{[<~:-]/u);
+						stream.eatWhile(/[^\p{L}\p{N}_＿&'{[<\-~:]/u);
 					}
 					const mt = stream.match(this.urlProtocols, false);
 					if (mt) {
@@ -1217,7 +1228,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (stream.sol()) {
 				stream.eatSpace();
-				const mt = stream.match(/^(?:\||\{\{\s*!([!)+-])?\s*\}\})/u);
+				const mt = stream.match(/^(?:\||\{\{\s*!([!)\-+])?\s*\}\})/u);
 				if (mt) {
 					if (mt[1] === '-' || !mt[1] && stream.eat('-')) {
 						stream.match(/^-*\s*/u);
@@ -1883,7 +1894,7 @@ export class MediaWiki {
 				if (stream.match('-{', false)) {
 					return this.eatWikiText(style)(stream, state);
 				}
-				stream.match(/^(?:(?:[^};=-]|\}(?!-)|=(?!>)|-(?!\{))+|;|=>)/u);
+				stream.match(/^(?:(?:[^}\-;=]|\}(?!-)|=(?!>)|-(?!\{))+|;|=>)/u);
 				return makeStyle(style, state);
 			}
 			return !isSolSyntax(stream, true) && stream.match(this.convertRegex) || space

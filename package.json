@@ -57,7 +57,7 @@
 		"@bhsd/cm-util": "^0.1.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.1",
 		"@bhsd/common": "^1.2.0",
-		"@bhsd/lezer-abusefilter": "^0.1.0",
+		"@bhsd/lezer-abusefilter": "^0.1.1",
 		"@bhsd/stylelint-util": "^0.1.0",
 		"@codemirror/autocomplete": "^6.20.0",
 		"@codemirror/commands": "^6.10.1",
@@ -77,7 +77,7 @@
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^1.3.2",
-		"@bhsd/test-util": "^0.2.1",
+		"@bhsd/test-util": "^0.3.0",
 		"@stylistic/eslint-plugin": "^5.5.0",
 		"@stylistic/stylelint-plugin": "^4.0.1",
 		"@types/eslint": "^8.56.12",
