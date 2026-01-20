@@ -5,7 +5,7 @@ import {base} from './constants.js';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
 import type {
 	Warning,
-} from 'stylelint';
+} from 'stylelint/types/stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {
 	QuickFixData,

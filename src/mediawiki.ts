@@ -88,7 +88,7 @@ export class FullMediaWiki extends MediaWiki {
 	get completionSource(): CompletionSource {
 		return (context): CompletionResult | null => {
 			const {state, pos, explicit} = context,
-				node = syntaxTree(state).resolve(pos, -1),
+				node = syntaxTree(state).resolveInner(pos, -1),
 				{
 					name: n,
 					from: f,
