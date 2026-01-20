@@ -11,6 +11,7 @@ import {
 	indentOnInput,
 	indentUnit,
 	ensureSyntaxTree,
+	syntaxTree,
 } from '@codemirror/language';
 import {
 	defaultKeymap,
@@ -270,15 +271,16 @@ export class CodeMirror6 {
 					},
 				}),
 				EditorView.updateListener.of(({
-					state: {doc},
+					state,
 					startState: {doc: startDoc},
 					docChanged,
 					focusChanged,
+					selectionSet,
 				}) => {
 					if (docChanged) {
 						clearTimeout(timer);
 						timer = setTimeout(() => {
-							textarea.value = doc.toString();
+							textarea.value = state.doc.toString();
 							textarea.dispatchEvent(new InputEvent('input'));
 						}, 400);
 						if (!noDetectionLangs.has(this.#lang) && !startDoc.toString().trim()) {
@@ -287,6 +289,15 @@ export class CodeMirror6 {
 					}
 					if (focusChanged) {
 						textarea.dispatchEvent(new FocusEvent(this.#view!.hasFocus ? 'focus' : 'blur'));
+					}
+					if (selectionSet && location.host === 'localhost:8080' && this.lang === 'mediawiki') {
+						const tree = syntaxTree(state),
+							{head} = state.selection.main,
+							{name} = tree.resolve(head),
+							innerName = tree.resolveInner(head).name;
+						if (name !== innerName) {
+							console.error(`Cursor at ${head}: ${name} (inner: ${innerName})`);
+						}
 					}
 				}),
 				...readOnly

@@ -6,7 +6,7 @@ import type {Linter} from 'eslint';
 import type {
 	Warning,
 	Config,
-} from 'stylelint';
+} from 'stylelint/types/stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {
@@ -45,7 +45,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	to?: number;
 }
 
-export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify@17';
 export const eslintRepo = 'npm/@bhsd/eslint-browserify',
 	luacheckRepo = 'npm/luacheck-browserify';
 

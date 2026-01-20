@@ -2,15 +2,15 @@ import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
 import {sliceDoc} from './util.js';
 import type {Extension} from '@codemirror/state';
-import type {CompletionContext, CompletionResult, Completion} from '@codemirror/autocomplete';
+import type {CompletionSource, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
 
 const cssWideKeywords = /* @__PURE__ */ (
 	() => ['revert', 'revert-layer'].map((label): Completion => ({label, type: 'keyword'}))
 )();
 
-export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.of({
-	autocomplete(context: CompletionContext) {
+export const cssCompletion = (dialect?: Dialect): Extension => {
+	const source: CompletionSource = context => {
 		const {state, pos} = context,
 			node = syntaxTree(state).resolveInner(pos, -1),
 			result = cssCompletionSource(context) as CompletionResult | null;
@@ -38,7 +38,8 @@ export const cssCompletion = (dialect?: Dialect): Extension => cssLanguage.data.
 			}
 		}
 		return result;
-	},
-});
+	};
+	return cssLanguage.data.of({autocomplete: source});
+};
 
 export default (dialect: Dialect): LanguageSupport => new LanguageSupport(cssLanguage, cssCompletion(dialect));

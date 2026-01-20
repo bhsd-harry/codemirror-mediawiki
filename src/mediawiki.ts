@@ -140,7 +140,6 @@ export class FullMediaWiki extends MediaWiki {
 		const parser = super.mediawiki(tags);
 		parser.languageData = {
 			closeBrackets: {brackets: ['(', '[', '{', '"'], before: ')]}>'} satisfies CloseBracketConfig,
-			autocomplete: this.completionSource,
 		};
 		return parser;
 	}
@@ -216,7 +215,7 @@ export class FullMediaWiki extends MediaWiki {
 	get completionSource(): CompletionSource {
 		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
-				node = syntaxTree(state).resolve(pos, -1),
+				node = syntaxTree(state).resolveInner(pos, -1),
 				{
 					name: n,
 					from: f,
@@ -645,5 +644,9 @@ const theme = /* @__PURE__ */ EditorView.theme({
 export const mediawikiBase = (config: MwConfig): LanguageSupport => {
 	const mode = new FullMediaWiki(config),
 		lang = StreamLanguage.define(mode.mediawiki());
-	return new LanguageSupport(lang, [syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())), theme]);
+	return new LanguageSupport(lang, [
+		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),
+		theme,
+		lang.data.of({autocomplete: mode.completionSource}),
+	]);
 };

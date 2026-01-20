@@ -340,8 +340,17 @@ export const registerMediaWikiCore = (articlePath?: string): void => {
 export const registerHTML = (): void => {
 	registerCommonExtensions();
 	registerHTMLCore();
+	registerBracketMatchingForHTML();
 	registerCloseBracketsForHTML();
 	registerColorPickerForHTML();
+};
+
+/** Register the `bracketMatching` extension for mixed MediaWiki-HTML */
+export const registerBracketMatchingForHTML = (): void => {
+	registerLangExtension<[Config, Extension]>('html', 'bracketMatching', [
+		{},
+		tagMatchingState,
+	]);
 };
 
 /** Register the `closeBrackets` extension for mixed MediaWiki-HTML */

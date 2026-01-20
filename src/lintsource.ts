@@ -290,7 +290,7 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
 };
 
 export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => lintJSON(doc.toString())
-	.map(({message, position, severity}): Diagnostic => ({message, severity, from: position, to: position}));
+	.map(({message, from, to = from, severity}): Diagnostic => ({message, severity, from, to}));
 
 export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
 	const {CDN} = base,

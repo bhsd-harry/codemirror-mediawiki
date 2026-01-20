@@ -130,9 +130,9 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 	if (!tree) {
 		return null;
 	}
-	let node = tree.resolve(pos, -1);
+	let node = tree.resolveInner(pos, -1);
 	if (!isTag(node)) {
-		node = tree.resolve(pos, 1);
+		node = tree.resolveInner(pos, 1);
 		if (!isTag(node)) {
 			return null;
 		}

@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.10.0
 
-*2026-01-20*
+*2026-01-23*
 
 **Added**
 
@@ -13,6 +13,7 @@
 
 - Do not highlight language conversion-like syntax (i.e., `-{}-`) on a MediaWiki site where language conversion is disabled
 - Non-width image keywords starting with `$1` (e.g., `$1页` in Chinese)
+- [Autocompletion](./README.md#autocompletion) for the mixed MediaWiki-HTML mode
 
 **Changed**
 

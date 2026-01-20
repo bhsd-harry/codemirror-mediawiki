@@ -3,6 +3,7 @@ import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {leadingSpaces, sliceDoc} from './util.js';
+import type {Extension} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 
 declare interface LuaGlobal {
@@ -318,8 +319,9 @@ const map = {
 			type: 'keyword',
 		}),
 	],
-	types = new Set(['variableName', 'variableName.standard', 'keyword']);
-lua.languageData!['autocomplete'] = (context => {
+	types = new Set(['variableName', 'variableName.standard', 'keyword']),
+	lang = StreamLanguage.define(lua);
+const source: CompletionSource = context => {
 	const {state, pos} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
 	if (!types.has(node.name)) {
@@ -427,30 +429,31 @@ lua.languageData!['autocomplete'] = (context => {
 			}
 	}
 	return null;
-}) as CompletionSource;
-
-const support = foldService.of(({doc, tabSize}, start, from) => {
-	const {text, number} = doc.lineAt(start);
-	if (!text.trim()) {
-		return null;
-	}
-	const getIndent = (line: string): number =>
-		leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
-	const indent = getIndent(text);
-	let j = number,
-		empty = true;
-	for (; j < doc.lines; j++) {
-		const {text: next} = doc.line(j + 1);
-		if (next.trim()) {
-			const nextIndent = getIndent(next);
-			if (indent >= nextIndent) {
-				break;
-			}
-			empty = false;
+};
+const support: Extension = [
+	lang.data.of({autocomplete: source}),
+	foldService.of(({doc, tabSize}, start, from) => {
+		const {text, number} = doc.lineAt(start);
+		if (!text.trim()) {
+			return null;
 		}
-	}
-	return empty || j === number ? null : {from, to: doc.line(j).to};
-});
+		const getIndent = (line: string): number =>
+			leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
+		const indent = getIndent(text);
+		let j = number,
+			empty = true;
+		for (; j < doc.lines; j++) {
+			const {text: next} = doc.line(j + 1);
+			if (next.trim()) {
+				const nextIndent = getIndent(next);
+				if (indent >= nextIndent) {
+					break;
+				}
+				empty = false;
+			}
+		}
+		return empty || j === number ? null : {from, to: doc.line(j).to};
+	}),
+];
 
-export default (): LanguageSupport => new LanguageSupport(StreamLanguage.define(lua), support);
-export {lua};
+export default (): LanguageSupport => new LanguageSupport(lang, support);

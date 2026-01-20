@@ -258,9 +258,11 @@ In addition to the common [extensions](#extensions), here are some HTML-specific
 
 ```js
 import {
+	registerBracketMatchingForHTML,
 	registerCloseBracketsForHTML,
 	registerColorPickerForHTML,
 } from '@bhsd/codemirror-mediawiki';
+registerBracketMatchingForHTML();
 registerCloseBracketsForHTML();
 registerColorPickerForHTML();
 ```

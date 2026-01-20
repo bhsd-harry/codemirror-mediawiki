@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {foldable} from '@codemirror/language';
-import luaLanguage, {lua} from '../src/lua';
+import lua from '../src/lua';
 import {autocompletionTest, createState} from './util';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
@@ -9,9 +9,11 @@ const nil = [
 		{label: 'next', type: 'function'},
 		{label: 'not', type: 'keyword'},
 	],
-	lang = luaLanguage();
+	lang = lua(),
+	state = createState('', lang),
+	[source] = state.languageDataAt<CompletionSource>('autocomplete', 0);
 
-const mockTest = autocompletionTest(lua.languageData!['autocomplete'] as CompletionSource, lang, /^\w*$/u);
+const mockTest = autocompletionTest(source!, lang, /^\w*$/u);
 
 const foldTest = (doc: string, result: unknown): void => {
 	assert.deepStrictEqual(
