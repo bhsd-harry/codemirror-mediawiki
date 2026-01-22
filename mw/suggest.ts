@@ -1,12 +1,8 @@
 import {isWMF} from '../src/constants';
+import {templateData} from './util';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
-
-declare interface TemplateParam {
-	label: string | null;
-	description: string | null;
-	aliases: string[];
-}
+import type {TemplateData} from './util';
 
 const templateParameters = new Map<string, ApiSuggestions>();
 
@@ -67,18 +63,22 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		} else if (!force && !isWMF) {
 			return [];
 		}
-		api.abort();
-		const {pages} = await api.get({
-			action: 'templatedata',
-			titles,
-			redirects: true,
-			converttitles: true,
-			lang: mw.config.get('wgUserLanguage'),
-		} satisfies TemplateDataApiTemplateDataParams) as {
-				pages: Record<number, {description?: string, params: Record<string, TemplateParam>}>;
-			},
-			[pageObj] = Object.values(pages),
-			desc = pageObj?.description,
+		let pageObj: TemplateData | undefined;
+		if (templateData.has(titles)) {
+			pageObj = templateData.get(titles);
+		} else {
+			api.abort();
+			const {pages} = await api.get({
+				action: 'templatedata',
+				titles,
+				redirects: true,
+				converttitles: true,
+				lang: mw.config.get('wgUserLanguage'),
+			} satisfies TemplateDataApiTemplateDataParams) as {pages: Record<number, TemplateData>};
+			[pageObj] = Object.values(pages);
+			templateData.set(titles, pageObj);
+		}
+		const desc = pageObj?.description,
 			params = Object.entries(pageObj?.params ?? {}),
 			result: ApiSuggestions = [];
 		for (const [key, {aliases, label, description}] of params) {

@@ -1,12 +1,15 @@
 import {getLSP} from '@bhsd/browser';
 import {getOpt} from '../src/lintsource';
 import {base} from '../src/constants';
+import {templateData} from './util';
 import {buildPanel, preferenceDialog} from './preference';
 import type {Diagnostic} from '@codemirror/lint';
 import type {AST} from 'wikiparser-node';
+import type {TemplateDataApiTemplateDataParams, ApiQuerySiteinfoParams} from 'types-mediawiki-api';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSource} from '../src/lintsource';
 import type {CodeMirror} from './codemirror';
+import type {TemplateData, Parameter} from './util';
 
 declare interface ParsoidError {
 	type: string;
@@ -16,15 +19,6 @@ declare interface ApiValidateError {
 	message: string;
 	line?: number;
 	column?: number;
-}
-declare interface Parameter {
-	required: boolean;
-	deprecated: boolean;
-	aliases: string[];
-}
-declare interface TemplateData {
-	title: string;
-	params: Record<string, Parameter>;
 }
 declare interface ApiResponse {
 	query?: {
@@ -41,6 +35,7 @@ declare interface ApiResponse {
 		errors?: ApiValidateError[];
 	};
 	pages?: Record<number, TemplateData>;
+	normalized?: {from: string, to: string}[];
 	redirects?: {from: string, to: string}[];
 }
 
@@ -116,7 +111,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 			action: 'query',
 			meta: 'siteinfo',
 			siprop: 'general',
-		}) as ApiResponse).query!;
+		} satisfies ApiQuerySiteinfoParams) as ApiResponse).query!;
 		parsoidRules.push(...[...high, ...medium, ...low].map(getRuleKey));
 		if (preferenceDialog.layout) {
 			preferenceDialog.layout.addTabPanels(buildPanel('Parsoid', parsoidRules), 2);
@@ -158,7 +153,6 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 };
 
 const voidLintSource: LintSource = () => [];
-export const templateData = new Map<string, TemplateData | undefined>();
 
 export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig}: CodeMirror): Promise<LintSource> => {
 	if (!('templatedata' in langConfig!.tags)) {
@@ -174,8 +168,8 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 			action: 'templatedata',
 			lang: mw.config.get('wgUserLanguage'),
 			redirects: true,
-			formatversion: 2,
-		},
+			formatversion: '2',
+		} satisfies TemplateDataApiTemplateDataParams,
 	});
 	return async ({doc}): Promise<Diagnostic[]> => {
 		await lsp.provideDefinition(doc.toString(), {line: 0, character: 0});
@@ -184,11 +178,14 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 		for (let i = 0; i < names.length / 50; i++) {
 			const batch = names.slice(i * 50, (i + 1) * 50),
 				// eslint-disable-next-line no-await-in-loop
-				{pages, redirects} = await api.post({titles: batch.join('|')}) as ApiResponse,
+				{pages, normalized = [], redirects = []} = await api.post({
+					titles: batch.join('|'),
+				}) as ApiResponse,
 				data = Object.values(pages!);
 			for (const name of batch) {
 				const page = data.find(
-					({title}) => title === name || title === redirects?.find(({from}) => from === name)?.to,
+					({title}) => title === name
+						|| title === [...normalized, ...redirects].find(({from}) => from === name)?.to,
 				);
 				templateData.set(name, page);
 			}

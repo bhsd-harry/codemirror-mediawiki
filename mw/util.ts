@@ -1,5 +1,20 @@
 import type {CodeMirror} from './codemirror';
 
+export interface Parameter {
+	label: string | null;
+	description: string | null;
+	required: boolean;
+	deprecated: boolean;
+	aliases: string[];
+}
+export interface TemplateData {
+	title: string;
+	description?: string;
+	params: Record<string, Parameter>;
+}
+
+export const templateData = new Map<string, TemplateData | undefined>();
+
 export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
 
 /**

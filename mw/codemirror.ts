@@ -26,14 +26,13 @@ import {
 	getTemplateStylesLintSource,
 	getScribuntoLintSource,
 	getPeastLintSource,
-	templateData,
 } from './lintsource';
 import {msg} from './msg';
 import {getTitleParser} from './openLinks';
 import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from './preference';
 import prepareSuggest from './suggest';
 import {textSelection, monacoTextSelection} from './textSelection';
-import {instances} from './util';
+import {instances, templateData} from './util';
 import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint/types/stylelint';
