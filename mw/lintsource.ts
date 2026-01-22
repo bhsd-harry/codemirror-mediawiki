@@ -1,8 +1,12 @@
+import {getLSP} from '@bhsd/browser';
 import {getOpt} from '../src/lintsource';
+import {base} from '../src/constants';
 import {buildPanel, preferenceDialog} from './preference';
 import type {Diagnostic} from '@codemirror/lint';
+import type {AST} from 'wikiparser-node';
 import type {Option, LiveOption} from '../src/linter';
 import type {LintSource} from '../src/lintsource';
+import type {CodeMirror} from './codemirror';
 
 declare interface ParsoidError {
 	type: string;
@@ -12,6 +16,15 @@ declare interface ApiValidateError {
 	message: string;
 	line?: number;
 	column?: number;
+}
+declare interface Parameter {
+	required: boolean;
+	deprecated: boolean;
+	aliases: string[];
+}
+declare interface TemplateData {
+	title: string;
+	params: Record<string, Parameter>;
 }
 declare interface ApiResponse {
 	query?: {
@@ -27,6 +40,8 @@ declare interface ApiResponse {
 		valid: boolean;
 		errors?: ApiValidateError[];
 	};
+	pages?: Record<number, TemplateData>;
+	redirects?: {from: string, to: string}[];
 }
 
 declare type Executer<T> = (text: string) => Promise<T[]>;
@@ -140,6 +155,95 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 			}));
 	};
 	return linter;
+};
+
+const voidLintSource: LintSource = () => [];
+export const templateData = new Map<string, TemplateData | undefined>();
+
+export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig}: CodeMirror): Promise<LintSource> => {
+	if (!('templatedata' in langConfig!.tags)) {
+		return voidLintSource;
+	}
+	const lsp = getLSP(view!, false, getWikiConfig, base.CDN);
+	if (!lsp || !('findTemplateTokens' in lsp)) {
+		return voidLintSource;
+	}
+	await mw.loader.using('mediawiki.api');
+	const api = new mw.Api({
+		parameters: {
+			action: 'templatedata',
+			lang: mw.config.get('wgUserLanguage'),
+			redirects: true,
+			formatversion: 2,
+		},
+	});
+	return async ({doc}): Promise<Diagnostic[]> => {
+		await lsp.provideDefinition(doc.toString(), {line: 0, character: 0});
+		const templates = await lsp.findTemplateTokens(),
+			names = [...new Set(templates.map(({name}) => name!))].filter(name => !templateData.has(name));
+		for (let i = 0; i < names.length / 50; i++) {
+			const batch = names.slice(i * 50, (i + 1) * 50),
+				// eslint-disable-next-line no-await-in-loop
+				{pages, redirects} = await api.post({titles: batch.join('|')}) as ApiResponse,
+				data = Object.values(pages!);
+			for (const name of batch) {
+				const page = data.find(
+					({title}) => title === name || title === redirects?.find(({from}) => from === name)?.to,
+				);
+				templateData.set(name, page);
+			}
+		}
+		const diagnostics: Diagnostic[] = [];
+		for (const {name, childNodes, range: [from, to]} of templates) {
+			const data = templateData.get(name!)?.params;
+			if (!data) {
+				continue;
+			}
+			const params = Object.entries(data),
+				actual = new Map<Parameter, AST[]>();
+			for (const child of childNodes!.slice(1)) {
+				const param = params.find(([p, {aliases}]) => p === child.name || aliases.includes(child.name!));
+				if (param) {
+					const entry = actual.get(param[1]);
+					if (entry) {
+						entry.push(child);
+					} else {
+						actual.set(param[1], [child]);
+					}
+				}
+			}
+			const missing: string[] = [];
+			for (const [p, param] of params) {
+				const nodes = actual.get(param);
+				if (nodes) {
+					if (param.deprecated || nodes.length > 1) {
+						const rule = param.deprecated ? 'Deprecated' : 'Duplicate';
+						diagnostics.push(...nodes.map(({range}): Diagnostic => ({
+							from: range[0],
+							to: range[1],
+							severity: 'warning',
+							source: 'TemplateData',
+							message: `${rule} parameter ${JSON.stringify(p)}`,
+						})));
+					}
+				} else if (param.required) {
+					missing.push(p);
+				}
+			}
+			if (missing.length > 0) {
+				diagnostics.push({
+					from,
+					to,
+					severity: 'error',
+					source: 'TemplateData',
+					message: `Missing required parameter(s): ${
+						missing.map(p => JSON.stringify(p)).join(', ')
+					}`,
+				});
+			}
+		}
+		return diagnostics;
+	};
 };
 
 export const getTemplateStylesLintSource = async (title: string): Promise<LintSource> => {

@@ -8,6 +8,7 @@
 - [CodeFolding](./README.md#codefolding) keyboard shortcuts now work with sections and tables in the MediaWiki mode
 - New optional argument for [`registerMediaWiki`](./README.md#mediawiki) to specify the article path of a MediaWiki site
 - Language support for [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter)
+- Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a WMF-hosted site
 
 **Fixed**
 

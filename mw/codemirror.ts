@@ -22,9 +22,11 @@ import {preferenceId, indentKey, themeKey, RuleState, curVersion, languages} fro
 import escape from './escape';
 import {
 	getParsoidLintSource,
+	getTemplateDataLintSource,
 	getTemplateStylesLintSource,
 	getScribuntoLintSource,
 	getPeastLintSource,
+	templateData,
 } from './lintsource';
 import {msg} from './msg';
 import {getTitleParser} from './openLinks';
@@ -43,10 +45,13 @@ import type {LintSources, LintSource} from '../src/lintsource';
 import type {MwConfig} from '../src/token';
 
 declare interface IWikitextModel extends editor.ITextModel {
-	linter?: {option?: Option | LiveOption};
+	linter?: {
+		option?: Option | LiveOption;
+		lint(text: string): editor.IMarkerData[] | Promise<editor.IMarkerData[]>;
+	};
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	getRangeAt?: (start: number, end: number) => IRange;
-	lint?: (this: IWikitextModel, on: boolean) => void;
+	lint?: (this: IWikitextModel, on: boolean) => Promise<void>;
 	/* eslint-enable @typescript-eslint/method-signature-style */
 }
 
@@ -448,7 +453,10 @@ export class CodeMirror extends CodeMirror6 {
 			if (isWMF) {
 				switch (lang) {
 					case 'mediawiki':
-						return getLintSources(lang, linter, [await getParsoidLintSource(page, opt)]);
+						return getLintSources(lang, linter, [
+							await getParsoidLintSource(page, opt),
+							await getTemplateDataLintSource(this),
+						]);
 					case 'lua':
 						return getLintSources(lang, linter, [await getScribuntoLintSource(page)]);
 					case 'css':
@@ -500,7 +508,7 @@ export class CodeMirror extends CodeMirror6 {
 			if (this.view) {
 				this.lint();
 			} else if (this.#model?.lint) {
-				this.#model.lint(false);
+				void this.#model.lint(false);
 			}
 			return;
 		}
@@ -575,7 +583,8 @@ export class CodeMirror extends CodeMirror6 {
 		if (this.view) {
 			this.lint(linters[lang]);
 		} else if (this.#model?.lint) {
-			this.#model.lint(true);
+			/** @todo 动态更新 `this.#model.linter.lint` */
+			void this.#model.lint(true);
 		}
 	}
 
@@ -747,3 +756,5 @@ export class CodeMirror extends CodeMirror6 {
 		return cm;
 	}
 }
+
+Object.assign(CodeMirror, {templateData});

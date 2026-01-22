@@ -362,29 +362,38 @@ export const openPreference = async (): Promise<void> => {
 		value = [...prefs];
 		setObject(storageKey, value);
 
-		// 保存至用户子页面
-		if (changed && user && (save || prefs.has('save'))) {
-			const params: ApiEditPageParams = {
-				action: 'edit',
-				title: userPage!,
-				text: JSON.stringify({
-					addons: value,
-					useMonaco: [...useMonaco],
-					indent,
-					theme,
-					wikilint,
-					ESLint: codeConfigs.get('ESLint'),
-					Stylelint: codeConfigs.get('Stylelint'),
-				} as Preferences),
-				summary: msg('save-summary'),
-			};
-			// eslint-disable-next-line promise/prefer-await-to-then
-			(await api)!.postWithToken('csrf', params).then(
-				() => {
-					void mw.notify(parseMsg('save-success'), {type: 'success'});
-				},
-				apiErr,
-			);
+		if (changed) {
+			// 更新语法诊断
+			if (prefs.has('lint')) {
+				for (const cm of editors) {
+					cm?.update();
+				}
+			}
+
+			// 保存至用户子页面
+			if (user && (save || prefs.has('save'))) {
+				const params: ApiEditPageParams = {
+					action: 'edit',
+					title: userPage!,
+					text: JSON.stringify({
+						addons: value,
+						useMonaco: [...useMonaco],
+						indent,
+						theme,
+						wikilint,
+						ESLint: codeConfigs.get('ESLint'),
+						Stylelint: codeConfigs.get('Stylelint'),
+					} as Preferences),
+					summary: msg('save-summary'),
+				};
+				// eslint-disable-next-line promise/prefer-await-to-then
+				(await api)!.postWithToken('csrf', params).then(
+					() => {
+						void mw.notify(parseMsg('save-success'), {type: 'success'});
+					},
+					apiErr,
+				);
+			}
 		}
 	}
 };

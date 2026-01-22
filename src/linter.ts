@@ -45,7 +45,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 	to?: number;
 }
 
-export const stylelintRepo = 'npm/@bhsd/stylelint-browserify@17';
+export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 export const eslintRepo = 'npm/@bhsd/eslint-browserify',
 	luacheckRepo = 'npm/luacheck-browserify';
 
