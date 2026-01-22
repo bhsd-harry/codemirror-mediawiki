@@ -99,20 +99,6 @@ export default (
 			},
 		),
 		EditorView.theme({
-			[hoverSelector]: {
-				padding: '2px 5px',
-				width: 'max-content',
-				maxWidth: '60vw',
-				overflowY: 'auto',
-			},
-			[`${hoverSelector} *`]: {
-				marginTop: '0!important',
-				marginBottom: '0!important',
-			},
-			[`${hoverSelector}>div`]: {
-				fontSize: '90%',
-				lineHeight: 1.4,
-			},
 			[code]: {
 				color: 'inherit',
 				padding: '.1em .4em',

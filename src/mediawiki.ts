@@ -16,7 +16,10 @@ import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
-import {isWMF} from './constants.js';
+import {
+	hoverSelector,
+	isWMF,
+} from './constants.js';
 import {MediaWiki} from './token.js';
 import {
 	hasTag,
@@ -634,6 +637,23 @@ const theme = /* @__PURE__ */ EditorView.theme({
 	},
 	'.cm-mw-tag-ref': {
 		backgroundColor: 'var(--cm-ref)',
+	},
+
+	// hover tooltip and signature tooltip
+	[hoverSelector]: {
+		padding: '2px 5px',
+		width: 'max-content',
+		maxWidth: '60vw',
+		maxHeight: '60vh',
+		overflowY: 'auto',
+	},
+	[`${hoverSelector} *`]: {
+		marginTop: '0!important',
+		marginBottom: '0!important',
+	},
+	[`${hoverSelector}>div`]: {
+		fontSize: '90%',
+		lineHeight: 1.4,
 	},
 });
 
