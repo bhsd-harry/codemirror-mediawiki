@@ -290,7 +290,10 @@ export class CodeMirror6 {
 					if (focusChanged) {
 						textarea.dispatchEvent(new FocusEvent(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
-					if (selectionSet && location.host === 'localhost:8080' && this.lang === 'mediawiki') {
+					if (
+						selectionSet && this.lang === 'mediawiki'
+						&& ['localhost:8080', 'bhsd-harry.github.io'].includes(location.host)
+					) {
 						const tree = syntaxTree(state),
 							{head} = state.selection.main,
 							{name} = tree.resolve(head),

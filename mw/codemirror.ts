@@ -132,10 +132,14 @@ const getObserver = (cm: CodeMirror): MutationObserver => new MutationObserver((
  * 获取全部 LintSource
  * @param lang 语言
  * @param linter 基础 LintSource
- * @param linter2 基于 API 的 LintSource
+ * @param more 基于 API 的 LintSource
  */
-const getLintSources = (lang: string, linter: LintSource | undefined, linter2: LintSource): LintSources => {
-	const lintersources: LintSources = linter ? [linter, linter2] : linter2;
+const getLintSources = (
+	lang: string,
+	linter: LintSource | undefined,
+	more: [LintSource, ...LintSource[]],
+): LintSources => {
+	const lintersources: LintSources = linter ? [linter, ...more] : more;
 	linters[lang] = lintersources;
 	return lintersources;
 };
@@ -444,17 +448,17 @@ export class CodeMirror extends CodeMirror6 {
 			if (isWMF) {
 				switch (lang) {
 					case 'mediawiki':
-						return getLintSources(lang, linter, await getParsoidLintSource(page, opt));
+						return getLintSources(lang, linter, [await getParsoidLintSource(page, opt)]);
 					case 'lua':
-						return getLintSources(lang, linter, await getScribuntoLintSource(page));
+						return getLintSources(lang, linter, [await getScribuntoLintSource(page)]);
 					case 'css':
 						if (dialect === 'sanitized-css') {
-							return getLintSources(lang, linter, await getTemplateStylesLintSource(page));
+							return getLintSources(lang, linter, [await getTemplateStylesLintSource(page)]);
 						}
 						break;
 					case 'javascript':
 						if (isRLModule(page, ns)) {
-							return getLintSources(lang, linter, await getPeastLintSource(page));
+							return getLintSources(lang, linter, [await getPeastLintSource(page)]);
 						}
 					// no default
 				}
