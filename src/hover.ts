@@ -13,6 +13,7 @@ import {
 	toConfigGetter,
 	escHTML,
 	sliceDoc,
+	findTemplateName,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -27,6 +28,7 @@ const code = `${hoverSelector} code`;
 
 export default (
 	articlePath?: string,
+	templatedata?: boolean,
 ) => (
 	cm: CodeMirror6,
 ): Extension => {
@@ -52,11 +54,10 @@ export default (
 				if (!hover && paramSuggest && 'templatedata' in tags) {
 					const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
 					if (node?.name.includes(tokens.templateName)) {
-						const result = await paramSuggest(sliceDoc(state, node), false),
+						const result = await paramSuggest(sliceDoc(state, node), templatedata),
 							{description, length} = result;
 						if (description || length > 0) {
-							// eslint-disable-next-line require-atomic-updates
-							hover = {
+							hover = { // eslint-disable-line require-atomic-updates
 								contents: {
 									kind: 'plaintext',
 									value: (description ? `<p>${escHTML(description)}</p>` : '') + (
@@ -71,6 +72,22 @@ export default (
 								},
 								range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
 							};
+						}
+					} else if (node?.name.includes(tokens.templateArgumentName)) {
+						const name = findTemplateName(state, node);
+						if (name) {
+							const result = await paramSuggest(name, templatedata),
+								param = sliceDoc(state, node).trim().slice(0, -1).trim(),
+								related = result.find(([key]) => key === param);
+							if (related?.[1]) {
+								hover = { // eslint-disable-line require-atomic-updates
+									contents: {
+										kind: 'plaintext',
+										value: escHTML(related[1]),
+									},
+									range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
+								};
+							}
 						}
 					}
 				}

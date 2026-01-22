@@ -1,4 +1,3 @@
-import {isWMF} from '../src/constants';
 import {templateData} from './util';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions} from '../src/token';
@@ -50,7 +49,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
  * @param api mw.Api 实例
  * @param page 页面标题
  */
-const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string, force = true) => {
+const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (titles: string, enable = true) => {
 	if (!titles || /[|{}<>[\]]/u.test(titles)) {
 		return [];
 	} else if (titles.startsWith('/')) {
@@ -60,13 +59,11 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		titles = new mw.Title(titles, 10).getPrefixedDb();
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
-		} else if (!force && !isWMF) {
-			return [];
 		}
 		let pageObj: TemplateData | undefined;
 		if (templateData.has(titles)) {
 			pageObj = templateData.get(titles);
-		} else {
+		} else if (enable) {
 			api.abort();
 			const {pages} = await api.get({
 				action: 'templatedata',
@@ -77,6 +74,8 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			} satisfies TemplateDataApiTemplateDataParams) as {pages: Record<number, TemplateData>};
 			[pageObj] = Object.values(pages);
 			templateData.set(titles, pageObj);
+		} else {
+			return [];
 		}
 		const desc = pageObj?.description,
 			params = Object.entries(pageObj?.params ?? {}),

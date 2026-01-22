@@ -64,7 +64,7 @@ registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
-registerMediaWiki();
+registerMediaWiki(undefined, isWMF);
 registerVue();
 registerTheme('dark', nord);
 registerTheme('nord', nord);
@@ -311,8 +311,7 @@ export class CodeMirror extends CodeMirror6 {
 			wrapping = isWiki || language === 'html' || language === 'plaintext',
 			tab = this.#indentStr.includes('\t'),
 			container = 'monaco-container';
-		// eslint-disable-next-line @typescript-eslint/await-thenable
-		await monaco;
+		await monaco; // eslint-disable-line @typescript-eslint/await-thenable
 		for (const editor of monaco.editor.getEditors()) {
 			if (editor.getContainerDomNode().classList.contains(container) && !editor.getDomNode()?.isConnected) {
 				editor.getModel()?.dispose();

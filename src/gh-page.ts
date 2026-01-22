@@ -135,8 +135,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	for (const input of languages) {
 		input.addEventListener('change', () => {
 			void init(input.id);
-			// eslint-disable-next-line no-restricted-globals
-			history.replaceState(
+			history.replaceState( // eslint-disable-line no-restricted-globals
 				null,
 				'',
 				`#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`,

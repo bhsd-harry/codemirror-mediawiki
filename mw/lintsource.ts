@@ -177,8 +177,7 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 			names = [...new Set(templates.map(({name}) => name!))].filter(name => !templateData.has(name));
 		for (let i = 0; i < names.length / 50; i++) {
 			const batch = names.slice(i * 50, (i + 1) * 50),
-				// eslint-disable-next-line no-await-in-loop
-				{pages, normalized = [], redirects = []} = await api.post({
+				{pages, normalized = [], redirects = []} = await api.post({ // eslint-disable-line no-await-in-loop
 					titles: batch.join('|'),
 				}) as ApiResponse,
 				data = Object.values(pages!);

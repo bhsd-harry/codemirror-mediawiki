@@ -71,6 +71,35 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 };
 
 /**
+ * Find the current template name
+ * @param state
+ * @param node 语法树节点
+ */
+export const findTemplateName = (state: EditorState, node: SyntaxNode): string | null => {
+	let stack = -1,
+		{prevSibling} = node,
+		/** 可包含`_`、`:`等 */ page = '';
+	while (prevSibling) {
+		const {name} = prevSibling;
+		if (name.includes(tokens.templateBracket)) {
+			const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
+			stack += lbrace;
+			if (stack >= 0) {
+				break;
+			}
+			stack += rbrace;
+		} else if (stack === -1 && name.includes(tokens.templateName)) {
+			page = sliceDoc(state, prevSibling) + page;
+		} else if (page && !name.includes(tokens.comment)) {
+			prevSibling = null;
+			break;
+		}
+		({prevSibling} = prevSibling);
+	}
+	return prevSibling && page;
+};
+
+/**
  * 判断节点是否包含指定类型
  * @param types 节点类型
  * @param names 指定类型

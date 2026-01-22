@@ -79,8 +79,7 @@ export const plain = (): Extension => [
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const languages: Record<string, (config?: any) => Extension> = {plain};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const avail: Record<string, Addon<any>> = {};
+export const avail: Record<string, Addon<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 export const linterRegistry: Record<string, LintSourceGetter> = {};
 

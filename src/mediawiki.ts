@@ -23,9 +23,8 @@ import {
 import {MediaWiki} from './token.js';
 import {
 	hasTag,
-	braceStackUpdate,
 	leadingSpaces,
-	sliceDoc,
+	findTemplateName,
 } from './util.js';
 import type {
 	StreamParser,
@@ -223,12 +222,12 @@ export class FullMediaWiki extends MediaWiki {
 					name: n,
 					from: f,
 					to: t,
+					prevSibling,
 				} = node,
 				types = new Set(n.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
-			let {prevSibling} = node;
 			if (explicit || isParserFunction && search.includes('#') || isWMF) {
 				const obj = isWMF
 					? null
@@ -294,26 +293,8 @@ export class FullMediaWiki extends MediaWiki {
 						|| hasTag(types, 'template') && prevIsDelimiter
 					)
 				) {
-					let stack = -1,
-						/** 可包含`_`、`:`等 */ page = '';
-					while (prevSibling) {
-						const {name} = prevSibling;
-						if (name.includes(tokens.templateBracket)) {
-							const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
-							stack += lbrace;
-							if (stack >= 0) {
-								break;
-							}
-							stack += rbrace;
-						} else if (stack === -1 && name.includes(tokens.templateName)) {
-							page = sliceDoc(state, prevSibling) + page;
-						} else if (page && !name.includes(tokens.comment)) {
-							prevSibling = null;
-							break;
-						}
-						({prevSibling} = prevSibling);
-					}
-					if (prevSibling && page) {
+					const page = findTemplateName(state, node);
+					if (page) {
 						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
 							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
 						if (suggestions && suggestions.options.length > 0) {

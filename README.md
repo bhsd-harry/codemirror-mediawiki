@@ -341,8 +341,12 @@ You can bundle the MediaWiki mode by importing the `registerMediaWiki` function:
 
 ```js
 import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
-// optionally pass the article path of a MediaWiki site
-registerMediaWiki('https://www.mediawiki.org/wiki/');
+registerMediaWiki(
+	// optionally pass the article path of a MediaWiki site
+	'https://www.mediawiki.org/wiki/',
+	// optionally disable template hover support using Extension:TemplateData
+	false,
+);
 ```
 
 The MediaWiki mode provides the following key bindings for quick formatting:
@@ -1131,7 +1135,8 @@ For granular control over the bundled extensions, you can import the `registerEs
 
 ```js
 import {registerEscape} from '@bhsd/codemirror-mediawiki';
-registerEscape();
+// optionally pass the article path of a MediaWiki site
+registerEscape('https://www.mediawiki.org/wiki/');
 ```
 
 </details>
@@ -1235,7 +1240,12 @@ For granular control over the bundled extensions, you can import the `registerHo
 
 ```js
 import {registerHover} from '@bhsd/codemirror-mediawiki';
-registerHover();
+registerHover(
+	// optionally pass the article path of a MediaWiki site
+	'https://www.mediawiki.org/wiki/',
+	// optionally disable template hover support using Extension:TemplateData
+	false,
+);
 ```
 
 </details>
@@ -1253,7 +1263,8 @@ For granular control over the bundled extensions, you can import the `registerIn
 
 ```js
 import {registerInlayHints} from '@bhsd/codemirror-mediawiki';
-registerInlayHints();
+// optionally pass the article path of a MediaWiki site
+registerInlayHints('https://www.mediawiki.org/wiki/');
 ```
 
 </details>
@@ -1290,7 +1301,8 @@ For granular control over the bundled extensions, you can import the `registerRe
 
 ```js
 import {registerRefHover} from '@bhsd/codemirror-mediawiki';
-registerRefHover();
+// optionally pass the article path of a MediaWiki site
+registerRefHover('https://www.mediawiki.org/wiki/');
 ```
 
 </details>
@@ -1326,7 +1338,8 @@ For granular control over the bundled extensions, you can import the `registerSi
 
 ```js
 import {registerSignatureHelp} from '@bhsd/codemirror-mediawiki';
-registerSignatureHelp();
+// optionally pass the article path of a MediaWiki site
+registerSignatureHelp('https://www.mediawiki.org/wiki/');
 ```
 
 </details>

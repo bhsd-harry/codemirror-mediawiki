@@ -9,6 +9,7 @@
 - New optional argument for [`registerMediaWiki`](./README.md#mediawiki) to specify the article path of a MediaWiki site
 - Language support for [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter)
 - Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a WMF-hosted site
+- The [hover](./README.md#hover) extension now also supports template parameter names if [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
 
 **Fixed**
 

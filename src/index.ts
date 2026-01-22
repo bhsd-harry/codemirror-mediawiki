@@ -211,14 +211,16 @@ const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T
 /**
  * Register MediaWiki language support
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ * @param templatedata whether to use [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData)
+ * for template hover information; enabled by default
  */
-export const registerMediaWiki = (articlePath?: string): void => {
+export const registerMediaWiki = (articlePath?: string, templatedata?: boolean): void => {
 	registerCommonExtensions();
 	registerMediaWikiCore(articlePath);
 	registerOpenLinks(articlePath);
 	registerEscape(articlePath);
 	registerRefHover(articlePath);
-	registerHover(articlePath);
+	registerHover(articlePath, templatedata);
 	registerSignatureHelp(articlePath);
 	registerInlayHints(articlePath);
 	registerColorPickerForMediaWiki();
@@ -262,9 +264,11 @@ export const registerRefHover = (articlePath?: string): void => {
 /**
  * Register the `hover` extension
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ * @param templatedata whether to use [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData)
+ * for template information; enabled by default
  */
-export const registerHover = (articlePath?: string): void => {
-	registerExtensionForMediaWiki('hover', magicWordHover(articlePath));
+export const registerHover = (articlePath?: string, templatedata?: boolean): void => {
+	registerExtensionForMediaWiki('hover', magicWordHover(articlePath, templatedata));
 };
 
 /**
