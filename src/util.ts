@@ -76,8 +76,8 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
  * @param types 节点类型
  * @param names 指定类型
  */
-export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
+export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 
 /**
  * 将解析设置转换为返回Promise的函数

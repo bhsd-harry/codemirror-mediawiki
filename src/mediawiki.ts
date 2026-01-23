@@ -8,9 +8,13 @@ import {
 	StreamLanguage,
 	syntaxTree,
 } from '@codemirror/language';
+import {EditorView} from '@codemirror/view';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
+import {
+	hoverSelector,
+} from './constants.js';
 import {MediaWiki} from './token.js';
 import {
 	hasTag,
@@ -20,7 +24,9 @@ import type {
 	Language,
 } from '@codemirror/language';
 import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
-import type {MwConfig} from './token';
+import type {
+	MwConfig,
+} from './token';
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly functionSynonyms: Completion[];
@@ -33,7 +39,9 @@ export class FullMediaWiki extends MediaWiki {
 	declare readonly elementAttrs: Map<string | undefined, Completion[]>;
 	declare readonly extAttrs: Map<string, Completion[]>;
 
-	constructor(config: MwConfig) {
+	constructor(
+		config: MwConfig,
+	) {
 		super(config);
 		const {
 			urlProtocols,
@@ -91,6 +99,7 @@ export class FullMediaWiki extends MediaWiki {
 				node = syntaxTree(state).resolveInner(pos, -1),
 				{
 					name: n,
+					prevSibling,
 					from: f,
 				} = node,
 				types = new Set(n.split('_')),
@@ -156,10 +165,12 @@ export class FullMediaWiki extends MediaWiki {
 				'comment',
 				'templateVariableName',
 				'templateName',
+				'parserFunctionName',
 				'linkPageName',
 				'linkToSection',
 				'extLink',
 			])) {
+				// 不可能是状态开关、标签、协议或图片参数名
 				return null;
 			}
 			let mt = context.matchBefore(/__(?:(?!__)[\p{L}\p{N}_])*$/u);
@@ -207,7 +218,6 @@ export class FullMediaWiki extends MediaWiki {
 				};
 			}
 			const isDelimiter = explicit && hasTag(types, 'fileDelimiter');
-			const {prevSibling} = node;
 			if (
 				isDelimiter
 				|| hasTag(types, 'fileText')
@@ -239,6 +249,25 @@ export class FullMediaWiki extends MediaWiki {
 		};
 	}
 }
+
+export const theme = /* @__PURE__ */ EditorView.theme({
+	// hover tooltip and signature tooltip
+	[hoverSelector]: {
+		padding: '2px 5px',
+		width: 'max-content',
+		maxWidth: '60vw',
+		maxHeight: '60vh',
+		overflowY: 'auto',
+	},
+	[`${hoverSelector} *`]: {
+		marginTop: '0!important',
+		marginBottom: '0!important',
+	},
+	[`${hoverSelector}>div`]: {
+		fontSize: '90%',
+		lineHeight: 1.4,
+	},
+});
 
 /**
  * Get the stream language for Wikitext.

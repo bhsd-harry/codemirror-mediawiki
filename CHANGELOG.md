@@ -13,6 +13,7 @@
 **Fixed**
 
 - Non-width image keywords starting with `$1` (e.g., `$1页` in Chinese)
+- Missing styles for the [signatureHelp](./README.md#signaturehelp) tooltip in the MediaWiki mode
 
 **Changed**
 

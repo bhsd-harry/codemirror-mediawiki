@@ -20,10 +20,10 @@ import {
 } from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {mediawikiBase} from './mediawiki.js';
+import {mediawikiBase, theme} from './mediawiki.js';
 import openLinks from './openLinks.js';
 import refHover from './ref.js';
-import signatureHelp from './signature.js';
+import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
 import statusBar from './statusBar.js';
 import {updateCDN} from './util.js';
@@ -51,6 +51,28 @@ export const mediawikiLanguage = (configData: ConfigData): Language =>
  */
 export const bracketMatching = (): Extension =>
 	[bracketMatchingBase({brackets: '()[]{}（）【】［］｛｝'}), tagMatchingState];
+
+/**
+ * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ */
+export const hover = (configData: ConfigData, cdn?: string): Extension => [
+	magicWordHover(configData, cdn),
+	theme,
+];
+
+/**
+ * Get the [signatureHelp](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#signaturehelp)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ */
+export const signatureHelp = (configData: ConfigData, cdn?: string): Extension => [
+	signatureHelpBase(configData, cdn),
+	theme,
+];
 
 /**
  * Get the [wikilint](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#wikilint)
@@ -102,6 +124,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 	return new LanguageSupport(
 		mediawikiLanguage(configData),
 		[
+			theme,
 			keymap.of([
 				...formatKeymap,
 				...escapeKeymap(configData),
@@ -110,7 +133,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 			autocompletion(),
 			refHover(configData),
 			magicWordHover(configData),
-			signatureHelp(configData),
+			signatureHelpBase(configData),
 			inlayHints(configData),
 			mediawikiColorPicker(),
 			codeFolding(),
@@ -123,8 +146,6 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 export {
 	escapeKeymap,
 	refHover,
-	magicWordHover as hover,
-	signatureHelp,
 	inlayHints,
 	formatKeymap,
 	mediawikiColorPicker as colorPicker,

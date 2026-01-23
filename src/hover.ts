@@ -18,12 +18,6 @@ import type {ConfigData} from 'wikiparser-node';
 
 const code = `${hoverSelector} code`;
 
-/**
- * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
- * extension for Wikitext.
- * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
- */
 export default (
 	configData: ConfigData,
 	cdn?: string,
@@ -64,20 +58,6 @@ export default (
 			},
 		),
 		EditorView.theme({
-			[hoverSelector]: {
-				padding: '2px 5px',
-				width: 'max-content',
-				maxWidth: '60vw',
-				overflowY: 'auto',
-			},
-			[`${hoverSelector} *`]: {
-				marginTop: '0!important',
-				marginBottom: '0!important',
-			},
-			[`${hoverSelector}>div`]: {
-				fontSize: '90%',
-				lineHeight: 1.4,
-			},
 			[code]: {
 				color: 'inherit',
 				padding: '.1em .4em',
