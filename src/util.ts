@@ -104,8 +104,8 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): string |
  * @param types 节点类型
  * @param names 指定类型
  */
-export const hasTag = (types: Set<string>, names: string | string[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name as TagName] : name));
+export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 
 /**
  * 获取字符串开头的空白字符

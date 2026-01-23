@@ -230,7 +230,7 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 				diagnostics.push({
 					from,
 					to,
-					severity: 'error',
+					severity: 'warning',
 					source: 'TemplateData',
 					message: `Missing required parameter(s): ${
 						missing.map(p => JSON.stringify(p)).join(', ')

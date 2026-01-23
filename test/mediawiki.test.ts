@@ -124,26 +124,51 @@ describe('autocompletion', () => {
 		);
 	});
 	it('template parameter', async () => {
+		const sections = [
+			{name: 'Required', rank: 1},
+			{name: 'Suggested', rank: 2},
+			{name: 'Optional', rank: 3},
+			{name: 'Deprecated', rank: 4},
+		] as const;
 		await mockTest(
 			'{{template|',
 			{
 				from: 11,
 				options: [
-					// @ts-expect-error explicit undefined
-					{label: 'param1=', type: 'variable', detail: undefined},
-					{label: 'param2=', type: 'variable', detail: 'another parameter'},
+					{label: 'param1=', type: 'variable', section: sections[3]},
+					{
+						label: 'param2=',
+						type: 'variable',
+						detail: 'another parameter',
+						info: 'a required parameter',
+						section: sections[0],
+					},
+					{
+						label: 'p2=',
+						type: 'variable',
+						detail: 'another parameter',
+						info: 'a required parameter',
+						section: sections[0],
+					},
+					{label: 'prm3=', type: 'variable', info: 'an optional parameter', section: sections[2]},
+					{label: 'prm4=', type: 'variable', detail: '4th parameter', section: sections[2]},
 				],
 				validFor: /^[^|{}=]*$/u,
 			},
 		);
 		await mockTest(
-			'{{template| p',
+			'{{template| pa',
 			{
 				from: 12,
 				options: [
-					// @ts-expect-error explicit undefined
-					{label: 'param1=', type: 'variable', detail: undefined},
-					{label: 'param2=', type: 'variable', detail: 'another parameter'},
+					{label: 'param1=', type: 'variable', section: sections[3]},
+					{
+						label: 'param2=',
+						type: 'variable',
+						detail: 'another parameter',
+						info: 'a required parameter',
+						section: sections[0],
+					},
 				],
 				validFor: /^[^|{}=]*$/u,
 			},

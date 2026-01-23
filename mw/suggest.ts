@@ -1,6 +1,6 @@
 import {templateData} from './util';
 import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
-import type {ApiSuggest, ApiSuggestions} from '../src/token';
+import type {ApiSuggest, ApiSuggestions, MwConfig, CompletionSectionName} from '../src/token';
 import type {TemplateData} from './util';
 
 const templateParameters = new Map<string, ApiSuggestions>();
@@ -10,8 +10,8 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest => {
-	let promise: Promise<ApiSuggestions> | undefined;
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
+	let promise: Promise<ApiSuggestions<string>> | undefined;
 	return async (search: string, subpage?: boolean, namespace = 0) => {
 		if (subpage) {
 			search = title + search;
@@ -81,19 +81,15 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 			params = Object.entries(pageObj?.params ?? {}),
 			result: ApiSuggestions = [];
 		for (const [key, {aliases, label, description, required, suggested, deprecated}] of params) {
-			const detail = description ?? label ?? '';
-			let boost = 0;
+			let section: CompletionSectionName = 'Optional';
 			if (required) {
-				boost = 99;
+				section = 'Required';
 			} else if (suggested) {
-				boost = 50;
+				section = 'Suggested';
 			} else if (deprecated) {
-				boost = -99;
+				section = 'Deprecated';
 			}
-			result.push(
-				[key, detail, boost],
-				...aliases.map((alias): [string, string, number] => [alias, detail, boost]),
-			);
+			result.push([[key, ...aliases], label ?? '', description ?? '', section]);
 		}
 		if (desc) {
 			result.description = desc;
@@ -109,7 +105,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
  * 准备建议
  * @param page 页面标题
  */
-export default async (page: string): Promise<Record<string, ApiSuggest>> => {
+export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'paramSuggest'>> => {
 	await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
 	const api = new mw.Api({parameters: {formatversion: 2}});
 	return {

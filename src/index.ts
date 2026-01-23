@@ -216,7 +216,7 @@ const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T
  */
 export const registerMediaWiki = (articlePath?: string, templatedata?: boolean): void => {
 	registerCommonExtensions();
-	registerMediaWikiCore(articlePath);
+	registerMediaWikiCore(articlePath, templatedata);
 	registerOpenLinks(articlePath);
 	registerEscape(articlePath);
 	registerRefHover(articlePath);
@@ -324,11 +324,13 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
 /**
  * Register MediaWiki core language support
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
+ * @param templatedata whether to use [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData)
+ * for template parameter autocompletion
  */
-export const registerMediaWikiCore = (articlePath?: string): void => {
+export const registerMediaWikiCore = (articlePath?: string, templatedata?: boolean): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
 	languages['mediawiki'] = (config: MwConfig): Extension => [
-		mediawikiBase(config),
+		mediawikiBase(config, templatedata),
 		plain(),
 		keymap.of(formatKeymap),
 	];

@@ -1,6 +1,6 @@
-import type {ApiSuggest} from './token';
+import type {ApiSuggest, ApiSuggestions} from './token';
 
-export const linkSuggest: ApiSuggest = (s, _, ns) => {
+export const linkSuggest: ApiSuggest<string> = (s, _, ns) => {
 	if (ns === 0) {
 		return [[`${s} (article)`], [`${s} (user)`]];
 	}
@@ -11,6 +11,11 @@ export const linkSuggest: ApiSuggest = (s, _, ns) => {
 export const paramSuggest: ApiSuggest = s => Object.assign(
 	s.includes(':')
 		? []
-		: [['param1'], ['param2', 'another parameter']] as [string, string?][],
+		: [
+			[['param1'], '', '', 'Deprecated'],
+			[['param2', 'p2'], 'another parameter', 'a required parameter', 'Required'],
+			[['prm3'], '', 'an optional parameter', 'Optional'],
+			[['prm4'], '4th parameter', '', 'Optional'],
+		] as ApiSuggestions,
 	{description: 'Example template'},
 );

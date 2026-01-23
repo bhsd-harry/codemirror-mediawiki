@@ -58,7 +58,8 @@ export interface StringStream extends StringStreamBase {
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
 
-export type ApiSuggestions = [string, string?, number?][] & {description?: string};
+export type CompletionSectionName = 'Required' | 'Suggested' | 'Optional' | 'Deprecated';
+export type ApiSuggestions<T = string[]> = [T, string?, string?, CompletionSectionName?][] & {description?: string};
 
 /**
  * 获取维基链接建议
@@ -66,8 +67,8 @@ export type ApiSuggestions = [string, string?, number?][] & {description?: strin
  * @param subpage 是否为子页面
  * @param namespace 命名空间
  */
-export type ApiSuggest = (search: string, subpage?: boolean, namespace?: number) =>
-	ApiSuggestions | Promise<ApiSuggestions>;
+export type ApiSuggest<T = string[]> = (search: string, subpage?: boolean, namespace?: number) =>
+	ApiSuggestions<T> | Promise<ApiSuggestions<T>>;
 
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
@@ -76,7 +77,7 @@ export interface MwConfig extends MwConfigBase {
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
-	linkSuggest?: ApiSuggest;
+	linkSuggest?: ApiSuggest<string>;
 	paramSuggest?: ApiSuggest;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;

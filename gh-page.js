@@ -24,7 +24,12 @@ var linkSuggest = (s, _, ns) => {
   return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`]];
 };
 var paramSuggest = (s) => Object.assign(
-  s.includes(":") ? [] : [["param1"], ["param2", "another parameter"]],
+  s.includes(":") ? [] : [
+    [["param1"], "", "", "Deprecated"],
+    [["param2", "p2"], "another parameter", "a required parameter", "Required"],
+    [["prm3"], "", "an optional parameter", "Optional"],
+    [["prm4"], "4th parameter", "", "Optional"]
+  ],
   { description: "Example template" }
 );
 
@@ -34,7 +39,7 @@ registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
-registerMediaWiki("https://www.mediawiki.org/wiki/");
+registerMediaWiki("https://www.mediawiki.org/wiki/", true);
 registerVue();
 registerAbuseFilter();
 registerTheme("nord", nord);
@@ -68,7 +73,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
         mwConfig = {
           ...CodeMirror6.getMwConfig(parserConfig),
           linkSuggest,
-          paramSuggest
+          ...location.host === "localhost:8080" && { paramSuggest }
         };
         Object.assign(cm, { mwConfig });
       }
@@ -114,6 +119,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     input.addEventListener("change", () => {
       void init(input.id);
       history.replaceState(
+        // eslint-disable-line no-restricted-globals
         null,
         "",
         `#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`

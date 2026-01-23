@@ -32,7 +32,13 @@ import type {
 } from '@codemirror/language';
 import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {StyleSpec} from 'style-mod';
-import type {MwConfig} from './token';
+import type {
+	MwConfig,
+	CompletionSectionName,
+} from './token';
+import type {TagName} from './config';
+
+const ranks: Record<CompletionSectionName, number> = {Required: 1, Suggested: 2, Optional: 3, Deprecated: 4};
 
 /**
  * 是否是普通维基链接
@@ -68,6 +74,7 @@ const apply = (view: EditorView, completion: Completion, from: number, to: numbe
 };
 
 export class FullMediaWiki extends MediaWiki {
+	declare readonly templatedata: boolean;
 	declare readonly nsRegex;
 	declare readonly functionSynonyms: Completion[];
 	declare readonly doubleUnderscore: Completion[];
@@ -79,7 +86,10 @@ export class FullMediaWiki extends MediaWiki {
 	declare readonly elementAttrs: Map<string | undefined, Completion[]>;
 	declare readonly extAttrs: Map<string, Completion[]>;
 
-	constructor(config: MwConfig) {
+	constructor(
+		config: MwConfig,
+		templatedata = false,
+	) {
 		super(config);
 		const {
 			urlProtocols,
@@ -87,6 +97,7 @@ export class FullMediaWiki extends MediaWiki {
 			functionSynonyms,
 			doubleUnderscore,
 		} = config;
+		this.templatedata = templatedata;
 		this.nsRegex = new RegExp(String.raw`^(${
 			Object.keys(nsid).filter(ns => ns !== '').join('|')
 				.replace(/_/gu, ' ')
@@ -208,12 +219,13 @@ export class FullMediaWiki extends MediaWiki {
 		return result?.length
 			? {
 				offset: leadingSpaces(search).length,
-				options: result.map(([key, detail, boost = 0]): Completion => ({
+				options: result.flatMap(([keys, detail, info, name]) => keys.map((key): Completion => ({
 					type: 'variable',
 					label: key + equal,
-					boost,
+					section: {name: name!, rank: ranks[name!]},
 					...detail && {detail},
-				})),
+					...info && {info},
+				}))),
 			}
 			: undefined;
 	}
@@ -225,20 +237,22 @@ export class FullMediaWiki extends MediaWiki {
 				node = syntaxTree(state).resolveInner(pos, -1),
 				{
 					name: n,
+					prevSibling,
 					from: f,
 					to: t,
-					prevSibling,
 				} = node,
 				types = new Set(n.split('_')),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
-			if (explicit || isParserFunction && search.includes('#') || isWMF) {
+			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
+			if (explicit || isWMF || isParserFunction && search.includes('#')) {
 				const obj = isWMF
 					? null
 					: {
 						validFor: /^[^|{}<>[\]#]*$/u,
 					};
+				// 模板名
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
@@ -257,8 +271,12 @@ export class FullMediaWiki extends MediaWiki {
 						...obj,
 					};
 				}
+				// 页面名
 				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
 				if (isPage && search.trim() || hasTag(types, 'linkPageName')) {
+					if (!this.config.linkSuggest) {
+						return null;
+					}
 					const isLink = isWikiLink(n);
 					let prefix = '',
 						ns = 0;
@@ -267,7 +285,7 @@ export class FullMediaWiki extends MediaWiki {
 							[...types].find(type => type.startsWith('mw-function-'))!
 								.slice(12) as unknown as keyof typeof this.autocompleteNamespaces
 						];
-					} else if (hasTag(types, 'mw-tag-gallery') && !isLink) {
+					} else if (hasTag(types, 'mw-tag-gallery' as TagName) && !isLink) {
 						ns = 6;
 					}
 					const suggestions = await this.#linkSuggest(prefix + search, ns);
@@ -286,17 +304,21 @@ export class FullMediaWiki extends MediaWiki {
 						...obj,
 					};
 				}
+			}
+			// 需要TemplateData API的建议，只在显式触发时提供
+			if (
+				this.config.paramSuggest
+				&& (explicit || this.templatedata)
+				&& this.tags.includes('templatedata')
+			) {
 				const isArgument = hasTag(types, 'templateArgumentName'),
 					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
 					isDelimiter = hasTag(types, 'templateDelimiter')
 						|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
-					this.tags.includes('templatedata')
-					&& (
-						isDelimiter
-						|| isArgument && !search.includes('=')
-						|| hasTag(types, 'template') && prevIsDelimiter
-					)
+					isDelimiter
+					|| isArgument && !search.includes('=')
+					|| hasTag(types, 'template') && prevIsDelimiter
 				) {
 					const page = findTemplateName(state, node);
 					if (page) {
@@ -354,10 +376,12 @@ export class FullMediaWiki extends MediaWiki {
 				'comment',
 				'templateVariableName',
 				'templateName',
+				'parserFunctionName',
 				'linkPageName',
 				'linkToSection',
 				'extLink',
 			])) {
+				// 不可能是状态开关、标签、协议或图片参数名
 				return null;
 			}
 			let mt = context.matchBefore(/__(?:(?!__)[\p{L}\p{N}_])*$/u);
@@ -646,9 +670,10 @@ const theme = /* @__PURE__ */ EditorView.theme({
 /**
  * Get a LanguageSupport instance for the MediaWiki mode.
  * @param config Configuration for the MediaWiki mode
+ * @param templatedata Whether to enable template parameter autocompletion
  */
-export const mediawikiBase = (config: MwConfig): LanguageSupport => {
-	const mode = new FullMediaWiki(config),
+export const mediawikiBase = (config: MwConfig, templatedata?: boolean): LanguageSupport => {
+	const mode = new FullMediaWiki(config, templatedata),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
 		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),

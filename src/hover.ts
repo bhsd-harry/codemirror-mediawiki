@@ -18,13 +18,17 @@ import {
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {MarkupContent} from 'vscode-languageserver-types';
-import type {CodeMirror6} from './codemirror.js';
+import type {CodeMirror6} from './codemirror';
+import type {CompletionSectionName} from './token';
 
 declare const marked: {
 	parse(source: string): string | Promise<string>;
 };
 
 const code = `${hoverSelector} code`;
+
+const getDoc = (section: CompletionSectionName, info = ''): string => escHTML(info)
+	+ (section === 'Optional' ? '' : `<br><b><i>@${section.toLowerCase()}</i></b>`);
 
 export default (
 	articlePath?: string,
@@ -64,9 +68,9 @@ export default (
 										length === 0
 											? ''
 											: `<ul>${
-												result.map(([key, details]) => `<li><code>${escHTML(key)}</code>${
-													details ? ` — ${escHTML(details)}` : ''
-												}</li>`).join('')
+												result.map(([keys,, info, section]) => `<li>${
+													keys.map(key => `<code>${escHTML(key)}</code>`).join('/')
+												}${info! && ' - '}${getDoc(section!, info)}</li>`).join('')
 											}</ul>`
 									),
 								},
@@ -78,12 +82,12 @@ export default (
 						if (name) {
 							const result = await paramSuggest(name, templatedata),
 								param = sliceDoc(state, node).trim().slice(0, -1).trim(),
-								related = result.find(([key]) => key === param);
-							if (related?.[1]) {
+								[,, info, section] = result.find(([keys]) => keys.includes(param)) ?? [];
+							if (info || section !== 'Optional') {
 								hover = { // eslint-disable-line require-atomic-updates
 									contents: {
 										kind: 'plaintext',
-										value: escHTML(related[1]),
+										value: getDoc(section!, info).replace(/^<br>/u, ''),
 									},
 									range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
 								};

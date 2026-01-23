@@ -23,7 +23,7 @@ registerHTML();
 registerJSON();
 registerJavaScript();
 registerLua();
-registerMediaWiki('https://www.mediawiki.org/wiki/');
+registerMediaWiki('https://www.mediawiki.org/wiki/', true);
 registerVue();
 registerAbuseFilter();
 registerTheme('nord', nord);
@@ -78,7 +78,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 				mwConfig = {
 					...CodeMirror6.getMwConfig(parserConfig),
 					linkSuggest,
-					paramSuggest,
+					...location.host === 'localhost:8080' && {paramSuggest},
 				};
 				Object.assign(cm, {mwConfig});
 			}
