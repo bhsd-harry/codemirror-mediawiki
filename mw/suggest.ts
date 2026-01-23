@@ -80,9 +80,20 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		const desc = pageObj?.description,
 			params = Object.entries(pageObj?.params ?? {}),
 			result: ApiSuggestions = [];
-		for (const [key, {aliases, label, description}] of params) {
+		for (const [key, {aliases, label, description, required, suggested, deprecated}] of params) {
 			const detail = description ?? label ?? '';
-			result.push([key, detail], ...aliases.map((alias): [string, string] => [alias, detail]));
+			let boost = 0;
+			if (required) {
+				boost = 99;
+			} else if (suggested) {
+				boost = 50;
+			} else if (deprecated) {
+				boost = -99;
+			}
+			result.push(
+				[key, detail, boost],
+				...aliases.map((alias): [string, string, number] => [alias, detail, boost]),
+			);
 		}
 		if (desc) {
 			result.description = desc;

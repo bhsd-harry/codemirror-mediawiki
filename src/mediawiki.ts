@@ -208,7 +208,12 @@ export class FullMediaWiki extends MediaWiki {
 		return result?.length
 			? {
 				offset: leadingSpaces(search).length,
-				options: result.map(([key, detail]) => ({type: 'variable', label: key + equal, detail} as Completion)),
+				options: result.map(([key, detail, boost = 0]): Completion => ({
+					type: 'variable',
+					label: key + equal,
+					boost,
+					...detail && {detail},
+				})),
 			}
 			: undefined;
 	}

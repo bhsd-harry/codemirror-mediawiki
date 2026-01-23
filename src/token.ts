@@ -58,7 +58,7 @@ export interface StringStream extends StringStreamBase {
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
 }
 
-export type ApiSuggestions = [string, string?][] & {description?: string};
+export type ApiSuggestions = [string, string?, number?][] & {description?: string};
 
 /**
  * 获取维基链接建议

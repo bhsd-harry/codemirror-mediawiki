@@ -4,6 +4,7 @@ export interface Parameter {
 	label: string | null;
 	description: string | null;
 	required: boolean;
+	suggested: boolean;
 	deprecated: boolean;
 	aliases: string[];
 }
