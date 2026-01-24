@@ -12,10 +12,15 @@ export const paramSuggest: ApiSuggest = s => Object.assign(
 	s.includes(':')
 		? []
 		: [
-			[['param1'], '', '', 'Deprecated'],
-			[['param2', 'p2'], 'another parameter', 'a required parameter', 'Required'],
-			[['prm3'], '', 'an optional parameter', 'Optional'],
-			[['prm4'], '4th parameter', '', 'Optional'],
+			[['parameter without detail or info'], '', '', 'Deprecated'],
+			[
+				['parameter with detail and info', 'argument with detail and info'],
+				'2nd parameter',
+				'a required parameter',
+				'Required',
+			],
+			[['parameter with info', 'argument with info'], '', 'a suggested parameter', 'Suggested'],
+			[['parameter with detail'], '4th parameter', '', 'Optional'],
 		] as ApiSuggestions,
 	{description: 'Example template'},
 );

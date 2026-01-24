@@ -135,39 +135,55 @@ describe('autocompletion', () => {
 			{
 				from: 11,
 				options: [
-					{label: 'param1=', type: 'variable', section: sections[3]},
+					{label: 'parameter without detail or info=', type: 'variable', section: sections[3]},
 					{
-						label: 'param2=',
+						label: 'parameter with detail and info=',
 						type: 'variable',
-						detail: 'another parameter',
+						detail: '2nd parameter',
 						info: 'a required parameter',
 						section: sections[0],
 					},
 					{
-						label: 'p2=',
+						label: 'argument with detail and info=',
 						type: 'variable',
-						detail: 'another parameter',
+						detail: '2nd parameter',
 						info: 'a required parameter',
 						section: sections[0],
 					},
-					{label: 'prm3=', type: 'variable', info: 'an optional parameter', section: sections[2]},
-					{label: 'prm4=', type: 'variable', detail: '4th parameter', section: sections[2]},
+					{
+						label: 'parameter with info=',
+						type: 'variable',
+						info: 'a suggested parameter',
+						section: sections[1],
+					},
+					{
+						label: 'argument with info=',
+						type: 'variable',
+						info: 'a suggested parameter',
+						section: sections[1],
+					},
+					{label: 'parameter with detail=', type: 'variable', detail: '4th parameter', section: sections[2]},
 				],
 				validFor: /^[^|{}=]*$/u,
 			},
 		);
 		await mockTest(
-			'{{template| pa',
+			'{{template| a',
 			{
 				from: 12,
 				options: [
-					{label: 'param1=', type: 'variable', section: sections[3]},
 					{
-						label: 'param2=',
+						label: 'argument with detail and info=',
 						type: 'variable',
-						detail: 'another parameter',
+						detail: '2nd parameter',
 						info: 'a required parameter',
 						section: sections[0],
+					},
+					{
+						label: 'argument with info=',
+						type: 'variable',
+						info: 'a suggested parameter',
+						section: sections[1],
 					},
 				],
 				validFor: /^[^|{}=]*$/u,

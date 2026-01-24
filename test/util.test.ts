@@ -3,6 +3,7 @@ import {Text} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {escHTML, indexToPos, posToIndex, sliceDoc, braceStackUpdate, hasTag, leadingSpaces} from '../src/util';
 import {createState} from './util';
+import type {TagName} from '../src/config';
 
 const doc = Text.of([
 	'First line.',
@@ -30,10 +31,10 @@ describe('util functions', () => {
 	it('has tag', () => {
 		const types = new Set(['mw-em', 'mw-error']);
 		const yes = (tag: string | string[]): void => {
-				assert.ok(hasTag(types, tag));
+				assert.ok(hasTag(types, tag as TagName | TagName[]));
 			},
 			no = (tag: string | string[]): void => {
-				assert.ok(!hasTag(types, tag));
+				assert.ok(!hasTag(types, tag as TagName | TagName[]));
 			};
 		yes('mw-em');
 		yes('mw-error');

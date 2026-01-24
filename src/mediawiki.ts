@@ -478,7 +478,7 @@ const getGrounds = (
 		([template, ext, link]) => `.cm-mw-${
 			getGround('template', template)
 		}${
-			getGround('exttag', ext)
+			getGround('ext', ext)
 		}${
 			getGround('link', link)
 		}ground`,
@@ -562,7 +562,7 @@ const theme = /* @__PURE__ */ EditorView.theme({
 		color: 'var(--cm-tpl)',
 		fontWeight: 'bold',
 	},
-	'.cm-mw-template-argument-name': {
+	[getSelector(['-argument-name'], ['template', 'parserfunction'])]: {
 		color: 'var(--cm-arg)',
 		fontWeight: 'normal',
 	},
