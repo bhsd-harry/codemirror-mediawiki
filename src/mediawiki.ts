@@ -672,8 +672,14 @@ const theme = /* @__PURE__ */ EditorView.theme({
  * @param config Configuration for the MediaWiki mode
  * @param templatedata Whether to enable template parameter autocompletion
  */
-export const mediawikiBase = (config: MwConfig, templatedata?: boolean): LanguageSupport => {
-	const mode = new FullMediaWiki(config, templatedata),
+export const mediawikiBase = (
+	config: MwConfig,
+	templatedata?: boolean,
+): LanguageSupport => {
+	const mode = new FullMediaWiki(
+			config,
+			templatedata,
+		),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
 		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),

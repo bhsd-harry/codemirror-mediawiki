@@ -49,6 +49,8 @@ export interface DocRange {
 }
 
 declare type AnchorUpdate = (pos: number, range: DocRange) => number;
+/** @returns 折叠范围或是否继续查找 */
+declare type FoldableLineEndCheck = (from: number, to?: number) => DocRange | boolean;
 
 const getExtRegex = /* @__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
@@ -332,11 +334,10 @@ const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined =>
 	return found;
 };
 
-export const foldableLine = (
-	{state, viewport: {to: end}, viewportLineBlocks}: EditorView,
-	{from: f, to: t}: DocRange,
-): DocRange | false => {
-	const tree = syntaxTree(state);
+export const foldableLine = ({state, viewportLineBlocks}: EditorView, {from: f, to: t}: DocRange): DocRange | false => {
+	const tree = syntaxTree(state),
+		{doc} = state,
+		{length} = viewportLineBlocks;
 
 	/**
 	 * 获取标题层级
@@ -353,36 +354,58 @@ export const foldableLine = (
 		 * @param to 行尾位置
 		 */
 		getTable = (from: number, to: number): 0 | 1 | -1 => {
-			const line = state.sliceDoc(from, to),
-				bracket = /^\s*(?:(?::+\s*)?\{\||\|\})/u.exec(line)?.[0];
+			const node = tree.resolve(from, 1),
+				{nextSibling} = node,
+				bracket = node.name.includes(tokens.tableBracket)
+					? node
+					: node.to < to && nextSibling?.name.includes(tokens.tableBracket) && nextSibling;
 			if (bracket) {
-				const {name} = tree.resolve(from + bracket.length, -1);
-				if (name.includes(tokens.tableBracket)) {
-					return bracket.endsWith('|}') ? -1 : 1;
-				}
+				return /\|\}$|\{\{\s*!(?:\s*\}|\)\s*)\}\}$/u.test(sliceDoc(state, bracket)) ? -1 : 1;
 			}
 			return 0;
+		},
+
+		/**
+		 * 逐行检查是否是折叠终点
+		 * @param checkLine 检查函数
+		 * @returns 折叠范围或是否继续查找
+		 */
+		loop = (checkLine: FoldableLineEndCheck): DocRange | boolean => {
+			let i = 0;
+			while (i <= doc.lines) {
+				const {from, to} = i < length ? viewportLineBlocks[i]! : doc.line(i);
+				if (from >= tree.topNode.to) {
+					return from === doc.length;
+				} else if (from > f) {
+					/** 折叠范围或是否继续查找 */
+					const result = checkLine(from, to);
+					if (result !== true) {
+						return result;
+					}
+				}
+				i++;
+				if (i === length) {
+					i = doc.lineAt(to).number + 1;
+				}
+			}
+			return true;
 		};
 
 	const level = getLevel(f);
 	if (level < 7) {
-		for (const {from} of viewportLineBlocks) {
-			if (from > f && getLevel(from) <= level) {
-				return t < from - 1 && {from: t, to: from - 1};
-			}
-		}
-		return end === state.doc.length && end > t && {from: t, to: end};
+		const checkLine: FoldableLineEndCheck = from =>
+			getLevel(from) > level || t < from - 1 && {from: t, to: from - 1};
+		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
+		return result === true
+			? t < doc.length && {from: t, to: doc.length}
+			: result;
 	} else if (getTable(f, t) === 1) {
-		for (const {from, to} of viewportLineBlocks) {
-			if (from > f) {
-				const bracket = getTable(from, to);
-				if (bracket === -1) {
-					return t < from - 1 && {from: t, to: from - 1};
-				} else if (bracket === 1 || getLevel(from) < 7) {
-					break;
-				}
-			}
-		}
+		const checkLine: FoldableLineEndCheck = (from, to) => {
+			const bracket = getTable(from, to!);
+			return bracket === -1 ? t < from - 1 && {from: t, to: from - 1} : bracket !== 1 && getLevel(from) === 7;
+		};
+		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
+		return typeof result === 'object' && result;
 	}
 	return false;
 };

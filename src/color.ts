@@ -43,7 +43,7 @@ export const discoverColors = (_: Tree, from: number, to: number, type: string, 
 		}).filter(options => options !== null);
 };
 
-export default (): Extension => [
+export default [
 	makeColorPicker({discoverColors}),
 	colorPickerTheme,
-];
+] satisfies Extension;

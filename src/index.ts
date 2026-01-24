@@ -52,10 +52,12 @@ import {
 } from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {mediawikiBase} from './mediawiki.js';
+import {
+	mediawikiBase,
+} from './mediawiki.js';
 import openLinks from './openLinks.js';
 import refHover from './ref.js';
-import signatureHelp from './signature.js';
+import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
 import statusBar from './statusBar.js';
 import css from './css.js';
@@ -276,7 +278,7 @@ export const registerHover = (articlePath?: string, templatedata?: boolean): voi
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerSignatureHelp = (articlePath?: string): void => {
-	registerExtensionForMediaWiki('signatureHelp', signatureHelp(articlePath));
+	registerExtensionForMediaWiki('signatureHelp', signatureHelpBase(articlePath));
 };
 
 /**
@@ -294,7 +296,7 @@ export const registerBidiIsolates = (): void => {
 
 /** Register the `colorPicker` extension for MediaWiki */
 export const registerColorPickerForMediaWiki = (): void => {
-	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker());
+	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker);
 };
 
 /** Register the `bracketMatching` extension for MediaWiki */

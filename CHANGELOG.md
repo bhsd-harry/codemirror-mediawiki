@@ -18,6 +18,7 @@
 - [Autocompletion](./README.md#autocompletion) for the mixed MediaWiki-HTML mode
 - Missing styles for the [signatureHelp](./README.md#signaturehelp) tooltip in the MediaWiki mode
 - Highlighting of parser functions and parser function argument names in the MediaWiki mode
+- [CodeFolding](./README.md#codefolding) for moderately long sections and tables in the MediaWiki mode
 
 **Changed**
 

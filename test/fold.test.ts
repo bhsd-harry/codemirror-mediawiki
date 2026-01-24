@@ -62,15 +62,20 @@ describe('codeFolding', () => {
 	});
 
 	const table = `
- : {|
+ {|
  |
- : {| id=table
+ : {|
  |-
  !
- |- id=tr
- |}`;
+ |}
+{{a|
+{{{!}}
+{{!}}
+{{!}}}
+}}`;
 	it('table', () => {
 		blockTest(table, 2, false);
-		blockTest(table, 4, {from: 24, to: 41});
+		blockTest(table, 4, {from: 13, to: 20});
+		blockTest(table, 9, {from: 36, to: 42});
 	});
 });

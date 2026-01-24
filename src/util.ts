@@ -107,15 +107,15 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): string |
 export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 
-/**
- * 获取字符串开头的空白字符
- * @param str 字符串
- */
-export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
-
 export const toConfigGetter = (
 	configGetter?: ConfigGetter,
 	articlePath?: string,
 ): ConfigGetter | undefined => articlePath
 	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
 	: configGetter;
+
+/**
+ * 获取字符串开头的空白字符
+ * @param str 字符串
+ */
+export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
