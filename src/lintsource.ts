@@ -20,7 +20,7 @@ import type {
 	LintConfig,
 } from 'wikiparser-node';
 
-declare type LintSourceGetter = (
+export type LintSourceGetter = (
 	opt: ConfigData,
 	lintConfig?: LintConfig,
 ) => LintSource | Promise<LintSource>;

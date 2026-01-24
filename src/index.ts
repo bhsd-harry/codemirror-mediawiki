@@ -20,7 +20,10 @@ import {
 } from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {mediawikiBase, theme} from './mediawiki.js';
+import {
+	mediawikiBase,
+	theme,
+} from './mediawiki.js';
 import openLinks from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';

@@ -15,6 +15,7 @@
 - Non-width image keywords starting with `$1` (e.g., `$1页` in Chinese)
 - Missing styles for the [signatureHelp](./README.md#signaturehelp) tooltip in the MediaWiki mode
 - Highlighting of parser functions and parser function argument names in the MediaWiki mode
+- [CodeFolding](./README.md#codefolding) for moderately long sections and tables in the MediaWiki mode
 
 **Changed**
 

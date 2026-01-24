@@ -273,8 +273,12 @@ export const theme = /* @__PURE__ */ EditorView.theme({
  * Get the stream language for Wikitext.
  * @param config Configuration for the MediaWiki mode
  */
-export const mediawikiBase = (config: MwConfig): Language => {
-	const mode = new FullMediaWiki(config),
+export const mediawikiBase = (
+	config: MwConfig,
+): Language => {
+	const mode = new FullMediaWiki(
+			config,
+		),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return lang;
 };
