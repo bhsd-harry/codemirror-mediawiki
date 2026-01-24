@@ -73,6 +73,7 @@ export const htmlTags = /* @__PURE__ */ html.flat(),
 		magicLink: 'mw-magic-link',
 		pageName: 'mw-pagename',
 		parserFunction: 'mw-parserfunction',
+		parserFunctionArgumentName: 'mw-parserfunction-argument-name',
 		parserFunctionBracket: 'mw-parserfunction-bracket',
 		parserFunctionDelimiter: 'mw-parserfunction-delimiter',
 		parserFunctionName: 'mw-parserfunction-name',
@@ -132,7 +133,7 @@ export const tokenTable = /* @__PURE__ */ (() => {
 		// #00f
 		[tags.definition(tags.variableName), ['templateName', 'templateDelimiter', 'templateBracket']],
 		// #256
-		[tags.special(tags.variableName), ['templateArgumentName']],
+		[tags.special(tags.variableName), ['parserFunctionArgumentName', 'templateArgumentName']],
 		// #30a
 		[
 			tags.local(tags.variableName),

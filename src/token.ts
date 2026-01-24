@@ -1843,7 +1843,10 @@ export class MediaWiki {
 				&& stream.match(new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', state)})*=`, 'iu'))
 			) {
 				state.tokenize = this.inTemplateArgument(false, parserFunction);
-				return makeLocalTagStyle('templateArgumentName', state);
+				return makeLocalTagStyle(
+					parserFunction ? 'parserFunctionArgumentName' : 'templateArgumentName',
+					state,
+				);
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
 				return this.eatWikiText(tag)(stream, state);
 			}
@@ -1989,16 +1992,20 @@ export class MediaWiki {
 					stream.start = stream.pos;
 					const char = stream.peek(),
 						style = state.tokenize(stream, state);
-					if (typeof style === 'string' && style.includes(tokens.templateArgumentName)) {
+					if (typeof style === 'string' && style.includes('-argument-name')) {
+						const isTemplate = style.includes(tokens.templateArgumentName),
+							argument = tokens[isTemplate ? 'template' : 'parserFunction'],
+							argumentName = tokens[isTemplate ? 'templateArgumentName' : 'parserFunctionArgumentName'],
+							delimiter = tokens[isTemplate ? 'templateDelimiter' : 'parserFunctionDelimiter'];
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
 								const types = typeof token.style === 'string' && token.style.split(' '),
-									j = types && types.indexOf(tokens.template);
+									j = types && types.indexOf(argument);
 								if (j !== false && j !== -1) {
-									types[j] = tokens.templateArgumentName;
+									types[j] = argumentName;
 									token.style = types.join(' ');
-								} else if (types && types.includes(tokens.templateDelimiter)) {
+								} else if (types && types.includes(delimiter)) {
 									break;
 								}
 							}
