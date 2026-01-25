@@ -252,7 +252,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		[`${errorSelector},${warningSelector}`]: {
 			paddingRight: '8px',
 		},
-		[`.${workerCls} ${errorSelector},.${workerCls} ${warningSelector}`]: {
+		[`.${workerCls} ${errorSelector}, .${workerCls} ${warningSelector}`]: {
 			cursor: 'pointer',
 		},
 		[`${workerSelector}>*>div`]: {

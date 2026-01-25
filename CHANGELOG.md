@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.10.0
 
-*2026-01-24*
+*2026-01-25*
 
 **Added**
 
@@ -10,6 +10,7 @@
 - Language support for [Extension:AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter)
 - Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a WMF-hosted site
 - The [hover](./README.md#hover) extension now also supports template parameter names if [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
+- Highlight built-in global variables in the JavaScript mode and the Lua mode
 
 **Fixed**
 

@@ -498,6 +498,9 @@ input[type="color"] {
 		--cm-var-name: #ac6600;
 		--cm-ref: rgb(223, 242, 235, .5);
 	}
+	.cm-globals, .cm-globals > * {
+		color: #256;
+	}
 	.cm-editor.cm-focused .cm-matchingTag {
 		background-color: rgb(50, 140, 130, .32);
 	}
@@ -526,6 +529,9 @@ input[type="color"] {
 		--cm-var: #d08770;
 		--cm-var-name: #d08770;
 		--cm-ref: rgb(60, 90, 80, .5);
+	}
+	.cm-globals, .cm-globals > * {
+		color: #d08770;
 	}
 	div.cm-activeLine {
 		background-color: rgb(76, 86, 106, .27);

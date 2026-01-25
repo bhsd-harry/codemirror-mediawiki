@@ -262,7 +262,7 @@ export class CodeMirror6 {
 					'& .cm-lineNumbers .cm-gutterElement': {
 						textAlign: 'end',
 					},
-					[`.cm-textfield,.cm-button,${panelSelector}.cm-search label,${panelSelector}.cm-gotoLine label`]: {
+					[`.cm-textfield, .cm-button,${panelSelector}.cm-search label,${panelSelector}.cm-gotoLine label`]: {
 						fontSize: 'inherit',
 					},
 					[`${panelSelector} [name="close"]`]: {

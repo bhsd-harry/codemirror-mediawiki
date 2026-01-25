@@ -10,8 +10,8 @@ const mockTest = (doc: string, result: WidgetOptions): void => {
 		tree = syntaxTree(state),
 		widgets: WidgetOptions[] = [];
 	tree.iterate({
-		enter(node): void {
-			const colors = discoverColors(tree, node.from, node.to, node.name, state.doc);
+		enter({from, to, name}): void {
+			const colors = discoverColors(tree, from, to, name, state.doc);
 			if (colors) {
 				widgets.push(...colors);
 			}

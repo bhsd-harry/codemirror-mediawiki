@@ -36,6 +36,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var-name': '#ac6600',
 			'--cm-ref': 'rgb(223,242,235,.5)',
 		},
+		'.cm-globals, .cm-globals>*': {
+			color: '#256',
+		},
 		[matching]: {
 			backgroundColor: 'rgb(50,140,130,.32)',
 		},
@@ -72,6 +75,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				'--cm-var': '#d08770',
 				'--cm-var-name': '#d08770',
 				'--cm-ref': 'rgb(60,90,80,0.5)',
+			},
+			'.cm-globals, .cm-globals>*': {
+				color: '#d08770',
 			},
 			'div.cm-activeLine': {
 				backgroundColor: 'rgb(76,86,106,.27)',
