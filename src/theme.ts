@@ -1,4 +1,5 @@
 import {EditorView} from '@codemirror/view';
+import {syntaxHighlighting, HighlightStyle, defaultHighlightStyle} from '@codemirror/language';
 import {nord as nordBase} from 'cm6-theme-nord';
 import {
 	matchingCls,
@@ -12,6 +13,10 @@ import type {Extension} from '@codemirror/state';
 const focused = '&.cm-focused',
 	matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
+
+export const getLightHighlightStyle = (): Extension => syntaxHighlighting(
+	HighlightStyle.define(defaultHighlightStyle.specs, {themeType: 'light'}),
+);
 
 export const light = /* @__PURE__ */ EditorView.theme({
 		'&': {
@@ -37,7 +42,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-ref': 'rgb(223,242,235,.5)',
 		},
 		'.cm-globals, .cm-globals>*': {
-			color: '#256',
+			color: '#164',
 		},
 		[matching]: {
 			backgroundColor: 'rgb(50,140,130,.32)',

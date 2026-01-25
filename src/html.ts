@@ -2,10 +2,11 @@ import {configureNesting} from '@lezer/html';
 import {htmlLanguage, htmlCompletionSourceWith} from '@codemirror/lang-html';
 import {javascript, javascriptLanguage} from '@codemirror/lang-javascript';
 import {cssLanguage} from '@codemirror/lang-css';
-import {LanguageSupport, syntaxHighlighting, defaultHighlightStyle, HighlightStyle} from '@codemirror/language';
+import {LanguageSupport} from '@codemirror/language';
 import {cssCompletion} from './css.js';
 import {jsCompletion} from './javascript.js';
 import {mediawikiBase} from './mediawiki.js';
+import {getLightHighlightStyle} from './theme.js';
 import type {MwConfig} from './token';
 
 export default (config: MwConfig): LanguageSupport => {
@@ -33,9 +34,7 @@ export default (config: MwConfig): LanguageSupport => {
 				jsCompletion,
 				cssCompletion(),
 				support,
-				syntaxHighlighting(
-					HighlightStyle.define(defaultHighlightStyle.specs, {themeType: 'light'}),
-				),
+				getLightHighlightStyle(),
 			],
 		);
 	Object.assign(lang, {nestedMWLanguage: language});

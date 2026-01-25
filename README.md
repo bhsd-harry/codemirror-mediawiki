@@ -87,7 +87,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 
 </details>
 
-# Installation
+## Installation
 
 You can install the package via npm and import it as a module:
 
@@ -109,7 +109,7 @@ import {
 } from '@bhsd/codemirror-mediawiki';
 ```
 
-# Browser Usage
+## Browser Usage
 
 <details>
 	<summary>Expand</summary>
@@ -182,9 +182,9 @@ const {
 
 </details>
 
-# Language modes
+## Language modes
 
-## abusefilter
+### abusefilter
 
 *version added: 3.10.0*
 
@@ -207,7 +207,7 @@ registerAbuseFilterCore();
 
 </details>
 
-## css
+### css
 
 <details>
 	<summary>Expand</summary>
@@ -235,7 +235,7 @@ registerColorPickerForCSS();
 
 </details>
 
-## html
+### html
 
 <details>
 	<summary>Expand</summary>
@@ -269,7 +269,7 @@ registerColorPickerForHTML();
 
 </details>
 
-## javascript
+### javascript
 
 <details>
 	<summary>Expand</summary>
@@ -290,7 +290,7 @@ registerJavaScriptCore();
 
 </details>
 
-## json
+### json
 
 <details>
 	<summary>Expand</summary>
@@ -311,7 +311,7 @@ registerJSONCore();
 
 </details>
 
-## lua
+### lua
 
 <details>
 	<summary>Expand</summary>
@@ -332,7 +332,7 @@ registerLuaCore();
 
 </details>
 
-## mediawiki
+### mediawiki
 
 <details>
 	<summary>Expand</summary>
@@ -385,7 +385,7 @@ registerCodeFoldingForMediaWiki();
 
 </details>
 
-## vue
+### vue
 
 <details>
 	<summary>Expand</summary>
@@ -417,7 +417,7 @@ registerColorPickerForVue();
 
 </details>
 
-## Other languages
+### Other languages
 
 <details>
 	<summary>Expand</summary>
@@ -440,13 +440,13 @@ registerLanguageCore('python', python);
 
 </details>
 
-# Themes
+## Themes
 
-## light
+### light
 
 This is the default theme, which is a light theme.
 
-## nord
+### nord
 
 <details>
 	<summary>Expand</summary>
@@ -460,7 +460,7 @@ registerTheme('nord', nord);
 
 </details>
 
-## Other themes
+### Other themes
 
 <details>
 	<summary>Expand</summary>
@@ -475,7 +475,7 @@ registerTheme('one-dark', oneDark);
 
 </details>
 
-# Constructor
+## Constructor
 
 <details>
 	<summary>Expand</summary>
@@ -500,9 +500,9 @@ cm = new CodeMirror6(textarea, 'abusefilter', dialect);
 
 </details>
 
-# Accessors
+## Accessors
 
-## dialect
+### dialect
 
 <details>
 	<summary>Expand</summary>
@@ -514,7 +514,7 @@ Only used for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extensio
 
 </details>
 
-## lang
+### lang
 
 <details>
 	<summary>Expand</summary>
@@ -526,7 +526,7 @@ The current language mode, read-only.
 
 </details>
 
-## textarea
+### textarea
 
 <details>
 	<summary>Expand</summary>
@@ -536,7 +536,7 @@ The textarea element replaced by CodeMirror, read-only.
 
 </details>
 
-## view
+### view
 
 <details>
 	<summary>Expand</summary>
@@ -546,7 +546,7 @@ The CodeMirror EditorView instance, read-only.
 
 </details>
 
-## visible
+### visible
 
 <details>
 	<summary>Expand</summary>
@@ -558,9 +558,9 @@ Whether the editor is visible, read-only.
 
 </details>
 
-# Methods
+## Methods
 
-## destroy
+### destroy
 
 <details>
 	<summary>Expand</summary>
@@ -575,7 +575,7 @@ cm.destroy();
 
 </details>
 
-## extraKeys
+### extraKeys
 
 <details>
 	<summary>Expand</summary>
@@ -593,7 +593,7 @@ cm.extraKeys([
 
 </details>
 
-## getLinter
+### getLinter
 
 <details>
 	<summary>Expand</summary>
@@ -613,7 +613,7 @@ const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
 
 </details>
 
-## getNodeAt
+### getNodeAt
 
 <details>
 	<summary>Expand</summary>
@@ -630,7 +630,7 @@ const tree = cm.getNodeAt(0);
 
 </details>
 
-## hasPreference
+### hasPreference
 
 <details>
 	<summary>Expand</summary>
@@ -647,7 +647,7 @@ const hasAutocompletion = cm.hasPreference('autocompletion');
 
 </details>
 
-## initialize
+### initialize
 
 <details>
 	<summary>Expand</summary>
@@ -663,7 +663,7 @@ cm.initialize();
 
 </details>
 
-## lint
+### lint
 
 <details>
 	<summary>Expand</summary>
@@ -688,7 +688,7 @@ cm.lint(({doc}) => [
 
 </details>
 
-## localize
+### localize
 
 <details>
 	<summary>Expand</summary>
@@ -706,7 +706,7 @@ cm.localize({
 
 </details>
 
-## prefer
+### prefer
 
 <details>
 	<summary>Expand</summary>
@@ -769,7 +769,7 @@ cm.prefer({
 
 </details>
 
-## replaceSelections
+### replaceSelections
 
 <details>
 	<summary>Expand</summary>
@@ -785,7 +785,7 @@ cm.replaceSelections(str => str.toUpperCase());
 
 </details>
 
-## scrollTo
+### scrollTo
 
 <details>
 	<summary>Expand</summary>
@@ -801,7 +801,7 @@ cm.scrollTo();
 
 </details>
 
-## setContent
+### setContent
 
 <details>
 	<summary>Expand</summary>
@@ -818,7 +818,7 @@ cm.setContent('');
 
 </details>
 
-## setIndent
+### setIndent
 
 <details>
 	<summary>Expand</summary>
@@ -835,7 +835,7 @@ cm.setIndent('\t');
 
 </details>
 
-## setLanguage
+### setLanguage
 
 <details>
 	<summary>Expand</summary>
@@ -857,7 +857,7 @@ cm.setLanguage('abusefilter', dialect);
 
 </details>
 
-## setLineWrapping
+### setLineWrapping
 
 <details>
 	<summary>Expand</summary>
@@ -874,7 +874,7 @@ cm.setLineWrapping(true);
 
 </details>
 
-## setTheme
+### setTheme
 
 <details>
 	<summary>Expand</summary>
@@ -892,7 +892,7 @@ cm.setTheme('nord');
 
 </details>
 
-## toggle
+### toggle
 
 <details>
 	<summary>Expand</summary>
@@ -910,7 +910,7 @@ cm.toggle(false); // hide CodeMirror
 
 </details>
 
-## update
+### update
 
 <details>
 	<summary>Expand</summary>
@@ -919,9 +919,9 @@ Refresh linting immediately.
 
 </details>
 
-# Static accessors
+## Static accessors
 
-## CDN
+### CDN
 
 <details>
 	<summary>Expand</summary>
@@ -937,9 +937,9 @@ CodeMirror6.CDN = 'https://cdn.jsdelivr.net';
 
 </details>
 
-# Static methods
+## Static methods
 
-## getMwConfig
+### getMwConfig
 
 <details>
 	<summary>Expand</summary>
@@ -956,7 +956,7 @@ const mwConfig = CodeMirror6.getMwConfig(config);
 
 </details>
 
-## replaceSelections (static)
+### replaceSelections (static)
 
 <details>
 	<summary>Expand</summary>
@@ -973,9 +973,9 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 
 </details>
 
-# Extensions
+## Extensions
 
-## allowMultipleSelections
+### allowMultipleSelections
 
 <details>
 	<summary>Expand</summary>
@@ -993,7 +993,7 @@ registerAllowMultipleSelections();
 
 </details>
 
-## autocompletion
+### autocompletion
 
 <details>
 	<summary>Expand</summary>
@@ -1016,7 +1016,7 @@ registerAutocompletion();
 
 </details>
 
-## bidiIsolates
+### bidiIsolates
 
 <details>
 	<summary>Expand</summary>
@@ -1034,7 +1034,7 @@ registerBidiIsolates();
 
 </details>
 
-## bracketMatching
+### bracketMatching
 
 <details>
 	<summary>Expand</summary>
@@ -1052,7 +1052,7 @@ registerBracketMatching();
 
 </details>
 
-## closeBrackets
+### closeBrackets
 
 <details>
 	<summary>Expand</summary>
@@ -1070,7 +1070,7 @@ registerCloseBrackets();
 
 </details>
 
-## codeFolding
+### codeFolding
 
 <details>
 	<summary>Expand</summary>
@@ -1096,7 +1096,7 @@ registerCodeFolding();
 
 </details>
 
-## colorPicker
+### colorPicker
 
 <details>
 	<summary>Expand</summary>
@@ -1114,7 +1114,7 @@ registerColorPicker();
 
 </details>
 
-## escape
+### escape
 
 <details>
 	<summary>Expand</summary>
@@ -1137,7 +1137,7 @@ registerEscape('https://www.mediawiki.org/wiki/');
 
 </details>
 
-## highlightActiveLine
+### highlightActiveLine
 
 <details>
 	<summary>Expand</summary>
@@ -1153,7 +1153,7 @@ registerHighlightActiveLine();
 
 </details>
 
-## highlightSelectionMatches
+### highlightSelectionMatches
 
 <details>
 	<summary>Expand</summary>
@@ -1171,7 +1171,7 @@ registerHighlightSelectionMatches();
 
 </details>
 
-## highlightSpecialChars
+### highlightSpecialChars
 
 <details>
 	<summary>Expand</summary>
@@ -1187,7 +1187,7 @@ registerHighlightSpecialChars();
 
 </details>
 
-## highlightTrailingWhitespace
+### highlightTrailingWhitespace
 
 <details>
 	<summary>Expand</summary>
@@ -1205,7 +1205,7 @@ registerHighlightTrailingWhitespace();
 
 </details>
 
-## highlightWhitespace
+### highlightWhitespace
 
 <details>
 	<summary>Expand</summary>
@@ -1223,7 +1223,7 @@ registerHighlightWhitespace();
 
 </details>
 
-## hover
+### hover
 
 <details>
 	<summary>Expand</summary>
@@ -1242,7 +1242,7 @@ registerHover('https://www.mediawiki.org/wiki/');
 
 </details>
 
-## inlayHints
+### inlayHints
 
 <details>
 	<summary>Expand</summary>
@@ -1261,7 +1261,7 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 
 </details>
 
-## openLinks
+### openLinks
 
 <details>
 	<summary>Expand</summary>
@@ -1280,7 +1280,7 @@ registerOpenLinks('https://www.mediawiki.org/wiki/');
 
 </details>
 
-## refHover
+### refHover
 
 <details>
 	<summary>Expand</summary>
@@ -1299,7 +1299,7 @@ registerRefHover('https://www.mediawiki.org/wiki/');
 
 </details>
 
-## scrollPastEnd
+### scrollPastEnd
 
 <details>
 	<summary>Expand</summary>
@@ -1317,7 +1317,7 @@ registerScrollPastEnd();
 
 </details>
 
-## signatureHelp
+### signatureHelp
 
 <details>
 	<summary>Expand</summary>
@@ -1336,44 +1336,44 @@ registerSignatureHelp('https://www.mediawiki.org/wiki/');
 
 </details>
 
-# Known issues
+## Known issues
 
-## Syntax Highlighting
+### Syntax Highlighting
 
 <details>
 	<summary>Expand</summary>
 
-### Extension
+#### Extension
 
 1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should prevent preformatted text ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
 
-### Transclusion
+#### Transclusion
 
 1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
 1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
 1. Template-like syntax without a template name ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#T408631%3A%20Invalid%20templates%20inside%20template%20parameters)).
 
-### Heading
+#### Heading
 
 1. Comments at the SOL should not break section headings ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Section%20extraction%20prefixed%20by%20comment%20(section%201))).
 
-### Table
+#### Table
 
 1. Comments at the SOL should not break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
 1. `!!` in links should start a new `<th>` ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Precedence%20of%20table%20over%20links)).
 
-### External link
+#### External link
 
 1. IPv6 addresses are not supported ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).
 1. External links inside double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
 
-### Block element
+#### Block element
 
 1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
 1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
 
-### Language conversion
+#### Language conversion
 
 1. BCP 47 language codes are not supported in language conversion ([Example](https://bhsd-harry.github.io/wikiparser-node/tests.html#Explicit%20definition%20of%20language%20variant%20alternatives%20(BCP%2047%20codes))).
 

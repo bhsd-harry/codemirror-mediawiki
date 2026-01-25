@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.10.1
+
+*2026-01-26*
+
+**Fixed**
+
+- Missing styles for the Lua mode
+
 ## 3.10.0
 
 *2026-01-25*
