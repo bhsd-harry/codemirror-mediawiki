@@ -1,9 +1,9 @@
+# @bhsd/codemirror-mediawiki
+
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-mediawiki.svg)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/972fd5f6684c4fd8ac2f26e01d349948)](https://app.codacy.com/gh/bhsd-harry/codemirror-mediawiki/dashboard)
-
-# @bhsd/codemirror-mediawiki
 
 This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
 
