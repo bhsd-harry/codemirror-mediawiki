@@ -10,6 +10,7 @@ then
 	gh release create "$1-w" --notes-file release-notes.md -t "@bhsd/codemirror-wikitext $1" --verify-tag --latest=false
 	rm release-notes.md
 else
+	sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" package.json
 	npm run lint && npm run build
 	if [[ $? -eq 0 ]]
 	then

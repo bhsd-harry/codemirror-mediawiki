@@ -1,7 +1,7 @@
+# @bhsd/codemirror-wikitext
+
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-wikitext.svg)](https://www.npmjs.com/package/@bhsd/codemirror-wikitext)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
-
-# @bhsd/codemirror-wikitext
 
 This repository contains a modified Wikitext [language](#mediawikilanguage) from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror) and various [language support extensions](#extensions).
 
