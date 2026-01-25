@@ -46,7 +46,7 @@ declare type FoldableLineEndCheck = (from: number, to?: number) => DocRange | bo
 
 const getExtRegex = /* @__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
-const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
+export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
 	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
 
 /**
@@ -225,7 +225,7 @@ const getAnchor = (state: EditorState): number => Math.max(...state.selection.ra
  * @param update 更新光标位置
  * @param refOnly 是否仅检查`<ref>`标签
  */
-const traverse = (
+export const traverse = (
 	state: EditorState,
 	tree: Tree,
 	effects: StateEffect<DocRange>[],
@@ -361,7 +361,7 @@ export const foldableLine = ({state, viewportLineBlocks}: EditorView, {from: f, 
 	return false;
 };
 
-const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
+export const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
 	const builder = new RangeSetBuilder<FoldMarker>();
 	for (const line of view.viewportLineBlocks) {
 		let mark: FoldMarker | undefined;
@@ -401,7 +401,7 @@ const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValu
  * 生成折叠命令
  * @param refOnly 是否仅检查`<ref>`标签
  */
-const foldCommand = (refOnly?: boolean): Command => view => {
+export const foldCommand = (refOnly?: boolean): Command => view => {
 	const {state} = view,
 		tree = ensureSyntaxTree(state, state.doc.length, 1e3) ?? syntaxTree(state),
 		effects: StateEffect<DocRange>[] = [];
@@ -431,7 +431,7 @@ const foldCommand = (refOnly?: boolean): Command => view => {
 
 export const foldRef = /* @__PURE__ */ foldCommand(true);
 
-const selectedLines = (view: EditorView): BlockInfo[] => {
+export const selectedLines = (view: EditorView): BlockInfo[] => {
 	const lines: BlockInfo[] = [];
 	for (const {head} of view.state.selection.ranges) {
 		if (lines.some(({from, to}) => from <= head && to >= head)) {
@@ -454,6 +454,33 @@ const foldCode = (view: EditorView, line: BlockInfo): boolean => {
 const unfoldCode = (view: EditorView, line: BlockInfo): StateEffect<DocRange> | undefined => {
 	const folded = findFold(view, line);
 	return folded && unfoldEffect.of(folded);
+};
+
+export const foldAt: Command = view => {
+	const {state} = view,
+		tree = syntaxTree(state),
+		effects: StateEffect<DocRange>[] = [];
+	let anchor = getAnchor(state);
+	for (const {from, to, empty} of state.selection.ranges) {
+		let node: SyntaxNode | null | undefined;
+		if (empty) {
+			// No selection, try both sides of the cursor position
+			node = tree.resolve(from, -1);
+		}
+		if (!node || node.name === 'Document') {
+			node = tree.resolve(from, 1);
+		}
+		anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
+	}
+	if (effects.length > 0) {
+		return execute(view, effects, anchor);
+	}
+	for (const line of selectedLines(view)) {
+		if (foldCode(view, line)) {
+			return true;
+		}
+	}
+	return false;
 };
 
 /**
@@ -487,32 +514,7 @@ export default (): Extension => [
 			// Fold the template at the selection/cursor
 			key: 'Ctrl-Shift-[',
 			mac: 'Cmd-Alt-[',
-			run(view): boolean {
-				const {state} = view,
-					tree = syntaxTree(state),
-					effects: StateEffect<DocRange>[] = [];
-				let anchor = getAnchor(state);
-				for (const {from, to, empty} of state.selection.ranges) {
-					let node: SyntaxNode | null | undefined;
-					if (empty) {
-						// No selection, try both sides of the cursor position
-						node = tree.resolve(from, -1);
-					}
-					if (!node || node.name === 'Document') {
-						node = tree.resolve(from, 1);
-					}
-					anchor = traverse(state, tree, effects, node, to, anchor, updateSelection);
-				}
-				if (effects.length > 0) {
-					return execute(view, effects, anchor);
-				}
-				for (const line of selectedLines(view)) {
-					if (foldCode(view, line)) {
-						return true;
-					}
-				}
-				return false;
-			},
+			run: foldAt,
 		},
 		{
 			// Fold all templates in the document

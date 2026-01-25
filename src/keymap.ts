@@ -10,8 +10,9 @@ import type {KeymapConfig} from './keybindings';
  * @param opt.pre 前缀
  * @param opt.post 后缀
  * @param opt.splitlines 是否分行
+ * @test
  */
-const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBinding => ({
+export const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBinding => ({
 	key,
 	run(view): true {
 		const {state} = view;
@@ -28,9 +29,7 @@ const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBin
 			const insert = pre + state.sliceDoc(from, to) + post,
 				head = from + insert.length;
 			return {
-				range: from === to
-					? EditorSelection.range(from + pre.length, head - post.length)
-					: EditorSelection.range(head, head),
+				range: EditorSelection.cursor(from === to ? from + pre.length : head),
 				changes: {from, to, insert},
 			};
 		}));

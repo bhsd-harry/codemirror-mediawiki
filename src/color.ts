@@ -6,11 +6,10 @@ import {
 	colorPickerTheme,
 	makeColorPicker,
 } from '@bhsd/codemirror-css-color-picker';
-import type {Text, Extension} from '@codemirror/state';
-import type {Tree} from '@lezer/common';
+import type {Extension} from '@codemirror/state';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
 
-export const discoverColors = (_: Tree, from: number, to: number, type: string, doc: Text): WidgetOptions[] | null => {
+export const discoverColors: Parameters<typeof makeColorPicker>[0]['discoverColors'] = (_, from, to, type, doc) => {
 	if (
 		!/mw-(?:(?:ext|html)tag-attribute-value|table-definition)/u.test(type)
 		&& (

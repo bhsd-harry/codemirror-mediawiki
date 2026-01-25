@@ -24,7 +24,7 @@ declare type MimeTypes = 'mediawiki'
 	| 'text/gallery';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
-declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
+export type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
 declare interface Nesting extends Record<NestCount, number> {
 	extName: string | false;
 	extState: object | false;
@@ -278,7 +278,7 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
 ).trim().replace(/\s{2,}/gu, ' ') || ' ';
 
-const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
+export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	let ground = '';
 	switch (state.nTemplate) {
 		case 0:

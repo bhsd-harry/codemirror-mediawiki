@@ -59,7 +59,8 @@ export const offsetAt = (range: [number, number], lineOrOffset: number, column?:
  * @param token.tag 节点标签
  * @param i 节点序号
  */
-const getPrefix = ({type, tag}: AST, i: number): string => `${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n`;
+export const getPrefix = ({type, tag}: AST, i: number): string =>
+	`${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n`;
 
 /**
  * 将偏移量转换为位置

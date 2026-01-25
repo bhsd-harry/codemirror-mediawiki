@@ -29,7 +29,7 @@ This repository contains a modified Wikitext [language](#mediawikilanguage) from
 
 </details>
 
-# Installation
+## Installation
 
 You can install the package via npm and import it as a module:
 
@@ -43,7 +43,7 @@ You may also want to install [WikiParser-Node](https://www.npmjs.com/package/wik
 npm install wikiparser-node
 ```
 
-# Basic Usage
+## Basic Usage
 
 You can simply import the `mediawiki` function to get the Wikitext language with full [language support](#extensions):
 
@@ -61,9 +61,9 @@ const langSupport: LanguageSupport = mediawiki(
 
 Here is an online [demo](https://bhsd-harry.github.io/codemirror-mediawiki/wikitext).
 
-# Language
+## Language
 
-## mediawikiLanguage
+### mediawikiLanguage
 
 <details>
 	<summary>Expand</summary>
@@ -80,9 +80,9 @@ const lang: StreamLanguage = mediawikiLanguage(config);
 
 </details>
 
-# Keymap
+## Keymap
 
-## escapeKeymap
+### escapeKeymap
 
 <details>
 	<summary>Expand</summary>
@@ -107,7 +107,7 @@ const keymap: KeyBinding[] = escapeKeymap(
 
 </details>
 
-## formatKeymap
+### formatKeymap
 
 <details>
 	<summary>Expand</summary>
@@ -138,9 +138,9 @@ const keymap: KeyBinding[] = formatKeymap;
 
 </details>
 
-# Extensions
+## Extensions
 
-## bidiIsolates
+### bidiIsolates
 
 <details>
 	<summary>Expand</summary>
@@ -158,7 +158,7 @@ const extension: Extension = bidiIsolates();
 
 </details>
 
-## bracketMatching
+### bracketMatching
 
 <details>
 	<summary>Expand</summary>
@@ -174,7 +174,7 @@ const extension: Extension = bracketMatching();
 
 </details>
 
-## codeFolding
+### codeFolding
 
 <details>
 	<summary>Expand</summary>
@@ -198,7 +198,7 @@ const extension: Extension = codeFolding();
 
 </details>
 
-## colorPicker
+### colorPicker
 
 <details>
 	<summary>Expand</summary>
@@ -214,7 +214,7 @@ const extension: Extension = colorPicker();
 
 </details>
 
-## hover
+### hover
 
 <details>
 	<summary>Expand</summary>
@@ -235,7 +235,7 @@ const extension: Extension = hover(
 
 </details>
 
-## inlayHints
+### inlayHints
 
 <details>
 	<summary>Expand</summary>
@@ -256,7 +256,7 @@ const extension: Extension = inlayHints(
 
 </details>
 
-## openLinks
+### openLinks
 
 <details>
 	<summary>Expand</summary>
@@ -275,7 +275,7 @@ const extension: Extension = openLinks(config);
 
 </details>
 
-## refHover
+### refHover
 
 <details>
 	<summary>Expand</summary>
@@ -296,7 +296,7 @@ const extension: Extension = refHover(
 
 </details>
 
-## signatureHelp
+### signatureHelp
 
 <details>
 	<summary>Expand</summary>
@@ -317,7 +317,7 @@ const extension: Extension = signatureHelp(
 
 </details>
 
-## wikilint
+### wikilint
 
 <details>
 	<summary>Expand</summary>

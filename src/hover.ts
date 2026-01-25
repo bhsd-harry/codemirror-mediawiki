@@ -12,8 +12,12 @@ import {
 	updateCDN,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
-import type {Extension} from '@codemirror/state';
-import type {MarkupContent} from 'vscode-languageserver-types';
+import type {
+	Extension,
+} from '@codemirror/state';
+import type {
+	MarkupContent,
+} from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
 
 const code = `${hoverSelector} code`;

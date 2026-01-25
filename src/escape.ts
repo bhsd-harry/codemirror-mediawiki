@@ -49,36 +49,37 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 			} catch {}
 		}
 		return encodeURIComponent(str);
+	},
+	escapeWiki = async (view: EditorView, lsp: Exclude<ReturnType<typeof getLSP>, undefined>): Promise<void> => {
+		const {state} = view,
+			{ranges} = state.selection,
+			replacements = new WeakMap<SelectionRange, string | undefined>();
+		for (const range of ranges) {
+			// eslint-disable-next-line no-await-in-loop
+			const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
+			replacements.set(range, action?.edit!.changes!['']![0]!.newText);
+		}
+		view.dispatch(state.changeByRange(range => {
+			const insert = replacements.get(range);
+			if (insert === undefined) {
+				return {range};
+			}
+			return {
+				range: EditorSelection.range(range.from, range.from + insert.length),
+				changes: {from: range.from, to: range.to, insert},
+			};
+		}));
 	};
 
-const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
-	const {state} = view,
-		{ranges} = state.selection,
-		lsp = getLSP(
-			view,
-			true,
-			getConfig,
-			base.CDN,
-		);
-	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
-		(async () => {
-			const replacements = new WeakMap<SelectionRange, string | undefined>();
-			for (const range of ranges) {
-				// eslint-disable-next-line no-await-in-loop
-				const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
-				replacements.set(range, action?.edit!.changes!['']![0]!.newText);
-			}
-			view.dispatch(state.changeByRange(range => {
-				const insert = replacements.get(range);
-				if (insert === undefined) {
-					return {range};
-				}
-				return {
-					range: EditorSelection.range(range.from, range.from + insert.length),
-					changes: {from: range.from, to: range.to, insert},
-				};
-			}));
-		})();
+const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean => {
+	const lsp = getLSP(
+		view,
+		true,
+		getConfig,
+		base.CDN,
+	);
+	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
+		void escapeWiki(view, lsp);
 		return true;
 	}
 	return false;
@@ -101,7 +102,7 @@ export default (
 		{
 			key: 'Mod-\\',
 			run(view): boolean {
-				return escapeWiki(
+				return escapeWikiCommand(
 					view,
 					toConfigGetter(
 						configData,

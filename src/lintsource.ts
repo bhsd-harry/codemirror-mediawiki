@@ -19,6 +19,7 @@ import type {
 	ConfigData,
 	LintConfig,
 } from 'wikiparser-node';
+import type {DocRange} from './fold';
 
 export type LintSourceGetter = (
 	opt: ConfigData,
@@ -54,7 +55,7 @@ export const getRange = (
 	endColumn?: number,
 	f = 0,
 	t = Infinity,
-): {from: number, to: number} => {
+): DocRange => {
 	const start = pos(doc, line, column, f);
 	return {
 		from: start,
@@ -79,8 +80,15 @@ const wikiLintSource = async (
 			apply(view): void {
 				view.dispatch({
 					changes: {
-						from: posToIndex(doc, range.start),
-						to: posToIndex(doc, range.end),
+						...getRange(
+							doc,
+							range.start.line + 1,
+							range.start.character + 1,
+							range.end.line + 1,
+							range.end.character + 1,
+							f,
+							t,
+						),
 						insert: newText,
 					},
 				});
