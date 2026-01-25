@@ -341,12 +341,8 @@ You can bundle the MediaWiki mode by importing the `registerMediaWiki` function:
 
 ```js
 import {registerMediaWiki} from '@bhsd/codemirror-mediawiki';
-registerMediaWiki(
-	// optionally pass the article path of a MediaWiki site
-	'https://www.mediawiki.org/wiki/',
-	// optionally disable template hover support using Extension:TemplateData
-	false,
-);
+// optionally pass the article path of a MediaWiki site
+registerMediaWiki('https://www.mediawiki.org/wiki/');
 ```
 
 The MediaWiki mode provides the following key bindings for quick formatting:
@@ -1240,12 +1236,8 @@ For granular control over the bundled extensions, you can import the `registerHo
 
 ```js
 import {registerHover} from '@bhsd/codemirror-mediawiki';
-registerHover(
-	// optionally pass the article path of a MediaWiki site
-	'https://www.mediawiki.org/wiki/',
-	// optionally disable template hover support using Extension:TemplateData
-	false,
-);
+// optionally pass the article path of a MediaWiki site
+registerHover('https://www.mediawiki.org/wiki/');
 ```
 
 </details>
