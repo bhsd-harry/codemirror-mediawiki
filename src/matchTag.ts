@@ -10,12 +10,13 @@ import type {MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 
 declare type TagType = 'ext' | 'html';
-declare interface TagMatchResult extends MatchResult {
+export interface TagMatchResult extends MatchResult {
 	start: Tag;
 	end?: Tag;
 }
 
-class Tag {
+/** @test */
+export class Tag {
 	declare readonly type;
 	declare readonly name;
 	declare readonly first;
@@ -67,8 +68,12 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
  * 获取标签信息，破损的HTML标签会返回`null`
  * @param state
  * @param node 语法树节点
+ * @test
  */
 export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
+	if (!isTag(node)) {
+		return null;
+	}
 	const type = node.name.includes('exttag') ? 'ext' : 'html';
 	let {nextSibling, prevSibling} = node,
 		nameNode = isName(node, type) ? node : null;
@@ -124,6 +129,7 @@ const searchTag = (state: EditorState, origin: Tag): Tag | null => {
  * 匹配标签
  * @param state
  * @param pos 位置
+ * @test
  */
 export const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
 	const tree = ensureSyntaxTree(state, pos);
@@ -133,9 +139,6 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 	let node = tree.resolveInner(pos, -1);
 	if (!isTag(node)) {
 		node = tree.resolveInner(pos, 1);
-		if (!isTag(node)) {
-			return null;
-		}
 	}
 	const start = getTag(state, node);
 	if (!start) {

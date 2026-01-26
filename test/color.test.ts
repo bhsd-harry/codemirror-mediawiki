@@ -11,7 +11,7 @@ const mockTest = (doc: string, result: WidgetOptions): void => {
 		widgets: WidgetOptions[] = [];
 	tree.iterate({
 		enter({from, to, name}): void {
-			const colors = discoverColors(tree, from, to, name, state.doc);
+			const colors = discoverColors(tree, from, to, name, state.doc) as WidgetOptions[] | null;
 			if (colors) {
 				widgets.push(...colors);
 			}

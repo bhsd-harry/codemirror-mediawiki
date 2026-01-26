@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import {StringStream as StringStreamBase} from '@codemirror/language';
-import {isSolSyntax, lookahead} from '../src/token';
-import type {StringStream, State} from '../src/token';
+import {isSolSyntax, lookahead, makeLocalStyle} from '../src/token';
+import type {StringStream, State, NestCount} from '../src/token';
 
 describe('syntax at SOL', () => {
 	const mockTest = (str: string, table?: boolean, file?: boolean, result = true): void => {
@@ -46,5 +46,31 @@ describe('lookahead RegExp', () => {
 	});
 	it('<onlyinclude>', () => {
 		mockTest(['pre', 'nowiki', 'onlyinclude'], String.raw`<(?!!--|onlyinclude>|(?:pre|nowiki)(?:[\s/>]|$))`);
+	});
+});
+
+describe('local style', () => {
+	const mockTest = (state: Partial<State>, result: string, endGround?: NestCount): Partial<State> => {
+		assert.strictEqual(makeLocalStyle('foo', state as State, endGround), result);
+		return state;
+	};
+	it('no endGround', () => {
+		mockTest({nTemplate: 0, nExt: 0, nLink: 0, nExtLink: 0}, 'foo');
+		mockTest({nTemplate: 4, nExt: 4, nLink: 1, nExtLink: 0}, 'mw-template3-ext3-link-ground foo');
+	});
+	it('with endGround', () => {
+		let state = mockTest(
+			{nTemplate: 0, nExt: 0, nLink: 0, nExtLink: 1},
+			'mw-link-ground foo',
+			'nExtLink',
+		);
+		assert.strictEqual(state.nExtLink, 0);
+		state = mockTest(
+			{nTemplate: 0, nExt: 1, nLink: 0, nExtLink: 0, dt: {n: 2, html: 0, nExt: 1}},
+			'mw-ext-ground foo',
+			'nExt',
+		);
+		assert.strictEqual(state.nExt, 0);
+		assert.strictEqual(state.dt?.n, 0);
 	});
 });

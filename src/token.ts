@@ -26,7 +26,7 @@ declare type MimeTypes = 'mediawiki'
 	| 'text/gallery';
 declare type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
-declare type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
+export type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
 declare interface Nesting extends Record<NestCount, number> {
 	extName: string | false;
 	extState: object | false;
@@ -220,6 +220,7 @@ const pop = (state: State): void => {
  * @param stream
  * @param table 是否允许表格
  * @param file 是否为文件
+ * @test
  */
 export const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolean): unknown =>
 	stream.sol() && (
@@ -232,6 +233,7 @@ export const isSolSyntax = (stream: StringStream, table?: boolean, file?: boolea
  * 获取负向先行断言
  * @param chars
  * @param comment 是否仅排除注释
+ * @test
  */
 export const lookahead = (chars: string, comment?: boolean | State): string => {
 	const table = {
@@ -297,7 +299,11 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
 ).trim().replace(/\s{2,}/gu, ' ') || ' ';
 
-const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
+/**
+ * @ignore
+ * @test
+ */
+export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	let ground = '';
 	switch (state.nTemplate) {
 		case 0:

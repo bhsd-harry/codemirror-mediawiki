@@ -52,8 +52,9 @@ export const isWikiLink = (name: string): boolean => /mw-[\w-]*link-ground/u.tes
  * @param completion 自动填充内容
  * @param from 起始位置
  * @param to 结束位置
+ * @test
  */
-const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
+export const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
 	let {label} = completion,
 		selection;
 	const initial = label.charAt(0).toLowerCase(),
@@ -73,6 +74,7 @@ const apply = (view: EditorView, completion: Completion, from: number, to: numbe
 	});
 };
 
+/** @test */
 export class FullMediaWiki extends MediaWiki {
 	declare readonly templatedata: boolean;
 	declare readonly nsRegex;
@@ -465,7 +467,8 @@ const getSelector = (cls: string[], prefix: string | string[] = ''): string => t
 	? cls.map(c => `.cm-mw-${prefix}${c}`).join()
 	: prefix.map(p => getSelector(cls, p)).join();
 
-const getGround = (type: string, ground?: number): string => ground ? `${type}${ground === 1 ? '' : ground}-` : '';
+const getGround = (type: 'link' | 'ext' | 'template', ground?: number): string =>
+	ground ? `${type}${ground === 1 ? '' : ground}-` : '';
 
 const getGrounds = (
 	grounds: [number?, number?, number?][],

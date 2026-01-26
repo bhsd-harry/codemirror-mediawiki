@@ -1,3 +1,4 @@
 {
-	"diff": false
+	"diff": false,
+	"reporter": "progress"
 }

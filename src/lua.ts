@@ -12,8 +12,9 @@ import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
 import {leadingSpaces, sliceDoc} from './util.js';
 import {getLightHighlightStyle} from './theme.js';
-import type {Extension} from '@codemirror/state';
+import type {Extension, EditorState} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
+import type {DocRange} from './fold';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
@@ -330,6 +331,11 @@ const map = {
 	],
 	types = new Set(['variableName', 'variableName.standard', 'keyword']),
 	lang = StreamLanguage.define(lua);
+
+/**
+ * @implements
+ * @test
+ */
 const source: CompletionSource = context => {
 	const {state, pos} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
@@ -439,32 +445,39 @@ const source: CompletionSource = context => {
 	}
 	return null;
 };
+
+/**
+ * @implements
+ * @test
+ */
+const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRange | null => {
+	const {text, number} = doc.lineAt(start);
+	if (!text.trim()) {
+		return null;
+	}
+	const getIndent = (line: string): number =>
+		leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
+	const indent = getIndent(text);
+	let j = number,
+		empty = true;
+	for (; j < doc.lines; j++) {
+		const {text: next} = doc.line(j + 1);
+		if (next.trim()) {
+			const nextIndent = getIndent(next);
+			if (indent >= nextIndent) {
+				break;
+			}
+			empty = false;
+		}
+	}
+	return empty || j === number ? null : {from, to: doc.line(j).to};
+};
+
 const support: Extension = [
 	getLightHighlightStyle(),
 	syntaxHighlighting(HighlightStyle.define([{tag: tags.standard(tags.variableName), class: 'cm-globals'}])),
 	lang.data.of({autocomplete: source}),
-	foldService.of(({doc, tabSize}, start, from) => {
-		const {text, number} = doc.lineAt(start);
-		if (!text.trim()) {
-			return null;
-		}
-		const getIndent = (line: string): number =>
-			leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
-		const indent = getIndent(text);
-		let j = number,
-			empty = true;
-		for (; j < doc.lines; j++) {
-			const {text: next} = doc.line(j + 1);
-			if (next.trim()) {
-				const nextIndent = getIndent(next);
-				if (indent >= nextIndent) {
-					break;
-				}
-				empty = false;
-			}
-		}
-		return empty || j === number ? null : {from, to: doc.line(j).to};
-	}),
+	foldService.of(fold),
 ];
 
 export default (): LanguageSupport => new LanguageSupport(lang, support);

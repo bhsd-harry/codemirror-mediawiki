@@ -106,6 +106,12 @@ const editExtensions = new Set(['closeBrackets', 'autocompletion', 'signatureHel
 const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
 const phrases: Record<string, string> = {};
 
+/**
+ * 替换选中内容
+ * @param view
+ * @param func 用于生成替换文本和光标位置的函数
+ * @test
+ */
 export const replaceSelections = (view: EditorView, func: ReplaceFunction): void => {
 	const {state} = view;
 	view.dispatch(state.changeByRange(range => {
@@ -649,6 +655,7 @@ export class CodeMirror6 {
 	 * Replace the current selection with the result of a function
 	 * @param view EditorView instance
 	 * @param func function to produce the replacement text
+	 * @test
 	 */
 	static replaceSelections = replaceSelections;
 

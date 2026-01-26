@@ -29,6 +29,10 @@ const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
+/**
+ * @implements
+ * @test
+ */
 export const getISBNParser = (articlePath?: string): ISBNParser | undefined => articlePath
 	? (link: string): string => {
 		const page = `Special:Booksources/${
@@ -41,6 +45,10 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 	}
 	: undefined;
 
+/**
+ * @ignore
+ * @test
+ */
 export const mouseEventListener = (
 	e: MouseEvent,
 	view: EditorView,

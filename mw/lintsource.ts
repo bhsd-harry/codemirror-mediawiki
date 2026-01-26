@@ -196,7 +196,7 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 				continue;
 			}
 			const params = Object.entries(data),
-				actual = new Map<Parameter, AST[]>();
+				actual = new WeakMap<Parameter, AST[]>();
 			for (const child of childNodes!.slice(1)) {
 				const param = params.find(([p, {aliases}]) => p === child.name || aliases.includes(child.name!));
 				if (param) {

@@ -11,25 +11,29 @@ import type {MwConfig} from './token';
 
 export default (config: MwConfig): LanguageSupport => {
 	const {language, support} = mediawikiBase(config),
-		lang = new LanguageSupport(
-			htmlLanguage.configure({
-				wrap: configureNesting(
-					[
-						{tag: 'script', parser: javascriptLanguage.parser},
-						{tag: 'style', parser: cssLanguage.parser},
-						{tag: 'noinclude', parser: language.parser},
-					],
-					[{name: 'style', parser: cssLanguage.parser.configure({top: 'Styles'})}],
-				),
+		/** @test */
+		lang = htmlLanguage.configure({
+			wrap: configureNesting(
+				[
+					{tag: 'script', parser: javascriptLanguage.parser},
+					{tag: 'style', parser: cssLanguage.parser},
+					{tag: 'noinclude', parser: language.parser},
+				],
+				[{name: 'style', parser: cssLanguage.parser.configure({top: 'Styles'})}],
+			),
+		}),
+		/** @test */
+		autocomplete = htmlLanguage.data.of({
+			autocomplete: htmlCompletionSourceWith({
+				extraTags: {
+					noinclude: {globalAttrs: false},
+				},
 			}),
+		}),
+		langSupport = new LanguageSupport(
+			lang,
 			[
-				htmlLanguage.data.of({
-					autocomplete: htmlCompletionSourceWith({
-						extraTags: {
-							noinclude: {globalAttrs: false},
-						},
-					}),
-				}),
+				autocomplete,
 				javascript().support,
 				jsCompletion,
 				cssCompletion(),
@@ -37,6 +41,6 @@ export default (config: MwConfig): LanguageSupport => {
 				getLightHighlightStyle(),
 			],
 		);
-	Object.assign(lang, {nestedMWLanguage: language});
-	return lang;
+	Object.assign(langSupport, {nestedMWLanguage: language});
+	return langSupport;
 };

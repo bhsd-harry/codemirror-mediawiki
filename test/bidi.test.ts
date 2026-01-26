@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import {Direction} from '@codemirror/view';
 import {computeIsolates} from '../src/bidi';
-import {createState} from './util';
+import {createState, convertRangeSet} from './util';
 import type {EditorView} from '@codemirror/view';
 
 const mockTest = (doc: string, ranges: number[][]): void => {
@@ -11,12 +11,8 @@ const mockTest = (doc: string, ranges: number[][]): void => {
 			state,
 			textDirection: Direction.RTL,
 		} as Partial<EditorView> as EditorView,
-		set = computeIsolates(view),
-		chunks: [number, number][] = [];
-	set.between(0, doc.length, (from, to) => {
-		chunks.push([from, to]);
-	});
-	assert.deepStrictEqual(chunks, ranges);
+		set = computeIsolates(view);
+	assert.deepStrictEqual(convertRangeSet(set, doc.length), ranges);
 };
 
 describe('bidiIsolation', () => {

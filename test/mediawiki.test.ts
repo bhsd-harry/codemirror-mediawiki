@@ -1,9 +1,22 @@
-import {FullMediaWiki} from '../src/mediawiki';
-import {mwConfig, autocompletionTest} from './util';
+import {FullMediaWiki, apply} from '../src/mediawiki';
+import {mwConfig, autocompletionTest, createDispatchableView} from './util';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
 const mockTest = autocompletionTest(mediawiki.completionSource);
+
+const applyTest = async (
+	doc: string,
+	cursor: number,
+	from: number,
+	label: string,
+	changes: (number | [number, ...string[]])[],
+	selection: number | [number, number],
+): Promise<void> => {
+	const view = createDispatchableView(doc, [cursor], {changes, selection: [selection]});
+	apply(view, {label}, from, cursor);
+	return view.dispatched;
+};
 
 describe('autocompletion', () => {
 	it('parser function/template name', async () => {
@@ -353,5 +366,15 @@ describe('autocompletion', () => {
 				validFor: /^[a-z:/]*$/iu,
 			},
 		);
+	});
+});
+
+describe('apply link completion', () => {
+	it('Lowercase', async () => {
+		await applyTest('[[f|', 3, 2, 'Foo', [2, [1, 'foo'], 1], 5);
+	});
+	it('pipe', async () => {
+		await applyTest('[[F', 3, 2, 'Foo', [2, [1, 'Foo|Foo]]']], [6, 9]);
+		await applyTest('[[F]]', 3, 2, 'Foo', [2, [1, 'Foo|Foo'], 2], [6, 9]);
 	});
 });

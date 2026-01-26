@@ -11,14 +11,20 @@ import type {Extension, Range, EditorState} from '@codemirror/state';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
 import type {Tree} from '@lezer/common';
+import type {DocRange} from './fold';
 
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
 
 const globals = Decoration.mark({class: 'cm-globals'});
 
-const markGlobals = (
+/**
+ * 高亮显示全局变量
+ * @ignore
+ * @test
+ */
+export const markGlobals = (
 	tree: Tree,
-	visibleRanges: readonly {from: number, to: number}[],
+	visibleRanges: readonly DocRange[],
 	state: EditorState,
 ): DecorationSet => {
 	const decorations: Range<Decoration>[] = [];

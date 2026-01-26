@@ -1,5 +1,7 @@
 import * as assert from 'assert';
-import {offsetAt, indexToPos} from '../src/linter';
+import {offsetAt, indexToPos, getPrefix, getCssLinter, getJsLinter, getWikiLinter, getLuaLinter} from '../src/linter';
+import './linter';
+import type {AST} from 'wikiparser-node';
 
 const wikitext = `<p style="top: 0;
 left: 0;">`,
@@ -14,6 +16,9 @@ const offsetTest = (lineOrOffset: number, column: number | undefined, offset: nu
 	},
 	positionTest = (index: number, line: number, character: number): void => {
 		assert.deepStrictEqual(indexToPos(wikitext, index), {line, character});
+	},
+	prefixTest = (type: string, tag = 'div'): void => {
+		assert.strictEqual(getPrefix({type: `${type}-attr`, tag} as unknown as AST, 1), `${tag}#1{\n`);
 	};
 
 describe('Stylelint position transformation', () => {
@@ -31,5 +36,228 @@ describe('Stylelint position transformation', () => {
 		positionTest(14, 0, 14);
 		positionTest(26, 1, 8);
 		positionTest(10, 0, 10);
+	});
+
+	it('CSS block prefix', () => {
+		prefixTest('ext');
+		prefixTest('html', 'p');
+		prefixTest('table', 'td');
+	});
+});
+
+describe('linters', () => {
+	it('Stylelint', async () => {
+		assert.strictEqual(typeof stylelint, 'function');
+		const lint = await getCssLinter();
+		assert.deepStrictEqual(
+			await lint('* { top: 0; top: 0 }'),
+			[
+				{
+					line: 1,
+					column: 5,
+					endLine: 1,
+					endColumn: 8,
+					rule: 'declaration-block-no-duplicate-properties',
+					url: undefined,
+					severity: 'error',
+					text: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
+					fix: {
+						range: [10, 18],
+						text: '',
+					},
+				},
+			],
+		);
+		assert.deepStrictEqual(
+			await lint('* { top: 0; top: 0 }', {'declaration-block-no-duplicate-properties': null}),
+			[],
+		);
+		assert.strictEqual(
+			await lint.fixer!('* { top: 0; top: 0 }', 'declaration-block-no-duplicate-properties'),
+			'* { top: 0 }',
+		);
+	});
+	it('ESLint', async () => {
+		assert.strictEqual(typeof eslint, 'object');
+		const lint = await getJsLinter();
+		assert.deepStrictEqual(
+			lint('console.log( !!!0 );'),
+			[
+				{
+					line: 1,
+					column: 15,
+					endLine: 1,
+					endColumn: 18,
+					ruleId: 'no-extra-boolean-cast',
+					messageId: 'unexpectedNegation',
+					message: 'Redundant double negation.',
+					severity: 2,
+					nodeType: 'UnaryExpression',
+					fix: {
+						range: [14, 17],
+						text: '0',
+					},
+				},
+			],
+		);
+		assert.strictEqual(
+			await lint.fixer!('console.log( !!!0 );', 'no-extra-boolean-cast'),
+			'console.log( !0 );',
+		);
+		assert.deepStrictEqual(
+			lint('console.log( !!!0 );', {
+				extends: 'eslint:recommended',
+				rules: {'no-extra-boolean-cast': 0},
+			}),
+			[],
+		);
+	});
+	it('WikiLint', async () => {
+		assert.strictEqual(typeof wikiparse, 'object');
+		assert.strictEqual(typeof wikiparse.LanguageService, 'function');
+		const lint = await getWikiLinter({}, {});
+		assert.deepStrictEqual(
+			await lint('</br><br style="top: 0; top: 0>'),
+			[
+				{
+					range: {
+						start: {line: 0, character: 0},
+						end: {line: 0, character: 5},
+					},
+					code: 'unmatched-tag',
+					message: 'tag that is both closing and self-closing',
+					severity: 1,
+					source: 'WikiLint',
+					data: [
+						{
+							fix: true,
+							title: 'Fix: open',
+							range: {
+								start: {line: 0, character: 1},
+								end: {line: 0, character: 2},
+							},
+							newText: '',
+						},
+					],
+				},
+				{
+					range: {
+						start: {line: 0, character: 15},
+						end: {line: 0, character: 30},
+					},
+					code: 'unclosed-quote',
+					message: 'unclosed quotes',
+					severity: 2,
+					source: 'WikiLint',
+					data: [
+						{
+							fix: false,
+							title: 'Suggestion: close',
+							range: {
+								start: {line: 0, character: 30},
+								end: {line: 0, character: 30},
+							},
+							newText: '"',
+						},
+					],
+				},
+				// from WikiParser-Node Stylelint integration
+				{
+					range: {
+						start: {line: 0, character: 16},
+						end: {line: 0, character: 19},
+					},
+					code: 'declaration-block-no-duplicate-properties',
+					message: 'Unexpected duplicate "top"',
+					severity: 1,
+					source: 'Stylelint',
+					data: [
+						{
+							fix: true,
+							title: 'Fix: declaration-block-no-duplicate-properties',
+							range: {
+								start: {line: 0, character: 16},
+								end: {line: 0, character: 23},
+							},
+							newText: '',
+						},
+					],
+				},
+				// from `getWikiLinter()` Stylelint integration
+				{
+					from: 16,
+					to: 19,
+					code: 'declaration-block-no-duplicate-properties',
+					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
+					severity: 1,
+					source: 'Stylelint',
+					data: [
+						{
+							fix: true,
+							title: 'Fix: Stylelint',
+							range: {
+								start: {line: 0, character: 16},
+								end: {line: 0, character: 23},
+							},
+							newText: '',
+						},
+					],
+				},
+			],
+		);
+		assert.deepStrictEqual(
+			await lint('<br style="top: 0>', {defaultSeverity: 1}),
+			[],
+		);
+		assert.deepStrictEqual(
+			await lint('<br style="top: 0; top: 0">', {'invalid-css': '0'}),
+			[
+				// from WikiParser-Node Stylelint integration
+				{
+					range: {
+						start: {line: 0, character: 11},
+						end: {line: 0, character: 14},
+					},
+					code: 'declaration-block-no-duplicate-properties',
+					message: 'Unexpected duplicate "top"',
+					severity: 1,
+					source: 'Stylelint',
+					data: [
+						{
+							fix: true,
+							title: 'Fix: declaration-block-no-duplicate-properties',
+							range: {
+								start: {line: 0, character: 11},
+								end: {line: 0, character: 18},
+							},
+							newText: '',
+						},
+					],
+				},
+			],
+		);
+		await lint('</br>');
+		assert.strictEqual(
+			await lint.fixer!('', 'unmatched-tag'),
+			'<br>',
+		);
+	});
+	it('Luacheck', async () => {
+		assert.strictEqual(typeof luacheck, 'function');
+		const lint = await getLuaLinter();
+		assert.deepStrictEqual(
+			await lint('f()'),
+			[
+				{
+					line: 1,
+					column: 1,
+					end_column: 1,
+					code: '113',
+					msg: 'Accessing an undefined global variable',
+					name: 'f',
+					severity: 2,
+				},
+			],
+		);
 	});
 });

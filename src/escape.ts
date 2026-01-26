@@ -37,6 +37,12 @@ const convert = (func: (str: string) => string, cmd: Command): Command => (view)
 	}
 	return cmd(view);
 };
+
+/**
+ * 转义HTML
+ * @param str 输入字符串
+ * @test
+ */
 export const escapeHTML = (str: string): string => [...str].map(c => {
 		if (c in entity) {
 			return `&${entity[c as keyof typeof entity]};`;
@@ -44,6 +50,12 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		const code = c.codePointAt(0)!;
 		return code < 256 ? `&#${code};` : `&#x${code.toString(16)};`;
 	}).join(''),
+
+	/**
+	 * 转义URI
+	 * @param str 输入字符串
+	 * @test
+	 */
 	escapeURI = (str: string): string => {
 		if (str.includes('%')) {
 			try {
@@ -51,36 +63,44 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 			} catch {}
 		}
 		return encodeURIComponent(str);
+	},
+
+	/**
+	 * 使用魔术字转义选中文本
+	 * @param view
+	 * @param lsp LSP实例
+	 * @test
+	 */
+	escapeWiki = async (view: EditorView, lsp: Exclude<ReturnType<typeof getLSP>, undefined>): Promise<void> => {
+		const {state} = view,
+			{ranges} = state.selection,
+			replacements = new WeakMap<SelectionRange, string | undefined>();
+		for (const range of ranges) {
+			// eslint-disable-next-line no-await-in-loop
+			const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
+			replacements.set(range, action?.edit!.changes!['']![0]!.newText);
+		}
+		view.dispatch(state.changeByRange(range => {
+			const insert = replacements.get(range);
+			if (insert === undefined) {
+				return {range};
+			}
+			return {
+				range: EditorSelection.range(range.from, range.from + insert.length),
+				changes: {from: range.from, to: range.to, insert},
+			};
+		}));
 	};
 
-const escapeWiki = (view: EditorView, getConfig?: ConfigGetter): boolean => {
-	const {state} = view,
-		{ranges} = state.selection,
-		lsp = getLSP(
-			view,
-			false,
-			getConfig,
-			base.CDN,
-		);
-	if (lsp && 'provideRefactoringAction' in lsp && ranges.some(({empty}) => !empty)) {
-		(async () => {
-			const replacements = new WeakMap<SelectionRange, string | undefined>();
-			for (const range of ranges) {
-				// eslint-disable-next-line no-await-in-loop
-				const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
-				replacements.set(range, action?.edit!.changes!['']![0]!.newText);
-			}
-			view.dispatch(state.changeByRange(range => {
-				const insert = replacements.get(range);
-				if (insert === undefined) {
-					return {range};
-				}
-				return {
-					range: EditorSelection.range(range.from, range.from + insert.length),
-					changes: {from: range.from, to: range.to, insert},
-				};
-			}));
-		})();
+const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean => {
+	const lsp = getLSP(
+		view,
+		false,
+		getConfig,
+		base.CDN,
+	);
+	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
+		void escapeWiki(view, lsp);
 		return true;
 	}
 	return false;
@@ -116,7 +136,7 @@ menuRegistry.push({
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {
-					escapeWiki(view, cm.getWikiConfig);
+					escapeWikiCommand(view, cm.getWikiConfig);
 					handlerBase(view, e);
 				});
 				items.unshift(btnWiki);
@@ -134,7 +154,7 @@ export default (
 	{
 		key: 'Mod-\\',
 		run(view): boolean {
-			return escapeWiki(
+			return escapeWikiCommand(
 				view,
 				toConfigGetter(
 					cm.getWikiConfig,

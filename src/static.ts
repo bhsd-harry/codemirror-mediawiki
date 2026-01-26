@@ -25,6 +25,10 @@ export const tagModes = {
 	inputbox: 'text/inputbox',
 };
 
+/**
+ * @ignore
+ * @test
+ */
 export const getStaticMwConfig = (
 	{
 		variable,

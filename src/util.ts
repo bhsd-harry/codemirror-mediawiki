@@ -16,6 +16,7 @@ const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 /**
  * 转义HTML字符串
  * @param text 原字符串
+ * @test
  */
 export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => dict[ch]!);
 
@@ -23,6 +24,7 @@ export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => 
  * 将索引转换为位置
  * @param doc Text 实例
  * @param index 索引
+ * @test
  */
 export const indexToPos = (doc: Text, index: number): Position => {
 	const line = doc.lineAt(index);
@@ -33,6 +35,7 @@ export const indexToPos = (doc: Text, index: number): Position => {
  * 将位置转换为索引
  * @param doc Text 实例
  * @param pos 位置
+ * @test
  */
 export const posToIndex = (doc: Text, pos: Position): number => {
 	const line = doc.line(pos.line + 1);
@@ -56,6 +59,7 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
  * 获取节点对应的字符串
  * @param state EditorState 实例
  * @param node 语法树节点
+ * @test
  */
 export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange): string =>
 	state.sliceDoc(node.from, node.to);
@@ -64,6 +68,7 @@ export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange):
  * Update the stack of opening (+) or closing (-) brackets
  * @param state
  * @param node 语法树节点
+ * @test
  */
 export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
 	const brackets = sliceDoc(state, node);
@@ -74,6 +79,7 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
  * Find the current template name
  * @param state
  * @param node 语法树节点
+ * @test
  */
 export const findTemplateName = (state: EditorState, node: SyntaxNode): string | null => {
 	let stack = -1,
@@ -103,6 +109,7 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): string |
  * 判断节点是否包含指定类型
  * @param types 节点类型
  * @param names 指定类型
+ * @test
  */
 export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
 	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
@@ -117,5 +124,6 @@ export const toConfigGetter = (
 /**
  * 获取字符串开头的空白字符
  * @param str 字符串
+ * @test
  */
 export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];

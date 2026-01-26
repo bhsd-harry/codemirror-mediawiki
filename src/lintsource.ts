@@ -32,6 +32,7 @@ import type {
 import type {Rule} from 'eslint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
+import type {DocRange} from './fold';
 
 export type LintSource = (
 	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>
@@ -63,6 +64,7 @@ export const getOpt = (opt: Option | LiveOption, runtime?: boolean): Option | Pr
  * @param line 行号
  * @param column 列号
  * @param from 子语言起始位置
+ * @test
  */
 export const pos = (doc: Text, line: number, column: number, from = 0): number => {
 	if (from === 0) {
@@ -75,6 +77,11 @@ export const pos = (doc: Text, line: number, column: number, from = 0): number =
 	});
 };
 
+/**
+ * 将行列范围转换为位置范围
+ * @ignore
+ * @test
+ */
 export const getRange = (
 	doc: Text,
 	line: number,
@@ -83,7 +90,7 @@ export const getRange = (
 	endColumn?: number,
 	f = 0,
 	t = Infinity,
-): {from: number, to: number} => {
+): DocRange => {
 	const start = pos(doc, line, column, f);
 	return {
 		from: start,
@@ -108,8 +115,15 @@ const wikiLintSource = async (
 			apply(view): void {
 				view.dispatch({
 					changes: {
-						from: posToIndex(doc, range.start),
-						to: posToIndex(doc, range.end),
+						...getRange(
+							doc,
+							range.start.line + 1,
+							range.start.character + 1,
+							range.end.line + 1,
+							range.end.character + 1,
+							f,
+							t,
+						),
 						insert: newText,
 					},
 				});
@@ -120,6 +134,10 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
+/**
+ * @implements
+ * @test
+ */
 export const getWikiLintSource = (articlePath?: string): LintSourceGetter => async (
 	opt,
 	v,
@@ -183,6 +201,10 @@ const jsLintSource = (
 		return diagnostic;
 	});
 
+/**
+ * @implements
+ * @test
+ */
 export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const {CDN} = base,
 		esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
@@ -227,6 +249,10 @@ const cssLintSource = async (
 		});
 };
 
+/**
+ * @implements
+ * @test
+ */
 export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const {CDN} = base,
 		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`);
@@ -235,6 +261,10 @@ export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 	return lintSource;
 };
 
+/**
+ * @implements
+ * @test
+ */
 export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const {CDN} = base,
 		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
@@ -272,6 +302,10 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 	};
 };
 
+/**
+ * @implements
+ * @test
+ */
 export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
 	const vueLintSource = await getVueLintSource(opt),
 		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn: base.CDN}, view);
@@ -289,18 +323,26 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
 	};
 };
 
+/**
+ * @implements
+ * @test
+ */
 export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => lintJSON(doc.toString())
 	.map(({message, from, to = from, severity}): Diagnostic => ({message, severity, from, to}));
 
+/**
+ * @implements
+ * @test
+ */
 export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
 	const {CDN} = base,
 		luaLint = await getLuaLinter(CDN && `${CDN}/${luacheckRepo}`);
 	return async ({doc}) => (await luaLint(doc.toString()))
-		.map(({line, column, end_column: endColumn, msg: message, severity}): Diagnostic => ({
+		.map(({line, column, end_column, msg: message, severity}): Diagnostic => ({
 			source: 'Luacheck',
 			message,
 			severity: severity === 1 ? 'warning' : 'error',
 			from: pos(doc, line, column),
-			to: pos(doc, line, endColumn + 1),
+			to: pos(doc, line, end_column + 1),
 		}));
 };

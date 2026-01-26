@@ -1,3 +1,4 @@
+import {pathToFileURL} from 'url';
 import css from '../src/css';
 import {autocompletionTest, createState} from './util';
 import type {CompletionSource, CompletionResult} from '@codemirror/autocomplete';
@@ -18,6 +19,9 @@ Object.assign(globalThis, {
 				'-webkit-box-sizing': '',
 				'-webkit-user-select': '',
 			},
+		},
+		currentScript: {
+			src: pathToFileURL(require.resolve('luacheck-browserify')).href,
 		},
 		addEventListener(): void {
 			//

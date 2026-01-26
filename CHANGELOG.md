@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.10.1
 
-*2026-01-26*
+*2026-01-28*
 
 **Fixed**
 
 - Missing styles for the Lua mode
+- Quick-fix positions for nested Wikitext in the mixed MediaWiki-HTML mode
 
 ## 3.10.0
 

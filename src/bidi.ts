@@ -22,6 +22,11 @@ const isolateSelector = '.cm-bidi-isolate',
 	}),
 	isolate = Decoration.mark({class: cls});
 
+/**
+ * 计算需要`unicode-bidi:isolate`的范围
+ * @ignore
+ * @test
+ */
 export const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
 	const set = new RangeSetBuilder<Decoration>();
 	if (textDirection === Direction.RTL) {

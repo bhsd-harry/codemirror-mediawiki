@@ -10,6 +10,10 @@ export interface Selection {
 	head: number;
 }
 
+/**
+ * @ignore
+ * @test
+ */
 export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
 	let parent: SyntaxNode | null = node;
 	while (parent) {
@@ -26,6 +30,10 @@ export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: s
 	return undefined;
 };
 
+/**
+ * @ignore
+ * @test
+ */
 export const findEnclosingPlainBrackets = (
 	state: EditorState,
 	pos: number,
@@ -51,6 +59,10 @@ export const findEnclosingPlainBrackets = (
 	return null;
 };
 
+/**
+ * @ignore
+ * @test
+ */
 export const trySelectMatchingBrackets = (
 	state: EditorState,
 	pos: number,
@@ -69,6 +81,10 @@ export const trySelectMatchingBrackets = (
 	};
 };
 
+/**
+ * @ignore
+ * @test
+ */
 export const selectMatchingBrackets = (
 	state: EditorState,
 	pos: number,

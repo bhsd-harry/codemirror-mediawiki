@@ -54,6 +54,7 @@ export const eslintRepo = 'npm/@bhsd/eslint-browserify',
  * @param range 范围
  * @param lineOrOffset 行号或相对位置
  * @param column 列号
+ * @test
  */
 export const offsetAt = (range: [number, number], lineOrOffset: number, column?: number): number => {
 	if (column === undefined) {
@@ -70,13 +71,16 @@ export const offsetAt = (range: [number, number], lineOrOffset: number, column?:
  * @param token.type 节点类型
  * @param token.tag 节点标签
  * @param i 节点序号
+ * @test
  */
-const getPrefix = ({type, tag}: AST, i: number): string => `${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n`;
+export const getPrefix = ({type, tag}: AST, i: number): string =>
+	`${type === 'ext-attr' ? 'div' : tag as string}#${i}{\n`;
 
 /**
  * 将偏移量转换为位置
  * @param code 代码字符串
  * @param index 偏移量
+ * @test
  */
 export const indexToPos = (code: string, index: number): Position => {
 	const lines = code.slice(0, index).split('\n');
@@ -95,6 +99,7 @@ const isStylelintConfig = (config?: Config | Config['rules']): config is Config 
  * @param opt 选项
  * @param opt.cdn jsDelivr CDN，不含库名
  * @param obj 对象
+ * @test
  */
 export const getWikiLinter: getAsyncLinter<
 	Promise<MixedDiagnostic[]>,
@@ -198,6 +203,7 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
 /**
  * 获取 ESLint
  * @param cdn CDN 地址
+ * @test
  */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
 	await loadScript(cdn, 'eslint');
@@ -240,6 +246,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 /**
  * 获取 Stylelint
  * @param cdn CDN 地址
+ * @test
  */
 export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (cdn = stylelintRepo) => {
 	await loadScript(cdn, 'stylelint');
@@ -268,6 +275,7 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (c
 /**
  * 获取 Luacheck
  * @param cdn CDN 地址
+ * @test
  */
 export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (cdn = luacheckRepo) => {
 	await loadScript(cdn, 'luacheck');

@@ -38,6 +38,22 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 		},
 	});
 
+/**
+ * @ignore
+ * @test
+ */
+export const getSignatureHelp = ({signatures, activeParameter: active}: SignatureHelp): string =>
+	signatures.map(({label, parameters, activeParameter = active}) => {
+		const safeLabel = escHTML(label);
+		if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
+			return safeLabel;
+		}
+		const colon = safeLabel.indexOf(':'),
+			parts = safeLabel.slice(colon + 1, -2).split('|');
+		parts[activeParameter!] = `<b>${parts[activeParameter!]}</b>`;
+		return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
+	}).join('<br>');
+
 export default (
 	articlePath?: string,
 ) => (
@@ -80,29 +96,15 @@ export default (
 				return null;
 			}
 			const {cursor, signatureHelp} = value;
-			if (!signatureHelp || signatureHelp.signatures.length === 0) {
-				return null;
-			}
-			const {signatures, activeParameter: active} = signatureHelp;
-			return {
-				pos: cursor,
-				above: true,
-				create(view): TooltipView {
-					return createTooltipView(
-						view,
-						signatures.map(({label, parameters, activeParameter = active}) => {
-							const safeLabel = escHTML(label);
-							if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
-								return safeLabel;
-							}
-							const colon = safeLabel.indexOf(':'),
-								parts = safeLabel.slice(colon + 1, -2).split('|');
-							parts[activeParameter!] = `<b>${parts[activeParameter!]}</b>`;
-							return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
-						}).join('<br>'),
-					);
-				},
-			};
+			return signatureHelp && signatureHelp.signatures.length > 0
+				? {
+					pos: cursor,
+					above: true,
+					create(view): TooltipView {
+						return createTooltipView(view, getSignatureHelp(signatureHelp));
+					},
+				}
+				: null;
 		}),
 	];
 };

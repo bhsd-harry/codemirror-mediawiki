@@ -6,13 +6,19 @@ export interface Text extends TextBase {
 	text?: string[];
 }
 
-const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
+/**
+ * 获取逐行文本内容
+ * @param text
+ * @test
+ */
+export const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
 
 /**
  * 检测文本的缩进方式
  * @param text 文本内容
  * @param defaultIndent 默认缩进方式
  * @param lang 语言
+ * @test
  */
 export const detectIndent = (text: string | Text, defaultIndent: string, lang: string): string => {
 	if (noDetectionLangs.has(lang)) {

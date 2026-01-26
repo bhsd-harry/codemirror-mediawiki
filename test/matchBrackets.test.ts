@@ -40,14 +40,14 @@ const mockTest = (bracket: MatchResult | null | undefined, result?: Result | nul
 	},
 	trySelectTest = (doc: string, pos: number, assoc: 1 | -1, inside: boolean, result: Selection | false): void => {
 		assert.deepStrictEqual(
-			trySelectMatchingBrackets(createState(doc), pos, assoc, undefined, inside),
+			trySelectMatchingBrackets(createState(doc, []), pos, assoc, undefined, inside),
 			result,
 			`pos: ${pos}, assoc: ${assoc}, inside: ${inside}`,
 		);
 	},
 	selectTest = (doc: string, pos: number, result: Selection | false): void => {
 		assert.deepStrictEqual(
-			selectMatchingBrackets(createState(doc), pos),
+			selectMatchingBrackets(createState(doc, []), pos),
 			result,
 			`pos: ${pos}`,
 		);

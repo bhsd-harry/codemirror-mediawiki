@@ -16,10 +16,16 @@ import {
 	findTemplateName,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
-import type {Extension} from '@codemirror/state';
-import type {MarkupContent} from 'vscode-languageserver-types';
+import type {
+	Extension,
+	EditorState,
+} from '@codemirror/state';
+import type {
+	MarkupContent,
+	Hover,
+} from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror';
-import type {CompletionSectionName} from './token';
+import type {CompletionSectionName, ApiSuggest} from './token';
 
 declare const marked: {
 	parse(source: string): string | Promise<string>;
@@ -27,8 +33,66 @@ declare const marked: {
 
 const code = `${hoverSelector} code`;
 
-const getDoc = (section: CompletionSectionName, info = ''): string => escHTML(info)
+/**
+ * @ignore
+ * @test
+ */
+export const getDoc = (section: CompletionSectionName, info = ''): string => escHTML(info)
 	+ (section === 'Optional' ? '' : `<br><b><i>@${section.toLowerCase()}</i></b>`);
+
+/**
+ * 从TemplateData API获取hover信息
+ * @ignore
+ * @test
+ */
+export const getHoverFromApi = async (
+	state: EditorState,
+	pos: number,
+	side: 1 | -1,
+	paramSuggest: ApiSuggest,
+	templatedata?: boolean,
+): Promise<Hover | undefined> => {
+	const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side),
+		{doc} = state;
+	if (node?.name.includes(tokens.templateName)) {
+		const result = await paramSuggest(sliceDoc(state, node), templatedata),
+			{description, length} = result;
+		if (description || length > 0) {
+			return {
+				contents: {
+					kind: 'plaintext',
+					value: (description ? `<p>${escHTML(description)}</p>` : '') + (
+						length === 0
+							? ''
+							: `<ul>${
+								result.map(([keys,, info, section]) => `<li>${
+									keys.map(key => `<code>${escHTML(key)}</code>`).join('/')
+								}${info! && ' - '}${getDoc(section!, info)}</li>`).join('')
+							}</ul>`
+					),
+				},
+				range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
+			};
+		}
+	} else if (node?.name.includes(tokens.templateArgumentName)) {
+		const name = findTemplateName(state, node);
+		if (name) {
+			const result = await paramSuggest(name, templatedata),
+				param = sliceDoc(state, node).trim().slice(0, -1).trim(),
+				[,, info, section] = result.find(([keys]) => keys.includes(param)) ?? [];
+			if (info || section && section !== 'Optional') {
+				return {
+					contents: {
+						kind: 'plaintext',
+						value: getDoc(section!, info).replace(/^<br>/u, ''),
+					},
+					range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
+				};
+			}
+		}
+	}
+	return undefined;
+};
 
 export default (
 	articlePath?: string,
@@ -56,44 +120,8 @@ export default (
 					base.CDN,
 				)?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (!hover && paramSuggest && 'templatedata' in tags) {
-					const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side);
-					if (node?.name.includes(tokens.templateName)) {
-						const result = await paramSuggest(sliceDoc(state, node), templatedata),
-							{description, length} = result;
-						if (description || length > 0) {
-							hover = { // eslint-disable-line require-atomic-updates
-								contents: {
-									kind: 'plaintext',
-									value: (description ? `<p>${escHTML(description)}</p>` : '') + (
-										length === 0
-											? ''
-											: `<ul>${
-												result.map(([keys,, info, section]) => `<li>${
-													keys.map(key => `<code>${escHTML(key)}</code>`).join('/')
-												}${info! && ' - '}${getDoc(section!, info)}</li>`).join('')
-											}</ul>`
-									),
-								},
-								range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
-							};
-						}
-					} else if (node?.name.includes(tokens.templateArgumentName)) {
-						const name = findTemplateName(state, node);
-						if (name) {
-							const result = await paramSuggest(name, templatedata),
-								param = sliceDoc(state, node).trim().slice(0, -1).trim(),
-								[,, info, section] = result.find(([keys]) => keys.includes(param)) ?? [];
-							if (info || section !== 'Optional') {
-								hover = { // eslint-disable-line require-atomic-updates
-									contents: {
-										kind: 'plaintext',
-										value: getDoc(section!, info).replace(/^<br>/u, ''),
-									},
-									range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
-								};
-							}
-						}
-					}
+					// eslint-disable-next-line require-atomic-updates
+					hover = await getHoverFromApi(state, pos, side, paramSuggest, templatedata);
 				}
 				if (hover) {
 					const {CDN = ''} = base;

@@ -35,6 +35,7 @@ export const keybindings = [
  * @param text 跨行文本
  * @param pre 前缀
  * @param post 后缀
+ * @test
  */
 export const encapsulateLines = (text: string, pre: string, post: string): string => {
 	const lines = text.split('\n');

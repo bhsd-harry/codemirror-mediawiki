@@ -39,6 +39,12 @@ export default extend(
 	{
 		files: ['**/*.ts'],
 		rules: {
+			camelcase: [
+				2,
+				{
+					allow: ['end_column'],
+				},
+			],
 			'@typescript-eslint/class-methods-use-this': [
 				2,
 				{
@@ -65,6 +71,16 @@ export default extend(
 		rules: {
 			'arrow-body-style': 0,
 			'jsdoc/no-bad-blocks': 0,
+		},
+		settings: {
+			jsdoc: {
+				structuredTags: {
+					test: {
+						name: false,
+						type: false,
+					},
+				},
+			},
 		},
 	},
 	{

@@ -9,6 +9,11 @@ const cssWideKeywords = /* @__PURE__ */ (
 	() => ['revert', 'revert-layer'].map((label): Completion => ({label, type: 'keyword'}))
 )();
 
+/**
+ * CSS completion source with dialect-specific adjustments.
+ * @param dialect 是否是sanitized-css
+ * @test
+ */
 export const cssCompletion = (dialect?: Dialect): Extension => {
 	const source: CompletionSource = context => {
 		const {state, pos} = context,
