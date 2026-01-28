@@ -252,12 +252,14 @@ export class FullMediaWiki extends MediaWiki {
 
 export const theme = /* @__PURE__ */ EditorView.theme({
 	// hover tooltip and signature tooltip
+	'.cm-tooltip-hover': {
+		maxHeight: '60vh',
+		overflow: 'hidden auto',
+	},
 	[hoverSelector]: {
 		padding: '2px 5px',
 		width: 'max-content',
 		maxWidth: '60vw',
-		maxHeight: '60vh',
-		overflowY: 'auto',
 	},
 	[`${hoverSelector} *`]: {
 		marginTop: '0!important',

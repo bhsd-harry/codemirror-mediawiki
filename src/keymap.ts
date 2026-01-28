@@ -10,7 +10,6 @@ import type {KeymapConfig} from './keybindings';
  * @param opt.pre 前缀
  * @param opt.post 后缀
  * @param opt.splitlines 是否分行
- * @test
  */
 export const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBinding => ({
 	key,
