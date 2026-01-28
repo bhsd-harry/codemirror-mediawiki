@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.10.2
+
+*2026-01-29*
+
+**Changed**
+
+- Layout of the template [hover](./README.md#hover) tooltip when [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
+
 ## 3.10.1
 
 *2026-01-28*

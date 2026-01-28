@@ -3,6 +3,7 @@ import {getOpt} from '../src/lintsource';
 import {base} from '../src/constants';
 import {templateData} from './util';
 import {buildPanel, preferenceDialog} from './preference';
+import type {Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {AST} from 'wikiparser-node';
 import type {TemplateDataApiTemplateDataParams, ApiQuerySiteinfoParams} from 'types-mediawiki-api';
@@ -39,7 +40,7 @@ declare interface ApiResponse {
 	redirects?: {from: string, to: string}[];
 }
 
-declare type Executer<T> = (text: string) => Promise<T[]>;
+declare type Executer<T = ApiValidateError> = (text: string) => Promise<T[]>;
 
 let highSet: Promise<Set<string>> | undefined;
 
@@ -89,18 +90,23 @@ const getExecuter = <T = ApiValidateError>(
 	return execute;
 };
 
-const codemirrorValidate = (
-	api: mw.Api,
-	content: string,
-	title: string,
+const getValidator = async (
 	contentmodel: 'javascript' | 'sanitized-css' | 'Scribunto',
-): ReturnType<mw.Api['get']> => api.post({
-	action: 'codemirror-validate',
-	contentmodel,
-	content,
-	title: title || 'Extension:CodeMirror',
-	formatversion: 2, // eslint-disable-next-line promise/prefer-await-to-then
-}).then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>;
+	title: string,
+): Promise<Executer> => {
+	await mw.loader.using('mediawiki.api');
+	const api = new mw.Api();
+	return getExecuter(
+		api,
+		content => api.post({
+			action: 'codemirror-validate',
+			contentmodel,
+			content,
+			title: title || 'Extension:CodeMirror',
+			formatversion: 2, // eslint-disable-next-line promise/prefer-await-to-then
+		}).then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>,
+	);
+};
 
 export const getParsoidLintSource = async (title: string, opt?: Option | LiveOption): Promise<LintSource> => {
 	await mw.loader.using('mediawiki.api');
@@ -171,23 +177,35 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 			formatversion: '2',
 		} satisfies TemplateDataApiTemplateDataParams,
 	});
+	let running: Promise<void> | undefined,
+		latest: Text | undefined;
 	return async ({doc}): Promise<Diagnostic[]> => {
+		latest = doc;
 		await lsp.provideDefinition(doc.toString(), {line: 0, character: 0});
-		const templates = await lsp.findTemplateTokens(),
-			names = [...new Set(templates.map(({name}) => name!))].filter(name => !templateData.has(name));
-		for (let i = 0; i < names.length / 50; i++) {
-			const batch = names.slice(i * 50, (i + 1) * 50),
-				{pages, normalized = [], redirects = []} = await api.post({ // eslint-disable-line no-await-in-loop
-					titles: batch.join('|'),
-				}) as ApiResponse,
-				data = Object.values(pages!);
-			for (const name of batch) {
-				const page = data.find(
-					({title}) => title === name
-						|| title === [...normalized, ...redirects].find(({from}) => from === name)?.to,
-				);
-				templateData.set(name, page);
-			}
+		const templates = await lsp.findTemplateTokens();
+		// 总是等待上一个请求完成，防止冗余请求
+		await running;
+		// 仅在内容未更改时发送请求
+		if (latest === doc) {
+			const names = [...new Set(templates.map(({name}) => name!))].filter(name => !templateData.has(name));
+			running = (async () => { // eslint-disable-line require-atomic-updates
+				for (let i = 0; i < names.length / 50; i++) {
+					const batch = names.slice(i * 50, (i + 1) * 50),
+						// eslint-disable-next-line no-await-in-loop
+						{pages, normalized = [], redirects = []} = await api.post({
+							titles: batch.join('|'),
+						}) as ApiResponse,
+						data = Object.values(pages!);
+					for (const name of batch) {
+						const page = data.find(
+							({title}) => title === name
+								|| title === [...normalized, ...redirects].find(({from}) => from === name)?.to,
+						);
+						templateData.set(name, page);
+					}
+				}
+			})();
+			await running;
 		}
 		const diagnostics: Diagnostic[] = [];
 		for (const {name, childNodes, range: [from, to]} of templates) {
@@ -243,13 +261,8 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 };
 
 export const getTemplateStylesLintSource = async (title: string): Promise<LintSource> => {
-	await mw.loader.using('mediawiki.api');
-	const api = new mw.Api(),
-		map = new mw.Map<Record<string, string>>(),
-		execute = getExecuter(
-			api,
-			content => codemirrorValidate(api, content, title, 'sanitized-css'),
-		);
+	const map = new mw.Map<Record<string, string>>(),
+		execute = await getValidator('sanitized-css', title);
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
 		(await execute(doc.toString())).map(({message, line, column}): Diagnostic => {
 			const from = doc.line(line!).from + column! - 1;
@@ -271,12 +284,7 @@ export const getTemplateStylesLintSource = async (title: string): Promise<LintSo
 };
 
 export const getScribuntoLintSource = async (title: string): Promise<LintSource> => {
-	await mw.loader.using('mediawiki.api');
-	const api = new mw.Api(),
-		execute = getExecuter(
-			api,
-			content => codemirrorValidate(api, content, title, 'Scribunto'),
-		);
+	const execute = await getValidator('Scribunto', title);
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
 		(await execute(doc.toString())).map(({message, line}): Diagnostic => {
 			const {from, to} = line === undefined ? {from: 0, to: 0} : doc.line(line);
@@ -292,12 +300,7 @@ export const getScribuntoLintSource = async (title: string): Promise<LintSource>
 };
 
 export const getPeastLintSource = async (title: string): Promise<LintSource> => {
-	await mw.loader.using('mediawiki.api');
-	const api = new mw.Api(),
-		execute = getExecuter(
-			api,
-			content => codemirrorValidate(api, content, title, 'javascript'),
-		);
+	const execute = await getValidator('javascript', title);
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> =>
 		(await execute(doc.toString())).map(({message, line, column}): Diagnostic => {
 			const from = doc.line(line!).from + column!;

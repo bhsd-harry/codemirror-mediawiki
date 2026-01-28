@@ -61,15 +61,17 @@ export const getHoverFromApi = async (
 			return {
 				contents: {
 					kind: 'plaintext',
-					value: (description ? `<p>${escHTML(description)}</p>` : '') + (
-						length === 0
-							? ''
-							: `<ul>${
-								result.map(([keys,, info, section]) => `<li>${
-									keys.map(key => `<code>${escHTML(key)}</code>`).join('/')
-								}${info! && ' - '}${getDoc(section!, info)}</li>`).join('')
-							}</ul>`
-					),
+					value: (description ? `<p>${escHTML(description)}</p>` : '')
+						+ (['Required', 'Suggested', 'Optional', 'Deprecated'] as const).map(name => {
+							const sectionResult = result.filter(([,,, section]) => section === name);
+							return sectionResult.length === 0
+								? ''
+								: `<h4>${name}</h4><ul>${
+									sectionResult.map(([keys,, info]) => `<li>${
+										keys.map(key => `<code>${escHTML(key)}</code>`).join('/')
+									}${info && ` - ${escHTML(info)}`}</li>`).join('')
+								}</ul>`;
+						}).join(''),
 				},
 				range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
 			};

@@ -325,12 +325,14 @@ input[type="color"] {
 	background-color: var(--cm-ref);
 }
 
+.cm-tooltip-hover {
+	max-height: 60vh;
+	overflow: hidden auto;
+}
 .cm-tooltip-hover-mw {
 	padding: 2px 5px;
 	width: max-content;
 	max-width: 60vw;
-	max-height: 60vh;
-	overflow-y: auto;
 }
 .cm-tooltip-hover-mw * {
 	margin-top: 0 !important;
