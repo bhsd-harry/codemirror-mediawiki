@@ -134,7 +134,7 @@ export default (
 							const dom = elt('div', {class: selector.slice(1)});
 							dom.style.font = getComputedStyle(view.contentDOM).font;
 							if (ref) {
-								const {range: {start, end}} = ref[0]!,
+								const {start, end} = ref[0]!.range,
 									anchor = posToIndex(doc, start),
 									head = posToIndex(doc, end);
 								dom.innerHTML = highlightRef(state, state.sliceDoc(anchor, head));

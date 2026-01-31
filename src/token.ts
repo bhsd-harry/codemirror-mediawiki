@@ -229,7 +229,7 @@ export const lookahead = (chars: string, comment?: boolean | State): string => {
 		'-': String.raw`-(?!\{(?!\{))`,
 	};
 	if (typeof comment === 'object') {
-		const {data: {tags}} = comment;
+		const {tags} = comment.data;
 		table['<'] = String.raw`<(?!!--${tags.includes('onlyinclude') ? '|onlyinclude>' : ''}|(?:${
 			tags.filter(tag => tag !== 'onlyinclude').join('|')
 		})(?:[\s/>]|$))`;
@@ -1139,7 +1139,7 @@ export class MediaWiki {
 	}
 
 	eatDoubleUnderscore(style: string, ch: '_' | '＿', stream: StringStream, state: State): Style {
-		const {config: {doubleUnderscore}} = this,
+		const {doubleUnderscore} = this.config,
 			underscore = ch.repeat(2),
 			name = stream.match(doubleUnderscoreRegex[ch]);
 		if (name) {
@@ -1434,7 +1434,7 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('extTagBracket', state);
 			} else if (stream.eat('>')) {
-				const {config: {tagModes}} = this;
+				const {tagModes} = this.config;
 				state.extName = name;
 				state.extMode ||= name in tagModes && (tagModes[name]!) in this
 					&& this[tagModes[name] as MimeTypes]([
@@ -1583,7 +1583,7 @@ export class MediaWiki {
 				ff = f.trim();
 			}
 			const ffLower = ff.toLowerCase(),
-				{config: {functionSynonyms, variableIDs, functionHooks}} = this,
+				{functionSynonyms, variableIDs, functionHooks} = this.config,
 				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
 					&& functionSynonyms[1][ff]
 					|| Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
@@ -1662,7 +1662,7 @@ export class MediaWiki {
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
 			if (mt) {
 				const name = mt[0].trim().toLowerCase() + (stream.peek() === '：' ? '：' : ''),
-					{config: {functionSynonyms: [insensitive]}} = this;
+					[insensitive] = this.config.functionSynonyms;
 				if (name.startsWith('#')) {
 					switch (insensitive[name] ?? insensitive[name.slice(1)]!) {
 						case 'invoke':
