@@ -89,7 +89,7 @@ export const loadJSON = (async () => {
 	};
 	(await api)!.get(params).then( // eslint-disable-line promise/prefer-await-to-then
 		res => {
-			const {query: {pages: [page]}} = res as MediaWikiResponse;
+			const [page] = (res as MediaWikiResponse).query.pages;
 			if (page?.revisions) {
 				const json: Partial<Preferences> = JSON.parse(page.revisions[0]!.content);
 				if (!json.addons?.includes('save')) {

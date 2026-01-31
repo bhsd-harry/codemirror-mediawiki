@@ -555,7 +555,7 @@ export class CodeMirror6 {
 			});
 		} else if (!show && this.#visible) {
 			const {state: {selection: {main: {from, to, head}}}, hasFocus} = this.#view,
-				{scrollDOM: {scrollTop}} = this.#view;
+				{scrollTop} = this.#view.scrollDOM;
 			this.#view.dom.style.setProperty('display', 'none', 'important');
 			this.#textarea.style.display = '';
 			this.#textarea.setSelectionRange(from, to, head === to ? 'forward' : 'backward');

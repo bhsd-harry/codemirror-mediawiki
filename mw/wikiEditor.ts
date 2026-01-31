@@ -151,7 +151,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 	} else if (typeof mw.addWikiEditor === 'function') { // MW >= 1.34
 		mw.addWikiEditor($textarea);
 	} else { // MW <= 1.33
-		const {wikiEditor: {modules: {dialogs: {config}}}} = $;
+		const {config} = $.wikiEditor.modules.dialogs;
 		$textarea.wikiEditor('addModule', {
 			...$.wikiEditor.modules.toolbar.config.getDefaultConfig(),
 			...config.getDefaultConfig(),

@@ -216,7 +216,7 @@ export class FullMediaWiki extends MediaWiki {
 		offset: number;
 		options: Completion[];
 	} | undefined> {
-		const {config: {paramSuggest}} = this,
+		const {paramSuggest} = this.config,
 			result = await paramSuggest?.(page);
 		return result?.length
 			? {

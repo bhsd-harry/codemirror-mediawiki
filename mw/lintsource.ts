@@ -113,11 +113,11 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 	const api = new mw.Api(),
 		rest = new mw.Rest();
 	highSet ??= (async () => {
-		const {general: {linter: {high, medium, low}}} = (await api.get({
+		const {high, medium, low} = (await api.get({
 			action: 'query',
 			meta: 'siteinfo',
 			siprop: 'general',
-		} satisfies ApiQuerySiteinfoParams) as ApiResponse).query!;
+		} satisfies ApiQuerySiteinfoParams) as ApiResponse).query!.general.linter;
 		parsoidRules.push(...[...high, ...medium, ...low].map(getRuleKey));
 		if (preferenceDialog.layout) {
 			preferenceDialog.layout.addTabPanels(buildPanel('Parsoid', parsoidRules), 2);

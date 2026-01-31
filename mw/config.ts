@@ -93,7 +93,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 
 		// 先处理魔术字和状态开关
 		if (config && !isIPE) { // 情形2或3
-			const {functionSynonyms: [insensitive]} = config;
+			const [insensitive] = config.functionSynonyms;
 			if (!('subst' in insensitive)) {
 				cleanAliases(insensitive);
 				Object.assign(insensitive, getConfig(magicwords, ({name}) => others.has(name)));

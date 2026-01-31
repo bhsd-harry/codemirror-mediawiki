@@ -363,7 +363,7 @@ export class CodeMirror extends CodeMirror6 {
 
 	/** 刷新 Monaco 编辑器高度 */
 	#refresh(): void {
-		const {textarea: {offsetHeight, style: {height}}} = this;
+		const {offsetHeight, style: {height}} = this.textarea;
 		this.#container!.style.height = offsetHeight ? `${offsetHeight}px` : height;
 	}
 

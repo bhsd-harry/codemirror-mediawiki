@@ -92,7 +92,7 @@ export const textSelection: TextSelection = {
 			textSelection.setSelection.call(this, {start: selectionStart, end: selectionEnd});
 		} else if (ownline && replace && !pre && !post && /^\s*=.*=\s*$/u.test(peri)) {
 			// 单独处理改变标题层级
-			const {selection: {main: {from, to}}} = state,
+			const {from, to} = state.selection.main,
 				[insert] = handleOwnline(from, to, peri);
 			view!.dispatch({
 				changes: {from, to, insert},
@@ -114,7 +114,7 @@ export const textSelection: TextSelection = {
 		return this;
 	},
 	getCaretPosition(option) {
-		const {state: {selection: {main: {from, to, head}}}} = getInstance(this).view!;
+		const {from, to, head} = getInstance(this).view!.state.selection.main;
 		return option?.startAndEnd ? [from, to] : head;
 	},
 	scrollToCaretPosition() {

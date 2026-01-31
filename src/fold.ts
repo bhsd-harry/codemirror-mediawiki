@@ -206,7 +206,7 @@ const foldSelector = '.cm-tooltip-fold';
  * @param state
  */
 const create = (state: EditorState): Tooltip | null => {
-	const {selection: {main: {head}}} = state,
+	const {head} = state.selection.main,
 		range = foldable(state, head);
 	if (range) {
 		const {from, to} = range;

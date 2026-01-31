@@ -41,7 +41,7 @@ const stateEffect = StateEffect.define<InlayHintEffect>(),
 			const str = doc.toString();
 			for (const effect of effects) {
 				if (effect.is(stateEffect)) {
-					const {value: {text, inlayHints}} = effect;
+					const {text, inlayHints} = effect.value;
 					if (str === text) {
 						return inlayHints
 							? Decoration.set(
