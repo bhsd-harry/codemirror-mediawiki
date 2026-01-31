@@ -34,13 +34,23 @@ describe('hover from TemplateData API', () => {
 	it('template name hover', async () => {
 		await mockTest(
 			3,
-			'<p>Example template</p><ul>'
-			+ '<li><code>parameter without detail or info</code><br><b><i>@deprecated</i></b></li>'
+			'<p>Example template</p>'
+			+ '<h4>Required</h4>'
+			+ '<ul>'
 			// eslint-disable-next-line @stylistic/max-len
-			+ '<li><code>parameter with detail and info</code>/<code>argument with detail and info</code> - a required parameter<br><b><i>@required</i></b></li>'
-			// eslint-disable-next-line @stylistic/max-len
-			+ '<li><code>parameter with info</code>/<code>argument with info</code> - a suggested parameter<br><b><i>@suggested</i></b></li>'
+			+ '<li><code>parameter with detail and info</code>/<code>argument with detail and info</code> - a required parameter</li>'
+			+ '</ul>'
+			+ '<h4>Suggested</h4>'
+			+ '<ul>'
+			+ '<li><code>parameter with info</code>/<code>argument with info</code> - a suggested parameter</li>'
+			+ '</ul>'
+			+ '<h4>Optional</h4>'
+			+ '<ul>'
 			+ '<li><code>parameter with detail</code></li>'
+			+ '</ul>'
+			+ '<h4>Deprecated</h4>'
+			+ '<ul>'
+			+ '<li><code>parameter without detail or info</code></li>'
 			+ '</ul>',
 			[0, 2, 0, 3],
 		);

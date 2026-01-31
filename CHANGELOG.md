@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.10.2
 
-*2026-01-29*
+*2026-02-01*
 
 **Changed**
 
 - Layout of the template [hover](./README.md#hover) tooltip when [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
+- The [lint](./README.md#lint) extension no longer includes [lintKeymap](https://codemirror.net/docs/ref/#lint.lintKeymap)
 
 ## 3.10.1
 
@@ -108,7 +109,7 @@
 **Fixed**
 
 - Show correct [WikiEditor](./mw/README.md#wikieditor) toolbar buttons for non-MediaWiki modes on a MediaWiki site
-- The [linter](./README.md#lint) extension when there have been multiple editors with the same language mode
+- The [lint](./README.md#lint) extension when there have been multiple editors with the same language mode
 
 ## 3.7.0
 

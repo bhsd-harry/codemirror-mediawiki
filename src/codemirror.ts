@@ -23,7 +23,7 @@ import {
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
-import {linter, lintGutter, lintKeymap} from '@codemirror/lint';
+import {linter, lintGutter, nextDiagnostic} from '@codemirror/lint';
 import elt from 'crelt';
 import {base, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
 import {light} from './theme.js';
@@ -418,7 +418,7 @@ export class CodeMirror6 {
 					return diagnostics;
 				})),
 				lintGutter(),
-				keymap.of(lintKeymap),
+				keymap.of([{key: 'F8', run: nextDiagnostic}]),
 				optionalFunctions.statusBar(cm, lintSources[0].fixer),
 			]
 			: [];

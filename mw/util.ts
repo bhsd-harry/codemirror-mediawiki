@@ -16,7 +16,7 @@ export interface TemplateData {
 
 export const templateData = new Map<string, TemplateData | undefined>();
 
-export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror>();
+export const instances = new WeakMap<HTMLTextAreaElement, CodeMirror | undefined>();
 
 /**
  * 获取CodeMirror实例

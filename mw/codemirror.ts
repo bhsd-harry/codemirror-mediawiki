@@ -162,6 +162,14 @@ const isRLModule = (title: string, ns = 2): boolean =>
  */
 const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest(`#${preferenceId}`);
 
+/**
+ * 抛出重复初始化错误
+ * @throws `RangeError` 重复初始化
+ */
+const throwInitError = (): never => {
+	throw new RangeError('The textarea has already been replaced by CodeMirror.');
+};
+
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
 export class CodeMirror extends CodeMirror6 {
 	static readonly version = curVersion;
@@ -216,8 +224,8 @@ export class CodeMirror extends CodeMirror6 {
 		isCM = true,
 		page = mw.config.get('wgPageName'),
 	) {
-		if (instances.has(textarea)) {
-			throw new RangeError('The textarea has already been replaced by CodeMirror.');
+		if (instances.get(textarea)) {
+			throwInitError();
 		}
 		const handler = (obj: ExtCodeMirror): void => {
 			if (obj.textarea === textarea) {
@@ -694,6 +702,10 @@ export class CodeMirror extends CodeMirror6 {
 		page?: string,
 		extensions: string[] = [],
 	): Promise<CodeMirror> {
+		if (instances.has(textarea)) {
+			throwInitError();
+		}
+		instances.set(textarea, undefined);
 		if (!lang && ns === undefined) {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {

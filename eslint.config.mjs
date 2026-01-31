@@ -103,6 +103,9 @@ export default extend(
 				project: './test/tsconfig.json',
 			},
 		},
+		rules: {
+			'@typescript-eslint/strict-void-return': 0,
+		},
 	},
 	{
 		files: ['bundle/*.ts'],
