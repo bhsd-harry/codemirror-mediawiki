@@ -95,7 +95,7 @@
 		"eslint-plugin-jsdoc": "^61.2.1",
 		"eslint-plugin-jsonc": "^2.21.0",
 		"eslint-plugin-promise": "^7.2.1",
-		"eslint-plugin-regexp": "^2.10.0",
+		"eslint-plugin-regexp": "^3.0.0",
 		"eslint-plugin-unicorn": "^62.0.0",
 		"http-server": "^14.1.1",
 		"luacheck-browserify": "^0.10.0",
