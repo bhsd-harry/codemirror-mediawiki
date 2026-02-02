@@ -77,7 +77,7 @@ export const plain = (): Extension => [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const languages: Record<string, (config?: any) => Extension> = {plain};
+export const languages: Record<string, (config?: any, cm?: CodeMirror6) => Extension> = {plain};
 
 export const avail: Record<string, Addon<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
 
@@ -161,6 +161,7 @@ export class CodeMirror6 {
 	#preferred = new Set<string>();
 	#indentStr = '\t';
 	#nestedMWLanguage: Language | undefined;
+	#lintSources: LintSource[] = [];
 
 	/** textarea element */
 	get textarea(): HTMLTextAreaElement {
@@ -180,6 +181,11 @@ export class CodeMirror6 {
 	/** whether the editor view is visible */
 	get visible(): boolean {
 		return this.#visible && this.textarea.isConnected;
+	}
+
+	/** @private */
+	get lintSources(): LintSource[] {
+		return this.#lintSources;
 	}
 
 	/**
@@ -205,7 +211,7 @@ export class CodeMirror6 {
 		if (isMW || this.#lang === 'html') {
 			config ??= this.langConfig;
 		}
-		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config);
+		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config, this);
 		this.#nestedMWLanguage = lang.nestedMWLanguage;
 		if (isMW) {
 			this.langConfig = config as MwConfig;
@@ -423,8 +429,10 @@ export class CodeMirror6 {
 			]
 			: [];
 		if (lintSource) {
+			this.#lintSources = lintSources!;
 			linters[this.#lang] = linterExtension;
 		} else {
+			this.#lintSources.length = 0;
 			delete linters[this.#lang];
 		}
 		if (this.#view) {

@@ -11,6 +11,7 @@ import {
 	leadingSpaces,
 	findTemplateName,
 } from '../src/util';
+import {tokens} from '../src/config';
 import {createState} from './util';
 import type {TagName} from '../src/config';
 
@@ -19,7 +20,7 @@ const doc = Text.of([
 	'Second line.',
 ]);
 const state = createState('{{a}}{{b}}'),
-	node = syntaxTree(state).resolve(5, -1);
+	node = syntaxTree(state).resolve(3, 1);
 
 describe('util functions', () => {
 	it('HTML escape', () => {
@@ -60,22 +61,22 @@ describe('util functions', () => {
 	});
 
 	it('has tag', () => {
-		const types = new Set(['mw-em', 'mw-error']);
+		const types = new Set([tokens.em, tokens.error]);
 		const yes = (tag: string | string[]): void => {
 				assert.ok(hasTag(types, tag as TagName | TagName[]));
 			},
 			no = (tag: string | string[]): void => {
 				assert.ok(!hasTag(types, tag as TagName | TagName[]));
 			};
-		yes('mw-em');
-		yes('mw-error');
+		yes(tokens.em);
+		yes(tokens.error);
 		yes('em');
 		yes('error');
-		no('mw-strong');
+		no(tokens.strong);
 		no('strong');
-		yes(['mw-em', 'mw-strong']);
+		yes([tokens.em, tokens.strong]);
 		yes(['em', 'strong']);
-		no(['mw-strong', 'list']);
+		no([tokens.strong, 'list']);
 		no(['strong', 'list']);
 	});
 

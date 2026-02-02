@@ -34,9 +34,10 @@ import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
 import type {DocRange} from './fold';
 
-export type LintSource = (
+export type LintSource<T = unknown> = (
 	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>
 ) & {
+	config?: T;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
@@ -210,6 +211,11 @@ export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource
 		esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
 	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
+	Object.defineProperty(lintSource, 'config', {
+		get() {
+			return esLint.config;
+		},
+	});
 	return lintSource;
 };
 
@@ -258,6 +264,11 @@ export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`);
 	const lintSource: LintSource = async ({doc}) => cssLintSource(styleLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
+	Object.defineProperty(lintSource, 'config', {
+		get() {
+			return styleLint.config;
+		},
+	});
 	return lintSource;
 };
 

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.10.3
+
+*2026-02-03*
+
+**Added**
+
+- When using the [lint](./README.md#lint) extension for the JavaScript mode, global variables will be highlighted based on the [ESLint legacy configuration](https://eslint.org/docs/latest/use/configure/language-options-deprecated#specifying-environments)
+
 ## 3.10.2
 
 *2026-02-01*
