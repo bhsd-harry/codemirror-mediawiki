@@ -13,7 +13,7 @@ import {
 	nord,
 } from '/codemirror-mediawiki/dist/main.min.js';
 import abusefilterDialect from '/lezer-abusefilter/dist/dialect.test.js';
-import {linkSuggest, paramSuggest} from './suggest.test';
+import {linkSuggest, paramSuggest, templateSignature} from './suggest.test';
 import type {ConfigData} from 'wikiparser-node';
 import type {Dialect} from '@bhsd/lezer-abusefilter';
 import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
@@ -78,7 +78,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 				mwConfig = {
 					...CodeMirror6.getMwConfig(parserConfig),
 					linkSuggest,
-					...location.host === 'localhost:8080' && {paramSuggest},
+					...location.host === 'localhost:8080' && {paramSuggest, templateSignature},
 				};
 				Object.assign(cm, {mwConfig});
 			}

@@ -109,7 +109,7 @@ export default (
 		hoverTooltip(async (view, pos, side): Promise<Tooltip | null> => {
 			const {state} = view,
 				node = ensureSyntaxTree(state, pos)?.resolve(pos, side);
-			if (node && node.name.includes('-exttag-')) {
+			if (node?.name.includes('-exttag-')) {
 				const tag = getTag(state, node);
 				if (tag && needHover(state, tag)) {
 					const {doc} = state,

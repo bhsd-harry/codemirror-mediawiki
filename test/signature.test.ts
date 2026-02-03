@@ -25,4 +25,8 @@ describe('signature help', () => {
 		getSignatureHelp({signatures, activeParameter: 2}),
 		'{{#foo:bar}}<br>{{#foo:bar|baz}}',
 	);
+	assert.strictEqual(
+		getSignatureHelp({signatures: ['{{A & B|<script id="xss">alert("XSS")</script>}}']}),
+		'{{A &amp; B|<b>&lt;script id</b>="xss">alert("XSS")&lt;/script>}}',
+	);
 });

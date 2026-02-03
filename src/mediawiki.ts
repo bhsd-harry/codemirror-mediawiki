@@ -326,7 +326,7 @@ export class FullMediaWiki extends MediaWiki {
 					if (page) {
 						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
 							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
-						if (suggestions && suggestions.options.length > 0) {
+						if (suggestions?.options.length) {
 							return {
 								from: isDelimiter ? pos : start + suggestions.offset,
 								options: suggestions.options,

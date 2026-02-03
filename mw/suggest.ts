@@ -45,6 +45,12 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
 };
 
 /**
+ * 标题规范化
+ * @param title 标题
+ */
+const normalizeTitle = (title: string): string => new mw.Title(title, 10).getPrefixedDb();
+
+/**
  * 获取模板参数建议
  * @param api mw.Api 实例
  * @param page 页面标题
@@ -56,7 +62,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		titles = page + titles;
 	}
 	try {
-		titles = new mw.Title(titles, 10).getPrefixedDb();
+		titles = normalizeTitle(titles);
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
 		}
@@ -105,11 +111,23 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
  * 准备建议
  * @param page 页面标题
  */
-export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'paramSuggest'>> => {
+export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'paramSuggest' | 'templateSignature'>> => {
 	await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
 	const api = new mw.Api({parameters: {formatversion: 2}});
 	return {
 		linkSuggest: linkSuggestFactory(api, page),
 		paramSuggest: paramSuggestFactory(api, page),
+		templateSignature(templateName, parameterName): string | undefined {
+			if (!templateName || !parameterName) {
+				return undefined;
+			}
+			const data = templateData.get(normalizeTitle(templateName)),
+				parameter = parameterName.slice(0, -1).trim();
+			if (!data?.params[parameter]) {
+				return undefined;
+			}
+			const {label, description} = data.params[parameter];
+			return description || label ? `{{${templateName.trim()}|${parameter}=${description || label}}}` : undefined;
+		},
 	};
 };

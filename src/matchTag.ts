@@ -137,7 +137,7 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 		return null;
 	}
 	let node = tree.resolveInner(pos, -1);
-	if (!isTag(node)) {
+	if (node.to === pos && !isTag(node)) {
 		node = tree.resolveInner(pos, 1);
 	}
 	const start = getTag(state, node);

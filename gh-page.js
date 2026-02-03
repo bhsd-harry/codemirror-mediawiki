@@ -37,6 +37,26 @@ var paramSuggest = (s) => Object.assign(
   ],
   { description: "Example template" }
 );
+var templateSignature = (templateName, parameterName) => {
+  if (!templateName || !parameterName) {
+    return void 0;
+  }
+  const parameter = parameterName.slice(0, -1).trim();
+  let label = "";
+  switch (parameter) {
+    case "parameter with detail and info":
+    case "argument with detail and info":
+      label = "a required parameter";
+      break;
+    case "parameter with info":
+    case "argument with info":
+      label = "a suggested parameter";
+      break;
+    case "parameter with detail":
+      label = "4th parameter";
+  }
+  return label && `{{${templateName.trim()}|${parameter}=${label}}}`;
+};
 
 // src/gh-page.ts
 registerCSS();
@@ -78,7 +98,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
         mwConfig = {
           ...CodeMirror6.getMwConfig(parserConfig),
           linkSuggest,
-          ...location.host === "localhost:8080" && { paramSuggest }
+          ...location.host === "localhost:8080" && { paramSuggest, templateSignature }
         };
         Object.assign(cm, { mwConfig });
       }

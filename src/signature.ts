@@ -3,13 +3,13 @@ import {StateField, StateEffect} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
 import {base} from './constants.js';
-import {tokens} from './config.js';
 import {
 	createTooltipView,
 	indexToPos,
 	escHTML,
 	toConfigGetter,
 	findTemplateName,
+	isTemplate,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -54,7 +54,12 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 export const getSignatureHelp = ({signatures, activeParameter: active}: SignatureHelp): string =>
 	signatures.map(signature => {
 		if (typeof signature === 'string') {
-			return escHTML(signature);
+			const safeLabel = escHTML(signature),
+				pipe = safeLabel.indexOf('|'),
+				equal = safeLabel.indexOf('=', pipe);
+			return `${safeLabel.slice(0, pipe)}|<b>${
+				safeLabel.slice(pipe + 1, equal)
+			}</b>${safeLabel.slice(equal)}`;
 		}
 		const {label, parameters, activeParameter = active} = signature,
 			safeLabel = escHTML(label);
@@ -96,9 +101,12 @@ export default (
 						base.CDN,
 					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
 					if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
-						const tree = syntaxTree(state),
+						const tree = syntaxTree(state);
+						let node = tree.resolve(cursor, -1);
+						if (node.to === cursor && !isTemplate(node)) {
 							node = tree.resolve(cursor, 1);
-						if (node.name.split('_').includes(tokens.template)) {
+						}
+						if (isTemplate(node)) {
 							const [templateName, parameterName] = findTemplateName(state, node),
 								tooltip = cm.langConfig.templateSignature(templateName, parameterName);
 							if (tooltip) {
@@ -127,7 +135,7 @@ export default (
 				return null;
 			}
 			const {cursor, signatureHelp} = value;
-			return signatureHelp && signatureHelp.signatures.length > 0
+			return signatureHelp?.signatures.length
 				? {
 					pos: cursor,
 					above: true,

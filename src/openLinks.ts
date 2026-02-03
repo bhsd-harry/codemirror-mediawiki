@@ -73,7 +73,7 @@ export const mouseEventListener = (
 	let node = tree.resolve(position, -1);
 	if (node.name.includes(tokens.linkToSection)) {
 		node = node.prevSibling!;
-	} else if (!hasTag(new Set(node.name.split('_')), tags)) {
+	} else if (node.to === position && !hasTag(new Set(node.name.split('_')), tags)) {
 		node = tree.resolve(position, 1);
 	}
 	const {name, from, to} = node;

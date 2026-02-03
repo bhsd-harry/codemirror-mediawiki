@@ -76,6 +76,12 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 };
 
 /**
+ * Check if the node is a template parameter value
+ * @param node 语法树节点
+ */
+export const isTemplate = (node: SyntaxNode): boolean => node.name.split('_').includes(tokens.template);
+
+/**
  * Find the current template name and parameter name
  * @param state
  * @param node 语法树节点
@@ -86,7 +92,7 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): [string 
 		{prevSibling} = node,
 		/** 可包含`_`、`:`等 */ page = '',
 		parameter = '',
-		need = node.name.split('_').includes(tokens.template);
+		need = isTemplate(node);
 	while (prevSibling) {
 		const {name} = prevSibling;
 		if (name.includes(tokens.templateBracket)) {

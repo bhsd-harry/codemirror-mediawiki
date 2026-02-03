@@ -24,3 +24,25 @@ export const paramSuggest: ApiSuggest = s => Object.assign(
 		] as ApiSuggestions,
 	{description: 'Example template'},
 );
+
+export const templateSignature = (templateName: string | null, parameterName: string): string | undefined => {
+	if (!templateName || !parameterName) {
+		return undefined;
+	}
+	const parameter = parameterName.slice(0, -1).trim();
+	let label = '';
+	switch (parameter) {
+		case 'parameter with detail and info':
+		case 'argument with detail and info':
+			label = 'a required parameter';
+			break;
+		case 'parameter with info':
+		case 'argument with info':
+			label = 'a suggested parameter';
+			break;
+		case 'parameter with detail':
+			label = '4th parameter';
+		// no default
+	}
+	return label && `{{${templateName.trim()}|${parameter}=${label}}}`;
+};
