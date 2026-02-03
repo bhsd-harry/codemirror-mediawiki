@@ -1,18 +1,27 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
+import {syntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
 import {base} from './constants.js';
+import {tokens} from './config.js';
 import {
 	createTooltipView,
 	indexToPos,
 	escHTML,
 	toConfigGetter,
+	findTemplateName,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
-import type {SignatureHelp} from 'vscode-languageserver-types';
+import type {
+	SignatureHelp as SignatureHelpBase,
+	SignatureInformation,
+} from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror';
 
+interface SignatureHelp extends Omit<SignatureHelpBase, 'signatures'> {
+	signatures: SignatureInformation[] | string[];
+}
 declare interface SignatureEffect {
 	signatureHelp?: SignatureHelp | undefined;
 	text: string;
@@ -43,8 +52,12 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
  * @test
  */
 export const getSignatureHelp = ({signatures, activeParameter: active}: SignatureHelp): string =>
-	signatures.map(({label, parameters, activeParameter = active}) => {
-		const safeLabel = escHTML(label);
+	signatures.map(signature => {
+		if (typeof signature === 'string') {
+			return escHTML(signature);
+		}
+		const {label, parameters, activeParameter = active} = signature,
+			safeLabel = escHTML(label);
 		if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
 			return safeLabel;
 		}
@@ -73,20 +86,28 @@ export default (
 					return;
 				}
 				(async () => {
+					let signatureHelp: SignatureHelp | undefined = await getLSP(
+						view,
+						false,
+						toConfigGetter(
+							cm.getWikiConfig,
+							articlePath,
+						),
+						base.CDN,
+					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
+					if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
+						const tree = syntaxTree(state),
+							node = tree.resolve(cursor, 1);
+						if (node.name.split('_').includes(tokens.template)) {
+							const [templateName, parameterName] = findTemplateName(state, node),
+								tooltip = cm.langConfig.templateSignature(templateName, parameterName);
+							if (tooltip) {
+								signatureHelp = {signatures: [tooltip]};
+							}
+						}
+					}
 					view.dispatch({
-						effects: stateEffect.of({
-							text,
-							cursor,
-							signatureHelp: await getLSP(
-								view,
-								false,
-								toConfigGetter(
-									cm.getWikiConfig,
-									articlePath,
-								),
-								base.CDN,
-							)?.provideSignatureHelp(text, indexToPos(doc, cursor)),
-						}),
+						effects: stateEffect.of({text, cursor, signatureHelp}),
 					});
 				})();
 			}
