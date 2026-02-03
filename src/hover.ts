@@ -77,7 +77,7 @@ export const getHoverFromApi = async (
 			};
 		}
 	} else if (node?.name.includes(tokens.templateArgumentName)) {
-		const name = findTemplateName(state, node);
+		const [name] = findTemplateName(state, node);
 		if (name) {
 			const result = await paramSuggest(name, templatedata),
 				param = sliceDoc(state, node).trim().slice(0, -1).trim(),

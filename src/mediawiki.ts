@@ -322,7 +322,7 @@ export class FullMediaWiki extends MediaWiki {
 					|| isArgument && !search.includes('=')
 					|| hasTag(types, 'template') && prevIsDelimiter
 				) {
-					const page = findTemplateName(state, node);
+					const [page] = findTemplateName(state, node);
 					if (page) {
 						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
 							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);

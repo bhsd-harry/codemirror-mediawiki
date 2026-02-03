@@ -43,21 +43,20 @@ describe('util functions', () => {
 		assert.deepStrictEqual(braceStackUpdate(state, node), [1, -1]);
 	});
 
-	it('find template name', () => {
-		const complexState = createState('{{a<!-- A -->a|{{b|{{c{{d}}|e=}}f=}}g=}}');
-		assert.strictEqual(
-			findTemplateName(complexState, syntaxTree(complexState).resolve(37)),
-			'aa',
-		);
-		assert.strictEqual(
-			findTemplateName(complexState, syntaxTree(complexState).resolve(33)),
-			'b',
-		);
+	it('find template name and parameter name', () => {
+		const complexState = createState('{{a<!-- A -->a|{{b|{{c{{d}}|e=1}}f=}}g=1}}');
+		const mockTest = (pos: number, expected: [string | null, string | null]): void => {
+			assert.deepStrictEqual(
+				findTemplateName(complexState, syntaxTree(complexState).resolve(pos, 1)),
+				expected,
+			);
+		};
+		mockTest(39, ['aa', '']);
+		mockTest(38, ['aa', '']);
+		mockTest(34, ['b', '']);
 		/** @todo should return `null` */
-		assert.strictEqual(
-			findTemplateName(complexState, syntaxTree(complexState).resolve(29)),
-			'c',
-		);
+		mockTest(29, ['c', '']);
+		mockTest(30, ['c', 'e=']);
 	});
 
 	it('has tag', () => {

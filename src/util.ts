@@ -76,33 +76,50 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 };
 
 /**
- * Find the current template name
+ * Find the current template name and parameter name
  * @param state
  * @param node 语法树节点
  * @test
  */
-export const findTemplateName = (state: EditorState, node: SyntaxNode): string | null => {
+export const findTemplateName = (state: EditorState, node: SyntaxNode): [string | null, string] => {
 	let stack = -1,
 		{prevSibling} = node,
-		/** 可包含`_`、`:`等 */ page = '';
+		/** 可包含`_`、`:`等 */ page = '',
+		parameter = '',
+		need = node.name.split('_').includes(tokens.template);
 	while (prevSibling) {
 		const {name} = prevSibling;
 		if (name.includes(tokens.templateBracket)) {
+			if (need && parameter) {
+				need = false;
+				parameter = '';
+			}
 			const [lbrace, rbrace] = braceStackUpdate(state, prevSibling);
 			stack += lbrace;
 			if (stack >= 0) {
 				break;
 			}
 			stack += rbrace;
-		} else if (stack === -1 && name.includes(tokens.templateName)) {
-			page = sliceDoc(state, prevSibling) + page;
+		} else if (stack === -1) {
+			if (name.includes(tokens.templateName)) {
+				page = sliceDoc(state, prevSibling) + page;
+			} else if (need) {
+				if (name.includes(tokens.templateDelimiter)) {
+					need = false;
+				} else if (name.includes(tokens.templateArgumentName)) {
+					parameter = sliceDoc(state, prevSibling) + parameter;
+				} else if (parameter && !name.includes(tokens.comment)) {
+					need = false;
+					parameter = '';
+				}
+			}
 		} else if (page && !name.includes(tokens.comment)) {
 			prevSibling = null;
 			break;
 		}
 		({prevSibling} = prevSibling);
 	}
-	return prevSibling && page;
+	return [prevSibling && page, parameter];
 };
 
 /**
