@@ -16,7 +16,14 @@ import html from '../src/html';
 import {createState, createDispatchableView, mwConfig} from './util';
 import './linter';
 import type {EditorView} from '@codemirror/view';
+import type {Extension} from '@codemirror/state';
 import type {LanguageSupport, Language} from '@codemirror/language';
+import type {Diagnostic as DiagnosticBase} from '@codemirror/lint';
+import type {LintSource} from '../src/lintsource';
+
+interface Diagnostic extends Omit<DiagnosticBase, 'actions'> {
+	actions?: {name: string, tooltip?: undefined}[];
+}
 
 describe('lintsource position transformation', () => {
 	it('standalone language', () => {
@@ -66,6 +73,55 @@ const test = () =>
 	});
 });
 
+const getWikiLintError = (from: number, to: number): Diagnostic => ({
+	from,
+	to,
+	message: 'tag that is both closing and self-closing (unmatched-tag)',
+	severity: 'error',
+	source: 'WikiLint',
+	actions: [{name: 'Fix: open'}],
+});
+
+const getStylelintError = (from: number, to: number, wikilint?: boolean, rule = true): Diagnostic => {
+	let name: string;
+	if (rule) {
+		name = wikilint ? 'Fix: Stylelint' : 'fix';
+	} else {
+		name = 'Fix: declaration-block-no-duplicate-properties';
+	}
+	return {
+		from,
+		to,
+		message: `Unexpected duplicate "top"${rule ? ' (declaration-block-no-duplicate-properties)' : ''}`,
+		severity: 'error',
+		source: 'Stylelint',
+		actions: [{name}],
+	};
+};
+
+const getESLintError = (from: number, to: number): Diagnostic => ({
+	from,
+	to,
+	message: 'Redundant double negation. (no-extra-boolean-cast)',
+	severity: 'error',
+	source: 'ESLint',
+	actions: [{name: 'fix', tooltip: undefined}],
+});
+
+const viewTest = async (
+	doc: string,
+	lintsource: LintSource,
+	from: number,
+	to: number,
+	insert = '',
+	lang: Extension = [],
+): Promise<void> => {
+	const view = createDispatchableView(doc, [0], {changes: {from, to, insert}}, lang),
+		diagnostics = await lintsource(view.state);
+	diagnostics.find(({message}) => message.endsWith(')'))!.actions![0]!.apply(view, 0, 0);
+	return view.dispatched;
+};
+
 describe('lint sources', () => {
 	it('WikiLint', async () => {
 		const state = createState('</br><br style="top: 0; top: 0>', []);
@@ -73,14 +129,7 @@ describe('lint sources', () => {
 		assert.partialDeepStrictEqual(
 			await lintsource(state),
 			[
-				{
-					from: 0,
-					to: 5,
-					message: 'tag that is both closing and self-closing (unmatched-tag)',
-					severity: 'error',
-					source: 'WikiLint',
-					actions: [{name: 'Fix: open'}],
-				},
+				getWikiLintError(0, 5),
 				{
 					from: 15,
 					to: 30,
@@ -90,23 +139,9 @@ describe('lint sources', () => {
 					actions: [{name: 'Suggestion: close'}],
 				},
 				// from WikiParser-Node Stylelint integration
-				{
-					from: 16,
-					to: 19,
-					message: 'Unexpected duplicate "top"',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'Fix: declaration-block-no-duplicate-properties'}],
-				},
+				getStylelintError(16, 19, true, false),
 				// from `getWikiLintSource()` Stylelint integration
-				{
-					from: 16,
-					to: 19,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'Fix: Stylelint'}],
-				},
+				getStylelintError(16, 19, true),
 			],
 		);
 		assert.strictEqual(
@@ -114,25 +149,8 @@ describe('lint sources', () => {
 			'<br><br style="top: 0; top: 0>',
 		);
 
-		let view = createDispatchableView(
-				'</br>',
-				[0],
-				{changes: {from: 1, to: 2, insert: ''}},
-				[],
-			),
-			diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<br style="top: 0; top: 0">',
-			[0],
-			{changes: {from: 11, to: 18, insert: ''}},
-			[],
-		);
-		diagnostics = await lintsource(view.state);
-		diagnostics.find(({message}) => message.endsWith(')'))!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
+		await viewTest('</br>', lintsource, 1, 2);
+		await viewTest('<br style="top: 0; top: 0">', lintsource, 11, 18);
 	});
 	it('ESLint', async () => {
 		const state = createState(String.raw`console.log( !!!/[\[]/u );`, []);
@@ -140,14 +158,7 @@ describe('lint sources', () => {
 		assert.partialDeepStrictEqual(
 			await lintsource(state),
 			[
-				{
-					from: 14,
-					to: 23,
-					message: 'Redundant double negation. (no-extra-boolean-cast)',
-					severity: 'error',
-					source: 'ESLint',
-					actions: [{name: 'fix', tooltip: undefined}],
-				},
+				getESLintError(14, 23),
 				{
 					from: 18,
 					to: 19,
@@ -172,15 +183,7 @@ describe('lint sources', () => {
 			String.raw`console.log( !/[\[]/u );`,
 		);
 
-		const view = createDispatchableView(
-				'console.log( !!!0 );',
-				[0],
-				{changes: {from: 14, to: 17, insert: '0'}},
-				[],
-			),
-			diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
+		await viewTest('console.log( !!!0 );', lintsource, 14, 17, '0');
 	});
 	it('StyleLint', async () => {
 		const text = '* { top: 0; top: 0 }';
@@ -188,31 +191,14 @@ describe('lint sources', () => {
 		let lintsource = await getCssLintSource();
 		assert.partialDeepStrictEqual(
 			await lintsource(state),
-			[
-				{
-					from: 4,
-					to: 7,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
-			],
+			[getStylelintError(4, 7)],
 		);
 		assert.strictEqual(
 			await lintsource.fixer!(state.doc, 'declaration-block-no-duplicate-properties'),
 			'* { top: 0 }',
 		);
 
-		const view = createDispatchableView(
-				text,
-				[0],
-				{changes: {from: 10, to: 18, insert: ''}},
-				[],
-			),
-			diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
+		await viewTest(text, lintsource, 10, 18);
 
 		lintsource = await getCssLintSource({'declaration-block-no-duplicate-properties': null});
 		assert.deepStrictEqual(
@@ -231,62 +217,15 @@ describe('lint sources', () => {
 		assert.partialDeepStrictEqual(
 			await lintsource(state),
 			[
-				{
-					from: 49,
-					to: 52,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
-				{
-					from: 84,
-					to: 87,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
-				{
-					from: 22,
-					to: 25,
-					message: 'Redundant double negation. (no-extra-boolean-cast)',
-					severity: 'error',
-					source: 'ESLint',
-					actions: [{name: 'fix', tooltip: undefined}],
-				},
+				getStylelintError(49, 52),
+				getStylelintError(84, 87),
+				getESLintError(22, 25),
 			],
 		);
 
-		let view = createDispatchableView(
-				'<script>console.log( !!!0 );</script>',
-				[0],
-				{changes: {from: 22, to: 25, insert: '0'}},
-				vue(),
-			),
-			diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<style>* { top: 0; top: 0 }</style>',
-			[0],
-			{changes: {from: 17, to: 25, insert: ''}},
-			vue(),
-		);
-		diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<p style="top: 0; top: 0">',
-			[0],
-			{changes: {from: 10, to: 17, insert: ''}},
-			vue(),
-		);
-		diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
+		await viewTest('<script>console.log( !!!0 );</script>', lintsource, 22, 25, '0', vue());
+		await viewTest('<style>* { top: 0; top: 0 }</style>', lintsource, 17, 25, '', vue());
+		await viewTest('<p style="top: 0; top: 0">', lintsource, 10, 17, '', vue());
 	});
 	it('mixed MediaWiki-HTML', async () => {
 		const lang = html(mwConfig) as LanguageSupport & {nestedMWLanguage: Language};
@@ -301,121 +240,31 @@ describe('lint sources', () => {
 		assert.partialDeepStrictEqual(
 			await lintsource(state),
 			[
-				{
-					from: 49,
-					to: 52,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
-				{
-					from: 84,
-					to: 87,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
+				getStylelintError(49, 52),
+				getStylelintError(84, 87),
 				// from Vue Stylelint integration
-				{
-					from: 128,
-					to: 131,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'fix'}],
-				},
-				{
-					from: 22,
-					to: 25,
-					message: 'Redundant double negation. (no-extra-boolean-cast)',
-					severity: 'error',
-					source: 'ESLint',
-					actions: [{name: 'fix', tooltip: undefined}],
-				},
-				{
-					from: 112,
-					to: 117,
-					message: 'tag that is both closing and self-closing (unmatched-tag)',
-					severity: 'error',
-					source: 'WikiLint',
-					actions: [{name: 'Fix: open'}],
-				},
+				getStylelintError(128, 131),
+				getESLintError(22, 25),
+				getWikiLintError(112, 117),
 				// from WikiParser-Node Stylelint integration
-				{
-					from: 128,
-					to: 131,
-					message: 'Unexpected duplicate "top"',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'Fix: declaration-block-no-duplicate-properties'}],
-				},
+				getStylelintError(128, 131, true, false),
 				// from `getWikiLintSource()` Stylelint integration
-				{
-					from: 128,
-					to: 131,
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 'error',
-					source: 'Stylelint',
-					actions: [{name: 'Fix: Stylelint'}],
-				},
+				getStylelintError(128, 131, true),
 			],
 		);
 
-		let view = createDispatchableView(
-				'<script>console.log( !!!0 );</script>',
-				[0],
-				{changes: {from: 22, to: 25, insert: '0'}},
-				lang,
-			),
-			diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<style>* { top: 0; top: 0 }</style>',
-			[0],
-			{changes: {from: 17, to: 25, insert: ''}},
-			lang,
-		);
-		diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<p style="top: 0; top: 0">',
-			[0],
-			{changes: {from: 10, to: 17, insert: ''}},
-			lang,
-		);
-		diagnostics = await lintsource(view.state);
-		// eslint-disable-next-line es-x/no-array-prototype-at
-		diagnostics.at(-1)!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
+		await viewTest('<script>console.log( !!!0 );</script>', lintsource, 22, 25, '0', lang);
+		await viewTest('<style>* { top: 0; top: 0 }</style>', lintsource, 17, 25, '', lang);
+		await viewTest('<p style="top: 0; top: 0">', lintsource, 10, 17, '', lang);
+		await viewTest(
 			'<noinclude><br style="top: 0; top: 0"></noinclude>',
-			[0],
-			{changes: {from: 22, to: 29, insert: ''}},
+			lintsource,
+			22,
+			29,
+			'',
 			lang,
 		);
-		diagnostics = await lintsource(view.state);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
-
-		view = createDispatchableView(
-			'<noinclude></br></noinclude>',
-			[0],
-			{changes: {from: 12, to: 13, insert: ''}},
-			lang,
-		);
-		diagnostics = await lintsource(view.state);
-		const diagnostic = diagnostics[0]!;
-		assert.strictEqual(diagnostic.from, 11);
-		assert.strictEqual(diagnostic.to, 16);
-		diagnostics[0]!.actions![0]!.apply(view, 0, 0);
-		await view.dispatched;
+		await viewTest('<noinclude></br></noinclude>', lintsource, 12, 13, '', lang);
 	});
 	it('JSON', async () => {
 		const text = '{ "a": 1, "a": 2';

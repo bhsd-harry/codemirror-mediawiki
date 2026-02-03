@@ -1,7 +1,9 @@
 import * as assert from 'assert';
 import {offsetAt, indexToPos, getPrefix, getCssLinter, getJsLinter, getWikiLinter, getLuaLinter} from '../src/linter';
 import './linter';
+import type {Diagnostic} from '@codemirror/lint';
 import type {AST} from 'wikiparser-node';
+import type {Range} from 'vscode-languageserver-types';
 
 const wikitext = `<p style="top: 0;
 left: 0;">`,
@@ -43,6 +45,38 @@ describe('Stylelint position transformation', () => {
 		prefixTest('html', 'p');
 		prefixTest('table', 'td');
 	});
+});
+
+const getStylelintError = (
+	line: number,
+	character: number,
+	to: number,
+	endFix: number,
+	wikilint?: boolean,
+): Partial<Omit<Diagnostic, 'severity'>> & {severity: number, code: string, data: unknown[], range?: Range} => ({
+	...wikilint
+		? {from: character, to}
+		: {
+			range: {
+				start: {line, character},
+				end: {line, character: to},
+			},
+		},
+	code: 'declaration-block-no-duplicate-properties',
+	message: `Unexpected duplicate "top"${wikilint ? ' (declaration-block-no-duplicate-properties)' : ''}`,
+	severity: 1,
+	source: 'Stylelint',
+	data: [
+		{
+			fix: true,
+			title: `Fix: ${wikilint ? 'Stylelint' : 'declaration-block-no-duplicate-properties'}`,
+			range: {
+				start: {line, character},
+				end: {line, character: endFix},
+			},
+			newText: '',
+		},
+	],
 });
 
 describe('linters', () => {
@@ -162,47 +196,9 @@ describe('linters', () => {
 					],
 				},
 				// from WikiParser-Node Stylelint integration
-				{
-					range: {
-						start: {line: 0, character: 16},
-						end: {line: 0, character: 19},
-					},
-					code: 'declaration-block-no-duplicate-properties',
-					message: 'Unexpected duplicate "top"',
-					severity: 1,
-					source: 'Stylelint',
-					data: [
-						{
-							fix: true,
-							title: 'Fix: declaration-block-no-duplicate-properties',
-							range: {
-								start: {line: 0, character: 16},
-								end: {line: 0, character: 23},
-							},
-							newText: '',
-						},
-					],
-				},
+				getStylelintError(0, 16, 19, 23),
 				// from `getWikiLinter()` Stylelint integration
-				{
-					from: 16,
-					to: 19,
-					code: 'declaration-block-no-duplicate-properties',
-					message: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
-					severity: 1,
-					source: 'Stylelint',
-					data: [
-						{
-							fix: true,
-							title: 'Fix: Stylelint',
-							range: {
-								start: {line: 0, character: 16},
-								end: {line: 0, character: 23},
-							},
-							newText: '',
-						},
-					],
-				},
+				getStylelintError(0, 16, 19, 23, true),
 			],
 		);
 		assert.deepStrictEqual(
@@ -213,27 +209,7 @@ describe('linters', () => {
 			await lint('<br style="top: 0; top: 0">', {'invalid-css': '0'}),
 			[
 				// from WikiParser-Node Stylelint integration
-				{
-					range: {
-						start: {line: 0, character: 11},
-						end: {line: 0, character: 14},
-					},
-					code: 'declaration-block-no-duplicate-properties',
-					message: 'Unexpected duplicate "top"',
-					severity: 1,
-					source: 'Stylelint',
-					data: [
-						{
-							fix: true,
-							title: 'Fix: declaration-block-no-duplicate-properties',
-							range: {
-								start: {line: 0, character: 11},
-								end: {line: 0, character: 18},
-							},
-							newText: '',
-						},
-					],
-				},
+				getStylelintError(0, 11, 14, 18),
 			],
 		);
 		await lint('</br>');

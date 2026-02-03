@@ -10,6 +10,30 @@ declare interface TagMatchResult {
 	end?: [number, number];
 }
 
+const classTest = (
+	doc: string,
+	type: 'ext' | 'html',
+	name: string,
+	selfClosing: boolean,
+	closing: boolean,
+	from: number,
+	to: number,
+	pos?: number,
+): void => {
+	const state = createState(doc),
+		tree = syntaxTree(state),
+		first = pos === undefined ? tree.topNode.firstChild! : tree.resolve(pos, 1);
+	let {nextSibling} = first;
+	while (nextSibling && !nextSibling.name.includes(tokens[`${type}TagBracket`])) {
+		({nextSibling} = nextSibling);
+	}
+	const tag = new Tag(type, name, first, nextSibling!, state);
+	assert.strictEqual(tag.selfClosing, selfClosing);
+	assert.strictEqual(tag.closing, closing);
+	assert.strictEqual(tag.from, from);
+	assert.strictEqual(tag.to, to);
+};
+
 const tagTest = (doc: string, pos: number, name: string, range: [number, number] | null): void => {
 	const state = createState(doc),
 		node = syntaxTree(state).resolve(pos, 1),
@@ -32,106 +56,20 @@ const mockTest = (doc: string, pos: number, result: TagMatchResult | null): void
 
 describe('Tag', () => {
 	it('void tag', () => {
-		let state = createState('<br>'),
-			{topNode} = syntaxTree(state),
-			tag = new Tag('html', 'br', topNode.firstChild!, topNode.lastChild!, state);
-		assert.strictEqual(tag.first.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.last.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.selfClosing, true);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 4);
-
-		state = createState('<wbr/>');
-		({topNode} = syntaxTree(state));
-		tag = new Tag('html', 'wbr', topNode.firstChild!, topNode.lastChild!, state);
-		assert.strictEqual(tag.first.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.last.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.selfClosing, true);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 6);
+		classTest('<br>', 'html', 'br', true, false, 0, 4);
+		classTest('<wbr/>', 'html', 'wbr', true, false, 0, 6);
 	});
 	it('self-closing tag', () => {
-		let state = createState('<li/>'),
-			{topNode} = syntaxTree(state),
-			tag = new Tag('html', 'li', topNode.firstChild!, topNode.lastChild!, state);
-		assert.strictEqual(tag.first.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.last.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.selfClosing, true);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 5);
-
-		state = createState('<ref name="foo" />');
-		({topNode} = syntaxTree(state));
-		tag = new Tag('ext', 'ref', topNode.firstChild!, topNode.lastChild!, state);
-		assert.strictEqual(tag.first.name, tokens.extTagBracket);
-		assert.strictEqual(tag.last.name, tokens.extTagBracket);
-		assert.strictEqual(tag.selfClosing, true);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 18);
+		classTest('<li/>', 'html', 'li', true, false, 0, 5);
+		classTest('<ref name="foo" />', 'ext', 'ref', true, false, 0, 18);
 	});
 	it('opening tag', () => {
-		let state = createState('<p>'),
-			{topNode} = syntaxTree(state),
-			tag = new Tag('html', 'p', topNode.firstChild!, topNode.lastChild!, state);
-		assert.strictEqual(tag.first.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.last.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.selfClosing, false);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 3);
-
-		state = createState('<ref></ref>');
-		({topNode} = syntaxTree(state));
-		tag = new Tag(
-			'ext',
-			'ref',
-			topNode.firstChild!,
-			topNode.firstChild!.nextSibling!.nextSibling!,
-			state,
-		);
-		assert.strictEqual(tag.first.name, tokens.extTagBracket);
-		assert.strictEqual(tag.last.name, tokens.extTagBracket);
-		assert.strictEqual(tag.selfClosing, false);
-		assert.strictEqual(tag.closing, false);
-		assert.strictEqual(tag.from, 0);
-		assert.strictEqual(tag.to, 5);
+		classTest('<p>', 'html', 'p', false, false, 0, 3);
+		classTest('<ref></ref>', 'ext', 'ref', false, false, 0, 5);
 	});
 	it('closing tag', () => {
-		let state = createState('<p></p>'),
-			{topNode} = syntaxTree(state),
-			tag = new Tag(
-				'html',
-				'p',
-				topNode.firstChild!.nextSibling!.nextSibling!,
-				topNode.lastChild!,
-				state,
-			);
-		assert.strictEqual(tag.first.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.last.name, tokens.htmlTagBracket);
-		assert.strictEqual(tag.selfClosing, false);
-		assert.strictEqual(tag.closing, true);
-		assert.strictEqual(tag.from, 3);
-		assert.strictEqual(tag.to, 7);
-
-		state = createState('<ref></ref>');
-		({topNode} = syntaxTree(state));
-		tag = new Tag(
-			'ext',
-			'ref',
-			topNode.firstChild!.nextSibling!.nextSibling!,
-			topNode.lastChild!,
-			state,
-		);
-		assert.strictEqual(tag.first.name, tokens.extTagBracket);
-		assert.strictEqual(tag.last.name, tokens.extTagBracket);
-		assert.strictEqual(tag.selfClosing, false);
-		assert.strictEqual(tag.closing, true);
-		assert.strictEqual(tag.from, 5);
-		assert.strictEqual(tag.to, 11);
+		classTest('<p></p>', 'html', 'p', false, true, 3, 7, 3);
+		classTest('<ref></ref>', 'ext', 'ref', false, true, 5, 11, 5);
 	});
 });
 
