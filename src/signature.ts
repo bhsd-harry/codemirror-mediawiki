@@ -103,7 +103,7 @@ export default (
 				return null;
 			}
 			const {cursor, signatureHelp} = value;
-			return signatureHelp && signatureHelp.signatures.length > 0
+			return signatureHelp?.signatures.length
 				? {
 					pos: cursor,
 					above: true,
