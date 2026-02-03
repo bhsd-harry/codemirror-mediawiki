@@ -87,6 +87,16 @@ export default (
 				})();
 			}
 		}),
+		EditorView.domEventHandlers({
+			keydown({key}, view) {
+				if (key === 'Escape') {
+					const {doc, selection: {main: {head}}} = view.state;
+					view.dispatch({
+						effects: stateEffect.of({text: doc.toString(), cursor: head}),
+					});
+				}
+			},
+		}),
 		showTooltip.from(field, (value): Tooltip | null => {
 			if (!value) {
 				return null;

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.2.1
+
+*2026-02-04*
+
+**Added**
+
+- The [signatureHelp](./README.md#signaturehelp) extension now supports dismissing the tooltip with the `Escape` key
+
 ## 0.2.0
 
 *2026-01-25*
