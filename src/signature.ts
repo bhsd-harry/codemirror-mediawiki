@@ -11,7 +11,9 @@ import {
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
-import type {SignatureHelp} from 'vscode-languageserver-types';
+import type {
+	SignatureHelp,
+} from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
 
 declare interface SignatureEffect {
@@ -40,8 +42,9 @@ const stateEffect = StateEffect.define<SignatureEffect>(),
 	});
 
 export const getSignatureHelp = ({signatures, activeParameter: active}: SignatureHelp): string =>
-	signatures.map(({label, parameters, activeParameter = active}) => {
-		const safeLabel = escHTML(label);
+	signatures.map(signature => {
+		const {label, parameters, activeParameter = active} = signature,
+			safeLabel = escHTML(label);
 		if (activeParameter! < 0 || activeParameter! >= parameters!.length) {
 			return safeLabel;
 		}
@@ -70,19 +73,17 @@ export default (
 					return;
 				}
 				(async () => {
+					// eslint-disable-next-line prefer-const
+					let signatureHelp: SignatureHelp | undefined = await getLSP(
+						view,
+						true,
+						toConfigGetter(
+							configData,
+						),
+						base.CDN,
+					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
 					view.dispatch({
-						effects: stateEffect.of({
-							text,
-							cursor,
-							signatureHelp: await getLSP(
-								view,
-								true,
-								toConfigGetter(
-									configData,
-								),
-								base.CDN,
-							)?.provideSignatureHelp(text, indexToPos(doc, cursor)),
-						}),
+						effects: stateEffect.of({text, cursor, signatureHelp}),
 					});
 				})();
 			}
