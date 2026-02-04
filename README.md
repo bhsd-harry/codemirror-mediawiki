@@ -929,7 +929,7 @@ Refresh linting immediately.
 *version added: 3.8.0*
 
 **type**: `string`  
-By default, libraries such as [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) are loaded from `testingcf.jsdelivr.net`. You can change the [jsDelivr CDN](https://www.jsdelivr.com/network) by setting this property.
+By default, libraries such as [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) are loaded from `fastly.jsdelivr.net`. You can change the [jsDelivr CDN](https://www.jsdelivr.com/network) by setting this property.
 
 ```js
 CodeMirror6.CDN = 'https://cdn.jsdelivr.net';

@@ -1,13 +1,17 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.10.3
+## 3.11.0
 
-*2026-02-04*
+*2026-02-05*
 
 **Added**
 
 - When using the [lint](./README.md#lint) extension for the JavaScript mode, global variables will be highlighted based on the [ESLint legacy configuration](https://eslint.org/docs/latest/use/configure/language-options-deprecated#specifying-environments)
 - The [signatureHelp](./README.md#signaturehelp) extension now supports dismissing the tooltip with the `Escape` key
 - The [signatureHelp](./README.md#signaturehelp) extension now supports template calls when [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
+
+**Changed**
+
+- The default CDN for loading the [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) library is now https://fastly.jsdelivr.net
 
 ## 3.10.2
 
