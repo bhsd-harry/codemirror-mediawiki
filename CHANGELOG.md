@@ -1,11 +1,15 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 0.2.1
+## 0.3.0
 
-*2026-02-04*
+*2026-02-05*
 
 **Added**
 
 - The [signatureHelp](./README.md#signaturehelp) extension now supports dismissing the tooltip with the `Escape` key
+
+**Changed**
+
+- The default CDN for loading the [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) library is now https://fastly.jsdelivr.net
 
 ## 0.2.0
 

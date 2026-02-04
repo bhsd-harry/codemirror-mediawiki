@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
@@ -27,9 +27,8 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"bundle:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build",
 		"build:core": "tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline",
-		"build:gh-page": "npm run bundle:gh-page && esbuild build/*-page.js --charset=utf8 --target=es2019 --format=esm --minify --outdir=.",
+		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --minify --sourcemap --outdir=.",
 		"build": "rm -rf dist/ && npm run build:core",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
 		"lint:css": "stylelint **/*.css",
@@ -40,7 +39,7 @@
 		"diff": "bash diff.sh"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.2.1",
+		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^0.1.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.2",
 		"@bhsd/common": "^1.3.1",

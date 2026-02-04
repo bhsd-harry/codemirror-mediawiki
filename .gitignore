@@ -3,6 +3,7 @@
 /diff.html
 dist/
 /mediawiki.css
+/*.map
 .eslintcache
 **/*.txt
 **/*.wiki

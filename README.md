@@ -54,7 +54,7 @@ import type {LanguageSupport} from '@codemirror/language';
 
 const langSupport: LanguageSupport = mediawiki(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -93,6 +93,8 @@ Key bindings:
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
 - `Ctrl`/`Cmd` + `\`: Escape the selected text with [magic words](https://www.mediawiki.org/wiki/Help:Magic_words#Escaped_characters)
 
+You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec) of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
+
 ```ts
 import {escapeKeymap} from '@bhsd/codemirror-wikitext';
 import config from 'wikiparser-node/config/default.json' with {type: 'json'};
@@ -100,7 +102,7 @@ import type {KeyBinding} from '@codemirror/view';
 
 const keymap: KeyBinding[] = escapeKeymap(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -129,6 +131,8 @@ Formatting key bindings:
 - `Ctrl`/`Cmd` + `Shift` + `6`: Inline code
 - `Ctrl`/`Cmd` + `Shift` + `K`: Ref tag
 
+You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec) of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
+
 ```ts
 import {formatKeymap} from '@bhsd/codemirror-wikitext';
 import type {KeyBinding} from '@codemirror/view';
@@ -147,7 +151,7 @@ const keymap: KeyBinding[] = formatKeymap;
 
 *version added: 0.2.0*
 
-When the editor contains right-to-left text, isolate bidirectional text from the surrounding text. This extension is not included in the default [`mediawiki`](#basic-usage) language support.
+When the editor contains right-to-left text, isolate bidirectional text from the surrounding text. This extension is *not* included in the default [`mediawiki`](#basic-usage) language support.
 
 ```ts
 import {bidiIsolates} from '@bhsd/codemirror-wikitext';
@@ -228,7 +232,7 @@ import type {Extension} from '@codemirror/state';
 
 const extension: Extension = hover(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -249,7 +253,7 @@ import type {Extension} from '@codemirror/state';
 
 const extension: Extension = inlayHints(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -263,7 +267,7 @@ const extension: Extension = inlayHints(
 
 *version added: 0.2.0*
 
-CTRL/CMD-click opens a link in a new tab.
+CTRL/CMD-click opens a link in a new tab. You may want to supply the [`articlePath`](https://github.com/bhsd-harry/wikiparser-node/wiki/types-%28EN%29#config) field in the parser configuration for internal links to work properly.
 
 ```ts
 import {openLinks} from '@bhsd/codemirror-wikitext';
@@ -289,7 +293,7 @@ import type {Extension} from '@codemirror/state';
 
 const extension: Extension = refHover(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -310,7 +314,7 @@ import type {Extension} from '@codemirror/state';
 
 const extension: Extension = signatureHelp(
 	config,
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
@@ -338,7 +342,7 @@ const extension: Extension = wikilint(
 		// (optional) hide the status bar
 		statusBar: false,
 	},
-	// (optional) specify the jsDelivr CDN for loading assets, default to https://testingcf.jsdelivr.net
+	// (optional) specify the jsDelivr CDN for loading assets, default to https://fastly.jsdelivr.net
 	'https://cdn.jsdelivr.net',
 );
 ```
