@@ -6,7 +6,7 @@ import {cssCompletion} from './css.js';
 import {jsCompletion, markGlobalsPlugin} from './javascript.js';
 import type {CodeMirror6} from './codemirror';
 
-export default (_: unknown, cm?: CodeMirror6): LanguageSupport => vue({
+export default (_?: unknown, cm?: CodeMirror6): LanguageSupport => vue({
 	base: new LanguageSupport(htmlLanguage, [
 		htmlLanguage.data.of({autocomplete: htmlCompletionSource}),
 		javascript().support,

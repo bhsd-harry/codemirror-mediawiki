@@ -19,7 +19,8 @@ import type {LintSource} from './lintsource';
 
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
 
-const globals = Decoration.mark({class: 'cm-globals'});
+const globals = Decoration.mark({class: 'cm-globals'}),
+	builtinGlobals = new Set(Object.keys(builtin));
 
 /**
  * 高亮显示全局变量
@@ -33,16 +34,18 @@ export const markGlobals = (
 	cm?: CodeMirror6,
 ): DecorationSet => {
 	const decorations: Range<Decoration>[] = [];
-	let allGlobals = builtin;
+	let allGlobals = builtinGlobals;
 	if (cm?.lintSources.length && typeof eslint === 'object' && 'environments' in eslint) {
 		const env = (cm.lintSources[0] as LintSource<Linter.BaseConfig> | undefined)?.config?.env;
 		if (env) {
-			allGlobals = {...builtin};
+			allGlobals = new Set(builtinGlobals);
 			for (const key of Object.keys(env)) {
-				Object.assign(
-					allGlobals,
-					(eslint.environments as Map<string, {globals: Record<string, false>}>).get(key)?.globals,
-				);
+				const obj = (eslint.environments as Map<string, {globals: Record<string, false>}>).get(key)?.globals;
+				if (obj) {
+					for (const k of Object.keys(obj)) {
+						allGlobals.add(k);
+					}
+				}
 			}
 		}
 	}
@@ -52,7 +55,7 @@ export const markGlobals = (
 			to,
 			enter({type, from: f, to: t}) {
 				const name = state.sliceDoc(f, t);
-				if (type.is('VariableName') && javascriptLanguage.isActiveAt(state, f) && name in allGlobals) {
+				if (type.is('VariableName') && javascriptLanguage.isActiveAt(state, f) && allGlobals.has(name)) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);
 					if (!completions?.options.some(({label}) => label === name)) {
 						decorations.push(globals.range(f, t));
@@ -95,7 +98,7 @@ export const markGlobalsPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fro
 	},
 );
 
-export default (_: unknown, cm?: CodeMirror6): Extension => [
+export default (_?: unknown, cm?: CodeMirror6): Extension => [
 	js(),
 	jsCompletion,
 	markGlobalsPlugin(cm),

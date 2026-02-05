@@ -85,7 +85,7 @@ const linters: Record<string, LintSources | undefined> = {},
 		plain: 'plaintext',
 	},
 	monacoThemes: Record<string, string> = {
-		light: 'vs',
+		light: 'light-plus',
 		dark: 'monokai',
 		nord: 'nord',
 	},
