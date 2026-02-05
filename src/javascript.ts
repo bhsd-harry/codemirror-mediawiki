@@ -52,7 +52,7 @@ export const markGlobals = (
 			to,
 			enter({type, from: f, to: t}) {
 				const name = state.sliceDoc(f, t);
-				if (type.is('VariableName') && name in allGlobals) {
+				if (type.is('VariableName') && javascriptLanguage.isActiveAt(state, f) && name in allGlobals) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);
 					if (!completions?.options.some(({label}) => label === name)) {
 						decorations.push(globals.range(f, t));
@@ -64,37 +64,39 @@ export const markGlobals = (
 	return Decoration.set(decorations);
 };
 
+export const markGlobalsPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fromClass(
+	class implements PluginValue {
+		declare tree;
+		declare decorations;
+
+		constructor({state, visibleRanges}: EditorView) {
+			this.tree = syntaxTree(state);
+			this.decorations = markGlobals(this.tree, visibleRanges, state, cm);
+		}
+
+		update({docChanged, viewportChanged, state, view: {visibleRanges}, transactions}: ViewUpdate): void {
+			const tree = syntaxTree(state);
+			let flag: boolean;
+			if (docChanged || viewportChanged || tree !== this.tree) {
+				this.tree = tree;
+				flag = true;
+			} else {
+				flag = transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect)));
+			}
+			if (flag) {
+				this.decorations = markGlobals(tree, visibleRanges, state, cm);
+			}
+		}
+	},
+	{
+		decorations(v) {
+			return v.decorations;
+		},
+	},
+);
+
 export default (_: unknown, cm?: CodeMirror6): Extension => [
 	js(),
 	jsCompletion,
-	ViewPlugin.fromClass(
-		class implements PluginValue {
-			declare tree;
-			declare decorations;
-
-			constructor({state, visibleRanges}: EditorView) {
-				this.tree = syntaxTree(state);
-				this.decorations = markGlobals(this.tree, visibleRanges, state, cm);
-			}
-
-			update({docChanged, viewportChanged, state, view: {visibleRanges}, transactions}: ViewUpdate): void {
-				const tree = syntaxTree(state);
-				let flag: boolean;
-				if (docChanged || viewportChanged || tree !== this.tree) {
-					this.tree = tree;
-					flag = true;
-				} else {
-					flag = transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect)));
-				}
-				if (flag) {
-					this.decorations = markGlobals(tree, visibleRanges, state, cm);
-				}
-			}
-		},
-		{
-			decorations(v) {
-				return v.decorations;
-			},
-		},
-	),
+	markGlobalsPlugin(cm),
 ];

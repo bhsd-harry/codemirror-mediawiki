@@ -5,7 +5,7 @@
 
 **Added**
 
-- When using the [lint](./README.md#lint) extension for the JavaScript mode, global variables will be highlighted based on the [ESLint legacy configuration](https://eslint.org/docs/latest/use/configure/language-options-deprecated#specifying-environments)
+- When using the [lint](./README.md#lint) extension for the JavaScript/Vue/mixed MediaWiki-HTML modes, global JavaScript variables will be highlighted based on the [ESLint legacy configuration](https://eslint.org/docs/latest/use/configure/language-options-deprecated#specifying-environments)
 - The [signatureHelp](./README.md#signaturehelp) extension now supports dismissing the tooltip with the `Escape` key
 - The [signatureHelp](./README.md#signaturehelp) extension now supports template calls when [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) is installed on a MediaWiki site
 

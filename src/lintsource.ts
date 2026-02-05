@@ -280,7 +280,7 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 	const {CDN} = base,
 		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
 		esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
-	return async state => {
+	const lintSource: LintSource = async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
 			js = option['js'] as Option,
@@ -311,6 +311,12 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 				.flatMap(({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js, doc, from, to)),
 		];
 	};
+	Object.defineProperty(lintSource, 'config', {
+		get() {
+			return esLint.config;
+		},
+	});
+	return lintSource;
 };
 
 /**
@@ -320,7 +326,7 @@ export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
 	const vueLintSource = await getVueLintSource(opt),
 		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn: base.CDN}, view);
-	return async state => {
+	const lintSource: LintSource = async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
 			wiki = option['wiki'] as Option;
@@ -332,6 +338,12 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
 			)).flat(),
 		];
 	};
+	Object.defineProperty(lintSource, 'config', {
+		get() {
+			return vueLintSource.config;
+		},
+	});
+	return lintSource;
 };
 
 /**

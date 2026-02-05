@@ -4,12 +4,13 @@ import {javascript, javascriptLanguage} from '@codemirror/lang-javascript';
 import {cssLanguage} from '@codemirror/lang-css';
 import {LanguageSupport} from '@codemirror/language';
 import {cssCompletion} from './css.js';
-import {jsCompletion} from './javascript.js';
+import {jsCompletion, markGlobalsPlugin} from './javascript.js';
 import {mediawikiBase} from './mediawiki.js';
 import {getLightHighlightStyle} from './theme.js';
 import type {MwConfig} from './token';
+import type {CodeMirror6} from './codemirror';
 
-export default (config: MwConfig): LanguageSupport => {
+export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
 	const {language, support} = mediawikiBase(config),
 		/** @test */
 		lang = htmlLanguage.configure({
@@ -39,6 +40,7 @@ export default (config: MwConfig): LanguageSupport => {
 				cssCompletion(),
 				support,
 				getLightHighlightStyle(),
+				markGlobalsPlugin(cm),
 			],
 		);
 	Object.assign(langSupport, {nestedMWLanguage: language});
