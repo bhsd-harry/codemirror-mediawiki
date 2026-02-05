@@ -59,7 +59,7 @@ export const bracketMatching = (): Extension =>
  * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const hover = (configData: ConfigData, cdn?: string): Extension => [
 	magicWordHover(configData, cdn),
@@ -70,7 +70,7 @@ export const hover = (configData: ConfigData, cdn?: string): Extension => [
  * Get the [signatureHelp](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#signaturehelp)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const signatureHelp = (configData: ConfigData, cdn?: string): Extension => [
 	signatureHelpBase(configData, cdn),
@@ -82,7 +82,7 @@ export const signatureHelp = (configData: ConfigData, cdn?: string): Extension =
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @param lintConfig [Lint configuration](https://github.com/bhsd-harry/wikiparser-node/wiki/Rules#configuration).
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const wikilint = (configData: ConfigData, lintConfig?: LintConfig, cdn?: string): Extension => {
 	updateCDN(cdn);
@@ -120,7 +120,7 @@ export const wikilint = (configData: ConfigData, lintConfig?: LintConfig, cdn?: 
 /**
  * Get full language support for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://testingcf.jsdelivr.net`
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport => {
 	updateCDN(cdn);
