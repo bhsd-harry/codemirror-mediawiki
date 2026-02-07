@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.11.1
+
+*2026-02-08*
+
+**Changed**
+
+- Monospaced font is now enforced for non-MediaWiki modes on a MediaWiki site
+
 ## 3.11.0
 
 *2026-02-05*

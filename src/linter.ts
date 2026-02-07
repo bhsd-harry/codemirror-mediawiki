@@ -232,7 +232,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 			config.rules = {...recommended, ...config.rules};
 		}
 		delete config.extends;
-		linter.config = config as Record<string, unknown>;
+		linter.config = config;
 		return esLinter.verify(text, config)
 			.filter(({ruleId, message}) => message !== `Definition for rule '${ruleId}' was not found.`);
 	};

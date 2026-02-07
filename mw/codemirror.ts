@@ -271,6 +271,11 @@ export class CodeMirror extends CodeMirror6 {
 				config,
 			);
 		}
+		// 继承编辑字体
+		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
+		if (font) {
+			this.view!.contentDOM.classList.toggle(font, this.lang === 'mediawiki' || this.lang === 'plain');
+		}
 	}
 
 	override initialize(config?: unknown, monaco?: boolean): void {
@@ -296,10 +301,6 @@ export class CodeMirror extends CodeMirror6 {
 			),
 		});
 		this.#setLangConfig(config as MwConfig);
-		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));
-		if (font) {
-			this.view!.contentDOM.classList.add(font);
-		}
 		toggleButton(this.$toolbar, 'lineWrapping', true);
 	}
 
