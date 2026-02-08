@@ -7,7 +7,7 @@ import {
 import {ViewPlugin, Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
-import {builtin} from 'globals/globals.json';
+import {builtin} from './javascript-globals.js';
 import type {Extension, Range, EditorState} from '@codemirror/state';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
