@@ -10,12 +10,14 @@ import {
 	stylelintRepo,
 	eslintRepo,
 	luacheckRepo,
+	isStylelintConfig,
 } from './linter.js';
 import {
 	posToIndex,
 	toConfigGetter,
 } from './util.js';
 import {base} from './constants.js';
+import {vue} from './javascript-globals.js';
 import type {EditorView} from '@codemirror/view';
 import type {
 	Text,
@@ -29,7 +31,8 @@ import type {
 import type {
 	QuickFixData,
 } from 'wikiparser-node';
-import type {Rule} from 'eslint';
+import type {Rule, Linter} from 'eslint';
+import type {Config} from 'stylelint/types/stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
 import type {DocRange} from './fold';
@@ -273,58 +276,87 @@ export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 };
 
 /**
+ * @author Yosuke Ota and others
+ * @license MIT
+ * @see https://github.com/ota-meshi/stylelint-config-recommended-vue/blob/main/lib/vue-specific-rules.js
+ */
+// eslint-disable-next-line unicorn/no-unreadable-iife
+const stylelintConfigVue = /* #__PURE__ */ ((): Exclude<Config['rules'], undefined> => ({
+	'selector-pseudo-class-no-unknown': [true, {ignorePseudoClasses: ['deep', 'global', 'slotted']}],
+	'selector-pseudo-element-no-unknown': [true, {ignorePseudoElements: ['v-deep', 'v-global', 'v-slotted']}],
+	'declaration-property-value-no-unknown': [true, {ignoreProperties: {'/.*/': String.raw`/v-bind\(.+\)/`}}],
+	'function-no-unknown': [true, {ignoreFunctions: ['v-bind']}],
+}))();
+
+/** @implements */
+const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.BaseConfig['globals']): LintSourceGetter =>
+	async (opt): Promise<LintSource> => {
+		const {CDN} = base,
+			styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
+			esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
+		const lintSource: LintSource = async state => {
+			const {doc} = state,
+				option = await getOpt(opt, true) ?? {};
+			let js = option['js'] as Linter.BaseConfig | null | undefined,
+				css = option['css'] as Config | Config['rules'];
+			if (rules) {
+				css = isStylelintConfig(css)
+					? {
+						...css,
+						rules: {...rules, ...css.rules},
+					}
+					: {...rules, ...css};
+			}
+			if (globals) {
+				js = {...js, globals: {...globals, ...js?.globals}};
+			}
+			return [
+				...(await Promise.all(
+					cssLanguage.findRegions(state).map(async ({from, to}): Promise<Diagnostic[]> => {
+						const node = ensureSyntaxTree(state, from)?.resolve(from, 1);
+						if (node?.name === 'AttributeValue') {
+							return (await cssLintSource(
+								styleLint,
+								`a {${sanitizeInlineStyle(state.sliceDoc(from, to))}}`,
+								css,
+								doc,
+								from - 3,
+								to + 1,
+							)).filter(({from: f, to: t}) => f <= to && t >= from)
+								.map((diagnostic): Diagnostic => {
+									diagnostic.from = Math.max(diagnostic.from, from);
+									diagnostic.to = Math.min(diagnostic.to, to);
+									return diagnostic;
+								});
+						}
+						return node ? cssLintSource(styleLint, state.sliceDoc(from, to), css, doc, from, to) : [];
+					}),
+				)).flat(),
+				...javascriptLanguage.findRegions(state).flatMap(
+					({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js as Option, doc, from, to),
+				),
+			];
+		};
+		Object.defineProperty(lintSource, 'config', {
+			get() {
+				return esLint.config;
+			},
+		});
+		return lintSource;
+	};
+
+/**
  * @implements
  * @test
  */
-export const getVueLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const {CDN} = base,
-		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
-		esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
-	const lintSource: LintSource = async state => {
-		const {doc} = state,
-			option = await getOpt(opt, true) ?? {},
-			js = option['js'] as Option,
-			css = option['css'] as Option;
-		return [
-			...(await Promise.all(
-				cssLanguage.findRegions(state).map(async ({from, to}): Promise<Diagnostic[]> => {
-					const node = ensureSyntaxTree(state, from)?.resolve(from, 1);
-					if (node?.name === 'AttributeValue') {
-						return (await cssLintSource(
-							styleLint,
-							`a {${sanitizeInlineStyle(state.sliceDoc(from, to))}}`,
-							css,
-							doc,
-							from - 3,
-							to + 1,
-						)).filter(({from: f, to: t}) => f <= to && t >= from)
-							.map((diagnostic): Diagnostic => {
-								diagnostic.from = Math.max(diagnostic.from, from);
-								diagnostic.to = Math.min(diagnostic.to, to);
-								return diagnostic;
-							});
-					}
-					return node ? cssLintSource(styleLint, state.sliceDoc(from, to), css, doc, from, to) : [];
-				}),
-			)).flat(),
-			...javascriptLanguage.findRegions(state)
-				.flatMap(({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js, doc, from, to)),
-		];
-	};
-	Object.defineProperty(lintSource, 'config', {
-		get() {
-			return esLint.config;
-		},
-	});
-	return lintSource;
-};
+export const getVueLintSource = /* #__PURE__ */ getVueOrHtmlLintSource(stylelintConfigVue, vue);
 
 /**
  * @implements
  * @test
  */
 export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
-	const vueLintSource = await getVueLintSource(opt),
+	const vueLintSource = await getVueOrHtmlLintSource()(opt),
 		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn: base.CDN}, view);
 	const lintSource: LintSource = async state => {
 		const {doc} = state,

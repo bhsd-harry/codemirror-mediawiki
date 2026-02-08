@@ -1,1 +1,1 @@
-export {builtin} from 'globals/globals.json';
+export {builtin, vue} from 'globals/globals.json';

@@ -91,7 +91,7 @@ export const indexToPos = (code: string, index: number): Position => {
  * 判断是否为 Stylelint 设置
  * @param config 设置
  */
-const isStylelintConfig = (config?: Config | Config['rules']): config is Config =>
+export const isStylelintConfig = (config?: Config | Config['rules']): config is Config =>
 	Boolean(config && ('extends' in config || 'rules' in config));
 
 /**
@@ -186,8 +186,10 @@ export const getWikiLinter: getAsyncLinter<
 	return linter;
 };
 
+// eslint-disable-next-line unicorn/no-unreadable-iife
+const jsEnv = /* #__PURE__ */ ((): Linter.BaseConfig['env'] => ({browser: true, es2024: true}))();
 export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line unicorn/no-unreadable-iife
-	env: {browser: true, es2024: true, jquery: true},
+	env: {...jsEnv, jquery: true},
 	globals: {
 		mw: 'readonly',
 		mediaWiki: 'readonly',
@@ -210,7 +212,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
 		conf: Linter.BaseConfig = {
-			env: {browser: true, es2024: true},
+			env: jsEnv,
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 		},
 		recommended: Linter.RulesRecord = {};

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.11.2
+
+*2026-02-09*
+
+**Fixed**
+
+- [Vue-specific Stylelint rule configurations](https://github.com/ota-meshi/stylelint-config-recommended-vue/blob/main/lib/vue-specific-rules.js) and JavaScript globals for the Vue mode
+
 ## 3.11.1
 
 *2026-02-08*

@@ -210,7 +210,8 @@ describe('lint sources', () => {
 		const state = createState(
 			`<script>console.log( !!!0 );</script>
 <style>* { top: 0; top: 0 }</style>
-<p style="top: 0; top: 0">`,
+<p style="top: 0; top: 0">
+<style>* { color: v-bind(color); }</style>`,
 			vue(),
 		);
 		const lintsource = await getVueLintSource();

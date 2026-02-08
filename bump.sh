@@ -12,7 +12,7 @@ then
 else
 	for x in i18n/* package.json
 	do
-		sed -i '' -E "s/\"version\": \".+\"/\"version\": \"$1\"/" "$x"
+		gsed -i -E "s/\"version\": \".+\"/\"version\": \"$1\"/" "$x"
 	done
 	npm run lint && npm run build:test && npm run test:real && npm run build
 	if [[ $? -eq 0 ]]

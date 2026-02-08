@@ -19,7 +19,7 @@ import type {LintSource} from './lintsource';
 
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
 
-const globals = Decoration.mark({class: 'cm-globals'}),
+const globalsMark = Decoration.mark({class: 'cm-globals'}),
 	builtinGlobals = new Set(Object.keys(builtin));
 
 /**
@@ -36,15 +36,23 @@ export const markGlobals = (
 	const decorations: Range<Decoration>[] = [];
 	let allGlobals = builtinGlobals;
 	if (cm?.lintSources.length && typeof eslint === 'object' && 'environments' in eslint) {
-		const env = (cm.lintSources[0] as LintSource<Linter.BaseConfig> | undefined)?.config?.env;
-		if (env) {
+		const {env, globals} = (cm.lintSources[0] as LintSource<Linter.BaseConfig> | undefined)?.config ?? {};
+		if (env || globals) {
 			allGlobals = new Set(builtinGlobals);
-			for (const key of Object.keys(env)) {
-				const obj = (eslint.environments as Map<string, {globals: Record<string, false>}>).get(key)?.globals;
-				if (obj) {
-					for (const k of Object.keys(obj)) {
-						allGlobals.add(k);
+			if (env) {
+				for (const key of Object.keys(env)) {
+					const obj = (eslint.environments as Map<string, {globals: Record<string, false>}>).get(key)
+						?.globals;
+					if (obj) {
+						for (const k of Object.keys(obj)) {
+							allGlobals.add(k);
+						}
 					}
+				}
+			}
+			if (globals) {
+				for (const k of Object.keys(globals)) {
+					allGlobals.add(k);
 				}
 			}
 		}
@@ -58,7 +66,7 @@ export const markGlobals = (
 				if (type.is('VariableName') && javascriptLanguage.isActiveAt(state, f) && allGlobals.has(name)) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);
 					if (!completions?.options.some(({label}) => label === name)) {
-						decorations.push(globals.range(f, t));
+						decorations.push(globalsMark.range(f, t));
 					}
 				}
 			},

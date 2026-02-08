@@ -366,11 +366,6 @@ export class CodeMirror6 {
 		this.#view!.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
 	}
 
-	/** 获取语法检查扩展 */
-	#getLintExtension(): LintExtension | undefined {
-		return (this.#linter.get(this.#view!.state) as LintExtension[])[0];
-	}
-
 	/**
 	 * Set language
 	 * @param lang language
@@ -444,7 +439,7 @@ export class CodeMirror6 {
 	/** Update syntax checking immediately */
 	update(): void {
 		if (this.#view) {
-			const extension = this.#getLintExtension();
+			const [extension] = this.#linter.get(this.#view.state) as LintExtension[];
 			if (extension) {
 				const plugin = this.#view.plugin(extension[1])!;
 				plugin.set = true;
