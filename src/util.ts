@@ -1,5 +1,4 @@
 import elt from 'crelt';
-import {tokens} from './config.js';
 import {
 	hoverSelector,
 	base,
@@ -10,7 +9,6 @@ import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
-import type {TagName} from './config';
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 
@@ -70,14 +68,6 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 	const brackets = sliceDoc(state, node);
 	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
 };
-
-/**
- * 判断节点是否包含指定类型
- * @param types 节点类型
- * @param names 指定类型
- */
-export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 
 /**
  * 将解析设置转换为返回Promise的函数

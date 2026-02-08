@@ -16,9 +16,6 @@ import {
 	hoverSelector,
 } from './constants.js';
 import {MediaWiki} from './token.js';
-import {
-	hasTag,
-} from './util.js';
 import type {
 	StreamParser,
 	Language,
@@ -27,6 +24,15 @@ import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult}
 import type {
 	MwConfig,
 } from './token';
+import type {TagName} from './config';
+
+/**
+ * 判断节点是否包含指定类型
+ * @param types 节点类型
+ * @param names 指定类型
+ */
+export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
+	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly functionSynonyms: Completion[];
