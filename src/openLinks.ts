@@ -2,16 +2,13 @@ import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
 import {isMac} from './constants.js';
-import {hasTag} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
 import type {MwConfig} from './token';
-import type {TagName} from './config';
 
 declare type ISBNParser = (link: string) => string;
 
-const tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
-	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
+const links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	pagename = '.cm-mw-pagename',
 	wikiLinks = [
 		'template-name',
@@ -61,20 +58,19 @@ export const mouseEventListener = (
 	) {
 		return undefined;
 	}
-	const position = view.posAtCoords(e);
-	if (!position) {
+	const posAndSide = view.posAndSideAtCoords(e);
+	if (!posAndSide) {
 		return undefined;
 	}
-	const {state} = view,
-		tree = ensureSyntaxTree(state, position);
+	const {pos, assoc} = posAndSide,
+		{state} = view,
+		tree = ensureSyntaxTree(state, pos);
 	if (!tree) {
 		return undefined;
 	}
-	let node = tree.resolve(position, -1);
+	let node = tree.resolve(pos, assoc);
 	if (node.name.includes(tokens.linkToSection)) {
 		node = node.prevSibling!;
-	} else if (node.to === position && !hasTag(new Set(node.name.split('_')), tags)) {
-		node = tree.resolve(position, 1);
 	}
 	const {name, from, to} = node;
 	if (name.includes('-extlink-protocol')) {

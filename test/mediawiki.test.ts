@@ -1,5 +1,8 @@
-import {FullMediaWiki, apply} from '../src/mediawiki';
+import * as assert from 'assert';
+import {FullMediaWiki, apply, hasTag} from '../src/mediawiki';
+import {tokens} from '../src/config';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util';
+import type {TagName} from '../src/config';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
@@ -376,5 +379,27 @@ describe('apply link completion', () => {
 	it('pipe', async () => {
 		await applyTest('[[F', 3, 2, 'Foo', [2, [1, 'Foo|Foo]]']], [6, 9]);
 		await applyTest('[[F]]', 3, 2, 'Foo', [2, [1, 'Foo|Foo'], 2], [6, 9]);
+	});
+});
+
+describe('util functions', () => {
+	it('has tag', () => {
+		const types = new Set([tokens.em, tokens.error]);
+		const yes = (tag: string | string[]): void => {
+				assert.ok(hasTag(types, tag as TagName | TagName[]));
+			},
+			no = (tag: string | string[]): void => {
+				assert.ok(!hasTag(types, tag as TagName | TagName[]));
+			};
+		yes(tokens.em);
+		yes(tokens.error);
+		yes('em');
+		yes('error');
+		no(tokens.strong);
+		no('strong');
+		yes([tokens.em, tokens.strong]);
+		yes(['em', 'strong']);
+		no([tokens.strong, 'list']);
+		no(['strong', 'list']);
 	});
 });

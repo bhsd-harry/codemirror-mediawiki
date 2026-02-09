@@ -7,13 +7,10 @@ import {
 	posToIndex,
 	sliceDoc,
 	braceStackUpdate,
-	hasTag,
 	leadingSpaces,
 	findTemplateName,
 } from '../src/util';
-import {tokens} from '../src/config';
 import {createState} from './util';
-import type {TagName} from '../src/config';
 
 const doc = Text.of([
 	'First line.',
@@ -57,26 +54,6 @@ describe('util functions', () => {
 		/** @todo should return `null` */
 		mockTest(29, ['c', '']);
 		mockTest(30, ['c', 'e=']);
-	});
-
-	it('has tag', () => {
-		const types = new Set([tokens.em, tokens.error]);
-		const yes = (tag: string | string[]): void => {
-				assert.ok(hasTag(types, tag as TagName | TagName[]));
-			},
-			no = (tag: string | string[]): void => {
-				assert.ok(!hasTag(types, tag as TagName | TagName[]));
-			};
-		yes(tokens.em);
-		yes(tokens.error);
-		yes('em');
-		yes('error');
-		no(tokens.strong);
-		no('strong');
-		yes([tokens.em, tokens.strong]);
-		yes(['em', 'strong']);
-		no([tokens.strong, 'list']);
-		no(['strong', 'list']);
 	});
 
 	it('leading spaces', () => {
