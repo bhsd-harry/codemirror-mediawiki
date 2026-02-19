@@ -34,12 +34,12 @@ describe('HTML autocompletion', () => {
 
 describe('HTML sublanguage', () => {
 	it('<script>', () => {
-		sublangTest('<head><script>const x = 1;</script></head>', 3, 'commentTokens', [
+		sublangTest('<head><script>const x = 1;</script></head>', 13, 'commentTokens', [
 			{
 				block: {open: '<!--', close: '-->'},
 			},
 		]);
-		sublangTest('<head><script>const x = 1;</script></head>', 8, 'commentTokens', [
+		sublangTest('<head><script>const x = 1;</script></head>', 15, 'commentTokens', [
 			{
 				line: '//',
 				block: {open: '/*', close: '*/'},
@@ -47,19 +47,19 @@ describe('HTML sublanguage', () => {
 		]);
 	});
 	it('<style>', () => {
-		sublangTest('<head><style>* { all: revert }</style></head>', 3, 'commentTokens', [
+		sublangTest('<head><style>* { all: revert }</style></head>', 12, 'commentTokens', [
 			{
 				block: {open: '<!--', close: '-->'},
 			},
 		]);
-		sublangTest('<head><style>* { all: revert }</style></head>', 8, 'commentTokens', [
+		sublangTest('<head><style>* { all: revert }</style></head>', 14, 'commentTokens', [
 			{
 				block: {open: '/*', close: '*/'},
 			},
 		]);
 	});
 	it('<noinclude>', () => {
-		sublangTest('<br><noinclude>{{doc}}</noinclude>', 13, 'closeBrackets', []);
+		sublangTest('<br><noinclude>{{doc}}</noinclude>', 14, 'closeBrackets', []);
 		sublangTest('<br><noinclude>{{doc}}</noinclude>', 16, 'closeBrackets', [
 			{
 				brackets: ['(', '[', '{', '"'],
