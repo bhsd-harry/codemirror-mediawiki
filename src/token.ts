@@ -1144,8 +1144,8 @@ export class MediaWiki {
 			name = stream.match(doubleUnderscoreRegex[ch]);
 		if (name) {
 			if (
-				Object.prototype.hasOwnProperty.call(doubleUnderscore[0], underscore + name[0].toLowerCase())
-				|| Object.prototype.hasOwnProperty.call(doubleUnderscore[1], underscore + name[0])
+				Object.hasOwn(doubleUnderscore[0], underscore + name[0].toLowerCase())
+				|| Object.hasOwn(doubleUnderscore[1], underscore + name[0])
 			) {
 				return tokens.doubleUnderscore;
 			} else if (!stream.eol()) {
@@ -1584,10 +1584,8 @@ export class MediaWiki {
 			}
 			const ffLower = ff.toLowerCase(),
 				{functionSynonyms, variableIDs, functionHooks} = this.config,
-				canonicalName = Object.prototype.hasOwnProperty.call(functionSynonyms[1], ff)
-					&& functionSynonyms[1][ff]
-					|| Object.prototype.hasOwnProperty.call(functionSynonyms[0], ffLower)
-					&& functionSynonyms[0][ffLower];
+				canonicalName = Object.hasOwn(functionSynonyms[1], ff) && functionSynonyms[1][ff]
+					|| Object.hasOwn(functionSynonyms[0], ffLower) && functionSynonyms[0][ffLower];
 			if (
 				(!delimiter || fullWidth || delimiter === ':' || delimiter === '}')
 				&& canonicalName
