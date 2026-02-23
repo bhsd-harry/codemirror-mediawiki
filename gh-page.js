@@ -46,11 +46,7 @@ var templateSignature = (templateName, parameterName) => {
   switch (parameter) {
     case "parameter with detail and info":
     case "argument with detail and info":
-      label = "a required parameter";
-      break;
-    case "parameter with info":
-    case "argument with info":
-      label = "a suggested parameter";
+      label = "2nd parameter";
       break;
     case "parameter with detail":
       label = "4th parameter";

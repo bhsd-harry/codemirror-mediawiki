@@ -74,12 +74,12 @@
 		"wikiparser-node": "^1.35.2"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.0.1",
+		"@bhsd/code-standard": "^2.1.0",
 		"@bhsd/test-util": "^0.3.0",
-		"@stylistic/eslint-plugin": "^5.8.0",
+		"@stylistic/eslint-plugin": "^5.9.0",
 		"@stylistic/stylelint-plugin": "^5.0.1",
 		"@types/eslint": "^9.6.1",
-		"@types/jquery": "^3.5.33",
+		"@types/jquery": "^3.5.34",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^24.10.13",
 		"@types/oojs-ui": "^0.49.4",
@@ -87,10 +87,10 @@
 		"@typescript-eslint/parser": "^8.54.0",
 		"esbuild": "^0.27.3",
 		"eslint": "^9.39.3",
-		"eslint-plugin-es-x": "^9.4.0",
+		"eslint-plugin-es-x": "^9.5.0",
 		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-jsdoc": "^62.7.0",
-		"eslint-plugin-jsonc": "^2.21.1",
+		"eslint-plugin-jsonc": "^3.1.0",
 		"eslint-plugin-promise": "^7.2.1",
 		"eslint-plugin-regexp": "^3.0.0",
 		"eslint-plugin-unicorn": "^63.0.0",
@@ -101,7 +101,7 @@
 		"monaco-editor": "^0.55.1",
 		"stylelint": "^17.3.0",
 		"stylelint-config-recommended": "^18.0.0",
-		"stylelint-plugin-use-baseline": "^1.2.2",
+		"stylelint-plugin-use-baseline": "^1.2.4",
 		"types-mediawiki": "^2.0.0",
 		"typescript": "^5.9.3"
 	}

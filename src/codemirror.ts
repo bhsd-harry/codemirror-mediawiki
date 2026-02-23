@@ -453,10 +453,10 @@ export class CodeMirror6 {
 	 */
 	prefer(names: string[] | Record<string, boolean>): void {
 		if (Array.isArray(names)) {
-			this.#preferred = new Set(names.filter(name => Object.prototype.hasOwnProperty.call(avail, name)));
+			this.#preferred = new Set(names.filter(name => Object.hasOwn(avail, name)));
 		} else {
 			for (const [name, enable] of Object.entries(names)) {
-				if (enable && Object.prototype.hasOwnProperty.call(avail, name)) {
+				if (enable && Object.hasOwn(avail, name)) {
 					this.#preferred.add(name);
 				} else {
 					this.#preferred.delete(name);
