@@ -9,7 +9,7 @@ import {
 	actionSelector,
 	bgDark,
 } from './constants.js';
-import type {Extension, SelectionRange} from '@codemirror/state';
+import type {Extension, SelectionRange, Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
 import type {
@@ -148,6 +148,14 @@ const updateMenu = (
 	}
 };
 
+const updatePosition = (doc: Text, {head, empty, from, to}: SelectionRange, position: HTMLElement): void => {
+	const {number, from: f} = doc.lineAt(head);
+	position.textContent = `${number}:${head - f}`;
+	if (!empty) {
+		position.textContent += ` (${to - from})`;
+	}
+};
+
 export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [];
@@ -189,7 +197,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 				fix,
 			),
 			message = elt('div', {class: messageSelector.slice(1)}),
-			position = elt('div', {class: lineCls}, '0:0'),
+			position = elt('div', {class: lineCls}),
 			dom = elt(
 				'div',
 				{class: `${panelSelector.slice(1)} ${statusSelector.slice(1)}`},
@@ -200,6 +208,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		position.addEventListener('click', () => {
 			gotoLine(view);
 		});
+		updatePosition(view.state.doc, view.state.selection.main, position);
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
@@ -218,11 +227,7 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 				if (docChanged || selectionSet) {
 					updateDiagnosticMessage(view, diagnostics, main, message);
 					updateMenu(cm, diagnostics, main, classList, optionAll, menu, fixer);
-					const {number, from} = doc.lineAt(main.head);
-					position.textContent = `${number}:${main.head - from}`;
-					if (!main.empty) {
-						position.textContent += ` (${main.to - main.from})`;
-					}
+					updatePosition(doc, main, position);
 				}
 			},
 		};

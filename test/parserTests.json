@@ -363,6 +363,11 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[ </><template-link-ground link-pagename pagename>Foo</><template-ground template>BC]]</><template-ground template-bracket>}}</>"
 	},
 	{
+		"desc": "Wikilinks with backslashes should be urlencoded in href (T415315)",
+		"wikitext": "[[foo\\bar]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>foo\\bar</><link-ground link-bracket>]]</>"
+	},
+	{
 		"desc": "Broken templates",
 		"wikitext": "{{1x|[[Foo|}}]]\n\n[[Foo|{{1x|]]}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Foo</><template-link-ground link-delimiter>|</><template-link-ground link-text>}}</><template-link-ground link-bracket>]][[</><template-link-ground link-pagename pagename>Foo</><template-link-ground link-delimiter>|</><template2-link-ground template-bracket>{{</><template2-link-ground template-name pagename>1x</><template2-link-ground template-delimiter>|</><template2-link-ground template>]]</><template2-link-ground template-bracket>}}</>"
@@ -4168,6 +4173,11 @@
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>xmlns:dct=</><htmltag-attribute-value>\"http://purl.org/dc/terms/\"</><htmltag-attribute html-span> property=</><htmltag-attribute-value>\"dct:title\"</><htmltag-bracket>&gt</>MediaWiki<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
+		"desc": "Serializer shouldn't blindly user dataParsoid.srcTagName",
+		"wikitext": "<FONT class=\"x\">boo</FONT>\n\n<span class=\"x\">boo</span>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>FONT </><htmltag-attribute html-font>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</>boo<htmltag-bracket>&lt;/</><htmltag-name>FONT</><htmltag-bracket>&gt&lt;</><htmltag-name>span </><htmltag-attribute html-span>class=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</>boo<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+	},
+	{
 		"desc": "Ignore rel attribute in a-tags during serialization to url-links",
 		"wikitext": "http://en.wikipedia.org/wiki/Foobar\nhttp://en.wikipedia.org/wiki/Foobar\nhttp://en.wikipedia.org/wiki/Foobar",
 		"parsed": "<free-extlink-protocol>http://</><free-extlink>en.wikipedia.org/wiki/Foobar</><free-extlink-protocol>http://</><free-extlink>en.wikipedia.org/wiki/Foobar</><free-extlink-protocol>http://</><free-extlink>en.wikipedia.org/wiki/Foobar</>"
@@ -4356,6 +4366,21 @@
 		"desc": "7. T194083 Regression test: Manual edit test to ensure nested diff markers aren't inserted",
 		"wikitext": "<div>placeholder</div>",
 		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</>placeholder<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+	},
+	{
+		"desc": "8. T409669 Regression test: Manual edit test to move format tags outside wikilinks with spaces in target",
+		"wikitext": "[[Foo bar baz]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo bar baz</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "9. T409669 Regression test: Don't move out format tags when originating as piped",
+		"wikitext": "[[Foo bar baz|''Foo bar baz'']]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo bar baz</><link-ground link-delimiter>|</><link-ground apostrophes>''</><link-ground link-text em>Foo bar baz</><link-ground apostrophes>''</><link-ground link-bracket>]]</>"
+	},
+	{
+		"desc": "10. T409669 Regression test: Don't move out format tags when originating as piped unless in edited content",
+		"wikitext": "[[Foo bar baz|Something else]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo bar baz</><link-ground link-delimiter>|</><link-ground link-text>Something else</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "T192913 Regression test: 1. html2wt of links should not trip on parser functions found in target",
@@ -8770,6 +8795,11 @@
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>Taiwan is China.<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>Taiwan is China<convert-bracket>}-</>"
 	},
 	{
+		"desc": "Code coverage: T with no variants (default variant)",
+		"wikitext": "-{H|zh:China; zh-tw:Taiwan}-\nTaiwan is China.-{T|Taiwan is China}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>Taiwan is China.<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>Taiwan is China<convert-bracket>}-</>"
+	},
+	{
 		"desc": "Code coverage: rules with no variants",
 		"wikitext": "-{H|zh:China; zh-tw:Taiwan}-\nTaiwan is China.\n-{H|China}-\nTaiwan is China.",
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-lang>zh:</>China<convert-delimiter>; </><convert-lang>zh-tw:</>Taiwan<convert-bracket>}-</>Taiwan is China.<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>China<convert-bracket>}-</>Taiwan is China."
@@ -8946,8 +8976,8 @@
 	},
 	{
 		"desc": "T153135: Nested language converter markup in definition list (code coverage)",
-		"wikitext": ";-{|zh-cn:AAA -{zh-hans|foo:bar}- -{R|bat:baz}-}-:def",
-		"parsed": "<list>;</><convert-bracket>-{</><convert-delimiter>|</><convert-lang>zh-cn:</><strong>AAA </><convert-bracket>-{</><convert-flag>zh-hans</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</><strong> </><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>bat:baz</><convert-bracket>}-}-</><list>:</>def"
+		"wikitext": ";-{zh-cn:AAA -{zh-hans|foo:bar}- -{R|bat:baz}-}-:def",
+		"parsed": "<list>;</><convert-bracket>-{</><convert-lang>zh-cn:</><strong>AAA </><convert-bracket>-{</><convert-flag>zh-hans</><convert-delimiter>|</><strong>foo:bar</><convert-bracket>}-</><strong> </><convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</><strong>bat:baz</><convert-bracket>}-}-</><list>:</>def"
 	},
 	{
 		"desc": "Language converter tricky html2wt cases (5)",
@@ -9023,6 +9053,31 @@
 		"desc": "T302678: Serialize empty twoway",
 		"wikitext": "-{H|}-",
 		"parsed": "<convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</><convert-bracket>}-</>"
+	},
+	{
+		"desc": "Two-way rules with images",
+		"wikitext": "-{zh-tw:[[File:Foobar.jpg|thumb|tw]]; zh-hk:[[File:Foobar.jpg|thumb|hk]]; zh-cn:[[File:Foobar.jpg|thumb|cn]]}-",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh-tw:</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>thumb</><link-ground file-delimiter>|</><link-ground file-text>tw</><link-ground link-bracket>]]</><convert-delimiter>; </><convert-lang>zh-hk:</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>thumb</><link-ground file-delimiter>|</><link-ground file-text>hk</><link-ground link-bracket>]]</><convert-delimiter>; </><convert-lang>zh-cn:</><link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>thumb</><link-ground file-delimiter>|</><link-ground file-text>cn</><link-ground link-bracket>]]</><convert-bracket>}-</>"
+	},
+	{
+		"desc": "Embedded new lines",
+		"wikitext": "-{zh-tw:* foo;\nzh-cn:* bar}-",
+		"parsed": "<convert-bracket>-{</><convert-lang>zh-tw:</>* foo<convert-delimiter>;</><convert-lang>zh-cn:</>* bar<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Language variant with empty flag section",
+		"wikitext": "This is -{|a test}-",
+		"parsed": "This is <convert-bracket>-{</><convert-delimiter>|</>a test<convert-bracket>}-</>"
+	},
+	{
+		"desc": "html2wt of language variant text that could be confused for a flag",
+		"wikitext": "-{R|R|R}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>R</><convert-delimiter>|</>R|R<convert-bracket>}-</>"
+	},
+	{
+		"desc": "Don't crash if there are no possible variants of a redlink",
+		"wikitext": "[[This is a red link]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>This is a red link</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "langParserTests2"
@@ -9234,8 +9289,8 @@
 	},
 	{
 		"desc": "Localized language names",
-		"wikitext": "-{N|zh-cn}-\n\n-{N|zh-tw}-\n\n-{N|sr-ec}-",
-		"parsed": "<convert-bracket>-{</><convert-flag>N</><convert-delimiter>|</>zh-cn<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>zh-tw<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>sr-ec<convert-bracket>}-</>"
+		"wikitext": "-{N|zh-cn}-\n\n-{N|zh-tw}-\n\n-{N|sr-Cyrl}-",
+		"parsed": "<convert-bracket>-{</><convert-flag>N</><convert-delimiter>|</>zh-cn<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>zh-tw<convert-bracket>}--{</><convert-flag>N</><convert-delimiter>|</>sr-Cyrl<convert-bracket>}-</>"
 	},
 	{
 		"desc": "Only consider certain variants for conversion (zh)",
@@ -9442,6 +9497,11 @@
 		"desc": "Magic links: RFC (w/ non-newline whitespace, T30950/T31025)",
 		"wikitext": "RFC &nbsp;&#160;&#0160;&#xA0;&#Xa0; 822\nRFC\n822",
 		"parsed": "RFC <entity>&amp;nbsp;&amp;#160;&amp;#0160;&amp;#xA0;&amp;#Xa0;</> 822RFC822"
+	},
+	{
+		"desc": "Magic links: ISBN using parser function syntax (T413375)",
+		"wikitext": "{{#isbn:0-306-40615-2}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#isbn</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>0-306-40615-2</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Magic links: ISBN (T3937)",
@@ -10981,8 +11041,8 @@
 	},
 	{
 		"desc": "T146305: Don't break image parsing if nested language converter markup is in the caption.",
-		"wikitext": "[[File:Foobar.jpg|thumb|-{|zh-cn:blog (hk: -{zh-hans|WEBJOURNAL}-, tw: -{zh-hans|WEBLOG}-)}-]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>thumb</><link-ground file-delimiter>|</><link-ground convert-bracket>-{</><link-ground convert-delimiter>|</><link-ground convert-lang>zh-cn:</><link-ground file-text>blog (hk: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBJOURNAL</><link-ground convert-bracket>}-</><link-ground file-text>, tw: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBLOG</><link-ground convert-bracket>}-</><link-ground file-text>)</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
+		"wikitext": "[[File:Foobar.jpg|thumb|-{zh-cn:blog (hk: -{zh-hans|WEBJOURNAL}-, tw: -{zh-hans|WEBLOG}-)}-]]",
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:Foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>thumb</><link-ground file-delimiter>|</><link-ground convert-bracket>-{</><link-ground convert-lang>zh-cn:</><link-ground file-text>blog (hk: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBJOURNAL</><link-ground convert-bracket>}-</><link-ground file-text>, tw: </><link-ground convert-bracket>-{</><link-ground convert-flag>zh-hans</><link-ground convert-delimiter>|</><link-ground file-text>WEBLOG</><link-ground convert-bracket>}-</><link-ground file-text>)</><link-ground convert-bracket>}-</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Don't break gallery if language converter markup is inside.",
@@ -12377,6 +12437,11 @@
 		"parsed": "<comment>&lt;!-- Not a valid redirect nor a valid parser function --&gt</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#REDIRECT </>[[]]}}"
 	},
 	{
+		"desc": "Redirect wikitext become ol list items when they come from a template",
+		"wikitext": "{{1x|#REDIRECT [[Foo]]}}",
+		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>#REDIRECT </><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</>"
+	},
+	{
 		"desc": "responsiveReferencesTests"
 	},
 	{
@@ -12779,6 +12844,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-syntaxhighlight> enclose=</><exttag-attribute-value>\"pre\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"2-3\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>function doSomething() {\tvar\tfoo,\t\tbar;\tif (baz) {</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "deprecated source tag adds tracking category",
+		"wikitext": "<source lang=\"python\">print('Hi')</source>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-source exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "deprecated enclose option adds tracking category",
 		"wikitext": "<syntaxhighlight enclose=\"none\" lang=\"python\">print('Hi')</syntaxhighlight>",
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>enclose=</><exttag-attribute-value>\"none\"</><exttag-attribute ext-syntaxhighlight> lang=</><exttag-attribute-value>\"python\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>print('Hi')</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
@@ -13025,6 +13095,11 @@
 		"desc": "Build table with {{!}}",
 		"wikitext": "{{{!}} class=\"wikitable\"\n!header\n!second header\n{{!}}- style=\"color:red;\"\n{{!}}data{{!}}{{!}} style=\"color:red;\"{{!}}second data\n{{!}}data{{!}}| style=\"color:green;\"{{!}}third data\n{{!}}data|{{!}} style=\"color:blue;\"{{!}}fourth data\n{{!}}}",
 		"parsed": "<table-bracket>{{{!}} </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>!</><table-th>second header</><table-delimiter>{{!}}- </><table-definition html-tr>style=</><table-definition-value>\"color:red;\"</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}{{!}} </><html-td table-definition>style=\"color:red;\"</><table-delimiter2>{{!}}</><table-td>second data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}| </><html-td table-definition>style=\"color:green;\"</><table-delimiter2>{{!}}</><table-td>third data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>|{{!}} </><html-td table-definition>style=\"color:blue;\"</><table-delimiter2>{{!}}</><table-td>fourth data</><table-bracket>{{!}}}</>"
+	},
+	{
+		"desc": "Edge cases with use of {{!}}",
+		"wikitext": "{|\n| width=60{{!}} foo\n| width=60 {{!}} foo\n| width=\"60{{!}}0\" foo\n| width=\"60 {{!}}0\" foo\n|}",
+		"parsed": "<table-bracket>{|</><table-delimiter>| </><html-td table-definition>width=60</><table-delimiter2>{{!}} </><table-td>foo</><table-delimiter>| </><html-td table-definition>width=60 </><table-delimiter2>{{!}} </><table-td>foo</><table-delimiter>| </><html-td table-definition>width=\"60</><table-delimiter2>{{!}}</><table-td>0\" foo</><table-delimiter>| </><html-td table-definition>width=\"60 </><table-delimiter2>{{!}}</><table-td>0\" foo</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Build table with pipe as data",
