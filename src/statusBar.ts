@@ -7,7 +7,7 @@ import {
 	diagnosticSelector,
 	actionSelector,
 } from './constants.js';
-import type {Extension, SelectionRange} from '@codemirror/state';
+import type {Extension, SelectionRange, Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {
 	ExtendedAction,
@@ -79,6 +79,14 @@ const updateDiagnosticMessage = (
 	}
 };
 
+const updatePosition = (doc: Text, {head, empty, from, to}: SelectionRange, position: HTMLElement): void => {
+	const {number, from: f} = doc.lineAt(head);
+	position.textContent = `${number}:${head - f}`;
+	if (!empty) {
+		position.textContent += ` (${to - from})`;
+	}
+};
+
 export default (): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [];
@@ -91,7 +99,7 @@ export default (): Extension => [
 				warning,
 			),
 			message = elt('div', {class: messageSelector.slice(1)}),
-			position = elt('div', {class: lineCls}, '0:0'),
+			position = elt('div', {class: lineCls}),
 			dom = elt(
 				'div',
 				{class: `${panelSelector.slice(1)} ${statusSelector.slice(1)}`},
@@ -102,6 +110,7 @@ export default (): Extension => [
 		position.addEventListener('click', () => {
 			gotoLine(view);
 		});
+		updatePosition(view.state.doc, view.state.selection.main, position);
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
@@ -118,11 +127,7 @@ export default (): Extension => [
 				}
 				if (docChanged || selectionSet) {
 					updateDiagnosticMessage(view, diagnostics, main, message);
-					const {number, from} = doc.lineAt(main.head);
-					position.textContent = `${number}:${main.head - from}`;
-					if (!main.empty) {
-						position.textContent += ` (${main.to - main.from})`;
-					}
+					updatePosition(doc, main, position);
 				}
 			},
 		};

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.3.1
+
+*2026-03-01*
+
+**Fixed**
+
+- The position indicator in the status bar is now correctly initialized
+
 ## 0.3.0
 
 *2026-02-05*
