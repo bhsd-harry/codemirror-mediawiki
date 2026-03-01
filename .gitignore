@@ -7,5 +7,5 @@ dist/
 /mediawiki.css
 /*.map
 .eslintcache
-**/*.txt
-**/*.wiki
+/test/*.wiki
+/test/prof*.json
