@@ -1,5 +1,8 @@
 import {showPanel, EditorView} from '@codemirror/view';
-import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
+import {
+	setDiagnosticsEffect,
+	nextDiagnostic,
+} from '@codemirror/lint';
 import {gotoLine} from '@codemirror/search';
 import elt from 'crelt';
 import {
@@ -57,6 +60,12 @@ const updateDiagnosticMessage = (
 	if (diagnostics.length === 0) {
 		msg.textContent = '';
 	} else {
+		const cmp: (a: Diagnostic, b: Diagnostic) => number = main.head === main.from
+			? (a, b): number => Math.abs(a.from - main.from) - Math.abs(b.from - main.from)
+				|| Math.abs(a.to - main.to) - Math.abs(b.to - main.to)
+			: (a, b): number => Math.abs(a.to - main.to) - Math.abs(b.to - main.to)
+				|| Math.abs(a.from - main.from) - Math.abs(b.from - main.from);
+		diagnostics.sort(cmp);
 		const diagnostic = diagnostics.find(({from, to}) => from <= main.head && to >= main.head) ?? diagnostics[0]!;
 		if (diagnostic.renderMessage) {
 			msg.replaceChildren(diagnostic.renderMessage(view));

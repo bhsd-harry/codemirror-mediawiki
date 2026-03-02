@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.3.2
+
+*2026-03-12*
+
+**Fixed**
+
+- When using the [wikilint](./README.md#wikilint) extension, the status bar now displays the message of the nearest diagnostic overlapping the selected text
+
 ## 0.3.1
 
 *2026-03-01*
