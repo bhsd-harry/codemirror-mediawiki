@@ -16,6 +16,7 @@ import type {} from 'luacheck-browserify';
 import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {Linter} from 'eslint';
+import type {configs} from '@eslint/js';
 import type {PublicApi} from 'stylelint';
 import type {Dialect} from '@bhsd/lezer-abusefilter';
 import type {LintSource} from './lintsource';
@@ -42,6 +43,10 @@ declare global {
 	module '/lezer-abusefilter/*' {
 		const dialect: Dialect;
 		export default dialect;
+	}
+	module '@eslint/js/*' {
+		const recommended: typeof configs.recommended;
+		export = recommended;
 	}
 
 	const eslint: {

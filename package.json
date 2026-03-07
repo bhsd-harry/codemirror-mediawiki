@@ -69,6 +69,7 @@
 		"@codemirror/search": "^6.6.0",
 		"@codemirror/state": "^6.5.4",
 		"@codemirror/view": "^6.39.13",
+		"@eslint/js": "^9.39.4",
 		"cm6-theme-nord": "^0.2.0",
 		"globals": "^17.4.0",
 		"wikiparser-node": "^1.36.0"
