@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.11.4
+
+*2026-03-07*
+
+**Fixed**
+
+- Missing recommended ESLint rules for the JavaScript mode in the [lint](./README.md#lint) extension
+
 ## 3.11.3
 
 *2026-03-01*
