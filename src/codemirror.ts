@@ -23,15 +23,17 @@ import {
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
 import {searchKeymap} from '@codemirror/search';
-import {linter, lintGutter, nextDiagnostic} from '@codemirror/lint';
+import {linter, lintGutter} from '@codemirror/lint';
 import elt from 'crelt';
 import {base, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
 import {light} from './theme.js';
+import {nextDiagnostic} from './lint.js';
 import type {
 	ViewPlugin,
 	KeyBinding,
+	DecorationSet,
 } from '@codemirror/view';
-import type {Extension, StateEffect} from '@codemirror/state';
+import type {Extension, StateEffect, StateField} from '@codemirror/state';
 import type {Language} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
@@ -60,7 +62,11 @@ declare interface MenuItem {
 	getItems(this: void, cm: CodeMirror6): HTMLElement[];
 }
 
-declare type LintExtension = [unknown, ViewPlugin<{set: boolean, force(): void}>];
+declare type LintExtension = [
+	unknown,
+	ViewPlugin<{set: boolean, force(): void}>,
+	[StateField<{diagnostics: DecorationSet}>],
+];
 
 declare interface OptionalFunctions {
 	statusBar: typeof statusBar;
@@ -381,7 +387,7 @@ export class CodeMirror6 {
 	 */
 	lint(lintSource?: LintSources): void {
 		const lintSources: LintSources | undefined = typeof lintSource === 'function' ? [lintSource] : lintSource;
-		const linterExtension = (cm: CodeMirror6): Extension => lintSources
+		const linterExtension = (cm: CodeMirror6): Extension => lintSources?.length
 			? [
 				...lintSources.map(source => linter(async ({state}) => {
 					const diagnostics = (await source(state)).map((diagnostic): Diagnostic => ({
@@ -409,7 +415,7 @@ export class CodeMirror6 {
 					return diagnostics;
 				})),
 				lintGutter(),
-				keymap.of([{key: 'F8', run: nextDiagnostic}]),
+				keymap.of([{key: 'F8', run: () => nextDiagnostic(this)}]),
 				optionalFunctions.statusBar(cm, lintSources[0].fixer),
 			]
 			: [];
@@ -426,15 +432,18 @@ export class CodeMirror6 {
 		}
 	}
 
+	/** @private */
+	getLintExtension(): LintExtension | undefined {
+		return this.#view && (this.#linter.get(this.#view.state) as [LintExtension?])[0];
+	}
+
 	/** Update syntax checking immediately */
 	update(): void {
-		if (this.#view) {
-			const [extension] = this.#linter.get(this.#view.state) as LintExtension[];
-			if (extension) {
-				const plugin = this.#view.plugin(extension[1])!;
-				plugin.set = true;
-				plugin.force();
-			}
+		const extension = this.getLintExtension();
+		if (extension) {
+			const plugin = this.#view!.plugin(extension[1])!;
+			plugin.set = true;
+			plugin.force();
 		}
 	}
 

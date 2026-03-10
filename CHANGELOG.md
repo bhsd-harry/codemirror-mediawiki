@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.11.5
+
+*2026-03-13*
+
+**Fixed**
+
+- When using the [lint](./README.md#lint) extension, pressing `F8` no longer skips overlapping diagnostics
+
 ## 3.11.4
 
 *2026-03-07*

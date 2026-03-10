@@ -1,5 +1,7 @@
 import {showPanel, EditorView} from '@codemirror/view';
-import {nextDiagnostic, setDiagnosticsEffect} from '@codemirror/lint';
+import {
+	setDiagnosticsEffect,
+} from '@codemirror/lint';
 import {gotoLine} from '@codemirror/search';
 import elt from 'crelt';
 import {menuRegistry} from './codemirror.js';
@@ -9,6 +11,7 @@ import {
 	actionSelector,
 	bgDark,
 } from './constants.js';
+import {nextDiagnostic} from './lint.js';
 import type {Extension, SelectionRange, Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
@@ -31,13 +34,14 @@ const statusSelector = '.cm-panel-status',
 	workerCls = 'cm-status-worker-enabled',
 	lineCls = 'cm-status-line';
 
-function getLintMarker(view: EditorView, severity: Severity): HTMLElement;
-function getLintMarker(view: EditorView, severity: 'fix', menu?: HTMLElement): HTMLElement;
+function getLintMarker(cm: CodeMirror6, severity: Severity): HTMLElement;
+function getLintMarker(cm: CodeMirror6, severity: 'fix', menu?: HTMLElement): HTMLElement;
 function getLintMarker(
-	view: EditorView,
+	cm: CodeMirror6,
 	severity: Severity | 'fix',
 	menu?: HTMLElement,
 ): HTMLElement {
+	const view = cm.view!;
 	const marker = elt('div', {class: `cm-status-${severity}`}),
 		icon = elt('div');
 	if (severity === 'fix') {
@@ -60,7 +64,7 @@ function getLintMarker(
 		marker.append(icon, elt('div', '0'));
 		marker.addEventListener('click', () => {
 			if (marker.parentElement?.classList.contains(workerCls)) {
-				nextDiagnostic(view);
+				nextDiagnostic(cm);
 				view.focus();
 			}
 		});
@@ -184,9 +188,9 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			});
 			view.dom.append(menu);
 		}
-		const error = getLintMarker(view, 'error'),
-			warning = getLintMarker(view, 'warning'),
-			fix = getLintMarker(view, 'fix', menu),
+		const error = getLintMarker(cm, 'error'),
+			warning = getLintMarker(cm, 'warning'),
+			fix = getLintMarker(cm, 'fix', menu),
 			{classList} = fix.firstChild as HTMLDivElement,
 			optionAll = elt('div', 'Fix all auto-fixable problems'),
 			worker = elt(
