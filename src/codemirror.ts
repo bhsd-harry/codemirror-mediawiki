@@ -562,7 +562,7 @@ export class CodeMirror6 {
 			this.#textarea.style.display = '';
 			this.#textarea.setSelectionRange(from, to, head === to ? 'forward' : 'backward');
 			if (hasFocus) {
-				this.#textarea.focus();
+				this.#textarea.focus({preventScroll: true});
 			}
 			requestAnimationFrame(() => {
 				this.#textarea.scrollTop = scrollTop;
