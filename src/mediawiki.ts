@@ -509,7 +509,7 @@ const theme = /* @__PURE__ */ EditorView.theme({
 		fontSize: '1.5em',
 		lineHeight: '1.2em',
 	},
-	[getSelector(['3~*', '4~*', '5~*', '6~*'], 'section--')]: {
+	[getSelector(['3', '3~*', '4', '4~*', '5', '5~*', '6', '6~*'], 'section--')]: {
 		fontWeight: 'bold',
 	},
 	[`${

@@ -355,6 +355,8 @@ const makeStyle = (style: string, state: ExtState, endGround?: NestCount): [stri
 const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [string] =>
 	makeStyle(tokens[tag], state, endGround);
 
+const getTagStyle = (tag: string): string => tag in tokens ? tokens[tag as TagName] : tag;
+
 /**
  * Remembers position and status for rollbacking.
  * It is needed for changing from bold to italic with apostrophes before it, if required.
@@ -715,23 +717,23 @@ export class MediaWiki {
 	}
 
 	@getTokenizer<string>
-	inStr(str: string, tag: TagName | false, errorTag: TagName = 'error'): Tokenizer<string> {
+	inStr(str: string, tag: string | false, errorTag = 'error'): Tokenizer<string> {
+		tag &&= getTagStyle(tag);
+		errorTag = getTagStyle(errorTag);
 		return (stream, state) => {
 			if (stream.match(str, Boolean(tag))) {
 				pop(state);
-				return tag ? makeLocalTagStyle(tag, state) : '';
+				return tag ? makeLocalStyle(tag, state) : '';
 			} else if (!stream.skipTo(str)) {
 				stream.skipToEnd();
 			}
-			return makeLocalTagStyle(errorTag, state);
+			return makeLocalStyle(errorTag, state);
 		};
 	}
 
 	@getTokenizer
 	eatWikiText(style: string): Tokenizer {
-		if (style in tokens) {
-			style = tokens[style as TagName];
-		}
+		style = getTagStyle(style);
 		const regex =
 			/^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
 		return (stream, state) => {
@@ -780,9 +782,10 @@ export class MediaWiki {
 						// Title
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
-							chain(state, this.inSectionHeader(tmp[3]!));
+							const level = tmp[1]!.length + 1;
+							chain(state, this.inSectionHeader(tmp[3]!, level));
 							return makeLocalStyle(
-								`${tokens.sectionHeader} mw-section--${tmp[1]!.length + 1}`,
+								`${tokens.sectionHeader} mw-section--${level}`,
 								state,
 							);
 						}
@@ -1313,7 +1316,9 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inSectionHeader(str: string): Tokenizer {
+	inSectionHeader(str: string, level: number): Tokenizer {
+		const headerStyle = `${tokens.sectionHeader} mw-section--${level}`,
+			style = `${tokens.section} mw-section--${level}`;
 		return (stream, state) => {
 			if (stream.sol()) {
 				pop(state);
@@ -1321,15 +1326,15 @@ export class MediaWiki {
 			} else if (stream.match(headerRegex)) {
 				if (stream.eol()) {
 					stream.backUp(str.length);
-					state.tokenize = this.inStr(str, 'sectionHeader');
+					state.tokenize = this.inStr(str, headerStyle);
 				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
 					// T171074: handle trailing comments
 					stream.backUp(str.length);
-					state.tokenize = this.inStr('<!--', false, 'sectionHeader');
+					state.tokenize = this.inStr('<!--', false, headerStyle);
 				}
-				return makeLocalTagStyle('section', state);
+				return makeLocalStyle(style, state);
 			}
-			return this.eatWikiText('section')(stream, state);
+			return this.eatWikiText(style)(stream, state);
 		};
 	}
 

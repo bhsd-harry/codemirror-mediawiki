@@ -146,6 +146,7 @@ const map = {
 				server: 1,
 				siteName: 1,
 				stylePath: 1,
+				wikiId: 1,
 				namespaces: 3,
 				contentNamespaces: 3,
 				subjectNamespaces: 3,

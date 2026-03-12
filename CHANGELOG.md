@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.11.6
+
+*2026-03-13*
+
+**Fixed**
+
+- Section header styles in certain conditions in the MediaWiki mode
+
 ## 3.11.5
 
 *2026-03-12*
