@@ -6,6 +6,7 @@
 **Fixed**
 
 - When using the [lint](./README.md#lint) extension, pressing `F8` no longer skips overlapping diagnostics
+- When using the [lint](./README.md#lint) extension, the status bar now displays the message of the nearest diagnostic overlapping the selected text
 
 ## 3.11.4
 
