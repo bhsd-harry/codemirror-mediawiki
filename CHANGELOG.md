@@ -3,6 +3,10 @@
 
 *2026-03-13*
 
+**Added**
+
+- The editor is now vertically resizable when the [wikiEditor](./mw/README.md#wikieditor) extension is disabled on a MediaWiki site
+
 **Fixed**
 
 - Section header styles in certain conditions in the MediaWiki mode

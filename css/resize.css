@@ -1,0 +1,16 @@
+.cm-editor {
+	overflow-y: hidden;
+	resize: vertical;
+}
+
+.cm-editor div.cm-status-line {
+	padding-right: .6em;
+}
+
+.wikiEditor-ui .cm-editor {
+	resize: none;
+}
+
+.wikiEditor-ui .cm-editor div.cm-status-line {
+	padding-right: .3em;
+}
