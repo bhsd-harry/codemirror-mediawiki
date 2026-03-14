@@ -297,7 +297,7 @@ export class CodeMirror6 {
 					if (focusChanged) {
 						textarea.dispatchEvent(new FocusEvent(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
-					if (
+					GH: if (
 						selectionSet && this.lang === 'mediawiki'
 						&& ['localhost:8080', 'bhsd-harry.github.io'].includes(location.host)
 					) {

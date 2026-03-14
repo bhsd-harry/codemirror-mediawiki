@@ -62,18 +62,18 @@ import {tagModes, getStaticMwConfig} from './static.js';
 import statusBar from './statusBar.js';
 import css from './css.js';
 import html from './html.js';
-import javascript from './javascript.js';
+import javascript, {exclude} from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
 import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {
-	Config,
 	LanguageSupport,
 } from '@codemirror/language';
 import type {Addon, AddonMain} from './codemirror';
 import type {LintSourceGetter, LintSource} from './lintsource';
 import type {MwConfig} from './token';
+import type {BracketConfig} from './matchBrackets';
 
 export type {MwConfig};
 export {CodeMirror6};
@@ -116,7 +116,7 @@ export const registerHighlightSelectionMatches = (): void => {
 
 /** Register the `bracketMatching` extension */
 export const registerBracketMatching = (): void => {
-	registerExtension('bracketMatching', ([config, e = []]: [Config?, Extension?] = []): Extension => [
+	registerExtension('bracketMatching', ([config, e = []]: [BracketConfig?, Extension?] = []): Extension => [
 		bracketMatchingBase(config),
 		e,
 	]);
@@ -301,7 +301,7 @@ export const registerColorPickerForMediaWiki = (): void => {
 
 /** Register the `bracketMatching` extension for MediaWiki */
 export const registerBracketMatchingForMediaWiki = (): void => {
-	registerLangExtension<[Config, Extension]>('mediawiki', 'bracketMatching', [
+	registerLangExtension<[BracketConfig, Extension]>('mediawiki', 'bracketMatching', [
 		{brackets: '()[]{}（）【】［］｛｝'},
 		tagMatchingState,
 	]);
@@ -355,8 +355,8 @@ export const registerHTML = (): void => {
 
 /** Register the `bracketMatching` extension for mixed MediaWiki-HTML */
 export const registerBracketMatchingForHTML = (): void => {
-	registerLangExtension<[Config, Extension]>('html', 'bracketMatching', [
-		{},
+	registerLangExtension<[BracketConfig, Extension]>('html', 'bracketMatching', [
+		{exclude},
 		tagMatchingState,
 	]);
 };
@@ -382,6 +382,12 @@ export const registerHTMLCore = (): void => {
 export const registerJavaScript = (): void => {
 	registerExtensions();
 	registerJavaScriptCore();
+	registerBracketMatchingForJavaScript();
+};
+
+/** Register the `bracketMatching` extension for JavaScript */
+export const registerBracketMatchingForJavaScript = (): void => {
+	registerLangExtension<[BracketConfig]>('javascript', 'bracketMatching', [{exclude}]);
 };
 
 /** Register JavaScript core language support */
@@ -440,8 +446,14 @@ export const registerLuaCore = (): void => {
 export const registerVue = (): void => {
 	registerCommonExtensions();
 	registerVueCore();
+	registerBracketMatchingForVue();
 	registerCloseBracketsForVue();
 	registerColorPickerForVue();
+};
+
+/** Register the `bracketMatching` extension for Vue */
+export const registerBracketMatchingForVue = (): void => {
+	registerLangExtension<[BracketConfig]>('vue', 'bracketMatching', [{exclude}]);
 };
 
 /** Register the `closeBrackets` extension for Vue */

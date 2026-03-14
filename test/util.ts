@@ -19,10 +19,20 @@ export const mwConfig: MwConfig = {
 	paramSuggest,
 };
 
-export const createState = (doc: string, lang: Extension = mediawikiBase(mwConfig)): EditorState => EditorState.create({
-	doc,
-	extensions: [lang],
-});
+export const createState = (
+	doc: string,
+	lang: Extension = mediawikiBase(mwConfig),
+	ranges?: (number | [number, number])[],
+): EditorState => {
+	const state = EditorState.create({
+		doc,
+		extensions: [lang],
+	});
+	if (ranges) {
+		setEditorSelection(state, ranges);
+	}
+	return state;
+};
 
 export const getEditorSelection = (selection: (number | [number, number])[]): EditorSelection =>
 	EditorSelection.fromJSON({
@@ -32,6 +42,10 @@ export const getEditorSelection = (selection: (number | [number, number])[]): Ed
 			return {anchor, head};
 		}),
 	});
+
+export const setEditorSelection = (state: EditorState, ranges: (number | [number, number])[]): void => {
+	Object.assign(state, {selection: getEditorSelection(ranges)});
+};
 
 export const createDispatchableView = (
 	text: string,
@@ -43,10 +57,9 @@ export const createDispatchableView = (
 	},
 	lang: Extension = mediawikiBase(mwConfig),
 ): EditorView & {dispatched: Promise<void>} => {
-	const state = createState(text, lang),
-		{doc} = state;
-	Object.assign(state, {selection: getEditorSelection(ranges)});
-	const {promise, resolve, reject} = Promise.withResolvers(); // eslint-disable-line es-x/no-promise-withresolvers
+	const state = createState(text, lang, ranges),
+		{doc} = state,
+		{promise, resolve, reject} = Promise.withResolvers(); // eslint-disable-line es-x/no-promise-withresolvers
 	return {
 		state,
 		dom: {

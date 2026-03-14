@@ -2,8 +2,9 @@ import * as assert from 'assert';
 import {javascript} from '@codemirror/lang-javascript';
 import {html} from '@codemirror/lang-html';
 import {vue} from '@codemirror/lang-vue';
+import {json} from '@codemirror/lang-json';
 import {syntaxTree} from '@codemirror/language';
-import {markGlobals} from '../src/javascript';
+import {markGlobals, exclude} from '../src/javascript';
 import {createState, convertRangeSet} from './util';
 import type {EditorState} from '@codemirror/state';
 import type {LanguageSupport} from '@codemirror/language';
@@ -11,6 +12,10 @@ import type {LanguageSupport} from '@codemirror/language';
 const mockTest = (state: EditorState, [from, to = state.doc.length]: [number, number?], results: number[][]): void => {
 	const set = markGlobals(syntaxTree(state), [{from, to}], state);
 	assert.deepStrictEqual(convertRangeSet(set, state.doc.length), results);
+};
+
+const excludeTest = (lang: () => LanguageSupport, doc: string, pos: number, result = false): void => {
+	assert.strictEqual(exclude(createState(doc, lang()), pos), result);
 };
 
 describe('JavaScript globals', () => {
@@ -51,3 +56,27 @@ const sublangTest = (name: string, lang: LanguageSupport): void => {
 
 sublangTest('HTML', html());
 sublangTest('Vue', vue());
+
+describe('exclude JavaScript RegExp literal', () => {
+	it('not JavaScript', () => {
+		excludeTest(json, '{}', 1);
+	});
+	it('not JavaScript sublanguage', () => {
+		excludeTest(html, '<br>', 1);
+		excludeTest(vue, '<template></template>', 10);
+	});
+	it('not RegExp literal in JavaScript', () => {
+		excludeTest(javascript, 'focus();', 1);
+	});
+	it('not RegExp literal in JavaScript sublanguage', () => {
+		excludeTest(html, '<script>focus();</script>', 9);
+		excludeTest(vue, '<script>focus();</script>', 9);
+	});
+	it('JavaScript RegExp literal', () => {
+		excludeTest(javascript, '/a/;', 1, true);
+	});
+	it('JavaScript sublanguage RegExp literal', () => {
+		excludeTest(html, '<script>/a/;</script>', 9, true);
+		excludeTest(vue, '<script>/a/;</script>', 9, true);
+	});
+});

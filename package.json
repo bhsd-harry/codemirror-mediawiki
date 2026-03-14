@@ -35,7 +35,7 @@
 		"build:mw": "MODE=mw node build.cjs && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js --external:@bhsd/browser --external:@bhsd/cm-util",
 		"build:wiki": "MODE=wiki node build.cjs",
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --outdir=. --external:/codemirror-mediawiki/dist/main.min.js --external:/codemirror-mediawiki/dist/demo.min.js --external:/wikiparser-node/extensions/dist/test-page-common.js --external:/lezer-abusefilter/dist/dialect.test.js",
-		"build:demo": "esbuild ./bundle/*.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild ./bundle/mediawiki.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
+		"build:demo": "esbuild ./bundle/*.ts --charset=utf8 --bundle --format=esm --outdir=build --drop-labels=GH && esbuild ./bundle/mediawiki.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
 		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && eslint --no-config-lookup -c eslint.dist.mjs dist/*.min.js",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && tsc --project bundle/tsconfig.json --noEmit && eslint --cache .",

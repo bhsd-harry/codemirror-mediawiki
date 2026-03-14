@@ -23,6 +23,15 @@ const globalsMark = Decoration.mark({class: 'cm-globals'}),
 	builtinGlobals = new Set(Object.keys(builtin));
 
 /**
+ * 忽略JavaScript正则表达式中的括号匹配
+ * @param state
+ * @param pos 位置
+ * @test
+ */
+export const exclude = (state: EditorState, pos: number): boolean => javascriptLanguage.isActiveAt(state, pos, 0)
+	&& syntaxTree(state).resolveInner(pos, 0).name === 'RegExp';
+
+/**
  * 高亮显示全局变量
  * @ignore
  * @test

@@ -11,7 +11,7 @@ import {
 	foldCommand,
 	foldAt,
 } from '../src/fold';
-import {createState, convertRangeSet, getEditorSelection, createDispatchableView, posToRange} from './util';
+import {createState, convertRangeSet, setEditorSelection, createDispatchableView, posToRange} from './util';
 import type {EditorView, BlockInfo} from '@codemirror/view';
 import type {StateEffect} from '@codemirror/state';
 import type {DocRange} from '../src/fold';
@@ -178,7 +178,7 @@ describe('codeFolding', () => {
 				},
 			} as EditorView;
 		const mockTest = (selection: [number, number][], lines: number[]): void => {
-			Object.assign(state, {selection: getEditorSelection(selection)});
+			setEditorSelection(state, selection);
 			assert.deepStrictEqual(selectedLines(view).map(({from}) => from), lines);
 		};
 		mockTest([[8, 10], [32, 39]], [10, 39]);

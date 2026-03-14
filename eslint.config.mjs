@@ -26,6 +26,7 @@ export default extend(
 					builtinGlobals: false,
 				},
 			],
+			'no-unused-labels': 0,
 			'jsdoc/require-jsdoc': 0,
 			'jsdoc/require-param-description': 0,
 		},

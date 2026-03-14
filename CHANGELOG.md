@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.11.6
 
-*2026-03-13*
+*2026-03-15*
 
 **Added**
 
@@ -10,6 +10,8 @@
 **Fixed**
 
 - Section header styles in certain conditions in the MediaWiki mode
+- The [bracketMatching](./README.md#bracketmatching) extension for enclosing brackets
+- The [bracketMatching](./README.md#bracketmatching) extension now ignores brackets in regular expressions in the JavaScript mode and the Vue mode
 
 ## 3.11.5
 

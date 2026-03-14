@@ -1,7 +1,7 @@
-import {Decoration, EditorView} from '@codemirror/view';
+import {Decoration, EditorView, ViewPlugin} from '@codemirror/view';
 import {bracketMatching, matchBrackets, syntaxTree} from '@codemirror/language';
-import type {DecorationSet} from '@codemirror/view';
-import type {Extension, StateField, Transaction, Range, Facet, EditorState} from '@codemirror/state';
+import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
+import type {Extension, Range, Facet, EditorState} from '@codemirror/state';
 import type {Config, MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 
@@ -9,6 +9,13 @@ export interface Selection {
 	anchor: number;
 	head: number;
 }
+
+export interface BracketConfig extends Config {
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	exclude?: (state: EditorState, pos: number) => boolean;
+}
+
+export type RequiredConfig = Required<Config> & BracketConfig;
 
 /**
  * @ignore
@@ -94,41 +101,71 @@ export const selectMatchingBrackets = (
 	|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
 	|| trySelectMatchingBrackets(state, pos - 1, 1, config, true);
 
-export default (configs?: Config): Extension => {
+/**
+ * @ignore
+ * @test
+ */
+export const bracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
+	const decorations: Range<Decoration>[] = [],
+		{afterCursor, brackets, renderMatch, exclude} = config;
+	for (const {empty, head} of state.selection.ranges) {
+		if (!empty) {
+			continue;
+		}
+		const tree = syntaxTree(state),
+			excluded = exclude?.(state, head),
+			match = !excluded && (
+				matchBrackets(state, head, -1, config)
+				|| head > 0 && matchBrackets(state, head - 1, 1, config)
+				|| afterCursor && (
+					matchBrackets(state, head, 1, config)
+					|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
+				)
+			)
+			|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
+			|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
+			|| !excluded && findEnclosingPlainBrackets(state, head, config);
+		if (match) {
+			decorations.push(...renderMatch(match, state));
+		}
+	}
+	return Decoration.set(decorations, true);
+};
+
+export default (configs?: BracketConfig): Extension => {
 	const extension = bracketMatching(configs) as [
-			Extension & {facet: Facet<Config, Required<Config>>},
-			[StateField<DecorationSet>, Extension],
+			Extension & {facet: Facet<Config, RequiredConfig>},
+			[ViewPlugin<PluginValue, undefined>, Extension],
 		],
-		[{facet}, [field]] = extension;
-	Object.assign(field, {
-		updateF(value: DecorationSet, {state, docChanged, selection}: Transaction): DecorationSet {
-			if (!docChanged && !selection) {
-				return value;
+		[{facet}, plugins] = extension;
+	plugins[0] = ViewPlugin.fromClass(
+		class implements PluginValue {
+			declare decorations;
+			declare paused;
+
+			constructor({state}: EditorView) {
+				this.decorations = bracketDeco(state, state.facet(facet));
+				this.paused = false;
 			}
-			const decorations: Range<Decoration>[] = [],
-				config = state.facet(facet),
-				{afterCursor, brackets, renderMatch} = config;
-			for (const {empty, head} of state.selection.ranges) {
-				if (!empty) {
-					continue;
-				}
-				const tree = syntaxTree(state),
-					match = matchBrackets(state, head, -1, config)
-						|| head > 0 && matchBrackets(state, head - 1, 1, config)
-						|| afterCursor && (
-							matchBrackets(state, head, 1, config)
-							|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
-						)
-						|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
-						|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
-						|| findEnclosingPlainBrackets(state, head, config);
-				if (match) {
-					decorations.push(...renderMatch(match, state));
+
+			update({docChanged, selectionSet, changes, state, view: {composing}}: ViewUpdate): void {
+				if (docChanged || selectionSet || this.paused) {
+					if (composing) {
+						this.decorations = this.decorations.map(changes);
+						this.paused = true;
+					} else {
+						this.decorations = bracketDeco(state, state.facet(facet));
+						this.paused = false;
+					}
 				}
 			}
-			return Decoration.set(decorations, true);
 		},
-	});
+		{
+			decorations({decorations}) {
+				return decorations;
+			},
+		},
+	);
 	return [
 		extension,
 		EditorView.domEventHandlers({
@@ -138,12 +175,13 @@ export default (configs?: Config): Extension => {
 			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
 			 */
 			dblclick(e, view) {
-				const pos = view.posAtCoords(e);
-				if (pos === null) {
+				const pos = view.posAtCoords(e),
+					{state} = view,
+					config = state.facet(facet);
+				if (pos === null || config.exclude?.(state, pos)) {
 					return false;
 				}
-				const {state} = view,
-					selection = selectMatchingBrackets(state, pos, state.facet(facet));
+				const selection = selectMatchingBrackets(state, pos, config);
 				if (selection) {
 					view.dispatch({selection});
 					return true;

@@ -15,6 +15,7 @@ const config = {
 			? {
 				entryPoints: ['mw/index.ts'],
 				outfile: 'build/wiki.js',
+				dropLabels: ['GH'],
 				define: {
 					$LANGS: JSON.stringify(langs),
 					$VERSION: JSON.stringify(version),
