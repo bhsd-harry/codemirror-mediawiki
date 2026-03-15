@@ -22,7 +22,7 @@ import {
 	insertNewlineKeepIndent,
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
-import {searchKeymap} from '@codemirror/search';
+import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
 import elt from 'crelt';
 import {base, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
@@ -250,6 +250,25 @@ export class CodeMirror6 {
 				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
 				highlightActiveLineGutter(),
+				search({
+					scrollToMatch(range, view) {
+						const scrollRect = view.scrollDOM.getBoundingClientRect(),
+							startCoords = view.coordsAtPos(range.from),
+							endCoords = view.coordsAtPos(range.to),
+							isInViewport = startCoords && startCoords.top >= scrollRect.top
+								&& endCoords && endCoords.bottom <= scrollRect.bottom;
+						return EditorView.scrollIntoView(range, {y: isInViewport ? 'nearest' : 'center'});
+					},
+				}),
+				EditorView.scrollHandler.of((view, {head}, options) => {
+					if (options.x === 'nearest' && options.y === 'center') {
+						const {scrollDOM} = view,
+							{top, height} = view.lineBlockAt(head);
+						scrollDOM.scrollTop = top + (height - scrollDOM.clientHeight) / 2;
+						options.y = 'nearest';
+					}
+					return false;
+				}),
 				keymap.of([
 					...defaultKeymap,
 					...searchKeymap,
