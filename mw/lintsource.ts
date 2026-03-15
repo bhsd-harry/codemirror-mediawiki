@@ -2,6 +2,7 @@ import {getLSP} from '@bhsd/browser';
 import {getOpt} from '../src/lintsource';
 import {base} from '../src/constants';
 import {templateData} from './util';
+import {RuleState} from './constants';
 import {buildPanel, preferenceDialog} from './preference';
 import type {Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
@@ -160,7 +161,10 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 
 const voidLintSource: LintSource = () => [];
 
-export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig}: CodeMirror): Promise<LintSource> => {
+export const getTemplateDataLintSource = async (
+	{langConfig, view, getWikiConfig}: CodeMirror,
+	opt?: Option | LiveOption,
+): Promise<LintSource> => {
 	if (!('templatedata' in langConfig!.tags)) {
 		return voidLintSource;
 	}
@@ -180,6 +184,10 @@ export const getTemplateDataLintSource = async ({langConfig, view, getWikiConfig
 	let running: Promise<void> | undefined,
 		latest: Text | undefined;
 	return async ({doc}): Promise<Diagnostic[]> => {
+		const config = await getOpt(opt, true);
+		if (config?.[getRuleKey('template-data')] === RuleState.off) {
+			return [];
+		}
 		latest = doc;
 		await lsp.provideDefinition(doc.toString(), {line: 0, character: 0});
 		const templates = await lsp.findTemplateTokens();

@@ -183,7 +183,7 @@ export const openPreference = async (): Promise<void> => {
 		preferenceDialog.layout = new OO.ui.IndexLayout();
 		const panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')}),
 			panelWikilint = buildPanel('WikiLint', rules),
-			panelParsoid = buildPanel('Parsoid', parsoidRules),
+			panelParsoid = buildPanel('Parsoid', [...parsoidRules, 'parsoid-template-data']),
 			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
 		for (const label of codeKeys) {
 			const c = codeConfigs.get(label);

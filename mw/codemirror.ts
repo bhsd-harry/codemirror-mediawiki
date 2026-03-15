@@ -462,7 +462,7 @@ export class CodeMirror extends CodeMirror6 {
 					case 'mediawiki':
 						return getLintSources(lang, linter, [
 							await getParsoidLintSource(page, opt),
-							await getTemplateDataLintSource(this),
+							await getTemplateDataLintSource(this, opt),
 						]);
 					case 'lua':
 						return getLintSources(lang, linter, [await getScribuntoLintSource(page)]);

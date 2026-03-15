@@ -263,8 +263,11 @@ export class CodeMirror6 {
 				EditorView.scrollHandler.of((view, {head}, options) => {
 					if (options.x === 'nearest' && options.y === 'center') {
 						const {scrollDOM} = view,
+							{clientHeight} = scrollDOM,
 							{top, height} = view.lineBlockAt(head);
-						scrollDOM.scrollTop = top + (height - scrollDOM.clientHeight) / 2;
+						if (height < clientHeight - options.yMargin * 2) {
+							scrollDOM.scrollTop = top + (height - clientHeight) / 2;
+						}
 						options.y = 'nearest';
 					}
 					return false;
