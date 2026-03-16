@@ -31,8 +31,12 @@ import type {TagName} from './config';
  * @param types 节点类型
  * @param names 指定类型
  */
-export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
+export const hasTag = (types: Set<string> | string, names: TagName | TagName[]): boolean => {
+	if (typeof types === 'string') {
+		types = new Set(types.split('_'));
+	}
+	return (Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
+};
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly functionSynonyms: Completion[];

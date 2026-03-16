@@ -75,6 +75,7 @@ export const mouseEventListener = (
  * Get the [openLinks](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#openlinks)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @since 0.2.0
  */
 export default (
 	configData: ConfigData,

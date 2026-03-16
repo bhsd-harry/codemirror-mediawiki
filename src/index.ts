@@ -8,6 +8,7 @@ import {LanguageSupport} from '@codemirror/language';
 import {linter} from '@codemirror/lint';
 import elt from 'crelt';
 import bidiIsolates from './bidi.js';
+import closeTags from './closeTags.js';
 import mediawikiColorPicker from './color.js';
 import {diagnosticSelector} from './constants.js';
 import escapeKeymap from './escape.js';
@@ -134,6 +135,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 			]),
 			bracketMatching(),
 			autocompletion(),
+			closeTags(),
 			refHover(configData),
 			magicWordHover(configData),
 			signatureHelpBase(configData),
@@ -155,4 +157,5 @@ export {
 	codeFolding,
 	openLinks,
 	bidiIsolates,
+	closeTags,
 };

@@ -16,6 +16,7 @@ import {
 	colorPicker,
 	codeFolding,
 	openLinks,
+	closeTags,
 	wikilint,
 } from './index';
 import type {ConfigData} from 'wikiparser-node';
@@ -33,6 +34,7 @@ import type {ConfigData} from 'wikiparser-node';
 					]),
 					bracketMatching(),
 					autocompletion(),
+					closeTags(),
 					refHover(configData),
 					hover(configData),
 					signatureHelp(configData),

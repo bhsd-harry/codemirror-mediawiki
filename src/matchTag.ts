@@ -97,7 +97,7 @@ export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
  * @param state
  * @param origin 起始标签
  */
-const searchTag = (state: EditorState, origin: Tag): Tag | null => {
+export const searchTag = (state: EditorState, origin: Tag): Tag | null => {
 	const {type, name, closing} = origin,
 		siblingGetter = closing ? 'prevSibling' : 'nextSibling',
 		endGetter = closing ? 'first' : 'last';

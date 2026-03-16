@@ -22,7 +22,7 @@ import {
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
-import {matchTag, getTag} from './matchTag.js';
+import {searchTag, getTag} from './matchTag.js';
 import {braceStackUpdate, sliceDoc} from './util.js';
 import type {
 	ViewUpdate,
@@ -136,10 +136,11 @@ export const foldable = (
 			while (nextSibling && !(isExtBracket(nextSibling) && !regex.test(nextSibling.name))) {
 				({nextSibling} = nextSibling);
 			}
-			const next = nextSibling?.nextSibling;
+			const next = nextSibling?.nextSibling,
+				closing = next && getTag(state, next);
 			// The closing bracket of the current extension tag
-			if (nextSibling && (!refOnly || next && refNames.has(getTag(state, next)?.name))) {
-				return {from: matchTag(state, nextSibling.to)!.end!.to, to: nextSibling.from};
+			if (closing && (!refOnly || refNames.has(closing.name))) {
+				return {from: searchTag(state, closing)!.to, to: nextSibling!.from};
 			}
 		}
 		return false;

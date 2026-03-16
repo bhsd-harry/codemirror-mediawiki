@@ -70,6 +70,7 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 /**
  * Get the [bidiIsolates](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#bidiisolates)
  * extension for Wikitext.
+ * @since 0.2.0
  */
 export default (): Extension => [
 	ViewPlugin.fromClass(
