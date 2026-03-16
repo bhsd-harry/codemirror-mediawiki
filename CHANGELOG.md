@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.3.3
 
-*2026-03-13*
+*2026-03-16*
 
 **Fixed**
 
 - Section header styles in certain conditions
+- The [bracketMatching](./README.md#bracketmatching) extension for enclosing brackets
 
 ## 0.3.2
 
