@@ -107,24 +107,33 @@ export const selectMatchingBrackets = (
  */
 export const bracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
 	const decorations: Range<Decoration>[] = [],
-		{afterCursor, brackets, renderMatch, exclude} = config;
+		{
+			afterCursor,
+			brackets,
+			renderMatch,
+			exclude,
+		} = config;
 	for (const {empty, head} of state.selection.ranges) {
 		if (!empty) {
 			continue;
 		}
 		const tree = syntaxTree(state),
 			excluded = exclude?.(state, head),
-			match = !excluded && (
-				matchBrackets(state, head, -1, config)
-				|| head > 0 && matchBrackets(state, head - 1, 1, config)
-				|| afterCursor && (
-					matchBrackets(state, head, 1, config)
-					|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
+			match =
+				!excluded && // eslint-disable-line @stylistic/operator-linebreak
+				(
+					matchBrackets(state, head, -1, config)
+					|| head > 0 && matchBrackets(state, head - 1, 1, config)
+					|| afterCursor && (
+						matchBrackets(state, head, 1, config)
+						|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
+					)
 				)
-			)
-			|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
-			|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
-			|| !excluded && findEnclosingPlainBrackets(state, head, config);
+				|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
+				|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
+				|| // eslint-disable-line @stylistic/operator-linebreak
+				!excluded && // eslint-disable-line @stylistic/operator-linebreak
+				findEnclosingPlainBrackets(state, head, config);
 		if (match) {
 			decorations.push(...renderMatch(match, state));
 		}
@@ -178,7 +187,10 @@ export default (configs?: BracketConfig): Extension => {
 				const pos = view.posAtCoords(e),
 					{state} = view,
 					config = state.facet(facet);
-				if (pos === null || config.exclude?.(state, pos)) {
+				if (
+					pos === null
+					|| config.exclude?.(state, pos)
+				) {
 					return false;
 				}
 				const selection = selectMatchingBrackets(state, pos, config);

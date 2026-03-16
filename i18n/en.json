@@ -9,6 +9,7 @@
 	"addon-autocompletion": "<span title=\"Shift-Enter\">Autocompletion</span>",
 	"addon-bracketMatching": "Highlight matching/non-matching brackets or tags",
 	"addon-closeBrackets": "Auto-close brackets and quotes",
+	"addon-closeTags": "Auto-close HTML/XML tags",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : fold\nCtrl-Shift-] : unfold\nCtrl-Alt-[ : fold all\nCtrl-Alt-] : unfold all\">Code folding</span>",
 	"addon-codeFolding-mac": "<span title=\"Cmd-Alt-[ : fold\nCmd-Alt-] : unfold\nCtrl-Alt-[ : fold all\nCtrl-Alt-] : unfold all\">Code folding</span>",
 	"addon-colorPicker": "Color picker",

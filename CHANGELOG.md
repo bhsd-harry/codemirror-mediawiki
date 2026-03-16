@@ -1,5 +1,5 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.11.6
+## 3.12.0
 
 *2026-03-16*
 
@@ -7,6 +7,7 @@
 
 - The editor is now vertically resizable when the [wikiEditor](./mw/README.md#wikieditor) extension is disabled on a MediaWiki site
 - Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a MediaWiki site can now be enabled or disabled in the preference dialog
+- New extension option: [closeTags](./README.md#closetags)
 
 **Fixed**
 

@@ -68,6 +68,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [bidiIsolates](#bidiisolates)
 	- [bracketMatching](#bracketmatching)
 	- [closeBrackets](#closebrackets)
+	- [closeTags](#closetags)
 	- [codeFolding](#codefolding)
 	- [colorPicker](#colorpicker)
 	- [escape](#escape)
@@ -259,11 +260,11 @@ In addition to the common [extensions](#extensions), here are some HTML-specific
 ```js
 import {
 	registerBracketMatchingForHTML,
-	registerCloseBracketsForHTML,
+	registerCloseTagsForHTML,
 	registerColorPickerForHTML,
 } from '@bhsd/codemirror-mediawiki';
 registerBracketMatchingForHTML();
-registerCloseBracketsForHTML();
+registerCloseTagsForHTML();
 registerColorPickerForHTML();
 ```
 
@@ -408,10 +409,10 @@ In addition to the common [extensions](#extensions), here are some Vue-specific 
 
 ```js
 import {
-	registerCloseBracketsForVue,
+	registerCloseTagsForVue,
 	registerColorPickerForVue,
 } from '@bhsd/codemirror-mediawiki';
-registerCloseBracketsForVue();
+registerCloseTagsForVue();
 registerColorPickerForVue();
 ```
 
@@ -722,6 +723,7 @@ cm.prefer([
 	'autocompletion',
 	'bracketMatching',
 	'closeBrackets',
+	'closeTags',
 	'codeFolding',
 	'highlightActiveLine',
 	'highlightSelectionMatches',
@@ -746,6 +748,7 @@ cm.prefer({
 	autocompletion: false,
 	bracketMatching: false,
 	closeBrackets: false,
+	closeTags: false,
 	codeFolding: false,
 	highlightActiveLine: false,
 	highlightSelectionMatches: false,
@@ -1070,6 +1073,30 @@ registerCloseBrackets();
 
 </details>
 
+### closeTags
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.12.0*
+
+Automatically close HTML/XML tags.
+
+For granular control over the bundled extensions, you need to register this extension for specific languages([HTML](#html), [MediaWiki](#mediawiki) or [Vue](#vue)):
+
+```js
+import {
+	registerCloseTagsForHTML,
+	registerCloseTagsForMediaWiki,
+	registerCloseTagsForVue,
+} from '@bhsd/codemirror-mediawiki';
+registerCloseTagsForHTML();
+registerCloseTagsForMediaWiki();
+registerCloseTagsForVue();
+```
+
+</details>
+
 ### codeFolding
 
 <details>
@@ -1105,11 +1132,19 @@ registerCodeFolding();
 
 Provide color pickers for CSS and MediaWiki modes.
 
-For granular control over the bundled extensions, you can import the `registerColorPicker` functions. Note that you also need to register this extension for specific languages([CSS](#css), [MediaWiki](#mediawiki) or [Vue](#vue)):
+For granular control over the bundled extensions, you need to register this extension for specific languages([CSS](#css), [HTML](#html), [MediaWiki](#mediawiki) or [Vue](#vue)):
 
 ```js
-import {registerColorPicker} from '@bhsd/codemirror-mediawiki';
-registerColorPicker();
+import {
+	registerColorPickerForCSS,
+	registerColorPickerForHTML,
+	registerColorPickerForMediaWiki,
+	registerColorPickerForVue,
+} from '@bhsd/codemirror-mediawiki';
+registerColorPickerForCSS();
+registerColorPickerForHTML();
+registerColorPickerForMediaWiki();
+registerColorPickerForVue();
 ```
 
 </details>

@@ -124,7 +124,7 @@ export const registerBracketMatching = (): void => {
 
 /** Register the `closeBrackets` extension */
 export const registerCloseBrackets = (): void => {
-	registerExtension('closeBrackets', (e: Extension = []): Extension => [closeBrackets(), e]);
+	registerExtension('closeBrackets', closeBrackets);
 };
 
 /** Register the `scrollPastEnd` extension */
@@ -159,13 +159,14 @@ export const registerCodeFolding = (): void => {
 	registerExtension('codeFolding', codeFolding);
 };
 
-/** Register the `colorPicker` extension */
-export const registerColorPicker = (): void => {
-	registerExtension('colorPicker', (e: Extension = []): Extension => e);
-};
+/**
+ * Register the `colorPicker` extension
+ * @deprecated This function does nothing and will be removed in a future release
+ */
+export const registerColorPicker = (): void => {};
 
-/** 注册所有通用扩展（除`colorPicker`） */
-const registerExtensions = (): void => {
+/** Register all common extensions */
+export const registerCommonExtensions = (): void => {
 	registerHighlightSpecialChars();
 	registerHighlightActiveLine();
 	registerHighlightWhitespace();
@@ -179,11 +180,11 @@ const registerExtensions = (): void => {
 	registerCodeFolding();
 };
 
-/** Register all common extensions */
-export const registerCommonExtensions = (): void => {
-	registerExtensions();
-	registerColorPicker();
-};
+/**
+ * 各语言独立定义的扩展
+ * @param e 扩展
+ */
+const langExtension = (e: Extension = []): Extension => e;
 
 /**
  * 仅供mediawiki模式的扩展
@@ -194,7 +195,7 @@ function mediawikiOnly(ext: (cm: CodeMirror6) => Extension): Addon<boolean>;
 function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon<Extension> | Addon<boolean> {
 	return typeof ext === 'function'
 		? [(enable: boolean, cm): Extension => enable ? ext(cm!) : [], {mediawiki: true}] as Addon<boolean>
-		: [(e: Extension = []): Extension => e, {mediawiki: ext}];
+		: [langExtension, {mediawiki: ext}];
 }
 
 /**
@@ -204,7 +205,7 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
  * @param ext 扩展
  */
 const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T): void => {
-	avail[name] ??= [(): Extension => []] satisfies Addon<T>;
+	avail[name] ??= [langExtension] satisfies Addon<Extension>;
 	const addon = avail[name] as Addon<T>;
 	addon[1] ??= {};
 	addon[1][lang] = ext;
@@ -349,7 +350,7 @@ export const registerHTML = (): void => {
 	registerCommonExtensions();
 	registerHTMLCore();
 	registerBracketMatchingForHTML();
-	registerCloseBracketsForHTML();
+	registerCloseTagsForHTML();
 	registerColorPickerForHTML();
 };
 
@@ -361,9 +362,15 @@ export const registerBracketMatchingForHTML = (): void => {
 	]);
 };
 
-/** Register the `closeBrackets` extension for mixed MediaWiki-HTML */
-export const registerCloseBracketsForHTML = (): void => {
-	registerLangExtension('html', 'closeBrackets', autoCloseTags);
+/**
+ * Register the `closeBrackets` extension for mixed MediaWiki-HTML
+ * @deprecated This function does nothing and will be removed in a future release
+ */
+export const registerCloseBracketsForHTML = (): void => {};
+
+/** Register the `closeTags` extension for mixed MediaWiki-HTML */
+export const registerCloseTagsForHTML = (): void => {
+	registerLangExtension('html', 'closeTags', autoCloseTags);
 };
 
 /** Register the `colorPicker` extension for mixed MediaWiki-HTML */
@@ -380,7 +387,7 @@ export const registerHTMLCore = (): void => {
 
 /** Register JavaScript language support */
 export const registerJavaScript = (): void => {
-	registerExtensions();
+	registerCommonExtensions();
 	registerJavaScriptCore();
 	registerBracketMatchingForJavaScript();
 };
@@ -418,7 +425,7 @@ export const registerCSSCore = (): void => {
 
 /** Register JSON language support */
 export const registerJSON = (): void => {
-	registerExtensions();
+	registerCommonExtensions();
 	registerJSONCore();
 };
 
@@ -431,7 +438,7 @@ export const registerJSONCore = (): void => {
 
 /** Register Lua language support */
 export const registerLua = (): void => {
-	registerExtensions();
+	registerCommonExtensions();
 	registerLuaCore();
 };
 
@@ -447,7 +454,7 @@ export const registerVue = (): void => {
 	registerCommonExtensions();
 	registerVueCore();
 	registerBracketMatchingForVue();
-	registerCloseBracketsForVue();
+	registerCloseTagsForVue();
 	registerColorPickerForVue();
 };
 
@@ -456,9 +463,15 @@ export const registerBracketMatchingForVue = (): void => {
 	registerLangExtension<[BracketConfig]>('vue', 'bracketMatching', [{exclude}]);
 };
 
-/** Register the `closeBrackets` extension for Vue */
-export const registerCloseBracketsForVue = (): void => {
-	registerLangExtension('vue', 'closeBrackets', autoCloseTags);
+/**
+ * Register the `closeBrackets` extension for Vue
+ * @deprecated This function does nothing and will be removed in a future release
+ */
+export const registerCloseBracketsForVue = (): void => {};
+
+/** Register the `closeTags` extension for Vue */
+export const registerCloseTagsForVue = (): void => {
+	registerLangExtension('vue', 'closeTags', autoCloseTags);
 };
 
 /** Register the `colorPicker` extension for Vue */
@@ -475,7 +488,7 @@ export const registerVueCore = (): void => {
 
 /** Register AbuseFilter language support */
 export const registerAbuseFilter = (): void => {
-	registerExtensions();
+	registerCommonExtensions();
 	registerAbuseFilterCore();
 };
 

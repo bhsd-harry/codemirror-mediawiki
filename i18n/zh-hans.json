@@ -9,6 +9,7 @@
 	"addon-autocompletion": "<span title=\"Shift-Enter\">自动填充</span>",
 	"addon-bracketMatching": "高亮显示匹配和未匹配的括号或标签",
 	"addon-closeBrackets": "自动闭合括号和引号",
+	"addon-closeTags": "自动闭合HTML/XML标签",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : 折叠\nCtrl-Shift-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
 	"addon-codeFolding-mac": "<span title=\"Cmd-Alt-[ : 折叠\nCmd-Alt-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
 	"addon-colorPicker": "颜色选择器",
