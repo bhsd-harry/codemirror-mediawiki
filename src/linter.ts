@@ -1,5 +1,3 @@
-/** @todo revert df69718ab908966bff162fe51e8cfb4595e6b2ec */
-import {rules as recommended} from '@eslint/js/src/configs/eslint-recommended.js';
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
@@ -210,6 +208,9 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
  * @test
  */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
+	/** @todo revert df69718ab908966bff162fe51e8cfb4595e6b2ec */
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
+	const {rules: recommended} = require('@eslint/js/src/configs/eslint-recommended.js');
 	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
