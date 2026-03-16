@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 0.3.3
+## 0.4.0
 
 *2026-03-16*
+
+**Added**
+
+- New extension: [closeTags](./README.md#closetags)
 
 **Fixed**
 

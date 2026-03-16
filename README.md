@@ -18,6 +18,7 @@ This repository contains a modified Wikitext [language](#mediawikilanguage) from
 - [Extensions](#extensions)
 	- [bidiIsolates](#bidiisolates)
 	- [bracketMatching](#bracketmatching)
+	- [closeTags](#closetags)
 	- [codeFolding](#codefolding)
 	- [colorPicker](#colorpicker)
 	- [hover](#hover)
@@ -174,6 +175,24 @@ import {bracketMatching} from '@bhsd/codemirror-wikitext';
 import type {Extension} from '@codemirror/state';
 
 const extension: Extension = bracketMatching();
+```
+
+</details>
+
+### closeTags
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 0.4.0*
+
+Automatically close HTML/XML tags.
+
+```js
+import {closeTags} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = closeTags();
 ```
 
 </details>
