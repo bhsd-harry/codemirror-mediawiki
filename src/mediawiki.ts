@@ -76,8 +76,12 @@ export const apply = (view: EditorView, completion: Completion, from: number, to
  * @param names 指定类型
  * @test
  */
-export const hasTag = (types: Set<string>, names: TagName | TagName[]): boolean =>
-	(Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
+export const hasTag = (types: Set<string> | string, names: TagName | TagName[]): boolean => {
+	if (typeof types === 'string') {
+		types = new Set(types.split('_'));
+	}
+	return (Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
+};
 
 /** @test */
 export class FullMediaWiki extends MediaWiki {

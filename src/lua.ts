@@ -11,7 +11,7 @@ import {
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
 import {leadingSpaces, sliceDoc} from './util.js';
-import {getLightHighlightStyle} from './theme.js';
+import {lightHighlightStyle} from './theme.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 import type {DocRange} from './fold';
@@ -475,7 +475,7 @@ const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRang
 };
 
 const support: Extension = [
-	getLightHighlightStyle(),
+	lightHighlightStyle,
 	syntaxHighlighting(HighlightStyle.define([{tag: tags.standard(tags.variableName), class: 'cm-globals'}])),
 	lang.data.of({autocomplete: source}),
 	foldService.of(fold),

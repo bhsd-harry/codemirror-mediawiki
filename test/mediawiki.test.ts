@@ -384,12 +384,15 @@ describe('apply link completion', () => {
 
 describe('util functions', () => {
 	it('has tag', () => {
-		const types = new Set([tokens.em, tokens.error]);
+		const types = new Set([tokens.em, tokens.error]),
+			typesStr = [...types].join('_');
 		const yes = (tag: string | string[]): void => {
 				assert.ok(hasTag(types, tag as TagName | TagName[]));
+				assert.ok(hasTag(typesStr, tag as TagName | TagName[]));
 			},
 			no = (tag: string | string[]): void => {
 				assert.ok(!hasTag(types, tag as TagName | TagName[]));
+				assert.ok(!hasTag(typesStr, tag as TagName | TagName[]));
 			};
 		yes(tokens.em);
 		yes(tokens.error);

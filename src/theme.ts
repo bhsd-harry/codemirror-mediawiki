@@ -14,9 +14,9 @@ const focused = '&.cm-focused',
 	matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
 
-export const getLightHighlightStyle = (): Extension => syntaxHighlighting(
+export const lightHighlightStyle = /* @__PURE__ */ ((): Extension => syntaxHighlighting(
 	HighlightStyle.define(defaultHighlightStyle.specs, {themeType: 'light'}),
-);
+))();
 
 export const light = /* @__PURE__ */ EditorView.theme({
 		'&': {

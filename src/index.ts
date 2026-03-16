@@ -24,6 +24,7 @@ import {abusefilter, analyzer} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
+import closeTags from './closeTags.js';
 import {
 	CodeMirror6,
 	avail,
@@ -229,6 +230,7 @@ export const registerMediaWiki = (articlePath?: string, templatedata?: boolean):
 	registerColorPickerForMediaWiki();
 	registerBracketMatchingForMediaWiki();
 	registerCodeFoldingForMediaWiki();
+	registerCloseTagsForMediaWiki();
 };
 
 /**
@@ -312,6 +314,11 @@ export const registerBracketMatchingForMediaWiki = (): void => {
 export const registerCodeFoldingForMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'codeFolding', mediawikiFold);
 	optionalFunctions.foldHandler = foldHandler;
+};
+
+/** Register the `closeTags` extension for MediaWiki */
+export const registerCloseTagsForMediaWiki = (): void => {
+	registerLangExtension('mediawiki', 'closeTags', closeTags());
 };
 
 /**

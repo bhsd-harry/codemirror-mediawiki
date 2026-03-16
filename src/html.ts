@@ -6,7 +6,7 @@ import {LanguageSupport} from '@codemirror/language';
 import {cssCompletion} from './css.js';
 import {jsCompletion, markGlobalsPlugin} from './javascript.js';
 import {mediawikiBase} from './mediawiki.js';
-import {getLightHighlightStyle} from './theme.js';
+import {lightHighlightStyle} from './theme.js';
 import type {MwConfig} from './token';
 import type {CodeMirror6} from './codemirror';
 
@@ -39,7 +39,7 @@ export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
 				jsCompletion,
 				cssCompletion(),
 				support,
-				getLightHighlightStyle(),
+				lightHighlightStyle,
 				markGlobalsPlugin(cm),
 			],
 		);
