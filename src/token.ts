@@ -178,7 +178,8 @@ const startState = (tokenize: Tokenizer, tags: string[], urlProtocols: RegExp, s
  */
 const copyState = (state: State): State => {
 	const result = {...state};
-	for (const [key, val] of Object.entries(state)) {
+	for (const key in result) { // eslint-disable-line guard-for-in
+		const val = result[key as keyof State];
 		if (Array.isArray(val)) {
 			// @ts-expect-error initial value
 			result[key] = [...val];
@@ -186,7 +187,7 @@ const copyState = (state: State): State => {
 			result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
 		} else if (key !== 'data' && val && typeof val === 'object') {
 			// @ts-expect-error initial value
-			result[key] = {...val};
+			result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
 		}
 	}
 	return result;
@@ -1961,8 +1962,13 @@ export class MediaWiki {
 					&& stream.string === oldToken.string
 					&& cmpNesting(state, oldToken.state)
 				) {
-					const {pos, string, state: {bold, italic, ...other}, style} = readyTokens[0]!;
-					Object.assign(state, other);
+					const {pos, string, state: other, style} = readyTokens[0]!;
+					for (const key in other) {
+						if (key !== 'bold' && key !== 'italic') {
+							// @ts-expect-error assign readonly properties
+							state[key as keyof State] = other[key as keyof State];
+						}
+					}
 					if (
 						!(state.extName && state.extMode)
 						&& state.nLink === 0
