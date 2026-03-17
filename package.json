@@ -11,7 +11,7 @@
 	"bugs": {
 		"url": "https://github.com/bhsd-harry/codemirror-mediawiki/issues"
 	},
-	"license": "GPL-2.0",
+	"license": "GPL-2.0-or-later",
 	"files": [
 		"/i18n/",
 		"/dist/*.js",
