@@ -164,7 +164,7 @@ const copyState = (state: State): State => {
 			result[key] = [...val];
 		} else if (key === 'extState') {
 			result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
-		} else if (key !== 'data' && val && typeof val === 'object') {
+		} else if (key !== 'data' && key !== 'extMode' && val && typeof val === 'object') {
 			// @ts-expect-error initial value
 			result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
 		}
