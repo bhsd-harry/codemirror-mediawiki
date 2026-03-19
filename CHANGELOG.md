@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.12.1
+
+*2026-03-20*
+
+**Added**
+
+- The [bracketMatching](./README.md#bracketmatching) extension now supports selecting the line block containing matching brackets with triple-click
+
 ## 3.12.0
 
 *2026-03-17*

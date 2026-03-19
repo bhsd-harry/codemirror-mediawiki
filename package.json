@@ -74,7 +74,7 @@
 		"eslint": "^9.39.4",
 		"globals": "^17.4.0",
 		"luacheck-browserify": "^0.10.1",
-		"stylelint": "^17.4.0",
+		"stylelint": "^17.5.0",
 		"wikiparser-node": "^1.36.0"
 	},
 	"devDependencies": {

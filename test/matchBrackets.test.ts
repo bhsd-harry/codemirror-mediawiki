@@ -11,6 +11,7 @@ import {
 	findEnclosingPlainBrackets,
 	trySelectMatchingBrackets,
 	selectMatchingBrackets,
+	selectLineBlock,
 	bracketDeco,
 } from '../src/matchBrackets';
 import {createState, convertRangeSet} from './util';
@@ -60,6 +61,13 @@ const mockTest = (bracket: MatchResult | null | undefined, result?: Result | nul
 	selectTest = (doc: string, pos: number, result: Selection | false): void => {
 		assert.deepStrictEqual(
 			selectMatchingBrackets(createState(doc, []), pos),
+			result,
+			`pos: ${pos}`,
+		);
+	},
+	selectLineBlockTest = (doc: string, pos: number, result: Selection | false): void => {
+		assert.deepStrictEqual(
+			selectLineBlock(createState(doc, []), pos),
 			result,
 			`pos: ${pos}`,
 		);
@@ -146,6 +154,21 @@ describe('select bracket pair on both sides', () => {
 	it('inside', () => {
 		selectTest(' [text] ', 2, {anchor: 2, head: 6});
 		selectTest(' [text] ', 6, {anchor: 6, head: 2});
+	});
+});
+
+describe('select line block', () => {
+	it('outside', () => {
+		selectLineBlockTest('function() {\n\t//\n};', 11, {anchor: 0, head: 19});
+		selectLineBlockTest('function() {\n\t//\n};', 18, {anchor: 0, head: 19});
+		selectLineBlockTest('function() {\n\t//\n};\n', 11, {anchor: 0, head: 20});
+		selectLineBlockTest('function() {\n\t//\n};\n', 18, {anchor: 0, head: 20});
+	});
+	it('inside', () => {
+		selectLineBlockTest('function() {\n\t//\n};', 12, {anchor: 0, head: 19});
+		selectLineBlockTest('function() {\n\t//\n};', 17, {anchor: 0, head: 19});
+		selectLineBlockTest('function() {\n\t//\n};\n', 12, {anchor: 0, head: 20});
+		selectLineBlockTest('function() {\n\t//\n};\n', 17, {anchor: 0, head: 20});
 	});
 });
 
