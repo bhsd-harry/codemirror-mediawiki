@@ -44,6 +44,12 @@ export const light = /* @__PURE__ */ EditorView.theme({
 		'.cm-globals, .cm-globals>*': {
 			color: '#164',
 		},
+		'.cm-doctag>*': {
+			color: '#219',
+		},
+		'.cm-doctag-type>*': {
+			color: '#085',
+		},
 		[matching]: {
 			backgroundColor: 'rgb(50,140,130,.32)',
 		},
@@ -83,6 +89,12 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			},
 			'.cm-globals, .cm-globals>*': {
 				color: '#d08770',
+			},
+			'.cm-doctag>*': {
+				color: '#81a1c1',
+			},
+			'.cm-doctag-type>*': {
+				color: '#ebcb8b',
 			},
 			'div.cm-activeLine': {
 				backgroundColor: 'rgb(76,86,106,.27)',

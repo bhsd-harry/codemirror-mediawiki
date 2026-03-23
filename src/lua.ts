@@ -1,5 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
+import {ViewPlugin, Decoration} from '@codemirror/view';
 import {
 	syntaxTree,
 	LanguageSupport,
@@ -10,10 +11,12 @@ import {
 } from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {leadingSpaces, sliceDoc} from './util.js';
+import {leadingSpaces, sliceDoc, markDocTagType} from './util.js';
 import {lightHighlightStyle} from './theme.js';
-import type {Extension, EditorState} from '@codemirror/state';
+import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
+import type {Extension, EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
+import type {Tree, SyntaxNode} from '@lezer/common';
 import type {DocRange} from './fold';
 
 declare interface LuaGlobal {
@@ -474,11 +477,83 @@ const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRang
 	return empty || j === number ? null : {from, to: doc.line(j).to};
 };
 
+/**
+ * 高亮显示LDoc标签
+ * @ignore
+ * @test
+ */
+export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state: EditorState): DecorationSet => {
+	const decorations: Range<Decoration>[] = [];
+	for (const {from, to} of visibleRanges) {
+		let node: SyntaxNode | null | undefined = tree.resolveInner(from, 1);
+		while (node && node.from < to) {
+			if (node.name === 'comment') {
+				const firstLine = sliceDoc(state, node),
+					block = firstLine.startsWith('--[[--');
+				if (
+					block
+					|| firstLine.startsWith('---')
+					&& !(firstLine.endsWith('--') && /[^-]/u.test(firstLine))
+				) {
+					while (node.name === 'comment') {
+						const comment = sliceDoc(state, node),
+							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{(?!\}))?/diu.exec(comment);
+						if (mt) {
+							markDocTagType(decorations, node.from, mt);
+						}
+						// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+						const {nextSibling} = node as SyntaxNode;
+						if (
+							!nextSibling || (
+								block
+									? comment.endsWith(']]')
+									: state.sliceDoc(node.to, nextSibling.from)
+										.split('\n', 3).length > 2
+							)
+						) {
+							break;
+						}
+						node = nextSibling;
+					}
+				}
+			}
+			node = node.nextSibling;
+		}
+	}
+	return Decoration.set(decorations);
+};
+
+export const markDocTagPlugin = ViewPlugin.fromClass(
+	class implements PluginValue {
+		declare tree;
+		declare decorations;
+
+		constructor({state, visibleRanges}: EditorView) {
+			this.tree = syntaxTree(state);
+			this.decorations = markDocTag(this.tree, visibleRanges, state);
+		}
+
+		update({docChanged, viewportChanged, state, view: {visibleRanges}}: ViewUpdate): void {
+			const tree = syntaxTree(state);
+			if (docChanged || viewportChanged || tree !== this.tree) {
+				this.tree = tree;
+				this.decorations = markDocTag(tree, visibleRanges, state);
+			}
+		}
+	},
+	{
+		decorations(v) {
+			return v.decorations;
+		},
+	},
+);
+
 const support: Extension = [
 	lightHighlightStyle,
 	syntaxHighlighting(HighlightStyle.define([{tag: tags.standard(tags.variableName), class: 'cm-globals'}])),
 	lang.data.of({autocomplete: source}),
 	foldService.of(fold),
+	markDocTagPlugin,
 ];
 
 export default (): LanguageSupport => new LanguageSupport(lang, support);

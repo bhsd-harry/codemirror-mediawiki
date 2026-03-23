@@ -3,7 +3,7 @@ import {htmlLanguage, htmlCompletionSource} from '@codemirror/lang-html';
 import {javascript} from '@codemirror/lang-javascript';
 import {LanguageSupport} from '@codemirror/language';
 import {cssCompletion} from './css.js';
-import {jsCompletion, markGlobalsPlugin} from './javascript.js';
+import {jsCompletion, markGlobalsAndDocTagPlugin} from './javascript.js';
 import type {CodeMirror6} from './codemirror';
 
 export default (_?: unknown, cm?: CodeMirror6): LanguageSupport => vue({
@@ -12,6 +12,6 @@ export default (_?: unknown, cm?: CodeMirror6): LanguageSupport => vue({
 		javascript().support,
 		jsCompletion,
 		cssCompletion(),
-		markGlobalsPlugin(cm),
+		markGlobalsAndDocTagPlugin(cm),
 	]),
 });

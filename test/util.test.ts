@@ -7,10 +7,13 @@ import {
 	posToIndex,
 	sliceDoc,
 	braceStackUpdate,
+	markDocTagType,
 	leadingSpaces,
 	findTemplateName,
 } from '../src/util';
 import {createState} from './util';
+import type {Decoration} from '@codemirror/view';
+import type {Range} from '@codemirror/state';
 
 const doc = Text.of([
 	'First line.',
@@ -18,6 +21,12 @@ const doc = Text.of([
 ]);
 const state = createState('{{a}}{{b}}'),
 	node = syntaxTree(state).resolve(3, 1);
+
+const markTest = (str: string, results: [number, number][]): void => {
+	const decorations: Range<Decoration>[] = [],
+		mt = /(@[a-z]+)(\s*\{)?/diu.exec(str)!;
+	assert.deepStrictEqual(markDocTagType(decorations, 0, mt).map(({from, to}) => [from, to]), results);
+};
 
 describe('util functions', () => {
 	it('HTML escape', () => {
@@ -60,5 +69,13 @@ describe('util functions', () => {
 		assert.strictEqual(leadingSpaces(' \t\n\t a'), ' \t\n\t ');
 		assert.strictEqual(leadingSpaces(' \t\n\t '), ' \t\n\t ');
 		assert.strictEqual(leadingSpaces('a'), '');
+	});
+
+	it('parse JSDoc/LDoc tag', () => {
+		markTest(' @file test', [[1, 6]]);
+		markTest('@content {', [[0, 8]]);
+		markTest('@type {}', [[0, 5]]);
+		markTest('@type {string|number}}', [[0, 5], [7, 20]]);
+		markTest('@param {{a: {b: string}}}}', [[0, 6], [8, 24]]);
 	});
 });

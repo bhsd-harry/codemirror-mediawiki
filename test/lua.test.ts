@@ -1,7 +1,7 @@
 import * as assert from 'assert';
-import {foldable} from '@codemirror/language';
-import lua from '../src/lua';
-import {autocompletionTest, createState} from './util';
+import {foldable, syntaxTree} from '@codemirror/language';
+import lua, {markDocTag} from '../src/lua';
+import {autocompletionTest, createState, convertRangeSet} from './util';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
 const nil = [
@@ -10,8 +10,7 @@ const nil = [
 		{label: 'not', type: 'keyword'},
 	],
 	lang = lua(),
-	state = createState('', lang),
-	[source] = state.languageDataAt<CompletionSource>('autocomplete', 0);
+	[source] = createState('', lang).languageDataAt<CompletionSource>('autocomplete', 0);
 
 const mockTest = autocompletionTest(source!, lang, /^\w*$/u);
 
@@ -20,6 +19,13 @@ const foldTest = (doc: string, result: unknown): void => {
 		foldable(createState(doc, lang), 0, doc.indexOf('\n')),
 		result,
 	);
+};
+
+const markTest = (doc: string, results: number[][]): void => {
+	const state = createState(doc, lang),
+		{length} = state.doc,
+		set = markDocTag(syntaxTree(state), [{from: 0, to: length}], state);
+	assert.deepStrictEqual(convertRangeSet(set, length), results);
 };
 
 describe('Lua autocompletion', () => {
@@ -194,5 +200,30 @@ describe('Lua folding', () => {
 		foldTest('a\n\tb\n\tc\nd', {from: 1, to: 7});
 		foldTest('a\n  b\n    c\n  d\ne', {from: 1, to: 15});
 		foldTest('\ta\n\t\tb\n\tc', {from: 2, to: 6});
+	});
+});
+
+describe('LDoc', () => {
+	it('line comment', () => {
+		markTest(
+			`---
+				-- @module test
+				-- @tparam {}
+				-- @treturn {string,...}
+
+				-- @alias M`,
+			[[11, 18], [31, 38], [49, 57], [59, 69]],
+		);
+	});
+	it('block comment', () => {
+		markTest(
+			`--[[--
+				@module test
+				@tparam {}
+				@treturn {string}
+			]]
+			-- @alias M`,
+			[[11, 18], [28, 35], [43, 51], [53, 59]],
+		);
 	});
 });

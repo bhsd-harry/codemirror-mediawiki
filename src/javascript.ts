@@ -8,6 +8,8 @@ import {ViewPlugin, Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
 import {builtin} from './javascript-globals.js';
+import {doctagMark} from './constants.js';
+import {markDocTagType} from './util.js';
 import type {Extension, Range, EditorState} from '@codemirror/state';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
@@ -32,11 +34,11 @@ export const exclude = (state: EditorState, pos: number): boolean => javascriptL
 	&& syntaxTree(state).resolveInner(pos, 0).name === 'RegExp';
 
 /**
- * 高亮显示全局变量
+ * 高亮显示全局变量和JSDoc标签
  * @ignore
  * @test
  */
-export const markGlobals = (
+export const markGlobalsAndDocTag = (
 	tree: Tree,
 	visibleRanges: readonly DocRange[],
 	state: EditorState,
@@ -72,10 +74,23 @@ export const markGlobals = (
 			to,
 			enter({type, from: f, to: t}) {
 				const name = state.sliceDoc(f, t);
-				if (type.is('VariableName') && javascriptLanguage.isActiveAt(state, f) && allGlobals.has(name)) {
+				if (!javascriptLanguage.isActiveAt(state, f)) {
+					//
+				} else if (type.is('VariableName') && allGlobals.has(name)) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);
 					if (!completions?.options.some(({label}) => label === name)) {
 						decorations.push(globalsMark.range(f, t));
+					}
+				} else if (type.is('BlockComment') && /^\/\*{2}(?!\*)/u.test(name)) {
+					const comment = name.slice(2),
+						mtAll = comment.matchAll(/^[ \t]*\*\s*(@[a-z]+)(\s+\{(?!\}))?|\{(@[a-z]+)/dgimu);
+					for (const mt of mtAll) {
+						if (mt[3]) {
+							const [start, end] = mt.indices![3]!;
+							decorations.push(doctagMark.range(f + start + 2, f + end + 2));
+						} else {
+							markDocTagType(decorations, f + 2, mt);
+						}
 					}
 				}
 			},
@@ -84,14 +99,14 @@ export const markGlobals = (
 	return Decoration.set(decorations);
 };
 
-export const markGlobalsPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fromClass(
+export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fromClass(
 	class implements PluginValue {
 		declare tree;
 		declare decorations;
 
 		constructor({state, visibleRanges}: EditorView) {
 			this.tree = syntaxTree(state);
-			this.decorations = markGlobals(this.tree, visibleRanges, state, cm);
+			this.decorations = markGlobalsAndDocTag(this.tree, visibleRanges, state, cm);
 		}
 
 		update({docChanged, viewportChanged, state, view: {visibleRanges}, transactions}: ViewUpdate): void {
@@ -104,7 +119,7 @@ export const markGlobalsPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fro
 				flag = transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect)));
 			}
 			if (flag) {
-				this.decorations = markGlobals(tree, visibleRanges, state, cm);
+				this.decorations = markGlobalsAndDocTag(tree, visibleRanges, state, cm);
 			}
 		}
 	},
@@ -118,5 +133,5 @@ export const markGlobalsPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fro
 export default (_?: unknown, cm?: CodeMirror6): Extension => [
 	js(),
 	jsCompletion,
-	markGlobalsPlugin(cm),
+	markGlobalsAndDocTagPlugin(cm),
 ];

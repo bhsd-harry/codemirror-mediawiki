@@ -7,8 +7,8 @@ import {instances} from './util';
 declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
-const baseVersion = '3.10',
-	addons = ['codeFolding'];
+const baseVersion = '3.12',
+	addons = ['closeTags'];
 
 mw.loader.addStyleTag($STYLE);
 

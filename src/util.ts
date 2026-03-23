@@ -2,9 +2,20 @@ import elt from 'crelt';
 import {tokens} from './config.js';
 import {
 	hoverSelector,
+	doctagMark,
+	typeMark,
 } from './constants.js';
-import type {EditorView, TooltipView} from '@codemirror/view';
-import type {Text, EditorState, SelectionRange} from '@codemirror/state';
+import type {
+	EditorView,
+	TooltipView,
+	Decoration,
+} from '@codemirror/view';
+import type {
+	Text,
+	EditorState,
+	SelectionRange,
+	Range,
+} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
@@ -64,7 +75,7 @@ export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange):
 	state.sliceDoc(node.from, node.to);
 
 /**
- * Update the stack of opening (+) or closing (-) brackets
+ * Update the stack of opening (+) or closing (-) braces
  * @param state
  * @param node 语法树节点
  * @test
@@ -72,6 +83,42 @@ export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange):
 export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
 	const brackets = sliceDoc(state, node);
 	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
+};
+
+/**
+ * Mark the type in a JSDoc/LDoc comment
+ * @param decorations
+ * @param from 起始位置
+ * @param mt 正则表达式匹配结果，第1个捕获组为标签，第2个捕获组为类型的起始括号`{`
+ * @test
+ */
+export const markDocTagType = (
+	decorations: Range<Decoration>[],
+	from: number,
+	mt: RegExpExecArray,
+): Range<Decoration>[] => {
+	const {input, indices} = mt,
+		[start, end] = indices![1]!;
+	decorations.push(doctagMark.range(from + start, from + end));
+	if (mt[2]) {
+		const re = /[{}]/gu,
+			[, left] = indices![2]!;
+		re.lastIndex = left;
+		let m = re.exec(input),
+			balance = 1;
+		while (m) {
+			balance += m[0] === '{' ? 1 : -1;
+			if (balance === 0) {
+				const {index} = m;
+				if (index > left) {
+					decorations.push(typeMark.range(from + left, from + index));
+				}
+				break;
+			}
+			m = re.exec(input);
+		}
+	}
+	return decorations;
 };
 
 /**

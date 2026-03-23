@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.12.1
 
-*2026-03-20*
+*2026-03-24*
 
 **Added**
 
 - The [bracketMatching](./README.md#bracketmatching) extension now supports selecting the line block containing matching brackets with triple-click
+- [JSDoc](https://jsdoc.app/) and [LDoc](https://lunarmodules.github.io/ldoc/) annotations are now syntax highlighted
 
 ## 3.12.0
 

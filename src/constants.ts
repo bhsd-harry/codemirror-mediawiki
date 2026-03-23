@@ -1,3 +1,4 @@
+import {Decoration} from '@codemirror/view';
 import {wmf} from '@bhsd/common';
 
 export const base: Record<'CDN', string | undefined> = {CDN: undefined},
@@ -6,6 +7,8 @@ export const base: Record<'CDN', string | undefined> = {CDN: undefined},
 	panelSelector = '.cm-panel',
 	panelsSelector = '.cm-panels',
 	actionSelector = '.cm-diagnosticAction',
+	doctagMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag'}),
+	typeMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
 	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	bgDark = '#4c566a',
 	matchingCls = 'cm-matchingTag',
