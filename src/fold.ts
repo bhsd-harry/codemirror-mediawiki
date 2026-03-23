@@ -440,20 +440,24 @@ export const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
 };
 
 const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
+	declare tree;
 	declare markers;
 
 	constructor(view: EditorView) {
+		this.tree = syntaxTree(view.state);
 		this.markers = buildMarkers(view);
 	}
 
 	update({docChanged, viewportChanged, startState, state, view}: ViewUpdate): void {
+		const tree = syntaxTree(state);
 		if (
 			docChanged
 			|| viewportChanged
 			|| startState.facet(language) !== state.facet(language)
 			|| startState.field(foldState, false) !== state.field(foldState, false)
-			|| syntaxTree(startState) !== syntaxTree(state)
+			|| tree !== this.tree
 		) {
+			this.tree = tree;
 			this.markers = buildMarkers(view);
 		}
 	}
