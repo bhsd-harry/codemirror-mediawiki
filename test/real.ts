@@ -1,7 +1,7 @@
-import {styleText} from 'util';
 import {Direction} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {javascript} from '@codemirror/lang-javascript';
+import {green, yellow} from '@bhsd/nodejs';
 import {execute} from '@bhsd/test-util';
 import {computeIsolates} from '../src/bidi';
 import {detectIndent} from '../src/indent';
@@ -16,7 +16,7 @@ const [,, lang] = process.argv,
 	failed: string[] = [];
 
 const log = (language: string): void => {
-	console.info(styleText('green', `Testing ${language}...`));
+	console.info(green(`Testing ${language}...`));
 };
 
 const coding = (langSupport: Extension, ns: string, model: string, mark: typeof markDocTag): Promise<void> => execute(
@@ -67,6 +67,6 @@ const coding = (langSupport: Extension, ns: string, model: string, mark: typeof 
 	}
 
 	if (failed.length > 0) {
-		console.warn(styleText('yellow', 'Failed to fully parse the following files:'), failed);
+		console.warn(yellow('Failed to fully parse the following files:'), failed);
 	}
 })();
