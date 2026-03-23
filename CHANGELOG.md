@@ -8,6 +8,11 @@
 - The [bracketMatching](./README.md#bracketmatching) extension now supports selecting the line block containing matching brackets with triple-click
 - [JSDoc](https://jsdoc.app/) and [LDoc](https://lunarmodules.github.io/ldoc/) annotations are now syntax highlighted
 
+**Fixed**
+
+- Issues with the [bidiIsolates](./README.md#bidiisolates) extension in the MediaWiki mode
+- Issues with tag matching in the [bracketMatching](./README.md#bracketmatching) extension in the MediaWiki mode
+
 ## 3.12.0
 
 *2026-03-17*

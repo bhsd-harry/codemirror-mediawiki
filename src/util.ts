@@ -5,21 +5,13 @@ import {
 	doctagMark,
 	typeMark,
 } from './constants.js';
-import type {
-	EditorView,
-	TooltipView,
-	Decoration,
-} from '@codemirror/view';
-import type {
-	Text,
-	EditorState,
-	SelectionRange,
-	Range,
-} from '@codemirror/state';
+import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
+import type {Text, EditorState, SelectionRange, Range} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
+import type {DocRange} from './fold';
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 
@@ -86,6 +78,27 @@ export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number,
 };
 
 /**
+ * Push a decoration to the array if the range is not empty
+ * @param decorations Decoration 数组
+ * @param decoration Decoration 实例
+ * @param from 起始位置或节点
+ * @param to 结束位置
+ */
+export const pushDecoration = (
+	decorations: Range<Decoration>[],
+	decoration: Decoration,
+	from: number | DocRange,
+	to?: number,
+): void => {
+	if (typeof from !== 'number') {
+		({from, to} = from);
+	}
+	if (from < to!) {
+		decorations.push(decoration.range(from, to));
+	}
+};
+
+/**
  * Mark the type in a JSDoc/LDoc comment
  * @param decorations
  * @param from 起始位置
@@ -99,7 +112,7 @@ export const markDocTagType = (
 ): Range<Decoration>[] => {
 	const {input, indices} = mt,
 		[start, end] = indices![1]!;
-	decorations.push(doctagMark.range(from + start, from + end));
+	pushDecoration(decorations, doctagMark, from + start, from + end);
 	if (mt[2]) {
 		const re = /[{}]/gu,
 			[, left] = indices![2]!;
@@ -109,10 +122,7 @@ export const markDocTagType = (
 		while (m) {
 			balance += m[0] === '{' ? 1 : -1;
 			if (balance === 0) {
-				const {index} = m;
-				if (index > left) {
-					decorations.push(typeMark.range(from + left, from + index));
-				}
+				pushDecoration(decorations, typeMark, from + left, from + m.index);
 				break;
 			}
 			m = re.exec(input);

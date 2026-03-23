@@ -9,7 +9,7 @@ import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
 import {builtin} from './javascript-globals.js';
 import {doctagMark} from './constants.js';
-import {markDocTagType} from './util.js';
+import {markDocTagType, pushDecoration} from './util.js';
 import type {Extension, Range, EditorState} from '@codemirror/state';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
@@ -79,7 +79,7 @@ export const markGlobalsAndDocTag = (
 				} else if (type.is('VariableName') && allGlobals.has(name)) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);
 					if (!completions?.options.some(({label}) => label === name)) {
-						decorations.push(globalsMark.range(f, t));
+						pushDecoration(decorations, globalsMark, f, t);
 					}
 				} else if (type.is('BlockComment') && /^\/\*{2}(?!\*)/u.test(name)) {
 					const comment = name.slice(2),
@@ -87,7 +87,7 @@ export const markGlobalsAndDocTag = (
 					for (const mt of mtAll) {
 						if (mt[3]) {
 							const [start, end] = mt.indices![3]!;
-							decorations.push(doctagMark.range(f + start + 2, f + end + 2));
+							pushDecoration(decorations, doctagMark, f + start + 2, f + end + 2);
 						} else {
 							markDocTagType(decorations, f + 2, mt);
 						}

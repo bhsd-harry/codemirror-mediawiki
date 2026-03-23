@@ -5,12 +5,13 @@
  */
 
 import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
-import {Prec, RangeSetBuilder} from '@codemirror/state';
+import {Prec} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
+import {pushDecoration} from './util.js';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
-import type {Extension} from '@codemirror/state';
+import type {Extension, Range} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 
 const isolateSelector = '.cm-bidi-isolate',
@@ -28,7 +29,7 @@ const isolateSelector = '.cm-bidi-isolate',
  * @test
  */
 export const computeIsolates = ({visibleRanges, state, textDirection}: EditorView): DecorationSet => {
-	const set = new RangeSetBuilder<Decoration>();
+	const set: Range<Decoration>[] = [];
 	if (textDirection === Direction.RTL) {
 		for (const {from, to} of visibleRanges) {
 			let node: SyntaxNode | null = syntaxTree(state).resolve(from, 1),
@@ -40,28 +41,28 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, t).includes('<')) {
 					const tag = getTag(state, nextSibling!);
 					if (tag) {
-						set.add(tag.from, tag.to, isolateLTR);
+						pushDecoration(set, isolateLTR, tag);
 					}
 				} else if (!td && !table && name.includes(tokens.tableDefinition)) {
 					if (/-html-(?:table|tr)/u.test(name)) {
 						table = state.doc.lineAt(f).to;
-						set.add(f, table, isolateLTR);
+						pushDecoration(set, isolateLTR, f, table);
 					} else {
 						td = f;
 					}
 				} else if (table && f > table) {
 					table = 0;
 				} else if (td && name.includes(tokens.tableDelimiter2)) {
-					set.add(td, f, isolateLTR);
+					pushDecoration(set, isolateLTR, td, f);
 					td = 0;
 				} else if (/-(?:template|parserfunction)-delimiter/u.test(name)) {
 					if (parameter) {
-						set.add(parameter, f, isolate);
+						pushDecoration(set, isolate, parameter, f);
 					}
 					parameter = t;
 				} else if (parameter && /-(?:template|parserfunction)-bracket/u.test(name)) {
 					if (state.sliceDoc(f, f + 1) === '}') {
-						set.add(parameter, f, isolate);
+						pushDecoration(set, isolate, parameter, f);
 					}
 					parameter = 0;
 				}
@@ -69,7 +70,7 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 			}
 		}
 	}
-	return set.finish();
+	return Decoration.set(set, true);
 };
 
 export default [

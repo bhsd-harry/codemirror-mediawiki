@@ -3,7 +3,7 @@ import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {voidHtmlTags, selfClosingTags} from './config.js';
 import {matchingCls, nonmatchingCls} from './constants.js';
-import {sliceDoc} from './util.js';
+import {sliceDoc, pushDecoration} from './util.js';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
@@ -167,15 +167,15 @@ export default /* @__PURE__ */ StateField.define<DecorationSet>({
 				const match = matchTag(state, range.head);
 				if (match) {
 					const mark = match.matched ? matchingMark : nonmatchingMark,
-						{start: {from, to, closing}, end} = match;
-					decorations.push(mark.range(from, to));
+						{start, end} = match;
+					pushDecoration(decorations, mark, start);
 					if (end) {
-						decorations[closing ? 'unshift' : 'push'](mark.range(end.from, end.to));
+						pushDecoration(decorations, mark, end);
 					}
 				}
 			}
 		}
-		return Decoration.set(decorations);
+		return Decoration.set(decorations, true);
 	},
 	provide(f) {
 		return EditorView.decorations.from(f);
