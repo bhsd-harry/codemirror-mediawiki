@@ -3,8 +3,15 @@ import {
 	hoverSelector,
 	base,
 } from './constants.js';
-import type {EditorView, TooltipView} from '@codemirror/view';
-import type {Text, EditorState, SelectionRange} from '@codemirror/state';
+import type {
+	EditorView,
+	TooltipView,
+} from '@codemirror/view';
+import type {
+	Text,
+	EditorState,
+	SelectionRange,
+} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
@@ -60,7 +67,7 @@ export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange):
 	state.sliceDoc(node.from, node.to);
 
 /**
- * Update the stack of opening (+) or closing (-) brackets
+ * Update the stack of opening (+) or closing (-) braces
  * @param state
  * @param node 语法树节点
  */
