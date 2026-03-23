@@ -73,7 +73,7 @@
 		"eslint-plugin-unicorn": "^63.0.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.21.0",
-		"stylelint": "^17.4.0",
+		"stylelint": "^17.5.0",
 		"stylelint-config-recommended": "^18.0.0",
 		"stylelint-plugin-use-baseline": "^1.2.7",
 		"typescript": "^5.9.3"

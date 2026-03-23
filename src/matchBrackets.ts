@@ -83,6 +83,34 @@ export const selectMatchingBrackets = (
 	|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
 	|| trySelectMatchingBrackets(state, pos - 1, 1, config, true);
 
+const tryMatchBracetks = (
+	state: EditorState,
+	pos: number,
+	config: Config & {afterCursor: boolean},
+): MatchResult | false | null =>
+	matchBrackets(state, pos, -1, config)
+	|| pos > 0 && matchBrackets(state, pos - 1, 1, config)
+	|| config.afterCursor && (
+		matchBrackets(state, pos, 1, config)
+		|| pos < state.doc.length && matchBrackets(state, pos + 1, -1, config)
+	);
+
+export const selectLineBlock = (state: EditorState, pos: number, config?: Config): Selection | false => {
+	const {doc} = state,
+		matching = tryMatchBracetks(state, pos, {...config, afterCursor: true});
+	if (!matching || !matching.matched) {
+		return false;
+	}
+	const {start, end} = matching,
+		a = doc.lineAt(start.from),
+		b = doc.lineAt(end!.from),
+		dir = a.from < b.from;
+	return {
+		anchor: (dir ? a : b).from,
+		head: Math.min(doc.length, (dir ? b : a).to + 1),
+	};
+};
+
 export const bracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
 	const decorations: Range<Decoration>[] = [],
 		{
@@ -96,12 +124,7 @@ export const bracketDeco = (state: EditorState, config: RequiredConfig): Decorat
 		}
 		const tree = syntaxTree(state),
 			match =
-				matchBrackets(state, head, -1, config)
-				|| head > 0 && matchBrackets(state, head - 1, 1, config)
-				|| afterCursor && (
-					matchBrackets(state, head, 1, config)
-					|| head < state.doc.length && matchBrackets(state, head + 1, -1, config)
-				)
+				tryMatchBracetks(state, head, config)
 				|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
 				|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
 				|| // eslint-disable-line @stylistic/operator-linebreak
@@ -111,6 +134,28 @@ export const bracketDeco = (state: EditorState, config: RequiredConfig): Decorat
 		}
 	}
 	return Decoration.set(decorations, true);
+};
+
+const clickHandler = (
+	e: MouseEvent,
+	view: EditorView,
+	facet: Facet<Config, RequiredConfig>,
+	select: (state: EditorState, pos: number, config?: Config) => Selection | false,
+): boolean => {
+	const pos = view.posAtCoords(e),
+		{state} = view,
+		config = state.facet(facet);
+	if (
+		pos === null
+	) {
+		return false;
+	}
+	const selection = select(state, pos, config);
+	if (selection) {
+		view.dispatch({selection});
+		return true;
+	}
+	return false;
 };
 
 export default (configs?: BracketConfig): Extension => {
@@ -150,26 +195,17 @@ export default (configs?: BracketConfig): Extension => {
 	return [
 		extension,
 		EditorView.domEventHandlers({
+			/** @ignore */
+			click(e, view) {
+				return e.detail === 3 && clickHandler(e, view, facet, selectLineBlock);
+			},
 
 			/**
 			 * @ignore
 			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
 			 */
 			dblclick(e, view) {
-				const pos = view.posAtCoords(e),
-					{state} = view,
-					config = state.facet(facet);
-				if (
-					pos === null
-				) {
-					return false;
-				}
-				const selection = selectMatchingBrackets(state, pos, config);
-				if (selection) {
-					view.dispatch({selection});
-					return true;
-				}
-				return false;
+				return clickHandler(e, view, facet, selectMatchingBrackets);
 			},
 		}),
 	];
