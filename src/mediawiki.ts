@@ -20,6 +20,7 @@ import {
 	hoverSelector,
 	isWMF,
 } from './constants.js';
+import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
 import {leadingSpaces, findTemplateName} from './util.js';
 import type {
@@ -696,6 +697,7 @@ export const mediawikiBase = (
 		),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
+		lightHighlightStyle,
 		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),
 		theme,
 		lang.data.of({autocomplete: mode.completionSource}),

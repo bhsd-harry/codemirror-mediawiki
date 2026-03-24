@@ -183,4 +183,29 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	indentChange();
 
 	Object.assign(globalThis, {cm});
+
+	if (location.host === 'localhost:8080') {
+		const queue: string[] = [],
+			{body} = document;
+		const isValid = (data: string, jsonc?: boolean): void => {
+				const tag = jsonc ? 'maplink' : 'templatedata';
+				queue.push(`<${tag}>\n${data}\n</${tag}>`);
+			},
+			isInvalid = (data: string, _?: unknown, jsonc?: boolean): void => {
+				isValid(data, jsonc);
+			},
+			it = (_: string, callback: () => void): void => {
+				callback();
+			};
+		Object.assign(globalThis, {isValid, isInvalid, it, describe: it});
+		body.addEventListener('click', ({target}) => {
+			if (target === body && cm.lang === 'mediawiki') {
+				if (queue.length === 0) {
+					console.error('No content in queue');
+				} else {
+					cm.setContent(queue.pop()!);
+				}
+			}
+		});
+	}
 }

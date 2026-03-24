@@ -51,9 +51,9 @@
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.3.0",
-		"@bhsd/cm-util": "^0.2.0",
+		"@bhsd/cm-util": "^1.0.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.2",
-		"@bhsd/common": "^1.4.0",
+		"@bhsd/common": "^2.0.0",
 		"@bhsd/lezer-abusefilter": "^0.2.1",
 		"@bhsd/stylelint-util": "^1.0.1",
 		"@codemirror/autocomplete": "^6.20.1",
@@ -79,7 +79,7 @@
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.1.1",
-		"@bhsd/nodejs": "^0.2.0",
+		"@bhsd/nodejs": "^1.0.0",
 		"@bhsd/test-util": "^0.4.0",
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@stylistic/stylelint-plugin": "^5.0.1",
@@ -106,8 +106,5 @@
 		"stylelint-plugin-use-baseline": "^1.2.7",
 		"types-mediawiki": "^2.0.0",
 		"typescript": "^5.9.3"
-	},
-	"engines": {
-		"node": "^24.14.0"
 	}
 }

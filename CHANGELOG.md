@@ -6,6 +6,7 @@
 **Added**
 
 - Highlight JSDoc name annotations if followed by a hyphen in the JavaScript mode
+- JSON/JSONC content inside `<templatedata>`, `<mapframe>` and `<maplink>` tags in the MediaWiki mode is now syntax highlighted
 
 **Fixed**
 

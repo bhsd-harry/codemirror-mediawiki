@@ -10,6 +10,7 @@ import {detectIndent} from '../src/indent';
 import {markGlobalsAndDocTag} from '../src/javascript';
 import lua, {markDocTag} from '../src/lua';
 import parse, {checkNode} from './parser';
+import jsonParse from './json';
 import {createState} from './util';
 import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -62,32 +63,44 @@ const tryScripts = (callback: (content: string, title: string) => void, files: s
 				node = node.nextSibling;
 			}
 
-			const state = createState(content);
 			computeIsolates({
 				visibleRanges: [{from: 0, to: content.length}],
-				state,
+				state: createState(content),
 				textDirection: Direction.RTL,
 			} as Partial<EditorView> as EditorView);
 		});
 	}
 
-	if (!lang || lang === 'javascript') {
+	if (!lang || lang === 'javascript' || lang === 'local') {
 		log('JavaScript');
 		const langSupport = javascript();
-		await coding(langSupport, '2|8', 'javascript', markGlobalsAndDocTag);
+		tryScripts(
+			singleScript(langSupport, 'javascript', markGlobalsAndDocTag),
+			fs.globSync(
+				['../**/*.js', '../**/*.[cm]js'],
+				{exclude: ['../**/*.min.js', '../**/node_modules/**', '../build/**']},
+			),
+			'..',
+		);
 
-		const callback = singleScript(langSupport, 'javascript', markGlobalsAndDocTag);
-		tryScripts(callback, fs.globSync(['dist/*.js', 'test/dist/**/*.js'], {exclude: ['dist/*.min.js']}));
+		if (lang !== 'local') {
+			await coding(langSupport, '2|8', 'javascript', markGlobalsAndDocTag);
+		}
 	}
 
-	if (!lang || lang === 'lua') {
+	if (!lang || lang === 'lua' || lang === 'local') {
 		log('Lua');
 		const langSupport = lua();
-		await coding(langSupport, '828', 'Scribunto', markDocTag);
+		tryScripts(singleScript(langSupport, 'lua', markDocTag), fs.globSync('../**/*.lua'), '..');
 
-		const callback = singleScript(langSupport, 'lua', markDocTag),
-			dir = path.join(require.resolve('luacheck-browserify'), '../../src/luacheck');
-		tryScripts(callback, fs.globSync(path.join(dir, '**/*.lua')), dir);
+		if (lang !== 'local') {
+			await coding(langSupport, '828', 'Scribunto', markDocTag);
+		}
+	}
+
+	if (!lang || lang === 'json' || lang === 'local') {
+		log('JSON');
+		tryScripts(jsonParse, fs.globSync('../**/*.json'), '..');
 	}
 
 	if (failed.length > 0) {
