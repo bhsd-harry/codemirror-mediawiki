@@ -1448,8 +1448,8 @@ export class MediaWiki {
 			const mt = stream.match(re)!;
 			if (isLang) {
 				let lang = mt[0].trim().toLowerCase();
-				if (lang === 'js') {
-					lang = 'javascript';
+				if (lang === 'wiki' || lang === 'wikitext') {
+					lang = 'mediawiki';
 				}
 				if (lang in this) {
 					state.extMode = this[lang as 'text/pre']() as StreamParser<object>;
