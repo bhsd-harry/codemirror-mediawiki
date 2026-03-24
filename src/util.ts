@@ -103,12 +103,14 @@ export const pushDecoration = (
  * @param decorations
  * @param from 起始位置
  * @param mt 正则表达式匹配结果，第1个捕获组为标签，第2个捕获组为类型的起始括号`{`
+ * @param offset Decoration 向外扩展的大小，默认为0
  * @test
  */
 export const markDocTagType = (
 	decorations: Range<Decoration>[],
 	from: number,
 	mt: RegExpExecArray,
+	offset = 0,
 ): Range<Decoration>[] => {
 	const {input, indices} = mt,
 		[start, end] = indices![1]!;
@@ -122,7 +124,7 @@ export const markDocTagType = (
 		while (m) {
 			balance += m[0] === '{' ? 1 : -1;
 			if (balance === 0) {
-				pushDecoration(decorations, typeMark, from + left, from + m.index);
+				pushDecoration(decorations, typeMark, from + left - offset, from + m.index + offset);
 				break;
 			}
 			m = re.exec(input);

@@ -497,9 +497,9 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 				) {
 					while (node.name === 'comment') {
 						const comment = sliceDoc(state, node),
-							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{(?!\}))?/diu.exec(comment);
+							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{)?/diu.exec(comment);
 						if (mt) {
-							markDocTagType(decorations, node.from, mt);
+							markDocTagType(decorations, node.from, mt, 1);
 						}
 						// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 						const {nextSibling} = node as SyntaxNode;
