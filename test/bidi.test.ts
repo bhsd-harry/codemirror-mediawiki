@@ -4,7 +4,7 @@ import {computeIsolates} from '../src/bidi';
 import {createState, convertRangeSet} from './util';
 import type {EditorView} from '@codemirror/view';
 
-const mockTest = (doc: string, ranges: number[][]): void => {
+const mockTest = (doc: string, ranges: [number, number][]): void => {
 	const state = createState(doc),
 		view = {
 			visibleRanges: [{from: 0, to: doc.length}],

@@ -5,17 +5,24 @@ import {vue} from '@codemirror/lang-vue';
 import {json} from '@codemirror/lang-json';
 import {syntaxTree} from '@codemirror/language';
 import {markGlobalsAndDocTag, exclude} from '../src/javascript';
-import {createState, convertRangeSet} from './util';
+import {createState, convertFullRangeSet, filterFromRangeSet} from './util';
 import type {EditorState} from '@codemirror/state';
 import type {LanguageSupport} from '@codemirror/language';
 
 const mockTest = (
 	state: EditorState,
 	[from = 0, to = state.doc.length]: [number?, number?],
-	results: number[][],
+	globals: [number, number][],
+	tag: [number, number][] = [],
+	type: [number, number][] = [],
+	v: [number, number][] = [],
 ): void => {
-	const set = markGlobalsAndDocTag(syntaxTree(state), [{from, to}], state);
-	assert.deepStrictEqual(convertRangeSet(set, state.doc.length), results);
+	const set = markGlobalsAndDocTag(syntaxTree(state), [{from, to}], state),
+		arr = convertFullRangeSet(set, state.doc.length);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-globals'), globals);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag'), tag);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag-type'), type);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag-var'), v);
 };
 
 const excludeTest = (lang: () => LanguageSupport, doc: string, pos: number, result = false): void => {
@@ -43,17 +50,25 @@ describe('JSDoc', () => {
 	it('block tag', () => {
 		const doc = `/** @type {(string|Array.<string>)} */
 				/**
-				 * @param {{{a: number, b: string, c}}} obj
-				 * @returns {}
+				 * @param {{{a: number, b: string, c}}} obj - object
+				 * @returns {} ret - return value
+				 * @throws e - error
 				 * @internal
 				 */`,
 			state = createState(doc, javascript());
-		mockTest(state, [], [[4, 9], [11, 34], [54, 60], [62, 89], [102, 110], [121, 130]]);
+		mockTest(
+			state,
+			[],
+			[],
+			[[4, 9], [54, 60], [111, 119], [149, 156], [174, 183]],
+			[[11, 34], [62, 89]],
+			[[91, 94], [123, 126], [157, 158]],
+		);
 	});
 	it('inline tag', () => {
 		const doc = '/** value of {@link X} */',
 			state = createState(doc, javascript());
-		mockTest(state, [], [[14, 19]]);
+		mockTest(state, [], [], [[14, 19]]);
 	});
 });
 
@@ -79,17 +94,25 @@ const sublangTest = (name: string, lang: LanguageSupport): void => {
 		it('block tag', () => {
 			const doc = `<script>/** @type {(string|Array.<string>)} */
 					/**
-					 * @param {{{a: number, b: string, c}}} obj
-					 * @returns {}
+					 * @param {{{a: number, b: string, c}}} obj - object
+					 * @returns {} ret - return value
+					 * @throws e - error
 					 * @internal
 					 */</script>`,
 				state = createState(doc, javascript());
-			mockTest(state, [], [[12, 17], [19, 42], [64, 70], [72, 99], [113, 121], [133, 142]]);
+			mockTest(
+				state,
+				[],
+				[],
+				[[12, 17], [64, 70], [122, 130], [161, 168], [187, 196]],
+				[[19, 42], [72, 99]],
+				[[101, 104], [134, 137], [169, 170]],
+			);
 		});
 		it('inline tag', () => {
 			const doc = '<script>/** value of {@link X} */</script>',
 				state = createState(doc, javascript());
-			mockTest(state, [], [[22, 27]]);
+			mockTest(state, [], [], [[22, 27]]);
 		});
 	});
 };

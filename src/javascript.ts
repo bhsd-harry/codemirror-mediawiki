@@ -22,6 +22,7 @@ import type {LintSource} from './lintsource';
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
 
 const globalsMark = Decoration.mark({class: 'cm-globals'}),
+	varMark = Decoration.mark({class: 'cm-doctag-var'}),
 	builtinGlobals = new Set(Object.keys(builtin));
 
 /**
@@ -83,13 +84,19 @@ export const markGlobalsAndDocTag = (
 					}
 				} else if (type.is('BlockComment') && /^\/\*{2}(?!\*)/u.test(name)) {
 					const comment = name.slice(2),
-						mtAll = comment.matchAll(/^[ \t]*\*\s*(@[a-z]+)(\s+\{(?!\}))?|\{(@[a-z]+)/dgimu);
+						pos = f + 2,
+						mtAll = comment.matchAll(/^[ \t]*\*\s*(@[a-z]+)(\s+\{)?|\{(@[a-z]+)/dgimu);
 					for (const mt of mtAll) {
 						if (mt[3]) {
 							const [start, end] = mt.indices![3]!;
-							pushDecoration(decorations, doctagMark, f + start + 2, f + end + 2);
+							pushDecoration(decorations, doctagMark, pos + start, pos + end);
 						} else {
-							markDocTagType(decorations, f + 2, mt);
+							const index = markDocTagType(decorations, pos, mt),
+								m = /^\s+([a-z_]\w*)\s+-/diu.exec(comment.slice(index));
+							if (m) {
+								const [start, end] = m.indices![1]!;
+								pushDecoration(decorations, varMark, pos + index + start, pos + index + end);
+							}
 						}
 					}
 				}

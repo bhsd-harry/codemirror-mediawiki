@@ -111,7 +111,7 @@ export const markDocTagType = (
 	from: number,
 	mt: RegExpExecArray,
 	offset = 0,
-): Range<Decoration>[] => {
+): number => {
 	const {input, indices} = mt,
 		[start, end] = indices![1]!;
 	pushDecoration(decorations, doctagMark, from + start, from + end);
@@ -125,12 +125,12 @@ export const markDocTagType = (
 			balance += m[0] === '{' ? 1 : -1;
 			if (balance === 0) {
 				pushDecoration(decorations, typeMark, from + left - offset, from + m.index + offset);
-				break;
+				return m.index + 1;
 			}
 			m = re.exec(input);
 		}
 	}
-	return decorations;
+	return end;
 };
 
 /**

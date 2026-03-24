@@ -6,8 +6,8 @@ import {mediawikiBase} from '../src/mediawiki';
 import {tagModes, getStaticMwConfig} from '../src/static';
 import {linkSuggest, paramSuggest} from '../src/suggest.test';
 import type {CompletionResult, CompletionSource} from '@codemirror/autocomplete';
-import type {Extension, Transaction, TransactionSpec, RangeSet, StateEffect} from '@codemirror/state';
-import type {EditorView, BlockInfo} from '@codemirror/view';
+import type {Extension, Transaction, TransactionSpec, RangeSet, StateEffect, RangeValue} from '@codemirror/state';
+import type {EditorView, BlockInfo, Decoration} from '@codemirror/view';
 import type {LanguageSupport} from '@codemirror/language';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
@@ -126,14 +126,20 @@ export const autocompletionTest = (source: CompletionSource, lang?: LanguageSupp
 		);
 	};
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const convertRangeSet = (set: RangeSet<any>, length: number): [number, number][] => {
-	const chunks: [number, number][] = [];
-	set.between(0, length, (from, to) => {
-		chunks.push([from, to]);
+export const convertFullRangeSet = <T extends RangeValue>(set: RangeSet<T>, length: number): [number, number, T][] => {
+	const chunks: [number, number, T][] = [];
+	set.between(0, length, (from, to, value) => {
+		chunks.push([from, to, value]);
 	});
 	return chunks;
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const convertRangeSet = (set: RangeSet<any>, length: number): [number, number][] =>
+	convertFullRangeSet(set, length).map(([from, to]) => [from, to]);
+
+export const filterFromRangeSet = (arr: [number, number, Decoration][], cl: string): [number, number][] =>
+	arr.filter(([,, {spec}]) => (spec as Record<string, string>)['class'] === cl).map(([from, to]) => [from, to]);
 
 export const posToRange = (pos: number | [number, number]): [number, number] =>
 	typeof pos === 'number' ? [pos, pos] : pos;

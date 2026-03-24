@@ -50,6 +50,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 		'.cm-doctag-type>*': {
 			color: '#085',
 		},
+		'.cm-doctag-var>*': {
+			color: '#00f',
+		},
 		[matching]: {
 			backgroundColor: 'rgb(50,140,130,.32)',
 		},
@@ -95,6 +98,9 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			},
 			'.cm-doctag-type>*': {
 				color: '#ebcb8b',
+			},
+			'.cm-doctag-var>*': {
+				color: '#8fbcbb',
 			},
 			'div.cm-activeLine': {
 				backgroundColor: 'rgb(76,86,106,.27)',

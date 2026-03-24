@@ -22,10 +22,17 @@ const doc = Text.of([
 const state = createState('{{a}}{{b}}'),
 	node = syntaxTree(state).resolve(3, 1);
 
-const markTest = (str: string, results: [number, number][]): void => {
+const jsTest = (str: string, results: [number, number][], end: number): void => {
 	const decorations: Range<Decoration>[] = [],
 		mt = /(@[a-z]+)(\s*\{)?/diu.exec(str)!;
-	assert.deepStrictEqual(markDocTagType(decorations, 0, mt).map(({from, to}) => [from, to]), results);
+	assert.strictEqual(markDocTagType(decorations, 0, mt), end, str);
+	assert.deepStrictEqual(decorations.map(({from, to}) => [from, to]), results);
+};
+const luaTest = (str: string, results: [number, number][], end: number): void => {
+	const decorations: Range<Decoration>[] = [],
+		mt = /(@[a-z]+)(\s*\{)?/diu.exec(str)!;
+	assert.strictEqual(markDocTagType(decorations, 0, mt, 1), end, str);
+	assert.deepStrictEqual(decorations.map(({from, to}) => [from, to]), results);
 };
 
 describe('util functions', () => {
@@ -71,11 +78,19 @@ describe('util functions', () => {
 		assert.strictEqual(leadingSpaces('a'), '');
 	});
 
-	it('parse JSDoc/LDoc tag', () => {
-		markTest(' @file test', [[1, 6]]);
-		markTest('@content {', [[0, 8]]);
-		markTest('@type {}', [[0, 5]]);
-		markTest('@type {string|number}}', [[0, 5], [7, 20]]);
-		markTest('@param {{a: {b: string}}}}', [[0, 6], [8, 24]]);
+	it('parse JSDoc tag', () => {
+		jsTest(' @file test', [[1, 6]], 6);
+		jsTest('@content {', [[0, 8]], 8);
+		jsTest('@type {}}', [[0, 5]], 8);
+		jsTest('@type {string|number}}', [[0, 5], [7, 20]], 21);
+		jsTest('@param {{a: {b: string}}}}', [[0, 6], [8, 24]], 25);
+	});
+
+	it('parse LDoc tag', () => {
+		luaTest(' @file test', [[1, 6]], 6);
+		luaTest('@content {', [[0, 8]], 8);
+		luaTest('@type {}}', [[0, 5], [6, 8]], 8);
+		luaTest('@type {string|number}}', [[0, 5], [6, 21]], 21);
+		luaTest('@param {{a: {b: string}}}}', [[0, 6], [7, 25]], 25);
 	});
 });

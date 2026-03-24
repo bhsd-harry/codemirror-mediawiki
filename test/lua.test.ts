@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import {foldable, syntaxTree} from '@codemirror/language';
 import lua, {markDocTag} from '../src/lua';
-import {autocompletionTest, createState, convertRangeSet} from './util';
+import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
 const nil = [
@@ -21,11 +21,13 @@ const foldTest = (doc: string, result: unknown): void => {
 	);
 };
 
-const markTest = (doc: string, results: number[][]): void => {
+const markTest = (doc: string, tag: [number, number][], type: [number, number][]): void => {
 	const state = createState(doc, lang),
 		{length} = state.doc,
-		set = markDocTag(syntaxTree(state), [{from: 0, to: length}], state);
-	assert.deepStrictEqual(convertRangeSet(set, length), results);
+		set = markDocTag(syntaxTree(state), [{from: 0, to: length}], state),
+		arr = convertFullRangeSet(set, length);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag'), tag);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag-type'), type);
 };
 
 describe('Lua autocompletion', () => {
@@ -212,7 +214,8 @@ describe('LDoc', () => {
 				-- @treturn {string,...}
 
 				-- @alias M`,
-			[[11, 18], [31, 38], [39, 41], [49, 57], [58, 70]],
+			[[11, 18], [31, 38], [49, 57]],
+			[[39, 41], [58, 70]],
 		);
 	});
 	it('block comment', () => {
@@ -223,7 +226,8 @@ describe('LDoc', () => {
 				@treturn {string,...}
 			]]
 			-- @alias M`,
-			[[11, 18], [28, 35], [36, 38], [43, 51], [52, 64]],
+			[[11, 18], [28, 35], [43, 51]],
+			[[36, 38], [52, 64]],
 		);
 	});
 });

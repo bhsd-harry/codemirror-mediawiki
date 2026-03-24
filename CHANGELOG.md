@@ -1,4 +1,16 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.12.2
+
+*2026-03-25*
+
+**Added**
+
+- Highlight JSDoc name annotations if followed by a hyphen in the JavaScript mode
+
+**Fixed**
+
+- LDoc type annotations in the Lua mode
+
 ## 3.12.1
 
 *2026-03-24*
