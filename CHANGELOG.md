@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.2
+
+*2026-03-25*
+
+**Added**
+
+- JSON/JSONC content inside `<templatedata>`, `<mapframe>` and `<maplink>` tags is now syntax highlighted
+
 ## 0.4.1
 
 *2026-03-24*

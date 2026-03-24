@@ -9,6 +9,7 @@ import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
+import {json, jsonc} from './json.js';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 import type {TagName} from './config';
@@ -1386,7 +1387,7 @@ export class MediaWiki {
 			const t = state.stack[0]!,
 				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
 					+ getEqual(t);
-			if (pipe.includes(stream.peek() ?? '')) {
+			if (pipe.includes(stream.peek() || '')) {
 				pop(state);
 				return '';
 			} else if (stream.match(/^(?:[&<]|\{\{)/u, false)) {
@@ -2244,5 +2245,13 @@ export class MediaWiki {
 				return simpleToken(stream, state);
 			},
 		};
+	}
+
+	json(): typeof json {
+		return json;
+	}
+
+	jsonc(): typeof jsonc {
+		return jsonc;
 	}
 }
