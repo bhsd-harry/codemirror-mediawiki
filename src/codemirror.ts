@@ -418,11 +418,11 @@ export class CodeMirror6 {
 							const span = elt(
 								'span',
 								{class: diagnosticSelector.slice(1)},
-								diagnostic.renderMessage?.(view) ?? diagnostic.message,
+								diagnostic.renderMessage?.call(this, view) ?? this.message,
 							);
 							span.addEventListener('click', () => {
 								view.dispatch({
-									selection: {anchor: diagnostic.from, head: diagnostic.to},
+									selection: {anchor: this.from, head: this.to},
 								});
 								view.focus();
 							});

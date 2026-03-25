@@ -279,7 +279,7 @@ export const getTemplateStylesLintSource = async (title: string): Promise<LintSo
 				source: 'TemplateStyles',
 				message,
 				renderMessage(): HTMLSpanElement {
-					map.set('', message);
+					map.set('', this.message);
 					const span = document.createElement('span');
 					span.innerHTML = new mw.Message(map, '').parse();
 					return span;
