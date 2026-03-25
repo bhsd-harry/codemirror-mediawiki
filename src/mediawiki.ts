@@ -20,7 +20,7 @@ import type {
 	StreamParser,
 	Language,
 } from '@codemirror/language';
-import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
+import type {CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {
 	MwConfig,
 } from './token';
@@ -95,10 +95,7 @@ export class FullMediaWiki extends MediaWiki {
 
 	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
 		const parser = super.mediawiki(tags);
-		parser.languageData = {
-			closeBrackets: {brackets: ['(', '[', '{', '"'], before: ')]}>'} satisfies CloseBracketConfig,
-			autocomplete: this.completionSource,
-		};
+		parser.languageData!['autocomplete'] = this.completionSource;
 		return parser;
 	}
 
@@ -260,7 +257,7 @@ export class FullMediaWiki extends MediaWiki {
 	}
 }
 
-export const theme = /* @__PURE__ */ EditorView.theme({
+export const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	// hover tooltip and signature tooltip
 	'.cm-tooltip-hover': {
 		maxHeight: '60vh',

@@ -1,7 +1,7 @@
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import type {Diagnostic as DiagnosticBase, Range, Position} from 'vscode-languageserver-types';
 import type {
 	Warning,
@@ -82,7 +82,7 @@ export const getWikiLinter: getAsyncLinter<
 	ConfigGetter,
 	LintConfig
 > = async (opt, obj) => {
-	const cdn = base.CDN;
+	const cdn = baseData.CDN;
 	await getWikiparse(
 		opt,
 		undefined,

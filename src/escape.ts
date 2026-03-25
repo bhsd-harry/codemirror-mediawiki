@@ -1,7 +1,7 @@
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {
 	replaceSelections,
 } from './codemirror.js';
@@ -76,7 +76,7 @@ const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean 
 		view,
 		true,
 		getConfig,
-		base.CDN,
+		baseData.CDN,
 	);
 	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
 		void escapeWiki(view, lsp);

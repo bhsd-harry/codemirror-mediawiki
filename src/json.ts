@@ -71,7 +71,7 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 					escaped = !escaped && next === '\\';
 					next = stream.next();
 				}
-				return stream.match(/^\s*:/u) ? 'propertyName.definition' : 'string';
+				return stream.match(/^\s*:/u, false) ? 'propertyName.definition' : 'string';
 			}
 			case '-':
 				if (state.wb) {
@@ -104,7 +104,10 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 
 	return {
 		startState(): State {
-			return {tokenize: tokenBase, wb: true};
+			return {
+				tokenize: tokenBase,
+				wb: true,
+			};
 		},
 
 		token(stream, state): string {
@@ -116,5 +119,5 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 	};
 };
 
-export const json = mkJson(),
+export const jsonBasic = mkJson(),
 	jsonc = mkJson(true);

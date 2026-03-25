@@ -9,9 +9,10 @@ import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
-import {json, jsonc} from './json.js';
+import {jsonBasic, jsonc} from './json.js';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
+import type {CloseBracketConfig} from '@codemirror/autocomplete';
 import type {TagName} from './config';
 
 declare type MimeTypes = 'mediawiki'
@@ -33,16 +34,16 @@ declare interface Nesting extends Record<NestCount, number> {
 export interface State extends Nesting {
 	readonly stack: Tokenizer[];
 	readonly inHtmlTag: string[];
+	readonly dt: Partial<Nesting> & {n: number, html: number};
+	readonly data: MediaWikiData;
 	tokenize: Tokenizer;
 	extMode: StreamParser<object> | false;
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
-	dt: Partial<Nesting> & {n: number, html: number};
 	sof: boolean;
 	redirect: {colon: boolean} | false;
 	imgLink: boolean;
-	data: MediaWikiData;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
@@ -2082,6 +2083,13 @@ export class MediaWiki {
 					: null;
 			},
 
+			languageData: {
+				closeBrackets: {
+					brackets: ['(', '[', '{', '"'],
+					before: ')]}>',
+				} satisfies CloseBracketConfig,
+			},
+
 			...tags
 				? undefined
 				: {
@@ -2247,8 +2255,8 @@ export class MediaWiki {
 		};
 	}
 
-	json(): typeof json {
-		return json;
+	json(): typeof jsonBasic {
+		return jsonBasic;
 	}
 
 	jsonc(): typeof jsonc {

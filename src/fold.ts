@@ -98,7 +98,7 @@ const refNames = new Set<string | undefined>(['ref', 'references']);
  * @param tree 语法树
  * @param refOnly 是否仅检查`<ref>`标签
  */
-export const foldable = (
+export const foldableInline = (
 	state: EditorState,
 	posOrNode: number | SyntaxNode,
 	tree?: Tree | null,
@@ -243,7 +243,7 @@ export const traverse = (
 			&& !(isTemplateBracket(node) && sliceDoc(state, node).startsWith('}}'))
 		)
 	) {
-		const range = foldable(state, node, tree, refOnly);
+		const range = foldableInline(state, node, tree, refOnly);
 		if (range) {
 			effects.push(foldEffect.of(range));
 			node = tree.resolve(range.to, 1);
@@ -256,7 +256,7 @@ export const traverse = (
 	return anchor;
 };
 
-class FoldMarker extends GutterMarker {
+class MyFoldMarker extends GutterMarker {
 	declare readonly open;
 
 	constructor(open: boolean) {
@@ -273,10 +273,10 @@ class FoldMarker extends GutterMarker {
 	}
 }
 
-const canFold = /* @__PURE__ */ new FoldMarker(true),
-	canUnfold = /* @__PURE__ */ new FoldMarker(false);
+const canFold = /* @__PURE__ */ new MyFoldMarker(true),
+	canUnfold = /* @__PURE__ */ new MyFoldMarker(false);
 
-const findFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
+const myFindFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
 	let found: DocRange | undefined;
 	state.field(foldState, false)?.between(line.from, line.to, (from, to) => {
 		if (!found && to === line.to) {
@@ -362,11 +362,11 @@ export const foldableLine = ({state, viewportLineBlocks}: EditorView, {from: f, 
 	return false;
 };
 
-export const buildMarkers = (view: EditorView): RangeSet<FoldMarker> => {
-	const builder = new RangeSetBuilder<FoldMarker>();
+export const buildMarkers = (view: EditorView): RangeSet<MyFoldMarker> => {
+	const builder = new RangeSetBuilder<MyFoldMarker>();
 	for (const line of view.viewportLineBlocks) {
-		let mark: FoldMarker | undefined;
-		if (findFold(view, line)) {
+		let mark: MyFoldMarker | undefined;
+		if (myFindFold(view, line)) {
 			mark = canUnfold;
 		} else if (foldableLine(view, line)) {
 			mark = canFold;
@@ -436,7 +436,7 @@ export const foldCommand = (refOnly?: boolean): Command => view => {
 
 export const foldRef = /* @__PURE__ */ foldCommand(true);
 
-export const selectedLines = (view: EditorView): BlockInfo[] => {
+export const mySelectedLines = (view: EditorView): BlockInfo[] => {
 	const lines: BlockInfo[] = [];
 	for (const {head} of view.state.selection.ranges) {
 		if (lines.some(({from, to}) => from <= head && to >= head)) {
@@ -447,7 +447,7 @@ export const selectedLines = (view: EditorView): BlockInfo[] => {
 	return lines;
 };
 
-const foldCode = (view: EditorView, line: BlockInfo): boolean => {
+const myFoldCode = (view: EditorView, line: BlockInfo): boolean => {
 	const range = foldableLine(view, line);
 	if (range) {
 		view.dispatch({effects: foldEffect.of(range)});
@@ -456,8 +456,8 @@ const foldCode = (view: EditorView, line: BlockInfo): boolean => {
 	return false;
 };
 
-const unfoldCode = (view: EditorView, line: BlockInfo): StateEffect<DocRange> | undefined => {
-	const folded = findFold(view, line);
+const myUnfoldCode = (view: EditorView, line: BlockInfo): StateEffect<DocRange> | undefined => {
+	const folded = myFindFold(view, line);
 	return folded && unfoldEffect.of(folded);
 };
 
@@ -480,8 +480,8 @@ export const foldAt: Command = view => {
 	if (effects.length > 0) {
 		return execute(view, effects, anchor);
 	}
-	for (const line of selectedLines(view)) {
-		if (foldCode(view, line)) {
+	for (const line of mySelectedLines(view)) {
+		if (myFoldCode(view, line)) {
 			return true;
 		}
 	}
@@ -551,8 +551,8 @@ export default (): Extension => [
 					view.dispatch({effects, selection});
 					return true;
 				}
-				for (const line of selectedLines(view)) {
-					const effect = unfoldCode(view, line);
+				for (const line of mySelectedLines(view)) {
+					const effect = myUnfoldCode(view, line);
 					if (effect) {
 						effects.push(effect);
 					}
@@ -573,16 +573,16 @@ export default (): Extension => [
 			return view.plugin(markers)?.markers ?? RangeSet.empty;
 		},
 		initialSpacer() {
-			return new FoldMarker(false);
+			return new MyFoldMarker(false);
 		},
 		domEventHandlers: {
 			click(view, line) {
-				const effects = unfoldCode(view, line);
+				const effects = myUnfoldCode(view, line);
 				if (effects) {
 					view.dispatch({effects});
 					return true;
 				}
-				return foldCode(view, line);
+				return myFoldCode(view, line);
 			},
 		},
 	}),

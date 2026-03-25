@@ -23,7 +23,7 @@ import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
 import {
 	mediawikiBase,
-	theme,
+	wikiTheme,
 } from './mediawiki.js';
 import openLinks from './openLinks.js';
 import refHover from './ref.js';
@@ -64,7 +64,7 @@ export const bracketMatching = (): Extension =>
  */
 export const hover = (configData: ConfigData, cdn?: string): Extension => [
 	magicWordHover(configData, cdn),
-	theme,
+	wikiTheme,
 ];
 
 /**
@@ -75,7 +75,7 @@ export const hover = (configData: ConfigData, cdn?: string): Extension => [
  */
 export const signatureHelp = (configData: ConfigData, cdn?: string): Extension => [
 	signatureHelpBase(configData, cdn),
-	theme,
+	wikiTheme,
 ];
 
 /**
@@ -128,7 +128,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 	return new LanguageSupport(
 		mediawikiLanguage(configData),
 		[
-			theme,
+			wikiTheme,
 			keymap.of([
 				...formatKeymap,
 				...escapeKeymap(configData),

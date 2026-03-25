@@ -3,7 +3,7 @@ import {
 	getLSP,
 } from '@bhsd/browser';
 import {marked} from 'marked';
-import {base, hoverSelector, bgDark} from './constants.js';
+import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
 	posToIndex,
@@ -41,7 +41,7 @@ export default (
 					toConfigGetter(
 						configData,
 					),
-					base.CDN,
+					baseData.CDN,
 				)?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
 					const {end} = hover.range!;

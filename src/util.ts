@@ -1,7 +1,7 @@
 import elt from 'crelt';
 import {
 	hoverSelector,
-	base,
+	baseData,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
 import type {Text, EditorState, SelectionRange, Range} from '@codemirror/state';
@@ -105,6 +105,6 @@ export const toConfigGetter = (
  */
 export const updateCDN = (cdn?: string): void => {
 	if (cdn) {
-		base.CDN = cdn;
+		baseData.CDN = cdn;
 	}
 };
