@@ -1,7 +1,7 @@
 import {Decoration} from '@codemirror/view';
 import {wmf} from '@bhsd/common';
 
-export const base: Record<'CDN', string | undefined> = {CDN: undefined},
+export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	hoverSelector = '.cm-tooltip-hover-mw',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	panelSelector = '.cm-panel',

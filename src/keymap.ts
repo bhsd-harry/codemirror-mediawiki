@@ -1,7 +1,10 @@
 import {EditorSelection} from '@codemirror/state';
+import {syntaxTree} from '@codemirror/language';
 import {keybindings, encapsulateLines} from './keybindings.js';
 import type {KeyBinding} from '@codemirror/view';
 import type {KeymapConfig} from './keybindings';
+
+const reKartographer = /(?:^|_)mw-tag-map(?:link|frame)(?:$|_)/u;
 
 /**
  * 生成keymap
@@ -12,11 +15,26 @@ import type {KeymapConfig} from './keybindings';
  * @param opt.splitlines 是否分行
  * @test
  */
-export const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBinding => ({
+export const getWikiKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig): KeyBinding => ({
 	key,
 	run(view): true {
-		const {state} = view;
+		const {state} = view,
+			tree = syntaxTree(state);
 		view.dispatch(state.changeByRange(({from, to}) => {
+			if (
+				key === 'Mod-/'
+				&& reKartographer.test(tree.resolveInner(from, 1).name)
+				&& reKartographer.test(tree.resolveInner(to, -1).name)
+			) {
+				// JSONC comment
+				if (from === to) {
+					pre = '//';
+					post = '';
+				} else {
+					pre = '/*';
+					post = '*/';
+				}
+			}
 			if (splitlines) {
 				const start = state.doc.lineAt(from).from,
 					end = state.doc.lineAt(to).to,
@@ -38,4 +56,4 @@ export const getKeymap = ({key, pre = '', post = '', splitlines}: KeymapConfig):
 	preventDefault: true,
 });
 
-export default keybindings.map(getKeymap);
+export default keybindings.map(getWikiKeymap);

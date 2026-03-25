@@ -3,7 +3,7 @@ import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
 import {keymap} from '@codemirror/view';
 import {CodeMirror6} from '../src/codemirror';
-import {base, isWMF} from '../src/constants';
+import {baseData, isWMF} from '../src/constants';
 import {
 	registerCSS,
 	registerHTML,
@@ -18,7 +18,7 @@ import {
 import {jsConfig} from '../src/linter';
 import {tagModes} from '../src/static';
 import {getMwConfig, getParserConfig} from './config';
-import {preferenceId, indentKey, themeKey, RuleState, curVersion, languages} from './constants';
+import {preferenceId, indentKey, themeKey, RuleState, curVersion, languageFallbacks} from './constants';
 import escape from './escape';
 import {
 	getParsoidLintSource,
@@ -33,7 +33,7 @@ import {prefs, useMonaco, wikilint, codeConfigs, loadJSON, openPreference} from 
 import prepareSuggest from './suggest';
 import {textSelection, monacoTextSelection} from './textSelection';
 import {instances, templateData} from './util';
-import wikiEditor, {toggleButton, setActive, getGroup} from './wikiEditor';
+import wikiEditor, {toggleButton, setButtonActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint/types/stylelint';
 import type {editor, IRange} from 'monaco-editor';
@@ -69,8 +69,8 @@ registerVue();
 registerTheme('dark', nord);
 registerTheme('nord', nord);
 
-const linters: Record<string, LintSources | undefined> = {},
-	langs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
+const cmLinters: Record<string, LintSources | undefined> = {},
+	cmLangs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
 	langMap: Record<string, string> = {
 		'sanitized-css': 'css',
 		js: 'javascript',
@@ -89,7 +89,7 @@ const linters: Record<string, LintSources | undefined> = {},
 		dark: 'monokai',
 		nord: 'nord',
 	},
-	avail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
+	cmAvail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
 		['autocompletion', 'quickSuggestions', false, true],
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
@@ -144,7 +144,7 @@ const getLintSources = (
 	more: [LintSource, ...LintSource[]],
 ): LintSources => {
 	const lintersources: LintSources = linter ? [linter, ...more] : more;
-	linters[lang] = lintersources;
+	cmLinters[lang] = lintersources;
 	return lintersources;
 };
 
@@ -307,7 +307,7 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		if (typeof monaco !== 'object' || typeof monaco.editor !== 'object') {
-			const CDN = base.CDN || baseCDN;
+			const CDN = baseData.CDN || baseCDN;
 			Object.assign(globalThis, {monaco: {CDN}});
 			await $.ajax(
 				`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/all.min.js`,
@@ -385,7 +385,7 @@ export class CodeMirror extends CodeMirror6 {
 			$textarea.removeData('jquery.textSelection');
 		}
 		this.#visible = show;
-		setActive(this.$toolbar, show);
+		setButtonActive(this.$toolbar, show);
 	}
 
 	override destroy(): void {
@@ -478,7 +478,7 @@ export class CodeMirror extends CodeMirror6 {
 					// no default
 				}
 			}
-			linters[lang] = linter;
+			cmLinters[lang] = linter;
 			return linter;
 		} else if (this.#model?.linter) {
 			this.#model.linter.option = opt;
@@ -520,7 +520,7 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		}
 		const {lang, ns, dialect, page} = this,
-			loaded = lang in linters;
+			loaded = lang in cmLinters;
 		if (!loaded) {
 			let defaultOpt: Option;
 			if (typeof ns === 'number') {
@@ -535,7 +535,7 @@ export class CodeMirror extends CodeMirror6 {
 			let opt: LiveOption | undefined;
 			switch (lang) {
 				case 'mediawiki': {
-					const option = {...defaultOpt, ...this.#getBasicOpt(lang, await languages)};
+					const option = {...defaultOpt, ...this.#getBasicOpt(lang, await languageFallbacks)};
 					opt = (runtime): Option => runtime ? this.#getBasicOpt(lang) : option;
 					break;
 				}
@@ -574,7 +574,7 @@ export class CodeMirror extends CodeMirror6 {
 					});
 					break;
 				case 'html': {
-					const option = this.#getBasicOpt('mediawiki', await languages);
+					const option = this.#getBasicOpt('mediawiki', await languageFallbacks);
 					opt = (runtime): Option => runtime
 						? {
 							wiki: this.#getBasicOpt('mediawiki'),
@@ -588,7 +588,7 @@ export class CodeMirror extends CodeMirror6 {
 			await this.getLinter(opt);
 		}
 		if (this.view) {
-			this.lint(linters[lang]);
+			this.lint(cmLinters[lang]);
 		} else if (this.#model?.lint) {
 			/** @todo 动态更新 `this.#model.linter.lint` */
 			void this.#model.lint(true);
@@ -631,7 +631,7 @@ export class CodeMirror extends CodeMirror6 {
 			escape(this.#editor, hasExtension('escape'));
 		}
 		const options: Record<string, unknown> = {};
-		for (const [key, opts, off, on] of avail) {
+		for (const [key, opts, off, on] of cmAvail) {
 			const has = hasExtension(key);
 			if (has !== undefined) {
 				if (typeof opts === 'string') {
@@ -746,7 +746,7 @@ export class CodeMirror extends CodeMirror6 {
 				prefs.delete('wikiEditor');
 			}
 		}
-		const isCM = !useMonaco.has(langs.has(lang) ? lang! : 'wiki'),
+		const isCM = !useMonaco.has(cmLangs.has(lang) ? lang! : 'wiki'),
 			isCMWiki = isCM && isWiki,
 			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
 		cm.dialect = dialect;

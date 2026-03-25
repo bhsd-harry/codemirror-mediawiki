@@ -1,6 +1,6 @@
-import {getObject, compareVersion, setI18N as setI18NBase} from '@bhsd/browser';
+import {getObject, compareVersion, setI18N} from '@bhsd/browser';
 import {isMac} from '../src/constants';
-import {curVersion, languages} from './constants';
+import {curVersion, languageFallbacks} from './constants';
 import {openPreference} from './preference';
 import type {CodeMirror} from './codemirror';
 
@@ -19,12 +19,12 @@ const {version} = i18n;
  * 加载 I18N
  * @param cdn CDN地址
  */
-export const setI18N = async (cdn: string): Promise<void> => {
+export const cmSetI18N = async (cdn: string): Promise<void> => {
 	try {
-		await setI18NBase(
+		await setI18N(
 			`${cdn}/${REPO_CDN}/i18n`,
 			curVersion,
-			await languages,
+			await languageFallbacks,
 			$LANGS,
 			storageKey,
 			i18n,

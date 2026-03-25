@@ -137,7 +137,7 @@ export const selectLineBlock = (state: EditorState, pos: number, config?: Config
  * @ignore
  * @test
  */
-export const bracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
+export const myBracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
 	const decorations: Range<Decoration>[] = [],
 		{
 			afterCursor,
@@ -201,7 +201,7 @@ export default (configs?: BracketConfig): Extension => {
 			declare paused;
 
 			constructor({state}: EditorView) {
-				this.decorations = bracketDeco(state, state.facet(facet));
+				this.decorations = myBracketDeco(state, state.facet(facet));
 				this.paused = false;
 			}
 
@@ -211,7 +211,7 @@ export default (configs?: BracketConfig): Extension => {
 						this.decorations = this.decorations.map(changes);
 						this.paused = true;
 					} else {
-						this.decorations = bracketDeco(state, state.facet(facet));
+						this.decorations = myBracketDeco(state, state.facet(facet));
 						this.paused = false;
 					}
 				}

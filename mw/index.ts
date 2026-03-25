@@ -1,6 +1,6 @@
 import {CDN} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {msg, setI18N, welcome, localize} from './msg';
+import {msg, cmSetI18N, welcome, localize} from './msg';
 import {openPreference} from './preference';
 import {instances} from './util';
 
@@ -45,7 +45,7 @@ document.body.addEventListener('click', e => {
 	};
 	await Promise.all([
 		mw.loader.using('mediawiki.util'),
-		setI18N(mw.libs.wphl?.CDN || CDN),
+		cmSetI18N(mw.libs.wphl?.CDN || CDN),
 	]);
 	mw.hook('wiki-codemirror6').add(localize);
 	mw.hook('wiki-codemirror6.setting').add(localize);

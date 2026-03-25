@@ -12,7 +12,7 @@ import {
 	trySelectMatchingBrackets,
 	selectMatchingBrackets,
 	selectLineBlock,
-	bracketDeco,
+	myBracketDeco,
 } from '../src/matchBrackets';
 import {createState, convertRangeSet} from './util';
 import type {Range} from '@codemirror/state';
@@ -75,7 +75,7 @@ const mockTest = (bracket: MatchResult | null | undefined, result?: Result | nul
 	decoTest = (doc: string, pos: number, result: number[] = []): void => {
 		const state = createState(doc, javascriptLanguage, [pos]);
 		assert.deepStrictEqual(
-			convertRangeSet(bracketDeco(state, config), doc.length),
+			convertRangeSet(myBracketDeco(state, config), doc.length),
 			result.map(i => [i, i + 1]),
 			`pos: ${pos}`,
 		);

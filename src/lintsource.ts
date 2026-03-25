@@ -16,7 +16,7 @@ import {
 	posToIndex,
 	toConfigGetter,
 } from './util.js';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {vue} from './javascript-globals.js';
 import type {EditorView} from '@codemirror/view';
 import type {
@@ -146,7 +146,7 @@ export const getWikiLintSource = (articlePath?: string): LintSourceGetter => asy
 	opt,
 	v,
 ): Promise<LintSource> => {
-	const options = {...await getOpt(opt), cdn: base.CDN} as {
+	const options = {...await getOpt(opt), cdn: baseData.CDN} as {
 		getConfig?: ConfigGetter | undefined;
 		cdn: string | undefined;
 	};
@@ -210,7 +210,7 @@ const jsLintSource = (
  * @test
  */
 export const getJsLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const {CDN} = base,
+	const {CDN} = baseData,
 		esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
 	const lintSource: LintSource = async ({doc}) => jsLintSource(esLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = (doc, rule): string => esLint.fixer!(doc.toString(), rule) as string;
@@ -263,7 +263,7 @@ const cssLintSource = async (
  * @test
  */
 export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
-	const {CDN} = base,
+	const {CDN} = baseData,
 		styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`);
 	const lintSource: LintSource = async ({doc}) => cssLintSource(styleLint, doc.toString(), await getOpt(opt), doc);
 	lintSource.fixer = async (doc, rule): Promise<string> => styleLint.fixer!(doc.toString(), rule);
@@ -291,7 +291,7 @@ const stylelintConfigVue = /* #__PURE__ */ ((): Exclude<Config['rules'], undefin
 /** @implements */
 const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.BaseConfig['globals']): LintSourceGetter =>
 	async (opt): Promise<LintSource> => {
-		const {CDN} = base,
+		const {CDN} = baseData,
 			styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
 			esLint = await getJsLinter(CDN && `${CDN}/${eslintRepo}`);
 		const lintSource: LintSource = async state => {
@@ -357,7 +357,7 @@ export const getVueLintSource = /* #__PURE__ */ getVueOrHtmlLintSource(stylelint
  */
 export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): Promise<LintSource> => {
 	const vueLintSource = await getVueOrHtmlLintSource()(opt),
-		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn: base.CDN}, view);
+		wikiLint = await getWikiLinter({include: false, ...await getOpt(opt), cdn: baseData.CDN}, view);
 	const lintSource: LintSource = async state => {
 		const {doc} = state,
 			option = await getOpt(opt, true) ?? {},
@@ -390,7 +390,7 @@ export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => 
  * @test
  */
 export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
-	const {CDN} = base,
+	const {CDN} = baseData,
 		luaLint = await getLuaLinter(CDN && `${CDN}/${luacheckRepo}`);
 	return async ({doc}) => (await luaLint(doc.toString()))
 		.map(({line, column, end_column, msg: message, severity}): Diagnostic => ({

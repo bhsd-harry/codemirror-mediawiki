@@ -542,4 +542,4 @@ export const registerTheme = (name: string, theme: Extension): void => {
 	themes[name] = theme;
 };
 
-export {nord} from './theme.js';
+export {nordDark as nord} from './theme.js';

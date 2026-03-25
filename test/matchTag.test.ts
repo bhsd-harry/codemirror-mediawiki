@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {syntaxTree} from '@codemirror/language';
-import {matchTag, Tag, getTag} from '../src/matchTag';
+import {matchTag, WikiTag, getTag} from '../src/matchTag';
 import {tokens} from '../src/config';
 import {createState} from './util';
 
@@ -27,7 +27,7 @@ const classTest = (
 	while (nextSibling && !nextSibling.name.includes(tokens[`${type}TagBracket`])) {
 		({nextSibling} = nextSibling);
 	}
-	const tag = new Tag(type, name, first, nextSibling!, state);
+	const tag = new WikiTag(type, name, first, nextSibling!, state);
 	assert.strictEqual(tag.selfClosing, selfClosing);
 	assert.strictEqual(tag.closing, closing);
 	assert.strictEqual(tag.from, from);
@@ -54,7 +54,7 @@ const mockTest = (doc: string, pos: number, result: TagMatchResult | null): void
 	);
 };
 
-describe('Tag', () => {
+describe('WikiTag', () => {
 	it('void tag', () => {
 		classTest('<br>', 'html', 'br', true, false, 0, 4);
 		classTest('<wbr/>', 'html', 'wbr', true, false, 0, 6);

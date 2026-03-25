@@ -25,7 +25,7 @@ import {
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
 import elt from 'crelt';
-import {base, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
+import {baseData, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -140,11 +140,11 @@ export const replaceSelections = (view: EditorView, func: ReplaceFunction): void
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
 	static get CDN(): string | undefined {
-		return base.CDN;
+		return baseData.CDN;
 	}
 
 	static set CDN(url: string | undefined) {
-		base.CDN = url;
+		baseData.CDN = url;
 	}
 
 	/** only for sanitized-css */

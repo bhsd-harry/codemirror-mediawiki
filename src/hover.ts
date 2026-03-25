@@ -5,7 +5,7 @@ import {
 	loadScript,
 } from '@bhsd/browser';
 import {tokens} from './config.js';
-import {base, hoverSelector, bgDark} from './constants.js';
+import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
 	posToIndex,
@@ -119,14 +119,14 @@ export default (
 						cm.getWikiConfig,
 						articlePath,
 					),
-					base.CDN,
+					baseData.CDN,
 				)?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (!hover && paramSuggest && 'templatedata' in tags) {
 					// eslint-disable-next-line require-atomic-updates
 					hover = await getHoverFromApi(state, pos, side, paramSuggest, templatedata);
 				}
 				if (hover) {
-					const {CDN = ''} = base;
+					const {CDN = ''} = baseData;
 					await loadScript(
 						`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
 						'marked',

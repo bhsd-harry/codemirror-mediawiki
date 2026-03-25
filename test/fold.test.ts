@@ -1,13 +1,13 @@
 import * as assert from 'assert';
 import {syntaxTree} from '@codemirror/language';
 import {
-	foldable,
+	foldableInline,
 	foldableLine,
 	traverse,
 	updateAll,
 	updateSelection,
 	buildMarkers,
-	selectedLines,
+	mySelectedLines,
 	foldCommand,
 	foldAt,
 } from '../src/fold';
@@ -17,7 +17,7 @@ import type {StateEffect} from '@codemirror/state';
 import type {DocRange} from '../src/fold';
 
 const inlineTest = (doc: string, pos: number, range: DocRange | false, refOnly?: boolean): void => {
-		assert.deepStrictEqual(foldable(createState(doc), pos, undefined, refOnly), range);
+		assert.deepStrictEqual(foldableInline(createState(doc), pos, undefined, refOnly), range);
 	},
 	blockTest = (text: string, line: number, range: DocRange | false): EditorView => {
 		const state = createState(text),
@@ -179,7 +179,7 @@ describe('codeFolding', () => {
 			} as EditorView;
 		const mockTest = (selection: [number, number][], lines: number[]): void => {
 			setEditorSelection(state, selection);
-			assert.deepStrictEqual(selectedLines(view).map(({from}) => from), lines);
+			assert.deepStrictEqual(mySelectedLines(view).map(({from}) => from), lines);
 		};
 		mockTest([[8, 10], [32, 39]], [10, 39]);
 		mockTest([[10, 8], [39, 32]], [1, 25]);

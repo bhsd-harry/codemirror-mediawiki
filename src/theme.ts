@@ -1,6 +1,6 @@
 import {EditorView} from '@codemirror/view';
 import {syntaxHighlighting, HighlightStyle, defaultHighlightStyle} from '@codemirror/language';
-import {nord as nordBase} from 'cm6-theme-nord';
+import {nord} from 'cm6-theme-nord';
 import {
 	matchingCls,
 	nonmatchingCls,
@@ -66,8 +66,8 @@ export const light = /* @__PURE__ */ EditorView.theme({
 	 * @author Bhsd
 	 * @see https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/nord-moeskin.css
 	 */
-	nord = /* @__PURE__ */ ((): Extension => [
-		nordBase,
+	nordDark = /* @__PURE__ */ ((): Extension => [
+		nord,
 		EditorView.theme({
 			'&': {
 				'--cm-arg': '#9f78a5',

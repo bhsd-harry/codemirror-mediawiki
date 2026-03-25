@@ -2,14 +2,14 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {
 	createTooltipView,
 	indexToPos,
 	escHTML,
 	toConfigGetter,
 	findTemplateName,
-	isTemplate,
+	isTemplateParam,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -28,15 +28,15 @@ declare interface SignatureEffect {
 	cursor: number;
 }
 
-const stateEffect = StateEffect.define<SignatureEffect>(),
-	field = StateField.define<SignatureEffect | undefined>({
+const signatureEffect = StateEffect.define<SignatureEffect>(),
+	signatureField = StateField.define<SignatureEffect | undefined>({
 		create() {
 			return undefined;
 		},
 		update(oldValue, {state: {doc, selection: {main: {head}}}, effects}) {
 			const text = doc.toString();
 			for (const effect of effects) {
-				if (effect.is(stateEffect)) {
+				if (effect.is(signatureEffect)) {
 					const {value} = effect;
 					if (head === value.cursor && text === value.text) {
 						return value;
@@ -78,15 +78,15 @@ export default (
 	cm: CodeMirror6,
 ): Extension => {
 	return [
-		field,
+		signatureField,
 		EditorView.updateListener.of(({view, state, docChanged, selectionSet}) => {
-			if (docChanged || selectionSet && state.field(field)?.signatureHelp?.signatures.length) {
+			if (docChanged || selectionSet && state.field(signatureField)?.signatureHelp?.signatures.length) {
 				const {doc, selection: {main}} = state,
 					{head: cursor} = main,
 					text = doc.toString();
 				if (!main.empty) {
 					view.dispatch({
-						effects: stateEffect.of({text, cursor}),
+						effects: signatureEffect.of({text, cursor}),
 					});
 					return;
 				}
@@ -98,15 +98,15 @@ export default (
 							cm.getWikiConfig,
 							articlePath,
 						),
-						base.CDN,
+						baseData.CDN,
 					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
 					if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
 						const tree = syntaxTree(state);
 						let node = tree.resolve(cursor, -1);
-						if (node.to === cursor && !isTemplate(node)) {
+						if (node.to === cursor && !isTemplateParam(node)) {
 							node = tree.resolve(cursor, 1);
 						}
-						if (isTemplate(node)) {
+						if (isTemplateParam(node)) {
 							const [templateName, parameterName] = findTemplateName(state, node),
 								tooltip = cm.langConfig.templateSignature(templateName, parameterName);
 							if (tooltip) {
@@ -115,7 +115,7 @@ export default (
 						}
 					}
 					view.dispatch({
-						effects: stateEffect.of({text, cursor, signatureHelp}),
+						effects: signatureEffect.of({text, cursor, signatureHelp}),
 					});
 				})();
 			}
@@ -125,12 +125,12 @@ export default (
 				if (key === 'Escape') {
 					const {doc, selection: {main: {head}}} = view.state;
 					view.dispatch({
-						effects: stateEffect.of({text: doc.toString(), cursor: head}),
+						effects: signatureEffect.of({text: doc.toString(), cursor: head}),
 					});
 				}
 			},
 		}),
-		showTooltip.from(field, (value): Tooltip | null => {
+		showTooltip.from(signatureField, (value): Tooltip | null => {
 			if (!value) {
 				return null;
 			}

@@ -48,7 +48,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
  * 标题规范化
  * @param title 标题
  */
-const normalizeTitle = (title: string): string => new mw.Title(title, 10).getPrefixedDb();
+const cmNormalizeTitle = (title: string): string => new mw.Title(title, 10).getPrefixedDb();
 
 /**
  * 获取模板参数建议
@@ -62,7 +62,7 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 		titles = page + titles;
 	}
 	try {
-		titles = normalizeTitle(titles);
+		titles = cmNormalizeTitle(titles);
 		if (templateParameters.has(titles)) {
 			return templateParameters.get(titles)!;
 		}
@@ -121,7 +121,7 @@ export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'par
 			if (!templateName || !parameterName) {
 				return undefined;
 			}
-			const data = templateData.get(normalizeTitle(templateName)),
+			const data = templateData.get(cmNormalizeTitle(templateName)),
 				parameter = parameterName.slice(0, -1).trim(),
 				label = data?.params[parameter]?.label;
 			return label ? `{{${templateName.trim()}|${parameter}=${label}}}` : undefined;

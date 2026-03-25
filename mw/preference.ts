@@ -29,7 +29,7 @@ declare interface MediaWikiResponse {
 	};
 }
 
-const storageKey = 'codemirror-mediawiki-addons',
+const prefKey = 'codemirror-mediawiki-addons',
 	monacoKey = 'codemirror-mediawiki-monaco',
 	langs = ['wiki', 'javascript', 'css', 'lua', 'json', 'vue'],
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
@@ -39,7 +39,7 @@ const storageKey = 'codemirror-mediawiki-addons',
 		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
-export const prefs = new Set(getObject(storageKey) as string[] | null),
+export const prefs = new Set(getObject(prefKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
 	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
@@ -53,7 +53,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	indentWidget: OO.ui.TextInputWidget,
 	themeWidget: OO.ui.DropdownInputWidget,
 	indent = localStorage.getItem(indentKey) ?? '',
-	theme = localStorage.getItem(themeKey) ?? 'auto';
+	themePref = localStorage.getItem(themeKey) ?? 'auto';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 
 /**
@@ -173,7 +173,7 @@ export const openPreference = async (): Promise<void> => {
 		widget.setValue([...prefs] as unknown as string);
 		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
-		themeWidget.setValue(theme);
+		themeWidget.setValue(themePref);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: preferenceId});
 		dialog.$element.css('z-index', 1002);
@@ -244,7 +244,7 @@ export const openPreference = async (): Promise<void> => {
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
 		themeWidget = new OO.ui.DropdownInputWidget({
-			value: theme,
+			value: themePref,
 			options: [
 				{data: 'auto', label: msg('theme-auto')},
 				{data: 'light', label: 'light'},
@@ -283,7 +283,7 @@ export const openPreference = async (): Promise<void> => {
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
 		const oldIndent = indent,
-			oldTheme = theme,
+			oldTheme = themePref,
 			save = prefs.has('save'),
 			editors = [
 				...document
@@ -299,13 +299,13 @@ export const openPreference = async (): Promise<void> => {
 		}
 
 		// 主题
-		theme = themeWidget.getValue();
-		if (theme !== oldTheme) {
+		themePref = themeWidget.getValue();
+		if (themePref !== oldTheme) {
 			changed = true;
 			for (const cm of editors) {
-				cm?.setTheme(theme);
+				cm?.setTheme(themePref);
 			}
-			localStorage.setItem(themeKey, theme);
+			localStorage.setItem(themeKey, themePref);
 		}
 
 		// WikiLint
@@ -360,7 +360,7 @@ export const openPreference = async (): Promise<void> => {
 			prefs.add('useMonaco');
 		}
 		value = [...prefs];
-		setObject(storageKey, value);
+		setObject(prefKey, value);
 
 		if (changed) {
 			// 更新语法诊断
@@ -379,7 +379,7 @@ export const openPreference = async (): Promise<void> => {
 						addons: value,
 						useMonaco: [...useMonaco],
 						indent,
-						theme,
+						theme: themePref,
 						wikilint,
 						ESLint: codeConfigs.get('ESLint'),
 						Stylelint: codeConfigs.get('Stylelint'),

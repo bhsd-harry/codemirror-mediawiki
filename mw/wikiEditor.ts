@@ -96,7 +96,7 @@ export const toggleButton = ($toolbar: JQuery | undefined, name: string, toggle?
  * @param $toolbar WikiEditor工具栏
  * @param active 是否激活
  */
-export const setActive = ($toolbar?: JQuery, active?: boolean): void => {
+export const setButtonActive = ($toolbar?: JQuery, active?: boolean): void => {
 	if ($toolbar) {
 		toggleButton($toolbar, 'toggle', active);
 		$toolbar.find(getGroup(['', 'search'])).show();
@@ -284,7 +284,7 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 				},
 		},
 	});
-	setActive($toolbar, true);
+	setButtonActive($toolbar, true);
 	$toolbar.toggleClass('codemirror-readonly', readOnly)
 		.toggleClass('codemirror-wiki', isWiki)
 		.toggleClass('codemirror-coding', !isWiki);

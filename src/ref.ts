@@ -3,7 +3,7 @@ import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language'
 import {highlightCode} from '@lezer/highlight';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
 import {
@@ -20,7 +20,7 @@ import type {
 	AST,
 } from 'wikiparser-node';
 import type {CodeMirror6} from './codemirror';
-import type {Tag} from './matchTag';
+import type {WikiTag} from './matchTag';
 
 declare type Tree = Promise<AST> & {docChanged?: boolean};
 
@@ -33,7 +33,7 @@ const trees = new WeakMap<EditorView, Tree>(),
  * @param state
  * @param node 语法树节点
  */
-const getName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim();
+const getRefName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim();
 
 /**
  * 高亮<ref>内容
@@ -69,12 +69,12 @@ export const highlightRef = (state: EditorState, text: string): string => {
  * @ignore
  * @test
  */
-export const needHover = (state: EditorState, {name, selfClosing, first, last}: Tag): boolean => {
+export const needHover = (state: EditorState, {name, selfClosing, first, last}: WikiTag): boolean => {
 	if (name === 'ref' && selfClosing) {
 		let prevSibling: SyntaxNode | null = last,
 			nextSibling: SyntaxNode | null = null;
 		while (prevSibling && prevSibling.from > first.to) {
-			const key = getName(state, prevSibling);
+			const key = getRefName(state, prevSibling);
 			if (
 				prevSibling.name.split('_').includes(tokens.extTagAttribute)
 				&& /(?:^|\s)name(?:$|[\s=])/iu.test(key)
@@ -87,7 +87,7 @@ export const needHover = (state: EditorState, {name, selfClosing, first, last}: 
 			({prevSibling} = prevSibling);
 		}
 		if (nextSibling?.name.includes(tokens.extTagAttributeValue)) {
-			let target = getName(state, nextSibling);
+			let target = getRefName(state, nextSibling);
 			const quote = target.charAt(0);
 			if (quote === '"' || quote === "'") {
 				target = target.slice(1, target.slice(-1) === quote ? -1 : undefined).trim();
@@ -120,7 +120,7 @@ export default (
 								cm.getWikiConfig,
 								articlePath,
 							),
-							base.CDN,
+							baseData.CDN,
 						)?.provideDefinition(doc.toString(), indexToPos(doc, tag.first.to));
 					return {
 						pos,

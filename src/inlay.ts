@@ -2,7 +2,7 @@ import {StateField, StateEffect} from '@codemirror/state';
 import {Decoration, EditorView, WidgetType, ViewPlugin} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {
 	posToIndex,
 	toConfigGetter,
@@ -90,7 +90,7 @@ export default (
 							cm.getWikiConfig,
 							articlePath,
 						),
-						base.CDN,
+						baseData.CDN,
 					)
 				) {
 					clearInterval(timer);

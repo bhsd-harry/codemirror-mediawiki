@@ -2,7 +2,7 @@ import type {DecorationSet} from '@codemirror/view';
 import type {Diagnostic} from '@codemirror/lint';
 import type {CodeMirror6} from './codemirror';
 
-const findDiagnostic = (deco: DecorationSet, head: number, anchor = head): Diagnostic | undefined => {
+const myFindDiagnostic = (deco: DecorationSet, head: number, anchor = head): Diagnostic | undefined => {
 	let found: Diagnostic | undefined;
 	deco.between(
 		head,
@@ -29,7 +29,7 @@ export const nextDiagnostic = (cm: CodeMirror6): boolean => {
 		{state} = view,
 		{diagnostics} = state.field(cm.getLintExtension()![2][0]),
 		{from, to} = state.selection.main,
-		next = findDiagnostic(diagnostics, from, to) ?? findDiagnostic(diagnostics, 0);
+		next = myFindDiagnostic(diagnostics, from, to) ?? myFindDiagnostic(diagnostics, 0);
 	if (!next || next.from === from && next.to === to) {
 		return false;
 	}

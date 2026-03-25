@@ -3,7 +3,7 @@ import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
 import elt from 'crelt';
-import {base} from './constants.js';
+import {baseData} from './constants.js';
 import {
 	replaceSelections,
 	menuRegistry,
@@ -97,7 +97,7 @@ const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean 
 		view,
 		false,
 		getConfig,
-		base.CDN,
+		baseData.CDN,
 	);
 	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
 		void escapeWiki(view, lsp);
@@ -132,7 +132,7 @@ menuRegistry.push({
 				handlerBase(view, e);
 			});
 			items = [btnHTML, btnURI];
-			const lsp = getLSP(view, false, cm.getWikiConfig, base.CDN);
+			const lsp = getLSP(view, false, cm.getWikiConfig, baseData.CDN);
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {

@@ -24,10 +24,9 @@ import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
 import {leadingSpaces, findTemplateName} from './util.js';
 import type {
-	StreamParser,
 	TagStyle,
 } from '@codemirror/language';
-import type {CloseBracketConfig, CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
+import type {CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {StyleSpec} from 'style-mod';
 import type {
 	MwConfig,
@@ -159,14 +158,6 @@ export class FullMediaWiki extends MediaWiki {
 			tag: this.tokenTable[className]!,
 			class: `cm-${className}`,
 		}));
-	}
-
-	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
-		const parser = super.mediawiki(tags);
-		parser.languageData = {
-			closeBrackets: {brackets: ['(', '[', '{', '"'], before: ')]}>'} satisfies CloseBracketConfig,
-		};
-		return parser;
 	}
 
 	/**
@@ -505,7 +496,7 @@ const getGrounds = (
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
-const theme = /* @__PURE__ */ EditorView.theme({
+const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['', '~*'], 'section--1')]: {
 		fontSize: '1.8em',
 		lineHeight: '1.2em',
@@ -699,7 +690,7 @@ export const mediawikiBase = (
 	return new LanguageSupport(lang, [
 		lightHighlightStyle,
 		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),
-		theme,
+		wikiTheme,
 		lang.data.of({autocomplete: mode.completionSource}),
 	]);
 };

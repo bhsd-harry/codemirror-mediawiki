@@ -1,7 +1,7 @@
 import {StreamLanguage} from '@codemirror/language';
-import {json, jsonc} from '../src/json';
+import {jsonBasic, jsonc} from '../src/json';
 
-const jsonParser = StreamLanguage.define(json).parser,
+const jsonParser = StreamLanguage.define(jsonBasic).parser,
 	jsoncParser = StreamLanguage.define(jsonc).parser;
 
 export default (text: string): void => {

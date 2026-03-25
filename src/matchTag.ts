@@ -11,12 +11,12 @@ import type {SyntaxNode} from '@lezer/common';
 
 declare type TagType = 'ext' | 'html';
 export interface TagMatchResult extends MatchResult {
-	start: Tag;
-	end?: Tag;
+	start: WikiTag;
+	end?: WikiTag;
 }
 
 /** @test */
-export class Tag {
+export class WikiTag {
 	declare readonly type;
 	declare readonly name;
 	declare readonly first;
@@ -70,7 +70,7 @@ const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.t
  * @param node 语法树节点
  * @test
  */
-export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
+export const getTag = (state: EditorState, node: SyntaxNode): WikiTag | null => {
 	if (!isTag(node)) {
 		return null;
 	}
@@ -91,7 +91,7 @@ export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
 		({prevSibling} = prevSibling);
 	}
 	const name = getName(state, nameNode!);
-	return new Tag(type, name, prevSibling!, nextSibling, state);
+	return new WikiTag(type, name, prevSibling!, nextSibling, state);
 };
 
 /**
@@ -99,7 +99,7 @@ export const getTag = (state: EditorState, node: SyntaxNode): Tag | null => {
  * @param state
  * @param origin 起始标签
  */
-export const searchTag = (state: EditorState, origin: Tag): Tag | null => {
+export const searchTag = (state: EditorState, origin: WikiTag): WikiTag | null => {
 	const {type, name, closing} = origin,
 		siblingGetter = closing ? 'prevSibling' : 'nextSibling',
 		endGetter = closing ? 'first' : 'last';
@@ -150,8 +150,8 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 	return end ? {matched: true, start, end} : {matched: false, start};
 };
 
-const matchingMark = /* @__PURE__ */ Decoration.mark({class: matchingCls}),
-	nonmatchingMark = /* @__PURE__ */ Decoration.mark({class: nonmatchingCls});
+const matchingTag = /* @__PURE__ */ Decoration.mark({class: matchingCls}),
+	nonmatchingTag = /* @__PURE__ */ Decoration.mark({class: nonmatchingCls});
 
 export default /* @__PURE__ */ StateField.define<DecorationSet>({
 	create() {
@@ -166,7 +166,7 @@ export default /* @__PURE__ */ StateField.define<DecorationSet>({
 			if (range.empty) {
 				const match = matchTag(state, range.head);
 				if (match) {
-					const mark = match.matched ? matchingMark : nonmatchingMark,
+					const mark = match.matched ? matchingTag : nonmatchingTag,
 						{start, end} = match;
 					pushDecoration(decorations, mark, start);
 					if (end) {

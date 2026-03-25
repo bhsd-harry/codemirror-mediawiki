@@ -7,7 +7,7 @@ export const enum RuleState {
 }
 
 export const curVersion = $VERSION,
-	languages = (async () => {
+	languageFallbacks = (async () => {
 		await mw.loader.using('mediawiki.language');
 		return mw.language.getFallbackLanguageChain();
 	})(),

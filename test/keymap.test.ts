@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import {getKeymap} from '../src/keymap';
+import {getWikiKeymap} from '../src/keymap';
 import {createDispatchableView} from './util';
 import type {Command} from '@codemirror/view';
 
@@ -17,7 +17,7 @@ const mockTest = (
 
 describe('generate keymap', () => {
 	it('single line', async () => {
-		const {run} = getKeymap({key: '', pre: 'pre', post: 'post', desc: ''});
+		const {run} = getWikiKeymap({key: '', pre: 'pre', post: 'post', desc: ''});
 		await mockTest(
 			run!,
 			'1\n2\n3\n4',
@@ -27,7 +27,7 @@ describe('generate keymap', () => {
 		);
 	});
 	it('multiple lines', async () => {
-		const {run} = getKeymap({key: '', pre: 'pre', post: 'post', splitlines: true, desc: ''});
+		const {run} = getWikiKeymap({key: '', pre: 'pre', post: 'post', splitlines: true, desc: ''});
 		await mockTest(
 			run!,
 			'1\n2\n3\n4',

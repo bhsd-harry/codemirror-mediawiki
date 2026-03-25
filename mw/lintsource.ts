@@ -1,6 +1,6 @@
 import {getLSP} from '@bhsd/browser';
 import {getOpt} from '../src/lintsource';
-import {base} from '../src/constants';
+import {baseData} from '../src/constants';
 import {templateData} from './util';
 import {RuleState} from './constants';
 import {buildPanel, preferenceDialog} from './preference';
@@ -47,7 +47,7 @@ let highSet: Promise<Set<string>> | undefined;
 
 const getMsgKey = (type: string): string => `linter-category-${type}`,
 	getRuleKey = (type: string): string => `parsoid-${type}`,
-	isEqualError = (a: ParsoidError, b: ParsoidError): boolean =>
+	isEqualParsoidError = (a: ParsoidError, b: ParsoidError): boolean =>
 		a.type === b.type && a.dsr[0] === b.dsr[0] && a.dsr[1] === b.dsr[1];
 
 export const parsoidRules: string[] = [];
@@ -143,7 +143,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 		return errors
 			.filter(({type}) => Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)))
 			.reduce<ParsoidError[]>((acc, cur) => { // eslint-disable-line unicorn/no-array-reduce
-				if (!acc.some(err => isEqualError(err, cur))) {
+				if (!acc.some(err => isEqualParsoidError(err, cur))) {
 					acc.push(cur);
 				}
 				return acc;
@@ -168,7 +168,7 @@ export const getTemplateDataLintSource = async (
 	if (!('templatedata' in langConfig!.tags)) {
 		return voidLintSource;
 	}
-	const lsp = getLSP(view!, false, getWikiConfig, base.CDN);
+	const lsp = getLSP(view!, false, getWikiConfig, baseData.CDN);
 	if (!lsp || !('findTemplateTokens' in lsp)) {
 		return voidLintSource;
 	}

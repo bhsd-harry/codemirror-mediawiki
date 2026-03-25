@@ -237,8 +237,8 @@ const map = {
 			ext: 4,
 		},
 	},
-	builtin = ['false', 'nil', 'true'],
-	builtins: Completion[] = builtin.map(label => ({label, type: 'constant'})),
+	luaBuiltin = ['false', 'nil', 'true'],
+	luaBuiltins: Completion[] = luaBuiltin.map(label => ({label, type: 'constant'})),
 	tables: Completion[] = [
 		'_G',
 		...Object.keys(globals),
@@ -294,7 +294,7 @@ const map = {
 		'until',
 		'goto',
 	].map(label => ({label, type: 'keyword'})),
-	keywords: Completion[] = [
+	luaKeywords: Completion[] = [
 		...[
 			'if',
 			'while',
@@ -333,7 +333,7 @@ const map = {
 			type: 'keyword',
 		}),
 	],
-	types = new Set(['variableName', 'variableName.standard', 'keyword']),
+	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
 	lang = StreamLanguage.define(lua);
 
 /**
@@ -343,7 +343,7 @@ const map = {
 const source: CompletionSource = context => {
 	const {state, pos} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
-	if (!types.has(node.name)) {
+	if (!excludedTypes.has(node.name)) {
 		return null;
 	}
 	const match = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w+$|\.{1,2}$/u);
@@ -416,7 +416,7 @@ const source: CompletionSource = context => {
 		case ',':
 			return {
 				from,
-				options: [...builtins, ...constants, ...tables, ...unary],
+				options: [...luaBuiltins, ...constants, ...tables, ...unary],
 				validFor,
 			};
 		case '}':
@@ -431,7 +431,7 @@ const source: CompletionSource = context => {
 		case '':
 			return {
 				from,
-				options: [...keywords, ...blocks, ...unary, ...constants, ...tables, ...builtins],
+				options: [...luaKeywords, ...blocks, ...unary, ...constants, ...tables, ...luaBuiltins],
 				validFor,
 			};
 		default:
@@ -440,9 +440,9 @@ const source: CompletionSource = context => {
 				return {
 					from,
 					options: prevSibling?.name !== 'keyword'
-						|| builtin.includes(sliceDoc(state, prevSibling))
+						|| luaBuiltin.includes(sliceDoc(state, prevSibling))
 						? [...binary, ...blocks]
-						: [...builtins, ...constants, ...tables, ...unary, ...blocks],
+						: [...luaBuiltins, ...constants, ...tables, ...unary, ...blocks],
 					validFor,
 				};
 			}
