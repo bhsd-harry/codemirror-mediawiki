@@ -9,7 +9,7 @@ declare type Tokenizer = (stream: StringStream, state: State) => string;
 const tokenNumber: Tokenizer = (stream, state) => {
 	if (stream.match(/^\d+(?:\.\d+)?(?:e[+-]?\d+)?/iu)) {
 		state.wb = false;
-		return 'number';
+		return /* #164 */ 'number';
 	}
 	state.wb = true;
 	return '';
@@ -26,7 +26,7 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 		} else {
 			stream.skipToEnd();
 		}
-		return 'comment';
+		return /* #940 */ 'comment';
 	};
 
 	const tokenBase: Tokenizer = (stream, state) => {
@@ -53,7 +53,7 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 				if (jsoncMode) {
 					if (stream.eat('/')) {
 						stream.skipToEnd();
-						return 'comment';
+						return /* #940 */ 'comment';
 					} else if (stream.eat('*')) {
 						state.tokenize = tokenComment;
 						return tokenComment(stream, state);
@@ -71,7 +71,9 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 					escaped = !escaped && next === '\\';
 					next = stream.next();
 				}
-				return stream.match(/^\s*:/u, false) ? 'propertyName.definition' : 'string';
+				return stream.match(/^\s*:/u, false)
+					? /* #00c */ 'propertyName.definition'
+					: /* #a11 */ 'string';
 			}
 			case '-':
 				if (state.wb) {
@@ -86,13 +88,13 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 						return tokenNumber(stream, state);
 					} else if (ch === 'n' && stream.match(/^ull\b/u)) {
 						state.wb = false;
-						return 'null';
+						return /* #708 */ 'null';
 					} else if (
 						ch === 't' && stream.match(/^rue\b/u)
 						|| ch === 'f' && stream.match(/^alse\b/u)
 					) {
 						state.wb = false;
-						return 'bool';
+						return /* #219 */ 'bool';
 					}
 				}
 				state.wb = !/[\w$]/u.test(ch);

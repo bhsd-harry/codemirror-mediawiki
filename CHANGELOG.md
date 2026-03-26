@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.3
+
+*2026-03-27*
+
+**Added**
+
+- Content inside `<math>`, `<chem>` and `<ce>` tags is now syntax highlighted
+
 ## 0.4.2
 
 *2026-03-26*
