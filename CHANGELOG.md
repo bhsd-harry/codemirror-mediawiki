@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.4.2
 
-*2026-03-25*
+*2026-03-26*
 
 **Added**
 
 - JSON/JSONC content inside `<templatedata>`, `<mapframe>` and `<maplink>` tags is now syntax highlighted
+- The [bracketMatching](./README.md#bracketmatching) extension now supports selecting the whole document with quadruple-click
 
 ## 0.4.1
 
