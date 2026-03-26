@@ -79,6 +79,8 @@ export const customSelection: Record<
 	number,
 	(state: EditorState, pos: number, config?: Config) => Selection | false
 > = {
+	0: state => ({anchor: 0, head: state.doc.length}),
+
 	2: (state, pos, config) => trySelectMatchingBrackets(state, pos, -1, config)
 		|| trySelectMatchingBrackets(state, pos, 1, config)
 		|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
@@ -99,8 +101,6 @@ export const customSelection: Record<
 			head: Math.min(doc.length, (dir ? b : a).to + 1),
 		};
 	},
-
-	4: state => ({anchor: 0, head: state.doc.length}),
 };
 
 const tryMatchBracetks = (
@@ -207,7 +207,8 @@ export default (configs?: BracketConfig): Extension => {
 			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
 			 */
 			mousedown(e, view) {
-				selection = e.detail in customSelection && clickHandler(e, view, facet, customSelection[e.detail]!);
+				const n = e.detail % 4;
+				selection = e.detail > 0 && n in customSelection && clickHandler(e, view, facet, customSelection[n]!);
 				return Boolean(selection);
 			},
 

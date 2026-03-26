@@ -46,12 +46,12 @@
 		"@bhsd/stylelint-util": "^1.0.1",
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",
-		"@codemirror/language": "^6.12.2",
+		"@codemirror/language": "^6.12.3",
 		"@codemirror/lint": "^6.9.5",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.40.0",
 		"marked": "^17.0.4",
-		"wikiparser-node": "^1.36.0"
+		"wikiparser-node": "^1.37.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.1.1",
