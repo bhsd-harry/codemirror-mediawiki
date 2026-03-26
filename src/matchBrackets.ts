@@ -225,11 +225,7 @@ export default (configs?: BracketConfig): Extension => {
 	return [
 		extension,
 		EditorView.domEventHandlers({
-
-			/**
-			 * @ignore
-			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
-			 */
+			/** @ignore */
 			mousedown(e, view) {
 				const n = e.detail % 4;
 				selection = e.detail > 0 && n in customSelection && clickHandler(e, view, facet, customSelection[n]!);

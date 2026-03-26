@@ -451,17 +451,21 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		'msgnw',
 	]),
 	substs = new Set(['subst', 'safesubst']),
-	headerRegex = new RegExp(String.raw`^(?:[^&[<{~'\-]|${lookahead("<{~'-")})+`, 'iu'),
-	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
-	argumentRegex = new RegExp(String.raw`^(?:[^|[&:}{<~'_＿\-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
-	styleRegex = new RegExp(String.raw`^(?:[^|[&}{<~'_＿\-]|${lookahead("}{<~'_＿-")})+`, 'iu'),
-	wikiRegex = new RegExp(String.raw`^(?:[^&:'{[<~_＿\-]|${lookahead("'{[<~_＿-")})+`, 'iu'),
-	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${lookahead('{<')})+`, 'iu'),
-	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)\-+]?\s*\}\})/u,
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
 	tableCellChars = "'<~_＿{-",
 	htmlAttrChars = '{/',
+	tableDefinitionLookAhead = lookahead(tableDefinitionChars),
+	htmlAttrLookAhead = lookahead(htmlAttrChars),
+	tableCellLookAhead = lookahead(tableCellChars),
+	argumentLookAhead = lookahead("}{<~'_＿-"),
+	headerRegex = new RegExp(String.raw`^(?:[^&[<{~'\-]|${lookahead("<{~'-")})+`, 'iu'),
+	templateRegex = new RegExp(`^(?:[^|{}<]|${lookahead('{}<', true)})+`, 'u'),
+	argumentRegex = new RegExp(String.raw`^(?:[^|[&:}{<~'_＿\-]|${argumentLookAhead})+`, 'iu'),
+	styleRegex = new RegExp(String.raw`^(?:[^|[&}{<~'_＿\-]|${argumentLookAhead})+`, 'iu'),
+	wikiRegex = new RegExp(String.raw`^(?:[^&:'{[<~_＿\-]|${lookahead("'{[<~_＿-")})+`, 'iu'),
+	tableDefinitionRegex = new RegExp(`^(?:[^&={<]|${tableDefinitionLookAhead})+`, 'iu'),
+	tableCellRegex = /^\s*(?:[|!]|\{\{\s*![!)\-+]?\s*\}\})/u,
 	freeRegex = [false, true].map(lpar => {
 		const punctuations = getPunctuations(lpar),
 			source = getUrlRegex(punctuations);
@@ -488,12 +492,12 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 		new RegExp(String.raw`^(?:[>}]|%(?:3[ce]|[57][bd])|${lookahead('[]{<')})+`, 'iu'),
 	] as const,
 	tableDefinitionValueRegex = ['', '='].map(equal => new RegExp(
-		String.raw`^(?:[^\s&${tableDefinitionChars}${equal}]|${lookahead(tableDefinitionChars)})+`,
+		String.raw`^(?:[^\s&${tableDefinitionChars}${equal}]|${tableDefinitionLookAhead})+`,
 		'iu',
 	)) as [RegExp, RegExp],
 	variableRegex = [false, true].map(
 		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? String.raw`[&~'_＿:\-` : ''}]|\}(?!\}\})|${
-			isDefault ? lookahead("{<~'_＿-") : lookahead('{<', true)
+			isDefault ? tableCellLookAhead : lookahead('{<', true)
 		})+`, 'iu'),
 	) as [RegExp, RegExp],
 	parserFunctionRegex = ['', '[&', '[&:'].map(s => getRegex(
@@ -509,18 +513,18 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	)),
 	getExtLinkRegex = getRegex(pipe => new RegExp(`^(?:${getUrlRegex(pipe)})+`, 'u')),
 	getTableDefinitionRegex = getRegex(s => new RegExp(
-		`^(?:[^&${tableDefinitionChars}${s}]|${lookahead(tableDefinitionChars)})+`,
+		`^(?:[^&${tableDefinitionChars}${s}]|${tableDefinitionLookAhead})+`,
 		'iu',
 	)),
 	getTableCellRegex = getRegex(s => new RegExp(
-		`^(?:[^[&${s}${escapeCharClass(tableCellChars)}]|${lookahead(tableCellChars)})+`,
+		`^(?:[^[&${s}${escapeCharClass(tableCellChars)}]|${tableCellLookAhead})+`,
 		'iu',
 	)),
 	getHtmlAttrRegex = getRegex(
-		s => new RegExp(`^(?:[^<>&${htmlAttrChars}${s}]|${lookahead(htmlAttrChars)})+`, 'u'),
+		s => new RegExp(`^(?:[^<>&${htmlAttrChars}${s}]|${htmlAttrLookAhead})+`, 'u'),
 	),
 	getHtmlAttrKeyRegex = getRegex(
-		pipe => new RegExp(`^(?:[^<>&={/${pipe}]|${lookahead('{/')})+`, 'u'),
+		pipe => new RegExp(`^(?:[^<>&={/${pipe}]|${htmlAttrLookAhead})+`, 'u'),
 	),
 	getExtAttrRegex = getRegex(s => new RegExp(`^(?:[^>/${s}]|${lookahead('/')})+`, 'u')),
 	getExtTagCloseRegex = getRegex(
@@ -606,7 +610,7 @@ export class MediaWiki {
 		);
 		this.tags = [...Object.keys(tags), 'includeonly', 'noinclude', 'onlyinclude'];
 		this.convertRegex = new RegExp(
-			String.raw`^(?:[^}|;&='{[<~_＿\-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${lookahead("'{<~_＿-")})+`,
+			String.raw`^(?:[^}|;&='{[<~_＿\-]|\}(?!-)|=(?!>)|\[(?!\[|${urlProtocols})|${tableCellLookAhead})+`,
 			'iu',
 		);
 		this.convertSemicolon = variants && new RegExp(
