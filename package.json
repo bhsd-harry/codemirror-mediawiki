@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.4.1",
+	"version": "0.4.2",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
