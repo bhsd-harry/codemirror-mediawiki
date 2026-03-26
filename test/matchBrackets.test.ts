@@ -162,10 +162,10 @@ describe('select by mousedown', () => {
 		selectTest('function() {\n\t//\n};\n', 18, 3, {anchor: 0, head: 20});
 	});
 	it('all', () => {
-		selectTest('foo bar', 0, 4, {anchor: 0, head: 7});
-		selectTest('foo bar', 1, 4, {anchor: 0, head: 7});
-		selectTest('foo bar', 3, 4, {anchor: 0, head: 7});
-		selectTest('foo bar', 7, 4, {anchor: 0, head: 7});
+		selectTest('foo bar', 0, 0, {anchor: 0, head: 7});
+		selectTest('foo bar', 1, 0, {anchor: 0, head: 7});
+		selectTest('foo bar', 3, 0, {anchor: 0, head: 7});
+		selectTest('foo bar', 7, 0, {anchor: 0, head: 7});
 	});
 });
 
