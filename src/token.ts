@@ -470,7 +470,7 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
 	)) as [RegExp, RegExp],
 	variableRegex = [false, true].map(
 		isDefault => new RegExp(String.raw`^(?:[^|{}<${isDefault ? String.raw`[&~'_＿:\-` : ''}]|\}(?!\}\})|${
-			isDefault ? tableCellLookAhead : lookahead('{<', true)
+			isDefault ? tableCellLookAhead : lookahead(tableDefinitionChars, true)
 		})+`, 'iu'),
 	) as [RegExp, RegExp],
 	parserFunctionRegex = ['', '[&', '[&:'].map(s => getRegex(
@@ -2209,9 +2209,10 @@ export class MediaWiki {
 			if (stream.match('<!--')) {
 				chain(state, this.inComment);
 				return tokens.comment;
+			} else if (stream.match(/^\{\{(?!\{)/u)) {
+				return this.eatTransclusion(stream, state) ?? '';
 			}
-			/** @todo braces should also be parsed */
-			stream.match(/^(?:[^<]|<(?!!--))+/u);
+			stream.match(/^(?:[^<{]|<(?!!--)|\{(?!\{(?!\{)))+/u);
 			return '';
 		};
 	}
