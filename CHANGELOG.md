@@ -1,12 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.12.2
 
-*2026-03-25*
+*2026-03-26*
 
 **Added**
 
 - Highlight JSDoc name annotations if followed by a hyphen in the JavaScript mode
 - JSON/JSONC content inside `<templatedata>`, `<mapframe>` and `<maplink>` tags in the MediaWiki mode is now syntax highlighted
+- The [bracketMatching](./README.md#bracketmatching) extension now supports selecting the whole document with quadruple-click
 
 **Fixed**
 

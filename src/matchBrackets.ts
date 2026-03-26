@@ -1,4 +1,5 @@
 import {Decoration, EditorView, ViewPlugin} from '@codemirror/view';
+import {EditorSelection} from '@codemirror/state';
 import {bracketMatching, matchBrackets, syntaxTree} from '@codemirror/language';
 import type {DecorationSet, PluginValue, ViewUpdate} from '@codemirror/view';
 import type {Extension, Range, Facet, EditorState} from '@codemirror/state';
@@ -88,18 +89,34 @@ export const trySelectMatchingBrackets = (
 	};
 };
 
-/**
- * @ignore
- * @test
- */
-export const selectMatchingBrackets = (
-	state: EditorState,
-	pos: number,
-	config?: Config,
-): Selection | false => trySelectMatchingBrackets(state, pos, -1, config)
-	|| trySelectMatchingBrackets(state, pos, 1, config)
-	|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
-	|| trySelectMatchingBrackets(state, pos - 1, 1, config, true);
+/** @test */
+export const customSelection: Record<
+	number,
+	(state: EditorState, pos: number, config?: Config) => Selection | false
+> = {
+	2: (state, pos, config) => trySelectMatchingBrackets(state, pos, -1, config)
+		|| trySelectMatchingBrackets(state, pos, 1, config)
+		|| trySelectMatchingBrackets(state, pos + 1, -1, config, true)
+		|| trySelectMatchingBrackets(state, pos - 1, 1, config, true),
+
+	3: (state, pos, config) => {
+		const {doc} = state,
+			matching = tryMatchBracetks(state, pos, {...config, afterCursor: true});
+		if (!matching || !matching.matched) {
+			return false;
+		}
+		const {start, end} = matching,
+			a = doc.lineAt(start.from),
+			b = doc.lineAt(end!.from),
+			dir = a.from < b.from;
+		return {
+			anchor: (dir ? a : b).from,
+			head: Math.min(doc.length, (dir ? b : a).to + 1),
+		};
+	},
+
+	4: state => ({anchor: 0, head: state.doc.length}),
+};
 
 const tryMatchBracetks = (
 	state: EditorState,
@@ -112,26 +129,6 @@ const tryMatchBracetks = (
 		matchBrackets(state, pos, 1, config)
 		|| pos < state.doc.length && matchBrackets(state, pos + 1, -1, config)
 	);
-
-/**
- * @ignore
- * @test
- */
-export const selectLineBlock = (state: EditorState, pos: number, config?: Config): Selection | false => {
-	const {doc} = state,
-		matching = tryMatchBracetks(state, pos, {...config, afterCursor: true});
-	if (!matching || !matching.matched) {
-		return false;
-	}
-	const {start, end} = matching,
-		a = doc.lineAt(start.from),
-		b = doc.lineAt(end!.from),
-		dir = a.from < b.from;
-	return {
-		anchor: (dir ? a : b).from,
-		head: Math.min(doc.length, (dir ? b : a).to + 1),
-	};
-};
 
 /**
  * @ignore
@@ -171,7 +168,7 @@ const clickHandler = (
 	view: EditorView,
 	facet: Facet<Config, RequiredConfig>,
 	select: (state: EditorState, pos: number, config?: Config) => Selection | false,
-): boolean => {
+): EditorSelection | false => {
 	const pos = view.posAtCoords(e),
 		{state} = view,
 		config = state.facet(facet);
@@ -181,10 +178,11 @@ const clickHandler = (
 	) {
 		return false;
 	}
-	const selection = select(state, pos, config);
-	if (selection) {
+	const range = select(state, pos, config);
+	if (range) {
+		const selection = EditorSelection.single(range.anchor, range.head);
 		view.dispatch({selection});
-		return true;
+		return selection;
 	}
 	return false;
 };
@@ -223,20 +221,39 @@ export default (configs?: BracketConfig): Extension => {
 			},
 		},
 	);
+	let selection: EditorSelection | false = false;
 	return [
 		extension,
 		EditorView.domEventHandlers({
-			/** @ignore */
-			click(e, view) {
-				return e.detail === 3 && clickHandler(e, view, facet, selectLineBlock);
-			},
 
 			/**
 			 * @ignore
 			 * @todo 由于括号高亮的重绘，双击会被识别为两次单击，导致功能失效
 			 */
-			dblclick(e, view) {
-				return clickHandler(e, view, facet, selectMatchingBrackets);
+			mousedown(e, view) {
+				selection = e.detail in customSelection && clickHandler(e, view, facet, customSelection[e.detail]!);
+				return Boolean(selection);
+			},
+
+			/** @ignore */
+			mouseup() {
+				selection = false;
+			},
+
+			/** @ignore */
+			mousemove(e, view) {
+				if (!selection) {
+					return false;
+				}
+				const head = view.posAtCoords(e),
+					{from, to} = selection.main;
+				if (head === null || head >= from && head <= to) {
+					return false;
+				}
+				view.dispatch({
+					selection: {head, anchor: head < from ? to : from},
+				});
+				return true;
 			},
 		}),
 	];

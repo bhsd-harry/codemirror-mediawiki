@@ -10,8 +10,7 @@ import {
 	findEnclosingBrackets,
 	findEnclosingPlainBrackets,
 	trySelectMatchingBrackets,
-	selectMatchingBrackets,
-	selectLineBlock,
+	customSelection,
 	myBracketDeco,
 } from '../src/matchBrackets';
 import {createState, convertRangeSet} from './util';
@@ -58,16 +57,9 @@ const mockTest = (bracket: MatchResult | null | undefined, result?: Result | nul
 			`pos: ${pos}, assoc: ${assoc}, inside: ${inside}`,
 		);
 	},
-	selectTest = (doc: string, pos: number, result: Selection | false): void => {
+	selectTest = (doc: string, pos: number, detail: number, result: Selection | false = false): void => {
 		assert.deepStrictEqual(
-			selectMatchingBrackets(createState(doc, []), pos),
-			result,
-			`pos: ${pos}`,
-		);
-	},
-	selectLineBlockTest = (doc: string, pos: number, result: Selection | false): void => {
-		assert.deepStrictEqual(
-			selectLineBlock(createState(doc, []), pos),
+			customSelection[detail]!(createState(doc, []), pos),
 			result,
 			`pos: ${pos}`,
 		);
@@ -146,29 +138,34 @@ describe('select bracket pair on one side', () => {
 	});
 });
 
-describe('select bracket pair on both sides', () => {
-	it('outside', () => {
-		selectTest(' [text] ', 1, {anchor: 1, head: 7});
-		selectTest(' [text] ', 7, {anchor: 7, head: 1});
+describe('select by mousedown', () => {
+	it('brackets', () => {
+		selectTest(' [text] ', 0, 2);
+		selectTest(' [text] ', 3, 2);
+		selectTest(' [text] ', 8, 2);
+		selectTest(' [text] ', 1, 2, {anchor: 1, head: 7});
+		selectTest(' [text] ', 7, 2, {anchor: 7, head: 1});
+		selectTest(' [text] ', 2, 2, {anchor: 2, head: 6});
+		selectTest(' [text] ', 6, 2, {anchor: 6, head: 2});
 	});
-	it('inside', () => {
-		selectTest(' [text] ', 2, {anchor: 2, head: 6});
-		selectTest(' [text] ', 6, {anchor: 6, head: 2});
+	it('line block', () => {
+		selectTest('function() {\n\t//\n};', 1, 3);
+		selectTest('function() {\n\t//\n};', 14, 3);
+		selectTest('function() {\n\t//\n};', 19, 3);
+		selectTest('function() {\n\t//\n};', 11, 3, {anchor: 0, head: 19});
+		selectTest('function() {\n\t//\n};', 12, 3, {anchor: 0, head: 19});
+		selectTest('function() {\n\t//\n};', 17, 3, {anchor: 0, head: 19});
+		selectTest('function() {\n\t//\n};', 18, 3, {anchor: 0, head: 19});
+		selectTest('function() {\n\t//\n};\n', 11, 3, {anchor: 0, head: 20});
+		selectTest('function() {\n\t//\n};\n', 12, 3, {anchor: 0, head: 20});
+		selectTest('function() {\n\t//\n};\n', 17, 3, {anchor: 0, head: 20});
+		selectTest('function() {\n\t//\n};\n', 18, 3, {anchor: 0, head: 20});
 	});
-});
-
-describe('select line block', () => {
-	it('outside', () => {
-		selectLineBlockTest('function() {\n\t//\n};', 11, {anchor: 0, head: 19});
-		selectLineBlockTest('function() {\n\t//\n};', 18, {anchor: 0, head: 19});
-		selectLineBlockTest('function() {\n\t//\n};\n', 11, {anchor: 0, head: 20});
-		selectLineBlockTest('function() {\n\t//\n};\n', 18, {anchor: 0, head: 20});
-	});
-	it('inside', () => {
-		selectLineBlockTest('function() {\n\t//\n};', 12, {anchor: 0, head: 19});
-		selectLineBlockTest('function() {\n\t//\n};', 17, {anchor: 0, head: 19});
-		selectLineBlockTest('function() {\n\t//\n};\n', 12, {anchor: 0, head: 20});
-		selectLineBlockTest('function() {\n\t//\n};\n', 17, {anchor: 0, head: 20});
+	it('all', () => {
+		selectTest('foo bar', 0, 4, {anchor: 0, head: 7});
+		selectTest('foo bar', 1, 4, {anchor: 0, head: 7});
+		selectTest('foo bar', 3, 4, {anchor: 0, head: 7});
+		selectTest('foo bar', 7, 4, {anchor: 0, head: 7});
 	});
 });
 
