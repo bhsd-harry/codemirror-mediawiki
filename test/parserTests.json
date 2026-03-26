@@ -5419,6 +5419,11 @@
 		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>File:LoremIpsum.djvu</><link-ground file-delimiter>|</><link-ground image-parameter>2页</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>File:foobar.jpg</><link-ground file-delimiter>|</><link-ground image-parameter>50像素</><link-ground link-bracket>]]</>"
 	},
 	{
+		"desc": "Template inside <inputbox>",
+		"wikitext": "<inputbox>\ntype=search\nprefix={{FULLPAGENAME}}/Archive\n</inputbox>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=searchprefix=</><tag-inputbox ext-ground parserfunction-bracket>{{</><tag-inputbox ext-ground parserfunction-name>FULLPAGENAME</><tag-inputbox ext-ground parserfunction-bracket>}}</><tag-inputbox>/Archive</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
