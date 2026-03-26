@@ -47,6 +47,7 @@
 		"test": "mocha test/dist/test/*.test.js && mocha test/dist/test/test.js",
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/test/real.js",
+		"test:math": "mocha test/dist/test/math.js",
 		"diff": "git diff --ignore-all-space --color-moved --minimal npm wikitext"
 	},
 	"dependencies": {
@@ -74,7 +75,7 @@
 		"eslint": "^9.39.4",
 		"globals": "^17.4.0",
 		"luacheck-browserify": "^0.10.1",
-		"stylelint": "^17.5.0",
+		"stylelint": "^17.6.0",
 		"wikiparser-node": "^1.37.0"
 	},
 	"devDependencies": {

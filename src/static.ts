@@ -26,6 +26,9 @@ export const tagModes = {
 	templatedata: 'json',
 	maplink: 'jsonc',
 	mapframe: 'jsonc',
+	math: 'text/math',
+	chem: 'text/math',
+	ce: 'text/math',
 };
 
 /**

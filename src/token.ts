@@ -10,6 +10,7 @@ import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
 import {jsonBasic, jsonc} from './json.js';
+import {math} from './math.js';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {EditorState} from '@codemirror/state';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
@@ -2280,6 +2281,10 @@ export class MediaWiki {
 				return simpleToken(stream, state);
 			},
 		};
+	}
+
+	'text/math'(): StreamParser<unknown> {
+		return math;
 	}
 
 	json(): typeof jsonBasic {
