@@ -6,6 +6,7 @@
 **Added**
 
 - Content inside `<math>`, `<chem>` and `<ce>` tags in the MediaWiki mode is now syntax highlighted
+- [LilyPond](https://lilypond.org/) syntax highlighting for content inside `<score>` tags in the MediaWiki mode
 
 ## 3.12.2
 

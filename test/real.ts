@@ -11,6 +11,7 @@ import {markGlobalsAndDocTag} from '../src/javascript';
 import lua, {markDocTag} from '../src/lua';
 import parse, {checkNode} from './parser';
 import jsonParse from './json';
+import lyParse from './lilypond';
 import {createState} from './util';
 import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -101,6 +102,11 @@ const tryScripts = (callback: (content: string, title: string) => void, files: s
 	if (!lang || lang === 'json' || lang === 'local') {
 		log('JSON');
 		tryScripts(jsonParse, fs.globSync('../**/*.json'), '..');
+	}
+
+	if (!lang || lang === 'lilypond' || lang === 'local') {
+		log('LilyPond');
+		tryScripts(lyParse, fs.globSync(['**/*.ly', '**/*.ily', '**/*.lytex']));
 	}
 
 	if (failed.length > 0) {
