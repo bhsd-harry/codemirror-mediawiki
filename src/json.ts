@@ -1,4 +1,4 @@
-import {inComment} from './lilypond';
+import {inComment} from './lilypond.js';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare interface State {

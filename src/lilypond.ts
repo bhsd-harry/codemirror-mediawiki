@@ -2,7 +2,16 @@ import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare interface State {
 	tokenize: Tokenizer;
+
+	/** 只用于Scheme */
 	parens: number;
+
+	/** 只用于歌词 */
+	braces: number;
+
+	/** 只用于歌词 */
+	spaced: boolean;
+	lyrics: boolean;
 }
 declare type Tokenizer = (stream: StringStream, state: State) => string;
 
@@ -21,10 +30,6 @@ export const inComment = <T extends (stream: StringStream, state: any) => string
 	return /* #940 */ 'comment';
 }) as T;
 
-/**
- * @ignore
- * @todo lyrics are also strings
- */
 const inString = (parent: Tokenizer): Tokenizer => (stream, state) => {
 	let escaped = false,
 		next = stream.next();
@@ -39,38 +44,68 @@ const inString = (parent: Tokenizer): Tokenizer => (stream, state) => {
 	return /* #a11 */ 'string';
 };
 
-const inScheme: Tokenizer = (stream, state) => {
-	if (stream.eatSpace()) {
-		return '';
-	}
-	const ch = stream.next()!;
-	switch (ch) {
-		case '(':
-			state.parens++;
+const inScheme = (parent: Tokenizer): Tokenizer => {
+	const tokenizer: Tokenizer = (stream, state) => {
+		if (stream.eatSpace()) {
 			return '';
-		case ')':
-			state.parens--;
-			if (state.parens === 0) {
-				state.tokenize = inBase;
-				return 'separator';
-			}
-			return '';
-		case '"':
-			state.tokenize = inString(inScheme);
-			return /* #a11 */ 'string';
-		case ';':
-			stream.skipToEnd();
-			return /* #940 */ 'comment';
-		case '#':
-			if (stream.eat('!')) {
-				state.tokenize = inComment(inScheme, '!#');
+		}
+		const ch = stream.next()!;
+		switch (ch) {
+			case '(':
+				state.parens++;
+				return '';
+			case ')':
+				state.parens--;
+				if (state.parens === 0) {
+					state.tokenize = parent;
+					return 'separator';
+				}
+				return '';
+			case '"':
+				state.tokenize = inString(tokenizer);
+				return /* #a11 */ 'string';
+			case ';':
+				stream.skipToEnd();
 				return /* #940 */ 'comment';
-			}
-			// fall through
-		default:
-			return '';
-	}
+			case '#':
+				if (stream.eat('!')) {
+					state.tokenize = inComment(tokenizer, '!#');
+					return /* #940 */ 'comment';
+				}
+				// fall through
+			default:
+				return '';
+		}
+	};
+	return tokenizer;
 };
+
+const eatHash = (stream: StringStream, state: State, ch: '#' | '$', parent: Tokenizer): string => {
+	if (ch === '#' && stream.eat('#')) {
+		return 'operator';
+	} else if (stream.eat('(')) {
+		state.tokenize = inScheme(parent);
+		state.parens = 1;
+		return 'separator';
+	}
+	return stream.match(/^\s*[-_a-z][-\w]*/iu) ? 'variableName.local' : 'operator';
+};
+
+const eatQuote = (state: State, parent: Tokenizer): string => {
+	state.tokenize = inString(parent);
+	return /* #a11 */ 'string';
+};
+
+const eatPercent = (stream: StringStream, state: State, parent: Tokenizer): string => {
+	if (stream.eat('{')) {
+		state.tokenize = inComment(parent, '%}');
+		return /* #940 */ 'comment';
+	}
+	stream.skipToEnd();
+	return /* #940 */ 'comment';
+};
+
+const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']);
 
 const inBase: Tokenizer = (stream, state) => {
 	if (stream.eatSpace()) {
@@ -81,36 +116,37 @@ const inBase: Tokenizer = (stream, state) => {
 		case '-':
 			return stream.eat(/[->.+_!^]/u) ? 'operator' : '';
 		case '#':
-			if (stream.eat('#')) {
-				return 'operator';
-			}
-			// fall through
 		case '$':
-			if (stream.eat('(')) {
-				state.tokenize = inScheme;
-				state.parens = 1;
-				return 'separator';
-			}
-			return '';
+			return eatHash(stream, state, ch, inBase);
 		case '"':
-			state.tokenize = inString(inBase);
-			return /* #a11 */ 'string';
+			return eatQuote(state, inBase);
 		case '%':
-			if (stream.eat('{')) {
-				state.tokenize = inComment(inBase, '%}');
-				return /* #940 */ 'comment';
-			}
-			stream.skipToEnd();
-			return /* #940 */ 'comment';
-		case '\\':
+			return eatPercent(stream, state, inBase);
+		case '\\': {
 			if (stream.eat(/[<>!]/u)) {
 				return 'operator';
 			} else if (stream.eat('\\')) {
 				return 'punctuation';
 			}
-			return stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) ? /* #708 */ 'keyword' : '';
+			const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null;
+			if (lyricsCommands.has(mt?.[0])) {
+				state.lyrics = true;
+			}
+			return mt ? /* #708 */ 'keyword' : '';
+		}
+		case '}':
+			state.lyrics = false;
+			return 'squareBracket';
+		case '{':
+			if (state.lyrics) {
+				state.lyrics = false;
+				state.braces = 1;
+				state.spaced = true;
+				state.tokenize = inLyrics;
+			}
+			return 'squareBracket';
 		default:
-			if (/[{}<>()[\]]/u.test(ch)) {
+			if (/[<>()[\]]/u.test(ch)) {
 				return 'squareBracket';
 			} else if (/[:|~^]/u.test(ch)) {
 				return 'punctuation';
@@ -122,9 +158,60 @@ const inBase: Tokenizer = (stream, state) => {
 			} else if (/[a-z]/iu.test(ch)) {
 				const mt = stream.match(/^(?:[a-z]|[-_\d]+(?=[a-z]))+/iu) as RegExpMatchArray | null,
 					word = ch + (mt?.[0] ?? '');
-				return /^(?:[rs]|[a-g](?:i[sh])*|[a-dfg]?(?:e[sh])+)$/u.test(word) ? '' : /* #219 */ 'atom';
+				return /^(?:[rs]|[a-g](?:i[sh])*|[a-g]?(?:e[sh])+)$/u.test(word) ? '' : /* #219 */ 'atom';
 			}
 			return '';
+	}
+};
+
+const inLyrics: Tokenizer = (stream, state) => {
+	if (stream.eatSpace()) {
+		state.spaced = true;
+		return '';
+	} else if (stream.sol()) {
+		state.spaced = true;
+	}
+	const ch = stream.next()!;
+	switch (ch) {
+		case '-':
+			if (state.spaced && stream.match(/^-(?=\s)/u)) {
+				return 'punctuation';
+			}
+			state.spaced = false;
+			return 'string';
+		case '_':
+		case '~':
+			state.spaced = false;
+			return 'punctuation';
+		case '#':
+		case '$':
+			state.spaced = false;
+			return eatHash(stream, state, ch, inLyrics);
+		case '"':
+			state.spaced = true;
+			return eatQuote(state, inLyrics);
+		case '%':
+			state.spaced = true;
+			return eatPercent(stream, state, inLyrics);
+		case '\\':
+			if (stream.eat(/[<>!\\]/u)) {
+				state.spaced = true;
+				return 'punctuation';
+			}
+			state.spaced = false;
+			return stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) ? /* #708 */ 'keyword' : '';
+		case '{':
+		case '}':
+			state.braces += ch === '{' ? 1 : -1;
+			if (state.braces) {
+				state.spaced = true;
+			} else {
+				state.tokenize = inBase;
+			}
+			return 'squareBracket';
+		default:
+			state.spaced = false;
+			return 'string';
 	}
 };
 
@@ -133,6 +220,9 @@ export const lilypond: StreamParser<State> = {
 		return {
 			tokenize: inBase,
 			parens: 0,
+			braces: 0,
+			lyrics: false,
+			spaced: false,
 		};
 	},
 
