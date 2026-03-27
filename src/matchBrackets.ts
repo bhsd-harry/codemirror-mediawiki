@@ -150,11 +150,14 @@ const clickHandler = (
 		{state} = view,
 		config = state.facet(facet);
 	if (
-		pos === null
+		// eslint-disable-next-line @stylistic/no-extra-parens
+		select !== customSelection[0] && (
+			pos === null
+		)
 	) {
 		return false;
 	}
-	const range = select(state, pos, config);
+	const range = select(state, pos!, config);
 	if (range) {
 		const selection = EditorSelection.single(range.anchor, range.head);
 		view.dispatch({selection});
