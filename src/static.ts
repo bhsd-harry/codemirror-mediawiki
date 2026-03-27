@@ -29,6 +29,7 @@ export const tagModes = {
 	math: 'text/math',
 	chem: 'text/math',
 	ce: 'text/math',
+	score: 'lilypond',
 };
 
 export const getStaticMwConfig = (

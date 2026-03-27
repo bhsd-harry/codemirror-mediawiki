@@ -1,6 +1,6 @@
 import type {StreamParser} from '@codemirror/language';
 
-export const math: StreamParser<unknown> = {
+export const math: StreamParser<object> = {
 	startState() {
 		return {};
 	},

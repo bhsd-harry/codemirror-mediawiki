@@ -11,6 +11,7 @@ import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
 import {jsonBasic, jsonc} from './json.js';
 import {math} from './math.js';
+import {lilypond} from './lilypond.js';
 import type {MwConfig as MwConfigBase} from '@bhsd/cm-util';
 import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/language';
 import type {CloseBracketConfig} from '@codemirror/autocomplete';
@@ -38,7 +39,7 @@ export interface State extends Nesting {
 	readonly dt: Partial<Nesting> & {n: number, html: number};
 	readonly data: MediaWikiData;
 	tokenize: Tokenizer;
-	extMode: StreamParser<object> | false;
+	extMode: StreamParser<object> | boolean;
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
@@ -166,7 +167,10 @@ const copyState = (state: State): State => {
 			// @ts-expect-error initial value
 			result[key] = [...val];
 		} else if (key === 'extState') {
-			result[key] = (state.extName && state.extMode && state.extMode.copyState || copyState)(val as State);
+			const f = state.extName && typeof state.extMode !== 'boolean'
+				&& state.extMode.copyState?.bind(state.extMode)
+				|| copyState;
+			result[key] = f(val as State);
 		} else if (key !== 'data' && key !== 'extMode' && val && typeof val === 'object') {
 			// @ts-expect-error initial value
 			result[key] = {...val}; // eslint-disable-line @typescript-eslint/no-misused-spread
@@ -409,7 +413,7 @@ const peekSpace = (stream: StringStream, sol?: boolean): boolean => {
 	return Boolean(peek && !peek.trim());
 };
 
-const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre']),
+const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
 	pageFunctions = new Set<string | undefined>([
 		'raw',
 		'msg',
@@ -1427,12 +1431,16 @@ export class MediaWiki {
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re)!;
 			if (isLang) {
-				let lang = mt[0].trim().toLowerCase();
-				if (lang === 'wiki' || lang === 'wikitext') {
-					lang = 'mediawiki';
-				}
-				if (lang in this) {
-					state.extMode = this[lang as 'text/pre']() as StreamParser<object>;
+				if (name !== 'score') {
+					let lang = mt[0].trim().toLowerCase();
+					if (lang === 'wiki' || lang === 'wikitext') {
+						lang = 'mediawiki';
+					}
+					if (lang in this) {
+						state.extMode = this[lang as 'text/pre']();
+					}
+				} else if (mt[0].trim() === 'ABC') {
+					state.extMode = true;
 				}
 			}
 			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
@@ -1454,7 +1462,7 @@ export class MediaWiki {
 						...state.data.tags.filter(tag => tag !== name),
 						...name === 'translate' ? ['tvar'] : [],
 					]);
-				if (state.extMode) {
+				if (typeof state.extMode !== 'boolean') {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
@@ -1521,7 +1529,7 @@ export class MediaWiki {
 	inExtTokens(origString: string): Tokenizer<string> {
 		return (stream, state) => {
 			let ret: string;
-			if (state.extMode === false) {
+			if (typeof state.extMode === 'boolean') {
 				ret = `mw-tag-${state.extName} ${tokens.extTag}`;
 				stream.skipToEnd();
 			} else {
@@ -1950,7 +1958,7 @@ export class MediaWiki {
 						}
 					}
 					if (
-						!(state.extName && state.extMode)
+						!(state.extName && typeof state.extMode !== 'boolean')
 						&& state.nLink === 0
 						&& typeof style === 'string'
 						&& style.includes(tokens.apostrophes)
@@ -2077,13 +2085,13 @@ export class MediaWiki {
 			},
 
 			blankLine(state): void {
-				if (state.extName && state.extMode && state.extMode.blankLine) {
+				if (state.extName && typeof state.extMode !== 'boolean' && state.extMode.blankLine) {
 					state.extMode.blankLine(state.extState as State, 0);
 				}
 			},
 
 			indent(state, textAfter, context): number | null {
-				return state.extName && state.extMode && state.extMode.indent
+				return state.extName && typeof state.extMode !== 'boolean' && state.extMode.indent
 					? state.extMode.indent(state.extState as object, textAfter, context)
 					: null;
 			},
@@ -2261,15 +2269,19 @@ export class MediaWiki {
 		};
 	}
 
-	'text/math'(): StreamParser<unknown> {
+	'text/math'(): StreamParser<object> {
 		return math;
 	}
 
-	json(): typeof jsonBasic {
+	json(): StreamParser<object> {
 		return jsonBasic;
 	}
 
-	jsonc(): typeof jsonc {
+	jsonc(): StreamParser<object> {
 		return jsonc;
+	}
+
+	lilypond(): StreamParser<object> {
+		return lilypond;
 	}
 }

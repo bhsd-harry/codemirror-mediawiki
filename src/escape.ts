@@ -61,13 +61,12 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		}
 		view.dispatch(state.changeByRange(range => {
 			const insert = replacements.get(range);
-			if (insert === undefined) {
-				return {range};
-			}
-			return {
-				range: EditorSelection.range(range.from, range.from + insert.length),
-				changes: {from: range.from, to: range.to, insert},
-			};
+			return insert === undefined
+				? {range}
+				: {
+					range: EditorSelection.range(range.from, range.from + insert.length),
+					changes: {from: range.from, to: range.to, insert},
+				};
 		}));
 	};
 
