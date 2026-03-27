@@ -173,12 +173,14 @@ const clickHandler = (
 		{state} = view,
 		config = state.facet(facet);
 	if (
-		pos === null
-		|| config.exclude?.(state, pos)
+		select !== customSelection[0] && (
+			pos === null
+			|| config.exclude?.(state, pos)
+		)
 	) {
 		return false;
 	}
-	const range = select(state, pos, config);
+	const range = select(state, pos!, config);
 	if (range) {
 		const selection = EditorSelection.single(range.anchor, range.head);
 		view.dispatch({selection});
