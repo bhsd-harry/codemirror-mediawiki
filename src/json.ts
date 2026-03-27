@@ -1,3 +1,4 @@
+import {inComment} from './lilypond';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare interface State {
@@ -6,7 +7,7 @@ declare interface State {
 }
 declare type Tokenizer = (stream: StringStream, state: State) => string;
 
-const tokenNumber: Tokenizer = (stream, state) => {
+const eatNumber: Tokenizer = (stream, state) => {
 	if (stream.match(/^\d+(?:\.\d+)?(?:e[+-]?\d+)?/iu)) {
 		state.wb = false;
 		return /* #164 */ 'number';
@@ -18,18 +19,7 @@ const tokenNumber: Tokenizer = (stream, state) => {
 const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 	// Tokenizer
 
-	const tokenComment: Tokenizer = (stream, state) => {
-		if (stream.skipTo('*/')) {
-			stream.next();
-			stream.next();
-			state.tokenize = tokenBase;
-		} else {
-			stream.skipToEnd();
-		}
-		return /* #940 */ 'comment';
-	};
-
-	const tokenBase: Tokenizer = (stream, state) => {
+	const inBase: Tokenizer = (stream, state) => {
 		if (stream.eatSpace()) {
 			state.wb = true;
 			return '';
@@ -55,8 +45,8 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 						stream.skipToEnd();
 						return /* #940 */ 'comment';
 					} else if (stream.eat('*')) {
-						state.tokenize = tokenComment;
-						return tokenComment(stream, state);
+						state.tokenize = inJsoncComment;
+						return 'comment';
 					}
 				}
 				return '';
@@ -77,15 +67,15 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 			}
 			case '-':
 				if (state.wb) {
-					return tokenNumber(stream, state);
+					return eatNumber(stream, state);
 				}
 				state.wb = true;
 				return '';
 			default:
 				if (state.wb) {
-					if (ch >= '0' && ch <= '9') {
+					if (/\d/u.test(ch)) {
 						stream.backUp(1);
-						return tokenNumber(stream, state);
+						return eatNumber(stream, state);
 					} else if (ch === 'n' && stream.match(/^ull\b/u)) {
 						state.wb = false;
 						return /* #708 */ 'null';
@@ -102,12 +92,14 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 		}
 	};
 
+	const inJsoncComment = inComment<Tokenizer>(inBase, '*/');
+
 	// Interface
 
 	return {
 		startState(): State {
 			return {
-				tokenize: tokenBase,
+				tokenize: inBase,
 				wb: true,
 			};
 		},

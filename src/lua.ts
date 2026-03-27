@@ -392,41 +392,6 @@ const source: CompletionSource = context => {
 				};
 			}
 			break;
-		case '..':
-		case '+':
-		case '-':
-		case '*':
-		case '/':
-		case '%':
-		case '^':
-		case '&':
-		case '|':
-		case '~':
-		case '<':
-		case '>':
-		case '[':
-			return {
-				from,
-				options: [...constants, ...tables],
-				validFor,
-			};
-		case '=':
-		case '{':
-		case '(':
-		case ',':
-			return {
-				from,
-				options: [...luaBuiltins, ...constants, ...tables, ...unary],
-				validFor,
-			};
-		case '}':
-		case ']':
-		case ')':
-			return {
-				from,
-				options: [...binary, ...blocks],
-				validFor,
-			};
 		case ';':
 		case '':
 			return {
@@ -435,7 +400,25 @@ const source: CompletionSource = context => {
 				validFor,
 			};
 		default:
-			if (pre !== char) {
+			if (/\.\.|[-+*/%^&|~<>[]/u.test(char)) {
+				return {
+					from,
+					options: [...constants, ...tables],
+					validFor,
+				};
+			} else if (/[={(,]/u.test(char)) {
+				return {
+					from,
+					options: [...luaBuiltins, ...constants, ...tables, ...unary],
+					validFor,
+				};
+			} else if (/[}\])]/u.test(char)) {
+				return {
+					from,
+					options: [...binary, ...blocks],
+					validFor,
+				};
+			} else if (pre !== char) {
 				const {prevSibling} = node;
 				return {
 					from,
