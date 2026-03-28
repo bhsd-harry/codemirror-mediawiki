@@ -99,13 +99,10 @@ const eatCommand = (stream: StringStream, state: State, base?: boolean): string 
 	if (base && lyricsCommands.has(mt?.[0])) {
 		state.lyrics = true;
 	}
-	return !mt || notKeyword(stream) ? '' : /* #708 */ 'keyword';
+	return !mt || 'score' in extData && !extData['score'].has(stream.current()) ? '' : /* #708 */ 'keyword';
 };
 
 const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']);
-
-const notKeyword = (stream: string | StringStream): boolean => 'score' in extData
-	&& !extData['score'].has(typeof stream === 'string' ? stream : stream.current());
 
 const inBase: Tokenizer = (stream, state) => {
 	if (stream.eatSpace()) {
@@ -155,8 +152,7 @@ const inBase: Tokenizer = (stream, state) => {
 				return /* #164 */ 'number';
 			} else if (/[a-z]/iu.test(ch)) {
 				stream.match(/^(?:[a-z]|[-_\d]+(?=[a-z]))+/iu);
-				const word = stream.current();
-				return notKeyword(word) || /^(?:[rs]|[a-g](?:is)*(?:ih)*|[a-g]?(?:es)*(?:eh)*)$/u.test(word)
+				return /^(?:[rs]|[a-g](?:is)*(?:ih)*|[a-g]?(?:es)*(?:eh)*)$/u.test(stream.current())
 					? ''
 					: /* #219 */ 'atom';
 			}

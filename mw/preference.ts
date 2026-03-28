@@ -53,7 +53,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	indentWidget: OO.ui.TextInputWidget,
 	themeWidget: OO.ui.DropdownInputWidget,
 	indent = localStorage.getItem(indentKey) ?? '',
-	themePref = localStorage.getItem(themeKey) ?? 'auto';
+	theme = localStorage.getItem(themeKey) ?? 'auto';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 
 /**
@@ -173,7 +173,7 @@ export const openPreference = async (): Promise<void> => {
 		widget.setValue([...prefs] as unknown as string);
 		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
-		themeWidget.setValue(themePref);
+		themeWidget.setValue(theme);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: preferenceId});
 		dialog.$element.css('z-index', 1002);
@@ -244,7 +244,7 @@ export const openPreference = async (): Promise<void> => {
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
 		themeWidget = new OO.ui.DropdownInputWidget({
-			value: themePref,
+			value: theme,
 			options: [
 				{data: 'auto', label: msg('theme-auto')},
 				{data: 'light', label: 'light'},
@@ -283,7 +283,7 @@ export const openPreference = async (): Promise<void> => {
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
 		const oldIndent = indent,
-			oldTheme = themePref,
+			oldTheme = theme,
 			save = prefs.has('save'),
 			editors = [
 				...document
@@ -299,13 +299,13 @@ export const openPreference = async (): Promise<void> => {
 		}
 
 		// 主题
-		themePref = themeWidget.getValue();
-		if (themePref !== oldTheme) {
+		theme = themeWidget.getValue();
+		if (theme !== oldTheme) {
 			changed = true;
 			for (const cm of editors) {
-				cm?.setTheme(themePref);
+				cm?.setTheme(theme);
 			}
-			localStorage.setItem(themeKey, themePref);
+			localStorage.setItem(themeKey, theme);
 		}
 
 		// WikiLint
@@ -379,7 +379,7 @@ export const openPreference = async (): Promise<void> => {
 						addons: value,
 						useMonaco: [...useMonaco],
 						indent,
-						theme: themePref,
+						theme,
 						wikilint,
 						ESLint: codeConfigs.get('ESLint'),
 						Stylelint: codeConfigs.get('Stylelint'),
