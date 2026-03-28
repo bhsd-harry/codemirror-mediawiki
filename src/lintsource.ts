@@ -19,7 +19,7 @@ import type {
 	ConfigData,
 	LintConfig,
 } from 'wikiparser-node';
-import type {DocRange} from './fold';
+import type {DocRange} from './util';
 
 export type LintSourceGetter = (
 	opt: ConfigData,

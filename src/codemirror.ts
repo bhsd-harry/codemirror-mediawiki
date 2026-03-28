@@ -4,9 +4,7 @@ import {
 import type {
 	EditorView,
 } from '@codemirror/view';
-import type {
-	DocRange,
-} from './fold';
+import type {DocRange} from './util';
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
 

@@ -1,12 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.4.3
 
-*2026-03-27*
+*2026-03-28*
 
 **Added**
 
-- Content inside `<math>`, `<chem>` and `<ce>` tags is now syntax highlighted
-- [LilyPond](https://lilypond.org/) syntax highlighting for content inside `<score>` tags
+- TeX math syntax highlighting and autocompletion for content inside `<math>`, `<chem>` and `<ce>` tags
+- [LilyPond](https://lilypond.org/) syntax highlighting and autocompletion for content inside `<score>` tags
 
 ## 0.4.2
 
