@@ -15,7 +15,7 @@ import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirr
 import type {CompletionContext} from '@codemirror/autocomplete';
 import type {Tree} from '@lezer/common';
 import type {Linter} from 'eslint';
-import type {DocRange} from './fold';
+import type {DocRange} from './util';
 import type {CodeMirror6} from './codemirror';
 import type {LintSource} from './lintsource';
 

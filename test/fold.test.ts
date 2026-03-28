@@ -14,7 +14,7 @@ import {
 import {createState, convertRangeSet, setEditorSelection, createDispatchableView, posToRange} from './util';
 import type {EditorView, BlockInfo} from '@codemirror/view';
 import type {StateEffect} from '@codemirror/state';
-import type {DocRange} from '../src/fold';
+import type {DocRange} from '../src/util';
 
 const inlineTest = (doc: string, pos: number, range: DocRange | false, refOnly?: boolean): void => {
 		assert.deepStrictEqual(foldableInline(createState(doc), pos, undefined, refOnly), range);

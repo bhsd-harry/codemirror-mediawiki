@@ -39,10 +39,8 @@ import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
-import type {
-	DocRange,
-	foldHandler,
-} from './fold';
+import type {foldHandler} from './fold';
+import type {DocRange} from './util';
 import type {Text as ExtendedText, detectIndent} from './indent';
 import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSources, LintSourceGetter} from './lintsource';

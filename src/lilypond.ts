@@ -1,3 +1,5 @@
+import {inComment, getCompletions} from './util.js';
+import {extData, extCompletion} from './constants.js';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare interface State {
@@ -15,20 +17,7 @@ declare interface State {
 }
 declare type Tokenizer = (stream: StringStream, state: State) => string;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const inComment = <T extends (stream: StringStream, state: any) => string = Tokenizer>(
-	parent: T,
-	end: string,
-): T => ((stream: StringStream, state: State) => {
-	if (stream.skipTo(end)) {
-		stream.next();
-		stream.next();
-		state.tokenize = parent;
-	} else {
-		stream.skipToEnd();
-	}
-	return /* #940 */ 'comment';
-}) as T;
+let scoreFetch: Promise<void> | undefined;
 
 const inString = (parent: Tokenizer): Tokenizer => (stream, state) => {
 	let escaped = false,
@@ -81,8 +70,8 @@ const inScheme = (parent: Tokenizer): Tokenizer => {
 };
 
 const eatHash = (stream: StringStream, state: State, ch: '#' | '$', parent: Tokenizer): string => {
-	if (ch === '#' && stream.eat('#')) {
-		return 'operator';
+	if (ch === '#' && stream.match(/^#[tf]?/u)) {
+		return /* #219 */ 'bool';
 	} else if (stream.eat('(')) {
 		state.tokenize = inScheme(parent);
 		state.parens = 1;
@@ -105,7 +94,18 @@ const eatPercent = (stream: StringStream, state: State, parent: Tokenizer): stri
 	return /* #940 */ 'comment';
 };
 
+const eatCommand = (stream: StringStream, state: State, base?: boolean): string => {
+	const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null;
+	if (base && lyricsCommands.has(mt?.[0])) {
+		state.lyrics = true;
+	}
+	return !mt || notKeyword(stream) ? '' : /* #708 */ 'keyword';
+};
+
 const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']);
+
+const notKeyword = (stream: string | StringStream): boolean => 'score' in extData
+	&& !extData['score'].has(typeof stream === 'string' ? stream : stream.current());
 
 const inBase: Tokenizer = (stream, state) => {
 	if (stream.eatSpace()) {
@@ -122,18 +122,16 @@ const inBase: Tokenizer = (stream, state) => {
 			return eatQuote(state, inBase);
 		case '%':
 			return eatPercent(stream, state, inBase);
-		case '\\': {
-			if (stream.eat(/[<>!]/u)) {
+		case '/':
+			stream.eat('+');
+			return 'punctuation';
+		case '\\':
+			if (stream.eat(/[-<>!]/u)) {
 				return 'operator';
-			} else if (stream.eat('\\')) {
-				return 'punctuation';
+			} else if (stream.eat(/[()[\]]/u)) {
+				return 'squareBracket';
 			}
-			const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null;
-			if (lyricsCommands.has(mt?.[0])) {
-				state.lyrics = true;
-			}
-			return mt ? /* #708 */ 'keyword' : '';
-		}
+			return stream.eat(/[\\=]/u) ? 'punctuation' : eatCommand(stream, state, true);
 		case '}':
 			state.lyrics = false;
 			return 'squareBracket';
@@ -156,9 +154,11 @@ const inBase: Tokenizer = (stream, state) => {
 				stream.match(/^\d*(?:[./]\d+)?/u);
 				return /* #164 */ 'number';
 			} else if (/[a-z]/iu.test(ch)) {
-				const mt = stream.match(/^(?:[a-z]|[-_\d]+(?=[a-z]))+/iu) as RegExpMatchArray | null,
-					word = ch + (mt?.[0] ?? '');
-				return /^(?:[rs]|[a-g](?:i[sh])*|[a-g]?(?:e[sh])+)$/u.test(word) ? '' : /* #219 */ 'atom';
+				stream.match(/^(?:[a-z]|[-_\d]+(?=[a-z]))+/iu);
+				const word = stream.current();
+				return notKeyword(word) || /^(?:[rs]|[a-g](?:is)*(?:ih)*|[a-g]?(?:es)*(?:eh)*)$/u.test(word)
+					? ''
+					: /* #219 */ 'atom';
 			}
 			return '';
 	}
@@ -199,7 +199,7 @@ const inLyrics: Tokenizer = (stream, state) => {
 				return 'punctuation';
 			}
 			state.spaced = false;
-			return stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) ? /* #708 */ 'keyword' : '';
+			return eatCommand(stream, state);
 		case '{':
 		case '}':
 			state.braces += ch === '{' ? 1 : -1;
@@ -217,6 +217,16 @@ const inLyrics: Tokenizer = (stream, state) => {
 
 export const lilypond: StreamParser<State> = {
 	startState() {
+		if (typeof wikiparse === 'object') {
+			scoreFetch ??= (async () => {
+				const data: string[] = await (await fetch(`${wikiparse.CDN}/data/ext/score.json`)).json();
+				extData['score'] = new Set(data.flatMap(item => item.split('.')));
+				extCompletion['score'] = getCompletions(
+					data.filter(s => s.startsWith('\\')),
+					'keyword',
+				);
+			})();
+		}
 		return {
 			tokenize: inBase,
 			parens: 0,

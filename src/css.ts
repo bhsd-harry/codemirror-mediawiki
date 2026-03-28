@@ -1,13 +1,11 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
-import {sliceDoc} from './util.js';
+import {sliceDoc, getCompletions} from './util.js';
 import type {Extension} from '@codemirror/state';
-import type {CompletionSource, CompletionResult, Completion} from '@codemirror/autocomplete';
+import type {CompletionSource, CompletionResult} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
 
-const cssWideKeywords = /* @__PURE__ */ (
-	() => ['revert', 'revert-layer'].map((label): Completion => ({label, type: 'keyword'}))
-)();
+const cssWideKeywords = /* @__PURE__ */ getCompletions(['revert', 'revert-layer']);
 
 /**
  * CSS completion source with dialect-specific adjustments.

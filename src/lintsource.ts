@@ -35,7 +35,7 @@ import type {Rule, Linter} from 'eslint';
 import type {Config} from 'stylelint/types/stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
-import type {DocRange} from './fold';
+import type {DocRange} from './util';
 
 export type LintSource<T = unknown> = (
 	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>

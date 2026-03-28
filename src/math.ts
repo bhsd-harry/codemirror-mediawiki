@@ -1,8 +1,19 @@
+import {extCompletion, extData} from './constants.js';
+import {getCompletions} from './util.js';
 import type {StreamParser} from '@codemirror/language';
+
+let mathFetch: Promise<void> | undefined;
 
 /** @test */
 export const math: StreamParser<object> = {
 	startState() {
+		if (typeof wikiparse === 'object') {
+			mathFetch ??= (async () => {
+				const data: string[] = await (await fetch(`${wikiparse.CDN}/data/ext/math.json`)).json();
+				extData['math'] = new Set(data);
+				extCompletion['math'] = getCompletions(data);
+			})();
+		}
 		return {};
 	},
 
@@ -13,7 +24,9 @@ export const math: StreamParser<object> = {
 		const ch = stream.next()!;
 		switch (ch) {
 			case '\\':
-				if (stream.eatWhile(/[a-z]/iu) || stream.eat(/[,;!\\]/u)) {
+				if (stream.eatWhile(/[a-z]/iu)) {
+					return 'math' in extData && !extData['math'].has(stream.current()) ? '' : /* #708 */ 'keyword';
+				} else if (stream.eat(/[,;!\\]/u)) {
 					return /* #708 */ 'keyword';
 				}
 				return stream.eat(/[$&%#{}_]/u) ? /* #219 */ 'atom' : /* #f00 */ 'invalid';

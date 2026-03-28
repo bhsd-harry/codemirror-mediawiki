@@ -11,7 +11,7 @@ import type {EditorView, BlockInfo, Decoration} from '@codemirror/view';
 import type {LanguageSupport} from '@codemirror/language';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from '../src/token';
-import type {DocRange} from '../src/fold';
+import type {DocRange} from '../src/util';
 
 export const mwConfig: MwConfig = {
 	...getStaticMwConfig(config as unknown as ConfigData, tagModes),

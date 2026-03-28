@@ -17,7 +17,7 @@ import {createState, convertRangeSet} from './util';
 import type {Range} from '@codemirror/state';
 import type {LanguageSupport, MatchResult} from '@codemirror/language';
 import type {Selection, RequiredConfig} from '../src/matchBrackets';
-import type {DocRange} from '../src/fold';
+import type {DocRange} from '../src/util';
 
 declare type Result = [number, number];
 

@@ -42,11 +42,7 @@ import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {AddonMain} from './codemirror';
 import type {TagName} from './config';
-
-export interface DocRange {
-	from: number;
-	to: number;
-}
+import type {DocRange} from './util';
 
 declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 /** @returns 折叠范围或是否继续查找 */

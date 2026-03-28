@@ -18,11 +18,16 @@ import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sh
 import {htmlTags, tokens} from './config.js';
 import {
 	hoverSelector,
+	extCompletion,
 	isWMF,
 } from './constants.js';
 import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
-import {leadingSpaces, findTemplateName} from './util.js';
+import {
+	getCompletions,
+	leadingSpaces,
+	findTemplateName,
+} from './util.js';
 import type {
 	TagStyle,
 } from '@codemirror/language';
@@ -87,15 +92,15 @@ export const hasTag = (types: Set<string> | string, names: TagName | TagName[]):
 export class FullMediaWiki extends MediaWiki {
 	declare readonly templatedata: boolean;
 	declare readonly nsRegex;
-	declare readonly functionSynonyms: Completion[];
-	declare readonly doubleUnderscore: Completion[];
-	declare readonly extTags: Completion[];
-	declare readonly htmlTags: Completion[];
-	declare readonly protocols: Completion[];
-	declare readonly imgKeys: Completion[];
-	declare readonly htmlAttrs: Completion[];
-	declare readonly elementAttrs: Map<string | undefined, Completion[]>;
-	declare readonly extAttrs: Map<string, Completion[]>;
+	declare readonly functionSynonyms;
+	declare readonly doubleUnderscore;
+	declare readonly extTags;
+	declare readonly htmlTags;
+	declare readonly protocols;
+	declare readonly imgKeys;
+	declare readonly htmlAttrs;
+	declare readonly elementAttrs;
+	declare readonly extAttrs;
 
 	constructor(
 		config: MwConfig,
@@ -117,15 +122,12 @@ export class FullMediaWiki extends MediaWiki {
 			type: i ? 'constant' : 'function',
 			label,
 		})));
-		this.doubleUnderscore = doubleUnderscore.flatMap(Object.keys).filter(isUnderscore).map((label): Completion => ({
-			type: 'constant',
-			label,
-		}));
-		this.extTags = this.tags.map((label): Completion => ({type: 'type', label}));
-		this.htmlTags = htmlTags.filter(tag => !this.tags.includes(tag)).map((label): Completion => ({
-			type: 'type',
-			label,
-		}));
+		this.doubleUnderscore = getCompletions(
+			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
+			'constant',
+		);
+		this.extTags = getCompletions(this.tags, 'type');
+		this.htmlTags = getCompletions(htmlTags.filter(tag => !this.tags.includes(tag)), 'type');
 		this.protocols = urlProtocols.split('|').map((label): Completion => ({
 			type: 'namespace',
 			label: label.replace(/\\\//gu, '/'),
@@ -134,17 +136,17 @@ export class FullMediaWiki extends MediaWiki {
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
 		this.htmlAttrs = [
-			...[...commonHtmlAttrs].map((label): Completion => ({type: 'property', label})),
+			...getCompletions([...commonHtmlAttrs], 'property'),
 			{type: 'variable', label: 'data-', detail: '*'},
 			{type: 'namespace', label: 'xmlns:', detail: '*'},
 		];
 		this.elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
 			key,
-			[...value].map((label): Completion => ({type: 'property', label})),
+			getCompletions([...value], 'property'),
 		]));
 		this.extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
 			key,
-			[...value].map((label): Completion => ({type: 'property', label})),
+			getCompletions([...value], 'property'),
 		]));
 	}
 
@@ -386,6 +388,28 @@ export class FullMediaWiki extends MediaWiki {
 			])) {
 				// 不可能是状态开关、标签、协议或图片参数名
 				return null;
+			} else if (
+				'math' in extCompletion
+				&& hasTag(types, ['mw-tag-math', 'mw-tag-chem', 'mw-tag-ce'] as string[] as TagName[])
+				&& (types.size === 1 || types.has('keyword') || types.has('invalid'))
+			) {
+				const mt = context.matchBefore(/\\[a-z]*$/iu);
+				return mt && {
+					from: mt.from,
+					options: extCompletion['math'],
+					validFor: /^[a-z]*$/iu,
+				};
+			} else if (
+				'score' in extCompletion
+				&& hasTag(types, 'mw-tag-score' as TagName)
+				&& (types.size === 1 || types.has('keyword'))
+			) {
+				const mt = context.matchBefore(/\\[-a-z]*$/iu);
+				return mt && {
+					from: mt.from,
+					options: extCompletion['score'],
+					validFor: /^[-a-z]*$/iu,
+				};
 			}
 			let mt = context.matchBefore(/__(?:(?!__)[\p{L}\p{N}_])*$/u);
 			if (mt) {

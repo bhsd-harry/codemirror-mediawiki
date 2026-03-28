@@ -11,13 +11,13 @@ import {
 } from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {leadingSpaces, sliceDoc, markDocTagType} from './util.js';
+import {leadingSpaces, sliceDoc, markDocTagType, getCompletions} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {Extension, EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 import type {Tree, SyntaxNode} from '@lezer/common';
-import type {DocRange} from './fold';
+import type {DocRange} from './util';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
@@ -238,14 +238,11 @@ const map = {
 		},
 	},
 	luaBuiltin = ['false', 'nil', 'true'],
-	luaBuiltins: Completion[] = luaBuiltin.map(label => ({label, type: 'constant'})),
-	tables: Completion[] = [
-		'_G',
-		...Object.keys(globals),
-	].map(label => ({label, type: 'namespace'})),
-	constants: Completion[] = [
+	luaBuiltins = getCompletions(luaBuiltin, 'constant'),
+	tables = getCompletions(['_G', ...Object.keys(globals)], 'namespace'),
+	constants = [
 		{label: '_VERSION', type: 'constant'},
-		...[
+		...getCompletions([
 			'assert',
 			'error',
 			'getfenv',
@@ -265,25 +262,18 @@ const map = {
 			'unpack',
 			'xpcall',
 			'require',
-		].map(label => ({label, type: 'function'})),
+		], 'function'),
 	],
-	binary: Completion[] = [
-		'and',
-		'or',
-		'in',
-	].map(label => ({label, type: 'keyword'})),
-	unary: Completion[] = [
-		...[
-			'not',
-			'function',
-		].map(label => ({label, type: 'keyword'})),
+	binary = getCompletions(['and', 'or', 'in']),
+	unary = [
+		...getCompletions(['not', 'function']),
 		snippetCompletion('function ${name}(${})\n\t${}\nend', {
 			label: 'function',
 			detail: 'definition',
 			type: 'keyword',
 		}),
 	],
-	blocks: Completion[] = [
+	blocks = getCompletions([
 		'break',
 		'elseif',
 		'return',
@@ -293,15 +283,15 @@ const map = {
 		'do',
 		'until',
 		'goto',
-	].map(label => ({label, type: 'keyword'})),
-	luaKeywords: Completion[] = [
-		...[
+	]),
+	luaKeywords = [
+		...getCompletions([
 			'if',
 			'while',
 			'repeat',
 			'for',
 			'local',
-		].map(label => ({label, type: 'keyword'})),
+		]),
 		snippetCompletion('if ${condition} then\n\t${}\nend', {
 			label: 'if',
 			detail: 'block',

@@ -39,7 +39,15 @@ const singleScript = (langSupport: Extension, model: string, mark: typeof markDo
 const coding = (langSupport: Extension, ns: string, model: string, mark: typeof markDocTag): Promise<void> =>
 	execute(singleScript(langSupport, model, mark), undefined, undefined, ns, model);
 
-const tryScripts = (callback: (content: string, title: string) => void, files: string[], dir = ''): void => {
+const tryScripts = (
+	callback: (content: string, title: string) => void,
+	exts: string | string[],
+	dir = '..',
+	exclude: string[] = [],
+): void => {
+	exts = typeof exts === 'string' ? [exts] : exts;
+	const rel = (arr: string[]): string[] => arr.map(s => `${dir}/**/${s}`),
+		files = fs.globSync(rel(exts), {exclude: rel([...exclude, 'node_modules/**'])});
 	console.log('开始检查本地文件：');
 	let i = 0;
 	for (const f of files) {
@@ -77,11 +85,9 @@ const tryScripts = (callback: (content: string, title: string) => void, files: s
 		const langSupport = javascript();
 		tryScripts(
 			singleScript(langSupport, 'javascript', markGlobalsAndDocTag),
-			fs.globSync(
-				['../**/*.js', '../**/*.[cm]js'],
-				{exclude: ['../**/*.min.js', '../**/node_modules/**', '../build/**']},
-			),
+			['*.js', '*.[cm]js'],
 			'..',
+			['*.min.js', 'build/**'],
 		);
 
 		if (lang !== 'local') {
@@ -92,7 +98,7 @@ const tryScripts = (callback: (content: string, title: string) => void, files: s
 	if (!lang || lang === 'lua' || lang === 'local') {
 		log('Lua');
 		const langSupport = lua();
-		tryScripts(singleScript(langSupport, 'lua', markDocTag), fs.globSync('../**/*.lua'), '..');
+		tryScripts(singleScript(langSupport, 'lua', markDocTag), '*.lua');
 
 		if (lang !== 'local') {
 			await coding(langSupport, '828', 'Scribunto', markDocTag);
@@ -101,12 +107,12 @@ const tryScripts = (callback: (content: string, title: string) => void, files: s
 
 	if (!lang || lang === 'json' || lang === 'local') {
 		log('JSON');
-		tryScripts(jsonParse, fs.globSync('../**/*.json'), '..');
+		tryScripts(jsonParse, '*.json');
 	}
 
 	if (!lang || lang === 'lilypond' || lang === 'local') {
 		log('LilyPond');
-		tryScripts(lyParse, fs.globSync(['**/*.ly', '**/*.ily', '**/*.lytex']));
+		tryScripts(lyParse, ['*.ly', '*.ily'], 'test/lilymusic');
 	}
 
 	if (failed.length > 0) {

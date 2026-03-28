@@ -1,4 +1,4 @@
-import {inComment} from './lilypond.js';
+import {inComment} from './util.js';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
 declare interface State {
@@ -92,7 +92,7 @@ const mkJson = (jsoncMode?: boolean): StreamParser<State> => {
 		}
 	};
 
-	const inJsoncComment = inComment<Tokenizer>(inBase, '*/');
+	const inJsoncComment = inComment<State>(inBase, '*/');
 
 	// Interface
 

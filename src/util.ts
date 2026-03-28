@@ -7,11 +7,17 @@ import {
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
 import type {Text, EditorState, SelectionRange, Range} from '@codemirror/state';
+import type {StringStream} from '@codemirror/language';
+import type {Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
-import type {DocRange} from './fold';
+
+export interface DocRange {
+	from: number;
+	to: number;
+}
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 
@@ -97,6 +103,47 @@ export const pushDecoration = (
 		decorations.push(decoration.range(from, to));
 	}
 };
+
+export const toConfigGetter = (
+	configGetter?: ConfigGetter,
+	articlePath?: string,
+): ConfigGetter | undefined => articlePath
+	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
+	: configGetter;
+
+/**
+ * 获取字符串开头的空白字符
+ * @param str 字符串
+ * @test
+ */
+export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
+
+/**
+ * Tokenizer for multiline comments
+ * @param parent 外层 Tokenizer
+ * @param end 注释结束标志
+ */
+export const inComment = <T extends {tokenize(stream: StringStream, state: T): string}>(
+	parent: (stream: StringStream, state: T) => string,
+	end: string,
+): (stream: StringStream, state: T) => string => (stream, state) => {
+	if (stream.skipTo(end)) {
+		stream.next();
+		stream.next();
+		state.tokenize = parent;
+	} else {
+		stream.skipToEnd();
+	}
+	return 'comment';
+};
+
+/**
+ * 生成自动补全选项
+ * @param labels 选项标签列表
+ * @param type 选项类型
+ */
+export const getCompletions = (labels: string[], type = 'keyword'): Completion[] =>
+	labels.map((label): Completion => ({label, type}));
 
 /**
  * Mark the type in a JSDoc/LDoc comment
@@ -185,17 +232,3 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): [string 
 	}
 	return [prevSibling && page, parameter];
 };
-
-export const toConfigGetter = (
-	configGetter?: ConfigGetter,
-	articlePath?: string,
-): ConfigGetter | undefined => articlePath
-	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
-	: configGetter;
-
-/**
- * 获取字符串开头的空白字符
- * @param str 字符串
- * @test
- */
-export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];

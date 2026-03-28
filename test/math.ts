@@ -1,6 +1,9 @@
 import * as path from 'path';
 import {StreamLanguage} from '@codemirror/language';
 import {math} from '../src/math';
+import {extData} from '../src/constants';
+
+extData['math'] = new Set(require('wikiparser-node/data/ext/math.json') as string[]);
 
 const {parser} = StreamLanguage.define(math);
 
