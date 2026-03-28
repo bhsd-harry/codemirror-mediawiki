@@ -1,12 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.4.3
 
-*2026-03-28*
+*2026-03-30*
 
 **Added**
 
 - TeX math syntax highlighting and autocompletion for content inside `<math>`, `<chem>` and `<ce>` tags
 - [LilyPond](https://lilypond.org/) syntax highlighting and autocompletion for content inside `<score>` tags
+- Commenting with `Mod` + `/` now also works for JSONC content inside `<mapframe>` and `<maplink>` tags and LilyPond content inside `<score>` tags
 
 ## 0.4.2
 

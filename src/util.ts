@@ -116,12 +116,6 @@ export const toConfigGetter = (
 ): ConfigGetter => () => Promise.resolve(configData);
 
 /**
- * 获取字符串开头的空白字符
- * @param str 字符串
- */
-export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
-
-/**
  * Tokenizer for multiline comments
  * @param parent 外层 Tokenizer
  * @param end 注释结束标志
@@ -147,3 +141,10 @@ export const inComment = <T extends {tokenize(stream: StringStream, state: T): s
  */
 export const getCompletions = (labels: string[], type = 'keyword'): Completion[] =>
 	labels.map((label): Completion => ({label, type}));
+
+/**
+ * 从Token类型中获取扩展标签名
+ * @param types Token类型列表
+ */
+export const getExtTags = (types: string[]): string[] =>
+	types.filter(type => type.startsWith('mw-tag-')).map(type => type.slice(7));
