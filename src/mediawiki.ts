@@ -25,6 +25,7 @@ import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
 import {
 	getCompletions,
+	getExtTags,
 	leadingSpaces,
 	findTemplateName,
 } from './util.js';
@@ -420,8 +421,7 @@ export class FullMediaWiki extends MediaWiki {
 				};
 			}
 			mt = context.matchBefore(/<\/?[a-z\d]*$/iu);
-			const extTags = [...types].filter(type => type.startsWith('mw-tag-'))
-				.map(s => s.slice(7));
+			const extTags = getExtTags([...types]);
 			if (mt && (explicit || mt.to - mt.from > 1)) {
 				const validFor = /^[a-z\d]*$/iu;
 				if (mt.text[1] === '/') {
