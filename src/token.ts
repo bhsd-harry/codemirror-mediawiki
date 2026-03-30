@@ -707,6 +707,9 @@ export class MediaWiki {
 		}
 		for (const tag of this.tags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre' && tag !== 'ref');
+			if (tag === 'score') {
+				this.addToken('tag-score-scheme');
+			}
 			this.addToken(`ext-${tag}`, true);
 		}
 		for (const tag of this.permittedHtmlTags) {

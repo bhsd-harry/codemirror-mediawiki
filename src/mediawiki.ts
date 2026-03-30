@@ -641,7 +641,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	'.cm-mw-entity': {
 		color: 'var(--cm-entity)',
 	},
-	'.cm-mw-exttag': {
+	'.cm-mw-exttag,.cm-mw-tag-score-scheme': {
 		backgroundColor: 'rgb(119,0,170,.04)',
 	},
 	/* eslint-disable no-sparse-arrays */

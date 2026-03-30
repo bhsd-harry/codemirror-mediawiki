@@ -34,36 +34,37 @@ const inString = (parent: Tokenizer): Tokenizer => (stream, state) => {
 };
 
 const inScheme = (parent: Tokenizer): Tokenizer => {
+	const style = 'mw-tag-score-scheme';
 	const tokenizer: Tokenizer = (stream, state) => {
 		if (stream.eatSpace()) {
-			return '';
+			return style;
 		}
 		const ch = stream.next()!;
 		switch (ch) {
 			case '(':
 				state.parens++;
-				return '';
+				return style;
 			case ')':
 				state.parens--;
 				if (state.parens === 0) {
 					state.tokenize = parent;
 					return 'separator';
 				}
-				return '';
+				return style;
 			case '"':
 				state.tokenize = inString(tokenizer);
-				return /* #a11 */ 'string';
+				return /* #a11 */ `string ${style}`;
 			case ';':
 				stream.skipToEnd();
-				return /* #940 */ 'comment';
+				return /* #940 */ `comment ${style}`;
 			case '#':
 				if (stream.eat('!')) {
 					state.tokenize = inComment(tokenizer, '!#');
-					return /* #940 */ 'comment';
+					return /* #940 */ `comment ${style}`;
 				}
 				// fall through
 			default:
-				return '';
+				return style;
 		}
 	};
 	return tokenizer;

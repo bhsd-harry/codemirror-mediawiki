@@ -84,9 +84,13 @@ input[type="color"] {
 	font-size: 1.5em;
 	line-height: 1.2em;
 }
+.cm-mw-section--3,
 .cm-mw-section--3 ~ *,
+.cm-mw-section--4,
 .cm-mw-section--4 ~ *,
+.cm-mw-section--5,
 .cm-mw-section--5 ~ *,
+.cm-mw-section--6,
 .cm-mw-section--6 ~ * {
 	font-weight: bold;
 }
@@ -166,7 +170,8 @@ input[type="color"] {
 	color: var(--cm-tpl);
 	font-weight: bold;
 }
-.cm-mw-template-argument-name {
+.cm-mw-template-argument-name,
+.cm-mw-parserfunction-argument-name {
 	color: var(--cm-arg);
 	font-weight: normal;
 }
@@ -235,7 +240,8 @@ input[type="color"] {
 .cm-mw-entity {
 	color: var(--cm-entity);
 }
-.cm-mw-exttag {
+.cm-mw-exttag,
+.cm-mw-tag-score-scheme {
 	background-color: rgb(119, 0, 170, .04);
 }
 .cm-mw-template-ground {
