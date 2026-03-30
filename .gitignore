@@ -7,3 +7,4 @@ dist/
 .eslintcache
 /test/*.wiki
 /test/prof*.json
+/test/lilymusic
