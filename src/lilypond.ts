@@ -97,19 +97,25 @@ const eatPercent = (stream: StringStream, state: State, parent: Tokenizer): stri
 	return /* #940 */ 'comment';
 };
 
+const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']),
+	setCommands = new Set<string | undefined>(['set', 'override']),
+	unsetCommands = new Set<string | undefined>(['unset', 'revert', 'tweak']),
+	newCommands = new Set<string | undefined>(['new', 'context']);
+
 const eatCommand = (stream: StringStream, state: State, parent: Tokenizer, base?: boolean): string => {
 	const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null,
 		cmd = mt?.[0],
-		isSet = setCommands.has(cmd);
+		isUnset = unsetCommands.has(cmd),
+		isNew = newCommands.has(cmd);
 	if (base && lyricsCommands.has(cmd)) {
 		state.lyrics = true;
-	} else if (isSet || unsetCommands.has(cmd)) {
-		state.tokenize = inAssignment(parent, isSet ? 1 : -1);
+	} else if (isUnset || isNew || setCommands.has(cmd)) {
+		state.tokenize = inAssignment(parent, isUnset ? -1 : 1, isNew);
 	}
 	return mt && extData['score']?.has(`\\${cmd}`) !== false ? /* #708 */ 'keyword' : '';
 };
 
-const inAssignment = (parent: Tokenizer, step: -1 | 0 | 1): Tokenizer => (stream, state) => {
+const inAssignment = (parent: Tokenizer, step: -1 | 0 | 1, cls?: boolean): Tokenizer => (stream, state) => {
 	if (stream.eatSpace()) {
 		return '';
 	} else if (step === 0) {
@@ -119,12 +125,8 @@ const inAssignment = (parent: Tokenizer, step: -1 | 0 | 1): Tokenizer => (stream
 	}
 	stream.match(/^[a-z][-\w.]*/iu);
 	state.tokenize = step === 1 ? inAssignment(parent, 0) : parent;
-	return /* #00f */ 'variableName.definition';
+	return cls ? /* #167 */ 'className' : /* #00f */ 'variableName.definition';
 };
-
-const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']),
-	setCommands = new Set<string | undefined>(['set', 'override']),
-	unsetCommands = new Set<string | undefined>(['unset', 'revert', 'tweak']);
 
 const inBase: Tokenizer = (stream, state) => {
 	if (stream.eatSpace()) {
