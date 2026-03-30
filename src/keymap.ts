@@ -84,6 +84,15 @@ export const getWikiKeymap = ({key, pre = '', post = '', splitlines}: KeymapConf
 						before = '/* ';
 						after = ' */';
 					}
+				} else if (isExtRange(fromExt, toExt, empty, ['score-scheme'])) {
+					// LilyPond scheme comment
+					if (empty) {
+						before = ';';
+						after = '';
+					} else {
+						before = '#! ';
+						after = ' !#';
+					}
 				} else if (isExtRange(fromExt, toExt, empty, ['score'])) {
 					// LilyPond comment
 					if (empty) {
