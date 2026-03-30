@@ -1908,7 +1908,7 @@ export class MediaWiki {
 	}
 
 	eatEntity(stream: StringStream, style: string): string {
-		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z\d]+);/iu);
+		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z][a-z\d]*);/iu);
 		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
 	}
 
