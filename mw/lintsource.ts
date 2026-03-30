@@ -169,7 +169,7 @@ export const getTemplateDataLintSource = async (
 		return voidLintSource;
 	}
 	const lsp = getLSP(view!, false, getWikiConfig, baseData.CDN);
-	if (!lsp || !('findTemplateTokens' in lsp)) {
+	if (!(lsp && 'findTemplateTokens' in lsp)) {
 		return voidLintSource;
 	}
 	await mw.loader.using('mediawiki.api');

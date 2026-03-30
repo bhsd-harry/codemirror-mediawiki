@@ -70,8 +70,10 @@ const inScheme = (parent: Tokenizer): Tokenizer => {
 };
 
 const eatHash = (stream: StringStream, state: State, ch: '#' | '$', parent: Tokenizer): string => {
-	if (ch === '#' && stream.match(/^#[tf]?/u)) {
+	if (stream.match(/^#[tf]/u)) {
 		return /* #219 */ 'bool';
+	} else if (ch === '#' && stream.match(/^(?:\d+|#x[\da-f]*)/iu)) {
+		return /* #a11 */ 'character';
 	} else if (stream.eat('(')) {
 		state.tokenize = inScheme(parent);
 		state.parens = 1;
@@ -94,15 +96,34 @@ const eatPercent = (stream: StringStream, state: State, parent: Tokenizer): stri
 	return /* #940 */ 'comment';
 };
 
-const eatCommand = (stream: StringStream, state: State, base?: boolean): string => {
-	const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null;
-	if (base && lyricsCommands.has(mt?.[0])) {
+const eatCommand = (stream: StringStream, state: State, parent: Tokenizer, base?: boolean): string => {
+	const mt = stream.match(/^[a-z](?:[a-z]|-+(?=[a-z]))*/iu) as RegExpMatchArray | null,
+		cmd = mt?.[0],
+		isSet = setCommands.has(cmd);
+	if (base && lyricsCommands.has(cmd)) {
 		state.lyrics = true;
+	} else if (isSet || unsetCommands.has(cmd)) {
+		state.tokenize = inAssignment(parent, isSet ? 1 : -1);
 	}
-	return !mt || 'score' in extData && !extData['score'].has(stream.current()) ? '' : /* #708 */ 'keyword';
+	return mt && extData['score']?.has(`\\${cmd}`) !== false ? /* #708 */ 'keyword' : '';
 };
 
-const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']);
+const inAssignment = (parent: Tokenizer, step: -1 | 0 | 1): Tokenizer => (stream, state) => {
+	if (stream.eatSpace()) {
+		return '';
+	} else if (step === 0) {
+		stream.eat('=');
+		state.tokenize = parent;
+		return 'operator';
+	}
+	stream.match(/^[a-z][-\w.]*/iu);
+	state.tokenize = step === 1 ? inAssignment(parent, 0) : parent;
+	return /* #00f */ 'variableName.definition';
+};
+
+const lyricsCommands = new Set<string | undefined>(['addlyrics', 'lyricmode', 'lyrics', 'lyricsto']),
+	setCommands = new Set<string | undefined>(['set', 'override']),
+	unsetCommands = new Set<string | undefined>(['unset', 'revert', 'tweak']);
 
 const inBase: Tokenizer = (stream, state) => {
 	if (stream.eatSpace()) {
@@ -111,7 +132,7 @@ const inBase: Tokenizer = (stream, state) => {
 	const ch = stream.next()!;
 	switch (ch) {
 		case '-':
-			return stream.eat(/[->.+_!^]/u) ? 'operator' : '';
+			return stream.eat(/[->.+_!^]/u) ? 'operator' : 'punctuation';
 		case '#':
 		case '$':
 			return eatHash(stream, state, ch, inBase);
@@ -128,7 +149,7 @@ const inBase: Tokenizer = (stream, state) => {
 			} else if (stream.eat(/[()[\]]/u)) {
 				return 'squareBracket';
 			}
-			return stream.eat(/[\\=]/u) ? 'punctuation' : eatCommand(stream, state, true);
+			return stream.eat(/[\\=]/u) ? 'punctuation' : eatCommand(stream, state, inBase, true);
 		case '}':
 			state.lyrics = false;
 			return 'squareBracket';
@@ -143,9 +164,9 @@ const inBase: Tokenizer = (stream, state) => {
 		default:
 			if (/[<>()[\]]/u.test(ch)) {
 				return 'squareBracket';
-			} else if (/[:|~^]/u.test(ch)) {
+			} else if (/[:|~^_=]/u.test(ch)) {
 				return 'punctuation';
-			} else if (/[=',.!?]/u.test(ch)) {
+			} else if (/[',.!?]/u.test(ch)) {
 				return 'operator';
 			} else if (/\d/u.test(ch)) {
 				stream.match(/^\d*(?:[./]\d+)?/u);
@@ -177,6 +198,7 @@ const inLyrics: Tokenizer = (stream, state) => {
 			return 'string';
 		case '_':
 		case '~':
+		case '|':
 			state.spaced = false;
 			return 'punctuation';
 		case '#':
@@ -192,10 +214,10 @@ const inLyrics: Tokenizer = (stream, state) => {
 		case '\\':
 			if (stream.eat(/[<>!\\]/u)) {
 				state.spaced = true;
-				return 'punctuation';
+				return '';
 			}
 			state.spaced = false;
-			return eatCommand(stream, state);
+			return eatCommand(stream, state, inLyrics);
 		case '{':
 		case '}':
 			state.braces += ch === '{' ? 1 : -1;
@@ -207,7 +229,12 @@ const inLyrics: Tokenizer = (stream, state) => {
 			return 'squareBracket';
 		default:
 			state.spaced = false;
-			return 'string';
+			if (/\d/u.test(ch)) {
+				stream.eatWhile(/\d/u);
+				return /* #164 */ 'number';
+			}
+			stream.eatWhile(/[^\s\d_~{}#$"%\\]/u);
+			return /* #a11 */ 'string';
 	}
 };
 

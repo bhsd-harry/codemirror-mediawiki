@@ -25,7 +25,7 @@ export const math: StreamParser<object> = {
 		switch (ch) {
 			case '\\':
 				if (stream.eatWhile(/[a-z]/iu)) {
-					return 'math' in extData && !extData['math'].has(stream.current()) ? '' : /* #708 */ 'keyword';
+					return extData['math']?.has(stream.current()) === false ? '' : /* #708 */ 'keyword';
 				} else if (stream.eat(/[,;!\\]/u)) {
 					return /* #708 */ 'keyword';
 				}
