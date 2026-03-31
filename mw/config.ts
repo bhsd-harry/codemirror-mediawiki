@@ -60,9 +60,9 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		config.tagModes = modes;
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
-		const parserConfig: ConfigData = await (await fetch(
-			`${CDN}/npm/wikiparser-node/config/moegirl.json`,
-		)).json();
+		const parserConfig: ConfigData = await (await fetch(`${
+			typeof wikiparse === 'object' ? wikiparse.CDN : `${CDN}/npm/wikiparser-node`
+		}/config/moegirl.json`)).json();
 		setObject('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig, modes);
 	} else {
