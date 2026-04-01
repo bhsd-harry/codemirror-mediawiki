@@ -14,12 +14,12 @@
 	"license": "GPL-2.0-or-later",
 	"files": [
 		"/dist/*.js",
-		"/dist/*.d.ts",
-		"!/dist/*-page.*"
+		"/dist/*.d.ts"
 	],
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"type": "module",
 	"sideEffects": false,
 	"repository": {
 		"type": "git",
@@ -27,7 +27,7 @@
 	},
 	"scripts": {
 		"prepublishOnly": "npm run build",
-		"build:core": "tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline",
+		"build:core": "tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --minify --sourcemap --outdir=.",
 		"build": "rm -rf dist/ && npm run build:core",
 		"lint:ts": "tsc --noEmit && eslint --cache .",

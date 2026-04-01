@@ -5,9 +5,10 @@
 	"compilerOptions": {
 		"target": "es2024",
 		"module": "es6",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"resolveJsonModule": true,
 		"declaration": true,
+		"rootDir": "src",
 		"outDir": "dist",
 		"alwaysStrict": true,
 		"exactOptionalPropertyTypes": true,
