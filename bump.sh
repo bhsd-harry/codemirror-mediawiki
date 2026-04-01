@@ -1,9 +1,7 @@
 #!/usr/local/bin/bash
 if [[ $2 == 'npm' ]]
 then
-	gsed -i '/"types":/a \\t"type": "module",' package.json
 	npm publish --tag "${3-latest}"
-	gsed -i '/"type": "module",/d' package.json
 elif [[ $2 == 'gh' ]]
 then
 	gsed -n "/## $1/,/##/{/^## .*/d;/./,\$!d;p}" CHANGELOG.md > release-notes.md

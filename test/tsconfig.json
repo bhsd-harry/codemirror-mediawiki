@@ -1,13 +1,17 @@
 {
 	"extends": "../tsconfig.json",
 	"include": [
-		"*.ts"
+		"src/*.ts"
 	],
 	"compilerOptions": {
+		"types": [
+			"mocha"
+		],
 		"target": "ES2024",
-		"module": "commonjs",
+		"module": "esnext",
 		"declaration": false,
 		"removeComments": true,
+		"rootDir": "src",
 		"outDir": "dist"
 	}
 }

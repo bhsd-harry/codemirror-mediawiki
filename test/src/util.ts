@@ -1,0 +1,145 @@
+import * as assert from 'assert';
+import {EditorState, EditorSelection, ChangeSet} from '@codemirror/state';
+import {CompletionContext} from '@codemirror/autocomplete';
+import config from 'wikiparser-node/config/default.json' with {type: 'json'};
+import {mediawikiBase} from '../../dist/mediawiki.js';
+import {tagModes, getStaticMwConfig} from '../../dist/static.js';
+import {linkSuggest, paramSuggest} from '../../dist/suggest.test.js';
+import type {CompletionResult, CompletionSource} from '@codemirror/autocomplete';
+import type {Extension, Transaction, TransactionSpec, RangeSet, StateEffect, RangeValue} from '@codemirror/state';
+import type {EditorView, BlockInfo, Decoration} from '@codemirror/view';
+import type {LanguageSupport} from '@codemirror/language';
+import type {ConfigData} from 'wikiparser-node';
+import type {MwConfig} from '../../dist/token';
+import type {DocRange} from '../../dist/util';
+
+export const mwConfig: MwConfig = {
+	...getStaticMwConfig(config as unknown as ConfigData, tagModes),
+	linkSuggest,
+	paramSuggest,
+};
+
+export const createState = (
+	doc: string,
+	lang: Extension = mediawikiBase(mwConfig),
+	ranges?: (number | [number, number])[],
+): EditorState => {
+	const state = EditorState.create({
+		doc,
+		extensions: [lang],
+	});
+	if (ranges) {
+		setEditorSelection(state, ranges);
+	}
+	return state;
+};
+
+export const getEditorSelection = (selection: (number | [number, number])[]): EditorSelection =>
+	EditorSelection.fromJSON({
+		main: 0,
+		ranges: selection.map(pos => {
+			const [anchor, head] = posToRange(pos);
+			return {anchor, head};
+		}),
+	});
+
+export const setEditorSelection = (state: EditorState, ranges: (number | [number, number])[]): void => {
+	Object.assign(state, {selection: getEditorSelection(ranges)});
+};
+
+export const createDispatchableView = (
+	text: string,
+	ranges: (number | [number, number])[],
+	transaction: {
+		changes?: (number | [number, ...string[]])[] | {from: number, to: number, insert: string};
+		selection?: (number | [number, number])[];
+		effects?: [number, number][];
+	},
+	lang: Extension = mediawikiBase(mwConfig),
+): EditorView & {dispatched: Promise<void>} => {
+	const state = createState(text, lang, ranges),
+		{doc} = state,
+		{promise, resolve, reject} = Promise.withResolvers(); // eslint-disable-line es-x/no-promise-withresolvers
+	return {
+		state,
+		dom: {
+			querySelector() {
+				return null;
+			},
+		} as Partial<HTMLElement>,
+		viewportLineBlocks: Array.from({length: doc.lines}, (_, i) => doc.line(i + 1) as Partial<BlockInfo>),
+		lineBlockAt(pos: number) {
+			return doc.lineAt(pos) as Partial<BlockInfo>;
+		},
+		dispatch({changes, selection, effects}: Transaction | TransactionSpec) {
+			try {
+				if (changes) {
+					assert.deepStrictEqual(
+						changes instanceof ChangeSet ? changes.toJSON() : changes,
+						transaction.changes,
+					);
+				}
+				if (selection) {
+					assert.deepStrictEqual(
+						selection instanceof EditorSelection
+							? selection
+							: EditorSelection.single(selection.anchor, selection.head ?? selection.anchor),
+						getEditorSelection(transaction.selection!),
+					);
+				}
+				if (effects) {
+					if (!Array.isArray(effects)) {
+						effects = [effects as StateEffect<unknown>];
+					}
+					assert.deepStrictEqual(
+						(effects as StateEffect<DocRange>[]).map(({value}) => value),
+						transaction.effects?.map(([from, to]) => ({from, to})) ?? [],
+					);
+				}
+				resolve(undefined);
+			} catch (e) {
+				reject(e);
+			}
+		},
+		dispatched: promise,
+	} as EditorView & {dispatched: Promise<void>};
+};
+
+export const autocompletionTest = (source: CompletionSource, lang?: LanguageSupport, validFor?: RegExp) =>
+	async (doc: string, result: CompletionResult | null): Promise<void> => {
+		const state = createState(doc, lang),
+			context = new CompletionContext(state, doc.length, true),
+			completion = await source(context);
+		assert.deepStrictEqual(
+			completion && {
+				...completion,
+				options: completion.options.filter(
+					option => option.label.toLowerCase().startsWith(doc.slice(completion.from).toLowerCase()),
+				).map(option => {
+					if (typeof option.apply === 'function') {
+						delete option.apply;
+					}
+					return option;
+				}),
+			},
+			validFor ? result && {...result, validFor} : result,
+		);
+	};
+
+export const convertFullRangeSet = <T extends RangeValue>(set: RangeSet<T>, length: number): [number, number, T][] => {
+	const chunks: [number, number, T][] = [];
+	set.between(0, length, (from, to, value) => {
+		chunks.push([from, to, value]);
+	});
+	return chunks;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const convertRangeSet = (set: RangeSet<any>, length: number): [number, number][] =>
+	convertFullRangeSet(set, length).map(([from, to]) => [from, to]);
+
+export const filterFromRangeSet = (arr: [number, number, Decoration][], cl: string): [number, number][] =>
+	arr.filter(([,, {spec}]) => (spec as Record<string, string>)['class'] === cl).map(([from, to]) => [from, to]);
+
+export const posToRange = (pos: number | [number, number]): [number, number] =>
+	typeof pos === 'number' ? [pos, pos] : pos;

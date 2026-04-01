@@ -5,6 +5,10 @@
 		"../src/global.d.ts"
 	],
 	"compilerOptions": {
+		"types": [
+			"oojs-ui"
+		],
+		"rootDir": "..",
 		"noEmit": true
 	}
 }

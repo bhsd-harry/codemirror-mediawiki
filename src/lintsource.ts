@@ -32,7 +32,7 @@ import type {
 	QuickFixData,
 } from 'wikiparser-node';
 import type {Rule, Linter} from 'eslint';
-import type {Config} from 'stylelint/types/stylelint';
+import type {Config} from 'stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from './linter';
 import type {DocRange} from './util';

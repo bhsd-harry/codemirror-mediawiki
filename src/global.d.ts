@@ -22,6 +22,10 @@ import type {LintSource} from './lintsource';
 import type {MwConfig} from './token';
 
 declare global {
+	module '@eslint/js/*' {
+		const recommended: Linter.BaseConfig;
+		export default recommended;
+	}
 	module '/codemirror-mediawiki/*' {
 		export {
 			CodeMirror6,

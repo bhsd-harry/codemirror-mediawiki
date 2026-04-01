@@ -1,3 +1,4 @@
+import recommended from '@eslint/js/src/configs/eslint-recommended.js';
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
@@ -6,7 +7,7 @@ import type {Linter} from 'eslint';
 import type {
 	Warning,
 	Config,
-} from 'stylelint/types/stylelint';
+} from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {
@@ -209,8 +210,6 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
  */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
 	/** @todo revert df69718ab908966bff162fe51e8cfb4595e6b2ec */
-	// eslint-disable-next-line @typescript-eslint/no-require-imports
-	const {rules: recommended} = require('@eslint/js/src/configs/eslint-recommended.js');
 	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
@@ -228,7 +227,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 			|| config.extends === 'eslint:recommended'
 			|| Array.isArray(config.extends) && config.extends.includes('eslint:recommended')
 		) {
-			config.rules = {...recommended, ...config.rules};
+			config.rules = {...recommended.rules!, ...config.rules};
 		}
 		delete config.extends;
 		linter.config = config;

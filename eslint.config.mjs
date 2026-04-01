@@ -98,7 +98,7 @@ export default extend(
 		},
 	},
 	{
-		files: ['test/*.ts'],
+		files: ['test/src/*.ts'],
 		languageOptions: {
 			parserOptions: {
 				project: './test/tsconfig.json',

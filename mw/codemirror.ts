@@ -35,7 +35,7 @@ import {textSelection, monacoTextSelection} from './textSelection';
 import {instances, templateData} from './util';
 import wikiEditor, {toggleButton, setButtonActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
-import type {Config} from 'stylelint/types/stylelint';
+import type {Config} from 'stylelint';
 import type {editor, IRange} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
 import type {Dialect, ReplaceFunction} from '../src/codemirror';
