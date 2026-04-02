@@ -349,7 +349,7 @@ const source: CompletionSource = context => {
 		case '.': {
 			const mt = context.matchBefore(/(?:^|[^\w.]|\.\.)\w(?:\w|\.(?!\.))+$/u);
 			if (mt) {
-				let cur: LuaGlobal | number | undefined = globals,
+				let cur: LuaGlobal | number | false | undefined = globals,
 					s = mt.text;
 				if (s.startsWith('.')) {
 					s = s.slice(2);
@@ -357,7 +357,7 @@ const source: CompletionSource = context => {
 					s = s.slice(1);
 				}
 				for (const part of s.split('.').slice(0, -1)) {
-					cur = cur[part];
+					cur = Object.hasOwn(cur, part) && cur[part];
 					if (typeof cur !== 'object') {
 						return null;
 					}

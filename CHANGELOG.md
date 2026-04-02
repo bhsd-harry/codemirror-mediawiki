@@ -1281,7 +1281,7 @@
 
 - Highlighting of HTML entities in page names in the MediaWiki mode
 
-## v2.12.5
+## 2.12.5
 
 *2024-05-09*
 
@@ -1289,7 +1289,7 @@
 
 - Fix the [wikiparse](https://github.com/bhsd-harry/wikiparser-node/wiki/wikiparse) configuration when used on a MediaWiki site
 
-## v2.12.4
+## 2.12.4
 
 *2024-05-09*
 
@@ -1297,7 +1297,7 @@
 
 - [Autocompletion](./README.md#autocompletion) for extension tag attributes in the MediaWiki mode
 
-## v2.12.3
+## 2.12.3
 
 *2024-05-08*
 
@@ -1309,7 +1309,7 @@
 
 - Exclude nested extension tags from [autocompletion](./README.md#autocompletion) in the MediaWiki mode
 
-## v2.12.2
+## 2.12.2
 
 *2024-05-07*
 
@@ -1327,7 +1327,7 @@
 
 - Extra `cm-mw-tag-*` HTML classes, except for `cm-mw-tag-pre` and `cm-mw-tag-nowiki`, are removed in the MediaWiki mode
 
-## v2.12.1
+## 2.12.1
 
 *2024-05-05*
 
@@ -1343,7 +1343,7 @@
 
 - [Autocompletion](./README.md#autocompletion) for MediaWiki parser functions starting with `#` is now automatically triggered
 
-## v2.12.0
+## 2.12.0
 
 *2024-05-04*
 
@@ -1493,7 +1493,7 @@
 - Anchors in file links are now highlighted as errors in the MediaWiki mode
 - The replacement function passed to [`replaceSelections`](./README.md#replaceselections-static) now has an expanded signature
 
-## v2.7.4
+## 2.7.4
 
 *2024-03-09*
 
@@ -1513,7 +1513,7 @@
 
 - When used on a MediaWiki site, wikilinks in messages are now opened in a new tab
 
-## v2.7.2
+## 2.7.2
 
 *2024-03-07*
 
@@ -1525,7 +1525,7 @@
 
 - Now switching off the [save](./mw/README.md#save) extension will also be recorded on the user subpage, and the preference settings loaded from the user subpage will not be applied if the `save` extension is switched off
 
-## v2.7.1
+## 2.7.1
 
 *2024-03-06*
 
@@ -1533,7 +1533,7 @@
 
 - Now [`fromTextArea`](./mw/README.md#fromtextarea) will wait to load preference settings from the user's subpage before creating the editor on a MediaWiki site
 
-## v2.7.0
+## 2.7.0
 
 *2024-03-05*
 
@@ -1545,7 +1545,7 @@
 
 - When used on a MediaWiki site, loading multiple visible CodeMirror editors for one textarea element is now prohibited
 
-## v2.6.8
+## 2.6.8
 
 *2024-03-03*
 
@@ -1556,9 +1556,9 @@
 **Fixed**
 
 - When used on a MediaWiki site, the editor now correctly memorizes the scroll position after a page reload
-- Syntax at SOL in a table cell in the MediaWiki mode, since [v2.6.7](#v267)
+- Syntax at SOL in a table cell in the MediaWiki mode, since [v2.6.7](#267)
 
-## v2.6.7
+## 2.6.7
 
 *2024-03-01*
 
@@ -1576,7 +1576,7 @@
 
 - Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now resets the cursor position
 
-## v2.6.6
+## 2.6.6
 
 *2024-02-29*
 
@@ -1584,7 +1584,7 @@
 
 - Keyboard shortcut for [template folding](./README.md#codefolding) (`Ctrl` + `Shift` + `[`/`Cmd` + `Alt` + `[`) now works wherever the tooltip is displayed
 
-## v2.6.5
+## 2.6.5
 
 *2024-02-27*
 
@@ -1597,7 +1597,7 @@
 
 - Now an unmatched closing HTML tag will not influence the stack
 
-## v2.6.4
+## 2.6.4
 
 *2024-02-26*
 
@@ -1609,7 +1609,7 @@
 
 - Unintentional change of the first checkbox due to click within the MediaWiki-site preference dialog
 
-## v2.6.3
+## 2.6.3
 
 *2024-02-24*
 
@@ -1625,7 +1625,7 @@
 
 - When used on a MediaWiki site, ESLint now treats `mw`, `$` and `OO` as global variables
 
-## v2.6.2
+## 2.6.2
 
 *2024-02-24*
 
@@ -1638,7 +1638,7 @@
 
 - In the MediaWiki mode, a valid tag name now must end with `/[>/\s]/`
 
-## v2.6.1
+## 2.6.1
 
 *2024-02-22*
 
@@ -1646,7 +1646,7 @@
 
 - Interaction between the tagMatching extension and uncustomized extension tags
 
-## v2.6.0
+## 2.6.0
 
 *2024-02-22*
 
@@ -1654,7 +1654,7 @@
 
 - The preference dialog on a MediaWiki site adds a new tab for WikiLint configurations
 
-## v2.5.1
+## 2.5.1
 
 *2024-02-21*
 
@@ -1663,7 +1663,7 @@
 - New extension option for the MediaWiki mode: [autocompletion](./README.md#autocompletion)
 - ESLint now provides auto-fix suggestions
 
-## v2.4.7
+## 2.4.7
 
 *2024-02-12*
 
@@ -1679,7 +1679,7 @@
 
 - The placeholder of the [codeFolding](./README.md#codefolding) extension now contains a leading `|`
 
-## v2.4.5
+## 2.4.5
 
 *2024-02-07*
 
@@ -1687,7 +1687,7 @@
 
 - New extension option for the MediaWiki mode: [wikiEditor](./mw/README.md#wikieditor)
 
-## v2.4.2
+## 2.4.2
 
 *2024-02-06*
 
@@ -1699,7 +1699,7 @@
 
 - The [openLinks](./README.md#openlinks) extension now utilizes the syntax tree to detect page names
 
-## v2.4.1
+## 2.4.1
 
 *2024-02-06*
 
@@ -1707,7 +1707,7 @@
 
 - New extension option for the MediaWiki mode: tagMatching
 
-## v2.3.5
+## 2.3.5
 
 *2024-02-05*
 
@@ -1719,7 +1719,7 @@
 
 - Folding a long template or a nested template
 
-## v2.3.3
+## 2.3.3
 
 *2024-02-04*
 
@@ -1732,7 +1732,7 @@
 
 - The keyboard shortcut for template folding now closes the tooltip
 
-## v2.3.0
+## 2.3.0
 
 *2024-02-02*
 
@@ -1741,7 +1741,7 @@
 - New extension option for the MediaWiki mode: [codeFolding](./README.md#codefolding)
 - When used on a MediaWiki site, a welcome message will be sent
 
-## v2.2.3
+## 2.2.3
 
 *2024-02-01*
 
@@ -1750,7 +1750,7 @@
 - The MediaWiki mode now has a comment syntax: `<!--` + `-->`
 - The preference dialog on a MediaWiki site now allows for full-HTML labels
 
-## v2.2.2
+## 2.2.2
 
 *2024-02-01*
 
@@ -1765,7 +1765,7 @@
 
 - [`fromTextArea`](./mw/README.md#fromtextarea) now takes one more optional argument of the namespace id
 
-## v2.1.15
+## 2.1.15
 
 *2024-01-30*
 
@@ -1777,7 +1777,7 @@
 
 - [`prefer`](./README.md#prefer) now takes either an array of strings or an object as the argument
 
-## v2.1.12
+## 2.1.12
 
 *2024-01-27*
 
@@ -1793,7 +1793,7 @@
 
 - [`getLinter`](./README.md#getlinter) temporarily disabling the warning of low-severity lint errors for Wikitext until the next minor version
 
-## v2.1.11
+## 2.1.11
 
 *2024-01-22*
 
@@ -1801,7 +1801,7 @@
 
 - New extension option: [allowMultipleSelections](https://codemirror.net/docs/ref/#state.EditorState^allowMultipleSelections)
 
-## v2.1.10
+## 2.1.10
 
 *2024-01-19*
 
@@ -1811,7 +1811,7 @@
 - Attribute delimiter of table captions and table cells
 - Unmatched closing tag
 
-## v2.1.9
+## 2.1.9
 
 *2024-01-18*
 
@@ -1823,9 +1823,9 @@
 **Fixed**
 
 - No more auto-focusing on the lint panel
-- `'/'` in HTML and extension tag attributes, since [v2.1.0](#v210)
+- `'/'` in HTML and extension tag attributes, since [v2.1.0](#210)
 
-## v2.1.8
+## 2.1.8
 
 *2024-01-17*
 
@@ -1837,7 +1837,7 @@
 
 - Reseting the editor size in [`toggle`](./README.md#toggle)
 
-## v2.1.5
+## 2.1.5
 
 *2024-01-15*
 
@@ -1845,7 +1845,7 @@
 
 - More permitted HTML tags in the mixed MediaWiki-HTML mode
 
-## v2.1.3
+## 2.1.3
 
 *2024-01-14*
 
@@ -1855,7 +1855,7 @@
 - New method: [`toggle`](./README.md#toggle)
 - [`getLinter`](./README.md#getlinter) now takes an optional configuration argument
 
-## v2.1.2
+## 2.1.2
 
 *2024-01-13*
 
@@ -1865,7 +1865,7 @@
 - Read-only mode
 - The MediaWiki-site version now automatically detects the language on editing pages
 
-## v2.1.0
+## 2.1.0
 
 *2024-01-13*
 
@@ -1889,7 +1889,7 @@
 - Multiple template variable default values
 - Removing the `u` flag from `MediaWiki.urlProtocols`
 
-## v2.0.15
+## 2.0.15
 
 *2024-01-11*
 
@@ -1897,7 +1897,7 @@
 
 - Missing token styles
 
-## v2.0.14
+## 2.0.14
 
 *2023-12-20*
 
@@ -1915,7 +1915,7 @@
 
 - The argument type of [`lint`](./README.md#lint)
 
-## v2.0.12
+## 2.0.12
 
 *2023-12-17*
 
@@ -1937,7 +1937,7 @@
 
 - `save` method
 
-## v2.0.9
+## 2.0.9
 
 *2023-12-16*
 
@@ -1951,7 +1951,7 @@
 
 - Initial height of the editor
 
-## v2.0.7
+## 2.0.7
 
 *2023-12-14*
 

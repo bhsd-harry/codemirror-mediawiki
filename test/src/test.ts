@@ -1,4 +1,4 @@
-import testUtil from '@bhsd/test-util';
+import {mochaTest} from '@bhsd/test-util';
 import parse, {checkNode} from './parser.js';
 import tests from '../parserTests.json' with {type: 'json'};
 
@@ -8,7 +8,7 @@ declare interface Token {
 }
 
 const entities = {'<': '&lt;', '>': '&gt', '&': '&amp;'};
-testUtil.mochaTest(
+mochaTest(
 	tests,
 	wikitext => {
 		let node = parse(wikitext);

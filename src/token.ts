@@ -1466,7 +1466,7 @@ export class MediaWiki {
 					if (lang === 'wiki' || lang === 'wikitext') {
 						lang = 'mediawiki';
 					}
-					if (lang in this.config.tagModes && lang in this) {
+					if (Object.values(this.config.tagModes).includes(lang) && lang in this) {
 						state.extMode = this[lang as 'text/pre']();
 					}
 				} else if (mt[0].trim() === 'ABC') {

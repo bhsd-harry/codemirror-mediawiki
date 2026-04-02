@@ -79,14 +79,20 @@ import type {BracketConfig} from './matchBrackets';
 export type {MwConfig};
 export {CodeMirror6};
 
+const getOrInsert = <T>(name: string, ext: Addon<T>): Addon<T> => {
+	if (!avail.has(name)) {
+		avail.set(name, ext);
+	}
+	return avail.get(name) as Addon<T>;
+};
+
 /**
  * 注册通用扩展
  * @param name 扩展名
  * @param ext 扩展
  */
 const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>): void => {
-	avail[name] ??= [] as unknown as Addon<T>;
-	const addon = avail[name] as Addon<T>;
+	const addon = getOrInsert<T>(name, [] as unknown as Addon<T>);
 	addon[0] = ext;
 };
 
@@ -195,8 +201,11 @@ function mediawikiOnly(ext: Extension): Addon<Extension>;
 function mediawikiOnly(ext: (cm: CodeMirror6) => Extension): Addon<boolean>;
 function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon<Extension> | Addon<boolean> {
 	return typeof ext === 'function'
-		? [(enable: boolean, cm): Extension => enable ? ext(cm!) : [], {mediawiki: true}] as Addon<boolean>
-		: [langExtension, {mediawiki: ext}];
+		? [
+			((enable: boolean | undefined, cm): Extension => enable ? ext(cm!) : []) satisfies AddonMain<boolean>,
+			new Map([['mediawiki', true]]),
+		]
+		: [langExtension, new Map([['mediawiki', ext]])];
 }
 
 /**
@@ -206,10 +215,9 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
  * @param ext 扩展
  */
 const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T): void => {
-	avail[name] ??= [langExtension] satisfies Addon<Extension>;
-	const addon = avail[name] as Addon<T>;
-	addon[1] ??= {};
-	addon[1][lang] = ext;
+	const addon = getOrInsert<T>(name, [langExtension] as Addon<T>);
+	addon[1] ??= new Map();
+	addon[1].set(lang, ext);
 };
 
 /**
@@ -239,7 +247,7 @@ export const registerMediaWiki = (articlePath?: string, templatedata?: boolean):
  * @param ext 扩展
  */
 const registerExtensionForMediaWiki = (name: string, ext: Extension | ((cm: CodeMirror6) => Extension)): void => {
-	avail[name] ??= mediawikiOnly(ext as Extension);
+	getOrInsert<Extension>(name, mediawikiOnly(ext as Extension));
 };
 
 /**
@@ -327,7 +335,7 @@ export const registerCloseTagsForMediaWiki = (): void => {
  * @param lintSource
  */
 const registerLintSource = (lang: string, lintSource: LintSourceGetter): void => {
-	linterRegistry[lang] = lintSource;
+	linterRegistry.set(lang, lintSource);
 	optionalFunctions.statusBar = statusBar;
 };
 
@@ -339,11 +347,11 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
  */
 export const registerMediaWikiCore = (articlePath?: string, templatedata?: boolean): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
-	languages['mediawiki'] = (config: MwConfig): Extension => [
+	languages.set('mediawiki', (config: MwConfig): Extension => [
 		mediawikiBase(config, templatedata),
 		plain(),
 		keymap.of(formatKeymap),
-	];
+	]);
 	registerLintSource('mediawiki', getWikiLintSource(articlePath));
 	destroyListeners.push(view => {
 		if (typeof wikiparse === 'object' && wikiparse.LanguageService) {
@@ -387,7 +395,7 @@ export const registerColorPickerForHTML = (): void => {
 
 /** Register mixed MediaWiki-HTML core language support */
 export const registerHTMLCore = (): void => {
-	languages['html'] = html;
+	languages.set('html', html);
 	registerLintSource('html', getHTMLLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -406,7 +414,7 @@ export const registerBracketMatchingForJavaScript = (): void => {
 
 /** Register JavaScript core language support */
 export const registerJavaScriptCore = (): void => {
-	languages['javascript'] = javascript;
+	languages.set('javascript', javascript);
 	registerLintSource('javascript', getJsLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -425,7 +433,7 @@ export const registerColorPickerForCSS = (): void => {
 
 /** Register CSS core language support */
 export const registerCSSCore = (): void => {
-	languages['css'] = css;
+	languages.set('css', css);
 	registerLintSource('css', getCssLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -438,7 +446,7 @@ export const registerJSON = (): void => {
 
 /** Register JSON core language support */
 export const registerJSONCore = (): void => {
-	languages['json'] = json;
+	languages.set('json', json);
 	registerLintSource('json', getJsonLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -451,7 +459,7 @@ export const registerLua = (): void => {
 
 /** Register Lua core language support */
 export const registerLuaCore = (): void => {
-	languages['lua'] = lua;
+	languages.set('lua', lua);
 	registerLintSource('lua', getLuaLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -488,7 +496,7 @@ export const registerColorPickerForVue = (): void => {
 
 /** Register Vue core language support */
 export const registerVueCore = (): void => {
-	languages['vue'] = vue;
+	languages.set('vue', vue);
 	registerLintSource('vue', getVueLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -501,7 +509,7 @@ export const registerAbuseFilter = (): void => {
 
 /** Register AbuseFilter core language support */
 export const registerAbuseFilterCore = (): void => {
-	languages['abusefilter'] = abusefilter;
+	languages.set('abusefilter', abusefilter);
 	registerLintSource('abusefilter', (): LintSource => state => analyzer({state} as EditorView));
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -532,14 +540,14 @@ export const registerLanguageCore = (
 	lang: (config?: unknown) => LanguageSupport,
 	lintSource?: LintSourceGetter,
 ): void => {
-	languages[name] = lang;
+	languages.set(name, lang);
 	if (lintSource) {
 		registerLintSource(name, lintSource);
 	}
 };
 
 export const registerTheme = (name: string, theme: Extension): void => {
-	themes[name] = theme;
+	themes.set(name, theme);
 };
 
 export {nordDark as nord} from './theme.js';

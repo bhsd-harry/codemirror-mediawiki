@@ -121,9 +121,12 @@ export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'par
 			if (!templateName || !parameterName) {
 				return undefined;
 			}
-			const data = templateData.get(cmNormalizeTitle(templateName)),
-				parameter = parameterName.slice(0, -1).trim(),
-				label = data?.params[parameter]?.label;
+			const data = templateData.get(cmNormalizeTitle(templateName));
+			if (!data) {
+				return undefined;
+			}
+			const parameter = parameterName.slice(0, -1).trim(),
+				label = Object.hasOwn(data.params, parameter) && data.params[parameter]!.label;
 			return label ? `{{${templateName.trim()}|${parameter}=${label}}}` : undefined;
 		},
 	};

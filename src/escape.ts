@@ -23,7 +23,14 @@ import type {
 import type {ConfigGetter} from '@bhsd/browser';
 import type {CodeMirror6} from './codemirror';
 
-const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'};
+const entity = new Map([
+	['"', 'quot'],
+	["'", 'apos'],
+	['<', 'lt'],
+	['>', 'gt'],
+	['&', 'amp'],
+	[' ', 'nbsp'],
+]);
 
 /**
  * 根据函数转换选中文本
@@ -44,8 +51,8 @@ const convert = (func: (str: string) => string, cmd: Command): Command => (view)
  * @test
  */
 export const escapeHTML = (str: string): string => [...str].map(c => {
-		if (c in entity) {
-			return `&${entity[c as keyof typeof entity]};`;
+		if (entity.has(c)) {
+			return `&${entity.get(c)};`;
 		}
 		const code = c.codePointAt(0)!;
 		return code < 256 ? `&#${code};` : `&#x${code.toString(16)};`;

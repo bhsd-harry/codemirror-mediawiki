@@ -4,7 +4,7 @@ import {Direction} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {javascript} from '@codemirror/lang-javascript';
 import {green, yellow, red, refreshStdout} from '@bhsd/nodejs';
-import testUtil from '@bhsd/test-util';
+import {execute} from '@bhsd/test-util';
 import {computeIsolates} from '../../dist/bidi.js';
 import {detectIndent} from '../../dist/indent.js';
 import {markGlobalsAndDocTag} from '../../dist/javascript.js';
@@ -37,7 +37,7 @@ const singleScript = (langSupport: Extension, model: string, mark: typeof markDo
 	};
 
 const coding = (langSupport: Extension, ns: string, model: string, mark: typeof markDocTag): Promise<void> =>
-	testUtil.execute(singleScript(langSupport, model, mark), undefined, undefined, ns, model);
+	execute(singleScript(langSupport, model, mark), undefined, undefined, ns, model);
 
 const tryScripts = (
 	callback: (content: string, title: string) => void,
@@ -65,7 +65,7 @@ const tryScripts = (
 (async () => {
 	if (!lang || lang === 'mediawiki') {
 		log('MediaWiki');
-		await testUtil.execute(content => {
+		await execute(content => {
 			let node = parse(content);
 			while (node) {
 				checkNode(node);

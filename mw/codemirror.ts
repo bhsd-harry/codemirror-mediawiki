@@ -69,26 +69,26 @@ registerVue();
 registerTheme('dark', nord);
 registerTheme('nord', nord);
 
-const cmLinters: Record<string, LintSources | undefined> = {},
+const cmLinters = new Map<string, LintSources | undefined>(),
 	cmLangs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
-	langMap: Record<string, string> = {
-		'sanitized-css': 'css',
-		js: 'javascript',
-		scribunto: 'lua',
-		wikitext: 'mediawiki',
-		'proofread-page': 'mediawiki',
-	},
-	monacoLangs: Record<string, string> = {
-		mediawiki: 'wikitext',
-		template: 'wikitext',
-		gadget: 'javascript',
-		plain: 'plaintext',
-	},
-	monacoThemes: Record<string, string> = {
-		light: 'light-plus',
-		dark: 'monokai',
-		nord: 'nord',
-	},
+	langMap = new Map([
+		['sanitized-css', 'css'],
+		['js', 'javascript'],
+		['scribunto', 'lua'],
+		['wikitext', 'mediawiki'],
+		['proofread-page', 'mediawiki'],
+	]),
+	monacoLangs = new Map([
+		['mediawiki', 'wikitext'],
+		['template', 'wikitext'],
+		['gadget', 'javascript'],
+		['plain', 'plaintext'],
+	]),
+	monacoThemes = new Map([
+		['light', 'light-plus'],
+		['dark', 'monokai'],
+		['nord', 'nord'],
+	]),
 	cmAvail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
 		['autocompletion', 'quickSuggestions', false, true],
@@ -139,12 +139,12 @@ const getObserver = (cm: CodeMirror): MutationObserver => new MutationObserver((
  * @param more 基于 API 的 LintSource
  */
 const getLintSources = (
-	lang: string,
+	lang: 'mediawiki' | 'lua' | 'css' | 'javascript',
 	linter: LintSource | undefined,
 	more: [LintSource, ...LintSource[]],
 ): LintSources => {
 	const lintersources: LintSources = linter ? [linter, ...more] : more;
-	cmLinters[lang] = lintersources;
+	cmLinters.set(lang, lintersources);
 	return lintersources;
 };
 
@@ -315,7 +315,7 @@ export class CodeMirror extends CodeMirror6 {
 			);
 		}
 		const {textarea, lang} = this,
-			language = monacoLangs[lang] ?? lang,
+			language = monacoLangs.get(lang) ?? lang,
 			isWiki = language === 'wikitext',
 			wrapping = isWiki || language === 'html' || language === 'plaintext',
 			tab = this.#indentStr.includes('\t'),
@@ -478,7 +478,7 @@ export class CodeMirror extends CodeMirror6 {
 					// no default
 				}
 			}
-			cmLinters[lang] = linter;
+			cmLinters.set(lang, linter);
 			return linter;
 		} else if (this.#model?.linter) {
 			this.#model.linter.option = opt;
@@ -520,7 +520,7 @@ export class CodeMirror extends CodeMirror6 {
 			return;
 		}
 		const {lang, ns, dialect, page} = this,
-			loaded = lang in cmLinters;
+			loaded = cmLinters.has(lang);
 		if (!loaded) {
 			let defaultOpt: Option;
 			if (typeof ns === 'number') {
@@ -588,7 +588,7 @@ export class CodeMirror extends CodeMirror6 {
 			await this.getLinter(opt);
 		}
 		if (this.view) {
-			this.lint(cmLinters[lang]);
+			this.lint(cmLinters.get(lang));
 		} else if (this.#model?.lint) {
 			/** @todo 动态更新 `this.#model.linter.lint` */
 			void this.#model.lint(true);
@@ -662,7 +662,7 @@ export class CodeMirror extends CodeMirror6 {
 			this.#removeThemeListener();
 		}
 		if (this.#editor) {
-			this.#editor.updateOptions({theme: monacoThemes[theme] ?? theme});
+			this.#editor.updateOptions({theme: monacoThemes.get(theme) ?? theme});
 			return;
 		}
 		super.setTheme(
@@ -724,11 +724,11 @@ export class CodeMirror extends CodeMirror6 {
 			}
 		}
 		let dialect: Dialect;
-		if (lang && lang in langMap) {
+		if (lang && langMap.has(lang)) {
 			if (lang === 'sanitized-css') {
 				dialect = lang;
 			}
-			lang = langMap[lang];
+			lang = langMap.get(lang);
 		}
 		const $textarea = $(textarea),
 			allPrefs = [...prefs, ...extensions],

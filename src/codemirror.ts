@@ -49,7 +49,7 @@ import type {MwConfig} from './token';
 import type {Selection} from './matchBrackets';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
-export type Addon<T> = [AddonMain<T>, Record<string, T>?];
+export type Addon<T> = [AddonMain<T>, Map<string, T>?];
 export type Dialect = 'sanitized-css' | undefined;
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
@@ -81,17 +81,17 @@ export const plain = (): Extension => [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const languages: Record<string, (config?: any, cm?: CodeMirror6) => Extension> = {plain};
+export const languages = new Map<string, (config?: any, cm?: CodeMirror6) => Extension>([['plain', plain]]);
 
-export const avail: Record<string, Addon<any>> = {}; // eslint-disable-line @typescript-eslint/no-explicit-any
+export const avail = new Map<string, Addon<any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
-export const linterRegistry: Record<string, LintSourceGetter> = {};
+export const linterRegistry = new Map<string, LintSourceGetter>();
 
 export const menuRegistry: MenuItem[] = [];
 
 export const destroyListeners: ((view: EditorView) => void)[] = [];
 
-export const themes: Record<string, Extension> = {light};
+export const themes = new Map([['light', light]]);
 
 export const optionalFunctions: OptionalFunctions = {
 	statusBar() {
@@ -107,7 +107,7 @@ export const optionalFunctions: OptionalFunctions = {
 
 const editExtensions = new Set(['closeBrackets', 'closeTags', 'autocompletion', 'signatureHelp', 'escape']);
 
-const linters: Record<string, (cm: CodeMirror6) => Extension> = {};
+const linters = new Map<string, (cm: CodeMirror6) => Extension>();
 const phrases: Record<string, string> = {};
 
 /**
@@ -215,7 +215,7 @@ export class CodeMirror6 {
 		if (isMW || this.#lang === 'html') {
 			config ??= this.langConfig;
 		}
-		const lang: Extension & {nestedMWLanguage?: Language} = (languages[this.#lang] ?? plain)(config, this);
+		const lang: Extension & {nestedMWLanguage?: Language} = (languages.get(this.#lang) ?? plain)(config, this);
 		this.#nestedMWLanguage = lang.nestedMWLanguage;
 		if (isMW) {
 			this.langConfig = config as MwConfig;
@@ -233,7 +233,7 @@ export class CodeMirror6 {
 			{value, dir: d, accessKey, tabIndex, lang: l, readOnly} = textarea,
 			extensions = [
 				this.#language.of(this.#getLanguage(config)),
-				this.#linter.of(linters[lang]?.(this) ?? []),
+				this.#linter.of(linters.get(lang)?.(this) ?? []),
 				this.#extensions.of([]),
 				this.#dir.of(EditorView.editorAttributes.of({dir: d})),
 				this.#extraKeys.of([]),
@@ -391,12 +391,13 @@ export class CodeMirror6 {
 	async setLanguage(lang = 'plain', config?: unknown): Promise<void> {
 		this.#lang = lang;
 		if (this.#view) {
-			const ext = this.#getLanguage(config);
+			const ext = this.#getLanguage(config),
+				hasLinter = linters.has(lang);
 			this.#effects([
 				this.#language.reconfigure(ext),
-				this.#linter.reconfigure(linters[lang]?.(this) ?? []),
+				this.#linter.reconfigure(hasLinter ? linters.get(lang)!(this) : []),
 			]);
-			this.#minHeight(lang in linters);
+			this.#minHeight(hasLinter);
 			this.prefer({});
 		}
 	}
@@ -441,10 +442,10 @@ export class CodeMirror6 {
 			: [];
 		if (lintSource) {
 			this.#lintSources = lintSources!;
-			linters[this.#lang] = linterExtension;
+			linters.set(this.#lang, linterExtension);
 		} else {
 			this.#lintSources.length = 0;
-			delete linters[this.#lang];
+			linters.delete(this.#lang);
 		}
 		if (this.#view) {
 			this.#effects(this.#linter.reconfigure(linterExtension(this)));
@@ -482,10 +483,10 @@ export class CodeMirror6 {
 	 */
 	prefer(names: string[] | Record<string, boolean>): void {
 		if (Array.isArray(names)) {
-			this.#preferred = new Set(names.filter(name => Object.hasOwn(avail, name)));
+			this.#preferred = new Set(names.filter(name => avail.has(name)));
 		} else {
 			for (const [name, enable] of Object.entries(names)) {
-				if (enable && Object.hasOwn(avail, name)) {
+				if (enable && avail.has(name)) {
 					this.#preferred.add(name);
 				} else {
 					this.#preferred.delete(name);
@@ -497,8 +498,8 @@ export class CodeMirror6 {
 			this.#effects(
 				this.#extensions.reconfigure(
 					[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name)).map(name => {
-						const [extension, configs = {}] = avail[name]!;
-						return extension(configs[this.#lang], this);
+						const [extension, configs] = avail.get(name)!;
+						return extension(configs?.get(this.#lang), this);
 					}),
 				),
 			);
@@ -534,7 +535,7 @@ export class CodeMirror6 {
 	 * @param opt linter options
 	 */
 	async getLinter(opt?: Option | LiveOption): Promise<LintSource | undefined> {
-		return linterRegistry[this.#lang]?.(opt, this.#view, this.#nestedMWLanguage);
+		return linterRegistry.get(this.#lang)?.(opt, this.#view, this.#nestedMWLanguage);
 	}
 
 	/**
@@ -657,8 +658,8 @@ export class CodeMirror6 {
 	 * @since 3.3.0
 	 */
 	setTheme(theme: string): void {
-		if (theme in themes) {
-			this.#view?.dispatch({effects: this.#theme.reconfigure(themes[theme]!)});
+		if (themes.has(theme)) {
+			this.#view?.dispatch({effects: this.#theme.reconfigure(themes.get(theme)!)});
 		}
 	}
 
