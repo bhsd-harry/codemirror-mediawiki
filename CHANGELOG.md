@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.12.4
+
+*2026-04-03*
+
+**Fixed**
+
+- The editor remains vertically resizable when [WikiEditor](https://www.mediawiki.org/wiki/Extension:WikiEditor) does not provide a bottom resizing bar on a MediaWiki site
+
 ## 3.12.3
 
 *2026-03-30*

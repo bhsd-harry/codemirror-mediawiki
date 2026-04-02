@@ -7,10 +7,11 @@
 	padding-right: .6em;
 }
 
-.wikiEditor-ui .cm-editor {
+.wikiEditor-ui-view-resizable .cm-editor {
+	overflow-y: visible;
 	resize: none;
 }
 
-.wikiEditor-ui .cm-editor div.cm-status-line {
+.wikiEditor-ui-view-resizable .cm-editor div.cm-status-line {
 	padding-right: .3em;
 }

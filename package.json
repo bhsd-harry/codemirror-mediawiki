@@ -78,7 +78,7 @@
 		"globals": "^17.4.0",
 		"luacheck-browserify": "^0.10.1",
 		"stylelint": "^17.6.0",
-		"wikiparser-node": "^1.37.1"
+		"wikiparser-node": "^1.38.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.1.1",

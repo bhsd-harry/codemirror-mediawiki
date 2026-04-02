@@ -33,6 +33,7 @@ input[type="color"] {
 .cm-foldGutter {
 	order: 2;
 }
+
 .cm-tooltip-fold {
 	cursor: pointer;
 	line-height: 1.2;
@@ -42,6 +43,7 @@ input[type="color"] {
 .cm-tooltip-fold:hover {
 	opacity: 1;
 }
+
 @media (prefers-color-scheme: dark) {
 	div.cm-tooltip-fold {
 		background-color: #4c566a;
@@ -54,6 +56,7 @@ input[type="color"] {
 	padding: .1em .4em;
 	border-radius: .4em;
 }
+
 @media (prefers-color-scheme: light) {
 	.cm-tooltip-hover-mw code {
 		background-color: #e0e6eb;
@@ -458,6 +461,7 @@ input[type="color"] {
 .cm-diagnosticText-clickable {
 	cursor: pointer;
 }
+
 @media (prefers-color-scheme: light) {
 	.cm-status-fix-menu {
 		background-color: #f5f5f5;
@@ -509,6 +513,15 @@ input[type="color"] {
 	.cm-globals, .cm-globals > * {
 		color: #256;
 	}
+	.cm-doctag > * {
+		color: #219;
+	}
+	.cm-doctag-type > * {
+		color: #085;
+	}
+	.cm-doctag-var > * {
+		color: #00f;
+	}
 	.cm-editor.cm-focused .cm-matchingTag {
 		background-color: rgb(50, 140, 130, .32);
 	}
@@ -520,7 +533,7 @@ input[type="color"] {
 	.cm-editor {
 		--cm-arg: #9f78a5;
 		--cm-attr: #97b757;
-		--comment: #4c566a;
+		--cm-comment: #4c566a;
 		--cm-convert: #b68;
 		--cm-entity: #00a1a1;
 		--cm-error: #bf616a;
@@ -540,6 +553,15 @@ input[type="color"] {
 	}
 	.cm-globals, .cm-globals > * {
 		color: #d08770;
+	}
+	.cm-doctag > * {
+		color: #81a1c1;
+	}
+	.cm-doctag-type > * {
+		color: #ebcb8b;
+	}
+	.cm-doctag-var > * {
+		color: #8fbcbb;
 	}
 	div.cm-activeLine {
 		background-color: rgb(76, 86, 106, .27);

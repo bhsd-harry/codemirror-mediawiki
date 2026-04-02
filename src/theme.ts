@@ -41,7 +41,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var-name': '#ac6600',
 			'--cm-ref': 'rgb(223,242,235,.5)',
 		},
-		'.cm-globals, .cm-globals>*': {
+		'.cm-globals,.cm-globals>*': {
 			color: '#164',
 		},
 		'.cm-doctag>*': {
@@ -90,7 +90,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				'--cm-var-name': '#d08770',
 				'--cm-ref': 'rgb(60,90,80,0.5)',
 			},
-			'.cm-globals, .cm-globals>*': {
+			'.cm-globals,.cm-globals>*': {
 				color: '#d08770',
 			},
 			'.cm-doctag>*': {
@@ -112,7 +112,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			[nonmatching]: {
 				backgroundColor: 'rgb(235,203,139,.32)',
 			},
-			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground, ${actionSelector}`]: {
+			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground,${actionSelector}`]: {
 				backgroundColor: bgDark,
 			},
 			[`div${panelsSelector}`]: {
