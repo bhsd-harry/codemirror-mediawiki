@@ -355,7 +355,7 @@ export const registerMediaWikiCore = (articlePath?: string, templatedata?: boole
 	registerLintSource('mediawiki', getWikiLintSource(articlePath));
 	destroyListeners.push(view => {
 		if (typeof wikiparse === 'object' && wikiparse.LanguageService) {
-			getLSP(view)?.destroy();
+			void getLSP(view)?.destroy();
 		}
 	});
 };

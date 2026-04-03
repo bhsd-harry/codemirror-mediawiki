@@ -1,17 +1,17 @@
 .cm-editor {
 	overflow-y: hidden;
 	resize: vertical;
-}
 
-.cm-editor div.cm-status-line {
-	padding-right: .6em;
+	div.cm-status-line {
+		padding-right: .6em;
+	}
 }
 
 .wikiEditor-ui-view-resizable .cm-editor {
 	overflow-y: visible;
 	resize: none;
-}
 
-.wikiEditor-ui-view-resizable .cm-editor div.cm-status-line {
-	padding-right: .3em;
+	div.cm-status-line {
+		padding-right: .3em;
+	}
 }

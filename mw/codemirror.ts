@@ -54,6 +54,7 @@ declare interface IWikitextModel extends editor.ITextModel {
 	/* eslint-enable @typescript-eslint/method-signature-style */
 }
 
+/** Extension:CodeMirror */
 declare interface ExtCodeMirror {
 	textarea: HTMLTextAreaElement;
 	destroy(): void;
@@ -403,6 +404,7 @@ export class CodeMirror extends CodeMirror6 {
 			.remove();
 		mw.hook('ext.CodeMirror.ready').remove(this.#handler);
 		this.#removeThemeListener();
+		instances.delete(this.textarea);
 		super.destroy();
 	}
 
