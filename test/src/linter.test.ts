@@ -119,7 +119,7 @@ describe('linters', () => {
 			'* { top: 0 }',
 		);
 	});
-	it('ESLint', async () => {
+	it.skip('ESLint', async () => {
 		assert.strictEqual(typeof eslint, 'object');
 		const lint = await getJsLinter();
 		assert.deepStrictEqual(

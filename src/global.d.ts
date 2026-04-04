@@ -23,7 +23,7 @@ import type {MwConfig} from './token';
 
 declare global {
 	module '@eslint/js/*' {
-		const recommended: Linter.BaseConfig;
+		const recommended: Linter.LegacyConfig;
 		export default recommended;
 	}
 	module '/codemirror-mediawiki/*' {

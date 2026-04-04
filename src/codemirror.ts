@@ -485,8 +485,8 @@ export class CodeMirror6 {
 		if (Array.isArray(names)) {
 			this.#preferred = new Set(names.filter(name => avail.has(name)));
 		} else {
-			for (const [name, enable] of Object.entries(names)) {
-				if (enable && avail.has(name)) {
+			for (const name in names) {
+				if (names[name] && avail.has(name)) {
 					this.#preferred.add(name);
 				} else {
 					this.#preferred.delete(name);

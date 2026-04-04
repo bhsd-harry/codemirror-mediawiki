@@ -531,7 +531,7 @@ export class CodeMirror extends CodeMirror6 {
 				} else if (lang === 'javascript') {
 					defaultOpt = (
 						isRLModule(page, ns) ? {parserOptions: {ecmaVersion: 8}} : {}
-					) satisfies Linter.BaseConfig;
+					) satisfies Linter.LegacyConfig;
 				}
 			}
 			let opt: LiveOption | undefined;

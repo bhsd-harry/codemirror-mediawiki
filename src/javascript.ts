@@ -48,22 +48,22 @@ export const markGlobalsAndDocTag = (
 	const decorations: Range<Decoration>[] = [];
 	let allGlobals = builtinGlobals;
 	if (cm?.lintSources.length && typeof eslint === 'object' && 'environments' in eslint) {
-		const {env, globals} = (cm.lintSources[0] as LintSource<Linter.BaseConfig> | undefined)?.config ?? {};
+		const {env, globals} = (cm.lintSources[0] as LintSource<Linter.LegacyConfig> | undefined)?.config ?? {};
 		if (env || globals) {
 			allGlobals = new Set(builtinGlobals);
 			if (env) {
-				for (const key of Object.keys(env)) {
+				for (const key in env) {
 					const obj = (eslint.environments as Map<string, {globals: Record<string, false>}>).get(key)
 						?.globals;
 					if (obj) {
-						for (const k of Object.keys(obj)) {
+						for (const k in obj) {
 							allGlobals.add(k);
 						}
 					}
 				}
 			}
 			if (globals) {
-				for (const k of Object.keys(globals)) {
+				for (const k in globals) {
 					allGlobals.add(k);
 				}
 			}

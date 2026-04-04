@@ -289,7 +289,7 @@ const stylelintConfigVue = /* #__PURE__ */ ((): Exclude<Config['rules'], undefin
 }))();
 
 /** @implements */
-const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.BaseConfig['globals']): LintSourceGetter =>
+const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.LegacyConfig['globals']): LintSourceGetter =>
 	async (opt): Promise<LintSource> => {
 		const {CDN} = baseData,
 			styleLint = await getCssLinter(CDN && `${CDN}/${stylelintRepo}`),
@@ -297,7 +297,7 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.BaseCo
 		const lintSource: LintSource = async state => {
 			const {doc} = state,
 				option = await getOpt(opt, true) ?? {};
-			let js = option['js'] as Linter.BaseConfig | null | undefined,
+			let js = option['js'] as Linter.LegacyConfig | null | undefined,
 				css = option['css'] as Config | Config['rules'];
 			if (rules) {
 				css = isStylelintConfig(css)

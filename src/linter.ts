@@ -48,7 +48,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 }
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
-export const eslintRepo = 'npm/@bhsd/eslint-browserify',
+export const eslintRepo = 'npm/@bhsd/eslint-browserify@9',
 	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
@@ -137,8 +137,11 @@ export const getWikiLinter: getAsyncLinter<
 		}\n}`);
 		const cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
 			isConfig = isStylelintConfig(cssConfig),
-			rules: Config['rules'] = {};
-		for (const [key, value] of Object.entries((isConfig ? cssConfig.rules : cssConfig) ?? {})) {
+			rules: Config['rules'] = {},
+			ruleConfig = isConfig ? cssConfig.rules : cssConfig;
+		for (const key in ruleConfig) {
+			const value = ruleConfig[key];
+			// 只能禁用规则
 			if (!value) {
 				rules[key] = value;
 			}
@@ -189,7 +192,7 @@ export const getWikiLinter: getAsyncLinter<
 };
 
 // eslint-disable-next-line unicorn/no-unreadable-iife
-const jsEnv = /* #__PURE__ */ ((): Linter.BaseConfig['env'] => ({browser: true, es2024: true}))();
+const jsEnv = /* #__PURE__ */ ((): Linter.LegacyConfig['env'] => ({browser: true, es2024: true}))();
 export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line unicorn/no-unreadable-iife
 	env: {...jsEnv, jquery: true},
 	globals: {
@@ -202,7 +205,7 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
 		importStylesheet: 'readonly',
 		importStylesheetURI: 'readonly',
 	},
-} satisfies Linter.BaseConfig))();
+} satisfies Linter.LegacyConfig))();
 
 /**
  * 获取 ESLint
@@ -213,15 +216,15 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 	await loadScript(cdn, 'eslint');
 	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
 	const esLinter = new eslint.Linter(),
-		conf: Linter.BaseConfig = {
+		conf: Linter.LegacyConfig = {
 			env: jsEnv,
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 		};
-	const linter: asyncLinter<Linter.LintMessage[], Linter.BaseConfig> = (
+	const linter: asyncLinter<Linter.LintMessage[], Linter.Config> = (
 		text,
-		opt: Linter.BaseConfig | null | undefined,
+		opt: Linter.LegacyConfig | null | undefined,
 	) => {
-		const config: Linter.BaseConfig = {...conf, ...opt};
+		const config: Linter.LegacyConfig = {...conf, ...opt};
 		if (
 			!('rules' in config)
 			|| config.extends === 'eslint:recommended'
@@ -230,8 +233,8 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 			config.rules = {...recommended.rules!, ...config.rules};
 		}
 		delete config.extends;
-		linter.config = config;
-		return esLinter.verify(text, config)
+		linter.config = config as unknown as Linter.Config;
+		return esLinter.verify(text, config as unknown as Linter.Config)
 			.filter(({ruleId, message}) => message !== `Definition for rule '${ruleId}' was not found.`);
 	};
 	linter.fixer = (code, rule): string => esLinter.verifyAndFix(

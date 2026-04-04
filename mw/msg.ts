@@ -37,11 +37,11 @@ export const cmSetI18N = async (cdn: string): Promise<void> => {
 			console.error(e);
 		}
 	}
-	for (const [k, v] of Object.entries(i18n)) {
+	for (const k in i18n) {
 		if (!k.endsWith('-mac')) {
-			mw.messages.set(`cm-mw-${k}`, v);
+			mw.messages.set(`cm-mw-${k}`, i18n[k]!);
 		} else if (isMac) {
-			mw.messages.set(`cm-mw-${k.slice(0, -4)}`, v);
+			mw.messages.set(`cm-mw-${k.slice(0, -4)}`, i18n[k]!);
 		}
 	}
 };

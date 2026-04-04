@@ -1,15 +1,9 @@
 import stylelint from 'stylelint';
-import eslint from 'eslint';
+import {Linter} from 'eslint';
 import Parser from 'wikiparser-node';
 import 'luacheck-browserify';
 import type {Diagnostic, CodeAction} from 'vscode-languageserver-types';
 import type {AST} from 'wikiparser-node';
-
-class Linter extends eslint.Linter {
-	constructor() {
-		super({configType: 'eslintrc'});
-	}
-}
 
 class LanguageService {
 	declare lsp: Parser.LanguageService;

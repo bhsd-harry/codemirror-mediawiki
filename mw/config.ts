@@ -148,7 +148,8 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		articlePath: mw.config.get('wgArticlePath'),
 	};
 	const noCM = mw.loader.getState('ext.CodeMirror') === null;
-	for (const [key, val] of Object.entries(insensitive)) {
+	for (const key in insensitive) {
+		const val = insensitive[key]!;
 		if (others.has(val) && val !== 'msgnw') {
 			delete config.parserFunction[0][key];
 			config.parserFunction[val === 'msg' || val === 'raw' ? 2 : 3].push(key);
@@ -156,8 +157,8 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 			config.parserFunction[0][`#${key}`] = val;
 		}
 	}
-	for (const [key, val] of Object.entries(img!)) {
-		config.img[key] = val.slice(4).replace(/_/gu, '-');
+	for (const key in img) {
+		config.img[key] = img[key]!.slice(4).replace(/_/gu, '-');
 	}
 	return config;
 };
