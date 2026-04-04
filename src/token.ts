@@ -161,7 +161,7 @@ const startState = (tokenize: Tokenizer, tags: string[], urlProtocols: RegExp, s
  */
 const copyState = (state: State): State => {
 	const result = {...state};
-	for (const key in result) { // eslint-disable-line guard-for-in
+	for (const key in result) {
 		const val = result[key as keyof State];
 		if (Array.isArray(val)) {
 			// @ts-expect-error initial value
@@ -688,7 +688,7 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
-		for (const i of Object.keys(this.autocompleteNamespaces)) {
+		for (const i in this.autocompleteNamespaces) {
 			if (Number.isInteger(Number(i))) {
 				this.addToken(`function-${i}`, true);
 			}

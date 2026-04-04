@@ -29,7 +29,7 @@
 		"prepublishOnly": "npm run build",
 		"build:core": "tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --minify --sourcemap --outdir=.",
-		"build": "rm -rf dist/ && npm run build:core",
+		"build": "rm -rf dist/ && npm run build:core && gsed -i '/^\\/\\/ /d' dist/*.js",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
 		"lint:css": "stylelint **/*.css",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
@@ -51,11 +51,12 @@
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.40.0",
 		"marked": "^17.0.4",
-		"wikiparser-node": "^1.38.0"
+		"wikiparser-node": "^1.38.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.1.1",
+		"@bhsd/code-standard": "^2.2.0",
 		"@codemirror/search": "^6.6.0",
+		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
 		"@types/node": "^24.11.0",
@@ -63,11 +64,10 @@
 		"@typescript-eslint/parser": "^8.58.0",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.27.7",
-		"eslint": "^9.39.4",
+		"eslint": "^10.2.0",
 		"eslint-plugin-es-x": "^9.6.0",
-		"eslint-plugin-eslint-comments": "^3.2.0",
 		"eslint-plugin-jsdoc": "^62.7.1",
-		"eslint-plugin-jsonc": "^3.1.1",
+		"eslint-plugin-jsonc": "^3.1.2",
 		"eslint-plugin-promise": "^7.2.1",
 		"eslint-plugin-regexp": "^3.1.0",
 		"eslint-plugin-unicorn": "^64.0.0",
@@ -77,5 +77,8 @@
 		"stylelint-config-recommended": "^18.0.0",
 		"stylelint-plugin-use-baseline": "^1.4.1",
 		"typescript": "^6.0.2"
+	},
+	"overrides": {
+		"eslint": "^10.2.0"
 	}
 }
