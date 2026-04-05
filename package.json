@@ -57,6 +57,7 @@
 		"@bhsd/cm-util": "^1.0.0",
 		"@bhsd/codemirror-css-color-picker": "^6.3.2",
 		"@bhsd/common": "^2.0.0",
+		"@bhsd/eslint-browserify": "^10.2.0",
 		"@bhsd/lezer-abusefilter": "^0.2.1",
 		"@bhsd/stylelint-util": "^1.0.1",
 		"@codemirror/autocomplete": "^6.20.1",
@@ -78,10 +79,10 @@
 		"globals": "^17.4.0",
 		"luacheck-browserify": "^0.10.1",
 		"stylelint": "^17.6.0",
-		"wikiparser-node": "^1.38.0"
+		"wikiparser-node": "^1.38.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.1.1",
+		"@bhsd/code-standard": "^2.2.0",
 		"@bhsd/nodejs": "^1.0.0",
 		"@bhsd/test-util": "^1.0.0",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
@@ -108,5 +109,8 @@
 		"stylelint-plugin-use-baseline": "^1.4.1",
 		"types-mediawiki": "^2.0.0",
 		"typescript": "^6.0.2"
+	},
+	"overrides": {
+		"eslint": "^10.2.0"
 	}
 }

@@ -48,7 +48,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 }
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
-export const eslintRepo = 'npm/@bhsd/eslint-browserify@9',
+export const eslintRepo = 'npm/@bhsd/eslint-browserify',
 	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
@@ -214,13 +214,13 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line
  */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
 	await loadScript(cdn, 'eslint');
-	/** @see https://www.npmjs.com/package/@codemirror/lang-javascript */
-	const esLinter = new eslint.Linter(),
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+	const esLinter = new (eslint.LegacyLinter ?? eslint.Linter)(),
 		conf: Linter.LegacyConfig = {
 			env: jsEnv,
 			parserOptions: {ecmaVersion: 15, sourceType: 'module'},
 		};
-	const linter: asyncLinter<Linter.LintMessage[], Linter.Config> = (
+	const linter: asyncLinter<Linter.LintMessage[], Linter.LegacyConfig> = (
 		text,
 		opt: Linter.LegacyConfig | null | undefined,
 	) => {
@@ -233,8 +233,8 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 			config.rules = {...recommended.rules!, ...config.rules};
 		}
 		delete config.extends;
-		linter.config = config as unknown as Linter.Config;
-		return esLinter.verify(text, config as unknown as Linter.Config)
+		linter.config = config;
+		return esLinter.verify(text, config)
 			.filter(({ruleId, message}) => message !== `Definition for rule '${ruleId}' was not found.`);
 	};
 	linter.fixer = (code, rule): string => esLinter.verifyAndFix(

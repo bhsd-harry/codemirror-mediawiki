@@ -119,8 +119,9 @@ describe('linters', () => {
 			'* { top: 0 }',
 		);
 	});
-	it.skip('ESLint', async () => {
+	it('ESLint', async () => {
 		assert.strictEqual(typeof eslint, 'object');
+		assert.strictEqual(typeof eslint.LegacyLinter, 'function');
 		const lint = await getJsLinter();
 		assert.deepStrictEqual(
 			lint('console.log( !!!0 );'),
@@ -134,7 +135,6 @@ describe('linters', () => {
 					messageId: 'unexpectedNegation',
 					message: 'Redundant double negation.',
 					severity: 2,
-					nodeType: 'UnaryExpression',
 					fix: {
 						range: [14, 17],
 						text: '0',

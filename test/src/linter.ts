@@ -1,5 +1,5 @@
 import stylelint from 'stylelint';
-import {Linter} from 'eslint';
+import '@bhsd/eslint-browserify';
 import Parser from 'wikiparser-node';
 import 'luacheck-browserify';
 import type {Diagnostic, CodeAction} from 'vscode-languageserver-types';
@@ -33,6 +33,5 @@ class LanguageService {
 
 Object.assign(globalThis, {
 	stylelint,
-	eslint: {Linter},
 	wikiparse: {LanguageService},
 });

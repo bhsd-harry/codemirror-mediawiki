@@ -17,6 +17,7 @@ import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
+import type {eslint as eslintGlobal} from '@bhsd/eslint-browserify';
 import type {Dialect} from '@bhsd/lezer-abusefilter';
 import type {LintSource} from './lintsource';
 import type {MwConfig} from './token';
@@ -48,9 +49,7 @@ declare global {
 		export default dialect;
 	}
 
-	const eslint: {
-		Linter: typeof Linter;
-	};
+	const eslint: typeof eslintGlobal;
 	const stylelint: PublicApi;
 	const Parser: Parser;
 }

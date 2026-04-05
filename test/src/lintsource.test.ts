@@ -152,7 +152,7 @@ describe('lint sources', () => {
 		await viewTest('</br>', lintsource, 1, 2);
 		await viewTest('<br style="top: 0; top: 0">', lintsource, 11, 18);
 	});
-	it.skip('ESLint', async () => {
+	it('ESLint', async () => {
 		const state = createState(String.raw`console.log( !!!/[\[]/u );`, []);
 		const lintsource = await getJsLintSource();
 		assert.partialDeepStrictEqual(
@@ -206,7 +206,7 @@ describe('lint sources', () => {
 			[],
 		);
 	});
-	it.skip('Vue', async () => {
+	it('Vue', async () => {
 		const state = createState(
 			`<script>console.log( !!!0 );</script>
 <style>* { top: 0; top: 0 }</style>
@@ -228,7 +228,7 @@ describe('lint sources', () => {
 		await viewTest('<style>* { top: 0; top: 0 }</style>', lintsource, 17, 25, '', vue());
 		await viewTest('<p style="top: 0; top: 0">', lintsource, 10, 17, '', vue());
 	});
-	it.skip('mixed MediaWiki-HTML', async () => {
+	it('mixed MediaWiki-HTML', async () => {
 		const lang = html(mwConfig) as LanguageSupport & {nestedMWLanguage: Language};
 		const state = createState(
 			`<script>console.log( !!!0 );</script>
