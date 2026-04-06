@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.12.3",
+	"version": "3.12.4",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -39,7 +39,7 @@
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --outdir=. --external:/codemirror-mediawiki/dist/main.min.js --external:/codemirror-mediawiki/dist/demo.min.js --external:/wikiparser-node/extensions/dist/test-page-common.js --external:/lezer-abusefilter/dist/dialect.test.js",
 		"build:demo": "esbuild ./bundle/*.ts --charset=utf8 --bundle --format=esm --outdir=build --drop-labels=GH && esbuild ./bundle/mediawiki.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
 		"build:test": "rm -rf test/dist/; tsc --project test/tsconfig.json && npm test",
-		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && eslint --no-config-lookup -c eslint.dist.mjs dist/*.min.js",
+		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && gsed -i '/^\\/\\/ /d' dist/*.js && eslint --no-config-lookup -c eslint.dist.mjs dist/*.min.js",
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && tsc --project bundle/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint **/*.css",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
@@ -73,7 +73,6 @@
 		"@codemirror/search": "^6.6.0",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.40.0",
-		"@eslint/js": "^10.0.1",
 		"cm6-theme-nord": "^0.2.0",
 		"eslint": "^10.2.0",
 		"globals": "^17.4.0",

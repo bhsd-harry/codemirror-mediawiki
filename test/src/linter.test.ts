@@ -124,7 +124,7 @@ describe('linters', () => {
 		assert.strictEqual(typeof eslint.LegacyLinter, 'function');
 		const lint = await getJsLinter();
 		assert.deepStrictEqual(
-			lint('console.log( !!!0 );'),
+			lint('console.log( !!!0 ); // eslint-disable-line no-void'),
 			[
 				{
 					line: 1,

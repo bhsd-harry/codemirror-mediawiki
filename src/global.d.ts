@@ -15,7 +15,6 @@ import {
 import type {} from 'luacheck-browserify';
 import type {} from 'wikiparser-node/extensions/typings';
 import type * as Parser from 'wikiparser-node';
-import type {Linter} from 'eslint';
 import type {PublicApi} from 'stylelint';
 import type {eslint as eslintGlobal} from '@bhsd/eslint-browserify';
 import type {Dialect} from '@bhsd/lezer-abusefilter';
@@ -23,10 +22,6 @@ import type {LintSource} from './lintsource';
 import type {MwConfig} from './token';
 
 declare global {
-	module '@eslint/js/*' {
-		const recommended: Linter.LegacyConfig;
-		export default recommended;
-	}
 	module '/codemirror-mediawiki/*' {
 		export {
 			CodeMirror6,

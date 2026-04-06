@@ -1,5 +1,3 @@
-/** @todo revert df69718ab908966bff162fe51e8cfb4595e6b2ec */
-import recommended from '@eslint/js/src/configs/eslint-recommended.js';
 import {sanitizeInlineStyle} from '@bhsd/common';
 import {loadScript, getWikiparse, getLSP} from '@bhsd/browser';
 import {styleLint} from '@bhsd/stylelint-util';
@@ -48,7 +46,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
 }
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
-export const eslintRepo = 'npm/@bhsd/eslint-browserify',
+export const eslintRepo = 'npm/@bhsd/eslint-browserify@10',
 	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
@@ -225,14 +223,16 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 		opt: Linter.LegacyConfig | null | undefined,
 	) => {
 		const config: Linter.LegacyConfig = {...conf, ...opt};
-		if (
-			!('rules' in config)
-			|| config.extends === 'eslint:recommended'
-			|| Array.isArray(config.extends) && config.extends.includes('eslint:recommended')
-		) {
-			config.rules = {...recommended.rules!, ...config.rules};
+		if (!('rules' in config)) {
+			let {extends: ex = []} = config;
+			if (!Array.isArray(ex)) {
+				ex = [ex];
+			}
+			if (!ex.includes('eslint:recommended')) {
+				ex.push('eslint:recommended');
+			}
+			config.extends = ex;
 		}
-		delete config.extends;
 		linter.config = config;
 		return esLinter.verify(text, config)
 			.filter(({ruleId, message}) => message !== `Definition for rule '${ruleId}' was not found.`);
