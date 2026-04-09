@@ -12,7 +12,7 @@ else
 	do
 		gsed -i -E "s/\"version\": \".+\"/\"version\": \"$1\"/" "$x"
 	done
-	npm run lint && npm run build:test && npm run test:math && npm run test:real && npm run build
+	npm run lint && npm run build && npm run build:test && npm run test:math && npm run test:real
 	if [[ $? -eq 0 ]]
 	then
 		git add -A
