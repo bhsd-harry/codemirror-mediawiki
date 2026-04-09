@@ -8,6 +8,10 @@
 	.cm-editor {
 		border: 1.5px solid #dedede;
 		border-radius: .3em;
+
+		input {
+			height: auto;
+		}
 	}
 	.oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled {
 		display: none;

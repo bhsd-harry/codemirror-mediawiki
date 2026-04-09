@@ -18,7 +18,7 @@
 .cm-textfield,
 .cm-button,
 .cm-panel.cm-search label,
-.cm-panel.cm-gotoLine label {
+.cm-panel.cm-dialog label {
 	font-size: inherit;
 }
 .cm-panel [name="close"] {
