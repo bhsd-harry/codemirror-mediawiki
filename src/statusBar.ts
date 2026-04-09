@@ -68,7 +68,12 @@ const updateDiagnosticMessage = (
 		diagnostics.sort(cmp);
 		const diagnostic = diagnostics.find(({from, to}) => from <= main.head && to >= main.head) ?? diagnostics[0]!;
 		if (diagnostic.renderMessage) {
-			msg.replaceChildren(diagnostic.renderMessage(view));
+			const rendered = diagnostic.renderMessage(view);
+			if (rendered instanceof Element && rendered.classList.contains(diagnosticSelector.slice(1))) {
+				msg.replaceChildren(...rendered.childNodes);
+			} else {
+				msg.replaceChildren(rendered);
+			}
 		} else {
 			msg.textContent = diagnostic.message;
 		}
