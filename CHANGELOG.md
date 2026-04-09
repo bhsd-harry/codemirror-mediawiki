@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.4.4
+
+*2026-04-09*
+
+**Fixed**
+
+- Downgrade the [@codemirror/view](https://www.npmjs.com/package/@codemirror/view) package to [v6.38.8](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.8-(2025-11-17)) to fix issues with composing text with an IME
+
 ## 0.4.3
 
 *2026-03-30*

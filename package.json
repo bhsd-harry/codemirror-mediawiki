@@ -49,7 +49,7 @@
 		"@codemirror/language": "^6.12.3",
 		"@codemirror/lint": "^6.9.5",
 		"@codemirror/state": "^6.6.0",
-		"@codemirror/view": "^6.40.0",
+		"@codemirror/view": "^6.38.8",
 		"marked": "^17.0.4",
 		"wikiparser-node": "^1.38.1"
 	},
