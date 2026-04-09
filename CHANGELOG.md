@@ -1,12 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.12.5
 
-*2026-04-09*
+*2026-04-10*
 
 **Fixed**
 
 - Font size of the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel, which is a regression caused by [@codemirror/search 6.6.0](https://codemirror.net/docs/changelog/#%40codemirror%2Fsearch-6.6.0-(2026-01-13))
 - Downgrade the [@codemirror/view](https://www.npmjs.com/package/@codemirror/view) package to [v6.38.8](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.8-(2025-11-17)) to fix issues with composing text with an IME
+- Error message in the status bar should not be clickable
 
 ## 3.12.4
 
