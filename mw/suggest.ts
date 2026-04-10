@@ -10,10 +10,12 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
-	let promise: Promise<ApiSuggestions<string>> | undefined,
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, number, string?]> => {
+	let promise: Promise<ApiSuggestions<[string, number, string?]>> | undefined,
 		last: [string, boolean, number] | undefined;
-	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0): Promise<ApiSuggestions<string>> => {
+	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0): Promise<
+		ApiSuggestions<[string, number, string?]>
+	> => {
 		if (subpage) {
 			gpssearch = title + gpssearch;
 		}
@@ -41,16 +43,18 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
 						pages = query?.pages ?? [];
 					if (subpage) {
 						const {length} = title;
-						return pages.map(({title: t}) => [t.slice(length)]);
+						return pages.map(({title: t, ns}) => [t.slice(length), ns]);
 					}
 					const redirects = query?.redirects ?? [];
 					return pages.map(({title: t, ns}) => {
 						const target = redirects.find(({to}) => to === t)?.from;
 						if (gpsnamespace === 0 || !target) {
-							return [t, target!];
+							return [t, ns, target!];
 						}
-						const targetMain = new mw.Title(target).getMainText();
-						return ns === gpsnamespace ? [new mw.Title(t).getMainText(), targetMain] : [targetMain];
+						const targetTitle = new mw.Title(target);
+						return ns === gpsnamespace
+							? [new mw.Title(t).getMainText(), ns, targetTitle.getMainText()]
+							: [targetTitle.getMainText(), targetTitle.getNamespaceId()];
 					});
 				} catch {
 					return [];

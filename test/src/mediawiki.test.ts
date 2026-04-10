@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import {FullMediaWiki, apply, applyDisplayLabel, hasTag} from '../../dist/mediawiki.js';
 import {tokens} from '../../dist/config.js';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util.js';
-import type {Completion} from '@codemirror/autocomplete';
+import type {Completion, CompletionResult} from '@codemirror/autocomplete';
 import type {TagName} from '../../dist/config';
 
 const mediawiki = new FullMediaWiki(mwConfig);
@@ -25,6 +25,15 @@ const applyFunctionTest = (applyFunction: Exclude<Completion['apply'], string | 
 const applyTest = applyFunctionTest(apply),
 	applyDisplayLabelTest = applyFunctionTest(applyDisplayLabel);
 
+const completion: Omit<CompletionResult, 'from'> = {
+	options: [
+		{label: 'a (article)', type: 'text'},
+		{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
+		{label: 'a (user)', type: 'redirect'},
+	],
+	validFor: /^[^|{}<>[\]#]*$/u,
+};
+
 describe('autocompletion', () => {
 	it('parser function/template name', async () => {
 		await mockTest(
@@ -36,7 +45,7 @@ describe('autocompletion', () => {
 					{label: 'fullurle', type: 'function'},
 					{label: 'FULLPAGENAME', type: 'constant'},
 					{label: 'FULLPAGENAMEE', type: 'constant'},
-					{label: 'full', type: 'text'},
+					{label: 'full', type: 'type'},
 				],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
@@ -53,12 +62,7 @@ describe('autocompletion', () => {
 			'{{ :a',
 			{
 				from: 4,
-				options: [
-					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
-					{label: 'a (user)', type: 'redirect'},
-				],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				...completion,
 			},
 		);
 		await mockTest(
@@ -76,12 +80,7 @@ describe('autocompletion', () => {
 			'{{#ifexist: a',
 			{
 				from: 12,
-				options: [
-					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
-					{label: 'a (user)', type: 'redirect'},
-				],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				...completion,
 			},
 		);
 		await mockTest(
@@ -128,12 +127,7 @@ describe('autocompletion', () => {
 			'[[ a',
 			{
 				from: 3,
-				options: [
-					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
-					{label: 'a (user)', type: 'redirect'},
-				],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				...completion,
 			},
 		);
 		await mockTest('[[ >', null);

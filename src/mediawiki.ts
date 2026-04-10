@@ -183,15 +183,19 @@ export class FullMediaWiki extends MediaWiki {
 	/**
 	 * 提供链接建议
 	 * @param str 搜索字符串，开头不包含` `，但可能包含`_`
-	 * @param ns 命名空间
+	 * @param namespace 命名空间
+	 * @param type 命名空间符合预设值时的图标类型
 	 */
-	async #linkSuggest(str: string, ns: number): Promise<{offset: number, options: Completion[]} | undefined> {
+	async #linkSuggest(str: string, namespace: number, type?: string): Promise<
+		{offset: number, options: Completion[]} | undefined
+	> {
 		const {config: {linkSuggest, nsid}, nsRegex} = this;
 		if (typeof linkSuggest !== 'function' || /[|{}<>[\]#]/u.test(str)) {
 			return undefined;
 		}
 		let subpage = false,
 			search = str,
+			ns = namespace,
 			offset = 0;
 		if (search.startsWith('/')) {
 			ns = 0;
@@ -221,16 +225,16 @@ export class FullMediaWiki extends MediaWiki {
 		return {
 			offset,
 			options: (await linkSuggest(search, subpage, ns))
-				.flatMap(([label, redirect = label]): Completion | Completion[] => {
+				.flatMap(([label, pageNs, redirect = label]): Completion | Completion[] => {
 					const normalized = underscore ? redirect.replaceAll(' ', '_') : redirect;
 					return redirect === label
 						? {
-							type: 'text',
+							type: pageNs === namespace && type || 'text',
 							label: normalized,
 						}
 						: [
 							{
-								type: 'text',
+								type: pageNs === namespace && type || 'text',
 								label: normalized,
 								displayLabel: label,
 								detail: redirect,
@@ -262,7 +266,7 @@ export class FullMediaWiki extends MediaWiki {
 				options: result.flatMap(([keys, detail, info, name]) => keys.map((key): Completion => ({
 					type: 'variable',
 					label: key + equal,
-					section: {name: name!, rank: ranks[name!]},
+					section: {name, rank: ranks[name]},
 					...detail && {detail},
 					...info && {info},
 				}))),
@@ -295,7 +299,7 @@ export class FullMediaWiki extends MediaWiki {
 				// 模板名
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
-						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
+						suggestions = await this.#linkSuggest(search, 10, 'type') ?? {offset: 0, options: []};
 					options.push(
 						...suggestions.options.map((option): Completion => ({...option, apply: applyDisplayLabel})),
 					);
@@ -323,10 +327,10 @@ export class FullMediaWiki extends MediaWiki {
 					let prefix = '',
 						ns = 0;
 					if (isPage) {
-						prefix = this.autocompleteNamespaces[
-							[...types].find(type => type.startsWith('mw-function-'))!
-								.slice(12) as unknown as keyof typeof this.autocompleteNamespaces
-						];
+						ns = Number(
+							[...types].find(type => type.startsWith('mw-function-'))!.slice(12),
+						);
+						prefix = this.autocompleteNamespaces[ns as keyof typeof this.autocompleteNamespaces];
 					} else if (hasTag(types, 'mw-tag-gallery' as TagName) && !isLink) {
 						ns = 6;
 					}

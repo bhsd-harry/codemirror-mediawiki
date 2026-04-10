@@ -16,12 +16,12 @@ import {
 import abusefilterDialect from "/lezer-abusefilter/dist/dialect.test.js";
 
 // src/suggest.test.ts
-var linkSuggest = (s, _, ns) => {
+var linkSuggest = (s, _, ns = 0) => {
   if (ns === 0) {
-    return [[`${s} (article)`], [`${s} (user)`]];
+    return [[`${s} (article)`, 0], ["Alice (user)", 0, `${s} (user)`]];
   }
   const colon = s.indexOf(":");
-  return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`]];
+  return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`, ns]];
 };
 var paramSuggest = (s) => Object.assign(
   s.includes(":") ? [] : [

@@ -72,12 +72,12 @@
 		"@codemirror/lint": "^6.9.5",
 		"@codemirror/search": "^6.6.0",
 		"@codemirror/state": "^6.6.0",
-		"@codemirror/view": "^6.38.8",
+		"@codemirror/view": "~6.38.8",
 		"cm6-theme-nord": "^0.2.0",
 		"eslint": "^10.2.0",
 		"globals": "^17.4.0",
 		"luacheck-browserify": "^0.10.1",
-		"stylelint": "^17.6.0",
+		"stylelint": "^17.7.0",
 		"wikiparser-node": "^1.38.1"
 	},
 	"devDependencies": {

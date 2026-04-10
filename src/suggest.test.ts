@@ -1,11 +1,11 @@
 import type {ApiSuggest, ApiSuggestions} from './token';
 
-export const linkSuggest: ApiSuggest<string> = (s, _, ns) => {
+export const linkSuggest: ApiSuggest<[string, number, string?]> = (s, _, ns = 0) => {
 	if (ns === 0) {
-		return [[`${s} (article)`], ['Alice (user)', `${s} (user)`]];
+		return [[`${s} (article)`, 0], ['Alice (user)', 0, `${s} (user)`]];
 	}
 	const colon = s.indexOf(':');
-	return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`]];
+	return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`, ns]];
 };
 
 export const paramSuggest: ApiSuggest = s => Object.assign(

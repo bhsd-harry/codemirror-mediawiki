@@ -63,7 +63,8 @@ export interface StringStream extends StringStreamBase {
 }
 
 export type CompletionSectionName = 'Required' | 'Suggested' | 'Optional' | 'Deprecated';
-export type ApiSuggestions<T = string[]> = [T, string?, string?, CompletionSectionName?][] & {description?: string};
+declare type ParamSuggestion = [string[], string, string, CompletionSectionName];
+export type ApiSuggestions<T = ParamSuggestion> = T[] & {description?: string};
 
 /**
  * 获取维基链接建议
@@ -71,7 +72,7 @@ export type ApiSuggestions<T = string[]> = [T, string?, string?, CompletionSecti
  * @param subpage 是否为子页面
  * @param namespace 命名空间
  */
-export type ApiSuggest<T = string[]> = (search: string, subpage?: boolean, namespace?: number) =>
+export type ApiSuggest<T = ParamSuggestion> = (search: string, subpage?: boolean, namespace?: number) =>
 	ApiSuggestions<T> | Promise<ApiSuggestions<T>>;
 
 export interface MwConfig extends MwConfigBase {
@@ -81,7 +82,7 @@ export interface MwConfig extends MwConfigBase {
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
-	linkSuggest?: ApiSuggest<string>;
+	linkSuggest?: ApiSuggest<[string, number, string?]>;
 	paramSuggest?: ApiSuggest;
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;
