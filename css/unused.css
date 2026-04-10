@@ -351,6 +351,9 @@ input[type="color"] {
 	font-size: 90%;
 	line-height: 1.4;
 }
+.cm-completionIcon-redirect::after {
+	content: "↳";
+}
 
 /* src/openLinks */
 .cm-mw-extlink-protocol,

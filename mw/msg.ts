@@ -99,7 +99,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 		notification = await notify(
 			'welcome-addons',
 			`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
-				curVersion.replace(/\./gu, '')
+				curVersion.replaceAll('.', '')
 			}" rel="noreferrer">${curVersion}</a>`,
 			String(addons.length),
 			addons.map(addon => `<li>${parseMsg(`addon-${addon}`, true)}</li>`).join(''),
@@ -118,6 +118,6 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 export const localize = (cm: CodeMirror): void => {
 	cm.localize(Object.fromEntries(
 		Object.entries(i18n).filter(([k]) => k.startsWith('phrase-'))
-			.map(([k, v]) => [k.slice(7).replace(/-/gu, ' '), v]),
+			.map(([k, v]) => [k.slice(7).replaceAll('-', ' '), v]),
 	));
 };

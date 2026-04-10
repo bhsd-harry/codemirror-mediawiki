@@ -1,5 +1,5 @@
 import {templateData} from './util';
-import type {ApiOpenSearchParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
+import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions, MwConfig, CompletionSectionName} from '../src/token';
 import type {TemplateData} from './util';
 
@@ -11,37 +11,67 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param title 页面标题
  */
 const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<string> => {
-	let promise: Promise<ApiSuggestions<string>> | undefined;
-	return async (search: string, subpage?: boolean, namespace = 0) => {
+	let promise: Promise<ApiSuggestions<string>> | undefined,
+		last: [string, boolean, number] | undefined;
+	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0): Promise<ApiSuggestions<string>> => {
 		if (subpage) {
-			search = title + search;
+			gpssearch = title + gpssearch;
 		}
-		promise ??= (async () => {
-			try {
-				api.abort();
-				const [, pages] = await api.get({
-					action: 'opensearch',
-					search,
-					namespace,
-					limit: 'max',
-				} satisfies ApiOpenSearchParams) as [string, string[]];
-				if (subpage) {
-					const {length} = title;
-					return pages.map(page => [page.slice(length)]);
+		if (promise) {
+			// 前一个请求未完成，记录最后一次调用的参数以便完成后继续
+			last = [gpssearch, subpage, gpsnamespace];
+		} else {
+			promise = (async () => {
+				try {
+					api.abort();
+					const params: ApiQueryParams = {
+							action: 'query',
+							generator: 'prefixsearch',
+							gpssearch,
+							gpsnamespace,
+							gpslimit: 'max',
+							...!subpage && {redirects: true},
+						},
+						{query}: {
+							query?: {
+								pages?: {title: string, ns: number}[];
+								redirects?: {from: string, to: string}[];
+							};
+						} = await api.get(params),
+						pages = query?.pages ?? [];
+					if (subpage) {
+						const {length} = title;
+						return pages.map(({title: t}) => [t.slice(length)]);
+					}
+					const redirects = query?.redirects ?? [];
+					return pages.map(({title: t, ns}) => {
+						const target = redirects.find(({to}) => to === t)?.from;
+						if (gpsnamespace === 0 || !target) {
+							return [t, target!];
+						}
+						const targetMain = new mw.Title(target).getMainText();
+						return ns === gpsnamespace ? [new mw.Title(t).getMainText(), targetMain] : [targetMain];
+					});
+				} catch {
+					return [];
 				}
-				return namespace === 0
-					? pages.map(page => [page])
-					: pages.map(page => [new mw.Title(page).getMainText()]);
-			} catch {
-				return [];
-			}
-		})();
+			})();
+			// 至少等待 120ms 以避免过于频繁的请求（例如用户快速输入时）
+			await new Promise(resolve => {
+				setTimeout(resolve, 120);
+			});
+		}
 		const result = await promise;
-		setTimeout(() => {
-			promise = undefined;
-		}, 120);
+		promise = undefined; // eslint-disable-line require-atomic-updates
+		if (last) {
+			// 有更新的请求，继续处理
+			const args = last;
+			last = undefined;
+			return f(...args);
+		}
 		return result;
 	};
+	return f;
 };
 
 /**

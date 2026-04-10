@@ -131,7 +131,7 @@ export const getWikiLinter: getAsyncLinter<
 		}
 		const lines = tokens.map((token, i) => `${getPrefix(token, i)}${
 			sanitizeInlineStyle(token.childNodes![1]!.childNodes![0]!.data!)
-				.replace(/\n/gu, ' ')
+				.replaceAll('\n', ' ')
 		}\n}`);
 		const cssConfig = config?.['css'] as Config | Config['rules'] | undefined,
 			isConfig = isStylelintConfig(cssConfig),

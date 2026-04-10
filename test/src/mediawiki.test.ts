@@ -1,14 +1,15 @@
 import * as assert from 'assert';
-import {FullMediaWiki, apply, hasTag} from '../../dist/mediawiki.js';
+import {FullMediaWiki, apply, applyDisplayLabel, hasTag} from '../../dist/mediawiki.js';
 import {tokens} from '../../dist/config.js';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util.js';
+import type {Completion} from '@codemirror/autocomplete';
 import type {TagName} from '../../dist/config';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
 const mockTest = autocompletionTest(mediawiki.completionSource);
 
-const applyTest = async (
+const applyFunctionTest = (applyFunction: Exclude<Completion['apply'], string | undefined>) => async (
 	doc: string,
 	cursor: number,
 	from: number,
@@ -17,9 +18,12 @@ const applyTest = async (
 	selection: number | [number, number],
 ): Promise<void> => {
 	const view = createDispatchableView(doc, [cursor], {changes, selection: [selection]});
-	apply(view, {label}, from, cursor);
+	applyFunction(view, {label}, from, cursor);
 	return view.dispatched;
 };
+
+const applyTest = applyFunctionTest(apply),
+	applyDisplayLabelTest = applyFunctionTest(applyDisplayLabel);
 
 describe('autocompletion', () => {
 	it('parser function/template name', async () => {
@@ -51,7 +55,8 @@ describe('autocompletion', () => {
 				from: 4,
 				options: [
 					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', type: 'text'},
+					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
+					{label: 'a (user)', type: 'redirect'},
 				],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
@@ -73,7 +78,8 @@ describe('autocompletion', () => {
 				from: 12,
 				options: [
 					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', type: 'text'},
+					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
+					{label: 'a (user)', type: 'redirect'},
 				],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
@@ -124,7 +130,8 @@ describe('autocompletion', () => {
 				from: 3,
 				options: [
 					{label: 'a (article)', type: 'text'},
-					{label: 'a (user)', type: 'text'},
+					{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
+					{label: 'a (user)', type: 'redirect'},
 				],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
@@ -374,11 +381,57 @@ describe('autocompletion', () => {
 
 describe('apply link completion', () => {
 	it('Lowercase', async () => {
-		await applyTest('[[f|', 3, 2, 'Foo', [2, [1, 'foo'], 1], 5);
+		await applyTest('[[f|', 3, 2, 'Foo', [2, [1, 'Foo'], 1], 5);
 	});
 	it('pipe', async () => {
 		await applyTest('[[F', 3, 2, 'Foo', [2, [1, 'Foo|Foo]]']], [6, 9]);
 		await applyTest('[[F]]', 3, 2, 'Foo', [2, [1, 'Foo|Foo'], 2], [6, 9]);
+	});
+});
+
+describe('apply page completion', () => {
+	it('template', async () => {
+		await applyDisplayLabelTest('{{f', 3, 2, 'Foo', [2, [1, 'Foo']], 5);
+		await applyDisplayLabelTest('{{:f', 4, 3, 'Foo', [3, [1, 'Foo']], 6);
+	});
+	it('parser function', async () => {
+		await applyDisplayLabelTest(
+			'{{#ifexist: f',
+			13,
+			12,
+			'Foo',
+			[12, [1, 'Foo']],
+			15,
+		);
+		await applyDisplayLabelTest(
+			'{{filepath: f',
+			13,
+			12,
+			'Foo',
+			[12, [1, 'Foo']],
+			15,
+		);
+		await applyDisplayLabelTest('{{int: f', 8, 7, 'Foo', [7, [1, 'Foo']], 10);
+		await applyDisplayLabelTest('{{raw: f', 8, 7, 'Foo', [7, [1, 'Foo']], 10);
+		await applyDisplayLabelTest(
+			'{{#widget: f',
+			12,
+			11,
+			'Foo',
+			[11, [1, 'Foo']],
+			14,
+		);
+		await applyDisplayLabelTest(
+			'{{#invoke: f',
+			12,
+			11,
+			'Foo',
+			[11, [1, 'Foo']],
+			14,
+		);
+	});
+	it('gallery', async () => {
+		await applyDisplayLabelTest('<gallery>f', 10, 9, 'Foo', [9, [1, 'Foo']], 12);
 	});
 });
 

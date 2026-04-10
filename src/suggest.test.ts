@@ -2,7 +2,7 @@ import type {ApiSuggest, ApiSuggestions} from './token';
 
 export const linkSuggest: ApiSuggest<string> = (s, _, ns) => {
 	if (ns === 0) {
-		return [[`${s} (article)`], [`${s} (user)`]];
+		return [[`${s} (article)`], ['Alice (user)', `${s} (user)`]];
 	}
 	const colon = s.indexOf(':');
 	return [[colon === -1 ? s : `${s.slice(colon + 1)} (${s.slice(0, colon).toLowerCase()})`]];

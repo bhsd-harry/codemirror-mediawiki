@@ -3,6 +3,10 @@
 
 *2026-04-10*
 
+**Added**
+
+- Link or template suggestions in the [autocompletion](./README.md#autocompletion) extension now include resolved redirects on a MediaWiki site
+
 **Fixed**
 
 - Font size of the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel, which is a regression caused by [@codemirror/search 6.6.0](https://codemirror.net/docs/changelog/#%40codemirror%2Fsearch-6.6.0-(2026-01-13))

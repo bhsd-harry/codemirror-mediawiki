@@ -49,6 +49,22 @@ const ranks: Record<CompletionSectionName, number> = {Required: 1, Suggested: 2,
 export const isWikiLink = (name: string): boolean => /mw-[\w-]*link-ground/u.test(name);
 
 /**
+ * 插入displayLabel（如果有）而不是label
+ * @param view
+ * @param completion 自动填充内容
+ * @param from 起始位置
+ * @param to 结束位置
+ * @test
+ */
+export const applyDisplayLabel = (view: EditorView, completion: Completion, from: number, to: number): void => {
+	const {label, displayLabel = label} = completion;
+	view.dispatch({
+		...insertCompletionText(view.state, displayLabel, from, to),
+		annotations: pickedCompletion.of(completion),
+	});
+};
+
+/**
  * 检查首字母大小写并插入正确的自动填充内容
  * @param view
  * @param completion 自动填充内容
@@ -57,20 +73,21 @@ export const isWikiLink = (name: string): boolean => /mw-[\w-]*link-ground/u.tes
  * @test
  */
 export const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
-	let {label} = completion,
+	const {label} = completion;
+	let {displayLabel = label} = completion,
 		selection;
-	const initial = label.charAt(0).toLowerCase(),
-		{state} = view,
+	const {state} = view,
 		after = state.sliceDoc(to);
-	if (state.sliceDoc(from, from + 1) === initial) {
-		label = initial + label.slice(1);
-	}
 	if (!/^\s*\|/u.test(after)) {
-		selection = {anchor: from + label.length + 1, head: from + label.length * 2 + 1};
-		label += `|${label}${/^\s*\]\]/u.test(after) ? '' : ']]'}`;
+		const initial = label.charAt(0).toLowerCase(),
+			anchor = from + displayLabel.length + 1;
+		selection = {anchor, head: anchor + label.length};
+		displayLabel += `|${
+			state.sliceDoc(from, from + 1) === initial ? initial + label.slice(1) : label
+		}${/^\s*\]\]/u.test(after) ? '' : ']]'}`;
 	}
 	view.dispatch({
-		...insertCompletionText(state, label, from, to),
+		...insertCompletionText(state, displayLabel, from, to),
 		annotations: pickedCompletion.of(completion),
 		selection,
 	});
@@ -117,7 +134,7 @@ export class FullMediaWiki extends MediaWiki {
 		this.templatedata = templatedata;
 		this.nsRegex = new RegExp(String.raw`^(${
 			Object.keys(nsid).filter(ns => ns !== '').join('|')
-				.replace(/_/gu, ' ')
+				.replaceAll('_', ' ')
 		})\s*:\s*`, 'iu');
 		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
 			type: i ? 'constant' : 'function',
@@ -131,7 +148,7 @@ export class FullMediaWiki extends MediaWiki {
 		this.htmlTags = getCompletions(htmlTags.filter(tag => !this.tags.includes(tag)), 'type');
 		this.protocols = urlProtocols.split('|').map((label): Completion => ({
 			type: 'namespace',
-			label: label.replace(/\\\//gu, '/'),
+			label: label.replaceAll(String.raw`\/`, '/'),
 		}));
 		this.imgKeys = this.img.map((label): Completion => label.endsWith('$1')
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
@@ -180,7 +197,7 @@ export class FullMediaWiki extends MediaWiki {
 			ns = 0;
 			subpage = true;
 		} else {
-			search = search.replace(/_/gu, ' ');
+			search = search.replaceAll('_', ' ');
 			offset = leadingSpaces(search).length;
 			search = search.slice(offset);
 			if (search.startsWith(':')) {
@@ -195,7 +212,7 @@ export class FullMediaWiki extends MediaWiki {
 			const mt2 = nsRegex.exec(search) as [string, string] | null;
 			if (mt2) {
 				const [{length}, prefix] = mt2;
-				ns = nsid[prefix.replace(/ /gu, '_').toLowerCase()] || 1;
+				ns = nsid[prefix.replaceAll(' ', '_').toLowerCase()] || 1;
 				offset += length;
 				search = `${ns === -2 ? 'File' : prefix}:${search.slice(length)}`;
 			}
@@ -203,10 +220,27 @@ export class FullMediaWiki extends MediaWiki {
 		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,
-			options: (await linkSuggest(search, subpage, ns)).map(([label]): Completion => ({
-				type: 'text',
-				label: underscore ? label.replace(/ /gu, '_') : label,
-			})),
+			options: (await linkSuggest(search, subpage, ns))
+				.flatMap(([label, redirect = label]): Completion | Completion[] => {
+					const normalized = underscore ? redirect.replaceAll(' ', '_') : redirect;
+					return redirect === label
+						? {
+							type: 'text',
+							label: normalized,
+						}
+						: [
+							{
+								type: 'text',
+								label: normalized,
+								displayLabel: label,
+								detail: redirect,
+							},
+							{
+								type: 'redirect',
+								label: normalized,
+							},
+						];
+				}),
 		};
 	}
 
@@ -262,7 +296,9 @@ export class FullMediaWiki extends MediaWiki {
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
 						suggestions = await this.#linkSuggest(search, 10) ?? {offset: 0, options: []};
-					options.push(...suggestions.options);
+					options.push(
+						...suggestions.options.map((option): Completion => ({...option, apply: applyDisplayLabel})),
+					);
 					return options.length === 0
 						? null
 						: {
@@ -299,9 +335,13 @@ export class FullMediaWiki extends MediaWiki {
 						return null;
 					} else if (!isPage && isLink) {
 						suggestions.options = suggestions.options.map((option): Completion => ({...option, apply}));
-					} else if (prefix === 'Module:') {
+					} else {
+						if (prefix === 'Module:') {
+							suggestions.options = suggestions.options
+								.filter(({label}) => !label.endsWith('/doc'));
+						}
 						suggestions.options = suggestions.options
-							.filter(({label}) => !label.endsWith('/doc'));
+							.map((option): Completion => ({...option, apply: applyDisplayLabel}));
 					}
 					return {
 						// eslint-disable-next-line unicorn/explicit-length-check
@@ -694,6 +734,11 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[`${hoverSelector}>div`]: {
 		fontSize: '90%',
 		lineHeight: 1.4,
+	},
+	'.cm-completionIcon-redirect': {
+		'&:after': {
+			content: '"↳"',
+		},
 	},
 });
 

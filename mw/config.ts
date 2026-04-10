@@ -56,7 +56,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
 	if (config?.img && config.redirection && config.variants && config.variableIDs && config.functionHooks && !isIPE) {
-		config.urlProtocols = config.urlProtocols.replace(/\\:/gu, ':');
+		config.urlProtocols = config.urlProtocols.replaceAll(String.raw`\:`, ':');
 		config.tagModes = modes;
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
@@ -119,7 +119,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 			...getKeywords(magicwords, true),
 			tagModes: modes,
 			variants: langconversion ? getVariants(variants) : [],
-			urlProtocols: mw.config.get('wgUrlProtocols').replace(/\\:/gu, ':'),
+			urlProtocols: mw.config.get('wgUrlProtocols').replaceAll(String.raw`\:`, ':'),
 		});
 		config!.variableIDs ??= variables;
 		config!.functionHooks ??= functionhooks.map(s => s.toLowerCase());
@@ -158,7 +158,7 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		}
 	}
 	for (const key in img) {
-		config.img[key] = img[key]!.slice(4).replace(/_/gu, '-');
+		config.img[key] = img[key]!.slice(4).replaceAll('_', '-');
 	}
 	return config;
 };

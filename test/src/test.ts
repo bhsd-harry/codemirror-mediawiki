@@ -16,8 +16,8 @@ mochaTest(
 		while (node) {
 			checkNode(node);
 			const {from, to} = node,
-				name = node.name.replace(/_/gu, ' ')
-					.replace(/mw-/gu, ''),
+				name = node.name.replaceAll('_', ' ')
+					.replaceAll('mw-', ''),
 				last = tokens[tokens.length - 1];
 			if (last?.name === name) {
 				last.text += wikitext.slice(from, to);

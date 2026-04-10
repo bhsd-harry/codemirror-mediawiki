@@ -433,7 +433,7 @@ const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRang
 		return null;
 	}
 	const getIndent = (line: string): number =>
-		leadingSpaces(line).replace(/\t/gu, ' '.repeat(tabSize)).length;
+		leadingSpaces(line).replaceAll('\t', ' '.repeat(tabSize)).length;
 	const indent = getIndent(text);
 	let j = number,
 		empty = true;
