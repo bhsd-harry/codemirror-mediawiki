@@ -75,7 +75,7 @@ export class FullMediaWiki extends MediaWiki {
 		this.htmlTags = getCompletions(htmlTags.filter(tag => !this.tags.includes(tag)), 'type');
 		this.protocols = urlProtocols.split('|').map((label): Completion => ({
 			type: 'namespace',
-			label: label.replace(/\\\//gu, '/'),
+			label: label.replaceAll(String.raw`\/`, '/'),
 		}));
 		this.imgKeys = this.img.map((label): Completion => label.endsWith('$1')
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
