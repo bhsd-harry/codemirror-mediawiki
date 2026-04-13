@@ -71,7 +71,7 @@ const getStylelintError = (
 			},
 		},
 	code: 'declaration-block-no-duplicate-properties',
-	message: `Unexpected duplicate "top"${wikilint ? ' (declaration-block-no-duplicate-properties)' : ''}`,
+	message: `Duplicate property "top"${wikilint ? ' (declaration-block-no-duplicate-properties)' : ''}`,
 	severity: 1,
 	source: 'Stylelint',
 	data: [
@@ -102,7 +102,7 @@ describe('linters', () => {
 					rule: 'declaration-block-no-duplicate-properties',
 					url: undefined,
 					severity: 'error',
-					text: 'Unexpected duplicate "top" (declaration-block-no-duplicate-properties)',
+					text: 'Duplicate property "top" (declaration-block-no-duplicate-properties)',
 					fix: {
 						range: [10, 18],
 						text: '',

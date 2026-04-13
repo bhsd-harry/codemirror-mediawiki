@@ -41,6 +41,7 @@ export type LintSource<T = unknown> = (
 	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>
 ) & {
 	config?: T;
+	disabled?: boolean;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };

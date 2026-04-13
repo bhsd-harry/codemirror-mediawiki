@@ -13,7 +13,7 @@ import {
 	nord,
 } from './index';
 import type {} from 'luacheck-browserify';
-import type {} from 'wikiparser-node/extensions/typings';
+import type {} from 'wikiparser-node/dist/extensions/typings';
 import type * as Parser from 'wikiparser-node';
 import type {PublicApi} from 'stylelint';
 import type {eslint as eslintGlobal} from '@bhsd/eslint-browserify';

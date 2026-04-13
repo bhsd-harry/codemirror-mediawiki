@@ -411,6 +411,9 @@ export class CodeMirror6 {
 		const linterExtension = (cm: CodeMirror6): Extension => lintSources?.length
 			? [
 				...lintSources.map(source => linter(async ({state}) => {
+					if (source.disabled) {
+						return [];
+					}
 					const diagnostics = (await source(state)).map((diagnostic): Diagnostic => ({
 						...diagnostic,
 						renderMessage(view): HTMLElement {

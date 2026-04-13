@@ -92,7 +92,7 @@ const getStylelintError = (from: number, to: number, wikilint?: boolean, rule = 
 	return {
 		from,
 		to,
-		message: `Unexpected duplicate "top"${rule ? ' (declaration-block-no-duplicate-properties)' : ''}`,
+		message: `Duplicate property "top"${rule ? ' (declaration-block-no-duplicate-properties)' : ''}`,
 		severity: 'error',
 		source: 'Stylelint',
 		actions: [{name}],
