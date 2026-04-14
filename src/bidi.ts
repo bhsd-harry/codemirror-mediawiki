@@ -7,6 +7,7 @@
 import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
+import {mwPrefix} from './constants.js';
 import {tokens} from './config.js';
 import {getTag} from './matchTag.js';
 import {pushDecoration} from './util.js';
@@ -107,7 +108,7 @@ export default (): Extension => [
 		},
 	),
 	EditorView.theme({
-		[`${isolateSelector}, &[dir="rtl"] .cm-mw-template-name`]: {
+		[`${isolateSelector}, &[dir="rtl"] .${mwPrefix}template-name`]: {
 			unicodeBidi: 'isolate',
 		},
 		[ltrSelector]: {

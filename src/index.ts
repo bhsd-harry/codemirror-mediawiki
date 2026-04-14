@@ -25,7 +25,9 @@ import {
 	mediawikiBase,
 	wikiTheme,
 } from './mediawiki.js';
-import openLinks from './openLinks.js';
+import {
+	openLinks,
+} from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';

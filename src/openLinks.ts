@@ -1,16 +1,18 @@
 import {EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
-import {isMac} from './constants.js';
+import {
+	isMac,
+} from './constants.js';
 import {hasTag} from './mediawiki.js';
 import type {Extension} from '@codemirror/state';
 import type {ConfigData} from 'wikiparser-node';
+import type {DOMEventHandlers} from '@codemirror/view';
 import type {TagName} from './config';
 
 declare type ISBNParser = (link: string) => string;
 
-const links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
-	tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
+const tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
 	modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control';
 
@@ -19,6 +21,14 @@ const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
 };
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
+
+const openInNewTab = (url?: string): true | undefined => {
+	if (url) {
+		open(url, '_blank', 'noreferrer');
+		return true;
+	}
+	return undefined;
+};
 
 export const getISBNParser = (articlePath?: string): ISBNParser | undefined => articlePath
 	? (link: string): string => {
@@ -86,13 +96,29 @@ export const mouseEventListener = (
 	return undefined;
 };
 
+const eventHandlers: DOMEventHandlers<unknown> = {
+	keydown(e, view) {
+		if (e.key === key) {
+			toggleOpenLinks(view, true);
+		}
+	},
+	keyup(e, view) {
+		if (e.key === key) {
+			toggleOpenLinks(view);
+		}
+	},
+	mousemove(e, view) {
+		toggleOpenLinks(view, e[modKey]);
+	},
+};
+
 /**
  * Get the [openLinks](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#openlinks)
  * extension for Wikitext.
  * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
  * @since 0.2.0
  */
-export default (
+export const openLinks = (
 	configData: ConfigData,
 ): Extension => {
 	const isbnParser = getISBNParser(
@@ -100,6 +126,7 @@ export default (
 	);
 	return [
 		EditorView.domEventHandlers({
+			...eventHandlers,
 			mousedown(e, view) {
 				if (e.button !== 0) {
 					return undefined;
@@ -109,32 +136,7 @@ export default (
 					view,
 					isbnParser,
 				);
-				if (url) {
-					open(url, '_blank', 'noreferrer');
-					return true;
-				}
-				return undefined;
-			},
-			keydown(e, view) {
-				if (e.key === key) {
-					toggleOpenLinks(view, true);
-				}
-			},
-			keyup(e, view) {
-				if (e.key === key) {
-					toggleOpenLinks(view);
-				}
-			},
-			mousemove(e, view) {
-				toggleOpenLinks(view, e[modKey]);
-			},
-		}),
-		EditorView.theme({
-			[
-			links
-				.map(type => `.cm-mw-${type}`).join()
-			]: {
-				cursor: 'var(--codemirror-cursor)',
+				return openInNewTab(url);
 			},
 		}),
 	];

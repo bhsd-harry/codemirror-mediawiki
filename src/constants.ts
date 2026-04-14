@@ -3,6 +3,7 @@ import type {Completion} from '@codemirror/autocomplete';
 export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	extData: Record<string, Set<string>> = {},
 	extCompletion: Record<string, Completion[]> = {},
+	mwPrefix = 'cm-mw-',
 	hoverSelector = '.cm-tooltip-hover-mw',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	panelSelector = '.cm-panel',

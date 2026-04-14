@@ -5,7 +5,6 @@
 
 **Fixed**
 
-- Downgrade the [@codemirror/view](https://www.npmjs.com/package/@codemirror/view) package to [v6.38.8](https://codemirror.net/docs/changelog/#%40codemirror%2Fview-6.38.8-(2025-11-17)) to fix issues with composing text with an IME
 - Error message in the status bar should not be clickable
 
 ## 0.4.3

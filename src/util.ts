@@ -4,7 +4,7 @@ import {
 	baseData,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
-import type {Text, EditorState, SelectionRange, Range} from '@codemirror/state';
+import type {Text, EditorState, Range} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
@@ -73,7 +73,7 @@ export const createTooltipView = (view: EditorView, innerHTML: string): TooltipV
  * @param state EditorState 实例
  * @param node 语法树节点
  */
-export const sliceDoc = (state: EditorState, node: SyntaxNode | SelectionRange): string =>
+export const sliceDoc = (state: EditorState, node: DocRange): string =>
 	state.sliceDoc(node.from, node.to);
 
 /**
