@@ -1,0 +1,18 @@
+-- 1. Variables and properties
+a.b
+#a
+
+-- 2. Keywords
+local a
+function f()
+	return true and false, nil
+end
+
+-- 3. LDoc
+--- summary
+-- description
+
+--[[--
+	summary
+	description
+]]

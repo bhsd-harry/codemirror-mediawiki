@@ -1,4 +1,7 @@
 import {StreamLanguage} from '@codemirror/language';
+import {javascriptLanguage} from '@codemirror/lang-javascript';
+import {cssLanguage} from '@codemirror/lang-css';
+import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {MediaWiki} from '../../dist/token.js';
 import {mwConfig} from './util.js';
 import type {SyntaxNode} from '@lezer/common';
@@ -12,3 +15,9 @@ export const checkNode = ({name}: SyntaxNode): void | never => {
 };
 
 export default (wikitext: string): SyntaxNode | null => parser.parse(wikitext).topNode.firstChild;
+
+export const parsers = {
+	javascript: javascriptLanguage.parser,
+	css: cssLanguage.parser,
+	lua: StreamLanguage.define(lua).parser,
+};

@@ -1,0 +1,17 @@
+// 1. RegExp
+/(.)/;
+/[\p{Script_Extensions=Greek}--[αβγ]]/v;
+
+// 2. Global and local variables
+a;
+a.b;
+{
+	let a;
+	a;
+}
+
+// 3. JSDoc
+/** @private */
+/**
+ * @ignore
+ */

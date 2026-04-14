@@ -1,0 +1,6 @@
+/* 1. Property vs. nested pseudo selector */
+a {
+	top: unset;
+	b:hover {}
+	b:hover
+}
