@@ -16,3 +16,8 @@ end
 	summary
 	description
 ]]
+
+-- 4. Page loading
+require( 'module:a' )
+mw.loadData"Module : A"
+mw.loadJsonData [=[A]=]

@@ -11,7 +11,8 @@ import {
 } from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {leadingSpaces, sliceDoc, markDocTagType, getCompletions} from './util.js';
+import {linkCls} from './constants.js';
+import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {Extension, EditorState, Range} from '@codemirror/state';
@@ -324,6 +325,9 @@ const map = {
 		}),
 	],
 	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
+	linkDeco = Decoration.mark({class: linkCls}),
+	reLink = ['', String.raw`module\s*:`]
+		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')),
 	lang = StreamLanguage.define(lua);
 
 /**
@@ -487,6 +491,22 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 							break;
 						}
 						node = nextSibling;
+					}
+				}
+			} else if (node.name === 'string') {
+				const {prevSibling} = node;
+				if (
+					(prevSibling?.name === 'variableName' || prevSibling?.name === 'variableName.standard')
+					&& /^[\s(]*$/u.test(state.sliceDoc(prevSibling.to, node.from))
+				) {
+					const func = sliceDoc(state, prevSibling),
+						isJson = func === 'mw.loadJsonData';
+					if (isJson || func === 'require' || func === 'mw.loadData') {
+						const mt = reLink[isJson ? 0 : 1]!.exec(sliceDoc(state, node));
+						if (mt) {
+							const offset = mt[1]?.length ?? mt[2]!.length + 2;
+							pushDecoration(decorations, linkDeco, node.from + offset, node.to - offset);
+						}
 					}
 				}
 			}

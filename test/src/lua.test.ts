@@ -21,13 +21,19 @@ const foldTest = (doc: string, result: unknown): void => {
 	);
 };
 
-const markTest = (doc: string, tag: [number, number][], type: [number, number][]): void => {
+const markTest = (
+	doc: string,
+	tag: [number, number][],
+	type: [number, number][],
+	link: [number, number][] = [],
+): void => {
 	const state = createState(doc, lang),
 		{length} = state.doc,
 		set = markDocTag(syntaxTree(state), [{from: 0, to: length}], state),
 		arr = convertFullRangeSet(set, length);
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag'), tag);
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag-type'), type);
+	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-link'), link);
 };
 
 describe('Lua autocompletion', () => {
@@ -228,6 +234,16 @@ describe('LDoc', () => {
 			-- @alias M`,
 			[[11, 18], [28, 35], [43, 51]],
 			[[36, 38], [52, 64]],
+		);
+	});
+	it('page link', () => {
+		markTest(
+			`require( 'module:a' )
+				mw.loadData"Module : A"
+				mw.loadJsonData [=[A]=]`,
+			[],
+			[],
+			[[10, 18], [38, 48], [73, 74]],
 		);
 	});
 });

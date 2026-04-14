@@ -25,7 +25,7 @@ import {
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
 import elt from 'crelt';
-import {baseData, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs} from './constants.js';
+import {baseData, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs, linkCls} from './constants.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -295,6 +295,10 @@ export class CodeMirror6 {
 					},
 					[`${panelSelector} [name="close"]`]: {
 						color: 'inherit',
+					},
+					[`.${linkCls}>span`]: {
+						color: 'var(--cm-link)',
+						textDecoration: 'underline',
 					},
 				}),
 				EditorView.updateListener.of(({

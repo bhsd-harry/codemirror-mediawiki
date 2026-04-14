@@ -14,6 +14,7 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	typeMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
 	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	bgDark = '#4c566a',
+	linkCls = 'cm-link',
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';
 
