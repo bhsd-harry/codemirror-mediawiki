@@ -2,18 +2,18 @@
 	& > .oo-ui-window-frame {
 		height: 100% !important;
 	}
-	.oo-ui-panelLayout {
+	& .oo-ui-panelLayout {
 		overflow: visible;
 	}
-	.cm-editor {
+	& .cm-editor {
 		border: 1.5px solid #dedede;
 		border-radius: .3em;
 
-		input {
+		& input {
 			height: auto;
 		}
 	}
-	.oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled {
+	& .oo-ui-checkboxMultioptionWidget.oo-ui-widget-disabled {
 		display: none;
 	}
 }

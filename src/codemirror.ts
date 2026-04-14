@@ -25,7 +25,14 @@ import {
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
 import elt from 'crelt';
-import {baseData, panelSelector, panelsSelector, diagnosticSelector, noDetectionLangs, linkCls} from './constants.js';
+import {
+	baseData,
+	panelSelector,
+	panelsSelector,
+	diagnosticSelector,
+	noDetectionLangs,
+	linkSelector,
+} from './constants.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -148,7 +155,7 @@ export class CodeMirror6 {
 	/** only for sanitized-css */
 	declare dialect: Dialect;
 	declare getWikiConfig?: ConfigGetter;
-	declare langConfig: MwConfig | undefined;
+	declare langConfig: Partial<MwConfig> & Pick<MwConfig, 'titleParser'> | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -296,7 +303,7 @@ export class CodeMirror6 {
 					[`${panelSelector} [name="close"]`]: {
 						color: 'inherit',
 					},
-					[`.${linkCls}>span`]: {
+					[`${linkSelector}>span`]: {
 						color: 'var(--cm-link)',
 						textDecoration: 'underline',
 					},

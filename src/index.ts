@@ -56,7 +56,10 @@ import tagMatchingState from './matchTag.js';
 import {
 	mediawikiBase,
 } from './mediawiki.js';
-import openLinks from './openLinks.js';
+import {
+	openLinks,
+	openLinksForLua,
+} from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
@@ -215,7 +218,11 @@ function mediawikiOnly(ext: Extension | ((cm: CodeMirror6) => Extension)): Addon
  * @param ext 扩展
  */
 const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T): void => {
-	const addon = getOrInsert<T>(name, [langExtension] as Addon<T>);
+	const addon = getOrInsert<T>(name, [
+		typeof ext === 'function'
+			? (f: ((cm: CodeMirror6) => Extension) | undefined, cm: CodeMirror6): Extension => f?.(cm) ?? []
+			: langExtension,
+	] as Addon<T>);
 	addon[1] ??= new Map();
 	addon[1].set(lang, ext);
 };
@@ -255,7 +262,7 @@ const registerExtensionForMediaWiki = (name: string, ext: Extension | ((cm: Code
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerOpenLinks = (articlePath?: string): void => {
-	registerExtensionForMediaWiki('openLinks', openLinks(articlePath));
+	registerLangExtension('mediawiki', 'openLinks', openLinks(articlePath));
 };
 
 /**
@@ -455,6 +462,12 @@ export const registerJSONCore = (): void => {
 export const registerLua = (): void => {
 	registerCommonExtensions();
 	registerLuaCore();
+	registerOpenLinksForLua();
+};
+
+/** Register the `openLinks` extension for Lua */
+export const registerOpenLinksForLua = (): void => {
+	registerLangExtension('lua', 'openLinks', openLinksForLua);
 };
 
 /** Register Lua core language support */

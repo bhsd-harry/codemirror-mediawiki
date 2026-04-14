@@ -2,7 +2,7 @@
 	overflow-y: hidden;
 	resize: vertical;
 
-	div.cm-status-line {
+	& div.cm-status-line {
 		padding-right: .6em;
 	}
 }
@@ -11,7 +11,7 @@
 	overflow-y: visible;
 	resize: none;
 
-	div.cm-status-line {
+	& div.cm-status-line {
 		padding-right: .3em;
 	}
 }

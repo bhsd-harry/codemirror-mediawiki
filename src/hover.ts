@@ -121,7 +121,7 @@ export default (
 					),
 					baseData.CDN,
 				)?.provideHover(doc.toString(), indexToPos(doc, pos));
-				if (!hover && paramSuggest && 'templatedata' in tags) {
+				if (!hover && paramSuggest && 'templatedata' in tags!) {
 					// eslint-disable-next-line require-atomic-updates
 					hover = await getHoverFromApi(state, pos, side, paramSuggest, templatedata);
 				}

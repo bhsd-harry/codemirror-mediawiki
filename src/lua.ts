@@ -11,7 +11,7 @@ import {
 } from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {linkCls} from './constants.js';
+import {linkSelector} from './constants.js';
 import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
@@ -325,7 +325,7 @@ const map = {
 		}),
 	],
 	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
-	linkDeco = Decoration.mark({class: linkCls}),
+	linkDeco = Decoration.mark({class: linkSelector.slice(1)}),
 	reLink = ['', String.raw`module\s*:`]
 		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')),
 	lang = StreamLanguage.define(lua);
@@ -502,9 +502,8 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 					const func = sliceDoc(state, prevSibling),
 						isJson = func === 'mw.loadJsonData';
 					if (isJson || func === 'require' || func === 'mw.loadData') {
-						const mt = reLink[isJson ? 0 : 1]!.exec(sliceDoc(state, node));
-						if (mt) {
-							const offset = mt[1]?.length ?? mt[2]!.length + 2;
+						const offset = getStringOffset(state, node, reLink[isJson ? 0 : 1]);
+						if (offset) {
 							pushDecoration(decorations, linkDeco, node.from + offset, node.to - offset);
 						}
 					}
@@ -514,6 +513,15 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 		}
 	}
 	return Decoration.set(decorations);
+};
+
+/**
+ * @ignore
+ * @test
+ */
+export const getStringOffset = (state: EditorState, node: SyntaxNode, re = reLink[0]!): number | null => {
+	const mt = re.exec(sliceDoc(state, node));
+	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
 };
 
 export const markDocTagPlugin = ViewPlugin.fromClass(

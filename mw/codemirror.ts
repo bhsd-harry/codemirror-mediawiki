@@ -17,6 +17,8 @@ import {
 } from '../src/index';
 import {jsConfig} from '../src/linter';
 import {tagModes} from '../src/static';
+import {sliceDoc} from '../src/util';
+import {getStringOffset} from '../src/lua';
 import {getMwConfig, getParserConfig} from './config';
 import {preferenceId, indentKey, themeKey, RuleState, curVersion, languageFallbacks} from './constants';
 import escape from './escape';
@@ -270,7 +272,18 @@ export class CodeMirror extends CodeMirror6 {
 					articlePath: mw.config.get('wgArticlePath'),
 				},
 				config,
-			);
+			) as MwConfig;
+		} else if (this.lang === 'lua') {
+			mw.loader.load('mediawiki.Title');
+			this.langConfig = {
+				titleParser(state, node): string | undefined {
+					const offset = getStringOffset(state, node);
+					return offset
+						? mw.Title.newFromText(sliceDoc(state, {from: node.from + offset, to: node.to - offset}))
+							?.getUrl(undefined)
+						: undefined;
+				},
+			};
 		}
 		// 继承编辑字体
 		const font = [...this.textarea.classList].find(cls => cls.startsWith('mw-editfont-'));

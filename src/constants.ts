@@ -5,16 +5,17 @@ import type {Completion} from '@codemirror/autocomplete';
 export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	extData: Record<string, Set<string>> = {},
 	extCompletion: Record<string, Completion[]> = {},
+	mwPrefix = 'cm-mw-',
 	hoverSelector = '.cm-tooltip-hover-mw',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	panelSelector = '.cm-panel',
 	panelsSelector = '.cm-panels',
 	actionSelector = '.cm-diagnosticAction',
+	linkSelector = '.cm-link',
 	doctagMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag'}),
 	typeMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
 	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	bgDark = '#4c566a',
-	linkCls = 'cm-link',
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';
 

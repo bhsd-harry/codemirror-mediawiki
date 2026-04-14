@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {foldable, syntaxTree} from '@codemirror/language';
-import lua, {markDocTag} from '../../dist/lua.js';
+import lua, {markDocTag, getStringOffset} from '../../dist/lua.js';
 import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util.js';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
@@ -34,6 +34,12 @@ const markTest = (
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag'), tag);
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-doctag-type'), type);
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-link'), link);
+};
+
+const stringTest = (doc: string, result: number | null): void => {
+	const state = createState(doc, lang),
+		node = syntaxTree(state).resolveInner(0, 1);
+	assert.strictEqual(getStringOffset(state, node), result);
 };
 
 describe('Lua autocompletion', () => {
@@ -245,5 +251,22 @@ describe('LDoc', () => {
 			[],
 			[[10, 18], [38, 48], [73, 74]],
 		);
+	});
+});
+
+describe('getStringOffset', () => {
+	it('single quote', () => {
+		stringTest("'abc'", 1);
+		stringTest("'abc", null);
+	});
+	it('double quote', () => {
+		stringTest('"abc"', 1);
+		stringTest('"abc', null);
+	});
+	it('long string', () => {
+		stringTest('[[abc]]', 2);
+		stringTest('[[abc', null);
+		stringTest('[=[abc]=]', 3);
+		stringTest('[=[abc', null);
 	});
 });

@@ -20,6 +20,7 @@ import {
 	hoverSelector,
 	extCompletion,
 	isWMF,
+	mwPrefix,
 } from './constants.js';
 import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
@@ -533,7 +534,7 @@ export class FullMediaWiki extends MediaWiki {
 }
 
 const getSelector = (cls: string[], prefix: string | string[] = ''): string => typeof prefix === 'string'
-	? cls.map(c => `.cm-mw-${prefix}${c}`).join()
+	? cls.map(c => `.${mwPrefix}${prefix}${c}`).join()
 	: prefix.map(p => getSelector(cls, p)).join();
 
 const getGround = (type: 'link' | 'ext' | 'template', ground?: number): string =>
@@ -547,7 +548,7 @@ const getGrounds = (
 	a: number,
 ): Record<string, StyleSpec> => ({
 	[grounds.map(
-		([template, ext, link]) => `.cm-mw-${
+		([template, ext, link]) => `.${mwPrefix}${
 			getGround('template', template)
 		}${
 			getGround('ext', ext)
@@ -609,16 +610,16 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	}`]: {
 		textDecoration: 'underline',
 	},
-	'.cm-mw-em': {
+	[`.${mwPrefix}em`]: {
 		fontStyle: 'italic',
 	},
 	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
 		color: 'var(--cm-hr)',
 	},
-	'.cm-mw-error': {
+	[`.${mwPrefix}error`]: {
 		color: 'var(--cm-error)',
 	},
-	'.cm-mw-skipformatting': {
+	[`${mwPrefix}skipformatting`]: {
 		backgroundColor: 'var(--cm-sp)',
 	},
 	[getSelector(['double-underscore', 'signature', 'hr'])]: {
@@ -638,7 +639,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		color: 'var(--cm-arg)',
 		fontWeight: 'normal',
 	},
-	'.cm-mw-templatevariable': {
+	[`${mwPrefix}templatevariable`]: {
 		color: 'var(--cm-var)',
 		fontWeight: 'normal',
 	},
@@ -675,17 +676,17 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['bracket', 'delimiter', 'delimiter2', 'definition'], 'table-')]: {
 		color: 'var(--cm-table)',
 	},
-	'.cm-mw-table-definition-value': {
+	[`${mwPrefix}table-definition-value`]: {
 		color: 'var(--cm-table-attr)',
 		fontWeight: 'normal',
 	},
 	[getSelector(['bracket', 'delimiter', 'flag', 'lang'], 'convert-')]: {
 		color: 'var(--cm-convert)',
 	},
-	'.cm-mw-entity': {
+	[`${mwPrefix}entity`]: {
 		color: 'var(--cm-entity)',
 	},
-	'.cm-mw-exttag,.cm-mw-tag-score-scheme': {
+	[`.${mwPrefix}exttag,.${mwPrefix}tag-score-scheme`]: {
 		backgroundColor: 'rgb(119,0,170,.04)',
 	},
 	/* eslint-disable no-sparse-arrays */
@@ -717,7 +718,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},
-	'.cm-mw-tag-ref': {
+	[`${mwPrefix}tag-ref`]: {
 		backgroundColor: 'var(--cm-ref)',
 	},
 

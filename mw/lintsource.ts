@@ -165,7 +165,7 @@ export const getTemplateDataLintSource = async (
 	{langConfig, view, getWikiConfig}: CodeMirror,
 	opt?: Option | LiveOption,
 ): Promise<LintSource> => {
-	if (!('templatedata' in langConfig!.tags)) {
+	if (!('templatedata' in langConfig!.tags!)) {
 		return voidLintSource;
 	}
 	const lsp = getLSP(view!, false, getWikiConfig, baseData.CDN);

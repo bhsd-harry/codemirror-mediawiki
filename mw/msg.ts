@@ -1,5 +1,5 @@
 import {getObject, compareVersion, setI18N} from '@bhsd/browser';
-import {isMac} from '../src/constants';
+import {isMac, mwPrefix} from '../src/constants';
 import {curVersion, languageFallbacks} from './constants';
 import {openPreference} from './preference';
 import type {CodeMirror} from './codemirror';
@@ -39,9 +39,9 @@ export const cmSetI18N = async (cdn: string): Promise<void> => {
 	}
 	for (const k in i18n) {
 		if (!k.endsWith('-mac')) {
-			mw.messages.set(`cm-mw-${k}`, i18n[k]!);
+			mw.messages.set(mwPrefix + k, i18n[k]!);
 		} else if (isMac) {
-			mw.messages.set(`cm-mw-${k.slice(0, -4)}`, i18n[k]!);
+			mw.messages.set(mwPrefix + k.slice(0, -4), i18n[k]!);
 		}
 	}
 };
@@ -51,7 +51,7 @@ export const cmSetI18N = async (cdn: string): Promise<void> => {
  * @param key 消息键，省略`cm-mw-`前缀
  * @param args 替换`$1`等的参数
  */
-export const msg = (key: string, ...args: string[]): string => mw.msg(`cm-mw-${key}`, ...args);
+export const msg = (key: string, ...args: string[]): string => mw.msg(mwPrefix + key, ...args);
 
 /**
  * 为所有链接添加`target="_blank"`
@@ -70,7 +70,7 @@ const blankTarget = ($dom: JQuery): JQuery => {
 export function parseMsg(key: string, text: boolean): string;
 export function parseMsg(key: string): JQuery;
 export function parseMsg(key: string, text?: boolean): string | JQuery {
-	const message = mw.message(`cm-mw-${key}`);
+	const message = mw.message(mwPrefix + key);
 	return text ? message.parse() : blankTarget(message.parseDom());
 }
 
