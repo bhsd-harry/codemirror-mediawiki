@@ -4,16 +4,13 @@ import {tokens} from './config.js';
 import {
 	isMac,
 } from './constants.js';
-import {hasTag} from './mediawiki.js';
 import type {Extension} from '@codemirror/state';
 import type {ConfigData} from 'wikiparser-node';
 import type {DOMEventHandlers} from '@codemirror/view';
-import type {TagName} from './config';
 
 declare type ISBNParser = (link: string) => string;
 
-const tags: TagName[] = ['extLinkProtocol', 'extLink', 'freeExtLinkProtocol', 'freeExtLink', 'magicLink', 'pageName'],
-	modKey = isMac ? 'metaKey' : 'ctrlKey',
+const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control';
 
 const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
@@ -44,8 +41,7 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 
 export const mouseEventListener = (
 	e: MouseEvent,
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	view: EditorView & {posAndSideAtCoords?: (coords: {x: number, y: number}) => {pos: number, assoc: 1 | -1} | null},
+	view: EditorView,
 	isbnParser?: ISBNParser,
 ): string | undefined => {
 	if (
@@ -54,30 +50,19 @@ export const mouseEventListener = (
 	) {
 		return undefined;
 	}
-	let pos: number | null,
-		assoc: 1 | -1 | undefined;
-	if (typeof view.posAndSideAtCoords === 'function') {
-		const posAndSide = view.posAndSideAtCoords(e);
-		if (!posAndSide) {
-			return undefined;
-		}
-		({pos, assoc} = posAndSide);
-	} else {
-		pos = view.posAtCoords(e);
-		if (!pos) {
-			return undefined;
-		}
+	const posAndSide = view.posAndSideAtCoords(e);
+	if (!posAndSide) {
+		return undefined;
 	}
-	const {state} = view,
+	const {pos, assoc} = posAndSide,
+		{state} = view,
 		tree = ensureSyntaxTree(state, pos);
 	if (!tree) {
 		return undefined;
 	}
-	let node = tree.resolve(pos, assoc ?? -1);
+	let node = tree.resolve(pos, assoc);
 	if (node.name.includes(tokens.linkToSection)) {
 		node = node.prevSibling!;
-	} else if (assoc === undefined && node.to === pos && !hasTag(node.name, tags)) {
-		node = tree.resolve(pos, 1);
 	}
 	const {name, from, to} = node;
 	if (name.includes('-extlink-protocol')) {
