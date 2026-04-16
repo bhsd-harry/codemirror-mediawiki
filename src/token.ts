@@ -65,6 +65,7 @@ export interface StringStream extends StringStreamBase {
 export type CompletionSectionName = 'Required' | 'Suggested' | 'Optional' | 'Deprecated';
 declare type ParamSuggestion = [string[], string, string, CompletionSectionName];
 export type ApiSuggestions<T = ParamSuggestion> = T[] & {description?: string};
+export type LinkSuggestion = [string, number, (string | [string])?];
 
 /**
  * 获取维基链接建议
@@ -87,7 +88,7 @@ export interface MwConfig extends MwConfigBase {
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
-	linkSuggest?: ApiSuggest<[string, number, (string | [string])?]>;
+	linkSuggest?: ApiSuggest<LinkSuggestion>;
 	paramSuggest?: ApiSuggest;
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;

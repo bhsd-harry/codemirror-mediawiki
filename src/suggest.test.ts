@@ -1,6 +1,6 @@
-import type {ApiSuggest, ApiSuggestions} from './token';
+import type {ApiSuggest, ApiSuggestions, LinkSuggestion} from './token';
 
-export const linkSuggest: ApiSuggest<[string, number, (string | [string])?]> = (s, _, ns = 0) => {
+export const linkSuggest: ApiSuggest<LinkSuggestion> = (s, _, ns = 0) => {
 	if (ns === 0) {
 		return [[`${s} (article)`, 0], ['Alice (user)', 0, `${s} (user)`], [`${s} (disambiguation)`, 0, [`Help:${s}`]]];
 	}

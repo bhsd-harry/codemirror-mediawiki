@@ -11,13 +11,14 @@ import {
 } from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {linkSelector} from './constants.js';
+import {linkSelector, isWMF} from './constants.js';
 import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {Extension, EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 import type {Tree, SyntaxNode} from '@lezer/common';
+import type {ApiSuggest, LinkSuggestion} from './token';
 import type {DocRange} from './util';
 
 declare interface LuaGlobal {
@@ -328,16 +329,45 @@ const map = {
 	linkDeco = Decoration.mark({class: linkSelector.slice(1)}),
 	reLink = ['', String.raw`module\s*:`]
 		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')),
+	reLinkIncomplete = ['', String.raw`module\s*:`]
+		.map(s => new RegExp(String.raw`^(['"]|\[=*\[)${s}.*$`, 'iu')),
 	lang = StreamLanguage.define(lua);
 
 /**
  * @implements
  * @test
  */
-const source: CompletionSource = context => {
-	const {state, pos} = context,
+const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource => async context => {
+	const {state, pos, explicit} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
-	if (!excludedTypes.has(node.name)) {
+	if ((explicit || isWMF) && linkSuggest && node.name === 'string' && pos > node.from) {
+		const offsetFull = getStringOffsetFull(state, node, state.sliceDoc(node.from, pos));
+		if (!offsetFull || pos <= node.from + offsetFull[0]) {
+			return null;
+		}
+		const [offset, isJson] = offsetFull,
+			search = state.sliceDoc(node.from + offset, pos);
+		if (/[|{}<>[\]#]/u.test(search)) {
+			return null;
+		}
+		const suggestions = await linkSuggest(
+				search,
+				false,
+				0,
+				isJson ? 'json' : 'Scribunto',
+			),
+			underscore = search.includes('_');
+		return suggestions.length === 0
+			? null
+			: {
+				from: node.from + offset,
+				options: suggestions.map(([label]): Completion => ({
+					label: underscore ? label.replaceAll(' ', '_') : label,
+					type: 'text',
+				})),
+				...!isWMF && {validFor: /^[^|{}<>[\]#]*$/u},
+			};
+	} else if (!excludedTypes.has(node.name)) {
 		return null;
 	}
 	const match = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w+$|\.{1,2}$/u);
@@ -493,20 +523,10 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 						node = nextSibling;
 					}
 				}
-			} else if (node.name === 'string') {
-				const {prevSibling} = node;
-				if (
-					(prevSibling?.name === 'variableName' || prevSibling?.name === 'variableName.standard')
-					&& /^[\s(]*$/u.test(state.sliceDoc(prevSibling.to, node.from))
-				) {
-					const func = sliceDoc(state, prevSibling),
-						isJson = func === 'mw.loadJsonData';
-					if (isJson || func === 'require' || func === 'mw.loadData') {
-						const offset = getStringOffset(state, node, reLink[isJson ? 0 : 1]);
-						if (offset) {
-							pushDecoration(decorations, linkDeco, node.from + offset, node.to - offset);
-						}
-					}
+			} else {
+				const offset = getStringOffsetFull(state, node);
+				if (offset) {
+					pushDecoration(decorations, linkDeco, node.from + offset[0], node.to - offset[0]);
 				}
 			}
 			node = node.nextSibling;
@@ -519,9 +539,32 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
  * @ignore
  * @test
  */
-export const getStringOffset = (state: EditorState, node: SyntaxNode, re = reLink[0]!): number | null => {
-	const mt = re.exec(sliceDoc(state, node));
+export const getStringOffset = (state: EditorState, node: SyntaxNode | string, re = reLink[0]!): number | null => {
+	const mt = re.exec(typeof node === 'string' ? node : sliceDoc(state, node));
 	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
+};
+
+/**
+ * @ignore
+ * @test
+ */
+export const getStringOffsetFull = (state: EditorState, node: SyntaxNode, str?: string): [number, boolean] | null => {
+	if (node.name !== 'string') {
+		return null;
+	}
+	const {prevSibling} = node;
+	if (
+		(prevSibling?.name === 'variableName' || prevSibling?.name === 'variableName.standard')
+		&& /^[\s(]*$/u.test(state.sliceDoc(prevSibling.to, node.from))
+	) {
+		const func = sliceDoc(state, prevSibling),
+			isJson = func === 'mw.loadJsonData';
+		if (isJson || func === 'require' || func === 'mw.loadData') {
+			const offset = getStringOffset(state, str ?? node, (str ? reLinkIncomplete : reLink)[isJson ? 0 : 1]);
+			return offset === null ? null : [offset, isJson];
+		}
+	}
+	return null;
 };
 
 export const markDocTagPlugin = ViewPlugin.fromClass(
@@ -549,12 +592,13 @@ export const markDocTagPlugin = ViewPlugin.fromClass(
 	},
 );
 
-const support: Extension = [
+const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 	lightHighlightStyle,
 	syntaxHighlighting(HighlightStyle.define([{tag: tags.standard(tags.variableName), class: 'cm-globals'}])),
-	lang.data.of({autocomplete: source}),
+	lang.data.of({autocomplete: getSource(linkSuggest)}),
 	foldService.of(fold),
 	markDocTagPlugin,
 ];
 
-export default (): LanguageSupport => new LanguageSupport(lang, support);
+export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}): LanguageSupport =>
+	new LanguageSupport(lang, getSupport(config?.linkSuggest));

@@ -1,6 +1,6 @@
 import {templateData} from './util';
 import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
-import type {ApiSuggest, ApiSuggestions, MwConfig, CompletionSectionName} from '../src/token';
+import type {ApiSuggest, ApiSuggestions, LinkSuggestion, MwConfig, CompletionSectionName} from '../src/token';
 import type {TemplateData} from './util';
 
 const templateParameters = new Map<string, ApiSuggestions>();
@@ -10,11 +10,11 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, number, (string | [string])?]> => {
-	let promise: Promise<ApiSuggestions<[string, number, (string | [string])?]>> | undefined,
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggestion> => {
+	let promise: Promise<ApiSuggestions<LinkSuggestion>> | undefined,
 		last: [string, boolean, number] | undefined;
 	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0, contentmodel?: string): Promise<
-		ApiSuggestions<[string, number, (string | [string])?]>
+		ApiSuggestions<LinkSuggestion>
 	> => {
 		if (subpage) {
 			gpssearch = title + gpssearch;
@@ -154,24 +154,30 @@ const paramSuggestFactory = (api: mw.Api, page: string): ApiSuggest => async (ti
 /**
  * 准备建议
  * @param page 页面标题
+ * @param linkOnly 是否仅准备链接建议
  */
-export default async (page: string): Promise<Pick<MwConfig, 'linkSuggest' | 'paramSuggest' | 'templateSignature'>> => {
+export default async (page: string, linkOnly?: boolean): Promise<
+	Pick<MwConfig, 'linkSuggest' | 'paramSuggest' | 'templateSignature'>
+> => {
 	await mw.loader.using(['mediawiki.api', 'mediawiki.Title']);
-	const api = new mw.Api({parameters: {formatversion: 2}});
-	return {
-		linkSuggest: linkSuggestFactory(api, page),
-		paramSuggest: paramSuggestFactory(api, page),
-		templateSignature(templateName, parameterName): string | undefined {
-			if (!templateName || !parameterName) {
-				return undefined;
-			}
-			const data = templateData.get(cmNormalizeTitle(templateName));
-			if (!data) {
-				return undefined;
-			}
-			const parameter = parameterName.slice(0, -1).trim(),
-				label = Object.hasOwn(data.params, parameter) && data.params[parameter]!.label;
-			return label ? `{{${templateName.trim()}|${parameter}=${label}}}` : undefined;
-		},
-	};
+	const api = new mw.Api({parameters: {formatversion: 2}}),
+		linkSuggest = linkSuggestFactory(api, page);
+	return linkOnly
+		? {linkSuggest}
+		: {
+			linkSuggest,
+			paramSuggest: paramSuggestFactory(api, page),
+			templateSignature(templateName, parameterName): string | undefined {
+				if (!templateName || !parameterName) {
+					return undefined;
+				}
+				const data = templateData.get(cmNormalizeTitle(templateName));
+				if (!data) {
+					return undefined;
+				}
+				const parameter = parameterName.slice(0, -1).trim(),
+					label = Object.hasOwn(data.params, parameter) && data.params[parameter]!.label;
+				return label ? `{{${templateName.trim()}|${parameter}=${label}}}` : undefined;
+			},
+		};
 };

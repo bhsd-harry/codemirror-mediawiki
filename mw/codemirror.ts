@@ -276,6 +276,7 @@ export class CodeMirror extends CodeMirror6 {
 		} else if (this.lang === 'lua') {
 			mw.loader.load('mediawiki.Title');
 			this.langConfig = {
+				...config,
 				titleParser(state, node): string | undefined {
 					const offset = getStringOffset(state, node);
 					return offset
@@ -768,6 +769,8 @@ export class CodeMirror extends CodeMirror6 {
 		$textarea.data('CodeMirror6', cm);
 		if (isCMWiki) {
 			await cm.setLanguage(lang, await getMwConfig(tagModes));
+		} else if (lang === 'lua') {
+			await cm.setLanguage(lang, await prepareSuggest(cm.page, true));
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer(allPrefs);

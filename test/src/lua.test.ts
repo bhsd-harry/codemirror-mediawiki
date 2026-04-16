@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import {foldable, syntaxTree} from '@codemirror/language';
-import lua, {markDocTag, getStringOffset} from '../../dist/lua.js';
+import lua, {markDocTag, getStringOffset, getStringOffsetFull} from '../../dist/lua.js';
 import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util.js';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
@@ -40,6 +40,12 @@ const stringTest = (doc: string, result: number | null): void => {
 	const state = createState(doc, lang),
 		node = syntaxTree(state).resolveInner(0, 1);
 	assert.strictEqual(getStringOffset(state, node), result);
+};
+
+const stringFullTest = (doc: string, result: [number, boolean] | null): void => {
+	const state = createState(doc, lang),
+		node = syntaxTree(state).resolveInner(doc.length, -1);
+	assert.deepStrictEqual(getStringOffsetFull(state, node), result, doc);
 };
 
 describe('Lua autocompletion', () => {
@@ -268,5 +274,29 @@ describe('getStringOffset', () => {
 		stringTest('[[abc', null);
 		stringTest('[=[abc]=]', 3);
 		stringTest('[=[abc', null);
+	});
+});
+
+describe('getStringOffsetFull', () => {
+	it('not a string', () => {
+		stringFullTest('abc', null);
+	});
+	it('not a function call', () => {
+		stringFullTest('local a = "abc"', null);
+	});
+	it('not a supported function call', () => {
+		stringFullTest('f([[abc]]', null);
+		stringFullTest('mw.f "abc"', null);
+	});
+	it('mw.loadJsonData', () => {
+		stringFullTest('mw.loadJsonData [[abc]]', [2, true]);
+		stringFullTest('mw.loadJsonData( [=[abc]=]', [3, true]);
+		stringFullTest('mw.loadJsonData "abc"', [1, true]);
+	});
+	it('require and mw.loadData', () => {
+		stringFullTest('require( "abc"', null);
+		stringFullTest('mw.loadData "abc"', null);
+		stringFullTest('require "module:abc"', [1, false]);
+		stringFullTest('mw.loadData("Module : abc"', [1, false]);
 	});
 });
