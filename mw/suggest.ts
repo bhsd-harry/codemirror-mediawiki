@@ -10,11 +10,11 @@ const templateParameters = new Map<string, ApiSuggestions>();
  * @param api mw.Api 实例
  * @param title 页面标题
  */
-const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, number, string?]> => {
-	let promise: Promise<ApiSuggestions<[string, number, string?]>> | undefined,
+const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, number, (string | [string])?]> => {
+	let promise: Promise<ApiSuggestions<[string, number, (string | [string])?]>> | undefined,
 		last: [string, boolean, number] | undefined;
-	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0): Promise<
-		ApiSuggestions<[string, number, string?]>
+	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0, contentmodel?: string): Promise<
+		ApiSuggestions<[string, number, (string | [string])?]>
 	> => {
 		if (subpage) {
 			gpssearch = title + gpssearch;
@@ -33,14 +33,18 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, num
 							gpsnamespace,
 							gpslimit: 'max',
 							...!subpage && {redirects: true},
+							...contentmodel && {prop: 'info'},
 						},
 						{query}: {
 							query?: {
-								pages?: {title: string, ns: number}[];
+								pages?: {title: string, ns: number, contentmodel?: string}[];
 								redirects?: {from: string, to: string}[];
 							};
-						} = await api.get(params),
-						pages = query?.pages ?? [];
+						} = await api.get(params);
+					let pages = query?.pages ?? [];
+					if (contentmodel) {
+						pages = pages.filter(({contentmodel: m}) => m === contentmodel);
+					}
 					if (subpage) {
 						const {length} = title;
 						return pages.map(({title: t, ns}) => [t.slice(length), ns]);
@@ -48,13 +52,19 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<[string, num
 					const redirects = query?.redirects ?? [];
 					return pages.map(({title: t, ns}) => {
 						const target = redirects.find(({to}) => to === t)?.from;
-						if (gpsnamespace === 0 || !target) {
+						if (gpsnamespace === 0) {
+							// 重定向目标可以位于任何命名空间
 							return [t, ns, target!];
+						} else if (!target) {
+							// 没有重定向，直接返回不含命名空间前缀的标题
+							return [new mw.Title(t).getMainText(), ns];
 						}
 						const targetTitle = new mw.Title(target);
 						return ns === gpsnamespace
+							// 位于同一命名空间的重定向，返回不含命名空间前缀的标题
 							? [new mw.Title(t).getMainText(), ns, targetTitle.getMainText()]
-							: [targetTitle.getMainText(), targetTitle.getNamespaceId()];
+							// 位于不同命名空间的重定向，舍弃重定向目标
+							: [targetTitle.getMainText(), targetTitle.getNamespaceId(), [t]];
 					});
 				} catch {
 					return [];

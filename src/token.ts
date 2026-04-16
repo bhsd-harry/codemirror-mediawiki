@@ -71,9 +71,14 @@ export type ApiSuggestions<T = ParamSuggestion> = T[] & {description?: string};
  * @param search 搜索字符串，开头不包含` `
  * @param subpage 是否为子页面
  * @param namespace 命名空间
+ * @param contentmodel 内容模型
  */
-export type ApiSuggest<T = ParamSuggestion> = (search: string, subpage?: boolean, namespace?: number) =>
-	ApiSuggestions<T> | Promise<ApiSuggestions<T>>;
+export type ApiSuggest<T = ParamSuggestion> = (
+	search: string,
+	subpage?: boolean,
+	namespace?: number,
+	contentmodel?: string,
+) => ApiSuggestions<T> | Promise<ApiSuggestions<T>>;
 
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
@@ -82,7 +87,7 @@ export interface MwConfig extends MwConfigBase {
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
-	linkSuggest?: ApiSuggest<[string, number, string?]>;
+	linkSuggest?: ApiSuggest<[string, number, (string | [string])?]>;
 	paramSuggest?: ApiSuggest;
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;

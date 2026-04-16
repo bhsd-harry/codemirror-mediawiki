@@ -6,6 +6,7 @@
 **Added**
 
 - The [openLinks](./README.md#openlinks) extension now also supports Lua functions `require`, `mw.loadData` and `mw.loadJsonData` on a MediaWiki site
+- [Autocompletion](./README.md#autocompletion) for the `src` attribute of `<templatestyles>` tags on a MediaWiki site
 
 ## 3.12.5
 

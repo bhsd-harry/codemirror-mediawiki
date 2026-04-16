@@ -28,8 +28,9 @@ const applyTest = applyFunctionTest(apply),
 const completion: Omit<CompletionResult, 'from'> = {
 	options: [
 		{label: 'a (article)', type: 'text'},
-		{label: 'a (user)', displayLabel: 'Alice (user)', detail: 'a (user)', type: 'text'},
-		{label: 'a (user)', type: 'redirect'},
+		{label: 'a (user)', displayLabel: 'Alice (user)', detail: '↲ a (user)', type: 'text'},
+		{label: 'a (user)', type: 'redirect', detail: '↳ Alice (user)'},
+		{label: 'a (disambiguation)', type: 'redirect', detail: '↳ Help:a'},
 	],
 	validFor: /^[^|{}<>[\]#]*$/u,
 };
@@ -135,6 +136,14 @@ describe('autocompletion', () => {
 			'<gallery> a',
 			{
 				from: 10,
+				options: [{label: 'a', type: 'text'}],
+				validFor: /^[^|{}<>[\]#]*$/u,
+			},
+		);
+		await mockTest(
+			'<templatestyles src="a',
+			{
+				from: 21,
 				options: [{label: 'a', type: 'text'}],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},

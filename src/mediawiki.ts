@@ -186,8 +186,9 @@ export class FullMediaWiki extends MediaWiki {
 	 * @param str 搜索字符串，开头不包含` `，但可能包含`_`
 	 * @param namespace 命名空间
 	 * @param type 命名空间符合预设值时的图标类型
+	 * @param contentmodel 内容模型
 	 */
-	async #linkSuggest(str: string, namespace: number, type?: string): Promise<
+	async #linkSuggest(str: string, namespace: number, type?: string, contentmodel?: string): Promise<
 		{offset: number, options: Completion[]} | undefined
 	> {
 		const {config: {linkSuggest, nsid}, nsRegex} = this;
@@ -225,8 +226,16 @@ export class FullMediaWiki extends MediaWiki {
 		const underscore = str.slice(offset).includes('_');
 		return {
 			offset,
-			options: (await linkSuggest(search, subpage, ns))
+			options: (await linkSuggest(search, subpage, ns, contentmodel))
 				.flatMap(([label, pageNs, redirect = label]): Completion | Completion[] => {
+					if (Array.isArray(redirect)) {
+						// 位于不同命名空间的重定向
+						return {
+							type: 'redirect',
+							label: underscore ? label.replaceAll(' ', '_') : label,
+							detail: `↳ ${redirect[0]}`,
+						};
+					}
 					const normalized = underscore ? redirect.replaceAll(' ', '_') : redirect;
 					return redirect === label
 						? {
@@ -238,11 +247,12 @@ export class FullMediaWiki extends MediaWiki {
 								type: pageNs === namespace && type || 'text',
 								label: normalized,
 								displayLabel: label,
-								detail: redirect,
+								detail: `↲ ${redirect}`,
 							},
 							{
 								type: 'redirect',
 								label: normalized,
+								detail: `↳ ${label}`,
 							},
 						];
 				}),
@@ -300,7 +310,8 @@ export class FullMediaWiki extends MediaWiki {
 				// 模板名
 				if (isParserFunction || hasTag(types, 'templateName')) {
 					const options = search.includes(':') ? [] : [...this.functionSynonyms],
-						suggestions = await this.#linkSuggest(search, 10, 'type') ?? {offset: 0, options: []};
+						suggestions = await this.#linkSuggest(search, 10, 'type')
+							?? {offset: 0, options: []};
 					options.push(
 						...suggestions.options.map((option): Completion => ({...option, apply: applyDisplayLabel})),
 					);
@@ -319,38 +330,43 @@ export class FullMediaWiki extends MediaWiki {
 					};
 				}
 				// 页面名
-				const isPage = hasTag(types, 'pageName') && hasTag(types, 'parserFunction') || 0;
-				if (isPage && search.trim() || hasTag(types, 'linkPageName')) {
+				const isPage = hasTag(types, 'pageName'),
+					isPageFunc = isPage && hasTag(types, 'parserFunction') || 0,
+					isTemplateStyles = isPage && hasTag(types, 'extTagAttributeValue');
+				if (isPageFunc && search.trim() || isTemplateStyles || hasTag(types, 'linkPageName')) {
 					if (!this.config.linkSuggest) {
 						return null;
 					}
 					const isLink = isWikiLink(n);
 					let prefix = '',
-						ns = 0;
-					if (isPage) {
+						ns = 0,
+						contentmodel: string | undefined;
+					if (isPageFunc) {
 						ns = Number(
 							[...types].find(type => type.startsWith('mw-function-'))!.slice(12),
 						);
 						prefix = this.autocompleteNamespaces[ns as keyof typeof this.autocompleteNamespaces];
+						if (prefix === 'Module:') {
+							contentmodel = 'Scribunto';
+						}
+					} else if (isTemplateStyles) {
+						ns = 10;
+						contentmodel = 'sanitized-css';
 					} else if (hasTag(types, 'mw-tag-gallery' as TagName) && !isLink) {
 						ns = 6;
 					}
-					const suggestions = await this.#linkSuggest(prefix + search, ns);
+					const suggestions = await this.#linkSuggest(prefix + search, ns, undefined, contentmodel);
 					if (!suggestions) {
 						return null;
-					} else if (!isPage && isLink) {
+					} else if (!isPageFunc && !isTemplateStyles && isLink) {
 						suggestions.options = suggestions.options.map((option): Completion => ({...option, apply}));
 					} else {
-						if (prefix === 'Module:') {
-							suggestions.options = suggestions.options
-								.filter(({label}) => !label.endsWith('/doc'));
-						}
 						suggestions.options = suggestions.options
 							.map((option): Completion => ({...option, apply: applyDisplayLabel}));
 					}
 					return {
 						// eslint-disable-next-line unicorn/explicit-length-check
-						from: start + suggestions.offset - (isPage && prefix.length),
+						from: start + suggestions.offset - (isPageFunc && prefix.length),
 						options: suggestions.options,
 						...obj,
 					};
