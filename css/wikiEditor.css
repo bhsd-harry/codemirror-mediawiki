@@ -2,18 +2,31 @@
 	z-index: 7;
 }
 
-.codemirror-readonly .group-format,
-.codemirror-readonly .group-insert,
-.codemirror-readonly .tabs,
-.codemirror-readonly .sections,
-.codemirror-wiki .group-codemirror,
-.codemirror-coding .group-codemirror,
-.codemirror-coding .group-default,
-.codemirror-coding .group-format,
-.codemirror-coding .group-insert,
-.codemirror-coding .tabs,
-.codemirror-coding .sections,
-.codeEditor-ui-toolbar .group-codemirror6,
-.codeEditor-ui-toolbar .group-codemirror6-search {
+/* stylelint-disable relative-selector-nesting-notation */
+.codemirror-readonly {
+	.group-format,
+	.group-insert,
+	.tabs,
+	.sections {
+		display: none;
+	}
+}
+.codemirror-wiki .group-codemirror {
 	display: none;
+}
+.codemirror-coding {
+	.group-codemirror,
+	.group-default,
+	.group-format,
+	.group-insert,
+	.tabs,
+	.sections {
+		display: none;
+	}
+}
+.codeEditor-ui-toolbar {
+	.group-codemirror6,
+	.group-codemirror6-search {
+		display: none;
+	}
 }

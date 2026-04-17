@@ -13,9 +13,10 @@ import type {MwConfig} from './token';
 
 declare type ISBNParser = (link: string) => string;
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
+const modKey = isMac ? 'metaKey' : 'ctrlKey';
+const key = isMac ? 'Meta' : 'Control',
 	pagename = `.${mwPrefix}pagename`,
+	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	wikiLinks = /* @__PURE__ */ (() => [
 		'template-name',
 		'link-pagename',
@@ -23,10 +24,10 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
 	])(),
-	key = isMac ? 'Meta' : 'Control';
+	openLinksCls = 'cm-open-links';
 
-const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
-	contentDOM.style[toggle ? 'setProperty' : 'removeProperty']('--codemirror-cursor', 'pointer');
+const toggleOpenLinks = ({dom}: EditorView, toggle = false): void => {
+	dom.classList.toggle(openLinksCls, toggle);
 };
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
@@ -121,15 +122,15 @@ const eventHandlers: DOMEventHandlers<unknown> = {
 };
 
 const getOpenLinksTheme = (selectors: string[], extra?: string): Extension => EditorView.theme({
-	[selectors.join()]: {
-		cursor: 'var(--codemirror-cursor)',
-	},
-	[selectors.map(selector => `${selector}:hover`).join()]: {
-		color: 'var(--cm-active)',
-	},
-	...extra && {
-		[extra]: {
+	[`&.${openLinksCls}`]: {
+		[selectors.map(selector => `& ${selector}:hover`).join()]: {
+			cursor: 'pointer',
 			color: 'var(--cm-active)',
+		},
+		...extra && {
+			[`& ${extra}`]: {
+				color: 'var(--cm-active)',
+			},
 		},
 	},
 });

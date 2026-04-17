@@ -696,9 +696,9 @@ export const mediawikiFold = /* @__PURE__ */ ((): Extension => [
 			lineHeight: 1.2,
 			padding: '0 1px',
 			opacity: 0.6,
-		},
-		[`${foldSelector}:hover`]: {
-			opacity: 1,
+			'&:hover': {
+				opacity: 1,
+			},
 		},
 	}),
 	EditorView.baseTheme({

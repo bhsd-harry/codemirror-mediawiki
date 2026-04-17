@@ -250,10 +250,10 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 	EditorView.theme({
 		[statusSelector]: {
 			lineHeight: 1.4,
-		},
-		[`${statusSelector}>div`]: {
-			padding: '0 .3em',
-			display: 'table-cell',
+			'&>div': {
+				padding: '0 .3em',
+				display: 'table-cell',
+			},
 		},
 		[workerSelector]: {
 			WebkitUserSelect: 'none',
@@ -264,25 +264,27 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 				+ '<path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"/>'
 				+ '</svg>'
 				+ "')",
-		},
-		[`${workerSelector}>*`]: {
-			display: 'table-cell',
-			whiteSpace: 'nowrap',
+			'&>*': {
+				display: 'table-cell',
+				whiteSpace: 'nowrap',
+				'&>div': {
+					display: 'inline-block',
+					verticalAlign: 'middle',
+					'&:first-child': {
+						marginRight: '4px',
+						width: '1em',
+						height: '1em',
+					},
+				},
+			},
 		},
 		[`${errorSelector},${warningSelector}`]: {
 			paddingRight: '8px',
 		},
-		[`.${workerCls} ${errorSelector}, .${workerCls} ${warningSelector}`]: {
-			cursor: 'pointer',
-		},
-		[`${workerSelector}>*>div`]: {
-			display: 'inline-block',
-			verticalAlign: 'middle',
-		},
-		[`${workerSelector}>*>div:first-child`]: {
-			marginRight: '4px',
-			width: '1em',
-			height: '1em',
+		[`.${workerCls}`]: {
+			[`& ${errorSelector}, & ${warningSelector}`]: {
+				cursor: 'pointer',
+			},
 		},
 		[`${disabledSelector},${enabledSelector}`]: {
 			WebkitMaskImage: 'var(--fix-icon)',
@@ -309,19 +311,19 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			borderRadius: '2px',
 			outline: 'none',
 			whiteSpace: 'nowrap',
-		},
-		[`${menuSelector}>div`]: {
-			padding: '1px 5px',
-			cursor: 'pointer',
+			'&>div': {
+				padding: '1px 5px',
+				cursor: 'pointer',
+			},
 		},
 		[messageSelector]: {
 			borderStyle: 'solid',
 			borderWidth: '0 1px',
 			width: '100%',
-		},
-		[`${messageSelector} ${actionSelector}`]: {
-			paddingTop: 0,
-			paddingBottom: 0,
+			[`& ${actionSelector}`]: {
+				paddingTop: 0,
+				paddingBottom: 0,
+			},
 		},
 		[`.${lineCls}`]: {
 			cursor: 'pointer',
@@ -332,24 +334,28 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 		},
 	}),
 	EditorView.baseTheme({
-		[`&light ${menuSelector}`]: {
-			backgroundColor: '#f5f5f5',
-			boxShadow: '0 2px 2px 0 rgb(0,0,0,.25)',
+		'&light': {
+			[`& ${menuSelector}`]: {
+				backgroundColor: '#f5f5f5',
+				boxShadow: '0 2px 2px 0 rgb(0,0,0,.25)',
+			},
+			[`& ${menuHover}`]: {
+				backgroundColor: '#e2f2ff',
+			},
+			[`& ${messageSelector}`]: {
+				borderColor: '#c8ccd1',
+			},
 		},
-		[`&light ${menuHover}`]: {
-			backgroundColor: '#e2f2ff',
-		},
-		[`&light ${messageSelector}`]: {
-			borderColor: '#c8ccd1',
-		},
-		[`&dark ${menuSelector}`]: {
-			backgroundColor: '#252a33',
-		},
-		[`&dark ${menuHover}`]: {
-			backgroundColor: bgDark,
-		},
-		[`&dark ${messageSelector}`]: {
-			borderColor: '#000',
+		'&dark': {
+			[`& ${menuSelector}`]: {
+				backgroundColor: '#252a33',
+			},
+			[`& ${menuHover}`]: {
+				backgroundColor: bgDark,
+			},
+			[`& ${messageSelector}`]: {
+				borderColor: '#000',
+			},
 		},
 	}),
 ];

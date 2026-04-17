@@ -582,16 +582,22 @@ const getGrounds = (
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 const wikiTheme = /* @__PURE__ */ EditorView.theme({
-	[getSelector(['', '~*'], 'section--1')]: {
-		fontSize: '1.8em',
-		lineHeight: '1.2em',
+	[`.${mwPrefix}section--1`]: {
+		'&,&~*': {
+			fontSize: '1.8em',
+			lineHeight: '1.2em',
+		},
 	},
-	[getSelector(['', '~*'], 'section--2')]: {
-		fontSize: '1.5em',
-		lineHeight: '1.2em',
+	[`.${mwPrefix}section--2`]: {
+		'&,&~*': {
+			fontSize: '1.5em',
+			lineHeight: '1.2em',
+		},
 	},
-	[getSelector(['3', '3~*', '4', '4~*', '5', '5~*', '6', '6~*'], 'section--')]: {
-		fontWeight: 'bold',
+	[getSelector(['3', '4', '5', '6'], 'section--')]: {
+		'&,&~*': {
+			fontWeight: 'bold',
+		},
 	},
 	[`${
 		getSelector(['section-header', 'template', 'parserfunction', 'file-delimiter', 'magic-link'])
@@ -747,19 +753,17 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		padding: '2px 5px',
 		width: 'max-content',
 		maxWidth: '60vw',
-	},
-	[`${hoverSelector} *`]: {
-		marginTop: '0!important',
-		marginBottom: '0!important',
-	},
-	[`${hoverSelector}>div`]: {
-		fontSize: '90%',
-		lineHeight: 1.4,
-	},
-	'.cm-completionIcon-redirect': {
-		'&:after': {
-			content: '"↳"',
+		'& *': {
+			marginTop: '0!important',
+			marginBottom: '0!important',
 		},
+		'&>div': {
+			fontSize: '90%',
+			lineHeight: 1.4,
+		},
+	},
+	'.cm-completionIcon-redirect:after': {
+		content: '"↳"',
 	},
 });
 

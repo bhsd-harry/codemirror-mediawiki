@@ -1,3 +1,4 @@
+import {isWMF} from '../src/constants';
 import {templateData} from './util';
 import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions, LinkSuggestion, MwConfig, CompletionSectionName} from '../src/token';
@@ -31,7 +32,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggesti
 							generator: 'prefixsearch',
 							gpssearch,
 							gpsnamespace,
-							gpslimit: 'max',
+							...!isWMF && {gpslimit: 'max'},
 							...!subpage && {redirects: true},
 							...contentmodel && {prop: 'info'},
 						},

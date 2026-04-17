@@ -42,8 +42,10 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-ref': 'rgb(223,242,235,.5)',
 			'--cm-active': '#05f',
 		},
-		'.cm-globals,.cm-globals>*': {
-			color: '#164',
+		'.cm-globals': {
+			'&,&>*': {
+				color: '#164',
+			},
 		},
 		'.cm-doctag>*': {
 			color: '#219',
@@ -92,8 +94,10 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				'--cm-ref': 'rgb(60,90,80,0.5)',
 				'--cm-active': '#b6d4fb',
 			},
-			'.cm-globals,.cm-globals>*': {
-				color: '#d08770',
+			'.cm-globals': {
+				'&,&>*': {
+					color: '#d08770',
+				},
 			},
 			'.cm-doctag>*': {
 				color: '#81a1c1',

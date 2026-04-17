@@ -8,7 +8,7 @@ declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
 const baseVersion = '3.13',
-	addons = ['autocompletion'];
+	addons = ['autocompletion', 'openLinks'];
 
 mw.loader.addStyleTag($STYLE);
 
