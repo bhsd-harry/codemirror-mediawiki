@@ -6,16 +6,10 @@ import {
 } from './constants.js';
 import type {Extension} from '@codemirror/state';
 import type {ConfigData} from 'wikiparser-node';
-import type {DOMEventHandlers} from '@codemirror/view';
 
 declare type ISBNParser = (link: string) => string;
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	key = isMac ? 'Meta' : 'Control';
-
-const toggleOpenLinks = ({contentDOM}: EditorView, toggle?: boolean): void => {
-	contentDOM.style[toggle ? 'setProperty' : 'removeProperty']('--codemirror-cursor', 'pointer');
-};
+const modKey = isMac ? 'metaKey' : 'ctrlKey';
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
 
@@ -81,22 +75,6 @@ export const mouseEventListener = (
 	return undefined;
 };
 
-const eventHandlers: DOMEventHandlers<unknown> = {
-	keydown(e, view) {
-		if (e.key === key) {
-			toggleOpenLinks(view, true);
-		}
-	},
-	keyup(e, view) {
-		if (e.key === key) {
-			toggleOpenLinks(view);
-		}
-	},
-	mousemove(e, view) {
-		toggleOpenLinks(view, e[modKey]);
-	},
-};
-
 /**
  * Get the [openLinks](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#openlinks)
  * extension for Wikitext.
@@ -111,7 +89,6 @@ export const openLinks = (
 	);
 	return [
 		EditorView.domEventHandlers({
-			...eventHandlers,
 			mousedown(e, view) {
 				if (e.button !== 0) {
 					return undefined;

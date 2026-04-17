@@ -290,14 +290,14 @@ export const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		padding: '2px 5px',
 		width: 'max-content',
 		maxWidth: '60vw',
-	},
-	[`${hoverSelector} *`]: {
-		marginTop: '0!important',
-		marginBottom: '0!important',
-	},
-	[`${hoverSelector}>div`]: {
-		fontSize: '90%',
-		lineHeight: 1.4,
+		'& *': {
+			marginTop: '0!important',
+			marginBottom: '0!important',
+		},
+		'&>div': {
+			fontSize: '90%',
+			lineHeight: 1.4,
+		},
 	},
 });
 

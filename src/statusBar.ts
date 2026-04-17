@@ -149,42 +149,44 @@ export default (): Extension => [
 	EditorView.theme({
 		[statusSelector]: {
 			lineHeight: 1.4,
-		},
-		[`${statusSelector}>div`]: {
-			padding: '0 .3em',
-			display: 'table-cell',
+			'&>div': {
+				padding: '0 .3em',
+				display: 'table-cell',
+			},
 		},
 		[workerSelector]: {
 			WebkitUserSelect: 'none',
 			userSelect: 'none',
-		},
-		[`${workerSelector}>*`]: {
-			display: 'table-cell',
-			whiteSpace: 'nowrap',
+			'&>*': {
+				display: 'table-cell',
+				whiteSpace: 'nowrap',
+				'&>div': {
+					display: 'inline-block',
+					verticalAlign: 'middle',
+					'&:first-child': {
+						marginRight: '4px',
+						width: '1em',
+						height: '1em',
+					},
+				},
+			},
 		},
 		[`${errorSelector},${warningSelector}`]: {
 			paddingRight: '8px',
 		},
-		[`.${workerCls} ${errorSelector}, .${workerCls} ${warningSelector}`]: {
-			cursor: 'pointer',
-		},
-		[`${workerSelector}>*>div`]: {
-			display: 'inline-block',
-			verticalAlign: 'middle',
-		},
-		[`${workerSelector}>*>div:first-child`]: {
-			marginRight: '4px',
-			width: '1em',
-			height: '1em',
+		[`.${workerCls}`]: {
+			[`& ${errorSelector}, & ${warningSelector}`]: {
+				cursor: 'pointer',
+			},
 		},
 		[messageSelector]: {
 			borderStyle: 'solid',
 			borderWidth: '0 1px',
 			width: '100%',
-		},
-		[`${messageSelector} ${actionSelector}`]: {
-			paddingTop: 0,
-			paddingBottom: 0,
+			[`& ${actionSelector}`]: {
+				paddingTop: 0,
+				paddingBottom: 0,
+			},
 		},
 		[`.${lineCls}`]: {
 			cursor: 'pointer',
@@ -195,11 +197,15 @@ export default (): Extension => [
 		},
 	}),
 	EditorView.baseTheme({
-		[`&light ${messageSelector}`]: {
-			borderColor: '#c8ccd1',
+		'&light': {
+			[`& ${messageSelector}`]: {
+				borderColor: '#c8ccd1',
+			},
 		},
-		[`&dark ${messageSelector}`]: {
-			borderColor: '#000',
+		'&dark': {
+			[`& ${messageSelector}`]: {
+				borderColor: '#000',
+			},
 		},
 	}),
 ];
