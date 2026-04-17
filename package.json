@@ -26,6 +26,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
+		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --omit=dev",
 		"prepublishOnly": "npm run build",
 		"build:core": "tsc && esbuild src/config.ts --bundle --format=esm --external:@lezer/highlight --outfile=dist/config.js --legal-comments=inline && rm dist/*-page.{js,d.ts}",
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --minify --sourcemap --outdir=.",
@@ -50,7 +51,7 @@
 		"@codemirror/lint": "^6.9.5",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.41.0",
-		"marked": "^18.0.0",
+		"marked": "^18.0.1",
 		"wikiparser-node": "^1.38.1"
 	},
 	"devDependencies": {
@@ -60,11 +61,11 @@
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
 		"@types/node": "^24.11.0",
-		"@typescript-eslint/eslint-plugin": "^8.58.1",
-		"@typescript-eslint/parser": "^8.58.1",
+		"@typescript-eslint/eslint-plugin": "^8.58.2",
+		"@typescript-eslint/parser": "^8.58.2",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",
-		"eslint": "^10.2.0",
+		"eslint": "^10.2.1",
 		"eslint-plugin-es-x": "^9.6.0",
 		"eslint-plugin-jsdoc": "^62.9.0",
 		"eslint-plugin-jsonc": "^3.1.2",
@@ -76,9 +77,9 @@
 		"stylelint": "^17.8.0",
 		"stylelint-config-recommended": "^18.0.0",
 		"stylelint-plugin-use-baseline": "^1.4.1",
-		"typescript": "^6.0.2"
+		"typescript": "^6.0.3"
 	},
 	"overrides": {
-		"eslint": "^10.2.0"
+		"eslint": "^10.2.1"
 	}
 }

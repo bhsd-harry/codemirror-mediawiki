@@ -38,12 +38,6 @@ export const mouseEventListener = (
 	view: EditorView,
 	isbnParser?: ISBNParser,
 ): string | undefined => {
-	if (
-		!e[modKey]
-		|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
-	) {
-		return undefined;
-	}
 	const posAndSide = view.posAndSideAtCoords(e);
 	if (!posAndSide) {
 		return undefined;
@@ -75,6 +69,10 @@ export const mouseEventListener = (
 	return undefined;
 };
 
+const notOpenableLink = (e: MouseEvent): boolean => e.button !== 0
+	|| !e[modKey]
+	|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline');
+
 /**
  * Get the [openLinks](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#openlinks)
  * extension for Wikitext.
@@ -90,7 +88,7 @@ export const openLinks = (
 	return [
 		EditorView.domEventHandlers({
 			mousedown(e, view) {
-				if (e.button !== 0) {
+				if (notOpenableLink(e)) {
 					return undefined;
 				}
 				const url = mouseEventListener(
