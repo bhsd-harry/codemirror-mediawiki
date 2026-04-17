@@ -15,7 +15,7 @@ Object.assign(globalThis, {
 const element = new Element();
 
 const mockTest = (doc: string, pos: number, assoc: 1 | -1, result?: string): void => {
-	const e = Object.assign(new Event('click'), {metaKey: true, ctrlKey: true}),
+	const e = Object.assign(new Event('click')),
 		state = createState(doc),
 		view = {
 			state,

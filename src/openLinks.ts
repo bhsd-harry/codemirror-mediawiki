@@ -66,12 +66,6 @@ export const mouseEventListener = (
 	isbnParser?: ISBNParser,
 	titleParser?: MwConfig['titleParser'],
 ): string | undefined => {
-	if (
-		!e[modKey]
-		|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
-	) {
-		return undefined;
-	}
 	const posAndSide = view.posAndSideAtCoords(e);
 	if (!posAndSide) {
 		return undefined;
@@ -135,6 +129,10 @@ const getOpenLinksTheme = (selectors: string[], extra?: string): Extension => Ed
 	},
 });
 
+const notOpenableLink = (e: MouseEvent): boolean => e.button !== 0
+	|| !e[modKey]
+	|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline');
+
 export const openLinks = (
 	articlePath?: string,
 ) => (
@@ -147,7 +145,7 @@ export const openLinks = (
 		EditorView.domEventHandlers({
 			...eventHandlers,
 			mousedown(e, view) {
-				if (e.button !== 0) {
+				if (notOpenableLink(e)) {
 					return undefined;
 				}
 				const url = mouseEventListener(
@@ -184,11 +182,7 @@ export const openLinksForLua = ({langConfig}: CodeMirror6): Extension => langCon
 		EditorView.domEventHandlers({
 			...eventHandlers,
 			mousedown(e, view) {
-				if (
-					e.button !== 0
-					|| !e[modKey]
-					|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
-				) {
+				if (notOpenableLink(e)) {
 					return undefined;
 				}
 				const pos = view.posAtCoords(e);
