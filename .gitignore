@@ -6,6 +6,7 @@ dist/
 !/dist/demo.min.js
 /mediawiki.css
 /*.map
+/package-lock.json
 .eslintcache
 /test/*.wiki
 /test/prof*.json

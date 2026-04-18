@@ -65,7 +65,7 @@ export interface StringStream extends StringStreamBase {
 export type CompletionSectionName = 'Required' | 'Suggested' | 'Optional' | 'Deprecated';
 declare type ParamSuggestion = [string[], string, string, CompletionSectionName];
 export type ApiSuggestions<T = ParamSuggestion> = T[] & {description?: string};
-export type LinkSuggestion = [string, number, (string | [string])?];
+export type LinkSuggestion = [string, number, (string | [string] | undefined)?];
 
 /**
  * 获取维基链接建议

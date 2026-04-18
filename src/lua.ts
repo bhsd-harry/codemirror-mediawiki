@@ -12,7 +12,7 @@ import {
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
 import {linkSelector, isWMF} from './constants.js';
-import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration} from './util.js';
+import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration, useUnderscore} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {Extension, EditorState, Range} from '@codemirror/state';
@@ -362,7 +362,7 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 			: {
 				from: node.from + offset,
 				options: suggestions.map(([label]): Completion => ({
-					label: underscore ? label.replaceAll(' ', '_') : label,
+					label: useUnderscore(label, underscore),
 					type: 'text',
 				})),
 				...!isWMF && {validFor: /^[^|{}<>[\]#]*$/u},

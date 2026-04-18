@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.13.1
+
+*2026-04-19*
+
+**Added**
+
+- The [openLinks](./README.md#openlinks) extension and the [autocompletion](./README.md#autocompletion) extension now also supports internal links starting with `../` on a MediaWiki site
+
 ## 3.13.0
 
 *2026-04-17*

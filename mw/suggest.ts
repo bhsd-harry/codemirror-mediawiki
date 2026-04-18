@@ -1,5 +1,6 @@
 import {isWMF} from '../src/constants';
-import {templateData} from './util';
+import {getSubpageLevel} from '../src/util';
+import {templateData, getParentDir} from './util';
 import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
 import type {ApiSuggest, ApiSuggestions, LinkSuggestion, MwConfig, CompletionSectionName} from '../src/token';
 import type {TemplateData} from './util';
@@ -13,17 +14,31 @@ const templateParameters = new Map<string, ApiSuggestions>();
  */
 const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggestion> => {
 	let promise: Promise<ApiSuggestions<LinkSuggestion>> | undefined,
-		last: [string, boolean, number] | undefined;
+		last: [string, boolean, number, string | undefined] | undefined;
 	const f = async (gpssearch: string, subpage = false, gpsnamespace = 0, contentmodel?: string): Promise<
 		ApiSuggestions<LinkSuggestion>
 	> => {
-		if (subpage) {
-			gpssearch = title + gpssearch;
-		}
 		if (promise) {
 			// 前一个请求未完成，记录最后一次调用的参数以便完成后继续
-			last = [gpssearch, subpage, gpsnamespace];
+			last = [gpssearch, subpage, gpsnamespace, contentmodel];
 		} else {
+			let offset = 0,
+				hasParent = false;
+			if (subpage) {
+				if (gpssearch.startsWith('/')) {
+					gpssearch = title + gpssearch;
+					offset = title.length;
+				} else {
+					const length = getSubpageLevel(gpssearch),
+						parent = getParentDir(title, length);
+					if (!parent) {
+						return [];
+					}
+					gpssearch = parent + gpssearch.slice(length - 1);
+					offset = parent.length;
+					hasParent = true;
+				}
+			}
 			promise = (async () => {
 				try {
 					api.abort();
@@ -47,8 +62,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggesti
 						pages = pages.filter(({contentmodel: m}) => m === contentmodel);
 					}
 					if (subpage) {
-						const {length} = title;
-						return pages.map(({title: t, ns}) => [t.slice(length), ns]);
+						return pages.map(({title: t, ns}) => [t.slice(offset), ns, hasParent ? [t] : undefined]);
 					}
 					const redirects = query?.redirects ?? [];
 					return pages.map(({title: t, ns}) => {

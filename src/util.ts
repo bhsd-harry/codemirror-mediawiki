@@ -239,3 +239,17 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): [string 
 	}
 	return [prevSibling && page, parameter];
 };
+
+/**
+ * 获取子页面层级
+ * @param str 子页面路径
+ */
+export const getSubpageLevel = (str: string): number => /^(?:\.\.\/)*/u.exec(str)![0].length;
+
+/**
+ * 把标题中的空格替换为下划线（如果需要）
+ * @param title 页面标题
+ * @param underscore 是否使用下划线替换空格
+ */
+export const useUnderscore = (title: string, underscore: boolean): string =>
+	underscore ? title.replaceAll(' ', '_') : title;

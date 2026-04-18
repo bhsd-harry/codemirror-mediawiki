@@ -29,6 +29,8 @@ import {
 	getExtTags,
 	leadingSpaces,
 	findTemplateName,
+	getSubpageLevel,
+	useUnderscore,
 } from './util.js';
 import type {
 	TagStyle,
@@ -74,7 +76,7 @@ export const applyDisplayLabel = (view: EditorView, completion: Completion, from
  * @test
  */
 export const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
-	const {label} = completion;
+	const {label, info} = completion;
 	let {displayLabel = label} = completion,
 		selection;
 	const {state} = view,
@@ -82,9 +84,10 @@ export const apply = (view: EditorView, completion: Completion, from: number, to
 	if (!/^\s*\|/u.test(after)) {
 		const initial = label.charAt(0).toLowerCase(),
 			anchor = from + displayLabel.length + 1;
-		selection = {anchor, head: anchor + label.length};
+		selection = {anchor, head: anchor + (info ?? label).length};
 		displayLabel += `|${
-			state.sliceDoc(from, from + 1) === initial ? initial + label.slice(1) : label
+			// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+			info as string ?? (state.sliceDoc(from, from + 1) === initial ? initial + label.slice(1) : label)
 		}${/^\s*\]\]/u.test(after) ? '' : ']]'}`;
 	}
 	view.dispatch({
@@ -198,10 +201,12 @@ export class FullMediaWiki extends MediaWiki {
 		let subpage = false,
 			search = str,
 			ns = namespace,
-			offset = 0;
-		if (search.startsWith('/')) {
+			offset: number;
+		if (/^(?:\.\.)?\//u.test(search)) {
 			ns = 0;
 			subpage = true;
+			const level = getSubpageLevel(search);
+			offset = level && level - 1;
 		} else {
 			search = search.replaceAll('_', ' ');
 			offset = leadingSpaces(search).length;
@@ -229,14 +234,22 @@ export class FullMediaWiki extends MediaWiki {
 			options: (await linkSuggest(search, subpage, ns, contentmodel))
 				.flatMap(([label, pageNs, redirect = label]): Completion | Completion[] => {
 					if (Array.isArray(redirect)) {
-						// 位于不同命名空间的重定向
-						return {
-							type: 'redirect',
-							label: underscore ? label.replaceAll(' ', '_') : label,
-							detail: `↳ ${redirect[0]}`,
-						};
+						const normalized = useUnderscore(label, underscore);
+						return subpage
+							? {
+								// `../`开头的子页面
+								type: 'text',
+								label: normalized,
+								info: useUnderscore(redirect[0], underscore),
+							}
+							: {
+								// 位于不同命名空间的重定向
+								type: 'redirect',
+								label: normalized,
+								detail: `↳ ${redirect[0]}`,
+							};
 					}
-					const normalized = underscore ? redirect.replaceAll(' ', '_') : redirect;
+					const normalized = useUnderscore(redirect, underscore);
 					return redirect === label
 						? {
 							type: pageNs === namespace && type || 'text',

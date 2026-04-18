@@ -1,7 +1,8 @@
 import {normalizeTitle} from '@bhsd/browser';
 import {tokens} from '../src/config';
 import {isWikiLink} from '../src/mediawiki';
-import {sliceDoc} from '../src/util';
+import {sliceDoc, getSubpageLevel} from '../src/util';
+import {getParentDir} from './util';
 import type {MwConfig} from '../src/token';
 
 export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'] => {
@@ -13,8 +14,19 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 			return page;
 		}
 		const isTemplateStyles = name.includes(tokens.extTagAttributeValue);
-		if (!isTemplateStyles && page.startsWith('/')) {
-			page = `:${mw.config.get('wgPageName')}${page}`;
+		if (!isTemplateStyles) {
+			const pageName = mw.config.get('wgPageName');
+			if (page.startsWith('/')) {
+				page = `:${pageName}${page}`;
+			} else if (page.startsWith('../')) {
+				const length = getSubpageLevel(page),
+					parent = getParentDir(pageName, length);
+				if (!parent) {
+					return undefined;
+				}
+				const sub = page.slice(length);
+				page = `:${parent}${sub && '/'}${sub}`;
+			}
 		}
 		let ns = 0;
 		if (isTemplateStyles || name.includes(tokens.templateName)) {
