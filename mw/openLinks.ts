@@ -3,13 +3,30 @@ import {tokens} from '../src/config';
 import {isWikiLink} from '../src/mediawiki';
 import {sliceDoc, getSubpageLevel} from '../src/util';
 import {getParentDir} from './util';
+import type {SyntaxNode} from '@lezer/common';
 import type {MwConfig} from '../src/token';
+
+const isSameToken = (node: SyntaxNode, name: string): boolean =>
+	node.name === name || node.name.includes(tokens.comment);
 
 export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'] => {
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
 	return (state, node) => {
-		const {name, nextSibling} = node;
-		let page = sliceDoc(state, node).trim();
+		const {name} = node;
+		let page = sliceDoc(state, node).trim(),
+			{prevSibling, nextSibling, from, to} = node;
+		while (prevSibling?.to === from && isSameToken(prevSibling, name)) {
+			if (prevSibling.name === name) {
+				page = sliceDoc(state, prevSibling) + page;
+			}
+			({from, prevSibling} = prevSibling);
+		}
+		while (nextSibling?.from === to && isSameToken(nextSibling, name)) {
+			if (nextSibling.name === name) {
+				page += sliceDoc(state, nextSibling);
+			}
+			({to, nextSibling} = nextSibling);
+		}
 		if (name.includes(tokens.fileText) && re.test(page)) {
 			return page;
 		}
