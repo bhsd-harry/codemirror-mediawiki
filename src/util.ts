@@ -1,3 +1,4 @@
+import {syntaxHighlighting, HighlightStyle} from '@codemirror/language';
 import elt from 'crelt';
 import {tokens} from './config.js';
 import {
@@ -6,7 +7,12 @@ import {
 	typeMark,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
-import type {Text, EditorState, Range} from '@codemirror/state';
+import type {
+	Text,
+	EditorState,
+	Range,
+	Extension,
+} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
@@ -253,3 +259,10 @@ export const getSubpageLevel = (str: string): number => /^(?:\.\.\/)*/u.exec(str
  */
 export const useUnderscore = (title: string, underscore: boolean): string =>
 	underscore ? title.replaceAll(' ', '_') : title;
+
+/**
+ * 生成语法高亮扩展
+ * @param args 传递给 `HighlightStyle.define` 的参数
+ */
+export const getHighlightExtension = (...args: Parameters<(typeof HighlightStyle)['define']>): Extension =>
+	syntaxHighlighting(HighlightStyle.define(...args));

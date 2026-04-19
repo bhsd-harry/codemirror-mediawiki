@@ -1,18 +1,19 @@
 /* eslint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {ViewPlugin, Decoration} from '@codemirror/view';
-import {
-	syntaxTree,
-	LanguageSupport,
-	StreamLanguage,
-	foldService,
-	HighlightStyle,
-	syntaxHighlighting,
-} from '@codemirror/language';
+import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
 import {linkSelector, isWMF} from './constants.js';
-import {leadingSpaces, sliceDoc, markDocTagType, getCompletions, pushDecoration, useUnderscore} from './util.js';
+import {
+	leadingSpaces,
+	sliceDoc,
+	markDocTagType,
+	getCompletions,
+	pushDecoration,
+	useUnderscore,
+	getHighlightExtension,
+} from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {Extension, EditorState, Range} from '@codemirror/state';
@@ -594,7 +595,7 @@ export const markDocTagPlugin = ViewPlugin.fromClass(
 
 const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 	lightHighlightStyle,
-	syntaxHighlighting(HighlightStyle.define([{tag: tags.standard(tags.variableName), class: 'cm-globals'}])),
+	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 	lang.data.of({autocomplete: getSource(linkSuggest)}),
 	foldService.of(fold),
 	markDocTagPlugin,

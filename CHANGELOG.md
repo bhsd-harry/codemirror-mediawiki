@@ -7,6 +7,7 @@
 
 - The [openLinks](./README.md#openlinks) extension and the [autocompletion](./README.md#autocompletion) extension now supports internal links starting with `../` in the MediaWiki mode on a MediaWiki site
 - The [openLinks](./README.md#openlinks) extension now also supports internal links containing HTML comments in the MediaWiki mode on a MediaWiki site
+- New methods: [`customHighlight`](./README.md#customhighlight) and [`clearCustomHighlight`](./README.md#clearcustomhighlight)
 
 ## 3.13.0
 

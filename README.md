@@ -40,6 +40,8 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [view](#view)
 	- [visible](#visible)
 - [Methods](#methods)
+	- [clearCustomHighlight](#clearcustomhighlight)
+	- [customHighlight](#customhighlight)
 	- [destroy](#destroy)
 	- [extraKeys](#extrakeys)
 	- [getLinter](#getlinter)
@@ -561,6 +563,54 @@ Whether the editor is visible, read-only.
 
 ## Methods
 
+### clearCustomHighlight
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.13.1*
+
+Remove all custom syntax highlighting styles added via [`customHighlight`](#customhighlight).
+
+```js
+cm.clearCustomHighlight();
+```
+
+</details>
+
+### customHighlight
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.13.1*
+
+Add custom syntax highlighting styles. This method works for all non-MediaWiki modes. You can call this method multiple times to add different styles, with later styles having higher priority.
+
+Custom styles have higher priority than [theme](#themes) styles, and light-mode/dark-mode custom styles have higher priority than common custom styles.
+
+```js
+cm.customHighlight([
+	{
+		tag: ['string', 'number'],
+		color: 'red',
+	},
+	{
+		tag: 'string.special',
+		class: 'cm-special-string',
+	},
+]);
+cm.customHighlight(
+	{
+		tag: ['variableName.definition'],
+		fontWeight: 'bold',
+	},
+	'dark',
+);
+```
+
+</details>
+
 ### destroy
 
 <details>
@@ -885,7 +935,7 @@ cm.setLineWrapping(true);
 *version added: 3.3.0*
 
 **param**: `string` the theme name  
-Set the theme of the editor. The default theme is `light`, other themes need to be registered using the `registerTheme` function first:
+Set the theme of the editor. The default theme is [`light`](#light), other themes need to be registered using the `registerTheme` function first:
 
 ```js
 import {registerTheme, nord} from '@bhsd/codemirror-mediawiki';

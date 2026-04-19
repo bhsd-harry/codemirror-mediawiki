@@ -7,9 +7,7 @@
 import {
 	StreamLanguage,
 	syntaxTree,
-	HighlightStyle,
 	LanguageSupport,
-	syntaxHighlighting,
 } from '@codemirror/language';
 import {EditorView} from '@codemirror/view';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
@@ -31,6 +29,7 @@ import {
 	findTemplateName,
 	getSubpageLevel,
 	useUnderscore,
+	getHighlightExtension,
 } from './util.js';
 import type {
 	TagStyle,
@@ -796,7 +795,7 @@ export const mediawikiBase = (
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
 		lightHighlightStyle,
-		syntaxHighlighting(HighlightStyle.define(mode.getTagStyles())),
+		getHighlightExtension(mode.getTagStyles()),
 		wikiTheme,
 		lang.data.of({autocomplete: mode.completionSource}),
 	]);

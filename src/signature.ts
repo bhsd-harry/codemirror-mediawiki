@@ -72,6 +72,12 @@ export const getSignatureHelp = ({signatures, activeParameter: active}: Signatur
 		return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
 	}).join('<br>');
 
+const dispatchSignatureEffect = (view: EditorView, effect: SignatureEffect): void => {
+	view.dispatch({
+		effects: signatureEffect.of(effect),
+	});
+};
+
 export default (
 	articlePath?: string,
 ) => (
@@ -85,9 +91,7 @@ export default (
 					{head: cursor} = main,
 					text = doc.toString();
 				if (!main.empty) {
-					view.dispatch({
-						effects: signatureEffect.of({text, cursor}),
-					});
+					dispatchSignatureEffect(view, {text, cursor});
 					return;
 				}
 				(async () => {
@@ -114,9 +118,7 @@ export default (
 							}
 						}
 					}
-					view.dispatch({
-						effects: signatureEffect.of({text, cursor, signatureHelp}),
-					});
+					dispatchSignatureEffect(view, {text, cursor, signatureHelp});
 				})();
 			}
 		}),
@@ -124,9 +126,7 @@ export default (
 			keydown({key}, view) {
 				if (key === 'Escape') {
 					const {doc, selection: {main: {head}}} = view.state;
-					view.dispatch({
-						effects: signatureEffect.of({text: doc.toString(), cursor: head}),
-					});
+					dispatchSignatureEffect(view, {text: doc.toString(), cursor: head});
 				}
 			},
 		}),

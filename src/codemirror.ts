@@ -4,6 +4,7 @@ import {
 	Compartment,
 	EditorState,
 	SelectionRange,
+	Prec,
 } from '@codemirror/state';
 import {
 	syntaxHighlighting,
@@ -24,6 +25,7 @@ import {
 } from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
 import {linter, lintGutter} from '@codemirror/lint';
+import {tags} from '@lezer/highlight';
 import elt from 'crelt';
 import {
 	baseData,
@@ -33,6 +35,7 @@ import {
 	noDetectionLangs,
 	linkSelector,
 } from './constants.js';
+import {getHighlightExtension} from './util.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -41,9 +44,10 @@ import type {
 	DecorationSet,
 } from '@codemirror/view';
 import type {Extension, StateEffect, StateField} from '@codemirror/state';
-import type {Language} from '@codemirror/language';
+import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
+import type {Tag} from '@lezer/highlight';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
 import type {foldHandler} from './fold';
@@ -77,6 +81,11 @@ declare interface OptionalFunctions {
 	statusBar: typeof statusBar;
 	detectIndent: typeof detectIndent;
 	foldHandler: typeof foldHandler;
+}
+
+declare type KnownTag = keyof typeof tags;
+declare interface SimplifiedTagStyle extends Omit<TagStyle, 'tag'> {
+	tag: string | string[];
 }
 
 export const plain = (): Extension => [
@@ -142,6 +151,14 @@ export const replaceSelections = (view: EditorView, func: ReplaceFunction): void
 	}));
 };
 
+const getDefaultCustomHighlightStyles = (): {
+	light: TagStyle[];
+	dark: TagStyle[];
+	'': TagStyle[];
+} => {
+	return {light: [], dark: [], '': []};
+};
+
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
 	static get CDN(): string | undefined {
@@ -166,6 +183,7 @@ export class CodeMirror6 {
 	readonly #phrases = new Compartment();
 	readonly #lineWrapping = new Compartment();
 	readonly #theme = new Compartment();
+	readonly #customHighlight = new Compartment();
 	#view: EditorView | undefined;
 	#lang;
 	#visible = false;
@@ -173,6 +191,7 @@ export class CodeMirror6 {
 	#indentStr = '\t';
 	#nestedMWLanguage: Language | undefined;
 	#lintSources: LintSource[] = [];
+	#customHighlightStyles = getDefaultCustomHighlightStyles();
 
 	/** textarea element */
 	get textarea(): HTMLTextAreaElement {
@@ -247,6 +266,7 @@ export class CodeMirror6 {
 				this.#phrases.of(EditorState.phrases.of(phrases)),
 				this.#lineWrapping.of(EditorView.lineWrapping),
 				this.#theme.of(light),
+				this.#customHighlight.of(this.#getCustomHighlightExtension()),
 				syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
@@ -675,6 +695,64 @@ export class CodeMirror6 {
 		if (themes.has(theme)) {
 			this.#view?.dispatch({effects: this.#theme.reconfigure(themes.get(theme)!)});
 		}
+	}
+
+	/**
+	 * Customize syntax highlighting
+	 * @param specs tag styles
+	 * @param themeType whether this highlight style should only be active in dark or light themes
+	 * @throws `RangeError` invalid theme type
+	 * @since 3.13.1
+	 */
+	customHighlight(specs: SimplifiedTagStyle | SimplifiedTagStyle[], themeType?: 'light' | 'dark'): void {
+		if (!['light', 'dark', '', undefined, null].includes(themeType)) {
+			throw new RangeError('Theme type must be either "light" or "dark"!');
+		}
+		this.#customHighlightStyles[themeType ?? ''].push(
+			...(Array.isArray(specs) ? specs : [specs]).map((style): TagStyle => ({
+				...style,
+				tag: (Array.isArray(style.tag) ? style.tag : [style.tag]).map((tag): Tag | false => {
+					const [base, ...modifiers] = tag.split('.');
+					if (typeof tags[base as KnownTag] !== 'object') {
+						console.warn(`Unknown tag: ${base}`);
+						return false;
+					}
+					let t = tags[base as KnownTag] as Tag;
+					for (const modifier of modifiers) {
+						if (typeof tags[modifier as KnownTag] === 'function') {
+							t = (tags[modifier as KnownTag] as (t: Tag) => Tag)(t);
+						} else {
+							console.warn(`Unknown tag modifier: ${modifier}`);
+						}
+					}
+					return t;
+				}).filter((t): t is Tag => t as boolean),
+			})),
+		);
+		this.#dispatchCustomHighlight();
+	}
+
+	/** Remove all custom syntax highlighting styles */
+	clearCustomHighlight(): void {
+		this.#customHighlightStyles = getDefaultCustomHighlightStyles();
+		this.#dispatchCustomHighlight();
+	}
+
+	/** 生成自定义高亮扩展 */
+	#getCustomHighlightExtension(): Extension {
+		const {light: l, dark: d, '': c} = this.#customHighlightStyles;
+		return Prec.high([
+			l.length === 0 ? [] : getHighlightExtension(l, {themeType: 'light'}),
+			d.length === 0 ? [] : getHighlightExtension(d, {themeType: 'dark'}),
+			c.length === 0 ? [] : getHighlightExtension(c),
+		]);
+	}
+
+	/** 更新自定义高亮 */
+	#dispatchCustomHighlight(): void {
+		this.#view?.dispatch({
+			effects: this.#customHighlight.reconfigure(this.#getCustomHighlightExtension()),
+		});
 	}
 
 	/**

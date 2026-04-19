@@ -1,5 +1,5 @@
 import {EditorView} from '@codemirror/view';
-import {syntaxHighlighting, HighlightStyle, defaultHighlightStyle} from '@codemirror/language';
+import {defaultHighlightStyle} from '@codemirror/language';
 import {nord} from 'cm6-theme-nord';
 import {
 	matchingCls,
@@ -8,14 +8,16 @@ import {
 	panelsSelector,
 	bgDark,
 } from './constants.js';
+import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
 
 const focused = '&.cm-focused',
 	matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
 
-export const lightHighlightStyle = /* @__PURE__ */ ((): Extension => syntaxHighlighting(
-	HighlightStyle.define(defaultHighlightStyle.specs, {themeType: 'light'}),
+export const lightHighlightStyle = /* @__PURE__ */ (() => getHighlightExtension(
+	defaultHighlightStyle.specs,
+	{themeType: 'light'},
 ))();
 
 export const light = /* @__PURE__ */ EditorView.theme({

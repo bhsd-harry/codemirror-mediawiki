@@ -56,7 +56,8 @@ const tryScripts = (
 		try {
 			callback(fs.readFileSync(f, 'utf8'), file);
 		} catch (e) {
-			console.error(red(`\n解析 ${file} 文件时出错！`), e);
+			console.error(red(`\n解析 ${file} 文件时出错！`));
+			console.error(e);
 		}
 	}
 	console.log();
@@ -116,6 +117,7 @@ const tryScripts = (
 	}
 
 	if (failed.length > 0) {
-		console.warn(yellow('Failed to fully parse the following files:'), failed);
+		console.warn(yellow('Failed to fully parse the following files:'));
+		console.warn(failed);
 	}
 })();
