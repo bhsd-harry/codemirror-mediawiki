@@ -4,7 +4,11 @@ import {
 	baseData,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
-import type {Text, EditorState, Range} from '@codemirror/state';
+import type {
+	Text,
+	EditorState,
+	Range,
+} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
