@@ -20,6 +20,7 @@ import type {
 	Extension,
 	EditorState,
 } from '@codemirror/state';
+import type {StyleSpec} from 'style-mod';
 import type {
 	MarkupContent,
 	Hover,
@@ -31,7 +32,7 @@ declare const marked: {
 	parse(source: string): string | Promise<string>;
 };
 
-const code = `${hoverSelector} code`;
+const code = /* @__PURE__ */ (() => `${hoverSelector} code`)();
 
 /**
  * @ignore
@@ -94,6 +95,27 @@ export const getHoverFromApi = async (
 		}
 	}
 	return undefined;
+};
+
+/** hover tooltip and signature tooltip */
+export const hoverStyle: Record<string, StyleSpec> = {
+	'.cm-tooltip-hover': {
+		maxHeight: '60vh',
+		overflow: 'hidden auto',
+	},
+	[hoverSelector]: {
+		padding: '2px 5px',
+		width: 'max-content',
+		maxWidth: '60vw',
+		'& *': {
+			marginTop: '0!important',
+			marginBottom: '0!important',
+		},
+		'&>div': {
+			fontSize: '90%',
+			lineHeight: 1.4,
+		},
+	},
 };
 
 export default (

@@ -1,13 +1,14 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.13.1
+## 3.14.0
 
-*2026-04-19*
+*2026-04-22*
 
 **Added**
 
 - The [openLinks](./README.md#openlinks) extension and the [autocompletion](./README.md#autocompletion) extension now supports internal links starting with `../` in the MediaWiki mode on a MediaWiki site
 - The [openLinks](./README.md#openlinks) extension now also supports internal links containing HTML comments in the MediaWiki mode on a MediaWiki site
 - New methods: [`customHighlight`](./README.md#customhighlight) and [`clearCustomHighlight`](./README.md#clearcustomhighlight)
+- The [hover](./README.md#hover) extension now also supports AbuseFilter built-in keywords, variables and functions
 
 ## 3.13.0
 

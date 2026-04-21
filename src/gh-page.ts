@@ -66,7 +66,8 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 			selector = '.fieldLayout';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
-			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display = display;
+			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display =
+				id === 'hover' || lang === 'abusefilter' ? '' : display;
 		}
 		for (const id of cssOnly) {
 			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display = cssDisplay;

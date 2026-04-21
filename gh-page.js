@@ -82,7 +82,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     const isMediaWiki = lang === "mediawiki", display = isMediaWiki ? "" : "none", cssDisplay = isMediaWiki || cssLangs.has(lang) ? "" : "none", selector = ".fieldLayout";
     let parserConfig;
     for (const id of mediawikiOnly) {
-      document.getElementById(id).closest(selector).style.display = display;
+      document.getElementById(id).closest(selector).style.display = id === "hover" || lang === "abusefilter" ? "" : display;
     }
     for (const id of cssOnly) {
       document.getElementById(id).closest(selector).style.display = cssDisplay;

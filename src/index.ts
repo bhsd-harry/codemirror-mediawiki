@@ -8,6 +8,7 @@ import {
 	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
+	EditorView,
 } from '@codemirror/view';
 import {EditorState, Prec} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
@@ -20,7 +21,7 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@codemirror/lang-json';
 import {autoCloseTags} from '@codemirror/lang-html';
-import {abusefilter, analyzer} from '@bhsd/lezer-abusefilter';
+import {abusefilter, analyzer, getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
@@ -36,9 +37,12 @@ import {
 	themes,
 } from './codemirror.js';
 import mediawikiColorPicker from './color.js';
+import {
+	hoverSelector,
+} from './constants.js';
 import escapeKeymap from './escape.js';
 import codeFolding, {mediawikiFold, foldHandler} from './fold.js';
-import magicWordHover from './hover.js';
+import magicWordHover, {hoverStyle} from './hover.js';
 import {detectIndent} from './indent.js';
 import inlayHints from './inlay.js';
 import formatKeymap from './keymap.js';
@@ -69,7 +73,6 @@ import html from './html.js';
 import javascript, {exclude} from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
-import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {
 	LanguageSupport,
@@ -288,7 +291,7 @@ export const registerRefHover = (articlePath?: string): void => {
  * for template information; enabled by default
  */
 export const registerHover = (articlePath?: string, templatedata?: boolean): void => {
-	registerExtensionForMediaWiki('hover', magicWordHover(articlePath, templatedata));
+	registerLangExtension('mediawiki', 'hover', magicWordHover(articlePath, templatedata));
 };
 
 /**
@@ -518,6 +521,15 @@ export const registerVueCore = (): void => {
 export const registerAbuseFilter = (): void => {
 	registerCommonExtensions();
 	registerAbuseFilterCore();
+	registerHoverForAbuseFilter();
+};
+
+/** Register the `hover` extension for AbuseFilter */
+export const registerHoverForAbuseFilter = (): void => {
+	registerLangExtension('abusefilter', 'hover', () => [
+		getDefaultHoverTooltip(hoverSelector.slice(1)),
+		EditorView.theme(hoverStyle),
+	]);
 };
 
 /** Register AbuseFilter core language support */

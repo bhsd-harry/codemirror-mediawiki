@@ -208,6 +208,13 @@ import {registerAbuseFilterCore} from '@bhsd/codemirror-mediawiki';
 registerAbuseFilterCore();
 ```
 
+In addition to the common [extensions](#extensions), here are some AbuseFilter-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {registerHoverForAbuseFilter} from '@bhsd/codemirror-mediawiki';
+registerHoverForAbuseFilter();
+```
+
 </details>
 
 ### css
@@ -291,6 +298,13 @@ import {registerJavaScriptCore} from '@bhsd/codemirror-mediawiki';
 registerJavaScriptCore();
 ```
 
+In addition to the common [extensions](#extensions), here are some JavaScript-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {registerBracketMatchingForJavaScript} from '@bhsd/codemirror-mediawiki';
+registerBracketMatchingForJavaScript();
+```
+
 </details>
 
 ### json
@@ -331,6 +345,13 @@ If you want a more granular control over the extensions, you can import the `reg
 ```js
 import {registerLuaCore} from '@bhsd/codemirror-mediawiki';
 registerLuaCore();
+```
+
+In addition to the common [extensions](#extensions), here are some Lua-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+
+```js
+import {registerOpenLinksForLua} from '@bhsd/codemirror-mediawiki';
+registerOpenLinksForLua();
 ```
 
 </details>
@@ -411,9 +432,11 @@ In addition to the common [extensions](#extensions), here are some Vue-specific 
 
 ```js
 import {
+	registerBracketMatchingForVue,
 	registerCloseTagsForVue,
 	registerColorPickerForVue,
 } from '@bhsd/codemirror-mediawiki';
+registerBracketMatchingForVue();
 registerCloseTagsForVue();
 registerColorPickerForVue();
 ```
@@ -1317,12 +1340,16 @@ registerHighlightWhitespace();
 
 Show the help information of a magic word or a template name when hovering.
 
-For granular control over the bundled extensions, you can import the `registerHover` function:
+For granular control over the bundled extensions, you need to register this extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
 
 ```js
-import {registerHover} from '@bhsd/codemirror-mediawiki';
+import {
+	registerHover, // for MediaWiki
+	registerHoverForAbuseFilter,
+} from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerHover('https://www.mediawiki.org/wiki/');
+registerHoverForAbuseFilter();
 ```
 
 </details>
@@ -1355,12 +1382,16 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 
 CTRL/CMD-click opens a link in a new tab.
 
-For granular control over the bundled extensions, you can import the `registerOpenLinks` function:
+For granular control over the bundled extensions, you need to register this extension for specific languages([Lua](#lua) or [MediaWiki](#mediawiki)):
 
 ```js
-import {registerOpenLinks} from '@bhsd/codemirror-mediawiki';
+import {
+	registerOpenLinks, // for MediaWiki
+	registerOpenLinksForLua,
+} from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerOpenLinks('https://www.mediawiki.org/wiki/');
+registerOpenLinksForLua();
 ```
 
 </details>

@@ -55,6 +55,24 @@ input[type="color"] {
 }
 
 /* src/hover */
+.cm-tooltip-hover {
+	max-height: 60vh;
+	overflow: hidden auto;
+}
+.cm-tooltip-hover-mw {
+	padding: 2px 5px;
+	width: max-content;
+	max-width: 60vw;
+	& * {
+		margin-top: 0 !important;
+		margin-bottom: 0 !important;
+	}
+	& > div {
+		font-size: 90%;
+		line-height: 1.4;
+	}
+}
+
 .cm-tooltip-hover-mw code {
 	color: inherit;
 	padding: .1em .4em;
@@ -336,24 +354,6 @@ input[type="color"] {
 }
 .cm-mw-tag-ref {
 	background-color: var(--cm-ref);
-}
-
-.cm-tooltip-hover {
-	max-height: 60vh;
-	overflow: hidden auto;
-}
-.cm-tooltip-hover-mw {
-	padding: 2px 5px;
-	width: max-content;
-	max-width: 60vw;
-	& * {
-		margin-top: 0 !important;
-		margin-bottom: 0 !important;
-	}
-	& > div {
-		font-size: 90%;
-		line-height: 1.4;
-	}
 }
 .cm-completionIcon-redirect::after {
 	content: "↳";
