@@ -10,7 +10,9 @@ import elt from 'crelt';
 import bidiIsolates from './bidi.js';
 import closeTags from './closeTags.js';
 import mediawikiColorPicker from './color.js';
-import {diagnosticSelector} from './constants.js';
+import {
+	diagnosticSelector,
+} from './constants.js';
 import escapeKeymap from './escape.js';
 import codeFolding from './fold.js';
 import magicWordHover from './hover.js';

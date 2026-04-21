@@ -13,7 +13,6 @@ import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
 import {
-	hoverSelector,
 	extCompletion,
 } from './constants.js';
 import {MediaWiki} from './token.js';
@@ -21,6 +20,7 @@ import {
 	getCompletions,
 	getExtTags,
 } from './util.js';
+import {hoverStyle} from './hover.js';
 import type {
 	StreamParser,
 	Language,
@@ -281,24 +281,7 @@ export class FullMediaWiki extends MediaWiki {
 }
 
 export const wikiTheme = /* @__PURE__ */ EditorView.theme({
-	// hover tooltip and signature tooltip
-	'.cm-tooltip-hover': {
-		maxHeight: '60vh',
-		overflow: 'hidden auto',
-	},
-	[hoverSelector]: {
-		padding: '2px 5px',
-		width: 'max-content',
-		maxWidth: '60vw',
-		'& *': {
-			marginTop: '0!important',
-			marginBottom: '0!important',
-		},
-		'&>div': {
-			fontSize: '90%',
-			lineHeight: 1.4,
-		},
-	},
+	...hoverStyle,
 });
 
 /**

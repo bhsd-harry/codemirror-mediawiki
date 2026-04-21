@@ -15,12 +15,34 @@ import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {
 	Extension,
 } from '@codemirror/state';
+import type {StyleSpec} from 'style-mod';
 import type {
 	MarkupContent,
 } from 'vscode-languageserver-types';
 import type {ConfigData} from 'wikiparser-node';
 
-const code = `${hoverSelector} code`;
+const code = /* @__PURE__ */ (() => `${hoverSelector} code`)();
+
+/** hover tooltip and signature tooltip */
+export const hoverStyle: Record<string, StyleSpec> = {
+	'.cm-tooltip-hover': {
+		maxHeight: '60vh',
+		overflow: 'hidden auto',
+	},
+	[hoverSelector]: {
+		padding: '2px 5px',
+		width: 'max-content',
+		maxWidth: '60vw',
+		'& *': {
+			marginTop: '0!important',
+			marginBottom: '0!important',
+		},
+		'&>div': {
+			fontSize: '90%',
+			lineHeight: 1.4,
+		},
+	},
+};
 
 export default (
 	configData: ConfigData,
