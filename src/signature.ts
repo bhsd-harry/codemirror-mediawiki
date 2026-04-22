@@ -10,6 +10,7 @@ import {
 	toConfigGetter,
 	findTemplateName,
 	isTemplateParam,
+	updateCompletion,
 } from './util.js';
 import type {TooltipView, Tooltip} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
@@ -95,7 +96,7 @@ export default (
 					return;
 				}
 				(async () => {
-					let signatureHelp: SignatureHelp | undefined = await getLSP(
+					const lsp = getLSP(
 						view,
 						false,
 						toConfigGetter(
@@ -103,7 +104,12 @@ export default (
 							articlePath,
 						),
 						baseData.CDN,
-					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
+					);
+					let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
+						text,
+						indexToPos(doc, cursor),
+					);
+					updateCompletion(cm, lsp);
 					if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
 						const tree = syntaxTree(state);
 						let node = tree.resolve(cursor, -1);

@@ -31,6 +31,7 @@ import {
 	getHighlightExtension,
 } from './util.js';
 import {hoverStyle} from './hover.js';
+import type {Extension} from '@codemirror/state';
 import type {
 	TagStyle,
 } from '@codemirror/language';
@@ -559,6 +560,10 @@ export class FullMediaWiki extends MediaWiki {
 			return null;
 		};
 	}
+
+	get extension(): Extension { // eslint-disable-line @typescript-eslint/class-methods-use-this
+		return [];
+	}
 }
 
 const getSelector = (cls: string[], prefix: string | string[] = ''): string => typeof prefix === 'string'
@@ -776,6 +781,7 @@ export const mediawikiBase = (
 		),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
+		mode,
 		lightHighlightStyle,
 		getHighlightExtension(mode.getTagStyles()),
 		wikiTheme,

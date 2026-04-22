@@ -1,9 +1,6 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {
-	getLSP,
-	loadScript,
-} from '@bhsd/browser';
+import {getLSP} from '@bhsd/browser';
 import {tokens} from './config.js';
 import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
@@ -14,6 +11,8 @@ import {
 	escHTML,
 	sliceDoc,
 	findTemplateName,
+	loadMarked,
+	updateCompletion,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {
@@ -25,12 +24,11 @@ import type {
 	MarkupContent,
 	Hover,
 } from 'vscode-languageserver-types';
+import type {Marked} from 'marked';
 import type {CodeMirror6} from './codemirror';
 import type {CompletionSectionName, ApiSuggest} from './token';
 
-declare const marked: {
-	parse(source: string): string | Promise<string>;
-};
+declare const marked: Marked;
 
 const code = /* @__PURE__ */ (() => `${hoverSelector} code`)();
 
@@ -134,7 +132,7 @@ export default (
 				const {state} = view,
 					{doc} = state;
 				const {paramSuggest, tags} = cm.langConfig!;
-				let hover = await getLSP(
+				const lsp = getLSP(
 					view,
 					false,
 					toConfigGetter(
@@ -142,18 +140,15 @@ export default (
 						articlePath,
 					),
 					baseData.CDN,
-				)?.provideHover(doc.toString(), indexToPos(doc, pos));
+				);
+				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
+				updateCompletion(cm, lsp);
 				if (!hover && paramSuggest && 'templatedata' in tags!) {
 					// eslint-disable-next-line require-atomic-updates
 					hover = await getHoverFromApi(state, pos, side, paramSuggest, templatedata);
 				}
 				if (hover) {
-					const {CDN = ''} = baseData;
-					await loadScript(
-						`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`,
-						'marked',
-						true,
-					);
+					await loadMarked();
 					const {end} = hover.range!;
 					return {
 						pos,

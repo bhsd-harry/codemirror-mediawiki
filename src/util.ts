@@ -1,10 +1,12 @@
 import {syntaxHighlighting, HighlightStyle} from '@codemirror/language';
 import elt from 'crelt';
+import {loadScript} from '@bhsd/browser';
 import {tokens} from './config.js';
 import {
 	hoverSelector,
 	doctagMark,
 	typeMark,
+	baseData,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
 import type {
@@ -14,16 +16,24 @@ import type {
 	Extension,
 } from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
-import type {Completion} from '@codemirror/autocomplete';
+import type {
+	Completion,
+	CompletionInfo,
+} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
+import type {LanguageServiceBase} from 'wikiparser-node/dist/extensions/typings.js';
+import type {Marked} from 'marked';
+import type {CodeMirror6} from './codemirror';
 
 export interface DocRange {
 	from: number;
 	to: number;
 }
+
+declare const marked: Marked;
 
 const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
 
@@ -266,3 +276,60 @@ export const useUnderscore = (title: string, underscore: boolean): string =>
  */
 export const getHighlightExtension = (...args: Parameters<(typeof HighlightStyle)['define']>): Extension =>
 	syntaxHighlighting(HighlightStyle.define(...args));
+
+/** 加载 marked 库 */
+export const loadMarked = async (): Promise<void> => {
+	const {CDN = ''} = baseData;
+	await loadScript(`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`, 'marked', true);
+};
+
+/**
+ * `info` method of `Completion`
+ * @ignore
+ */
+const info = async ({md}: Completion & {md?: string}): Promise<CompletionInfo> => {
+	await loadMarked();
+	const dom = elt('div');
+	dom.innerHTML = await marked.parseInline(md!);
+	return {dom};
+};
+
+const updateItems = (
+	completions: Completion[],
+	data: {aliases: string[], description?: string}[],
+	toName: (label: string) => string,
+): void => {
+	for (const completion of completions) {
+		const {label} = completion,
+			name = toName(label),
+			item = data.find(({aliases}) => aliases.includes(name));
+		if (item?.description) {
+			Object.assign(completion, {info, md: item.description});
+		}
+	}
+};
+
+/**
+ * 更新魔术字的描述信息
+ * @ignore
+ */
+export const updateCompletion = ({mediaWiki, langConfig}: CodeMirror6, lsp?: LanguageServiceBase): void => {
+	if (lsp?.data && !('lspData' in mediaWiki!)) {
+		Object.assign(mediaWiki!, {lspData: lsp.data});
+		const {doubleUnderscore, functionSynonyms} = langConfig!;
+		updateItems(
+			mediaWiki!.doubleUnderscore,
+			lsp.data.behaviorSwitches,
+			label => (doubleUnderscore?.[0][label] || doubleUnderscore?.[1][label] || label.slice(2, -2))
+				.toLowerCase(),
+		);
+		updateItems(
+			mediaWiki!.functionSynonyms,
+			lsp.data.parserFunctions,
+			label => {
+				const name = functionSynonyms?.[0][label] || functionSynonyms?.[1][label] || label;
+				return label.startsWith('#') && !name.startsWith('#') ? `#${name}` : name;
+			},
+		);
+	}
+};

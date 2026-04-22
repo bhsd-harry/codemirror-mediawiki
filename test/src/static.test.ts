@@ -45,12 +45,12 @@ const ref: Omit<ConfigData, 'html' | 'namespaces' | 'interwiki' | 'doubleUndersc
 const config: MwConfig = {
 	doubleUnderscore: [
 		{
-			__toc__: true,
-			'＿＿目次＿＿': true,
+			__toc__: 'toc',
+			'＿＿目次＿＿': 'toc',
 		},
 		{
-			__INDEX__: true,
-			'＿＿インデックス＿＿': true,
+			__INDEX__: 'INDEX',
+			'＿＿インデックス＿＿': 'INDEX',
 		},
 	],
 	tags: {pre: true, nowiki: true},
@@ -104,12 +104,6 @@ describe('get MediaWiki config', () => {
 				INDEX: 'INDEX',
 				'＿＿インデックス＿＿': 'INDEX',
 			},
-		]);
-	});
-	it('legacy', () => {
-		mockTest([
-			['toc', '＿＿目次＿＿'],
-			['INDEX', '＿＿インデックス＿＿'],
 		]);
 	});
 });
