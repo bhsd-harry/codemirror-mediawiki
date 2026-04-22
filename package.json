@@ -59,7 +59,7 @@
 		"@bhsd/codemirror-css-color-picker": "^6.3.2",
 		"@bhsd/common": "^2.0.0",
 		"@bhsd/eslint-browserify": "^10.2.1",
-		"@bhsd/lezer-abusefilter": "^0.2.1",
+		"@bhsd/lezer-abusefilter": "^0.3.0",
 		"@bhsd/stylelint-util": "^1.0.2",
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",

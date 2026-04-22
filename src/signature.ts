@@ -144,7 +144,6 @@ export default (
 			return signatureHelp?.signatures.length
 				? {
 					pos: cursor,
-					above: true,
 					create(view): TooltipView {
 						return createTooltipView(view, getSignatureHelp(signatureHelp));
 					},

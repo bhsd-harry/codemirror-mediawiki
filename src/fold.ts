@@ -217,7 +217,6 @@ const create = (state: EditorState): Tooltip | null => {
 			? null
 			: {
 				pos: head,
-				above: true,
 				create(): TooltipView {
 					const dom = elt(
 						'div',
