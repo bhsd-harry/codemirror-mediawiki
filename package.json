@@ -52,7 +52,7 @@
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.41.0",
 		"marked": "^18.0.1",
-		"wikiparser-node": "^1.38.1"
+		"wikiparser-node": "^1.39.1"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.2.0",
@@ -61,8 +61,8 @@
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
 		"@types/node": "^24.11.0",
-		"@typescript-eslint/eslint-plugin": "^8.58.2",
-		"@typescript-eslint/parser": "^8.58.2",
+		"@typescript-eslint/eslint-plugin": "^8.59.0",
+		"@typescript-eslint/parser": "^8.59.0",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",
 		"eslint": "^10.2.1",
@@ -74,7 +74,7 @@
 		"eslint-plugin-unicorn": "^64.0.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.22.1",
-		"stylelint": "^17.8.0",
+		"stylelint": "^17.9.0",
 		"stylelint-config-recommended": "^18.0.0",
 		"stylelint-plugin-use-baseline": "^1.4.1",
 		"typescript": "^6.0.3"
