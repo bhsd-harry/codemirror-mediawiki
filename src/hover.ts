@@ -1,7 +1,5 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
-import {
-	getLSP,
-} from '@bhsd/browser';
+import {getLSP} from '@bhsd/browser';
 import {marked} from 'marked';
 import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
@@ -57,14 +55,16 @@ export default (
 			): Promise<Tooltip | null> => {
 				const {state} = view,
 					{doc} = state;
-				const hover = await getLSP(
+				const lsp = getLSP(
 					view,
 					true,
 					toConfigGetter(
 						configData,
 					),
 					baseData.CDN,
-				)?.provideHover(doc.toString(), indexToPos(doc, pos));
+				);
+				// eslint-disable-next-line prefer-const
+				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
 					const {end} = hover.range!;
 					return {

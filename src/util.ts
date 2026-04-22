@@ -10,7 +10,9 @@ import type {
 	Range,
 } from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
-import type {Completion} from '@codemirror/autocomplete';
+import type {
+	Completion,
+} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';

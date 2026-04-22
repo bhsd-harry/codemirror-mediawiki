@@ -77,15 +77,19 @@ export default (
 					return;
 				}
 				(async () => {
-					// eslint-disable-next-line prefer-const
-					let signatureHelp: SignatureHelp | undefined = await getLSP(
+					const lsp = getLSP(
 						view,
 						true,
 						toConfigGetter(
 							configData,
 						),
 						baseData.CDN,
-					)?.provideSignatureHelp(text, indexToPos(doc, cursor));
+					);
+					// eslint-disable-next-line prefer-const
+					let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
+						text,
+						indexToPos(doc, cursor),
+					);
 					dispatchSignatureEffect(view, {text, cursor, signatureHelp});
 				})();
 			}

@@ -32,6 +32,9 @@ export const tagModes = {
 	score: 'lilypond',
 };
 
+const getDoubleUnderscore = (newSchema: Record<string, string>): Record<string, string> =>
+	Object.fromEntries(Object.entries(newSchema).map(([k, v]) => [isUnderscore(k) ? `__${k}__` : k, v]));
+
 export const getStaticMwConfig = (
 	{
 		variable,
@@ -42,7 +45,7 @@ export const getStaticMwConfig = (
 		variants,
 		redirection,
 		ext,
-		doubleUnderscore: [d0, d1, d2, d3],
+		doubleUnderscore: [,, d2, d3],
 		img,
 	}: ConfigData,
 	modes: Record<string, string>,
@@ -50,12 +53,8 @@ export const getStaticMwConfig = (
 	tags: Object.fromEntries(ext.map(s => [s, true])),
 	tagModes: modes,
 	doubleUnderscore: [
-		Object.fromEntries(
-			(d2 && d0.length === 0 ? Object.keys(d2) : d0).map(s => [isUnderscore(s) ? `__${s}__` : s, true]),
-		),
-		Object.fromEntries(
-			(d3 && d1.length === 0 ? Object.keys(d3) : d1).map(s => [isUnderscore(s) ? `__${s}__` : s, true]),
-		),
+		getDoubleUnderscore(d2),
+		getDoubleUnderscore(d3),
 	],
 	functionHooks: functionHook,
 	variableIDs: variable,
