@@ -15,8 +15,8 @@ declare type ISBNParser = (link: string) => string;
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey';
 const key = isMac ? 'Meta' : 'Control',
-	pagename = `.${mwPrefix}pagename`,
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
+	pagename = `.${mwPrefix}pagename`,
 	wikiLinks = /* @__PURE__ */ (() => [
 		'template-name',
 		'link-pagename',

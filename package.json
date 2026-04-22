@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.13.0",
+	"version": "3.14.0",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -59,7 +59,7 @@
 		"@bhsd/codemirror-css-color-picker": "^6.3.2",
 		"@bhsd/common": "^2.0.0",
 		"@bhsd/eslint-browserify": "^10.2.1",
-		"@bhsd/lezer-abusefilter": "^0.3.0",
+		"@bhsd/lezer-abusefilter": "^0.3.1",
 		"@bhsd/stylelint-util": "^1.0.2",
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",
@@ -78,7 +78,7 @@
 		"eslint": "^10.2.1",
 		"globals": "^17.5.0",
 		"luacheck-browserify": "^0.10.1",
-		"stylelint": "^17.8.0",
+		"stylelint": "^17.9.0",
 		"wikiparser-node": "^1.38.1"
 	},
 	"devDependencies": {
@@ -92,8 +92,8 @@
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^24.11.0",
 		"@types/oojs-ui": "^0.49.4",
-		"@typescript-eslint/eslint-plugin": "^8.58.2",
-		"@typescript-eslint/parser": "^8.58.2",
+		"@typescript-eslint/eslint-plugin": "^8.59.0",
+		"@typescript-eslint/parser": "^8.59.0",
 		"esbuild": "^0.28.0",
 		"eslint-plugin-es-x": "^9.6.0",
 		"eslint-plugin-jsdoc": "^62.9.0",

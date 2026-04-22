@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.14.0
 
-*2026-04-22*
+*2026-04-23*
 
 **Added**
 
@@ -9,6 +9,10 @@
 - The [openLinks](./README.md#openlinks) extension now also supports internal links containing HTML comments in the MediaWiki mode on a MediaWiki site
 - New methods: [`customHighlight`](./README.md#customhighlight) and [`clearCustomHighlight`](./README.md#clearcustomhighlight)
 - The [hover](./README.md#hover) extension now also supports AbuseFilter built-in keywords, variables and functions
+
+**Fixed**
+
+- Missing styles for some tokens in the MediaWiki mode, since [v3.13.0](#3130)
 
 ## 3.13.0
 

@@ -617,7 +617,9 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		},
 	},
 	[`${
-		getSelector(['section-header', 'template', 'parserfunction', 'file-delimiter', 'magic-link'])
+		getSelector(
+			['section-header', 'template', 'parserfunction', 'file-delimiter', 'magic-link', 'templatevariable'],
+		)
 	},${
 		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
 	},${
@@ -658,7 +660,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[`.${mwPrefix}error`]: {
 		color: 'var(--cm-error)',
 	},
-	[`${mwPrefix}skipformatting`]: {
+	[`.${mwPrefix}skipformatting`]: {
 		backgroundColor: 'var(--cm-sp)',
 	},
 	[getSelector(['double-underscore', 'signature', 'hr'])]: {
@@ -676,10 +678,6 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	},
 	[getSelector(['-argument-name'], ['template', 'parserfunction'])]: {
 		color: 'var(--cm-arg)',
-		fontWeight: 'normal',
-	},
-	[`${mwPrefix}templatevariable`]: {
-		color: 'var(--cm-var)',
 		fontWeight: 'normal',
 	},
 	[getSelector(['name', 'bracket', 'delimiter'], 'templatevariable-')]: {
@@ -715,14 +713,14 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['bracket', 'delimiter', 'delimiter2', 'definition'], 'table-')]: {
 		color: 'var(--cm-table)',
 	},
-	[`${mwPrefix}table-definition-value`]: {
+	[`.${mwPrefix}table-definition-value`]: {
 		color: 'var(--cm-table-attr)',
 		fontWeight: 'normal',
 	},
 	[getSelector(['bracket', 'delimiter', 'flag', 'lang'], 'convert-')]: {
 		color: 'var(--cm-convert)',
 	},
-	[`${mwPrefix}entity`]: {
+	[`.${mwPrefix}entity`]: {
 		color: 'var(--cm-entity)',
 	},
 	[`.${mwPrefix}exttag,.${mwPrefix}tag-score-scheme`]: {
@@ -757,7 +755,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},
-	[`${mwPrefix}tag-ref`]: {
+	[`.${mwPrefix}tag-ref`]: {
 		backgroundColor: 'var(--cm-ref)',
 	},
 	'.cm-completionIcon-redirect:after': {
