@@ -42,7 +42,7 @@
 	"dependencies": {
 		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^1.0.0",
-		"@bhsd/codemirror-css-color-picker": "^6.3.2",
+		"@bhsd/codemirror-css-color-picker": "^7.0.0",
 		"@bhsd/common": "^2.0.0",
 		"@bhsd/stylelint-util": "^1.0.2",
 		"@codemirror/autocomplete": "^6.20.1",
@@ -55,7 +55,7 @@
 		"wikiparser-node": "^1.39.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.2.0",
+		"@bhsd/code-standard": "^2.3.0",
 		"@codemirror/search": "^6.6.0",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
 		"@stylistic/eslint-plugin": "^5.10.0",
