@@ -12,7 +12,6 @@ import {
 	sliceDoc,
 	findTemplateName,
 	loadMarked,
-	updateCompletion,
 } from './util.js';
 import type {Tooltip, TooltipView} from '@codemirror/view';
 import type {
@@ -132,7 +131,7 @@ export default (
 				const {state} = view,
 					{doc} = state;
 				const {paramSuggest, tags} = cm.langConfig!;
-				const lsp = getLSP(
+				cm.lsp ??= getLSP(
 					view,
 					false,
 					toConfigGetter(
@@ -141,8 +140,7 @@ export default (
 					),
 					baseData.CDN,
 				);
-				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
-				updateCompletion(cm, lsp);
+				let hover = await cm.lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (!hover && paramSuggest && 'templatedata' in tags!) {
 					// eslint-disable-next-line require-atomic-updates
 					hover = await getHoverFromApi(state, pos, side, paramSuggest, templatedata);

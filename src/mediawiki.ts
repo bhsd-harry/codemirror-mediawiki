@@ -11,6 +11,7 @@ import {
 } from '@codemirror/language';
 import {EditorView} from '@codemirror/view';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
+import elt from 'crelt';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
@@ -29,19 +30,28 @@ import {
 	getSubpageLevel,
 	useUnderscore,
 	getHighlightExtension,
+	loadMarked,
 } from './util.js';
 import {hoverStyle} from './hover.js';
-import type {Extension} from '@codemirror/state';
 import type {
 	TagStyle,
 } from '@codemirror/language';
-import type {CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
+import type {
+	CompletionSource,
+	Completion,
+	CompletionResult,
+	CompletionInfo,
+} from '@codemirror/autocomplete';
 import type {StyleSpec} from 'style-mod';
+import type {Marked} from 'marked';
 import type {
 	MwConfig,
 	CompletionSectionName,
 } from './token';
 import type {TagName} from './config';
+import type {CodeMirror6} from './codemirror';
+
+declare const marked: Marked;
 
 const ranks: Record<CompletionSectionName, number> = {Required: 1, Suggested: 2, Optional: 3, Deprecated: 4};
 
@@ -110,22 +120,67 @@ export const hasTag = (types: Set<string> | string, names: TagName | TagName[]):
 	return (Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
 };
 
+/**
+ * `info` method of `Completion`
+ * @ignore
+ */
+const getInfo = async ({md}: Completion & {md?: string}): Promise<CompletionInfo> => {
+	await loadMarked();
+	const dom = elt('div');
+	dom.innerHTML = await marked.parseInline(md!);
+	return {dom};
+};
+
+const updateItems = (
+	completions: Completion[],
+	data: {aliases: string[], description?: string}[],
+	toName: (label: string) => string,
+): void => {
+	for (const completion of completions) {
+		const name = toName(completion.label),
+			md = data.find(({aliases}) => aliases.includes(name))?.description;
+		if (md) {
+			Object.assign(completion, {
+				info: getInfo,
+				md: md.split('\n', 1)[0],
+			});
+		}
+	}
+};
+
 /** @test */
 export class FullMediaWiki extends MediaWiki {
+	declare readonly cm: CodeMirror6 | undefined;
 	declare readonly templatedata: boolean;
 	declare readonly nsRegex;
-	declare readonly functionSynonyms;
-	declare readonly doubleUnderscore;
 	declare readonly extTags;
 	declare readonly htmlTags;
 	declare readonly protocols;
 	declare readonly imgKeys;
-	declare readonly htmlAttrs;
-	declare readonly elementAttrs;
-	declare readonly extAttrs;
+
+	readonly htmlAttrs = [
+		...getCompletions([...commonHtmlAttrs], 'property'),
+		{type: 'variable', label: 'data-', detail: '*'},
+		{type: 'namespace', label: 'xmlns:', detail: '*'},
+	];
+
+	readonly elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
+		key,
+		getCompletions([...value], 'property'),
+	]));
+
+	readonly extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
+		key,
+		getCompletions([...value], 'property'),
+	]));
+
+	#doubleUnderscore;
+	#functionSynonyms;
+	#usingLSP = false;
 
 	constructor(
 		config: MwConfig,
+		cm?: CodeMirror6,
 		templatedata = false,
 	) {
 		super(config);
@@ -135,19 +190,12 @@ export class FullMediaWiki extends MediaWiki {
 			functionSynonyms,
 			doubleUnderscore,
 		} = config;
+		this.cm = cm;
 		this.templatedata = templatedata;
 		this.nsRegex = new RegExp(String.raw`^(${
 			Object.keys(nsid).filter(ns => ns !== '').join('|')
 				.replaceAll('_', ' ')
 		})\s*:\s*`, 'iu');
-		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
-			type: i ? 'constant' : 'function',
-			label,
-		})));
-		this.doubleUnderscore = getCompletions(
-			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
-			'constant',
-		);
 		this.extTags = getCompletions(this.tags, 'type');
 		this.htmlTags = getCompletions(htmlTags.filter(tag => !this.tags.includes(tag)), 'type');
 		this.protocols = urlProtocols.split('|').map((label): Completion => ({
@@ -157,19 +205,14 @@ export class FullMediaWiki extends MediaWiki {
 		this.imgKeys = this.img.map((label): Completion => label.endsWith('$1')
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
-		this.htmlAttrs = [
-			...getCompletions([...commonHtmlAttrs], 'property'),
-			{type: 'variable', label: 'data-', detail: '*'},
-			{type: 'namespace', label: 'xmlns:', detail: '*'},
-		];
-		this.elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
-			key,
-			getCompletions([...value], 'property'),
-		]));
-		this.extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
-			key,
-			getCompletions([...value], 'property'),
-		]));
+		this.#doubleUnderscore = getCompletions(
+			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
+			'constant',
+		);
+		this.#functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
+			type: i ? 'constant' : 'function',
+			label,
+		})));
 	}
 
 	/**
@@ -296,6 +339,41 @@ export class FullMediaWiki extends MediaWiki {
 				}))),
 			}
 			: undefined;
+	}
+
+	/** 更新魔术字的描述信息 */
+	#updateCompletion(): void {
+		if (!this.#usingLSP && this.cm?.lsp?.data) {
+			this.#usingLSP = true;
+			const {
+				config: {doubleUnderscore, functionSynonyms},
+				cm: {lsp: {data: {behaviorSwitches, parserFunctions}}},
+			} = this;
+			updateItems(
+				this.#doubleUnderscore,
+				behaviorSwitches,
+				label => (doubleUnderscore[0][label] || doubleUnderscore[1][label] || label.slice(2, -2))
+					.toLowerCase(),
+			);
+			updateItems(
+				this.#functionSynonyms,
+				parserFunctions,
+				label => {
+					const name = functionSynonyms[0][label] || functionSynonyms[1][label] || label;
+					return label.startsWith('#') && !name.startsWith('#') ? `#${name}` : name;
+				},
+			);
+		}
+	}
+
+	get doubleUnderscore(): Completion[] {
+		this.#updateCompletion();
+		return this.#doubleUnderscore;
+	}
+
+	get functionSynonyms(): Completion[] {
+		this.#updateCompletion();
+		return this.#functionSynonyms;
 	}
 
 	/** 自动补全魔术字和标签名 */
@@ -560,10 +638,6 @@ export class FullMediaWiki extends MediaWiki {
 			return null;
 		};
 	}
-
-	get extension(): Extension { // eslint-disable-line @typescript-eslint/class-methods-use-this
-		return [];
-	}
 }
 
 const getSelector = (cls: string[], prefix: string | string[] = ''): string => typeof prefix === 'string'
@@ -767,19 +841,21 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 /**
  * Get a LanguageSupport instance for the MediaWiki mode.
  * @param config Configuration for the MediaWiki mode
+ * @param cm CodeMirror6 instance
  * @param templatedata Whether to enable template parameter autocompletion
  */
 export const mediawikiBase = (
 	config: MwConfig,
+	cm?: CodeMirror6,
 	templatedata?: boolean,
 ): LanguageSupport => {
 	const mode = new FullMediaWiki(
 			config,
+			cm,
 			templatedata,
 		),
 		lang = StreamLanguage.define(mode.mediawiki());
 	return new LanguageSupport(lang, [
-		mode,
 		lightHighlightStyle,
 		getHighlightExtension(mode.getTagStyles()),
 		wikiTheme,

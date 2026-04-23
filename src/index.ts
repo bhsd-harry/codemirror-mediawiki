@@ -357,8 +357,8 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
  */
 export const registerMediaWikiCore = (articlePath?: string, templatedata?: boolean): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
-	languages.set('mediawiki', (config: MwConfig): Extension => [
-		mediawikiBase(config, templatedata),
+	languages.set('mediawiki', (config: MwConfig, cm): Extension => [
+		mediawikiBase(config, cm, templatedata),
 		plain(),
 		keymap.of(formatKeymap),
 	]);

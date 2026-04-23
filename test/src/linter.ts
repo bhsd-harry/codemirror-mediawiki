@@ -6,10 +6,9 @@ import type {Diagnostic, CodeAction} from 'vscode-languageserver-types';
 import type {AST} from 'wikiparser-node';
 
 class LanguageService {
-	declare lsp: Parser.LanguageService;
+	lsp = Parser.createLanguageService();
 
 	constructor(include = false) {
-		this.lsp = Parser.createLanguageService();
 		this.lsp.include = include;
 	}
 

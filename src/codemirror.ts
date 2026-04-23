@@ -44,12 +44,13 @@ import type {
 	DecorationSet,
 } from '@codemirror/view';
 import type {Extension, StateEffect, StateField} from '@codemirror/state';
-import type {Language, TagStyle, LanguageSupport} from '@codemirror/language';
+import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {Tag} from '@lezer/highlight';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
+import type {LanguageServiceBase} from 'wikiparser-node/dist/extensions/typings';
 import type {foldHandler} from './fold';
 import type {DocRange} from './util';
 import type {detectIndent} from './indent';
@@ -58,7 +59,6 @@ import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
 import type statusBar from './statusBar';
 import type {MwConfig} from './token';
 import type {Selection} from './matchBrackets';
-import type {FullMediaWiki} from './mediawiki';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
 export type Addon<T> = [AddonMain<T>, Map<string, T>?];
@@ -174,8 +174,7 @@ export class CodeMirror6 {
 	declare dialect: Dialect;
 	declare getWikiConfig?: ConfigGetter;
 	declare langConfig: Partial<MwConfig> & Pick<MwConfig, 'titleParser'> | undefined;
-	/** @private */
-	declare mediaWiki?: FullMediaWiki;
+	declare lsp: LanguageServiceBase | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -248,7 +247,6 @@ export class CodeMirror6 {
 		this.#nestedMWLanguage = lang.nestedMWLanguage;
 		if (isMW) {
 			this.langConfig = config as MwConfig;
-			[this.mediaWiki] = (lang as [LanguageSupport])[0].support as [FullMediaWiki];
 		}
 		return lang;
 	}

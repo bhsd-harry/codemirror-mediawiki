@@ -198,11 +198,10 @@ export default (configs?: BracketConfig): Extension => {
 	plugins[0] = ViewPlugin.fromClass(
 		class implements PluginValue {
 			declare decorations;
-			declare paused;
+			paused = false;
 
 			constructor({state}: EditorView) {
 				this.decorations = myBracketDeco(state, state.facet(facet));
-				this.paused = false;
 			}
 
 			update({docChanged, selectionSet, changes, state, view: {composing}}: ViewUpdate): void {
