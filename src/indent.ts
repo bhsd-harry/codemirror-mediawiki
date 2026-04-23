@@ -1,8 +1,8 @@
 import {noDetectionLangs} from './constants.js';
-import type {Text as TextBase} from '@codemirror/state';
+import type {Text} from '@codemirror/state';
 
-export interface Text extends TextBase {
-	children: readonly Text[] | null;
+declare interface ExtendedText extends Text {
+	children: readonly ExtendedText[] | null;
 	text?: string[];
 }
 
@@ -11,7 +11,7 @@ export interface Text extends TextBase {
  * @param text
  * @test
  */
-export const getLines = (text: Text): string[] => text.children?.flatMap(getLines) ?? text.text!;
+export const getLines = (text: ExtendedText): string[] => text.children?.flatMap(getLines) ?? text.text!;
 
 /**
  * 检测文本的缩进方式

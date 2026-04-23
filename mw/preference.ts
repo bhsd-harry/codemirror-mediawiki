@@ -65,7 +65,7 @@ const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescr
 	const message = code === 'http' || code === 'okay-but-empty'
 		? `MediaWiki API request failed: ${code}`
 		: $('<ul>', {html: (e as {errors: {html: string}[]}).errors.map(({html}) => $('<li>', {html}))});
-	void mw.notify(message as string | HTMLElement[], {type: 'error', autoHideSeconds: 'long'});
+	void mw.notify(message, {type: 'error', autoHideSeconds: 'long'});
 };
 
 const api = (async () => {
@@ -380,10 +380,10 @@ export const openPreference = async (): Promise<void> => {
 						useMonaco: [...useMonaco],
 						indent,
 						theme,
-						wikilint,
+						wikilint: wikilint as Record<LintError.Rule, RuleState>,
 						ESLint: codeConfigs.get('ESLint'),
 						Stylelint: codeConfigs.get('Stylelint'),
-					} as Preferences),
+					} satisfies Preferences),
 					summary: msg('save-summary'),
 				};
 				// eslint-disable-next-line promise/prefer-await-to-then

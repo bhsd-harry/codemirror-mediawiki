@@ -11,10 +11,6 @@ declare interface Token {
 	text: string;
 	name: string;
 }
-declare interface Test {
-	input: string;
-	output: string;
-}
 declare interface ObjNode {
 	name: string;
 	from: number;
@@ -89,7 +85,7 @@ describe('Lezer parser tests', () => {
 		it(`${lang} parser tests`, () => {
 			const input = fs.readFileSync(path.join(dir, file), 'utf8'),
 				printed = objToStr(input, toObj(parsers[lang].parse(input).topNode)),
-				{output} = lezerTests[lang] as Test;
+				{output} = lezerTests[lang];
 			lezerTests[lang] = {input, output: printed};
 			assert.deepStrictEqual(split(printed), split(output));
 		});

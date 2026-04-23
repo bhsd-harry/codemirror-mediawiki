@@ -52,7 +52,7 @@ import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
 import type {foldHandler} from './fold';
 import type {DocRange} from './util';
-import type {Text as ExtendedText, detectIndent} from './indent';
+import type {detectIndent} from './indent';
 import type {Option, LiveOption} from './linter';
 import type {LintSource, LintSources, LintSourceGetter} from './lintsource';
 import type statusBar from './statusBar';
@@ -551,7 +551,7 @@ export class CodeMirror6 {
 	setIndent(indent: string): void {
 		if (this.#view) {
 			this.#effects(this.#indent.reconfigure(indentUnit.of(
-				optionalFunctions.detectIndent(this.#view.state.doc as ExtendedText, indent, this.#lang),
+				optionalFunctions.detectIndent(this.#view.state.doc, indent, this.#lang),
 			)));
 		} else {
 			this.#indentStr = indent;
