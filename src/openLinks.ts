@@ -83,8 +83,6 @@ export const mouseEventListener = (
 	const {name, from, to} = node;
 	if (name.includes('-extlink-protocol')) {
 		return wrapURL(state.sliceDoc(from, node.nextSibling!.to));
-	} else if (name.includes(tokens.pageName) && typeof titleParser === 'function') {
-		return titleParser(state, node);
 	} else if (/-extlink(?:_|$)/u.test(name)) {
 		return wrapURL(state.sliceDoc(node.prevSibling!.from, to));
 	} else if (name.includes(tokens.magicLink)) {
@@ -95,6 +93,8 @@ export const mouseEventListener = (
 			return `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
 		}
 		return isbnParser?.(link);
+	} else if (name.includes(tokens.pageName) && typeof titleParser === 'function') {
+		return titleParser(state, node);
 	}
 	return undefined;
 };

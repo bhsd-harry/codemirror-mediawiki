@@ -56,7 +56,7 @@
 	"dependencies": {
 		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^1.0.0",
-		"@bhsd/codemirror-css-color-picker": "^6.3.2",
+		"@bhsd/codemirror-css-color-picker": "^7.0.0",
 		"@bhsd/common": "^2.0.0",
 		"@bhsd/eslint-browserify": "^10.2.1",
 		"@bhsd/lezer-abusefilter": "^0.3.1",
@@ -79,10 +79,10 @@
 		"globals": "^17.5.0",
 		"luacheck-browserify": "^0.10.1",
 		"stylelint": "^17.9.0",
-		"wikiparser-node": "^1.39.0"
+		"wikiparser-node": "^1.39.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.2.0",
+		"@bhsd/code-standard": "^2.3.0",
 		"@bhsd/nodejs": "^1.0.0",
 		"@bhsd/test-util": "^1.1.0",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",

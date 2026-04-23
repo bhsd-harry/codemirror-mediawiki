@@ -13,7 +13,7 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
 	return (state, node) => {
 		const {name} = node;
-		let page = sliceDoc(state, node).trim(),
+		let page = sliceDoc(state, node),
 			{prevSibling, nextSibling, from, to} = node;
 		while (prevSibling?.to === from && isSameToken(prevSibling, name)) {
 			if (prevSibling.name === name) {
@@ -27,6 +27,7 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 			}
 			({to, nextSibling} = nextSibling);
 		}
+		page = page.trim();
 		if (name.includes(tokens.fileText) && re.test(page)) {
 			return page;
 		}
