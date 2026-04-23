@@ -14,6 +14,10 @@
 
 - Missing styles for some tokens in the MediaWiki mode, since [v3.13.0](#3130)
 
+**Changed**
+
+- When not selecting any text, pressing `Tab` now inserts a tab character instead of increasing the indentation of the current line
+
 ## 3.13.0
 
 *2026-04-17*

@@ -79,12 +79,12 @@
 		"globals": "^17.5.0",
 		"luacheck-browserify": "^0.10.1",
 		"stylelint": "^17.9.0",
-		"wikiparser-node": "^1.38.1"
+		"wikiparser-node": "^1.39.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.2.0",
 		"@bhsd/nodejs": "^1.0.0",
-		"@bhsd/test-util": "^1.0.1",
+		"@bhsd/test-util": "^1.1.0",
 		"@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
 		"@stylistic/eslint-plugin": "^5.10.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",

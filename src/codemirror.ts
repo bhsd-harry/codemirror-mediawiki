@@ -19,7 +19,7 @@ import {
 	historyKeymap,
 	history,
 	redo,
-	indentWithTab,
+	insertTab,
 	insertNewlineKeepIndent,
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
@@ -379,7 +379,7 @@ export class CodeMirror6 {
 						this.#indent.of(indentUnit.of(optionalFunctions.detectIndent(value, this.#indentStr, lang))),
 						keymap.of([
 							...historyKeymap,
-							indentWithTab,
+							{key: 'Tab', run: insertTab},
 							{win: 'Ctrl-Shift-z', run: redo, preventDefault: true},
 						]),
 					],
