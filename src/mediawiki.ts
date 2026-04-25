@@ -691,9 +691,7 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		},
 	},
 	[`${
-		getSelector(
-			['section-header', 'template', 'parserfunction', 'file-delimiter', 'magic-link', 'templatevariable'],
-		)
+		getSelector(['section-header', 'file-delimiter', 'magic-link', 'templatevariable'])
 	},${
 		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
 	},${
@@ -718,15 +716,20 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	}`]: {
 		fontWeight: 'bold',
 	},
+	[`.${mwPrefix}em`]: {
+		fontStyle: 'italic',
+	},
+	// 模板和解析器函数的参数不加粗不斜体
+	[getSelector(['template', 'parserfunction'])]: {
+		fontWeight: 'normal',
+		fontStyle: 'normal',
+	},
 	[`${
 		getSelector(['pagename', 'link-tosection', 'magic-link'])
 	},${
 		getSelector(['extlink', 'extlink-protocol'], ['', 'free-'])
 	}`]: {
 		textDecoration: 'underline',
-	},
-	[`.${mwPrefix}em`]: {
-		fontStyle: 'italic',
 	},
 	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
 		color: 'var(--cm-hr)',
