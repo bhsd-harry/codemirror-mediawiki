@@ -441,7 +441,7 @@ export class FullMediaWiki extends MediaWiki {
 							contentmodel = 'Scribunto';
 						}
 					} else if (isTemplateStyles) {
-						ns = 10;
+						ns = this.config.templateStylesDefaultNamespace ?? 10;
 						contentmodel = 'sanitized-css';
 					} else if (hasTag(types, 'mw-tag-gallery' as TagName) && !isLink) {
 						ns = 6;

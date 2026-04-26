@@ -1,12 +1,5 @@
-import {splitColors, numToHex} from '@bhsd/common';
-import {
-	parseCallExpression,
-	parseColorLiteral,
-	ColorType,
-	colorPickerTheme,
-	makeColorPicker,
-} from '@bhsd/codemirror-css-color-picker';
-import type {Extension} from '@codemirror/state';
+import {splitColors} from '@bhsd/common';
+import {parseCallExpression, parseColorLiteral, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
 import type {WidgetOptions, DiscoverColors} from '@bhsd/codemirror-css-color-picker';
 
 /**
@@ -30,26 +23,14 @@ export const discoverColors: DiscoverColors = (_, {from, to, name}, doc) => {
 		return undefined;
 	}
 	return splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor)
-		.map(([s, start, end]): WidgetOptions | false => {
+		.map(([s, start, end]): WidgetOptions | false | undefined => {
 			const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
-			if (!color) {
-				return false;
-			}
-			let {alpha} = color;
-			if (color.colorType !== ColorType.hex) {
-				alpha &&= numToHex(parseFloat(alpha.slice(1)) / (alpha.endsWith('%') ? 100 : 1));
-			}
-			return {
+			return color && {
 				...color,
-				colorType: ColorType.hex,
-				alpha,
 				from: from + start,
 				to: from + end,
 			};
-		}).filter(options => options !== false);
+		}).filter(Boolean) as WidgetOptions[];
 };
 
-export default [
-	makeColorPicker({discoverColors}),
-	colorPickerTheme,
-] satisfies Extension;
+export default makeColorPicker(discoverColors);

@@ -51,7 +51,7 @@
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/real.js",
 		"test:math": "mocha test/dist/math.js",
-		"diff": "git diff --ignore-all-space --color-moved --minimal npm wikitext"
+		"diff": "git diff -w --color-moved --minimal npm wikitext"
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.3.0",

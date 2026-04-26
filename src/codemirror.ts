@@ -367,11 +367,6 @@ export class CodeMirror6 {
 					? [
 						EditorState.readOnly.of(true),
 						EditorState.changeFilter.of(({docChanged}) => !docChanged),
-						EditorView.theme({
-							'input[type="color"]': {
-								pointerEvents: 'none',
-							},
-						}),
 					]
 					: [
 						history(),

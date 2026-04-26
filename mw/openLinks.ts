@@ -9,7 +9,9 @@ import type {MwConfig} from '../src/token';
 const isSameToken = (node: SyntaxNode, name: string): boolean =>
 	node.name === name || node.name.includes(tokens.comment);
 
-export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'] => {
+export const getTitleParser = (
+	{urlProtocols, templateStylesDefaultNamespace = 10}: MwConfig,
+): MwConfig['titleParser'] => {
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
 	return (state, node) => {
 		const {name} = node;
@@ -47,7 +49,9 @@ export const getTitleParser = ({urlProtocols}: MwConfig): MwConfig['titleParser'
 			}
 		}
 		let ns = 0;
-		if (isTemplateStyles || name.includes(tokens.templateName)) {
+		if (isTemplateStyles) {
+			ns = templateStylesDefaultNamespace;
+		} else if (name.includes(tokens.templateName)) {
 			ns = 10;
 		} else if (
 			name.includes('mw-tag-gallery') && name.includes(tokens.linkPageName) && !isWikiLink(name)

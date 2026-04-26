@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import {syntaxTree} from '@codemirror/language';
-import {ColorType} from '@bhsd/codemirror-css-color-picker';
 import {discoverColors} from '../../dist/color.js';
 import {createState} from './util.js';
 import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
@@ -29,9 +28,11 @@ describe('colorPicker', () => {
 			{
 				from: 17,
 				to: 36,
-				alpha: 'b3',
-				color: '#ff0000',
-				colorType: ColorType.hex,
+				colorType: 'rgba',
+				alpha: 0.7,
+				color: [255, 0, 0],
+				legacy: true,
+				spaced: true,
 			},
 		);
 	});
@@ -41,9 +42,11 @@ describe('colorPicker', () => {
 			{
 				from: 20,
 				to: 29,
-				alpha: 'ff',
-				color: '#00ff00',
-				colorType: ColorType.hex,
+				colorType: 'hex',
+				alpha: 1,
+				color: [0, 255, 0],
+				legacy: false,
+				spaced: false,
 			},
 		);
 	});
@@ -53,9 +56,11 @@ describe('colorPicker', () => {
 			{
 				from: 18,
 				to: 23,
-				alpha: '00',
-				color: '#ff0000',
-				colorType: ColorType.hex,
+				colorType: 'hex',
+				alpha: 0,
+				color: [255, 0, 0],
+				legacy: false,
+				spaced: false,
 			},
 		);
 	});
@@ -65,9 +70,11 @@ describe('colorPicker', () => {
 			{
 				from: 8,
 				to: 26,
-				alpha: '80',
-				color: '#0000ff',
-				colorType: ColorType.hex,
+				colorType: 'rgb',
+				alpha: 0.5,
+				color: [0, 0, 255],
+				legacy: false,
+				spaced: true,
 			},
 		);
 	});
@@ -77,9 +84,11 @@ describe('colorPicker', () => {
 			{
 				from: 10,
 				to: 33,
-				alpha: '80',
-				color: '#ff0000',
-				colorType: ColorType.hex,
+				colorType: 'hsla',
+				alpha: 0.5,
+				color: [255, 0, 0],
+				legacy: true,
+				spaced: true,
 			},
 		);
 	});
@@ -89,9 +98,11 @@ describe('colorPicker', () => {
 			{
 				from: 4,
 				to: 20,
-				alpha: '',
-				color: '#ff0000',
-				colorType: ColorType.hex,
+				colorType: 'hsl',
+				alpha: 1,
+				color: [255, 0, 0],
+				legacy: false,
+				spaced: true,
 			},
 		);
 	});

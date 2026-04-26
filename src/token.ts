@@ -88,6 +88,7 @@ export interface MwConfig extends MwConfigBase {
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
+	templateStylesDefaultNamespace?: number;
 	linkSuggest?: ApiSuggest<LinkSuggestion>;
 	paramSuggest?: ApiSuggest;
 	/* eslint-disable @typescript-eslint/method-signature-style */

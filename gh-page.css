@@ -43,7 +43,7 @@ h2 {
 	display: table-cell;
 	vertical-align: middle;
 }
-.field, .header, input, input + span, label {
+.field, .header, input:enabled, input:enabled + span, label {
 	cursor: pointer;
 }
 .field {
