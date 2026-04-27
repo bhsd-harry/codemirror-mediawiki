@@ -43,7 +43,7 @@
 		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^1.0.0",
 		"@bhsd/codemirror-css-color-picker": "^7.0.0",
-		"@bhsd/common": "^2.0.0",
+		"@bhsd/common": "^2.1.0",
 		"@bhsd/stylelint-util": "^1.0.2",
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",
@@ -74,7 +74,7 @@
 		"eslint-plugin-unicorn": "^64.0.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.22.1",
-		"stylelint": "^17.9.0",
+		"stylelint": "^17.9.1",
 		"stylelint-config-recommended": "^18.0.0",
 		"stylelint-plugin-use-baseline": "^1.4.1",
 		"typescript": "^6.0.3"
