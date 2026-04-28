@@ -1,4 +1,21 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.15.0
+
+*2026-04-29*
+
+**Added**
+
+- The Lua linter can now be dynamically [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) in the preference dialog on a MediaWiki site
+
+**Fixed**
+
+- The [openLinks](./README.md#openlinks) extension and the [autocompletion](./README.md#autocompletion) extension now respect [`$wgTemplateStylesDefaultNamespace`](https://www.mediawiki.org/wiki/Extension:TemplateStyles#Configuration) when available on a MediaWiki site
+- An auto-indentation issue when pressing `Enter` at the beginning of a line in the MediaWiki mode
+
+**Changed**
+
+- The [@bhsd/codemirror-css-color-picker](https://www.npmjs.com/package/@bhsd/codemirror-css-color-picker) package has been upgraded to v7, which may contain breaking changes for the [colorPicker](./README.md#colorpicker) extension
+
 ## 3.14.0
 
 *2026-04-23*

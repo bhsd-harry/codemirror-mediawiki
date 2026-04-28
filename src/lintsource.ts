@@ -393,7 +393,7 @@ export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => 
 export const getLuaLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const {CDN} = baseData,
 		luaLint = await getLuaLinter(CDN && `${CDN}/${luacheckRepo}`);
-	return async ({doc}) => (await luaLint(doc.toString(), await getOpt(opt)))
+	const lintSource: LintSource = async ({doc}) => (await luaLint(doc.toString(), await getOpt(opt)))
 		.map(({line, column, end_column, code, msg: message, severity}): Diagnostic => ({
 			source: 'Luacheck',
 			message: `${message} (${code})`,
@@ -401,4 +401,10 @@ export const getLuaLintSource: LintSourceGetter = async (opt): Promise<LintSourc
 			from: pos(doc, line, column),
 			to: pos(doc, line, end_column + 1),
 		}));
+	Object.defineProperty(lintSource, 'config', {
+		get() {
+			return luaLint.config;
+		},
+	});
+	return lintSource;
 };

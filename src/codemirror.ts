@@ -327,10 +327,13 @@ export class CodeMirror6 {
 					},
 				]),
 				EditorView.theme({
+					'.cm-scroller': {
+						minHeight: '2em',
+					},
 					[panelsSelector]: {
 						direction: document.dir,
 					},
-					'& .cm-lineNumbers .cm-gutterElement': {
+					'.cm-lineNumbers .cm-gutterElement': {
 						textAlign: 'end',
 					},
 					[`.cm-textfield, .cm-button,${panelSelector}.cm-search label,${panelSelector}.cm-dialog label`]: {
@@ -399,7 +402,6 @@ export class CodeMirror6 {
 		});
 		const {fontSize, lineHeight, border} = getComputedStyle(textarea);
 		textarea.before(this.#view.dom);
-		this.#minHeight();
 		this.#view.dom.style.border = border;
 		this.#view.scrollDOM.style.fontSize = fontSize;
 		this.#view.scrollDOM.style.lineHeight = lineHeight;
@@ -417,14 +419,6 @@ export class CodeMirror6 {
 	}
 
 	/**
-	 * 设置编辑器最小高度
-	 * @param linting 是否启用语法检查
-	 */
-	#minHeight(linting?: boolean): void {
-		this.#view!.dom.style.minHeight = linting ? 'calc(100px + 2em)' : '2em';
-	}
-
-	/**
 	 * Set language
 	 * @param lang language
 	 * @param config language configuration
@@ -439,7 +433,6 @@ export class CodeMirror6 {
 				this.#language.reconfigure(ext),
 				this.#linter.reconfigure(hasLinter ? linters.get(lang)!(this) : []),
 			]);
-			this.#minHeight(hasLinter);
 			this.prefer({});
 		}
 	}
@@ -494,7 +487,6 @@ export class CodeMirror6 {
 		}
 		if (this.#view) {
 			this.#effects(this.#linter.reconfigure(linterExtension(this)));
-			this.#minHeight(Boolean(lintSource));
 		}
 	}
 
