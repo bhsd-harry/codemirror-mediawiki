@@ -390,13 +390,13 @@ export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => 
  * @implements
  * @test
  */
-export const getLuaLintSource: LintSourceGetter = async (): Promise<LintSource> => {
+export const getLuaLintSource: LintSourceGetter = async (opt): Promise<LintSource> => {
 	const {CDN} = baseData,
 		luaLint = await getLuaLinter(CDN && `${CDN}/${luacheckRepo}`);
-	return async ({doc}) => (await luaLint(doc.toString()))
-		.map(({line, column, end_column, msg: message, severity}): Diagnostic => ({
+	return async ({doc}) => (await luaLint(doc.toString(), await getOpt(opt)))
+		.map(({line, column, end_column, code, msg: message, severity}): Diagnostic => ({
 			source: 'Luacheck',
-			message,
+			message: `${message} (${code})`,
 			severity: severity === 1 ? 'warning' : 'error',
 			from: pos(doc, line, column),
 			to: pos(doc, line, end_column + 1),

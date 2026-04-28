@@ -34,7 +34,7 @@ const prefKey = 'codemirror-mediawiki-addons',
 	langs = ['wiki', 'javascript', 'css', 'lua', 'json', 'vue'],
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
-	codeKeys = ['ESLint', 'Stylelint'] as const,
+	codeKeys = ['ESLint', 'Stylelint', 'Luacheck'] as const,
 	user = mw.config.get('wgUserGroups')?.includes('user')
 		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
@@ -383,6 +383,7 @@ export const openPreference = async (): Promise<void> => {
 						wikilint: wikilint as Record<LintError.Rule, RuleState>,
 						ESLint: codeConfigs.get('ESLint'),
 						Stylelint: codeConfigs.get('Stylelint'),
+						Luacheck: codeConfigs.get('Luacheck'),
 					} satisfies Preferences),
 					summary: msg('save-summary'),
 				};

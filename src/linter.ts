@@ -281,6 +281,12 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (c
 export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async (cdn = luacheckRepo) => {
 	await loadScript(cdn, 'luacheck');
 	// eslint-disable-next-line @typescript-eslint/await-thenable
-	const luachecker = await luacheck(undefined as unknown as string);
-	return async text => (await luachecker.queue(text)).filter(({severity}) => severity);
+	const luachecker = await luacheck();
+	const linter: asyncLinter<Promise<Diagnostic[]>> = async (text, opt) => {
+		linter.config = opt! ?? undefined; // eslint-disable-line @typescript-eslint/no-unnecessary-condition
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+		luachecker.setConfig?.(linter.config as Parameters<typeof luacheck>[0]);
+		return (await luachecker.queue(text)).filter(({severity}) => severity);
+	};
+	return linter;
 };

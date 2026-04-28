@@ -598,7 +598,13 @@ export class CodeMirror extends CodeMirror6 {
 							css: this.#getBasicOpt('css'),
 						}
 						: option;
+					break;
 				}
+				case 'lua':
+					opt = (): Option => {
+						const option = codeConfigs.get('Luacheck');
+						return option && typeof option === 'object' ? {std: 'mediawiki', ...option} : option;
+					};
 				// no default
 			}
 			await this.getLinter(opt);
