@@ -33,6 +33,40 @@ input[type="color"] {
 	pointer-events: none;
 }
 
+/* src/color */
+.cm-css-color-picker-wrapper {
+	display: inline-block;
+	margin-left: .6ch;
+	margin-right: .6ch;
+	height: 1em;
+	width: 1em;
+	transform: translateY(.1em);
+
+	& > input[type="color"] {
+		height: 100%;
+		width: 100%;
+		padding: 0;
+		appearance: none;
+		border: none;
+		border-radius: 0;
+		outline: 1px solid #ddd;
+		&:enabled {
+			cursor: pointer;
+		}
+		&::-webkit-color-swatch-wrapper {
+			padding: 0;
+		}
+		&::-webkit-color-swatch {
+			border: none;
+			border-radius: 0;
+		}
+		&::-moz-color-swatch {
+			border: none;
+			border-radius: 0;
+		}
+	}
+}
+
 /* src/fold */
 .cm-foldGutter {
 	order: 2;

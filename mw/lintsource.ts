@@ -1,5 +1,5 @@
 import {getLSP} from '@bhsd/browser';
-import {getOpt} from '../src/lintsource';
+import {getOpt} from '@bhsd/cm-util';
 import {baseData} from '../src/constants';
 import {templateData} from './util';
 import {RuleState} from './constants';
@@ -8,7 +8,7 @@ import type {Text} from '@codemirror/state';
 import type {Diagnostic} from '@codemirror/lint';
 import type {AST} from 'wikiparser-node';
 import type {TemplateDataApiTemplateDataParams, ApiQuerySiteinfoParams} from 'types-mediawiki-api';
-import type {Option, LiveOption} from '../src/linter';
+import type {Option, LiveOption} from '@bhsd/cm-util';
 import type {LintSource} from '../src/lintsource';
 import type {CodeMirror} from './codemirror';
 import type {TemplateData, Parameter} from './util';
@@ -136,7 +136,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 	);
 	const linter: LintSource = async ({doc}): Promise<Diagnostic[]> => {
 		const errors = await execute(doc.toString()),
-			config = await getOpt(opt, true),
+			config = await getOpt(opt),
 			defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
 			error = await highSet!;
 		await api.loadMessagesIfMissing(errors.map(({type}) => getMsgKey(type)));
@@ -184,7 +184,7 @@ export const getTemplateDataLintSource = async (
 	let running: Promise<void> | undefined,
 		latest: Text | undefined;
 	return async ({doc}): Promise<Diagnostic[]> => {
-		const config = await getOpt(opt, true);
+		const config = await getOpt(opt);
 		if (config?.[getRuleKey('template-data')] === RuleState.off) {
 			return [];
 		}

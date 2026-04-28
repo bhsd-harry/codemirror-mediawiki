@@ -9,13 +9,12 @@ import type {
 } from 'stylelint';
 import type {Diagnostic} from 'luacheck-browserify';
 import type {ConfigGetter} from '@bhsd/browser';
+import type {Option} from '@bhsd/cm-util';
 import type {
 	QuickFixData,
 	AST,
 } from 'wikiparser-node';
 
-export type Option = Record<string, unknown> | null | undefined;
-export type LiveOption = (runtime?: boolean) => Option | Promise<Option>;
 declare type asyncLinter<
 	T,
 	S = Record<string, unknown>,

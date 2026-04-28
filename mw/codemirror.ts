@@ -48,24 +48,12 @@ import {instances, templateData} from './util';
 import wikiEditor, {toggleButton, setButtonActive, getGroup} from './wikiEditor';
 import type {Linter} from 'eslint';
 import type {Config} from 'stylelint';
-import type {editor, IRange} from 'monaco-editor';
+import type {editor} from 'monaco-editor';
 import type {ConfigData} from 'wikiparser-node';
+import type {Option, LiveOption, IWikitextModel} from '@bhsd/cm-util';
 import type {Dialect, ReplaceFunction} from '../src/codemirror';
-import type {Option, LiveOption} from '../src/linter';
 import type {LintSources, LintSource} from '../src/lintsource';
 import type {MwConfig} from '../src/token';
-
-declare interface IWikitextModel extends editor.ITextModel {
-	linter?: {
-		disabled?: boolean;
-		option?: Option | LiveOption;
-		lint(text: string): editor.IMarkerData[] | Promise<editor.IMarkerData[]>;
-	};
-	/* eslint-disable @typescript-eslint/method-signature-style */
-	getRangeAt?: (start: number, end: number) => IRange;
-	lint?: (this: IWikitextModel, on?: boolean) => Promise<void>;
-	/* eslint-enable @typescript-eslint/method-signature-style */
-}
 
 /** Extension:CodeMirror */
 declare interface ExtCodeMirror {
