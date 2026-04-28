@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.5.0
+
+*2026-04-29*
+
+**Changed**
+
+- The [@bhsd/codemirror-css-color-picker](https://www.npmjs.com/package/@bhsd/codemirror-css-color-picker) package has been upgraded to v7, which may contain breaking changes for the [colorPicker](./README.md#colorpicker) extension
+
 ## 0.4.4
 
 *2026-04-10*
