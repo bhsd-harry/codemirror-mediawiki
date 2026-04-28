@@ -20,7 +20,6 @@ import {
 	history,
 	redo,
 	insertTab,
-	insertNewlineKeepIndent,
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
@@ -43,7 +42,7 @@ import type {
 	KeyBinding,
 	DecorationSet,
 } from '@codemirror/view';
-import type {Extension, StateEffect, StateField} from '@codemirror/state';
+import type {Extension, StateEffect, StateField, StateCommand} from '@codemirror/state';
 import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
@@ -88,6 +87,21 @@ declare type KnownTag = keyof typeof tags;
 declare interface SimplifiedTagStyle extends Omit<TagStyle, 'tag'> {
 	tag: string | string[];
 }
+
+const insertNewlineKeepIndent: StateCommand = ({state, dispatch}) => {
+	dispatch(state.update(
+		state.changeByRange(({from, to}) => {
+			const {text, from: f} = state.doc.lineAt(from),
+				[indent] = /^\s*/u.exec(text.slice(0, from - f))!;
+			return {
+				changes: {from, to, insert: state.lineBreak + indent},
+				range: EditorSelection.cursor(from + indent.length + 1),
+			};
+		}),
+		{scrollIntoView: true, userEvent: 'input'},
+	));
+	return true;
+};
 
 export const plain = (): Extension => [
 	EditorView.contentAttributes.of({spellcheck: 'true'}),
