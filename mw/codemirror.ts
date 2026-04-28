@@ -20,7 +20,17 @@ import {tagModes} from '../src/static';
 import {sliceDoc} from '../src/util';
 import {getStringOffset} from '../src/lua';
 import {getMwConfig, getParserConfig} from './config';
-import {preferenceId, indentKey, themeKey, RuleState, curVersion, languageFallbacks} from './constants';
+import {
+	preferenceId,
+	indentKey,
+	themeKey,
+	RuleState,
+	curVersion,
+	languageFallbacks,
+	hook,
+	settingHook,
+	linterHook,
+} from './constants';
 import escape from './escape';
 import {
 	getParsoidLintSource,
@@ -47,12 +57,13 @@ import type {MwConfig} from '../src/token';
 
 declare interface IWikitextModel extends editor.ITextModel {
 	linter?: {
+		disabled?: boolean;
 		option?: Option | LiveOption;
 		lint(text: string): editor.IMarkerData[] | Promise<editor.IMarkerData[]>;
 	};
 	/* eslint-disable @typescript-eslint/method-signature-style */
 	getRangeAt?: (start: number, end: number) => IRange;
-	lint?: (this: IWikitextModel, on: boolean) => Promise<void>;
+	lint?: (this: IWikitextModel, on?: boolean) => Promise<void>;
 	/* eslint-enable @typescript-eslint/method-signature-style */
 }
 
@@ -80,6 +91,12 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		['scribunto', 'lua'],
 		['wikitext', 'mediawiki'],
 		['proofread-page', 'mediawiki'],
+	]),
+	linterMap = new Map([
+		['wikitext', 'WikiLint'],
+		['javascript', 'ESLint'],
+		['css', 'Stylelint'],
+		['lua', 'Luacheck'],
 	]),
 	monacoLangs = new Map([
 		['mediawiki', 'wikitext'],
@@ -114,6 +131,8 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		String.raw`^User:[^/]+/(?:common|global|${mw.config.get('skin')})\.js$`,
 		'u',
 	),
+	mwHook = mw.hook<ExtCodeMirror[]>('ext.CodeMirror.ready'),
+	monacoHook = mw.hook<string[]>(linterHook),
 	mediaQuery = matchMedia('(prefers-color-scheme: dark)');
 
 /**
@@ -189,6 +208,7 @@ export class CodeMirror extends CodeMirror6 {
 	#init: Promise<void> | undefined;
 	#indentStr = '\t';
 	#handler;
+	#monacoHandler: ((key: string) => void) | undefined;
 	#observer: MutationObserver | undefined;
 	#listener = (): void => {
 		setTheme(this);
@@ -235,7 +255,7 @@ export class CodeMirror extends CodeMirror6 {
 				obj.destroy();
 			}
 		};
-		mw.hook('ext.CodeMirror.ready').add(handler);
+		mwHook.add(handler);
 		super(textarea, lang, config, false);
 		this.ns = ns;
 		this.page = page;
@@ -244,7 +264,7 @@ export class CodeMirror extends CodeMirror6 {
 		instances.set(textarea, this);
 		this.initialize(config, !isCM);
 		if (isEditor(textarea)) {
-			mw.hook('wiki-codemirror6').fire(this);
+			mw.hook<this[]>(hook).fire(this);
 			if (textarea.id === 'wpTextbox1') {
 				textarea.form?.addEventListener('submit', () => {
 					const scrollTop = document.querySelector<HTMLInputElement>('#wpScrolltop');
@@ -254,7 +274,7 @@ export class CodeMirror extends CodeMirror6 {
 				});
 			}
 		} else {
-			mw.hook('wiki-codemirror6.setting').fire(this);
+			mw.hook<this[]>(settingHook).fire(this);
 		}
 	}
 
@@ -374,6 +394,12 @@ export class CodeMirror extends CodeMirror6 {
 				textarea.value = this.#model!.getValue();
 			}, 400);
 		});
+		this.#monacoHandler = (key): void => {
+			if (this.#model?.linter && !this.#model.linter.disabled && linterMap.get(language) === key) {
+				void this.#model.lint?.();
+			}
+		};
+		monacoHook.add(this.#monacoHandler);
 		toggleButton(this.$toolbar, 'lineWrapping', wrapping);
 	}
 
@@ -416,7 +442,10 @@ export class CodeMirror extends CodeMirror6 {
 		this.$toolbar?.removeClass(['readonly', 'wiki', 'coding'].map(s => `codemirror-${s}`).join(' '))
 			.find(getGroup(['', 'format', 'more', 'search']))
 			.remove();
-		mw.hook('ext.CodeMirror.ready').remove(this.#handler);
+		mwHook.remove(this.#handler);
+		if (this.#monacoHandler) {
+			monacoHook.remove(this.#monacoHandler);
+		}
 		this.#removeThemeListener();
 		instances.delete(this.textarea);
 		super.destroy();
@@ -530,8 +559,8 @@ export class CodeMirror extends CodeMirror6 {
 		if (!on) {
 			if (this.view) {
 				this.lint();
-			} else if (this.#model?.lint) {
-				void this.#model.lint(false);
+			} else {
+				void this.#model?.lint?.(false);
 			}
 			return;
 		}
@@ -611,9 +640,9 @@ export class CodeMirror extends CodeMirror6 {
 		}
 		if (this.view) {
 			this.lint(cmLinters.get(lang));
-		} else if (this.#model?.lint) {
+		} else {
 			/** @todo 动态更新 `this.#model.linter.lint` */
-			void this.#model.lint(true);
+			void this.#model?.lint?.();
 		}
 	}
 

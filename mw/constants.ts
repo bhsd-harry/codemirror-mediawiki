@@ -13,4 +13,7 @@ export const curVersion = $VERSION,
 	})(),
 	indentKey = 'codemirror-mediawiki-indent',
 	themeKey = 'codemirror-mediawiki-theme',
+	hook = 'wiki-codemirror6',
+	settingHook = `${hook}.setting`,
+	linterHook = `${hook}.linter`,
 	preferenceId = 'cm-preference';

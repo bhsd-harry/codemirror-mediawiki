@@ -1,7 +1,7 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {preferenceId, indentKey, themeKey, RuleState} from './constants';
+import {preferenceId, indentKey, themeKey, RuleState, linterHook} from './constants';
 import {parsoidRules} from './lintsource';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './util';
@@ -35,6 +35,7 @@ const prefKey = 'codemirror-mediawiki-addons',
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint', 'Luacheck'] as const,
+	hook = mw.hook<string[]>(linterHook),
 	user = mw.config.get('wgUserGroups')?.includes('user')
 		&& mw.config.get('wgUserName'),
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
@@ -309,21 +310,31 @@ export const openPreference = async (): Promise<void> => {
 		}
 
 		// WikiLint
+		let wikilintConfigured = false;
 		for (const [rule, dropdown] of wikilintWidgets) {
-			const val = dropdown.getValue() as RuleState;
-			changed ||= val !== wikilint[rule];
+			const val = dropdown.getValue() as RuleState,
+				configured = val !== wikilint[rule];
+			changed ||= configured;
+			wikilintConfigured ||= configured;
 			wikilint[rule] = val;
 		}
 		setObject(wikilintKey, wikilint);
+		if (wikilintConfigured) {
+			hook.fire('WikiLint');
+		}
 
 		// ESLint & Stylelint
 		const jsonErrors: string[] = [];
 		for (const key of codeKeys) {
 			try {
-				const config = JSON.parse(widgets[key]!.getValue().trim() || 'null');
-				changed ||= JSON.stringify(config) !== JSON.stringify(codeConfigs.get(key));
+				const config = JSON.parse(widgets[key]!.getValue().trim() || 'null'),
+					configured = JSON.stringify(config) !== JSON.stringify(codeConfigs.get(key));
+				changed ||= configured;
 				codeConfigs.set(key, config);
 				setObject(`codemirror-mediawiki-${key}`, config);
+				if (configured) {
+					hook.fire(key);
+				}
 			} catch {
 				jsonErrors.push(key);
 			}

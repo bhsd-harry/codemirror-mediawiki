@@ -44,6 +44,7 @@
 	"wikilint-on": "On",
 	"ESLint-config": "ESLint configuration as JSON:",
 	"Stylelint-config": "Stylelint configuration as JSON:",
+	"Luacheck-config": "Luacheck configuration as JSON:",
 	"and": " and ",
 	"json-error": "Invalid JSON: $1",
 	"phrase-Fold-template-or-extension-tag": "Fold template, parser function or extension tag",

@@ -1,4 +1,5 @@
 import {CDN} from '@bhsd/browser';
+import {hook, settingHook} from './constants';
 import {CodeMirror} from './codemirror';
 import {msg, cmSetI18N, welcome, localize} from './msg';
 import {openPreference} from './preference';
@@ -47,8 +48,8 @@ document.body.addEventListener('click', e => {
 		mw.loader.using('mediawiki.util'),
 		cmSetI18N(mw.libs.wphl?.CDN || CDN),
 	]);
-	mw.hook('wiki-codemirror6').add(localize);
-	mw.hook('wiki-codemirror6.setting').add(localize);
+	mw.hook<CodeMirror[]>(hook).add(localize);
+	mw.hook<CodeMirror[]>(settingHook).add(localize);
 	mw.util.addPortletLink(
 		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
 		'#',

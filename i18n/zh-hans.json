@@ -44,6 +44,7 @@
 	"wikilint-on": "开启",
 	"ESLint-config": "JSON格式的ESLint设置：",
 	"Stylelint-config": "JSON格式的Stylelint设置：",
+	"Luacheck-config": "JSON格式的Luacheck设置：",
 	"and": "和",
 	"json-error": "JSON格式错误：$1",
 	"phrase-Go-to-line": "跳转到行",
