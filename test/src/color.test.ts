@@ -2,15 +2,15 @@ import * as assert from 'assert';
 import {syntaxTree} from '@codemirror/language';
 import {discoverColors} from '../../dist/color.js';
 import {createState} from './util.js';
-import type {WidgetOptions} from '@bhsd/codemirror-css-color-picker';
+import type {DocRange} from '../../dist/util';
 
-const mockTest = (doc: string, result: WidgetOptions): void => {
+const mockTest = (doc: string, result: DocRange): void => {
 	const state = createState(doc),
 		tree = syntaxTree(state),
-		widgets: WidgetOptions[] = [];
+		widgets: DocRange[] = [];
 	tree.iterate({
 		enter(node): void {
-			const colors = discoverColors(tree, node, state.doc) as WidgetOptions[] | null;
+			const colors = discoverColors(tree, node, state.doc) as DocRange[] | undefined;
 			if (colors) {
 				widgets.push(...colors);
 			}
@@ -28,11 +28,6 @@ describe('colorPicker', () => {
 			{
 				from: 17,
 				to: 36,
-				colorType: 'rgba',
-				alpha: 0.7,
-				color: [255, 0, 0],
-				legacy: true,
-				spaced: true,
 			},
 		);
 	});
@@ -42,11 +37,6 @@ describe('colorPicker', () => {
 			{
 				from: 20,
 				to: 29,
-				colorType: 'hex',
-				alpha: 1,
-				color: [0, 255, 0],
-				legacy: false,
-				spaced: false,
 			},
 		);
 	});
@@ -56,11 +46,6 @@ describe('colorPicker', () => {
 			{
 				from: 18,
 				to: 23,
-				colorType: 'hex',
-				alpha: 0,
-				color: [255, 0, 0],
-				legacy: false,
-				spaced: false,
 			},
 		);
 	});
@@ -70,11 +55,6 @@ describe('colorPicker', () => {
 			{
 				from: 8,
 				to: 26,
-				colorType: 'rgb',
-				alpha: 0.5,
-				color: [0, 0, 255],
-				legacy: false,
-				spaced: true,
 			},
 		);
 	});
@@ -84,11 +64,6 @@ describe('colorPicker', () => {
 			{
 				from: 10,
 				to: 33,
-				colorType: 'hsla',
-				alpha: 0.5,
-				color: [255, 0, 0],
-				legacy: true,
-				spaced: true,
 			},
 		);
 	});
@@ -98,11 +73,6 @@ describe('colorPicker', () => {
 			{
 				from: 4,
 				to: 20,
-				colorType: 'hsl',
-				alpha: 1,
-				color: [255, 0, 0],
-				legacy: false,
-				spaced: true,
 			},
 		);
 	});

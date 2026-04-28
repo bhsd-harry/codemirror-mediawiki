@@ -1,6 +1,7 @@
 import {splitColors} from '@bhsd/common';
-import {parseCallExpression, parseColorLiteral, makeColorPicker} from '@bhsd/codemirror-css-color-picker';
-import type {WidgetOptions, DiscoverColors} from '@bhsd/codemirror-css-color-picker';
+import {makeColorPicker} from '@bhsd/codemirror-css-color-picker';
+import type {DiscoverColors} from '@bhsd/codemirror-css-color-picker';
+import type {DocRange} from './util';
 
 /**
  * @implements
@@ -21,15 +22,12 @@ export const discoverColors: DiscoverColors = (_, {from, to, name}, doc) =>
 	&& doc.sliceString(from - 1, from) === '|'
 	&& (doc.sliceString(to, to + 1) === '|' || doc.sliceString(to, to + 3) === '}}}')
 
-		? splitColors(doc.sliceString(from, to)).filter(([,,, isColor]) => isColor)
-			.map(([s, start, end]): WidgetOptions | false | undefined => {
-				const color = s.startsWith('#') ? parseColorLiteral(s) : parseCallExpression(s);
-				return color && {
-					...color,
-					from: from + start,
-					to: from + end,
-				};
-			}).filter(Boolean) as WidgetOptions[]
+		? splitColors(doc.sliceString(from, to))
+			.filter(([,,, isColor]) => isColor)
+			.map(([, start, end]): DocRange => ({
+				from: from + start,
+				to: from + end,
+			}))
 		: undefined;
 
 export default makeColorPicker(discoverColors);
