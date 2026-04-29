@@ -50,15 +50,27 @@ document.body.addEventListener('click', e => {
 	]);
 	mw.hook<CodeMirror[]>(hook).add(localize);
 	mw.hook<CodeMirror[]>(settingHook).add(localize);
-	mw.util.addPortletLink(
-		portletContainer[mw.config.get('skin')] ?? 'p-cactions',
-		'#',
-		msg('title'),
-		'cm-settings',
-	)!.addEventListener('click', e => {
+	const skin = mw.config.get('skin'),
+		link = mw.util.addPortletLink(
+			portletContainer[skin] ?? 'p-cactions',
+			'#',
+			msg('title'),
+			'cm-settings',
+		)!;
+	link.addEventListener('click', e => {
 		e.preventDefault();
 		void openPreference();
 	});
+	if (skin === 'minerva') {
+		let path = mw.config.get('wgScriptPath');
+		if (/^\/(?!\/)/u.test(path)) {
+			path = location.origin + path;
+		}
+		link.style.setProperty(
+			'--cm-icon',
+			`url(${path}/load.php?modules=skins.minerva.icons&image=settings&format=original&skin=minerva)`,
+		);
+	}
 	void welcome(baseVersion, addons);
 })();
 

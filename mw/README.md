@@ -18,6 +18,10 @@
 	- [wikiEditor](#wikieditor)
 	- [save](#save)
 	- [useMonaco](#usemonaco)
+- [Preference dialog](#preference-dialog)
+	- [ESLint](#eslint)
+	- [Stylelint](#stylelint)
+	- [Luacheck](#luacheck)
 - [Integration with editors](#integration-with-editors)
 	- [Native WikiEditor](#native-wikieditor)
 	- [Wikiplus](#wikiplus)
@@ -39,7 +43,7 @@ or
 mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
-All supported [languages](../README#language-modes) are included in this bundle. The script also adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
+All supported [languages](../README.md#language-modes) are included in this bundle. The script also adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
 
 # Constructor
 
@@ -222,6 +226,22 @@ Save preferences as JSON on a user subpage (`Special:Mypage/codemirror-mediawiki
 *version added: 2.11.1*
 
 Use the Monaco editor instead of the CodeMirror editor.
+
+# Preference dialog
+
+Users can configure their preferences in a multi-tab dialog. The first tab is for general settings with checkboxes and dropdowns to enable or disable certain features. The next tabs are for language-specific linter settings, which are either dropdowns or textareas depending on the linter. For linters configured with textareas (including [ESLint](#eslint), [Stylelint](#stylelint) and [Luacheck](#luacheck)), only valid JSON input is accepted.
+
+## ESLint
+
+ESLint is used for linting [JavaScript](../README.md#javascript) code, including the code embedded in `<script>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue) modes. It can be configured with a JSON input in the legacy [eslintrc format](https://eslint.org/docs/v8.x/use/configure/). In particular, [`eslint:recommended`](https://eslint.org/docs/v8.x/use/configure/configuration-files#using-eslintrecommended) is supported and is the default.
+
+## Stylelint
+
+Stylelint is used for linting [CSS](../README.md#css) code, including the code embedded in `<style>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue) modes and the code in `style` attributes in [MediaWiki](../README.md#mediawiki) and [HTML](../README.md#html) modes. It can be [configured](https://stylelint.io/user-guide/configure/) with a JSON input. In particular, [`stylelint-config-recommended`](https://www.npmjs.com/package/stylelint-config-recommended) is supported and is the default.
+
+## Luacheck
+
+Luacheck is used for linting [Lua](../README.md#lua) code. It can be [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) with a JSON input. In particular, a custom set of standard globals named `mediawiki` is provided for the [Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto) environment and is the default.
 
 # Integration with editors
 

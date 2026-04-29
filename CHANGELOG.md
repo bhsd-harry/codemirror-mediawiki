@@ -5,8 +5,8 @@
 
 **Added**
 
-- The Lua linter can now be dynamically [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) in the preference dialog on a MediaWiki site
-- When using the Monaco editor on a MediaWiki site, the linter will be immediately re-executed when it is reconfigured in the preference dialog
+- The Lua linter can now be dynamically [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) in the [preference dialog](./mw/README.md#luacheck) on a MediaWiki site
+- When using the Monaco editor on a MediaWiki site, the linter will be immediately re-executed when it is reconfigured in the [preference dialog](./mw/README.md#preference-dialog)
 
 **Fixed**
 
@@ -111,7 +111,7 @@
 **Added**
 
 - The editor is now vertically resizable when the [wikiEditor](./mw/README.md#wikieditor) extension is disabled on a MediaWiki site
-- Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a MediaWiki site can now be enabled or disabled in the preference dialog
+- Wikitext linting with [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData) on a MediaWiki site can now be enabled or disabled in the [preference dialog](./mw/README.md#preference-dialog)
 - New extension option: [closeTags](./README.md#closetags)
 
 **Fixed**
@@ -267,7 +267,7 @@
 - Clicking on the position indicator in the status bar now opens the [gotoLine](https://codemirror.net/docs/ref/#search.gotoLine) panel
 - Allow users to specify the [jsDelivr CDN](https://www.jsdelivr.com/network)
 - Allow users to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) when using the Monaco editor on a MediaWiki site
-- New keyboard shortcut to open the preference dialog on a MediaWiki site: `Ctrl` + `Shift` + `,`/`Cmd` + `Shift` + `,`
+- New keyboard shortcut to open the [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site: `Ctrl` + `Shift` + `,`/`Cmd` + `Shift` + `,`
 
 **Fixed**
 
@@ -370,7 +370,7 @@
 
 **Changed**
 
-- The preference dialog on a MediaWiki site is now styled as `z-index: 1002`
+- The [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site is now styled as `z-index: 1002`
 - Improved link suggestions in the [autocompletion](./README.md#autocompletion) extension on a MediaWiki site
 
 ## 3.6.0
@@ -394,7 +394,7 @@
 
 **Changed**
 
-- Configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) are now listed in a dedicated tab in the preference dialog on a WMF-hosted site
+- Configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) are now listed in a dedicated tab in the [preference dialog](./mw/README.md#preference-dialog) on a WMF-hosted site
 
 ## 3.5.1
 
@@ -402,7 +402,7 @@
 
 **Added**
 
-- The preference dialog now includes configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) on a WMF-hosted site
+- The [preference dialog](./mw/README.md#preference-dialog) now includes configurations for [Extension:Linter](https://www.mediawiki.org/wiki/Extension:Linter) on a WMF-hosted site
 
 ## 3.5.0
 
@@ -629,7 +629,7 @@
 
 **Fixed**
 
-- The CodeMirror editors in the preference dialog are now localized when used on a MediaWiki site
+- The CodeMirror editors in the [preference dialog](./mw/README.md#preference-dialog) are now localized when used on a MediaWiki site
 
 **Changed**
 
@@ -959,7 +959,7 @@
 
 **Changed**
 
-- The preference dialog on a MediaWiki site is now styled as `z-index: 801`
+- The [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site is now styled as `z-index: 801`
 - The preferences button from the [WikiEditor](./mw/README.md#wikieditor) toolbar is now hidden when the CodeMirror editor is off
 
 ## 2.19.1
@@ -1674,7 +1674,7 @@
 
 **Fixed**
 
-- Unintentional change of the first checkbox due to click within the MediaWiki-site preference dialog
+- Unintentional change of the first checkbox due to click within the MediaWiki-site [preference dialog](./mw/README.md#preference-dialog)
 
 ## 2.6.3
 
@@ -1699,7 +1699,7 @@
 **Added**
 
 - New method: [`scrollTo`](./README.md#scrollto)
-- The preference dialog on a MediaWiki site adds new tabs for ESLint and Stylelint configurations
+- The [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site adds new tabs for [ESLint](./mw/README.md#eslint) and [Stylelint](./mw/README.md#stylelint) configurations
 
 **Fixed**
 
@@ -1719,7 +1719,7 @@
 
 **Added**
 
-- The preference dialog on a MediaWiki site adds a new tab for WikiLint configurations
+- The [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site adds a new tab for WikiLint configurations
 
 ## 2.5.1
 
@@ -1815,7 +1815,7 @@
 **Added**
 
 - The MediaWiki mode now has a comment syntax: `<!--` + `-->`
-- The preference dialog on a MediaWiki site now allows for full-HTML labels
+- The [preference dialog](./mw/README.md#preference-dialog) on a MediaWiki site now allows for full-HTML labels
 
 ## 2.2.2
 
@@ -1826,7 +1826,7 @@
 - New extension option for the MediaWiki mode: [escape](./README.md#escape)
 - New method: [`extraKeys`](./README.md#extrakeys)
 - New static method: [`replaceSelections`](./README.md#replaceselections-static)
-- Now on a MediaWiki site, a user can toggle extensions on and off with a dialog
+- Now on a MediaWiki site, a user can toggle extensions on and off with a [preference dialog](./mw/README.md#preference-dialog)
 
 **Changed**
 
