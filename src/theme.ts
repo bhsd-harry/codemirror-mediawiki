@@ -12,6 +12,7 @@ import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
 
 const focused = '&.cm-focused',
+	searchMatch = '.cm-searchMatch.cm-searchMatch-selected',
 	matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
 
@@ -76,7 +77,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'&': {
 				'--cm-arg': '#9f78a5',
 				'--cm-attr': '#97b757',
-				'--cm-comment': '#4c566a',
+				'--cm-comment': bgDark,
 				'--cm-convert': '#b68',
 				'--cm-entity': '#00a1a1',
 				'--cm-error': '#bf616a',
@@ -124,14 +125,22 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			[`div${panelsSelector}`]: {
 				color: '#d8dee9',
 			},
-			[`${focused} .cm-searchMatch.cm-searchMatch-selected`]: {
-				color: '#b48ead',
+			[`${searchMatch} span`]: {
+				color: '#2e3440',
+			},
+			[`${focused} ${searchMatch}`]: {
+				'&,& span': {
+					color: '#b48ead',
+				},
 			},
 			'div.cm-tooltip-autocomplete ul li[aria-selected]': {
 				color: 'inherit',
 			},
 			'div.cm-gutters': {
 				color: '#5e81ac',
+			},
+			'span.cm-foldPlaceholder': {
+				backgroundColor: bgDark,
 			},
 		}),
 	])();

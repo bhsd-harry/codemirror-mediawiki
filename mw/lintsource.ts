@@ -77,15 +77,12 @@ const getExecuter = <T = ApiValidateError>(
 			}, 3e3);
 		});
 		return content
-			? post(content).then( // eslint-disable-line promise/prefer-await-to-then
-				errors => errors as T[],
-				(_, e) => {
-					if (typeof e !== 'object' || e.textStatus !== 'abort') {
-						console.error('API linting failed:', e);
-					}
-					return [];
-				},
-			)
+			? post(content).catch<T[]>((_, e) => { // eslint-disable-line promise/prefer-await-to-then
+				if (typeof e !== 'object' || e.textStatus !== 'abort') {
+					console.error('API linting failed:', e);
+				}
+				return [];
+			})
 			: [];
 	};
 	return execute;

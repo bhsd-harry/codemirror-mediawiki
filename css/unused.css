@@ -12,7 +12,7 @@
 .cm-panels {
 	direction: ltr;
 }
-.cm-editor .cm-lineNumbers .cm-gutterElement {
+.cm-lineNumbers .cm-gutterElement {
 	text-align: end;
 }
 .cm-textfield,
@@ -644,13 +644,21 @@ input[type="color"] {
 	div.cm-panels {
 		color: #d8dee9;
 	}
+	.cm-searchMatch.cm-searchMatch-selected span {
+		color: #2e3440;
+	}
 	.cm-editor.cm-focused .cm-searchMatch.cm-searchMatch-selected {
-		color: #b48ead;
+		&, & span {
+			color: #b48ead;
+		}
 	}
 	div.cm-tooltip-autocomplete ul li[aria-selected] {
 		color: inherit;
 	}
 	div.cm-gutters {
 		color: #5e81ac;
+	}
+	span.cm-foldPlaceholder {
+		background-color: #4c566a;
 	}
 }
