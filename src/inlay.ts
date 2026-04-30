@@ -21,7 +21,7 @@ declare interface InlayHintEffect {
 const cls = 'cm-inlay-hint';
 
 class InlayHintWidget extends WidgetType {
-	declare label: string;
+	declare label;
 
 	constructor(label: string) {
 		super();

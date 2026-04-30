@@ -195,8 +195,8 @@ export default (configs?: BracketConfig): Extension => {
 			}
 		},
 		{
-			decorations({decorations}) {
-				return decorations;
+			decorations(v) {
+				return v.decorations;
 			},
 		},
 	);
