@@ -195,8 +195,6 @@ export class CodeMirror extends CodeMirror6 {
 	#model: IWikitextModel | undefined;
 	#editor: editor.IStandaloneCodeEditor | undefined;
 	#init: Promise<void> | undefined;
-	#indentStr = '\t';
-	#col = 0;
 	#handler;
 	#monacoHandler: ((key: string) => void) | undefined;
 	#observer: MutationObserver | undefined;
@@ -343,7 +341,6 @@ export class CodeMirror extends CodeMirror6 {
 			language = monacoLangs.get(lang) ?? lang,
 			isWiki = language === 'wikitext',
 			wrapping = isWiki || language === 'html' || language === 'plaintext',
-			tab = this.#indentStr.includes('\t'),
 			container = 'monaco-container';
 		await monaco; // eslint-disable-line @typescript-eslint/await-thenable
 		for (const editor of monaco.editor.getEditors()) {
@@ -468,29 +465,26 @@ export class CodeMirror extends CodeMirror6 {
 	}
 
 	#getMonacoOptions(): editor.IEditorOptions & editor.IGlobalEditorOptions {
-		const tab = this.#indentStr.includes('\t');
+		const {indent, columnGuide, lang} = this,
+			tab = indent.includes('\t');
 		return {
-			tabSize: tab ? 4 : this.#indentStr.length,
+			tabSize: tab ? 4 : indent.length,
 			insertSpaces: !tab,
-			rulers: this.lang !== 'mediawiki' && this.#col > 0 ? [this.#col] : [],
+			rulers: lang !== 'mediawiki' && columnGuide > 0 ? [columnGuide] : [],
 		};
 	}
 
-	override setIndent(indent: string): void {
+	override setIndent(indent: string | number): void {
+		super.setIndent(indent);
 		if (this.#editor) {
-			this.#indentStr = indent;
 			this.#editor.updateOptions(this.#getMonacoOptions());
-		} else {
-			super.setIndent(indent);
 		}
 	}
 
 	override setColumnGuide(col: number): void {
+		super.setColumnGuide(col);
 		if (this.#editor) {
-			this.#col = col;
 			this.#editor.updateOptions(this.#getMonacoOptions());
-		} else {
-			super.setColumnGuide(col);
 		}
 	}
 

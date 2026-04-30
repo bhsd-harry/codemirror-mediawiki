@@ -248,6 +248,16 @@ export class CodeMirror6 {
 		return this.#lintSources;
 	}
 
+	/** @private */
+	get indent(): string {
+		return this.#indentStr;
+	}
+
+	/** @private */
+	get columnGuide(): number {
+		return this.#col;
+	}
+
 	/**
 	 * @param textarea textarea element
 	 * @param lang language
@@ -570,10 +580,11 @@ export class CodeMirror6 {
 
 	/**
 	 * Set text indentation
-	 * @param indent indentation string
+	 * @param indent indentation string or number of spaces
 	 */
-	setIndent(indent: string): void {
-		this.#indentStr = indent;
+	setIndent(indent: string | number): void {
+		const level = Number(indent);
+		this.#indentStr = level ? ' '.repeat(level) : (indent || '\t') as string;
 		if (this.#view) {
 			this.#effects(this.#indent.reconfigure(this.#getIndent(this.#view.state.doc)));
 		}

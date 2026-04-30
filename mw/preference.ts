@@ -303,7 +303,7 @@ export const openPreference = async (): Promise<void> => {
 		let changed = indent !== oldIndent;
 		if (changed) {
 			for (const cm of editors) {
-				cm?.setIndent(indent || '\t');
+				cm?.setIndent(indent);
 			}
 			localStorage.setItem(indentKey, indent);
 		}

@@ -299,7 +299,7 @@ describe('lint sources', () => {
 				{
 					from: 0,
 					to: 1,
-					message: 'Accessing an undefined global variable',
+					message: 'Accessing an undefined global variable (113)',
 					severity: 'error',
 					source: 'Luacheck',
 				},

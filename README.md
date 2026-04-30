@@ -917,11 +917,12 @@ cm.setContent('');
 
 *version added: 2.0.9*
 
-**param**: `string` the indentation string, default as tab  
+**param**: `string | number` the indentation string or the number of spaces, default as tab  
 Set the indentation string.
 
 ```js
-cm.setIndent(' '.repeat(2));
+cm.setIndent(2);
+cm.setIndent('  ');
 cm.setIndent('\t');
 ```
 

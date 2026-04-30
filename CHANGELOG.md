@@ -17,6 +17,7 @@
 **Changed**
 
 - The [@bhsd/codemirror-css-color-picker](https://www.npmjs.com/package/@bhsd/codemirror-css-color-picker) package has been upgraded to v7, which may contain breaking changes for the [colorPicker](./README.md#colorpicker) extension
+- The argument of the [`setIndent`](./README.md#setindent) method can now be either a string (e.g., `'    '` or `'\t'`) or a number representing the number of spaces (e.g., `4`)
 
 ## 3.14.0
 
