@@ -33,6 +33,13 @@ input[type="color"] {
 	pointer-events: none;
 }
 
+.cm-content {
+	background-image: linear-gradient(var(--col-guide), var(--col-guide));
+	background-position: calc(80ch + 6px) 0;
+	background-repeat: no-repeat;
+	background-size: 2px 100%;
+}
+
 /* src/color */
 .cm-css-color-picker-wrapper {
 	display: inline-block;
@@ -569,6 +576,7 @@ input[type="color"] {
 		--cm-var-name: #ac6600;
 		--cm-ref: rgb(223, 242, 235, .5);
 		--cm-active: #05f;
+		--col-guide: #f3f3f3;
 	}
 	.cm-globals {
 		&, & > * {
@@ -612,6 +620,7 @@ input[type="color"] {
 		--cm-var-name: #d08770;
 		--cm-ref: rgb(60, 90, 80, .5);
 		--cm-active: #b6d4fb;
+		--col-guide: #45494e;
 	}
 	.cm-globals {
 		&, & > * {

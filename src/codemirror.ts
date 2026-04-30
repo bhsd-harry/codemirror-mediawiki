@@ -48,7 +48,6 @@ import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {Tag} from '@lezer/highlight';
-import type {StyleSpec} from 'style-mod';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
@@ -174,16 +173,6 @@ const getDefaultCustomHighlightStyles = (): {
 	'': TagStyle[];
 } => {
 	return {light: [], dark: [], '': []};
-};
-
-const getColumnGuid = (left: string): StyleSpec => {
-	const color = 'var(--col-guide)';
-	return {
-		backgroundImage: `linear-gradient(${color},${color})`,
-		backgroundPosition: `${left} 0`,
-		backgroundRepeat: 'no-repeat',
-		backgroundSize: '2px 100%',
-	};
 };
 
 /** CodeMirror 6 editor */
@@ -610,11 +599,16 @@ export class CodeMirror6 {
 		if (!col || col < 0 || noDetectionLangs.has(this.#lang)) {
 			return [];
 		}
+		const color = 'var(--col-guide)',
+			padding = this.#view!.coordsAtPos(0)!.left
+				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x;
 		return EditorView.theme({
-			'.cm-content': getColumnGuid(`calc(${col}ch + ${
-				this.#view!.coordsAtPos(0)!.left
-				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x
-			}px)`),
+			'.cm-content': {
+				backgroundImage: `linear-gradient(${color},${color})`,
+				backgroundPosition: `calc(${col}ch + ${padding}px) 0`,
+				backgroundRepeat: 'no-repeat',
+				backgroundSize: '2px 100%',
+			},
 		});
 	}
 

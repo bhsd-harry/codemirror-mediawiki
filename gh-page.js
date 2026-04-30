@@ -66,27 +66,32 @@ registerAbuseFilter();
 registerTheme("nord", nord);
 registerBidiIsolates();
 if (location.pathname.startsWith("/codemirror-mediawiki")) {
-  const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), search = new URLSearchParams(location.search);
+  const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), col = document.querySelector("#col"), search = new URLSearchParams(location.search);
   if (search.has("rtl")) {
     textarea.dir = "rtl";
   }
   if (search.has("indent")) {
     indent.value = search.get("indent");
   }
+  if (search.has("col")) {
+    col.value = String(Number(search.get("col")) || 0);
+  }
   for (const extension of extensions) {
     extension.checked = search.has(extension.id);
   }
   const mediawikiOnly = ["escape", "refHover", "hover", "signatureHelp", "inlayHints", "openLinks"], cssOnly = ["colorPicker"], cssLangs = /* @__PURE__ */ new Set(["css", "vue", "html"]), cm = new CodeMirror6(textarea), linters = {};
   let config, mwConfig, fetchConfig;
+  const getLayoutStyle = (id) => document.getElementById(id).closest(".fieldLayout").style;
   const init = async (lang) => {
-    const isMediaWiki = lang === "mediawiki", display = isMediaWiki ? "" : "none", cssDisplay = isMediaWiki || cssLangs.has(lang) ? "" : "none", selector = ".fieldLayout";
+    const isMediaWiki = lang === "mediawiki", display = isMediaWiki ? "" : "none", cssDisplay = isMediaWiki || cssLangs.has(lang) ? "" : "none";
     let parserConfig;
     for (const id of mediawikiOnly) {
-      document.getElementById(id).closest(selector).style.display = id === "hover" || lang === "abusefilter" ? "" : display;
+      getLayoutStyle(id).display = id === "hover" || lang === "abusefilter" ? "" : display;
     }
     for (const id of cssOnly) {
-      document.getElementById(id).closest(selector).style.display = cssDisplay;
+      getLayoutStyle(id).display = cssDisplay;
     }
+    getLayoutStyle("col").display = isMediaWiki ? "none" : "";
     if (isMediaWiki || lang === "html") {
       fetchConfig != null ? fetchConfig : fetchConfig = (async () => (await fetch("/wikiparser-node/config/default.json")).json())();
       parserConfig = await fetchConfig;
@@ -136,6 +141,11 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     cm.setIndent(value || "	");
     updateSearch("indent", value);
   };
+  const colChange = () => {
+    const column = Number(col.value);
+    cm.setColumnGuide(column);
+    updateSearch("col", column);
+  };
   for (const input of languages) {
     input.addEventListener("change", () => {
       void init(input.id);
@@ -181,6 +191,8 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
   }
   indent.addEventListener("change", indentChange);
   indentChange();
+  col.addEventListener("change", colChange);
+  colChange();
   Object.assign(globalThis, { cm });
   if (location.host === "localhost:8080") {
     const queue = [], { body } = document;

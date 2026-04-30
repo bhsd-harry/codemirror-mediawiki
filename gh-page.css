@@ -43,13 +43,10 @@ h2 {
 	display: table-cell;
 	vertical-align: middle;
 }
-.field, .header, input:enabled, input:enabled + span, label {
-	cursor: pointer;
-}
 .field {
 	position: relative;
 }
-input[type="text"] {
+input[type="text"], input[type="number"] {
 	box-shadow: inset 0 0 0 1px transparent;
 	background-color: #fff;
 	margin: 0;
@@ -57,7 +54,12 @@ input[type="text"] {
 	border-radius: 2px;
 	padding: 1px 2px;
 	font: inherit;
+}
+input[type="text"] {
 	width: 6ch;
+}
+input[type="number"] {
+	width: 7ch;
 }
 .field > input[type="checkbox"], input[type="radio"] {
 	position: relative;
@@ -76,6 +78,9 @@ input + span {
 	border: 1px solid #72777d;
 	box-sizing: border-box;
 }
+.field, .header, input:enabled, input:enabled + span, label {
+	cursor: pointer;
+}
 input[type="checkbox"] + span {
 	border-radius: 2px;
 }
@@ -93,16 +98,20 @@ input[type="checkbox"]:checked + span {
 input[type="radio"]:checked + span {
 	border-width: 6px;
 }
-input[type="text"]:hover {
+input[type="text"]:hover, input[type="number"]:hover {
 	border-color: #72777d;
 }
 input[type="checkbox"]:hover + span, input[type="radio"]:hover + span {
 	border-color: #447ff5;
 }
-input[type="text"]:focus, input[type="checkbox"]:focus + span {
+input[type="text"]:focus, input[type="number"]:focus, input[type="checkbox"]:focus + span {
 	border-color: #36c;
 	box-shadow: inset 0 0 0 1px #36c;
 	outline: none;
+}
+input[type="number"]:invalid {
+	border-color: #f54739;
+	box-shadow: inset 0 0 0 1px #f54739;
 }
 input[type="checkbox"]:active + span, input[type="radio"]:active + span {
 	background-color: #2a4b8d;

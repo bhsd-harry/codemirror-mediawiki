@@ -35,12 +35,16 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		languages = [...document.querySelectorAll<HTMLInputElement>('input[name="language"]')],
 		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
+		col = document.querySelector<HTMLInputElement>('#col')!,
 		search = new URLSearchParams(location.search);
 	if (search.has('rtl')) {
 		textarea.dir = 'rtl';
 	}
 	if (search.has('indent')) {
 		indent.value = search.get('indent')!;
+	}
+	if (search.has('col')) {
+		col.value = String(Number(search.get('col')!) || 0);
 	}
 	for (const extension of extensions) {
 		extension.checked = search.has(extension.id);
@@ -56,22 +60,28 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		fetchConfig: Promise<ConfigData> | undefined;
 
 	/**
+	 * 获取选项的样式
+	 * @param id 选项id
+	 */
+	const getLayoutStyle = (id: string): CSSStyleDeclaration => document.getElementById(id)!
+		.closest<HTMLElement>('.fieldLayout')!.style;
+
+	/**
 	 * 设置语言
 	 * @param lang 语言
 	 */
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
-			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none',
-			selector = '.fieldLayout';
+			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
-			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display =
-				id === 'hover' || lang === 'abusefilter' ? '' : display;
+			getLayoutStyle(id).display = id === 'hover' || lang === 'abusefilter' ? '' : display;
 		}
 		for (const id of cssOnly) {
-			document.getElementById(id)!.closest<HTMLElement>(selector)!.style.display = cssDisplay;
+			getLayoutStyle(id).display = cssDisplay;
 		}
+		getLayoutStyle('col').display = isMediaWiki ? 'none' : '';
 		if (isMediaWiki || lang === 'html') {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;
@@ -132,6 +142,13 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		updateSearch('indent', value);
 	};
 
+	/** 设置行宽辅助线 */
+	const colChange = (): void => {
+		const column = Number(col.value);
+		cm.setColumnGuide(column);
+		updateSearch('col', column);
+	};
+
 	// 初始化语言
 	for (const input of languages) {
 		input.addEventListener('change', () => {
@@ -182,6 +199,10 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	// 初始化缩进
 	indent.addEventListener('change', indentChange);
 	indentChange();
+
+	// 初始化行宽辅助线
+	col.addEventListener('change', colChange);
+	colChange();
 
 	Object.assign(globalThis, {cm});
 
