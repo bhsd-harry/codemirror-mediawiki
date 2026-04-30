@@ -1,12 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.15.0
 
-*2026-04-29*
+*2026-04-30*
 
 **Added**
 
 - The Lua linter can now be dynamically [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) in the [preference dialog](./mw/README.md#luacheck) on a MediaWiki site
 - When using the Monaco editor on a MediaWiki site, the linter will be immediately re-executed when it is reconfigured in the [preference dialog](./mw/README.md#preference-dialog)
+- New method: [`setColumnGuide`](./README.md#setcolumnguide)
 
 **Fixed**
 

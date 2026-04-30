@@ -23,6 +23,7 @@ import {getMwConfig, getParserConfig} from './config';
 import {
 	preferenceId,
 	indentKey,
+	colKey,
 	themeKey,
 	RuleState,
 	curVersion,
@@ -195,6 +196,7 @@ export class CodeMirror extends CodeMirror6 {
 	#editor: editor.IStandaloneCodeEditor | undefined;
 	#init: Promise<void> | undefined;
 	#indentStr = '\t';
+	#col = 0;
 	#handler;
 	#monacoHandler: ((key: string) => void) | undefined;
 	#observer: MutationObserver | undefined;
@@ -362,14 +364,13 @@ export class CodeMirror extends CodeMirror6 {
 			readOnly: textarea.readOnly,
 			wordWrap: wrapping ? 'on' : 'off',
 			wordBreak: 'keepAll',
-			tabSize: tab ? 4 : Number(this.#indentStr),
-			insertSpaces: !tab,
 			glyphMargin: true,
 			fontSize: parseFloat(getComputedStyle(textarea).fontSize),
 			unicodeHighlight: {
 				ambiguousCharacters: !isWiki && language !== 'html' && language !== 'plaintext',
 			},
 			multiCursorModifier: 'ctrlCmd',
+			...this.#getMonacoOptions(),
 		});
 		// eslint-disable-next-line no-bitwise
 		this.#editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Comma, () => {
@@ -466,13 +467,30 @@ export class CodeMirror extends CodeMirror6 {
 		return this.view ? this.view.state.doc.toString() : this.#model!.getValue();
 	}
 
+	#getMonacoOptions(): editor.IEditorOptions & editor.IGlobalEditorOptions {
+		const tab = this.#indentStr.includes('\t');
+		return {
+			tabSize: tab ? 4 : this.#indentStr.length,
+			insertSpaces: !tab,
+			rulers: this.lang !== 'mediawiki' && this.#col > 0 ? [this.#col] : [],
+		};
+	}
+
 	override setIndent(indent: string): void {
 		if (this.#editor) {
 			this.#indentStr = indent;
-			const tab = indent.includes('\t');
-			this.#editor.updateOptions({tabSize: tab ? 4 : Number(indent), insertSpaces: !tab});
+			this.#editor.updateOptions(this.#getMonacoOptions());
 		} else {
 			super.setIndent(indent);
+		}
+	}
+
+	override setColumnGuide(col: number): void {
+		if (this.#editor) {
+			this.#col = col;
+			this.#editor.updateOptions(this.#getMonacoOptions());
+		} else {
+			super.setColumnGuide(col);
 		}
 	}
 
@@ -798,9 +816,13 @@ export class CodeMirror extends CodeMirror6 {
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer(allPrefs);
 		const indent = localStorage.getItem(indentKey),
+			col = Number(localStorage.getItem(colKey)),
 			theme = localStorage.getItem(themeKey);
 		if (indent) {
 			cm.setIndent(indent);
+		}
+		if (col > 0) {
+			cm.setColumnGuide(col);
 		}
 		if (theme) {
 			cm.setTheme(theme);

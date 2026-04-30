@@ -8,8 +8,8 @@ import {instances} from './util';
 declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
-const baseVersion = '3.13',
-	addons = ['autocompletion', 'openLinks'];
+const baseVersion = '3.15',
+	addons = ['col', 'lint'];
 
 mw.loader.addStyleTag($STYLE);
 

@@ -43,6 +43,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var-name': '#ac6600',
 			'--cm-ref': 'rgb(223,242,235,.5)',
 			'--cm-active': '#05f',
+			'--col-guide': '#f3f3f3',
 		},
 		'.cm-globals': {
 			'&,&>*': {
@@ -94,6 +95,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				'--cm-var-name': '#d08770',
 				'--cm-ref': 'rgb(60,90,80,0.5)',
 				'--cm-active': '#b6d4fb',
+				'--col-guide': '#45494e',
 			},
 			'.cm-globals': {
 				'&,&>*': {

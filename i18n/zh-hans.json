@@ -12,6 +12,7 @@
 	"addon-closeTags": "自动闭合HTML/XML标签",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : 折叠\nCtrl-Shift-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
 	"addon-codeFolding-mac": "<span title=\"Cmd-Alt-[ : 折叠\nCmd-Alt-] : 展开\nCtrl-Alt-[ : 折叠所有\nCtrl-Alt-] : 展开所有\">代码折叠</span>",
+	"addon-col": "行宽辅助线",
 	"addon-colorPicker": "颜色选择器",
 	"addon-escape": "<span title=\"Ctrl-\\ : 使用转义魔术字\nCtrl-[ : HTML编码\nCtrl-] : URL解码或编码\">添加HTML和URL编码快捷键</span>",
 	"addon-escape-mac": "<span title=\"Cmd-\\ : 使用转义魔术字\nCmd-[ : HTML编码\nCmd-] : URL解码或编码\">添加HTML和URL编码快捷键</span>",

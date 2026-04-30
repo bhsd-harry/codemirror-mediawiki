@@ -20,6 +20,7 @@ import {
 	history,
 	redo,
 	insertTab,
+	indentLess,
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
@@ -42,11 +43,12 @@ import type {
 	KeyBinding,
 	DecorationSet,
 } from '@codemirror/view';
-import type {Extension, StateEffect, StateField, StateCommand} from '@codemirror/state';
+import type {Extension, StateEffect, StateField, StateCommand, Text} from '@codemirror/state';
 import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {Tag} from '@lezer/highlight';
+import type {StyleSpec} from 'style-mod';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
@@ -174,6 +176,16 @@ const getDefaultCustomHighlightStyles = (): {
 	return {light: [], dark: [], '': []};
 };
 
+const getColumnGuid = (left: string): StyleSpec => {
+	const color = 'var(--col-guide)';
+	return {
+		backgroundImage: `linear-gradient(${color},${color})`,
+		backgroundPosition: `${left} 0`,
+		backgroundRepeat: 'no-repeat',
+		backgroundSize: '2px 100%',
+	};
+};
+
 /** CodeMirror 6 editor */
 export class CodeMirror6 {
 	static get CDN(): string | undefined {
@@ -195,6 +207,7 @@ export class CodeMirror6 {
 	readonly #extensions = new Compartment();
 	readonly #dir = new Compartment();
 	readonly #indent = new Compartment();
+	readonly #column = new Compartment();
 	readonly #extraKeys = new Compartment();
 	readonly #phrases = new Compartment();
 	readonly #lineWrapping = new Compartment();
@@ -205,6 +218,7 @@ export class CodeMirror6 {
 	#visible = false;
 	#preferred = new Set<string>();
 	#indentStr = '\t';
+	#col = 0;
 	#nestedMWLanguage: Language | undefined;
 	#lintSources: LintSource[] = [];
 	#customHighlightStyles = getDefaultCustomHighlightStyles();
@@ -283,6 +297,7 @@ export class CodeMirror6 {
 				this.#lineWrapping.of(EditorView.lineWrapping),
 				this.#theme.of(light),
 				this.#customHighlight.of(this.#getCustomHighlightExtension()),
+				this.#column.of(this.#getColumnGuide(this.#col)),
 				syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
@@ -368,7 +383,7 @@ export class CodeMirror6 {
 						textarea.dispatchEvent(new FocusEvent(this.#view!.hasFocus ? 'focus' : 'blur'));
 					}
 					GH: if (
-						selectionSet && this.lang === 'mediawiki'
+						selectionSet && this.#lang === 'mediawiki'
 						&& ['localhost:8080', 'bhsd-harry.github.io'].includes(location.host)
 					) {
 						const tree = syntaxTree(state),
@@ -388,10 +403,10 @@ export class CodeMirror6 {
 					: [
 						history(),
 						indentOnInput(),
-						this.#indent.of(indentUnit.of(optionalFunctions.detectIndent(value, this.#indentStr, lang))),
+						this.#indent.of(this.#getIndent(value)),
 						keymap.of([
 							...historyKeymap,
-							{key: 'Tab', run: insertTab},
+							{key: 'Tab', run: insertTab, shift: indentLess},
 							{win: 'Ctrl-Shift-z', run: redo, preventDefault: true},
 						]),
 					],
@@ -433,6 +448,8 @@ export class CodeMirror6 {
 				this.#language.reconfigure(ext),
 				this.#linter.reconfigure(hasLinter ? linters.get(lang)!(this) : []),
 			]);
+			this.setIndent(this.#indentStr);
+			this.setColumnGuide(this.#col);
 			this.prefer({});
 		}
 	}
@@ -544,17 +561,50 @@ export class CodeMirror6 {
 	}
 
 	/**
+	 * 计算文档缩进
+	 * @param doc 文档内容
+	 */
+	#getIndent(doc: Text | string): Extension {
+		return indentUnit.of(optionalFunctions.detectIndent(doc, this.#indentStr, this.#lang));
+	}
+
+	/**
 	 * Set text indentation
 	 * @param indent indentation string
 	 */
 	setIndent(indent: string): void {
+		this.#indentStr = indent;
 		if (this.#view) {
-			this.#effects(this.#indent.reconfigure(indentUnit.of(
-				optionalFunctions.detectIndent(this.#view.state.doc, indent, this.#lang),
-			)));
-		} else {
-			this.#indentStr = indent;
+			this.#effects(this.#indent.reconfigure(this.#getIndent(this.#view.state.doc)));
 		}
+	}
+
+	/**
+	 * Set a vertical column guide for non-MediaWiki modes
+	 * @param col column number (0 to disable)
+	 * @since 3.15.0
+	 */
+	setColumnGuide(col: number): void {
+		this.#col = col;
+		if (this.#view) {
+			this.#effects(this.#column.reconfigure(this.#getColumnGuide(col)));
+		}
+	}
+
+	/**
+	 * 生成行宽辅助线
+	 * @param col 列数（0表示禁用）
+	 */
+	#getColumnGuide(col: number): Extension {
+		if (!col || col < 0 || noDetectionLangs.has(this.#lang)) {
+			return [];
+		}
+		return EditorView.theme({
+			'.cm-content': getColumnGuid(`calc(${col}ch + ${
+				this.#view!.coordsAtPos(0)!.left
+				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x
+			}px)`),
+		});
 	}
 
 	/**

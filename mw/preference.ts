@@ -1,7 +1,7 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {preferenceId, indentKey, themeKey, RuleState, linterHook} from './constants';
+import {preferenceId, indentKey, colKey, themeKey, RuleState, linterHook} from './constants';
 import {parsoidRules} from './lintsource';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './util';
@@ -14,6 +14,7 @@ declare type Preferences = {
 	addons: string[];
 	useMonaco: string[];
 	indent: string;
+	col: number;
 	theme: string;
 	wikilint: Record<LintError.Rule, RuleState>;
 } & Record<codeKey, unknown>;
@@ -31,6 +32,7 @@ declare interface MediaWikiResponse {
 
 const prefKey = 'codemirror-mediawiki-addons',
 	monacoKey = 'codemirror-mediawiki-monaco',
+	nonBooleanKeys = new Set(['indent', 'col', 'theme', 'useMonaco'].map(k => `addon-${k}`)),
 	langs = ['wiki', 'javascript', 'css', 'lua', 'json', 'vue'],
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
@@ -52,8 +54,10 @@ let dialog: OO.ui.MessageDialog | undefined,
 	widget: OO.ui.CheckboxMultiselectInputWidget,
 	monacoWidget: OO.ui.CheckboxMultiselectInputWidget,
 	indentWidget: OO.ui.TextInputWidget,
+	colWidget: OO.ui.NumberInputWidget,
 	themeWidget: OO.ui.DropdownInputWidget,
 	indent = localStorage.getItem(indentKey) ?? '',
+	col = Number(localStorage.getItem(colKey)) || 0,
 	theme = localStorage.getItem(themeKey) ?? 'auto';
 const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
 
@@ -106,6 +110,9 @@ export const loadJSON = (async () => {
 				}
 				if (json.indent) {
 					localStorage.setItem(indentKey, json.indent);
+				}
+				if (json.col !== undefined) {
+					localStorage.setItem(colKey, String(json.col));
 				}
 				if (json.theme) {
 					localStorage.setItem(themeKey, json.theme);
@@ -174,6 +181,7 @@ export const openPreference = async (): Promise<void> => {
 		widget.setValue([...prefs] as unknown as string);
 		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
+		colWidget.setValue(String(col));
 		themeWidget.setValue(theme);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: preferenceId});
@@ -220,12 +228,9 @@ export const openPreference = async (): Promise<void> => {
 				{disabled: true},
 				...Object.keys(i18n)
 					.filter(
-						k =>
-							k !== 'addon-indent'
-							&& k !== 'addon-theme'
-							&& k !== 'addon-useMonaco'
-							&& k.startsWith('addon-')
-							&& !k.endsWith('-mac'),
+						k => k.startsWith('addon-')
+							&& !k.endsWith('-mac')
+							&& !nonBooleanKeys.has(k),
 					)
 					.map((k): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label' | 'disabled'> => ({
 						data: k.slice(6),
@@ -244,6 +249,7 @@ export const openPreference = async (): Promise<void> => {
 			value: [...useMonaco] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
+		colWidget = new OO.ui.NumberInputWidget({value: String(col), min: 0});
 		themeWidget = new OO.ui.DropdownInputWidget({
 			value: theme,
 			options: [
@@ -262,10 +268,12 @@ export const openPreference = async (): Promise<void> => {
 				align: 'top',
 			}),
 			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')}),
+			colField = new OO.ui.FieldLayout(colWidget as unknown as OO.ui.Widget, {label: msg('addon-col')}),
 			themeField = new OO.ui.FieldLayout(themeWidget, {label: msg('addon-theme')});
 		panelMain.$element.append(
 			field.$element,
 			indentField.$element,
+			colField.$element,
 			themeField.$element,
 			monacoField.$element,
 			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
@@ -284,6 +292,7 @@ export const openPreference = async (): Promise<void> => {
 	if (typeof data === 'object' && data.action === 'accept') {
 		// 缩进
 		const oldIndent = indent,
+			oldCol = col,
 			oldTheme = theme,
 			save = prefs.has('save'),
 			editors = [
@@ -297,6 +306,14 @@ export const openPreference = async (): Promise<void> => {
 				cm?.setIndent(indent || '\t');
 			}
 			localStorage.setItem(indentKey, indent);
+		}
+		col = Number(colWidget.getValue());
+		if (col !== oldCol) {
+			changed = true;
+			for (const cm of editors) {
+				cm?.setColumnGuide(col);
+			}
+			localStorage.setItem(colKey, String(col));
 		}
 
 		// 主题
@@ -390,6 +407,7 @@ export const openPreference = async (): Promise<void> => {
 						addons: value,
 						useMonaco: [...useMonaco],
 						indent,
+						col,
 						theme,
 						wikilint: wikilint as Record<LintError.Rule, RuleState>,
 						ESLint: codeConfigs.get('ESLint'),

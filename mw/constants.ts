@@ -12,6 +12,7 @@ export const curVersion = $VERSION,
 		return mw.language.getFallbackLanguageChain();
 	})(),
 	indentKey = 'codemirror-mediawiki-indent',
+	colKey = 'codemirror-mediawiki-col',
 	themeKey = 'codemirror-mediawiki-theme',
 	hook = 'wiki-codemirror6',
 	settingHook = `${hook}.setting`,

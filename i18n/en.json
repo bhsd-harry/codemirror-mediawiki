@@ -12,6 +12,7 @@
 	"addon-closeTags": "Auto-close HTML/XML tags",
 	"addon-codeFolding": "<span title=\"Ctrl-Shift-[ : fold\nCtrl-Shift-] : unfold\nCtrl-Alt-[ : fold all\nCtrl-Alt-] : unfold all\">Code folding</span>",
 	"addon-codeFolding-mac": "<span title=\"Cmd-Alt-[ : fold\nCmd-Alt-] : unfold\nCtrl-Alt-[ : fold all\nCtrl-Alt-] : unfold all\">Code folding</span>",
+	"addon-col": "Column guide",
 	"addon-colorPicker": "Color picker",
 	"addon-escape": "<span title=\"Ctrl-\\ : escaping with magic words\nCtrl-[ : HTML encoding\nCtrl-] : URL decoding or encoding\">Keyboard shortcuts for HTML/URL encoding</span>",
 	"addon-escape-mac": "<span title=\"Cmd-\\ : escaping with magic words\nCmd-[ : HTML encoding\nCmd-] : URL decoding or encoding\">Keyboard shortcuts for HTML/URL encoding</span>",

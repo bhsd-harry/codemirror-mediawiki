@@ -52,6 +52,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [prefer](#prefer)
 	- [replaceSelections](#replaceselections)
 	- [scrollTo](#scrollto)
+	- [setColumnGuide](#setcolumnguide)
 	- [setContent](#setcontent)
 	- [setIndent](#setindent)
 	- [setLanguage](#setlanguage)
@@ -873,6 +874,21 @@ Scroll to the given position or range. Need initialization first.
 
 ```js
 cm.scrollTo();
+```
+
+</details>
+
+### setColumnGuide
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.15.0*
+
+**param**: `number` the column number to show the guide at, or 0 to disable the column guide  
+
+```js
+cm.setColumnGuide(80);
 ```
 
 </details>
