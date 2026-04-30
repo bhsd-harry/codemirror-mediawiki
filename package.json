@@ -32,7 +32,7 @@
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --format=esm --outdir=build && esbuild src/*-page.ts --charset=utf8 --bundle --target=es2019 --format=esm --minify --sourcemap --outdir=.",
 		"build": "rm -rf dist/ && npm run build:core && gsed -i '/^\\/\\/ /d' dist/*.js",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
-		"lint:css": "stylelint **/*.css",
+		"lint:css": "stylelint *.css",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
