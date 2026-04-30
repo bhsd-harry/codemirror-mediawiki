@@ -27,7 +27,10 @@ import {
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
-import {bgDark} from './constants.js';
+import {
+	mwTag,
+	bgDark,
+} from './constants.js';
 import {searchTag, getTag} from './matchTag.js';
 import {braceStackUpdate, sliceDoc} from './util.js';
 import type {
@@ -124,7 +127,7 @@ export const foldableInline = (
 		} else {
 			const right = tree.resolve(posOrNode, 1);
 			node = isExt(left, refOnly)
-				&& left.name.split('mw-tag-').length > right.name.split('mw-tag-').length
+				&& left.name.split(mwTag).length > right.name.split(mwTag).length
 				? left
 				: right;
 		}
@@ -135,7 +138,7 @@ export const foldableInline = (
 		// Not a template
 		if (isExt(node, refOnly)) {
 			const {name} = node,
-				[tag] = /^[a-z]+/u.exec(name.slice(name.lastIndexOf('mw-tag-') + 7))!,
+				[tag] = /^[a-z]+/u.exec(name.slice(name.lastIndexOf(mwTag) + 7))!,
 				regex = getExtRegex(tag);
 			let {nextSibling} = node;
 			while (nextSibling && !(isExtBracket(nextSibling) && !regex.test(nextSibling.name))) {

@@ -7,11 +7,11 @@ import type {TagName} from './config';
 
 const brackets: TagName[] = ['extTagBracket', 'htmlTagBracket'];
 
-export default (): Extension => EditorView.inputHandler.of((view, from, to, text, insertTransaction) => {
+export default (): Extension => EditorView.inputHandler.of((view, from, to, text, insert) => {
 	if (view.composing || view.state.readOnly || from !== to || text !== '>') {
 		return false;
 	}
-	const base = insertTransaction(),
+	const base = insert(),
 		{state} = base,
 		tree = syntaxTree(state),
 		closeTags = state.changeByRange(range => {

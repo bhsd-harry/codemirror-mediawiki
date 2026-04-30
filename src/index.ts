@@ -5,7 +5,6 @@ import {
 	highlightWhitespace,
 	highlightTrailingWhitespace,
 	scrollPastEnd,
-	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
 	EditorView,
@@ -25,6 +24,7 @@ import {abusefilter, analyzer, getDefaultHoverTooltip} from '@bhsd/lezer-abusefi
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
+import blockCursor from './blockCursor.js';
 import closeTags from './closeTags.js';
 import {
 	CodeMirror6,
@@ -149,7 +149,6 @@ export const registerScrollPastEnd = (): void => {
 export const registerAllowMultipleSelections = (): void => {
 	registerExtension('allowMultipleSelections', (): Extension => [
 		EditorState.allowMultipleSelections.of(true),
-		drawSelection(),
 		rectangularSelection(),
 		crosshairCursor(),
 	]);
@@ -173,6 +172,14 @@ export const registerCodeFolding = (): void => {
 };
 
 /**
+ * Register the `blockCursor` extension
+ * @since 3.16.0
+ */
+export const registerBlockCursor = (): void => {
+	registerExtension('blockCursor', blockCursor);
+};
+
+/**
  * Register the `colorPicker` extension
  * @deprecated This function does nothing and will be removed in a future release
  */
@@ -191,6 +198,7 @@ export const registerCommonExtensions = (): void => {
 	registerAllowMultipleSelections();
 	registerAutocompletion();
 	registerCodeFolding();
+	registerBlockCursor();
 };
 
 /**
@@ -310,7 +318,10 @@ export const registerInlayHints = (articlePath?: string): void => {
 	registerExtensionForMediaWiki('inlayHints', inlayHints(articlePath));
 };
 
-/** Register the `bidiIsolates` extension */
+/**
+ * Register the `bidiIsolates` extension
+ * @since 3.10.0
+ */
 export const registerBidiIsolates = (): void => {
 	registerExtensionForMediaWiki('bidiIsolates', bidiIsolates);
 };
@@ -334,7 +345,10 @@ export const registerCodeFoldingForMediaWiki = (): void => {
 	optionalFunctions.foldHandler = foldHandler;
 };
 
-/** Register the `closeTags` extension for MediaWiki */
+/**
+ * Register the `closeTags` extension for MediaWiki
+ * @since 3.12.0
+ */
 export const registerCloseTagsForMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'closeTags', closeTags());
 };
@@ -393,7 +407,10 @@ export const registerBracketMatchingForHTML = (): void => {
  */
 export const registerCloseBracketsForHTML = (): void => {};
 
-/** Register the `closeTags` extension for mixed MediaWiki-HTML */
+/**
+ * Register the `closeTags` extension for mixed MediaWiki-HTML
+ * @since 3.12.0
+ */
 export const registerCloseTagsForHTML = (): void => {
 	registerLangExtension('html', 'closeTags', autoCloseTags);
 };
@@ -500,7 +517,10 @@ export const registerBracketMatchingForVue = (): void => {
  */
 export const registerCloseBracketsForVue = (): void => {};
 
-/** Register the `closeTags` extension for Vue */
+/**
+ * Register the `closeTags` extension for Vue
+ * @since 3.12.0
+ */
 export const registerCloseTagsForVue = (): void => {
 	registerLangExtension('vue', 'closeTags', autoCloseTags);
 };

@@ -69,6 +69,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [allowMultipleSelections](#allowmultipleselections)
 	- [autocompletion](#autocompletion)
 	- [bidiIsolates](#bidiisolates)
+	- [blockCursor](#blockcursor)
 	- [bracketMatching](#bracketmatching)
 	- [closeBrackets](#closebrackets)
 	- [closeTags](#closetags)
@@ -1123,6 +1124,22 @@ This extension is not included in the [`mediawiki`](#mediawiki) language support
 ```js
 import {registerBidiIsolates} from '@bhsd/codemirror-mediawiki';
 registerBidiIsolates();
+```
+
+</details>
+
+### blockCursor
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.16.0*
+
+Render the cursor as a block.
+
+```js
+import {registerBlockCursor} from '@bhsd/codemirror-mediawiki';
+registerBlockCursor();
 ```
 
 </details>

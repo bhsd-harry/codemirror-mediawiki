@@ -1,4 +1,4 @@
-import {EditorView, lineNumbers, keymap, highlightActiveLineGutter} from '@codemirror/view';
+import {EditorView, lineNumbers, keymap, highlightActiveLineGutter, drawSelection} from '@codemirror/view';
 import {
 	EditorSelection,
 	Compartment,
@@ -304,6 +304,7 @@ export class CodeMirror6 {
 				}),
 				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
+				drawSelection(),
 				highlightActiveLineGutter(),
 				search({
 					scrollToMatch(range, view) {

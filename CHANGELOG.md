@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.16.0
+
+*2026-05-01*
+
+**Added**
+
+- New extension option: [blockCursor](./README.md#blockcursor)
+
 ## 3.15.0
 
 *2026-04-30*

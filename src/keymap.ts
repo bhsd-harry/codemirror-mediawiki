@@ -3,6 +3,7 @@ import {syntaxTree} from '@codemirror/language';
 import {keybindings, encapsulateLines} from './keybindings.js';
 import {getTag} from './matchTag.js';
 import {sliceDoc, getExtTags} from './util.js';
+import {mwTag} from './constants.js';
 import type {KeyBinding} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
@@ -30,7 +31,7 @@ export const getExtNames = (state: EditorState, tree: Tree, pos: number, side: 1
 		}
 		return [];
 	}
-	const ext = name.includes('mw-tag-') ? getExtTags(name.split('_')) : [];
+	const ext = name.includes(mwTag) ? getExtTags(name.split('_')) : [];
 	if (name.includes('mw-exttag-bracket')) {
 		const bracket = sliceDoc(state, node),
 			{from} = node;

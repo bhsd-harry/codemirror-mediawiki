@@ -4,9 +4,10 @@ import {loadScript} from '@bhsd/browser';
 import {tokens} from './config.js';
 import {
 	hoverSelector,
+	baseData,
+	mwTag,
 	doctagMark,
 	typeMark,
-	baseData,
 } from './constants.js';
 import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
 import type {
@@ -151,7 +152,7 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  * @param types Token类型列表
  */
 export const getExtTags = (types: string[]): string[] =>
-	types.filter(type => type.startsWith('mw-tag-')).map(type => type.slice(7));
+	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
 
 /**
  * 获取字符串开头的空白字符
