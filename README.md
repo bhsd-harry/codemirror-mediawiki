@@ -82,6 +82,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [highlightTrailingWhitespace](#highlighttrailingwhitespace)
 	- [highlightWhitespace](#highlightwhitespace)
 	- [hover](#hover)
+	- [indentGuide](#indentguide)
 	- [inlayHints](#inlayhints)
 	- [openLinks](#openlinks)
 	- [refHover](#refhover)
@@ -1137,6 +1138,8 @@ registerBidiIsolates();
 
 Render the cursor as a block.
 
+For granular control over the bundled extensions, you can import the `registerBlockCursor` function:
+
 ```js
 import {registerBlockCursor} from '@bhsd/codemirror-mediawiki';
 registerBlockCursor();
@@ -1384,6 +1387,24 @@ import {
 // optionally pass the article path of a MediaWiki site
 registerHover('https://www.mediawiki.org/wiki/');
 registerHoverForAbuseFilter();
+```
+
+</details>
+
+### indentGuide
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 3.16.0*
+
+Show indent guides as vertical lines. This extension is not available in the MediaWiki mode.
+
+For granular control over the bundled extensions, you can import the `registerIndentGuide` function:
+
+```js
+import {registerIndentGuide} from '@bhsd/codemirror-mediawiki';
+registerIndentGuide();
 ```
 
 </details>

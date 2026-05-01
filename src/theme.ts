@@ -45,7 +45,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var-name': '#ac6600',
 			'--cm-ref': 'rgb(223,242,235,.5)',
 			'--cm-active': '#05f',
-			[guideColor]: '#f3f3f3',
+			[guideColor]: '#f0f0f0',
 			[cursorColor]: '#222',
 		},
 		'.cm-globals': {

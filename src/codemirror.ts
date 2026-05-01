@@ -297,6 +297,7 @@ export class CodeMirror6 {
 				this.#lineWrapping.of(EditorView.lineWrapping),
 				this.#theme.of(light),
 				this.#customHighlight.of(this.#getCustomHighlightExtension()),
+				this.#indent.of(this.#getIndent(value)),
 				this.#column.of(this.#getColumnGuide(this.#col)),
 				syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
 				EditorView.contentAttributes.of({
@@ -403,7 +404,6 @@ export class CodeMirror6 {
 					: [
 						history(),
 						indentOnInput(),
-						this.#indent.of(this.#getIndent(value)),
 						keymap.of([
 							...historyKeymap,
 							{key: 'Tab', run: insertTab, shift: indentLess},

@@ -13,6 +13,7 @@ const getMargin = (dom: HTMLElement): string => getComputedStyle(dom).direction 
 export default (): Extension => [
 	layer({
 		above: true,
+		class: layerCls,
 		markers(view) {
 			view.dom.style.setProperty(cursorMargin, getMargin(view.contentDOM));
 			return view.state.selection.ranges.filter(({empty}) => empty).flatMap(r => {
@@ -31,7 +32,6 @@ export default (): Extension => [
 			}
 			return docChanged || selectionSet;
 		},
-		class: layerCls,
 	}),
 	EditorView.theme({
 		'.cm-cursorLayer': {

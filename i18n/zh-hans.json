@@ -24,6 +24,7 @@
 	"addon-highlightWhitespace": "显示空白字符",
 	"addon-hover": "悬停在魔术字上可查看帮助",
 	"addon-indent": "缩进",
+	"addon-indentGuide": "显示缩进辅助线",
 	"addon-inlayHints": "启用匿名参数的内联提示",
 	"addon-lint": "语法检查",
 	"addon-openLinks": "CTRL+点击可打开链接或嵌入的页面",

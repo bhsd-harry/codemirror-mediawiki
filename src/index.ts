@@ -45,6 +45,7 @@ import escapeKeymap from './escape.js';
 import codeFolding, {mediawikiFold, foldHandler} from './fold.js';
 import magicWordHover, {hoverStyle} from './hover.js';
 import {detectIndent} from './indent.js';
+import indentGuide from './indentGuide.js';
 import inlayHints from './inlay.js';
 import formatKeymap from './keymap.js';
 import {
@@ -192,6 +193,17 @@ export const registerCodeFolding = (): void => {
 export const registerBlockCursor = (): void => {
 	registerDrawSelection();
 	registerExtension('blockCursor', blockCursor, ['drawSelection']);
+};
+
+/**
+ * Register the `indentGuide` extension
+ * @since 3.16.0
+ */
+export const registerIndentGuide = (): void => {
+	getOrInsert<boolean>('indentGuide', [
+		(disabled?: boolean): Extension => disabled ? [] : indentGuide(),
+		new Map([['mediawiki', true]]),
+	]);
 };
 
 /**
@@ -403,6 +415,7 @@ export const registerMediaWikiCore = (articlePath?: string, templatedata?: boole
 export const registerHTML = (): void => {
 	registerCommonExtensions();
 	registerHTMLCore();
+	registerIndentGuide();
 	registerBracketMatchingForHTML();
 	registerCloseTagsForHTML();
 	registerColorPickerForHTML();
@@ -446,6 +459,7 @@ export const registerHTMLCore = (): void => {
 export const registerJavaScript = (): void => {
 	registerCommonExtensions();
 	registerJavaScriptCore();
+	registerIndentGuide();
 	registerBracketMatchingForJavaScript();
 };
 
@@ -465,6 +479,7 @@ export const registerJavaScriptCore = (): void => {
 export const registerCSS = (): void => {
 	registerCommonExtensions();
 	registerCSSCore();
+	registerIndentGuide();
 	registerColorPickerForCSS();
 };
 
@@ -484,6 +499,7 @@ export const registerCSSCore = (): void => {
 export const registerJSON = (): void => {
 	registerCommonExtensions();
 	registerJSONCore();
+	registerIndentGuide();
 };
 
 /** Register JSON core language support */
@@ -497,6 +513,7 @@ export const registerJSONCore = (): void => {
 export const registerLua = (): void => {
 	registerCommonExtensions();
 	registerLuaCore();
+	registerIndentGuide();
 	registerOpenLinksForLua();
 };
 
@@ -516,6 +533,7 @@ export const registerLuaCore = (): void => {
 export const registerVue = (): void => {
 	registerCommonExtensions();
 	registerVueCore();
+	registerIndentGuide();
 	registerBracketMatchingForVue();
 	registerCloseTagsForVue();
 	registerColorPickerForVue();
@@ -556,6 +574,7 @@ export const registerVueCore = (): void => {
 export const registerAbuseFilter = (): void => {
 	registerCommonExtensions();
 	registerAbuseFilterCore();
+	registerIndentGuide();
 	registerHoverForAbuseFilter();
 };
 

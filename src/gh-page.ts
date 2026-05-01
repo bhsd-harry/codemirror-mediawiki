@@ -51,6 +51,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	}
 
 	const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'],
+		nonMediawiki = ['indentGuide', 'col'],
 		cssOnly = ['colorPicker'],
 		cssLangs = new Set(['css', 'vue', 'html']),
 		cm = new CodeMirror6(textarea),
@@ -73,15 +74,18 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	const init = async (lang: string): Promise<void> => {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
+			revertDisplay = isMediaWiki ? 'none' : '',
 			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
 			getLayoutStyle(id).display = id === 'hover' || lang === 'abusefilter' ? '' : display;
 		}
+		for (const id of nonMediawiki) {
+			getLayoutStyle(id).display = revertDisplay;
+		}
 		for (const id of cssOnly) {
 			getLayoutStyle(id).display = cssDisplay;
 		}
-		getLayoutStyle('col').display = isMediaWiki ? 'none' : '';
 		if (isMediaWiki || lang === 'html') {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();
 			parserConfig = await fetchConfig;

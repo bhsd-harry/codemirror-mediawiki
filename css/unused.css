@@ -148,6 +148,16 @@ input[type="color"] {
 	}
 }
 
+/* src/indentGuide */
+.cm-indent-guide-layer {
+	pointer-events: none;
+}
+.cm-indent-guide {
+	background-image: linear-gradient(to left, var(--col-guide) 0 2px, transparent 2px 100%);
+	background-size: var(--indent-unit) 100%;
+	background-repeat: repeat;
+}
+
 /* src/inlay */
 .cm-inlay-hint {
 	color: #969696;
@@ -593,7 +603,7 @@ input[type="color"] {
 		--cm-var-name: #ac6600;
 		--cm-ref: rgb(223, 242, 235, .5);
 		--cm-active: #05f;
-		--col-guide: #f3f3f3;
+		--col-guide: #f0f0f0;
 		--cursor-color: #222;
 	}
 	.cm-globals {

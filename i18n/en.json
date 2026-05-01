@@ -24,6 +24,7 @@
 	"addon-highlightWhitespace": "Show whitespace characters",
 	"addon-hover": "Hover over a magic word to see the help information",
 	"addon-indent": "Indent",
+	"addon-indentGuide": "Show indent guides",
 	"addon-inlayHints": "Show inlay hints for anonymous parameters",
 	"addon-lint": "Linter",
 	"addon-openLinks": "Open the link or transcluded page with CTRL-click",

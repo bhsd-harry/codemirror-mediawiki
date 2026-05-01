@@ -1,11 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.16.0
 
-*2026-05-01*
+*2026-05-02*
 
 **Added**
 
-- New extension option: [blockCursor](./README.md#blockcursor)
+- New extension options: [blockCursor](./README.md#blockcursor) and [indentGuide](./README.md#indentguide)
 
 **Fixed**
 
