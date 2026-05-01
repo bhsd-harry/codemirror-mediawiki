@@ -7,6 +7,7 @@
 	"contentmodel": "Please indicate the content model:",
 	"addon-allowMultipleSelections": "Allow multiple selections",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">Autocompletion</span>",
+	"addon-blockCursor": "Block cursor",
 	"addon-bracketMatching": "Highlight matching/non-matching brackets or tags",
 	"addon-closeBrackets": "Auto-close brackets and quotes",
 	"addon-closeTags": "Auto-close HTML/XML tags",

@@ -8,6 +8,23 @@
 	display: inline-block;
 }
 
+/* src/blockCursor */
+@media (prefers-color-scheme: light) {
+	div.cm-cursor {
+		border-left-color: #222;
+	}
+}
+@media (prefers-color-scheme: dark) {
+	div.cm-cursor {
+		border-left-color: #fff;
+	}
+}
+div.cm-cursor {
+	border-left-width: var(--cursor-width, 1ch);
+	margin-left: var(--cursor-margin, 0);
+	opacity: .3;
+}
+
 /* src/codemirror */
 .cm-panels {
 	direction: ltr;

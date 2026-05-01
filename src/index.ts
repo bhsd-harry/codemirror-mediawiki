@@ -5,6 +5,7 @@ import {
 	highlightWhitespace,
 	highlightTrailingWhitespace,
 	scrollPastEnd,
+	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
 	EditorView,
@@ -96,10 +97,18 @@ const getOrInsert = <T>(name: string, ext: Addon<T>): Addon<T> => {
  * 注册通用扩展
  * @param name 扩展名
  * @param ext 扩展
+ * @param dep 依赖的扩展列表
  */
-const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>): void => {
+const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, dep?: string[]): void => {
 	const addon = getOrInsert<T>(name, [] as unknown as Addon<T>);
 	addon[0] = ext;
+	if (dep) {
+		addon[2] = dep;
+	}
+};
+
+const registerDrawSelection = (): void => {
+	registerExtension('drawSelection', drawSelection);
 };
 
 /** Register the `highlightSpecialChars` extension */
@@ -147,11 +156,16 @@ export const registerScrollPastEnd = (): void => {
 
 /** Register the `allowMultipleSelections` extension */
 export const registerAllowMultipleSelections = (): void => {
-	registerExtension('allowMultipleSelections', (): Extension => [
-		EditorState.allowMultipleSelections.of(true),
-		rectangularSelection(),
-		crosshairCursor(),
-	]);
+	registerDrawSelection();
+	registerExtension(
+		'allowMultipleSelections',
+		(): Extension => [
+			EditorState.allowMultipleSelections.of(true),
+			rectangularSelection(),
+			crosshairCursor(),
+		],
+		['drawSelection'],
+	);
 };
 
 /** Register the `autocompletion` extension */
@@ -176,7 +190,8 @@ export const registerCodeFolding = (): void => {
  * @since 3.16.0
  */
 export const registerBlockCursor = (): void => {
-	registerExtension('blockCursor', blockCursor);
+	registerDrawSelection();
+	registerExtension('blockCursor', blockCursor, ['drawSelection']);
 };
 
 /**

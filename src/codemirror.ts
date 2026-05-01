@@ -1,4 +1,4 @@
-import {EditorView, lineNumbers, keymap, highlightActiveLineGutter, drawSelection} from '@codemirror/view';
+import {EditorView, lineNumbers, keymap, highlightActiveLineGutter} from '@codemirror/view';
 import {
 	EditorSelection,
 	Compartment,
@@ -61,7 +61,7 @@ import type {MwConfig} from './token';
 import type {Selection} from './matchBrackets';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
-export type Addon<T> = [AddonMain<T>, Map<string, T>?];
+export type Addon<T> = [AddonMain<T>, Map<string, T>?, string[]?];
 export type Dialect = 'sanitized-css' | undefined;
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
@@ -304,7 +304,6 @@ export class CodeMirror6 {
 				}),
 				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
-				drawSelection(),
 				highlightActiveLineGutter(),
 				search({
 					scrollToMatch(range, view) {
@@ -551,7 +550,12 @@ export class CodeMirror6 {
 			const {readOnly} = this.#view.state;
 			this.#effects(
 				this.#extensions.reconfigure(
-					[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name)).map(name => {
+					[
+						...new Set(
+							[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name))
+								.flatMap(name => [name, ...avail.get(name)?.[2] ?? []]),
+						),
+					].map(name => {
 						const [extension, configs] = avail.get(name)!;
 						return extension(configs?.get(this.#lang), this);
 					}),

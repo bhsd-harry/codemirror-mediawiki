@@ -7,6 +7,7 @@
 	"contentmodel": "請輸入內容模型：",
 	"addon-allowMultipleSelections": "允許選擇多個片段",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">自動填入</span>",
+	"addon-blockCursor": "塊狀游標",
 	"addon-bracketMatching": "突出顯示匹配和未匹配的括號或標籤",
 	"addon-closeBrackets": "自動閉合括號和引號",
 	"addon-closeTags": "自動閉合HTML/XML標籤",
