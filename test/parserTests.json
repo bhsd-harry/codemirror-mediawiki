@@ -2245,7 +2245,7 @@
 	{
 		"desc": "Single-line or multiline-comments can follow headings",
 		"wikitext": "==foo==<!---->\n==bar==<!--c1-->\n==baz==<!--\nc2\nc3-->",
-		"parsed": "<section-header section--2>==</><section section--2>foo</><section-header section--2>==</><comment>&lt;!----&gt</><section-header section--2>==</><section section--2>bar</><section-header section--2>==</><comment>&lt;!--c1--&gt</><section-header section--2>==</><section section--2>baz</><section-header section--2>==</><comment>&lt;!--c2c3--&gt</>"
+		"parsed": "<section-header section--2>==</><section section--2>foo</><section-header section--2>==</><comment section--2>&lt;!----&gt</><section-header section--2>==</><section section--2>bar</><section-header section--2>==</><comment section--2>&lt;!--c1--&gt</><section-header section--2>==</><section section--2>baz</><section-header section--2>==</><comment section--2>&lt;!--</><comment>c2c3--&gt</>"
 	},
 	{
 		"desc": "T3186 news: in the middle of text",
@@ -3010,12 +3010,12 @@
 	{
 		"desc": "Section extraction test with comment after heading (section 1)",
 		"wikitext": "==a==\n==b== <!-- -->\n==c==",
-		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>====</><section section--2>b</><section-header section--2>== </><comment>&lt;!-- --&gt</><section-header section--2>==</><section section--2>c</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>====</><section section--2>b</><section-header section--2>== </><comment section--2>&lt;!-- --&gt</><section-header section--2>==</><section section--2>c</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Section extraction test with comment after heading (section 2)",
 		"wikitext": "==a==\n==b== <!-- -->\n==c==",
-		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>====</><section section--2>b</><section-header section--2>== </><comment>&lt;!-- --&gt</><section-header section--2>==</><section section--2>c</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>====</><section section--2>b</><section-header section--2>== </><comment section--2>&lt;!-- --&gt</><section-header section--2>==</><section section--2>c</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Section extraction test with bogus <nowiki> heading (section 1)",
@@ -3055,7 +3055,7 @@
 	{
 		"desc": "Sectiion with all-equals",
 		"wikitext": "=== \nThe line above must have a trailing space\n=== <!--\n--> <!-- -->\nBut just in case it doesn't...",
-		"parsed": "<section-header section--1>=</><section section--1>=</><section-header section--1>= </>The line above must have a trailing space<section-header section--1>=</><section section--1>=</><section-header section--1>= </><comment>&lt;!----&gt</> <comment>&lt;!-- --&gt</>But just in case it doesn't..."
+		"parsed": "<section-header section--1>=</><section section--1>=</><section-header section--1>= </>The line above must have a trailing space<section-header section--1>=</><section section--1>=</><section-header section--1>= </><comment section--1>&lt;!--</><comment>--&gt</> <comment>&lt;!-- --&gt</>But just in case it doesn't..."
 	},
 	{
 		"desc": "Section replacement test (section 0)",
@@ -3335,12 +3335,12 @@
 	{
 		"desc": "anchorencode encodes like the TOC generator: (T20431)",
 		"wikitext": "===_ +:.3A%3A _ &&amp;]] x===\n{{anchorencode: _ +:.3A%3A _ &&amp;]] x}}\n\n__NOEDITSECTION__",
-		"parsed": "<section-header section--3>===</><section section--3>_ +:.3A%3A _ &amp;</><entity>&amp;amp;</><section section--3>]] x</><section-header section--3>===</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>anchorencode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> _ +:.3A%3A _ &amp;</><ext-ground entity>&amp;amp;</><ext-ground parserfunction>]] x</><ext-ground parserfunction-bracket>}}</><double-underscore>__NOEDITSECTION__</>"
+		"parsed": "<section-header section--3>===</><section section--3>_ +:.3A%3A _ &amp;</><entity section--3>&amp;amp;</><section section--3>]] x</><section-header section--3>===</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>anchorencode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> _ +:.3A%3A _ &amp;</><ext-ground entity>&amp;amp;</><ext-ground parserfunction>]] x</><ext-ground parserfunction-bracket>}}</><double-underscore>__NOEDITSECTION__</>"
 	},
 	{
 		"desc": "anchorencode encodes like the TOC generator: (T20431) (legacy)",
 		"wikitext": "===_ +:.3A%3A&&amp;]]===\n{{anchorencode: _ +:.3A%3A&&amp;]] }}\n__NOEDITSECTION__",
-		"parsed": "<section-header section--3>===</><section section--3>_ +:.3A%3A&amp;</><entity>&amp;amp;</><section section--3>]]</><section-header section--3>===</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>anchorencode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> _ +:.3A%3A&amp;</><ext-ground entity>&amp;amp;</><ext-ground parserfunction>]] </><ext-ground parserfunction-bracket>}}</><double-underscore>__NOEDITSECTION__</>"
+		"parsed": "<section-header section--3>===</><section section--3>_ +:.3A%3A&amp;</><entity section--3>&amp;amp;</><section section--3>]]</><section-header section--3>===</><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>anchorencode</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> _ +:.3A%3A&amp;</><ext-ground entity>&amp;amp;</><ext-ground parserfunction>]] </><ext-ground parserfunction-bracket>}}</><double-underscore>__NOEDITSECTION__</>"
 	},
 	{
 		"desc": "T8200: blockquotes and paragraph formatting",
@@ -4260,7 +4260,7 @@
 	{
 		"desc": "Headings: Don't hoist metas that come from templates",
 		"wikitext": "== {{1x|foo [[Category:Foo]]}} ==",
-		"parsed": "<section-header section--2>==</><section section--2> </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>foo </><template-link-ground link-bracket>[[</><template-link-ground link-pagename pagename>Category:Foo</><template-link-ground link-bracket>]]</><template-ground template-bracket>}}</><section section--2> </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> </><template-ground template-bracket section--2>{{</><template-ground template-name pagename section--2>1x</><template-ground template-delimiter section--2>|</><template-ground template section--2>foo </><template-link-ground link-bracket section--2>[[</><template-link-ground link-pagename pagename section--2>Category:Foo</><template-link-ground link-bracket section--2>]]</><template-ground template-bracket section--2>}}</><section section--2> </><section-header section--2>==</>"
 	},
 	{
 		"desc": "Parsoid: Serialize positional parameters with = in them as named parameter",
@@ -4585,7 +4585,7 @@
 	{
 		"desc": "1. Headings: Add space before/after == (T53744)",
 		"wikitext": "== foo ==\n\n== bar ==\n\n== baz ==\n\n== <span> baz</span> ==",
-		"parsed": "<section-header section--2>==</><section section--2> foo </><section-header section--2>====</><section section--2> bar </><section-header section--2>====</><section section--2> baz </><section-header section--2>====</><section section--2> </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2> baz</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2> </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> foo </><section-header section--2>====</><section section--2> bar </><section-header section--2>====</><section section--2> baz </><section-header section--2>====</><section section--2> </><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2> baz</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2> </><section-header section--2>==</>"
 	},
 	{
 		"desc": "2. Headings: Add space before/after == even after hoisted content",
@@ -4595,12 +4595,12 @@
 	{
 		"desc": "2. Headings: suppress empty headings on edits",
 		"wikitext": "==<span id=\"x\">foo</span>==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><section section--2>foo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>id=</><htmltag-attribute-value section--2>\"x\"</><htmltag-bracket section--2>&gt</><section section--2>foo</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Headings: Replace <br/> with a single whitespace char",
 		"wikitext": "== foo bar ==\n\n== foo <span> bar</span> baz ==",
-		"parsed": "<section-header section--2>==</><section section--2> foo bar </><section-header section--2>====</><section section--2> foo </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2> bar</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2> baz </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> foo bar </><section-header section--2>====</><section section--2> foo </><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2> bar</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2> baz </><section-header section--2>==</>"
 	},
 	{
 		"desc": "2. WT Quote Tags: suppress empty style tags on edits",
@@ -4845,7 +4845,7 @@
 	{
 		"desc": "Trim whitespace in wikitext headings, list items, table captions, headings, and cells",
 		"wikitext": "__NOTOC__\n==    <!--c1-->  <!--c2--> Spaces   <!--c3--> <!--c4-->  ==\n==\t\t<!--c1-->\t<!--c2--> Tabs\t\t<!--c3--><!--c4-->\t==\n== <!--Headings with fallback ids--> Личная жизнь ==\n*     <!--c1-->   <!--c2-->  List item <!--c3--> <!--c4-->\n; <!--term to define--> term : <!--term's definition--> definition\n{|\n|+ <!--c1--> <!--c2--> Table Caption <!--c3--> <!--c4-->\n|-\n!  <!--c1--> <!--c2--> Table Heading 1 <!--c3--> <!--c4--> !!   Table Heading 2 <!--c5-->\n|-\n| <!--c1--> <!--c2--> Table Cell 1 <!--c3--> <!--c4--> ||   Table Cell 2 <!--c5-->\n|-\n| class=\"foo\" || <!--c1--> <!--c2--> Table Cell 3 <!--c3--> <!--c4-->\n|-\n| <!--c1--> testing [[one|two]] <!--c2--> | <!--c3--> some content\n|}\n: {|\n  |  <!--c1--> <!--c2--> Table Cell 1 <!--c3--> <!--c4--> ||   Table Cell 2 <!--c5-->\n  |} foo   <!--c1-->",
-		"parsed": "<double-underscore>__NOTOC__</><section-header section--2>==</><section section--2>    </><comment>&lt;!--c1--&gt</><section section--2>  </><comment>&lt;!--c2--&gt</><section section--2> Spaces   </><comment>&lt;!--c3--&gt</><section section--2> </><comment>&lt;!--c4--&gt</><section section--2>  </><section-header section--2>====</><section section--2>\t\t</><comment>&lt;!--c1--&gt</><section section--2>\t</><comment>&lt;!--c2--&gt</><section section--2> Tabs\t\t</><comment>&lt;!--c3--&gt&lt;!--c4--&gt</><section section--2>\t</><section-header section--2>====</><section section--2> </><comment>&lt;!--Headings with fallback ids--&gt</><section section--2> Личная жизнь </><section-header section--2>==</><list>*</>     <comment>&lt;!--c1--&gt</>   <comment>&lt;!--c2--&gt</>  List item <comment>&lt;!--c3--&gt</> <comment>&lt;!--c4--&gt</><list>;</><strong> </><comment>&lt;!--term to define--&gt</><strong> term </><list>:</> <comment>&lt;!--term's definition--&gt</> definition<table-bracket>{|</><table-delimiter>|+ </><comment>&lt;!--c1--&gt</><table-caption> </><comment>&lt;!--c2--&gt</><table-caption> Table Caption </><comment>&lt;!--c3--&gt</><table-caption> </><comment>&lt;!--c4--&gt</><table-delimiter>|-!  </><comment>&lt;!--c1--&gt</><table-th> </><comment>&lt;!--c2--&gt</><table-th> Table Heading 1 </><comment>&lt;!--c3--&gt</><table-th> </><comment>&lt;!--c4--&gt</><table-th> </><table-delimiter>!!   </><table-th>Table Heading 2 </><comment>&lt;!--c5--&gt</><table-delimiter>|-| </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 1 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-td> </><table-delimiter>||   </><table-td>Table Cell 2 </><comment>&lt;!--c5--&gt</><table-delimiter>|-| </><table-td>class=\"foo\" </><table-delimiter>|| </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 3 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-delimiter>|-| </><comment>&lt;!--c1--&gt</><table-td> testing </><link-ground link-bracket>[[</><link-ground link-pagename pagename>one</><link-ground link-delimiter>|</><link-ground link-text>two</><link-ground link-bracket>]]</><table-td> </><comment>&lt;!--c2--&gt</><table-td> | </><comment>&lt;!--c3--&gt</><table-td> some content</><table-bracket>|}</><list>: </><table-bracket>{|</><table-delimiter>  |  </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 1 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-td> </><table-delimiter>||   </><table-td>Table Cell 2 </><comment>&lt;!--c5--&gt</><table-bracket>  |}</> foo   <comment>&lt;!--c1--&gt</>"
+		"parsed": "<double-underscore>__NOTOC__</><section-header section--2>==</><section section--2>    </><comment section--2>&lt;!--c1--&gt</><section section--2>  </><comment section--2>&lt;!--c2--&gt</><section section--2> Spaces   </><comment section--2>&lt;!--c3--&gt</><section section--2> </><comment section--2>&lt;!--c4--&gt</><section section--2>  </><section-header section--2>====</><section section--2>\t\t</><comment section--2>&lt;!--c1--&gt</><section section--2>\t</><comment section--2>&lt;!--c2--&gt</><section section--2> Tabs\t\t</><comment section--2>&lt;!--c3--&gt&lt;!--c4--&gt</><section section--2>\t</><section-header section--2>====</><section section--2> </><comment section--2>&lt;!--Headings with fallback ids--&gt</><section section--2> Личная жизнь </><section-header section--2>==</><list>*</>     <comment>&lt;!--c1--&gt</>   <comment>&lt;!--c2--&gt</>  List item <comment>&lt;!--c3--&gt</> <comment>&lt;!--c4--&gt</><list>;</><strong> </><comment>&lt;!--term to define--&gt</><strong> term </><list>:</> <comment>&lt;!--term's definition--&gt</> definition<table-bracket>{|</><table-delimiter>|+ </><comment>&lt;!--c1--&gt</><table-caption> </><comment>&lt;!--c2--&gt</><table-caption> Table Caption </><comment>&lt;!--c3--&gt</><table-caption> </><comment>&lt;!--c4--&gt</><table-delimiter>|-!  </><comment>&lt;!--c1--&gt</><table-th> </><comment>&lt;!--c2--&gt</><table-th> Table Heading 1 </><comment>&lt;!--c3--&gt</><table-th> </><comment>&lt;!--c4--&gt</><table-th> </><table-delimiter>!!   </><table-th>Table Heading 2 </><comment>&lt;!--c5--&gt</><table-delimiter>|-| </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 1 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-td> </><table-delimiter>||   </><table-td>Table Cell 2 </><comment>&lt;!--c5--&gt</><table-delimiter>|-| </><table-td>class=\"foo\" </><table-delimiter>|| </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 3 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-delimiter>|-| </><comment>&lt;!--c1--&gt</><table-td> testing </><link-ground link-bracket>[[</><link-ground link-pagename pagename>one</><link-ground link-delimiter>|</><link-ground link-text>two</><link-ground link-bracket>]]</><table-td> </><comment>&lt;!--c2--&gt</><table-td> | </><comment>&lt;!--c3--&gt</><table-td> some content</><table-bracket>|}</><list>: </><table-bracket>{|</><table-delimiter>  |  </><comment>&lt;!--c1--&gt</><table-td> </><comment>&lt;!--c2--&gt</><table-td> Table Cell 1 </><comment>&lt;!--c3--&gt</><table-td> </><comment>&lt;!--c4--&gt</><table-td> </><table-delimiter>||   </><table-td>Table Cell 2 </><comment>&lt;!--c5--&gt</><table-bracket>  |}</> foo   <comment>&lt;!--c1--&gt</>"
 	},
 	{
 		"desc": "Do not trim whitespace in HTML headings, list items, table captions, headings, and cells",
@@ -4885,7 +4885,7 @@
 	{
 		"desc": "Spaced heading with element",
 		"wikitext": "=== hi <span id=\"x\">hi</span> hi ho ===",
-		"parsed": "<section-header section--3>===</><section section--3> hi </><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"x\"</><htmltag-bracket>&gt</><section section--3>hi</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--3> hi ho </><section-header section--3>===</>"
+		"parsed": "<section-header section--3>===</><section section--3> hi </><htmltag-bracket section--3>&lt;</><htmltag-name section--3>span </><htmltag-attribute html-span section--3>id=</><htmltag-attribute-value section--3>\"x\"</><htmltag-bracket section--3>&gt</><section section--3>hi</><htmltag-bracket section--3>&lt;/</><htmltag-name section--3>span</><htmltag-bracket section--3>&gt</><section section--3> hi ho </><section-header section--3>===</>"
 	},
 	{
 		"desc": "Allow tabindex 0",
@@ -5454,7 +5454,7 @@
 	{
 		"desc": "U+0338, bare and as entity",
 		"wikitext": "Header\n\n== &#x338; One & ==\n&#x338; Text\n\n== ̸ Two & ==\n̸ Text",
-		"parsed": "Header<section-header section--2>==</><section section--2> </><entity>&amp;#x338;</><section section--2> One &amp; </><section-header section--2>==</><entity>&amp;#x338;</> Text<section-header section--2>==</><section section--2> ̸ Two &amp; </><section-header section--2>==</≯ Text"
+		"parsed": "Header<section-header section--2>==</><section section--2> </><entity section--2>&amp;#x338;</><section section--2> One &amp; </><section-header section--2>==</><entity>&amp;#x338;</> Text<section-header section--2>==</><section section--2> ̸ Two &amp; </><section-header section--2>==</≯ Text"
 	},
 	{
 		"desc": "Stray carriage return in text",
@@ -6335,7 +6335,7 @@
 	{
 		"desc": "Handle extension content in section headers properly",
 		"wikitext": "==c<ref>d</ref>==",
-		"parsed": "<section-header section--2>==</><section section--2>c</><exttag-bracket>&lt;</><exttag-name>ref</><exttag-bracket>&gt</><tag-ref>d</><exttag-bracket>&lt;/</><exttag-name>ref</><exttag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>c</><exttag-bracket section--2>&lt;</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><tag-ref>d</><exttag-bracket section--2>&lt;/</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Non-diffing cite error",
@@ -7516,42 +7516,42 @@
 	{
 		"desc": "Ensure headings with html tags get the right anchors",
 		"wikitext": "==<span>x</span>==\n==<strike>y</strike>==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2>x</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>strike</><htmltag-bracket>&gt</><section section--2>y</><htmltag-bracket>&lt;/</><htmltag-name>strike</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2>x</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>strike</><htmltag-bracket section--2>&gt</><section section--2>y</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>strike</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure unallowed tag wrappers in headings get stripped",
 		"wikitext": "==<div>b</div>==\n==<font>c</font>==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt</><section section--2>b</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>font</><htmltag-bracket>&gt</><section section--2>c</><htmltag-bracket>&lt;/</><htmltag-name>font</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt</><section section--2>b</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>font</><htmltag-bracket section--2>&gt</><section section--2>c</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>font</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure disallowed attributes are stripped, but dir attribute in a span is left behind",
 		"wikitext": "==<span dir='ltr' title='x'>a</span>==\n==<span dir='rtl' title='x'>b</span>==\n==<i dir='rtl' title='ha'>c</i>==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>dir=</><htmltag-attribute-value>'ltr'</><htmltag-attribute html-span> title=</><htmltag-attribute-value>'x'</><htmltag-bracket>&gt</><section section--2>a</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>dir=</><htmltag-attribute-value>'rtl'</><htmltag-attribute html-span> title=</><htmltag-attribute-value>'x'</><htmltag-bracket>&gt</><section section--2>b</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>dir=</><htmltag-attribute-value>'rtl'</><htmltag-attribute html-i> title=</><htmltag-attribute-value>'ha'</><htmltag-bracket>&gt</><section section--2>c</><htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>'ltr'</><htmltag-attribute html-span section--2> title=</><htmltag-attribute-value section--2>'x'</><htmltag-bracket section--2>&gt</><section section--2>a</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>'rtl'</><htmltag-attribute html-span section--2> title=</><htmltag-attribute-value section--2>'x'</><htmltag-bracket section--2>&gt</><section section--2>b</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>i </><htmltag-attribute html-i section--2>dir=</><htmltag-attribute-value section--2>'rtl'</><htmltag-attribute html-i section--2> title=</><htmltag-attribute-value section--2>'ha'</><htmltag-bracket section--2>&gt</><section section--2>c</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure empty tags are stripped",
 		"wikitext": "==<span><div></div></span>x==\n==<span dir='ltr'><i dir='ltr'></i></span>y==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt&lt;</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2>x</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>dir=</><htmltag-attribute-value>'ltr'</><htmltag-bracket>&gt&lt;</><htmltag-name>i </><htmltag-attribute html-i>dir=</><htmltag-attribute-value>'ltr'</><htmltag-bracket>&gt&lt;/</><htmltag-name>i</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2>y</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt&lt;</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2>x</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>'ltr'</><htmltag-bracket section--2>&gt&lt;</><htmltag-name section--2>i </><htmltag-attribute html-i section--2>dir=</><htmltag-attribute-value section--2>'ltr'</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2>y</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure tags following empty tags are stripped",
 		"wikitext": "==<div></div>x==\n==<abbr><abbr></abbr></abbr><abbr><abbr title=\"abbr title\">y</abbr></abbr>z==",
-		"parsed": "<section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><section section--2>x</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;</><htmltag-name>abbr </><htmltag-attribute html-abbr>title=</><htmltag-attribute-value>\"abbr title\"</><htmltag-bracket>&gt</><section section--2>y</><htmltag-bracket>&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt&lt;/</><htmltag-name>abbr</><htmltag-bracket>&gt</><section section--2>z</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>div</><htmltag-bracket section--2>&gt</><section section--2>x</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;</><htmltag-name section--2>abbr </><htmltag-attribute html-abbr section--2>title=</><htmltag-attribute-value section--2>\"abbr title\"</><htmltag-bracket section--2>&gt</><section section--2>y</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>abbr</><htmltag-bracket section--2>&gt</><section section--2>z</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure comments in toc lines are stripped",
 		"wikitext": "==hi<html><!--ho--></html>==",
-		"parsed": "<section-header section--2>==</><section section--2>hi&lt;html&gt</><comment>&lt;!--ho--&gt</><section section--2>&lt;/html&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>hi&lt;html&gt</><comment section--2>&lt;!--ho--&gt</><section section--2>&lt;/html&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Handle links in heading content",
 		"wikitext": "==[[Cat]]==\n==[[Dog]]s==\n==[[Cat|I love my ''cat'']]==",
-		"parsed": "<section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Cat</><link-ground link-bracket>]]</><section-header section--2>====</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Dog</><link-ground link-bracket>]]</><section section--2>s</><section-header section--2>====</><link-ground link-bracket>[[</><link-ground link-pagename pagename>Cat</><link-ground link-delimiter>|</><link-ground link-text>I love my </><link-ground apostrophes>''</><link-ground link-text em>cat</><link-ground apostrophes>''</><link-ground link-bracket>]]</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>Cat</><link-ground link-bracket section--2>]]</><section-header section--2>====</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>Dog</><link-ground link-bracket section--2>]]</><section section--2>s</><section-header section--2>====</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>Cat</><link-ground link-delimiter section--2>|</><link-ground link-text section--2>I love my </><link-ground apostrophes section--2>''</><link-ground link-text em section--2>cat</><link-ground apostrophes section--2>''</><link-ground link-bracket section--2>]]</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Ensure headings with special chars get the right anchors",
 		"wikitext": "===a=\n=''x''=",
-		"parsed": "<section-header section--1>=</><section section--1>==a</><section-header section--1>==</><apostrophes>''</><section section--1>x</><apostrophes>''</><section-header section--1>=</>"
+		"parsed": "<section-header section--1>=</><section section--1>==a</><section-header section--1>==</><apostrophes section--1>''</><section section--1>x</><apostrophes section--1>''</><section-header section--1>=</>"
 	},
 	{
 		"desc": "Templated sections (heading from template arg)",
@@ -7601,7 +7601,7 @@
 	{
 		"desc": "Section headings with TOC, language conversion rules, and displaytitle\n(T306862, T331316, T26072)",
 		"wikitext": "<!--\n-->-{H|Foo=>en:Boo;Foo=>en-x-piglatin:Bob;}-<!--\n-->-{H|Bar=>en:Bat;Bar=>en-x-piglatin:Ball;}-<!--\n-->-{T|en:Foo;en-x-piglatin:Bar;}-<!--\n-->\nIntroduction.\n-{A|en:Do; en-x-piglatin:Re;}-\n== Foo ==\nFoo Do\n== Bar ==\nBar Re\n== -{Foo Bar}- ==",
-		"parsed": "<comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Foo=&gten:Boo;Foo=&gten-x-piglatin:Bob<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Bar=&gten:Bat;Bar=&gten-x-piglatin:Ball<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>en:Foo;en-x-piglatin:Bar<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</>Introduction.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>en:Do; en-x-piglatin:Re<convert-delimiter>;</><convert-bracket>}-</><section-header section--2>==</><section section--2> Foo </><section-header section--2>==</>Foo Do<section-header section--2>==</><section section--2> Bar </><section-header section--2>==</>Bar Re<section-header section--2>==</><section section--2> </><convert-bracket>-{</><section section--2>Foo Bar</><convert-bracket>}-</><section section--2> </><section-header section--2>==</>"
+		"parsed": "<comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Foo=&gten:Boo;Foo=&gten-x-piglatin:Bob<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>H</><convert-delimiter>|</>Bar=&gten:Bat;Bar=&gten-x-piglatin:Ball<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</><convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</>en:Foo;en-x-piglatin:Bar<convert-delimiter>;</><convert-bracket>}-</><comment>&lt;!----&gt</>Introduction.<convert-bracket>-{</><convert-flag>A</><convert-delimiter>|</>en:Do; en-x-piglatin:Re<convert-delimiter>;</><convert-bracket>}-</><section-header section--2>==</><section section--2> Foo </><section-header section--2>==</>Foo Do<section-header section--2>==</><section section--2> Bar </><section-header section--2>==</>Bar Re<section-header section--2>==</><section section--2> </><convert-bracket section--2>-{</><section section--2>Foo Bar</><convert-bracket section--2>}-</><section section--2> </><section-header section--2>==</>"
 	},
 	{
 		"desc": "TOC anchors don't collide",
@@ -7621,7 +7621,7 @@
 	{
 		"desc": "TOC for heading containing <span id=\"...\"></span> (T96153)",
 		"wikitext": "__FORCETOC__\n==<span id=\"old-anchor\"></span>New title==",
-		"parsed": "<double-underscore>__FORCETOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>id=</><htmltag-attribute-value>\"old-anchor\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section section--2>New title</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__FORCETOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>id=</><htmltag-attribute-value section--2>\"old-anchor\"</><htmltag-bracket section--2>&gt&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section section--2>New title</><section-header section--2>==</>"
 	},
 	{
 		"desc": "TOC with wgMaxTocLevel=3 (T8204)",
@@ -7711,7 +7711,7 @@
 	{
 		"desc": "Link inside a section heading",
 		"wikitext": "==Section with a [[Main Page|link]] in it==",
-		"parsed": "<section-header section--2>==</><section section--2>Section with a </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>link</><link-ground link-bracket>]]</><section section--2> in it</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>Section with a </><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>Main Page</><link-ground link-delimiter section--2>|</><link-ground link-text section--2>link</><link-ground link-bracket section--2>]]</><section section--2> in it</><section-header section--2>==</>"
 	},
 	{
 		"desc": "TOC regression (T14077)",
@@ -7726,22 +7726,22 @@
 	{
 		"desc": "T28375: TOC with italics",
 		"wikitext": "__TOC__\n==''Lost'' episodes==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><apostrophes>''</><section section--2>Lost</><apostrophes>''</><section section--2> episodes</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><apostrophes section--2>''</><section section--2>Lost</><apostrophes section--2>''</><section section--2> episodes</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T28375: TOC with bold",
 		"wikitext": "__TOC__\n=='''should be bold''' then normal text==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><apostrophes>'''</><section section--2>should be bold</><apostrophes>'''</><section section--2> then normal text</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><apostrophes section--2>'''</><section section--2>should be bold</><apostrophes section--2>'''</><section section--2> then normal text</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T35845: Headings become cursive in TOC when they contain an image",
 		"wikitext": "__TOC__\n==Image [[Image:foobar.jpg]]==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><section section--2>Image </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Image:foobar.jpg</><link-ground link-bracket>]]</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><section section--2>Image </><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>Image:foobar.jpg</><link-ground link-bracket section--2>]]</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T35845 (2): Headings become bold in TOC when they contain a blockquote",
 		"wikitext": "__TOC__\n==<blockquote>Quote</blockquote>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><section section--2>Quote</><htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>blockquote</><htmltag-bracket section--2>&gt</><section section--2>Quote</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>blockquote</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Unclosed tags in TOC",
@@ -7751,27 +7751,27 @@
 	{
 		"desc": "Multiple tags in TOC",
 		"wikitext": "__TOC__\n==<i>Foo</i> <b>Bar</b>==\n\n==<i>Foo</i> <blockquote>Bar</blockquote>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</><section section--2>Foo</><htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><section section--2> </><htmltag-bracket>&lt;</><htmltag-name>b</><htmltag-bracket>&gt</><section section--2>Bar</><htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>i</><htmltag-bracket>&gt</><section section--2>Foo</><htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</><section section--2> </><htmltag-bracket>&lt;</><htmltag-name>blockquote</><htmltag-bracket>&gt</><section section--2>Bar</><htmltag-bracket>&lt;/</><htmltag-name>blockquote</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt</><section section--2>Foo</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt</><section section--2> </><htmltag-bracket section--2>&lt;</><htmltag-name section--2>b</><htmltag-bracket section--2>&gt</><section section--2>Bar</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>b</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt</><section section--2>Foo</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>i</><htmltag-bracket section--2>&gt</><section section--2> </><htmltag-bracket section--2>&lt;</><htmltag-name section--2>blockquote</><htmltag-bracket section--2>&gt</><section section--2>Bar</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>blockquote</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Tags with parameters in TOC",
 		"wikitext": "__TOC__\n==<sup class=\"in-h2\">Hello</sup>==\n\n==<sup class=\"a > b\">Evilbye</sup>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>sup </><htmltag-attribute html-sup>class=</><htmltag-attribute-value>\"in-h2\"</><htmltag-bracket>&gt</><section section--2>Hello</><htmltag-bracket>&lt;/</><htmltag-name>sup</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>sup </><htmltag-attribute html-sup>class=</><htmltag-attribute-value>\"a </><htmltag-bracket>&gt</><section section--2> b\"&gtEvilbye</><htmltag-bracket>&lt;/</><htmltag-name>sup</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>sup </><htmltag-attribute html-sup section--2>class=</><htmltag-attribute-value section--2>\"in-h2\"</><htmltag-bracket section--2>&gt</><section section--2>Hello</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>sup</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>sup </><htmltag-attribute html-sup section--2>class=</><htmltag-attribute-value section--2>\"a </><htmltag-bracket section--2>&gt</><section section--2> b\"&gtEvilbye</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>sup</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "span tags with directionality in TOC",
 		"wikitext": "__TOC__\n==<span dir=\"ltr\">C++</span>==\n\n==<span dir=\"rtl\">זבנג!</span>==\n\n==<span style=\"font-style: italic\" dir=\"ltr\" title=\"hello\">Attributes other than dir</span>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>dir=</><htmltag-attribute-value>\"ltr\"</><htmltag-bracket>&gt</><section section--2>C++</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>dir=</><htmltag-attribute-value>\"rtl\"</><htmltag-bracket>&gt</><section section--2>זבנג!</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>====</><htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>style=</><htmltag-attribute-value>\"font-style: italic\"</><htmltag-attribute html-span> dir=</><htmltag-attribute-value>\"ltr\"</><htmltag-attribute html-span> title=</><htmltag-attribute-value>\"hello\"</><htmltag-bracket>&gt</><section section--2>Attributes other than dir</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-bracket section--2>&gt</><section section--2>C++</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"rtl\"</><htmltag-bracket section--2>&gt</><section section--2>זבנג!</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>style=</><htmltag-attribute-value section--2>\"font-style: italic\"</><htmltag-attribute html-span section--2> dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-attribute html-span section--2> title=</><htmltag-attribute-value section--2>\"hello\"</><htmltag-bracket section--2>&gt</><section section--2>Attributes other than dir</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T74884: bdi element in ToC",
 		"wikitext": "__TOC__\n==<bdi>test</bdi>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>bdi</><htmltag-bracket>&gt</><section section--2>test</><htmltag-bracket>&lt;/</><htmltag-name>bdi</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>bdi</><htmltag-bracket section--2>&gt</><section section--2>test</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>bdi</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T35715: s/strike element in ToC",
 		"wikitext": "__TOC__\n==<s>test</s> test <strike>test</strike>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>s</><htmltag-bracket>&gt</><section section--2>test</><htmltag-bracket>&lt;/</><htmltag-name>s</><htmltag-bracket>&gt</><section section--2> test </><htmltag-bracket>&lt;</><htmltag-name>strike</><htmltag-bracket>&gt</><section section--2>test</><htmltag-bracket>&lt;/</><htmltag-name>strike</><htmltag-bracket>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>s</><htmltag-bracket section--2>&gt</><section section--2>test</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>s</><htmltag-bracket section--2>&gt</><section section--2> test </><htmltag-bracket section--2>&lt;</><htmltag-name section--2>strike</><htmltag-bracket section--2>&gt</><section section--2>test</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>strike</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T198618: style element in ToC",
@@ -7796,7 +7796,7 @@
 	{
 		"desc": "Short headings with trailing space should match behavior of Parser::doHeadings (T21910)",
 		"wikitext": "=== \nThe line above must have a trailing space!\n=== <!--\n--> <!-- -->\nBut just in case it doesn't...",
-		"parsed": "<section-header section--1>=</><section section--1>=</><section-header section--1>= </>The line above must have a trailing space!<section-header section--1>=</><section section--1>=</><section-header section--1>= </><comment>&lt;!----&gt</> <comment>&lt;!-- --&gt</>But just in case it doesn't..."
+		"parsed": "<section-header section--1>=</><section section--1>=</><section-header section--1>= </>The line above must have a trailing space!<section-header section--1>=</><section section--1>=</><section-header section--1>= </><comment section--1>&lt;!--</><comment>--&gt</> <comment>&lt;!-- --&gt</>But just in case it doesn't..."
 	},
 	{
 		"desc": "Header with special characters (T27462)",
@@ -7806,12 +7806,12 @@
 	{
 		"desc": "Header with space, plus and underscore as entity",
 		"wikitext": "Id should not contain + for spaces\n\n==Space between Text==\nsection 1\n\n==Space-Entity&#32;between&#32;Text==\nsection 2\n\n==Plus+between+Text==\nsection 3\n\n==Plus-Entity&#43;between&#43;Text==\nsection 4\n\n==Underscore_between_Text==\nsection 5\n\n==Underscore-Entity&#95;between&#95;Text==\nsection 6\n\n[[#Space between Text]]\n[[#Space-Entity&#32;between&#32;Text]]\n[[#Plus+between+Text]]\n[[#Plus-Entity&#43;between&#43;Text]]\n[[#Underscore_between_Text]]\n[[#Underscore-Entity&#95;between&#95;Text]]",
-		"parsed": "Id should not contain + for spaces<section-header section--2>==</><section section--2>Space between Text</><section-header section--2>==</>section 1<section-header section--2>==</><section section--2>Space-Entity</><entity>&amp;#32;</><section section--2>between</><entity>&amp;#32;</><section section--2>Text</><section-header section--2>==</>section 2<section-header section--2>==</><section section--2>Plus+between+Text</><section-header section--2>==</>section 3<section-header section--2>==</><section section--2>Plus-Entity</><entity>&amp;#43;</><section section--2>between</><entity>&amp;#43;</><section section--2>Text</><section-header section--2>==</>section 4<section-header section--2>==</><section section--2>Underscore_between_Text</><section-header section--2>==</>section 5<section-header section--2>==</><section section--2>Underscore-Entity</><entity>&amp;#95;</><section section--2>between</><entity>&amp;#95;</><section section--2>Text</><section-header section--2>==</>section 6<link-ground link-bracket>[[</><link-ground link-tosection>#Space between Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Space-Entity&amp;#32;between&amp;#32;Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Plus+between+Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Plus-Entity&amp;#43;between&amp;#43;Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Underscore_between_Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Underscore-Entity&amp;#95;between&amp;#95;Text</><link-ground link-bracket>]]</>"
+		"parsed": "Id should not contain + for spaces<section-header section--2>==</><section section--2>Space between Text</><section-header section--2>==</>section 1<section-header section--2>==</><section section--2>Space-Entity</><entity section--2>&amp;#32;</><section section--2>between</><entity section--2>&amp;#32;</><section section--2>Text</><section-header section--2>==</>section 2<section-header section--2>==</><section section--2>Plus+between+Text</><section-header section--2>==</>section 3<section-header section--2>==</><section section--2>Plus-Entity</><entity section--2>&amp;#43;</><section section--2>between</><entity section--2>&amp;#43;</><section section--2>Text</><section-header section--2>==</>section 4<section-header section--2>==</><section section--2>Underscore_between_Text</><section-header section--2>==</>section 5<section-header section--2>==</><section section--2>Underscore-Entity</><entity section--2>&amp;#95;</><section section--2>between</><entity section--2>&amp;#95;</><section section--2>Text</><section-header section--2>==</>section 6<link-ground link-bracket>[[</><link-ground link-tosection>#Space between Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Space-Entity&amp;#32;between&amp;#32;Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Plus+between+Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Plus-Entity&amp;#43;between&amp;#43;Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Underscore_between_Text</><link-ground link-bracket>]][[</><link-ground link-tosection>#Underscore-Entity&amp;#95;between&amp;#95;Text</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Headers with excess '=' characters\n(Are similar tests necessary beyond the 1st level?)",
 		"wikitext": "=foo==\n==foo=\n=''italic'' heading==\n==''italic'' heading=",
-		"parsed": "<section-header section--1>=</><section section--1>foo=</><section-header section--1>==</><section section--1>=foo</><section-header section--1>==</><apostrophes>''</><section section--1>italic</><apostrophes>''</><section section--1> heading=</><section-header section--1>==</><section section--1>=</><apostrophes>''</><section section--1>italic</><apostrophes>''</><section section--1> heading</><section-header section--1>=</>"
+		"parsed": "<section-header section--1>=</><section section--1>foo=</><section-header section--1>==</><section section--1>=foo</><section-header section--1>==</><apostrophes section--1>''</><section section--1>italic</><apostrophes section--1>''</><section section--1> heading=</><section-header section--1>==</><section section--1>=</><apostrophes section--1>''</><section section--1>italic</><apostrophes section--1>''</><section section--1> heading</><section-header section--1>=</>"
 	},
 	{
 		"desc": "HTML headers vs TOC (T25393)\n(__NOEDITSECTION__ for clearer output, doesn't matter here)",
@@ -7861,12 +7861,12 @@
 	{
 		"desc": "Heading with nonbreaking space in prefix/suffix (T235684)",
 		"wikitext": "== &nbsp; A &nbsp; B &nbsp; ==",
-		"parsed": "<section-header section--2>==</><section section--2> </><entity>&amp;nbsp;</><section section--2> A </><entity>&amp;nbsp;</><section section--2> B </><entity>&amp;nbsp;</><section section--2> </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> </><entity section--2>&amp;nbsp;</><section section--2> A </><entity section--2>&amp;nbsp;</><section section--2> B </><entity section--2>&amp;nbsp;</><section section--2> </><section-header section--2>==</>"
 	},
 	{
 		"desc": "Heading with literal wikitext - the wikitext is not parsed in section edit link tooltip",
 		"wikitext": "== <nowiki>{{PAGENAME}}</nowiki> ==\n== &#123;&#123;PAGENAME}} ==",
-		"parsed": "<section-header section--2>==</><section section--2> </><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>{{PAGENAME}}</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section section--2> </><section-header section--2>====</><section section--2> </><entity>&amp;#123;&amp;#123;</><section section--2>PAGENAME}} </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> </><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki>{{PAGENAME}}</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section section--2> </><section-header section--2>====</><section section--2> </><entity section--2>&amp;#123;&amp;#123;</><section section--2>PAGENAME}} </><section-header section--2>==</>"
 	},
 	{
 		"desc": "T8563: Edit link generation for section shown by <includeonly>",
@@ -7911,17 +7911,17 @@
 	{
 		"desc": "nowiki inside link inside heading (T20295)",
 		"wikitext": "==[[foo|x<nowiki>y</nowiki>z]]==",
-		"parsed": "<section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-pagename pagename>foo</><link-ground link-delimiter>|</><link-ground link-text>x</><link-ground exttag-bracket>&lt;</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><tag-nowiki>y</><link-ground exttag-bracket>&lt;/</><link-ground exttag-name>nowiki</><link-ground exttag-bracket>&gt</><link-ground link-text>z</><link-ground link-bracket>]]</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>foo</><link-ground link-delimiter section--2>|</><link-ground link-text section--2>x</><link-ground exttag-bracket section--2>&lt;</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><tag-nowiki>y</><link-ground exttag-bracket section--2>&lt;/</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><link-ground link-text section--2>z</><link-ground link-bracket section--2>]]</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Decoding of HTML entities in headings and links for IDs and link fragments (T103714)",
 		"wikitext": "==A&B&amp;C&amp;amp;D&amp;amp;amp;E==\n[[#A&B&amp;C&amp;amp;D&amp;amp;amp;E]]",
-		"parsed": "<section-header section--2>==</><section section--2>A&amp;B</><entity>&amp;amp;</><section section--2>C</><entity>&amp;amp;</><section section--2>amp;D</><entity>&amp;amp;</><section section--2>amp;amp;E</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#A&amp;B&amp;amp;C&amp;amp;amp;D&amp;amp;amp;amp;E</><link-ground link-bracket>]]</>"
+		"parsed": "<section-header section--2>==</><section section--2>A&amp;B</><entity section--2>&amp;amp;</><section section--2>C</><entity section--2>&amp;amp;</><section section--2>amp;D</><entity section--2>&amp;amp;</><section section--2>amp;amp;E</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#A&amp;B&amp;amp;C&amp;amp;amp;D&amp;amp;amp;amp;E</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Decoding of HTML entities in headings and links for IDs and link fragments (T103714) (legacy)",
 		"wikitext": "==A&B&amp;C&amp;amp;D&amp;amp;amp;E==\n[[#A&B&amp;C&amp;amp;D&amp;amp;amp;E]]",
-		"parsed": "<section-header section--2>==</><section section--2>A&amp;B</><entity>&amp;amp;</><section section--2>C</><entity>&amp;amp;</><section section--2>amp;D</><entity>&amp;amp;</><section section--2>amp;amp;E</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#A&amp;B&amp;amp;C&amp;amp;amp;D&amp;amp;amp;amp;E</><link-ground link-bracket>]]</>"
+		"parsed": "<section-header section--2>==</><section section--2>A&amp;B</><entity section--2>&amp;amp;</><section section--2>C</><entity section--2>&amp;amp;</><section section--2>amp;D</><entity section--2>&amp;amp;</><section section--2>amp;amp;E</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#A&amp;B&amp;amp;C&amp;amp;amp;D&amp;amp;amp;amp;E</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "HTML5 ids: fallback to legacy",
@@ -7941,7 +7941,7 @@
 	{
 		"desc": "T90902: Normalize weird characters in section IDs",
 		"wikitext": "==Foo&nbsp;bar==\n[[#Foo&nbsp;bar]]",
-		"parsed": "<section-header section--2>==</><section section--2>Foo</><entity>&amp;nbsp;</><section section--2>bar</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#Foo&amp;nbsp;bar</><link-ground link-bracket>]]</>"
+		"parsed": "<section-header section--2>==</><section section--2>Foo</><entity section--2>&amp;nbsp;</><section section--2>bar</><section-header section--2>==</><link-ground link-bracket>[[</><link-ground link-tosection>#Foo&amp;nbsp;bar</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "mw-heading wrapper edge cases",
@@ -7976,7 +7976,7 @@
 	{
 		"desc": "Editable headings can only have trailing comments and whitespace",
 		"wikitext": "==== test ====\nyup\n\n==== hi ho ====<noinclude>\nnope\n</noinclude>\n\n==== test 2 ====\nanother yup\n\n<!-- well -->==== ha ha ====\nback to nope\n\n==== he he ====  <!-- but this is ok -->\nsee",
-		"parsed": "<section-header section--4>====</><section section--4> test </><section-header section--4>====</>yup==== hi ho ====<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>nope</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><section-header section--4>====</><section section--4> test 2 </><section-header section--4>====</>another yup<comment>&lt;!-- well --&gt</>==== ha ha ====back to nope<section-header section--4>====</><section section--4> he he </><section-header section--4>====  </><comment>&lt;!-- but this is ok --&gt</>see"
+		"parsed": "<section-header section--4>====</><section section--4> test </><section-header section--4>====</>yup==== hi ho ====<exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>nope</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt</><section-header section--4>====</><section section--4> test 2 </><section-header section--4>====</>another yup<comment>&lt;!-- well --&gt</>==== ha ha ====back to nope<section-header section--4>====</><section section--4> he he </><section-header section--4>====  </><comment section--4>&lt;!-- but this is ok --&gt</>see"
 	},
 	{
 		"desc": "T368722: Empty headings",
@@ -11785,7 +11785,7 @@
 	{
 		"desc": "Preprocessor precedence 15: broken brace markup in headings",
 		"wikitext": "__NOTOC__ __NOEDITSECTION__\n===1 foo[bar 1===\n1\n===2 foo[[bar 2===\n2\n===3 foo{bar 3===\n3\n===4 foo{{bar 4===\n4\n===5 foo{{{bar 5===\n5\n===6 foo-{bar 6===\n6",
-		"parsed": "<double-underscore>__NOTOC__</> <double-underscore>__NOEDITSECTION__</><section-header section--3>===</><section section--3>1 foo[bar 1</><section-header section--3>===</>1<section-header section--3>===</><section section--3>2 foo</><link-ground link-bracket>[[</><link-ground link-pagename pagename>bar 2===</>2<section-header section--3>===</><section section--3>3 foo{bar 3</><section-header section--3>===</>3<section-header section--3>===</><section section--3>4 foo</><template-ground template-bracket>{{</><template-ground template-name pagename>bar 4===</>4<section-header section--3>===</><section section--3>5 foo</><templatevariable-bracket>{{{</><templatevariable-name>bar 5===</>5<section-header section--3>===</><section section--3>6 foo</><convert-bracket>-{</><section section--3>bar 6===6</>"
+		"parsed": "<double-underscore>__NOTOC__</> <double-underscore>__NOEDITSECTION__</><section-header section--3>===</><section section--3>1 foo[bar 1</><section-header section--3>===</>1<section-header section--3>===</><section section--3>2 foo</><link-ground link-bracket section--3>[[</><link-ground link-pagename pagename section--3>bar 2===</>2<section-header section--3>===</><section section--3>3 foo{bar 3</><section-header section--3>===</>3<section-header section--3>===</><section section--3>4 foo</><template-ground template-bracket section--3>{{</><template-ground template-name pagename section--3>bar 4===</>4<section-header section--3>===</><section section--3>5 foo</><templatevariable-bracket section--3>{{{</><templatevariable-name section--3>bar 5===</>5<section-header section--3>===</><section section--3>6 foo</><convert-bracket section--3>-{</><section section--3>bar 6===</><section>6</>"
 	},
 	{
 		"desc": "Preprocessor precedence 16: matching closing braces to opening braces",
@@ -13436,7 +13436,7 @@
 	{
 		"desc": "Headings: 1. Nested inside html",
 		"wikitext": "= =foo= =\n\n== =foo= ==\n\n=== =foo= ===\n\n=<nowiki>=foo=</nowiki>=\n==<nowiki>=foo=</nowiki>==\n===<nowiki>=foo=</nowiki>===\n====<nowiki>=foo=</nowiki>====\n=====<nowiki>=foo=</nowiki>=====\n======<nowiki>=foo=</nowiki>======",
-		"parsed": "<section-header section--1>=</><section section--1> =foo= </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo= </><section-header section--2>==</><section-header section--3>===</><section section--3> =foo= </><section-header section--3>===</><section-header section--1>=</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--1>=</><section-header section--2>==</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--2>==</><section-header section--3>===</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--3>===</><section-header section--4>====</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--4>====</><section-header section--5>=====</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--5>=====</><section-header section--6>======</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>=foo=</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><section-header section--6>======</>"
+		"parsed": "<section-header section--1>=</><section section--1> =foo= </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo= </><section-header section--2>==</><section-header section--3>===</><section section--3> =foo= </><section-header section--3>===</><section-header section--1>=</><exttag-bracket section--1>&lt;</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><tag-nowiki>=foo=</><exttag-bracket section--1>&lt;/</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><section-header section--1>=</><section-header section--2>==</><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki>=foo=</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section-header section--2>==</><section-header section--3>===</><exttag-bracket section--3>&lt;</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><tag-nowiki>=foo=</><exttag-bracket section--3>&lt;/</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><section-header section--3>===</><section-header section--4>====</><exttag-bracket section--4>&lt;</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><tag-nowiki>=foo=</><exttag-bracket section--4>&lt;/</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><section-header section--4>====</><section-header section--5>=====</><exttag-bracket section--5>&lt;</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><tag-nowiki>=foo=</><exttag-bracket section--5>&lt;/</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><section-header section--5>=====</><section-header section--6>======</><exttag-bracket section--6>&lt;</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><tag-nowiki>=foo=</><exttag-bracket section--6>&lt;/</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><section-header section--6>======</>"
 	},
 	{
 		"desc": "Headings: 2. Outside heading nest on a single line <h1>foo</h1>*bar",
@@ -13446,12 +13446,12 @@
 	{
 		"desc": "Headings: 3. Nested inside html with wikitext split by html tags",
 		"wikitext": "= ='''bold'''foo= =",
-		"parsed": "<section-header section--1>=</><section section--1> =</><apostrophes>'''</><section section--1>bold</><apostrophes>'''</><section section--1>foo= </><section-header section--1>=</>"
+		"parsed": "<section-header section--1>=</><section section--1> =</><apostrophes section--1>'''</><section section--1>bold</><apostrophes section--1>'''</><section section--1>foo= </><section-header section--1>=</>"
 	},
 	{
 		"desc": "Headings: 4a. No escaping needed (testing just h1 and h2)",
 		"wikitext": "= =foo =\n\n= foo= =\n\n= =foo= =\n\n= =foo= bar =\n\n== =foo ==\n\n== foo= ==\n\n= = =\n\n= ''=''foo= =",
-		"parsed": "<section-header section--1>=</><section section--1> =foo </><section-header section--1>==</><section section--1> foo= </><section-header section--1>==</><section section--1> =foo= </><section-header section--1>==</><section section--1> =foo= bar </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo </><section-header section--2>====</><section section--2> foo= </><section-header section--2>==</><section-header section--1>=</><section section--1> = </><section-header section--1>==</><section section--1> </><apostrophes>''</><section section--1>=</><apostrophes>''</><section section--1>foo= </><section-header section--1>=</>"
+		"parsed": "<section-header section--1>=</><section section--1> =foo </><section-header section--1>==</><section section--1> foo= </><section-header section--1>==</><section section--1> =foo= </><section-header section--1>==</><section section--1> =foo= bar </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo </><section-header section--2>====</><section section--2> foo= </><section-header section--2>==</><section-header section--1>=</><section section--1> = </><section-header section--1>==</><section section--1> </><apostrophes section--1>''</><section section--1>=</><apostrophes section--1>''</><section section--1>foo= </><section-header section--1>=</>"
 	},
 	{
 		"desc": "Headings: 4b. No escaping needed (inside p-tags)",

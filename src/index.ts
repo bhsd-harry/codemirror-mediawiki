@@ -108,7 +108,7 @@ const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, dep?:
 };
 
 const registerDrawSelection = (): void => {
-	registerExtension('drawSelection', drawSelection);
+	registerExtension('drawSelection', () => drawSelection({drawRangeCursor: false}));
 };
 
 /** Register the `highlightSpecialChars` extension */

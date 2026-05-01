@@ -674,21 +674,15 @@ const getGrounds = (
  */
 const wikiTheme = /* @__PURE__ */ EditorView.theme({
 	[`.${mwPrefix}section--1`]: {
-		'&,&~*': {
-			fontSize: '1.8em',
-			lineHeight: '1.2em',
-		},
+		fontSize: '1.8em',
+		lineHeight: '1.2em',
 	},
 	[`.${mwPrefix}section--2`]: {
-		'&,&~*': {
-			fontSize: '1.5em',
-			lineHeight: '1.2em',
-		},
+		fontSize: '1.5em',
+		lineHeight: '1.2em',
 	},
 	[getSelector(['3', '4', '5', '6'], 'section--')]: {
-		'&,&~*': {
-			fontWeight: 'bold',
-		},
+		fontWeight: 'bold',
 	},
 	[`${
 		getSelector(['section-header', 'file-delimiter', 'magic-link', 'templatevariable'])

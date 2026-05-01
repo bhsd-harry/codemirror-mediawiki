@@ -7,6 +7,10 @@
 
 - New extension option: [blockCursor](./README.md#blockcursor)
 
+**Fixed**
+
+- Font size of level 1 and 2 section headers in the MediaWiki mode
+
 ## 3.15.0
 
 *2026-04-30*
