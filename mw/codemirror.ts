@@ -101,6 +101,7 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 	cmAvail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],
 		['autocompletion', 'quickSuggestions', false, true],
+		['blockCursor', 'cursorStyle', 'line', 'block'],
 		['bracketMatching', 'matchBrackets', 'never', 'always'],
 		['closeBrackets', ['autoClosingBrackets', 'autoClosingQuotes'], 'never', 'always'],
 		['codeFolding', 'folding', false, true],

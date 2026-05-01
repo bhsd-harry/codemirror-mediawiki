@@ -9,20 +9,20 @@
 }
 
 /* src/blockCursor */
-@media (prefers-color-scheme: light) {
-	div.cm-cursor {
-		border-left-color: #222;
-	}
+.cm-cursorLayer {
+	display: none;
 }
-@media (prefers-color-scheme: dark) {
-	div.cm-cursor {
-		border-left-color: #fff;
-	}
-}
-div.cm-cursor {
-	border-left-width: var(--cursor-width, 1ch);
-	margin-left: var(--cursor-margin, 0);
+.cm-blockCursorLayer {
+	pointer-events: none;
+	animation: steps(1) cm-blink 1.2s infinite; /* stylelint-disable-line no-unknown-animations */
 	opacity: .3;
+}
+.cm-blockCursor {
+	background-color: var(--cursor-color);
+}
+.cm-blockCursor-eol {
+	border-left: 1px solid var(--cursor-color);
+	margin-left: var(--cursor-margin);
 }
 
 /* src/codemirror */
@@ -51,7 +51,7 @@ input[type="color"] {
 }
 
 .cm-content {
-	background-image: linear-gradient(var(--col-guide), var(--col-guide));
+	background-image: linear-gradient(var(--col-guide) 0 100%);
 	background-position: calc(80ch + 6px) 0;
 	background-repeat: no-repeat;
 	background-size: 2px 100%;
@@ -594,6 +594,7 @@ input[type="color"] {
 		--cm-ref: rgb(223, 242, 235, .5);
 		--cm-active: #05f;
 		--col-guide: #f3f3f3;
+		--cursor-color: #222;
 	}
 	.cm-globals {
 		&, & > * {
@@ -638,6 +639,7 @@ input[type="color"] {
 		--cm-ref: rgb(60, 90, 80, .5);
 		--cm-active: #b6d4fb;
 		--col-guide: #45494e;
+		--cursor-color: #fff;
 	}
 	.cm-globals {
 		&, & > * {

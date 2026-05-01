@@ -34,6 +34,7 @@ import {
 	diagnosticSelector,
 	noDetectionLangs,
 	linkSelector,
+	guideColor,
 } from './constants.js';
 import {getHighlightExtension} from './util.js';
 import {light} from './theme.js';
@@ -604,12 +605,12 @@ export class CodeMirror6 {
 		if (!col || col < 0 || noDetectionLangs.has(this.#lang)) {
 			return [];
 		}
-		const color = 'var(--col-guide)',
+		const color = `var(${guideColor})`,
 			padding = this.#view!.coordsAtPos(0)!.left
 				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x;
 		return EditorView.theme({
 			'.cm-content': {
-				backgroundImage: `linear-gradient(${color},${color})`,
+				backgroundImage: `linear-gradient(${color} 0 100%)`,
 				backgroundPosition: `calc(${col}ch + ${padding}px) 0`,
 				backgroundRepeat: 'no-repeat',
 				backgroundSize: '2px 100%',

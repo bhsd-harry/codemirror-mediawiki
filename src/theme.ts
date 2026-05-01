@@ -7,6 +7,8 @@ import {
 	actionSelector,
 	panelsSelector,
 	bgDark,
+	cursorColor,
+	guideColor,
 } from './constants.js';
 import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
@@ -43,7 +45,8 @@ export const light = /* @__PURE__ */ EditorView.theme({
 			'--cm-var-name': '#ac6600',
 			'--cm-ref': 'rgb(223,242,235,.5)',
 			'--cm-active': '#05f',
-			'--col-guide': '#f3f3f3',
+			[guideColor]: '#f3f3f3',
+			[cursorColor]: '#222',
 		},
 		'.cm-globals': {
 			'&,&>*': {
@@ -95,7 +98,8 @@ export const light = /* @__PURE__ */ EditorView.theme({
 				'--cm-var-name': '#d08770',
 				'--cm-ref': 'rgb(60,90,80,0.5)',
 				'--cm-active': '#b6d4fb',
-				'--col-guide': '#45494e',
+				[guideColor]: '#45494e',
+				[cursorColor]: '#fff',
 			},
 			'.cm-globals': {
 				'&,&>*': {

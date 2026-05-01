@@ -115,19 +115,22 @@ const eventHandlers: DOMEventHandlers<unknown> = {
 	},
 };
 
-const getOpenLinksTheme = (selectors: string[], extra?: string): Extension => EditorView.theme({
-	[`&.${openLinksCls}`]: {
-		[selectors.map(selector => `& ${selector}:hover`).join()]: {
-			cursor: 'pointer',
-			color: 'var(--cm-active)',
-		},
-		...extra && {
-			[`& ${extra}`]: {
-				color: 'var(--cm-active)',
+const getOpenLinksTheme = (selectors: string[], extra?: string): Extension => {
+	const color = 'var(--cm-active)';
+	return EditorView.theme({
+		[`&.${openLinksCls}`]: {
+			[selectors.map(selector => `& ${selector}:hover`).join()]: {
+				cursor: 'pointer',
+				color,
+			},
+			...extra && {
+				[`& ${extra}`]: {
+					color,
+				},
 			},
 		},
-	},
-});
+	});
+};
 
 const notOpenableLink = (e: MouseEvent): boolean => e.button !== 0
 	|| !e[modKey]
