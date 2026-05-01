@@ -46,6 +46,7 @@ export interface State extends Nesting {
 	sof: boolean;
 	redirect: {colon: boolean} | false;
 	imgLink: boolean;
+	section: number;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
 declare interface Token {
@@ -152,6 +153,7 @@ const startState = (tokenize: Tokenizer, tags: string[], urlProtocols: RegExp, s
 	sof,
 	redirect: false,
 	imgLink: false,
+	section: 0,
 	data: new MediaWikiData(tags, `(${urlProtocols.source.slice(4)}`),
 });
 
@@ -287,8 +289,9 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 ).trim().replace(/\s{2,}/gu, ' ') || ' ';
 
 export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
+	const {nTemplate, nExt, nLink, nExtLink, dt, section} = state;
 	let ground = '';
-	switch (state.nTemplate) {
+	switch (nTemplate) {
 		case 0:
 			break;
 		case 1:
@@ -301,7 +304,7 @@ export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestC
 			ground += '-template3';
 			break;
 	}
-	switch (state.nExt) {
+	switch (nExt) {
 		case 0:
 			break;
 		case 1:
@@ -314,17 +317,16 @@ export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestC
 			ground += '-ext3';
 			break;
 	}
-	if (state.nLink || state.nExtLink) {
+	if (nLink || nExtLink) {
 		ground += '-link';
 	}
 	if (endGround) {
 		state[endGround]--;
-		const {dt} = state;
 		if (dt?.n && state[endGround] < dt[endGround]!) {
 			dt.n = 0;
 		}
 	}
-	return (ground && `mw${ground}-ground `) + style;
+	return (ground && `mw${ground}-ground `) + style + (section ? ` mw-section--${section}` : '');
 };
 
 const makeLocalTagStyle = (tag: TagName, state: State, endGround?: NestCount): string =>
@@ -771,11 +773,9 @@ export class MediaWiki {
 						if (tmp) {
 							stream.backUp(tmp[2]!.length);
 							const level = tmp[1]!.length + 1;
-							chain(state, this.inSectionHeader(tmp[3]!, level));
-							return makeLocalStyle(
-								`${tokens.sectionHeader} mw-section--${level}`,
-								state,
-							);
+							state.section = level;
+							chain(state, this.inSectionHeader(tmp[3]!));
+							return makeLocalStyle(tokens.sectionHeader, state);
 						}
 						break;
 					}
@@ -1304,9 +1304,7 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inSectionHeader(str: string, level: number): Tokenizer {
-		const headerStyle = `${tokens.sectionHeader} mw-section--${level}`,
-			style = `${tokens.section} mw-section--${level}`;
+	inSectionHeader(str: string): Tokenizer {
 		return (stream, state) => {
 			if (stream.sol()) {
 				pop(state);
@@ -1314,15 +1312,15 @@ export class MediaWiki {
 			} else if (stream.match(headerRegex)) {
 				if (stream.eol()) {
 					stream.backUp(str.length);
-					state.tokenize = this.inStr(str, headerStyle);
+					state.tokenize = this.inStr(str, tokens.sectionHeader);
 				} else if (stream.match(/^<!--(?!.*?-->.*?=)/u, false)) {
 					// T171074: handle trailing comments
 					stream.backUp(str.length);
-					state.tokenize = this.inStr('<!--', false, headerStyle);
+					state.tokenize = this.inStr('<!--', false, tokens.sectionHeader);
 				}
-				return makeLocalStyle(style, state);
+				return makeLocalStyle(tokens.section, state);
 			}
-			return this.eatWikiText(style)(stream, state);
+			return this.eatWikiText(tokens.section)(stream, state);
 		};
 	}
 
@@ -1997,6 +1995,7 @@ export class MediaWiki {
 					// reset bold and italic status in every new line
 					state.bold = false;
 					state.italic = false;
+					state.section = 0;
 					state.dt.n = 0;
 					state.dt.html = 0;
 					data.firstSingleLetterWord = null;
@@ -2085,12 +2084,6 @@ export class MediaWiki {
 				stream.string = data.oldToken.string;
 				Object.assign(state, data.oldToken.state);
 				return '';
-			},
-
-			blankLine(state): void {
-				if (state.extName && typeof state.extMode !== 'boolean' && state.extMode.blankLine) {
-					state.extMode.blankLine(state.extState as State, 0);
-				}
 			},
 
 			indent(state, textAfter, context): number | null {
