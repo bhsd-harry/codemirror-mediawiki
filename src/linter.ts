@@ -238,7 +238,7 @@ export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (
 	};
 	linter.fixer = (code, rule): string => esLinter.verifyAndFix(
 		code,
-		rule ? {...linter.config, rules: {[rule]: linter.config!.rules?.[rule] ?? 2}} : linter.config!,
+		rule ? {...linter.config, extends: [], rules: {[rule]: linter.config!.rules?.[rule] ?? 2}} : linter.config!,
 	).output;
 	return linter as asyncLinter<Linter.LintMessage[]>;
 };

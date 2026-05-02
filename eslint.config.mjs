@@ -92,28 +92,12 @@ export default extend(
 				mw: 'readonly',
 				OO: 'readonly',
 			},
-			parserOptions: {
-				project: './mw/tsconfig.json',
-			},
 		},
 	},
 	{
 		files: ['test/src/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './test/tsconfig.json',
-			},
-		},
 		rules: {
 			'@typescript-eslint/strict-void-return': 0,
-		},
-	},
-	{
-		files: ['bundle/*.ts'],
-		languageOptions: {
-			parserOptions: {
-				project: './bundle/tsconfig.json',
-			},
 		},
 	},
 );

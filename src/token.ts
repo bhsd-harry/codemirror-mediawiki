@@ -2114,12 +2114,6 @@ export class MediaWiki {
 				return '';
 			},
 
-			blankLine(state): void {
-				if (state.extName && typeof state.extMode !== 'boolean' && state.extMode.blankLine) {
-					state.extMode.blankLine(state.extState as State, 0);
-				}
-			},
-
 			indent(state, textAfter, context): number | null {
 				return state.extName && typeof state.extMode !== 'boolean' && state.extMode.indent
 					? state.extMode.indent(state.extState as object, textAfter, context)

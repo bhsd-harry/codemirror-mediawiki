@@ -10,6 +10,7 @@
 **Fixed**
 
 - Font size of level 1 and 2 section headers in the MediaWiki mode
+- Fix-all actions for ESLint diagnostics in the JavaScript, mixed MediaWiki-HTML and Vue modes
 
 ## 3.15.0
 
