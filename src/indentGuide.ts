@@ -1,6 +1,7 @@
 import {EditorView, layer, RectangleMarker} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {getIndentUnit} from '@codemirror/language';
+import {numLeadingSpaces} from '@bhsd/common';
 import {guideColor} from './constants.js';
 import type {Extension} from '@codemirror/state';
 
@@ -30,7 +31,7 @@ export default (): Extension => [
 				for (let line = doc.lineAt(from); line.from < to;) {
 					const {text, from: f, number} = line;
 					if (text.trim()) {
-						const width = (view.coordsAtPos(f + /^\s*/u.exec(text)![0].length)?.left ?? NaN)
+						const width = (view.coordsAtPos(f + numLeadingSpaces(text))?.left ?? NaN)
 							- (view.coordsAtPos(f)?.left ?? NaN)
 							|| 0;
 						if (blankLines.length > 0) {

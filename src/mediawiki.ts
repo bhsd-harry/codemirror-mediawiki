@@ -12,6 +12,7 @@ import {
 import {EditorView} from '@codemirror/view';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import elt from 'crelt';
+import {numLeadingSpaces} from '@bhsd/common';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
@@ -25,7 +26,6 @@ import {MediaWiki} from './token.js';
 import {
 	getCompletions,
 	getExtTags,
-	leadingSpaces,
 	findTemplateName,
 	getSubpageLevel,
 	useUnderscore,
@@ -252,12 +252,12 @@ export class FullMediaWiki extends MediaWiki {
 			offset = level && level - 1;
 		} else {
 			search = search.replaceAll('_', ' ');
-			offset = leadingSpaces(search).length;
+			offset = numLeadingSpaces(search);
 			search = search.slice(offset);
 			if (search.startsWith(':')) {
-				const [{length}] = /^:\s*/u.exec(search)!;
-				offset += length;
-				search = search.slice(length);
+				const i = numLeadingSpaces(search.slice(1)) + 1;
+				offset += i;
+				search = search.slice(i);
 				ns = 0;
 			}
 			if (!search) {
@@ -329,7 +329,7 @@ export class FullMediaWiki extends MediaWiki {
 			result = await paramSuggest?.(page);
 		return result?.length
 			? {
-				offset: leadingSpaces(search).length,
+				offset: numLeadingSpaces(search),
 				options: result.flatMap(([keys, detail, info, name]) => keys.map((key): Completion => ({
 					type: 'variable',
 					label: key + equal,

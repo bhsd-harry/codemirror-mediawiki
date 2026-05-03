@@ -1,4 +1,4 @@
-@import url("resize.css");
-@import url("preference.css");
-@import url("wikiEditor.css");
-@import url("monaco.css");
+@import "resize.css";
+@import "preference.css";
+@import "wikiEditor.css";
+@import "monaco.css";

@@ -36,7 +36,7 @@ import {
 	linkSelector,
 	guideColor,
 } from './constants.js';
-import {getHighlightExtension} from './util.js';
+import {getHighlightExtension, leadingSpaces} from './util.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -94,7 +94,7 @@ const insertNewlineKeepIndent: StateCommand = ({state, dispatch}) => {
 	dispatch(state.update(
 		state.changeByRange(({from, to}) => {
 			const {text, from: f} = state.doc.lineAt(from),
-				[indent] = /^\s*/u.exec(text.slice(0, from - f))!;
+				indent = leadingSpaces(text.slice(0, from - f));
 			return {
 				changes: {from, to, insert: state.lineBreak + indent},
 				range: EditorSelection.cursor(from + indent.length + 1),
