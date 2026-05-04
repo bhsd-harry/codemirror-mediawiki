@@ -32,34 +32,7 @@ class InlayHintWidget extends WidgetType {
 	}
 }
 
-const stateEffect = StateEffect.define<InlayHintEffect>(),
-	field = StateField.define<DecorationSet>({
-		create() {
-			return Decoration.none;
-		},
-		update(deco, {state: {doc}, effects}) {
-			const str = doc.toString();
-			for (const effect of effects) {
-				if (effect.is(stateEffect)) {
-					const {text, inlayHints} = effect.value;
-					if (str === text) {
-						return inlayHints
-							? Decoration.set(
-								inlayHints.map(({position, label}) => Decoration.widget({
-									widget: new InlayHintWidget(label as string),
-								}).range(posToIndex(doc, position))),
-								true,
-							)
-							: Decoration.none;
-					}
-				}
-			}
-			return deco;
-		},
-		provide(f) {
-			return EditorView.decorations.from(f);
-		},
-	});
+const stateEffect = StateEffect.define<InlayHintEffect>();
 
 const update = async ({view, docChanged}: Pick<ViewUpdate, 'view' | 'docChanged'>): Promise<void> => {
 	if (docChanged) {
@@ -79,7 +52,33 @@ export default (
 	cm: CodeMirror6,
 ): Extension => {
 	return [
-		field,
+		StateField.define<DecorationSet>({
+			create() {
+				return Decoration.none;
+			},
+			update(deco, {state: {doc}, effects}) {
+				const str = doc.toString();
+				for (const effect of effects) {
+					if (effect.is(stateEffect)) {
+						const {text, inlayHints} = effect.value;
+						if (str === text) {
+							return inlayHints
+								? Decoration.set(
+									inlayHints.map(({position, label}) => Decoration.widget({
+										widget: new InlayHintWidget(label as string),
+									}).range(posToIndex(doc, position))),
+									true,
+								)
+								: Decoration.none;
+						}
+					}
+				}
+				return deco;
+			},
+			provide(f) {
+				return EditorView.decorations.from(f);
+			},
+		}),
 		ViewPlugin.define(view => {
 			const timer = setInterval(() => {
 				if (

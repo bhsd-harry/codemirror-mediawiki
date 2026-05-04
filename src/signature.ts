@@ -45,6 +45,22 @@ const signatureEffect = StateEffect.define<SignatureEffect>(),
 			}
 			return oldValue;
 		},
+		provide(f) {
+			return showTooltip.from(f, (value): Tooltip | null => {
+				if (!value) {
+					return null;
+				}
+				const {cursor, signatureHelp} = value;
+				return signatureHelp?.signatures.length
+					? {
+						pos: cursor,
+						create(view): TooltipView {
+							return createTooltipView(view, getSignatureHelp(signatureHelp));
+						},
+					}
+					: null;
+			});
+		},
 	});
 
 /**
@@ -133,20 +149,6 @@ export default (
 					dispatchSignatureEffect(view, {text: doc.toString(), cursor: head});
 				}
 			},
-		}),
-		showTooltip.from(signatureField, (value): Tooltip | null => {
-			if (!value) {
-				return null;
-			}
-			const {cursor, signatureHelp} = value;
-			return signatureHelp?.signatures.length
-				? {
-					pos: cursor,
-					create(view): TooltipView {
-						return createTooltipView(view, getSignatureHelp(signatureHelp));
-					},
-				}
-				: null;
 		}),
 	];
 };
