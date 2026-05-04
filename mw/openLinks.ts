@@ -31,7 +31,7 @@ export const getTitleParser = (
 		}
 		page = page.trim();
 		if (name.includes(tokens.fileText) && re.test(page)) {
-			return page;
+			return {page};
 		}
 		const isTemplateStyles = name.includes(tokens.extTagAttributeValue);
 		if (!isTemplateStyles) {
@@ -62,6 +62,6 @@ export const getTitleParser = (
 		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
 			page += sliceDoc(state, nextSibling).trim();
 		}
-		return mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined);
+		return {page: mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined)};
 	};
 };

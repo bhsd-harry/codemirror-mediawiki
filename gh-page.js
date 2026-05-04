@@ -79,20 +79,23 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
   for (const extension of extensions) {
     extension.checked = search.has(extension.id);
   }
-  const mediawikiOnly = ["escape", "refHover", "hover", "signatureHelp", "inlayHints", "openLinks"], nonMediawiki = ["indentGuide", "col"], cssOnly = ["colorPicker"], cssLangs = /* @__PURE__ */ new Set(["css", "vue", "html"]), cm = new CodeMirror6(textarea), linters = {};
+  const mediawikiOnly = ["escape", "refHover", "hover", "signatureHelp", "inlayHints", "openLinks"], nonMediawiki = ["indentGuide", "col"], htmlOnly = ["closeTags"], htmlLangs = /* @__PURE__ */ new Set(["mediawiki", "html", "vue"]), cssOnly = ["colorPicker"], cssLangs = /* @__PURE__ */ new Set([...htmlLangs, "css"]), cm = new CodeMirror6(textarea), linters = {};
   let config, mwConfig, fetchConfig;
   const getLayoutStyle = (id) => document.getElementById(id).closest(".fieldLayout").style;
   const init = async (lang) => {
-    const isMediaWiki = lang === "mediawiki", display = isMediaWiki ? "" : "none", revertDisplay = isMediaWiki ? "none" : "", cssDisplay = isMediaWiki || cssLangs.has(lang) ? "" : "none";
+    const isMediaWiki = lang === "mediawiki", display = isMediaWiki ? "" : "none", revertDisplay = isMediaWiki ? "none" : "", cssDisplay = cssLangs.has(lang) ? "" : "none", htmlDisplay = htmlLangs.has(lang) ? "" : "none";
     let parserConfig;
     for (const id of mediawikiOnly) {
-      getLayoutStyle(id).display = id === "hover" || lang === "abusefilter" ? "" : display;
+      getLayoutStyle(id).display = id === "hover" && lang === "abusefilter" ? "" : display;
     }
     for (const id of nonMediawiki) {
       getLayoutStyle(id).display = revertDisplay;
     }
     for (const id of cssOnly) {
       getLayoutStyle(id).display = cssDisplay;
+    }
+    for (const id of htmlOnly) {
+      getLayoutStyle(id).display = htmlDisplay;
     }
     if (isMediaWiki || lang === "html") {
       fetchConfig != null ? fetchConfig : fetchConfig = (async () => (await fetch("/wikiparser-node/config/default.json")).json())();

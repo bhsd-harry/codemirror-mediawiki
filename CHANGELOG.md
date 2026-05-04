@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.16.0
 
-*2026-05-02*
+*2026-05-05*
 
 **Added**
 
@@ -11,6 +11,7 @@
 
 - Font size of level 1 and 2 section headers in the MediaWiki mode
 - Fix-all actions for ESLint diagnostics in the JavaScript, mixed MediaWiki-HTML and Vue modes
+- Styles for the [openLinks](./README.md#openlinks) extension when the [highlightWhitespace](./README.md#highlightwhitespace) extension is also enabled
 
 ## 3.15.0
 

@@ -287,12 +287,17 @@ export class CodeMirror extends CodeMirror6 {
 			mw.loader.load('mediawiki.Title');
 			this.langConfig = {
 				...config,
-				titleParser(state, node): string | undefined {
+				titleParser(state, node): {page: string | undefined, range: [number, number]} | undefined {
 					const offset = getStringOffset(state, node);
-					return offset
-						? mw.Title.newFromText(sliceDoc(state, {from: node.from + offset, to: node.to - offset}))
-							?.getUrl(undefined)
-						: undefined;
+					if (!offset) {
+						return undefined;
+					}
+					const from = node.from + offset,
+						to = node.to - offset;
+					return {
+						page: mw.Title.newFromText(sliceDoc(state, {from, to}))?.getUrl(undefined),
+						range: [from, to],
+					};
 				},
 			};
 		}

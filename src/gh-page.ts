@@ -52,8 +52,10 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 
 	const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'],
 		nonMediawiki = ['indentGuide', 'col'],
+		htmlOnly = ['closeTags'],
+		htmlLangs = new Set(['mediawiki', 'html', 'vue']),
 		cssOnly = ['colorPicker'],
-		cssLangs = new Set(['css', 'vue', 'html']),
+		cssLangs = new Set([...htmlLangs, 'css']),
 		cm = new CodeMirror6(textarea),
 		linters: Record<string, LintSource | undefined> = {};
 	let config: MwConfig | Dialect | undefined,
@@ -75,16 +77,20 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		const isMediaWiki = lang === 'mediawiki',
 			display = isMediaWiki ? '' : 'none',
 			revertDisplay = isMediaWiki ? 'none' : '',
-			cssDisplay = isMediaWiki || cssLangs.has(lang) ? '' : 'none';
+			cssDisplay = cssLangs.has(lang) ? '' : 'none',
+			htmlDisplay = htmlLangs.has(lang) ? '' : 'none';
 		let parserConfig: ConfigData | undefined;
 		for (const id of mediawikiOnly) {
-			getLayoutStyle(id).display = id === 'hover' || lang === 'abusefilter' ? '' : display;
+			getLayoutStyle(id).display = id === 'hover' && lang === 'abusefilter' ? '' : display;
 		}
 		for (const id of nonMediawiki) {
 			getLayoutStyle(id).display = revertDisplay;
 		}
 		for (const id of cssOnly) {
 			getLayoutStyle(id).display = cssDisplay;
+		}
+		for (const id of htmlOnly) {
+			getLayoutStyle(id).display = htmlDisplay;
 		}
 		if (isMediaWiki || lang === 'html') {
 			fetchConfig ??= (async () => (await fetch('/wikiparser-node/config/default.json')).json())();

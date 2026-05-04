@@ -1,4 +1,5 @@
-import {EditorView} from '@codemirror/view';
+import {EditorView, Decoration} from '@codemirror/view';
+import {StateEffect, StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
 import {
@@ -6,15 +7,23 @@ import {
 	linkSelector,
 	mwPrefix,
 } from './constants.js';
-import type {Extension} from '@codemirror/state';
-import type {DOMEventHandlers} from '@codemirror/view';
+import type {Extension, EditorState} from '@codemirror/state';
+import type {DOMEventHandlers, DecorationSet} from '@codemirror/view';
 import type {CodeMirror6} from './codemirror';
 import type {MwConfig} from './token';
 
 declare type ISBNParser = (link: string) => string;
 
-const modKey = isMac ? 'metaKey' : 'ctrlKey';
-const key = isMac ? 'Meta' : 'Control',
+declare interface ActiveRangeSet extends DecorationSet {
+	activeRange?: readonly [number, number];
+}
+declare interface Pos {
+	pos: number;
+	assoc: 1 | -1;
+}
+
+const modKey = isMac ? 'metaKey' : 'ctrlKey',
+	key = isMac ? 'Meta' : 'Control',
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	pagename = `.${mwPrefix}pagename`,
 	wikiLinks = /* @__PURE__ */ (() => [
@@ -24,10 +33,16 @@ const key = isMac ? 'Meta' : 'Control',
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
 	])(),
-	openLinksCls = 'cm-open-links';
+	openLinksCls = 'cm-open-links',
+	activeLinkCls = 'cm-active-link',
+	activeLink = Decoration.mark({class: activeLinkCls}),
+	openLinksEffect = StateEffect.define<Pos | null>();
 
-const toggleOpenLinks = ({dom}: EditorView, toggle = false): void => {
-	dom.classList.toggle(openLinksCls, toggle);
+const toggleOpenLinks = (view: EditorView, toggle = false): void => {
+	view.dom.classList.toggle(openLinksCls, toggle);
+	if (!toggle) {
+		view.dispatch({effects: openLinksEffect.of(null)});
+	}
 };
 
 const wrapURL = (url: string): string => url.startsWith('//') ? location.protocol + url : url;
@@ -60,19 +75,28 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
  * @ignore
  * @test
  */
-export const mouseEventListener = (
-	e: MouseEvent,
-	view: EditorView,
+export function getLink(
+	state: EditorState,
+	{pos, assoc}: Pos,
+	str: false,
 	isbnParser?: ISBNParser,
 	titleParser?: MwConfig['titleParser'],
-): string | undefined => {
-	const posAndSide = view.posAndSideAtCoords(e);
-	if (!posAndSide) {
-		return undefined;
-	}
-	const {pos, assoc} = posAndSide,
-		{state} = view,
-		tree = ensureSyntaxTree(state, pos);
+): readonly [number, number] | undefined;
+export function getLink(
+	state: EditorState,
+	{pos, assoc}: Pos,
+	str: true,
+	isbnParser?: ISBNParser,
+	titleParser?: MwConfig['titleParser'],
+): string | undefined;
+export function getLink(
+	state: EditorState,
+	{pos, assoc}: Pos,
+	str: boolean,
+	isbnParser?: ISBNParser,
+	titleParser?: MwConfig['titleParser'],
+): readonly [number, number] | string | undefined {
+	const tree = ensureSyntaxTree(state, pos);
 	if (!tree) {
 		return undefined;
 	}
@@ -82,10 +106,15 @@ export const mouseEventListener = (
 	}
 	const {name, from, to} = node;
 	if (name.includes('-extlink-protocol')) {
-		return wrapURL(state.sliceDoc(from, node.nextSibling!.to));
+		const range = [from, node.nextSibling!.to] as const;
+		return str ? wrapURL(state.sliceDoc(...range)) : range;
 	} else if (/-extlink(?:_|$)/u.test(name)) {
-		return wrapURL(state.sliceDoc(node.prevSibling!.from, to));
+		const range = [node.prevSibling!.from, to] as const;
+		return str ? wrapURL(state.sliceDoc(...range)) : range;
 	} else if (name.includes(tokens.magicLink)) {
+		if (!str) {
+			return [from, to];
+		}
 		const link = state.sliceDoc(from, to);
 		if (link.startsWith('RFC')) {
 			return `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`;
@@ -94,10 +123,10 @@ export const mouseEventListener = (
 		}
 		return isbnParser?.(link);
 	} else if (name.includes(tokens.pageName) && typeof titleParser === 'function') {
-		return titleParser(state, node);
+		return str ? titleParser(state, node)?.page : [from, to];
 	}
 	return undefined;
-};
+}
 
 const eventHandlers: DOMEventHandlers<unknown> = {
 	keydown(e, view) {
@@ -112,29 +141,77 @@ const eventHandlers: DOMEventHandlers<unknown> = {
 	},
 	mousemove(e, view) {
 		toggleOpenLinks(view, e[modKey]);
+		if (!notOpenableLink(e)) {
+			view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
+		}
 	},
 };
 
-const getOpenLinksTheme = (selectors: string[], extra?: string): Extension => {
-	const color = 'var(--cm-active)';
+const getOpenLinksTheme = (
+	selectors: string[],
+): Extension => {
+	const selector = selectors.map(sel => `& ${sel}`).join();
 	return EditorView.theme({
 		[`&.${openLinksCls}`]: {
-			[selectors.map(selector => `& ${selector}:hover`).join()]: {
+			[selector]: {
 				cursor: 'pointer',
-				color,
 			},
-			...extra && {
-				[`& ${extra}`]: {
-					color,
-				},
+		},
+		[`.${activeLinkCls}`]: {
+			[selector]: {
+				color: 'var(--cm-active)',
 			},
 		},
 	});
 };
 
 const notOpenableLink = (e: MouseEvent): boolean => e.button !== 0
-	|| !e[modKey]
-	|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline');
+	|| !(e.target instanceof Element && getComputedStyle(e.target).textDecorationLine === 'underline')
+	|| !e[modKey];
+
+export const getOpenLinksField = (
+	findActiveRange: (state: EditorState, posAndSide: Pos) => readonly [number, number] | undefined,
+): Extension => StateField.define<ActiveRangeSet>({
+	create() {
+		return Decoration.none;
+	},
+	update(deco, {effects, state, docChanged}) {
+		if (docChanged) {
+			return Decoration.none;
+		}
+		for (const effect of effects) {
+			if (effect.is(openLinksEffect)) {
+				const {value} = effect;
+				if (!value) {
+					return Decoration.none;
+				}
+				const {pos, assoc} = value,
+					{activeRange} = deco;
+				if (
+					activeRange
+					&& (activeRange[0] < pos || activeRange[0] === pos && assoc === 1)
+					&& (activeRange[1] > pos || activeRange[1] === pos && assoc === -1)
+				) {
+					return deco;
+				}
+				const range = findActiveRange(state, value);
+				if (range) {
+					const set: ActiveRangeSet = Decoration.set(activeLink.range(...range));
+					set.activeRange = range;
+					return set;
+				}
+				return Decoration.none;
+			}
+		}
+		return deco;
+	},
+	compare(a, b) {
+		return a.activeRange?.[0] === b.activeRange?.[0] && a.activeRange?.[1] === b.activeRange?.[1];
+	},
+	provide(f) {
+		return EditorView.decorations.from(f);
+	},
+});
 
 export const openLinks = (
 	articlePath?: string,
@@ -142,20 +219,35 @@ export const openLinks = (
 	{langConfig}: CodeMirror6,
 ): Extension => {
 	const isbnParser = getISBNParser(
-		articlePath || langConfig?.articlePath,
-	);
+			articlePath || langConfig?.articlePath,
+		),
+		titleParser = langConfig?.titleParser;
 	return [
+		getOpenLinksField(
+			(state, posAndSide) => getLink(
+				state,
+				posAndSide,
+				false,
+				isbnParser,
+				titleParser,
+			),
+		),
 		EditorView.domEventHandlers({
 			...eventHandlers,
 			mousedown(e, view) {
 				if (notOpenableLink(e)) {
 					return undefined;
 				}
-				const url = mouseEventListener(
-					e,
-					view,
+				const posAndSide = view.posAndSideAtCoords(e);
+				if (!posAndSide) {
+					return undefined;
+				}
+				const url = getLink(
+					view.state,
+					posAndSide,
+					true,
 					isbnParser,
-					langConfig?.titleParser,
+					titleParser,
 				);
 				return openInNewTab(url);
 			},
@@ -166,22 +258,42 @@ export const openLinks = (
 				...langConfig?.titleParser ? wikiLinks : [],
 			]
 				.map(type => `.${mwPrefix}${type}`),
-			`:is(${
-				['', 'free-'].flatMap(s => {
-					const extlink = `.${mwPrefix}${s}extlink`,
-						protocol = `${extlink}-protocol`;
-					return [
-						`${protocol}:hover+${extlink}`,
-						`${protocol}:has(+${extlink}:hover)`,
-					];
-				}).join()
-			})`,
 		),
 	];
 };
 
+function getLinkForLua(
+	state: EditorState,
+	pos: number,
+	titleParser: MwConfig['titleParser'],
+): [number, number] | undefined;
+function getLinkForLua(
+	state: EditorState,
+	pos: number,
+	titleParser: MwConfig['titleParser'],
+	str: true,
+): boolean | undefined;
+function getLinkForLua(
+	state: EditorState,
+	pos: number,
+	titleParser: MwConfig['titleParser'],
+	str?: true,
+): [number, number] | boolean | undefined {
+	const tree = ensureSyntaxTree(state, pos);
+	if (!tree) {
+		return undefined;
+	}
+	const node = tree.resolve(pos, 0);
+	if (node.name === 'string') {
+		const title = titleParser!(state, node);
+		return str ? openInNewTab(title?.page) : title?.range;
+	}
+	return undefined;
+}
+
 export const openLinksForLua = ({langConfig}: CodeMirror6): Extension => langConfig?.titleParser
 	? [
+		getOpenLinksField((state, {pos}) => getLinkForLua(state, pos, langConfig.titleParser)),
 		EditorView.domEventHandlers({
 			...eventHandlers,
 			mousedown(e, view) {
@@ -192,16 +304,7 @@ export const openLinksForLua = ({langConfig}: CodeMirror6): Extension => langCon
 				if (!pos) {
 					return undefined;
 				}
-				const {state} = view,
-					tree = ensureSyntaxTree(state, pos);
-				if (!tree) {
-					return undefined;
-				}
-				const node = tree.resolve(pos, 0);
-				if (node.name === 'string') {
-					return openInNewTab(langConfig.titleParser!(state, node));
-				}
-				return undefined;
+				return pos ? getLinkForLua(view.state, pos, langConfig.titleParser, true) : undefined;
 			},
 		}),
 		getOpenLinksTheme([`${linkSelector}>span`]),

@@ -93,7 +93,10 @@ export interface MwConfig extends MwConfigBase {
 	linkSuggest?: ApiSuggest<LinkSuggestion>;
 	paramSuggest?: ApiSuggest;
 	/* eslint-disable @typescript-eslint/method-signature-style */
-	titleParser?: (state: EditorState, node: SyntaxNode) => string | undefined;
+	titleParser?: (state: EditorState, node: SyntaxNode) => {
+		page: string | undefined;
+		range?: [number, number];
+	} | undefined;
 	templateSignature?: (templateName: string | null, parameterName: string) => string | undefined;
 	/* eslint-enable @typescript-eslint/method-signature-style */
 }

@@ -2,7 +2,6 @@ import {EventEmitter} from 'events';
 import * as assert from 'assert';
 import {mouseEventListener, getISBNParser} from '../../dist/openLinks.js';
 import {createState} from './util.js';
-import type {EditorView} from '@codemirror/view';
 
 Object.assign(globalThis, {
 	Element: EventEmitter,
@@ -14,17 +13,12 @@ Object.assign(globalThis, {
 
 const element = new Element();
 
-const mockTest = (doc: string, pos: number, assoc: 1 | -1, result?: string): void => {
+const mockTest = (doc: string, pos: number, assoc: 1 | -1, result?: string, range?: [number, number]): void => {
 	const e = Object.assign(new Event('click')),
-		state = createState(doc),
-		view = {
-			state,
-			posAndSideAtCoords() {
-				return {pos, assoc};
-			},
-		} as Partial<EditorView> as EditorView;
+		state = createState(doc);
 	Object.defineProperty(e, 'target', {value: element});
-	assert.strictEqual(mouseEventListener(e as MouseEvent, view, undefined), result);
+	assert.strictEqual(mouseEventListener(state, {pos, assoc}, true), result);
+	assert.deepStrictEqual(mouseEventListener(state, {pos, assoc}, false), range);
 };
 
 describe('ISBN parser', () => {
@@ -46,34 +40,34 @@ describe('ISBN parser', () => {
 
 describe('openLinks', () => {
 	it('extlink-protocol', () => {
-		mockTest('[news:a]', 1, 1, 'news:a');
+		mockTest('[news:a]', 1, 1, 'news:a', [1, 7]);
 		mockTest('[news:a]', 1, -1);
-		mockTest('[news:a]', 6, -1, 'news:a');
-		mockTest('[git://b b]', 1, 1, 'git://b');
+		mockTest('[news:a]', 6, -1, 'news:a', [1, 7]);
+		mockTest('[git://b b]', 1, 1, 'git://b', [1, 8]);
 		mockTest('[git://b b]', 1, -1);
-		mockTest('[git://b b]', 7, -1, 'git://b');
-		mockTest('[//c]', 1, 1, 'https://c');
+		mockTest('[git://b b]', 7, -1, 'git://b', [1, 8]);
+		mockTest('[//c]', 1, 1, 'https://c', [1, 4]);
 		mockTest('[//c]', 1, -1);
-		mockTest('[//c]', 3, -1, 'https://c');
+		mockTest('[//c]', 3, -1, 'https://c', [1, 4]);
 	});
 	it('extlink', () => {
-		mockTest('[git://b b]', 8, -1, 'git://b');
+		mockTest('[git://b b]', 8, -1, 'git://b', [1, 8]);
 		mockTest('[git://b b]', 8, 1);
-		mockTest('[git://b b]', 7, 1, 'git://b');
-		mockTest('[//c]', 4, -1, 'https://c');
+		mockTest('[git://b b]', 7, 1, 'git://b', [1, 8]);
+		mockTest('[//c]', 4, -1, 'https://c', [1, 4]);
 		mockTest('[//c]', 4, 1);
-		mockTest('[//c]', 3, 1, 'https://c');
+		mockTest('[//c]', 3, 1, 'https://c', [1, 4]);
 	});
 	it('RFC', () => {
-		mockTest('RFC 1', 0, 1, 'https://datatracker.ietf.org/doc/html/rfc1');
+		mockTest('RFC 1', 0, 1, 'https://datatracker.ietf.org/doc/html/rfc1', [0, 5]);
 		mockTest('RFC 1', 0, -1);
-		mockTest('RFC 1', 5, -1, 'https://datatracker.ietf.org/doc/html/rfc1');
+		mockTest('RFC 1', 5, -1, 'https://datatracker.ietf.org/doc/html/rfc1', [0, 5]);
 		mockTest('RFC 1', 5, 1);
 	});
 	it('PMID', () => {
-		mockTest('PMID 2', 0, 1, 'https://pubmed.ncbi.nlm.nih.gov/2');
+		mockTest('PMID 2', 0, 1, 'https://pubmed.ncbi.nlm.nih.gov/2', [0, 6]);
 		mockTest('PMID 2', 0, -1);
-		mockTest('PMID 2', 6, -1, 'https://pubmed.ncbi.nlm.nih.gov/2');
+		mockTest('PMID 2', 6, -1, 'https://pubmed.ncbi.nlm.nih.gov/2', [0, 6]);
 		mockTest('PMID 2', 6, 1);
 	});
 });
