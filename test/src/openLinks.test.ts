@@ -1,6 +1,6 @@
 import {EventEmitter} from 'events';
 import * as assert from 'assert';
-import {mouseEventListener, getISBNParser} from '../../dist/openLinks.js';
+import {getLinkParser, getISBNParser} from '../../dist/openLinks.js';
 import {createState} from './util.js';
 
 Object.assign(globalThis, {
@@ -17,8 +17,9 @@ const mockTest = (doc: string, pos: number, assoc: 1 | -1, result?: string, rang
 	const e = Object.assign(new Event('click')),
 		state = createState(doc);
 	Object.defineProperty(e, 'target', {value: element});
-	assert.strictEqual(mouseEventListener(state, {pos, assoc}, true), result);
-	assert.deepStrictEqual(mouseEventListener(state, {pos, assoc}, false), range);
+	const linkParser = getLinkParser();
+	assert.strictEqual(linkParser(state, {pos, assoc}, true), result);
+	assert.deepStrictEqual(linkParser(state, {pos, assoc}), range);
 };
 
 describe('ISBN parser', () => {
