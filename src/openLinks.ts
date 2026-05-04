@@ -140,8 +140,9 @@ const eventHandlers: DOMEventHandlers<unknown> = {
 		}
 	},
 	mousemove(e, view) {
-		toggleOpenLinks(view, e[modKey]);
-		if (!notOpenableLink(e)) {
+		const toggle = e[modKey];
+		toggleOpenLinks(view, toggle);
+		if (toggle) {
 			view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
 		}
 	},
