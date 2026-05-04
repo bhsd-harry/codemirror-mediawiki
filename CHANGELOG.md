@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.6.0
+
+*2026-05-05*
+
+**Added**
+
+- The [openLinks](./README.md#openlinks) extension now modifies the cursor to indicate when hovering over an openable link
+
 ## 0.5.0
 
 *2026-04-30*
