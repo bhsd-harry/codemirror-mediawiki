@@ -7,7 +7,7 @@ import {
 	isMac,
 } from './constants.js';
 import type {Extension, EditorState} from '@codemirror/state';
-import type {DOMEventHandlers, DecorationSet} from '@codemirror/view';
+import type {DecorationSet} from '@codemirror/view';
 import type {ConfigData} from 'wikiparser-node';
 
 declare type ISBNParser = (link: string) => string;
@@ -109,8 +109,9 @@ const eventHandlers: DOMEventHandlers<unknown> = {
 		}
 	},
 	mousemove(e, view) {
-		toggleOpenLinks(view, e[modKey]);
-		if (!notOpenableLink(e)) {
+		const toggle = e[modKey];
+		toggleOpenLinks(view, toggle);
+		if (toggle) {
 			view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
 		}
 	},
