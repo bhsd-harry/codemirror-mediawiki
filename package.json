@@ -57,7 +57,7 @@
 		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^1.1.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
-		"@bhsd/common": "^2.2.0",
+		"@bhsd/common": "^2.2.1",
 		"@bhsd/eslint-browserify": "^10.3.0",
 		"@bhsd/lezer-abusefilter": "^0.3.1",
 		"@bhsd/stylelint-util": "^1.0.2",
