@@ -20,7 +20,7 @@ export const keybindings = [
 	{key: 'Mod-Shift-k', pre: '<ref>', post: '</ref>', desc: 'ref'},
 	{key: 'Mod-/', pre: '<!-- ', post: ' -->', desc: 'comment'},
 	{key: 'Ctrl-0', splitlines: true, desc: 'heading 0'},
-	...new Array(6).fill(0).map((_, i): KeymapConfig => ({
+	...Array.from({length: 6}, (_, i): KeymapConfig => ({
 		key: `Ctrl-${i + 1}`,
 		pre: `${'='.repeat(i + 1)} `,
 		post: ` ${'='.repeat(i + 1)}`,

@@ -46,7 +46,7 @@ const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string 
 export const getISBNParser = (articlePath?: string): ISBNParser | undefined => articlePath
 	? (link: string): string => {
 		const page = `Special:Booksources/${
-			link.slice(4).replace(/[\p{Zs}\t-]/gu, '')
+			link.slice(4).replaceAll(/[\p{Zs}\t-]/gu, '')
 				.replace(/x$/u, 'X')
 		}`;
 		return articlePath.includes('$1')

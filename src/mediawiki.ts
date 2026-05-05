@@ -25,7 +25,11 @@ import type {
 	StreamParser,
 	Language,
 } from '@codemirror/language';
-import type {CompletionSource, Completion, CompletionResult} from '@codemirror/autocomplete';
+import type {
+	CompletionSource,
+	Completion,
+	CompletionResult,
+} from '@codemirror/autocomplete';
 import type {
 	MwConfig,
 } from './token';
@@ -44,15 +48,29 @@ export const hasTag = (types: Set<string> | string, names: TagName | TagName[]):
 };
 
 export class FullMediaWiki extends MediaWiki {
-	declare readonly functionSynonyms;
-	declare readonly doubleUnderscore;
 	declare readonly extTags;
 	declare readonly htmlTags;
 	declare readonly protocols;
 	declare readonly imgKeys;
-	declare readonly htmlAttrs;
-	declare readonly elementAttrs;
-	declare readonly extAttrs;
+
+	readonly htmlAttrs = [
+		...getCompletions([...commonHtmlAttrs], 'property'),
+		{type: 'variable', label: 'data-', detail: '*'},
+		{type: 'namespace', label: 'xmlns:', detail: '*'},
+	];
+
+	readonly elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
+		key,
+		getCompletions([...value], 'property'),
+	]));
+
+	readonly extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
+		key,
+		getCompletions([...value], 'property'),
+	]));
+
+	#doubleUnderscore;
+	#functionSynonyms;
 
 	constructor(
 		config: MwConfig,
@@ -63,14 +81,6 @@ export class FullMediaWiki extends MediaWiki {
 			functionSynonyms,
 			doubleUnderscore,
 		} = config;
-		this.functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
-			type: i ? 'constant' : 'function',
-			label,
-		})));
-		this.doubleUnderscore = getCompletions(
-			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
-			'constant',
-		);
 		this.extTags = getCompletions(this.tags, 'type');
 		this.htmlTags = getCompletions(htmlTags.filter(tag => !this.tags.includes(tag)), 'type');
 		this.protocols = urlProtocols.split('|').map((label): Completion => ({
@@ -80,19 +90,14 @@ export class FullMediaWiki extends MediaWiki {
 		this.imgKeys = this.img.map((label): Completion => label.endsWith('$1')
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
-		this.htmlAttrs = [
-			...getCompletions([...commonHtmlAttrs], 'property'),
-			{type: 'variable', label: 'data-', detail: '*'},
-			{type: 'namespace', label: 'xmlns:', detail: '*'},
-		];
-		this.elementAttrs = new Map(Object.entries(htmlAttrs).map(([key, value]) => [
-			key,
-			getCompletions([...value], 'property'),
-		]));
-		this.extAttrs = new Map(Object.entries(extAttrs).map(([key, value]) => [
-			key,
-			getCompletions([...value], 'property'),
-		]));
+		this.#doubleUnderscore = getCompletions(
+			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
+			'constant',
+		);
+		this.#functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({
+			type: i ? 'constant' : 'function',
+			label,
+		})));
 	}
 
 	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -101,9 +106,18 @@ export class FullMediaWiki extends MediaWiki {
 		return parser;
 	}
 
+	get doubleUnderscore(): Completion[] {
+		return this.#doubleUnderscore;
+	}
+
+	get functionSynonyms(): Completion[] {
+		return this.#functionSynonyms;
+	}
+
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		return (context): CompletionResult | null => {
+		// eslint-disable-next-line @typescript-eslint/require-await
+		return async (context): Promise<CompletionResult | null> => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolveInner(pos, -1),
 				{
@@ -220,7 +234,7 @@ export class FullMediaWiki extends MediaWiki {
 					const mt2 = context
 							.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 						target = /^<([a-z\d]+)/iu.exec(mt2?.text ?? '')?.[1]!.toLowerCase(),
-						extTag = extTags[extTags.length - 1],
+						extTag = extTags.at(-1),
 						closed = /^\s*>/u.test(state.sliceDoc(pos)),
 						options = [
 							...this.htmlTags.filter(({label}) => !this.voidHtmlTags.has(label)),

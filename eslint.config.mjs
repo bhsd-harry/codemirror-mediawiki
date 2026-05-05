@@ -27,6 +27,7 @@ export default extend(
 			],
 			'jsdoc/require-jsdoc': 0,
 			'jsdoc/require-param-description': 0,
+			'unicorn/prefer-regexp-test': 0,
 		},
 	},
 	{

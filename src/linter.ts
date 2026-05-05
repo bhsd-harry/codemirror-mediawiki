@@ -69,7 +69,7 @@ export const getPrefix = ({type, tag}: AST, i: number): string =>
  */
 export const indexToPos = (code: string, index: number): Position => {
 	const lines = code.slice(0, index).split('\n');
-	return {line: lines.length - 1, character: lines[lines.length - 1]!.length};
+	return {line: lines.length - 1, character: lines.at(-1)!.length};
 };
 
 /**
@@ -167,7 +167,10 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (c
 	const linter: asyncLinter<
 		Promise<Warning[]>
 	> = async code => {
-		const warnings = await styleLint(stylelint, code);
+		const warnings = await styleLint(
+			stylelint,
+			code,
+		);
 		return warnings;
 	};
 	return linter;

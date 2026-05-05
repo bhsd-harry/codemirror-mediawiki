@@ -7,7 +7,6 @@ import {
 import {LanguageSupport} from '@codemirror/language';
 import {linter} from '@codemirror/lint';
 import elt from 'crelt';
-import bidiIsolates from './bidi.js';
 import closeTags from './closeTags.js';
 import mediawikiColorPicker from './color.js';
 import {
@@ -41,6 +40,8 @@ import type {
 } from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {ConfigData, LintConfig as LintConfigBase} from 'wikiparser-node';
+
+export {default as bidiIsolates} from './bidi.js';
 
 declare type LintConfig = Extract<LintConfigBase, {h1?: unknown}>
 	| Extract<LintConfigBase, {rules: unknown}> & {statusBar?: boolean};
@@ -160,6 +161,5 @@ export {
 	mediawikiColorPicker as colorPicker,
 	codeFolding,
 	openLinks,
-	bidiIsolates,
 	closeTags,
 };

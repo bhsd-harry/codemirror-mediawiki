@@ -11,9 +11,7 @@ import type {
 	Range,
 } from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
-import type {
-	Completion,
-} from '@codemirror/autocomplete';
+import type {Completion} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
@@ -40,7 +38,7 @@ export const updateCDN = (cdn?: string): void => {
  * 转义HTML字符串
  * @param text 原字符串
  */
-export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => dict[ch]!);
+export const escHTML = (text: string): string => text.replaceAll(/[\n<&]/gu, ch => dict[ch]!);
 
 /**
  * 将索引转换为位置

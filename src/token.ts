@@ -70,20 +70,21 @@ export interface MwConfig extends MwConfigBase {
 }
 
 class MediaWikiData {
-	/** 已解析的节点 */
-	declare readonly readyTokens: Token[];
-
-	/** 当前起始位置 */
-	declare oldToken: Token | null;
-
-	/** 可能需要回滚的`'''` */
-	declare mark: number | null;
-
-	declare firstSingleLetterWord: number | null;
-	declare firstMultiLetterWord: number | null;
-	declare firstSpace: number | null;
 	declare readonly tags;
 	declare readonly urlProtocols;
+
+	/** 已解析的节点 */
+	readonly readyTokens: Token[] = [];
+
+	/** 当前起始位置 */
+	oldToken: Token | null = null;
+
+	/** 可能需要回滚的`'''` */
+	mark: number | null = null;
+
+	firstSingleLetterWord: number | null = null;
+	firstMultiLetterWord: number | null = null;
+	firstSpace: number | null = null;
 
 	constructor(tags: string[], urlProtocols: string) {
 		this.tags = tags.includes('translate') ? tags.filter(tag => tag !== 'tvar') : tags;
@@ -91,12 +92,6 @@ class MediaWikiData {
 			String.raw`^(${this.tags.includes('tvar') ? '<tvar name=[^>]+>' : ''})?${urlProtocols}`,
 			'iu',
 		);
-		this.firstSingleLetterWord = null;
-		this.firstMultiLetterWord = null;
-		this.firstSpace = null;
-		this.readyTokens = [];
-		this.oldToken = null;
-		this.mark = null;
 	}
 }
 
@@ -286,7 +281,7 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 	typeof style === 'string'
 		? style
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
-).trim().replace(/\s{2,}/gu, ' ') || ' ';
+).trim().replaceAll(/\s{2,}/gu, ' ') || ' ';
 
 export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	const {nTemplate, nExt, nLink, nExtLink, dt, section} = state;
@@ -400,7 +395,7 @@ const getEqual = (t: Tokenizer): string => t.name === 'inTemplateArgument' && t.
  * 转义字符类中的特殊字符
  * @param chars 字符类
  */
-const escapeCharClass = (chars: string): string => chars.replace(/[\]-]/gu, String.raw`\$&`);
+const escapeCharClass = (chars: string): string => chars.replaceAll(/[\]-]/gu, String.raw`\$&`);
 
 /**
  * 下一个字符是否为空白字符
@@ -516,8 +511,6 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
 /** Adapted from the original CodeMirror 5 stream parser by Pavel Astakhov */
 export class MediaWiki {
 	declare readonly config;
-	declare readonly tokenTable;
-	declare readonly hiddenTable: Record<string, Tag>;
 	declare readonly permittedHtmlTags;
 	declare readonly voidHtmlTags;
 	declare readonly urlProtocols;
@@ -533,7 +526,17 @@ export class MediaWiki {
 	declare readonly hasVariants;
 	declare readonly preRegex;
 	declare readonly substRegex;
-	declare readonly autocompleteNamespaces;
+
+	readonly tokenTable = {...tokenTable};
+	readonly hiddenTable: Record<string, Tag> = {};
+	readonly autocompleteNamespaces = {
+		0: '',
+		6: 'File:',
+		8: 'MediaWiki:',
+		10: 'Template:',
+		274: 'Widget:',
+		828: 'Module:',
+	};
 
 	constructor(config: MwConfig) {
 		const {
@@ -548,8 +551,6 @@ export class MediaWiki {
 			img = {},
 		} = config;
 		this.config = config;
-		this.tokenTable = {...tokenTable};
-		this.hiddenTable = {};
 		this.permittedHtmlTags = new Set<string | undefined>([
 			...htmlTags,
 			...permittedHtmlTags ?? [],
@@ -612,14 +613,6 @@ export class MediaWiki {
 			})\s*)?`,
 			'iu',
 		);
-		this.autocompleteNamespaces = {
-			0: '',
-			6: 'File:',
-			8: 'MediaWiki:',
-			10: 'Template:',
-			274: 'Widget:',
-			828: 'Module:',
-		};
 		this.registerGroundTokens();
 	}
 
@@ -1344,7 +1337,7 @@ export class MediaWiki {
 			if (dt.n && dt.html) {
 				dt.html--;
 			}
-			if (tagname === inHtmlTag[inHtmlTag.length - 1]) {
+			if (tagname === inHtmlTag.at(-1)) {
 				inHtmlTag.pop();
 			} else {
 				chain(state, this.inStr('>', 'error'));
