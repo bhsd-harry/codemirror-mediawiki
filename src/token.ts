@@ -9,6 +9,7 @@ import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
+import {MediaWikiData} from './data.js';
 import {jsonBasic, jsonc} from './json.js';
 import {math} from './math.js';
 import {lilypond} from './lilypond.js';
@@ -26,7 +27,7 @@ declare type MimeTypes = 'mediawiki'
 	| 'text/combobox'
 	| 'text/inputbox'
 	| 'text/gallery';
-declare type Style = string | [string];
+export type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
 export type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
 declare interface Nesting extends Record<NestCount, number> {
@@ -49,13 +50,6 @@ export interface State extends Nesting {
 	section: number;
 }
 declare type ExtState = Omit<State, 'dt'> & Partial<Pick<State, 'dt'>>;
-declare interface Token {
-	readonly char?: string | undefined;
-	readonly string: string;
-	readonly state: State;
-	pos: number;
-	style: Style;
-}
 export interface StringStream extends StringStreamBase {
 	match(pattern: string, consume?: boolean, caseInsensitive?: boolean): true | null;
 	match(pattern: RegExp, consume?: boolean): RegExpMatchArray | null;
@@ -67,32 +61,6 @@ export interface MwConfig extends MwConfigBase {
 	img?: Record<string, string>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
-}
-
-class MediaWikiData {
-	declare readonly tags;
-	declare readonly urlProtocols;
-
-	/** 已解析的节点 */
-	readonly readyTokens: Token[] = [];
-
-	/** 当前起始位置 */
-	oldToken: Token | null = null;
-
-	/** 可能需要回滚的`'''` */
-	mark: number | null = null;
-
-	firstSingleLetterWord: number | null = null;
-	firstMultiLetterWord: number | null = null;
-	firstSpace: number | null = null;
-
-	constructor(tags: string[], urlProtocols: string) {
-		this.tags = tags.includes('translate') ? tags.filter(tag => tag !== 'tvar') : tags;
-		this.urlProtocols = new RegExp(
-			String.raw`^(${this.tags.includes('tvar') ? '<tvar name=[^>]+>' : ''})?${urlProtocols}`,
-			'iu',
-		);
-	}
 }
 
 /**

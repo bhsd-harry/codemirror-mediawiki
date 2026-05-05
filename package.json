@@ -55,7 +55,7 @@
 		"wikiparser-node": "^1.39.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.4.1",
+		"@bhsd/code-standard": "^2.4.2",
 		"@codemirror/search": "^6.7.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
 		"@types/node": "^24.11.0",
