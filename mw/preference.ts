@@ -182,7 +182,8 @@ export const openPreference = async (): Promise<void> => {
 		monacoWidget.setValue([...useMonaco] as unknown as string);
 		indentWidget.setValue(indent);
 		colWidget.setValue(String(col));
-		themeWidget.setValue(theme);
+		/** @todo 一段时间后移除对过时选项`nord`的支持 */
+		themeWidget.setValue(theme === 'nord' ? 'dark' : theme);
 	} else {
 		dialog = new OO.ui.MessageDialog({id: preferenceId});
 		dialog.$element.css('z-index', 1002);
@@ -256,7 +257,6 @@ export const openPreference = async (): Promise<void> => {
 				{data: 'auto', label: msg('theme-auto')},
 				{data: 'light', label: 'light'},
 				{data: 'dark', label: 'dark'},
-				{data: 'nord', label: 'nord'},
 			],
 		});
 		const field = new OO.ui.FieldLayout(widget, {

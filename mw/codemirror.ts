@@ -70,7 +70,6 @@ registerLua();
 registerMediaWiki(undefined, isWMF);
 registerVue();
 registerTheme('dark', nord);
-registerTheme('nord', nord);
 
 const cmLinters = new Map<string, LintSources | undefined>(),
 	cmLangs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
@@ -96,7 +95,6 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 	monacoThemes = new Map([
 		['light', 'light-plus'],
 		['dark', 'monokai'],
-		['nord', 'nord'],
 	]),
 	cmAvail: [string, keyof editor.IEditorOptions | (keyof editor.IEditorOptions)[], unknown, unknown][] = [
 		['allowMultipleSelections', 'multiCursorLimit', 1, undefined],

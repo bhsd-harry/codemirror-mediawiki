@@ -26,7 +26,7 @@ registerLua();
 registerMediaWiki('https://www.mediawiki.org/wiki/', true);
 registerVue();
 registerAbuseFilter();
-registerTheme('nord', nord);
+registerTheme('dark', nord);
 registerBidiIsolates();
 
 if (location.pathname.startsWith('/codemirror-mediawiki')) {
@@ -138,7 +138,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	const prefer = function(this: HTMLInputElement): void {
 		const {id, checked} = this;
 		if (id === 'dark') {
-			cm.setTheme(checked ? 'nord' : 'light');
+			cm.setTheme(checked ? 'dark' : 'light');
 		} else {
 			cm.prefer({[id]: checked});
 		}
@@ -203,7 +203,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	cm.prefer(extensions.filter(({checked, id}) => checked && id !== 'dark').map(({id}) => id));
 	cm.prefer({bidiIsolates: true});
 	if (extensions.some(({checked, id}) => checked && id === 'dark')) {
-		cm.setTheme('nord');
+		cm.setTheme('dark');
 	}
 
 	// 初始化缩进

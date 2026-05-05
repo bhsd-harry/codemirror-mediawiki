@@ -13,6 +13,10 @@
 - Fix-all actions for ESLint diagnostics in the JavaScript, mixed MediaWiki-HTML and Vue modes
 - Styles for the [openLinks](./README.md#openlinks) extension when the [highlightWhitespace](./README.md#highlightwhitespace) extension is also enabled
 
+**Removed**
+
+- The option `nord` is removed from the preference dialog on a MediaWiki site, since it is an alias of the `dark` theme
+
 ## 3.15.0
 
 *2026-04-30*
