@@ -10,8 +10,9 @@ import type {DecorationSet} from '@codemirror/view';
 import type {ConfigData} from 'wikiparser-node';
 
 declare type ISBNParser = (link: string) => string;
+declare type ActiveRange = readonly [number, number];
 declare interface ActiveRangeSet extends DecorationSet {
-	activeRange?: readonly [number, number];
+	activeRange?: ActiveRange;
 }
 declare interface Pos {
 	pos: number;
@@ -19,7 +20,7 @@ declare interface Pos {
 }
 declare interface LinkParser {
 	(state: EditorState, posAndSide: Pos, string: true): string | undefined;
-	(state: EditorState, posAndSide: Pos, string?: false): readonly [number, number] | undefined;
+	(state: EditorState, posAndSide: Pos, string?: false): ActiveRange | undefined;
 }
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
@@ -34,11 +35,7 @@ const toggleOpenLinks = (view: EditorView, toggle = false): void => {
 	}
 };
 
-const wrapURL = (
-	state: EditorState,
-	range: readonly [number, number],
-	str?: boolean,
-): string | readonly [number, number] => {
+const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string | ActiveRange => {
 	if (!str) {
 		return range;
 	}

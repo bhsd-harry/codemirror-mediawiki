@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.5.0",
+	"version": "0.6.0",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
@@ -43,7 +43,7 @@
 		"@bhsd/browser": "^0.3.0",
 		"@bhsd/cm-util": "^1.1.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
-		"@bhsd/common": "^2.2.0",
+		"@bhsd/common": "^2.2.1",
 		"@bhsd/stylelint-util": "^1.0.2",
 		"@codemirror/autocomplete": "^6.20.1",
 		"@codemirror/commands": "^6.10.3",

@@ -22,9 +22,12 @@ import {
 import type {ConfigData} from 'wikiparser-node';
 
 (async () => {
-	const configData: ConfigData = await (await fetch('/wikiparser-node/config/default.json')).json(),
-		parent = document.getElementById('wpTextbox')!,
-		extensions = [
+	const configData: ConfigData = {
+			...await (await fetch('/wikiparser-node/config/default.json')).json(),
+			articlePath: 'https://www.mediawiki.org/wiki/$1',
+		},
+		parent = document.getElementById('wpTextbox')!;
+	const extensions = [
 			new LanguageSupport(
 				mediawikiLanguage(configData),
 				[
