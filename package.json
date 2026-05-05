@@ -82,7 +82,7 @@
 		"wikiparser-node": "^1.39.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.4.1",
+		"@bhsd/code-standard": "^2.4.2",
 		"@bhsd/nodejs": "^1.0.0",
 		"@bhsd/test-util": "^1.2.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",

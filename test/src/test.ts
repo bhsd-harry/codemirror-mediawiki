@@ -78,12 +78,11 @@ const objToStr = (code: string, {name, from, to, children}: ObjNode): string => 
 	return output;
 };
 
-const dir = path.join('test', 'tests');
 describe('Lezer parser tests', () => {
-	for (const file of fs.readdirSync(dir)) {
+	for (const file of fs.globSync('test/tests/*.txt')) {
 		const lang = path.basename(file, '.txt') as keyof typeof parsers;
 		it(`${lang} parser tests`, () => {
-			const input = fs.readFileSync(path.join(dir, file), 'utf8'),
+			const input = fs.readFileSync(file, 'utf8'),
 				printed = objToStr(input, toObj(parsers[lang].parse(input).topNode)),
 				{output} = lezerTests[lang];
 			lezerTests[lang] = {input, output: printed};

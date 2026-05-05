@@ -46,11 +46,10 @@ const tryScripts = (
 	exclude: string[] = [],
 ): void => {
 	exts = typeof exts === 'string' ? [exts] : exts;
-	const rel = (arr: string[]): string[] => arr.map(s => `${dir}/**/${s}`),
-		files = fs.globSync(rel(exts), {exclude: rel([...exclude, 'node_modules/**'])});
+	const rel = (arr: string[]): string[] => arr.map(s => `${dir}/**/${s}`);
 	console.log('开始检查本地文件：');
 	let i = 0;
-	for (const f of files) {
+	for (const f of fs.globSync(rel(exts), {exclude: rel([...exclude, 'node_modules/**'])})) {
 		const file = path.relative(dir, f);
 		refreshStdout(`${++i} ${file}`);
 		try {
