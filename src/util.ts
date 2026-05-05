@@ -35,7 +35,7 @@ const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
  * @param text 原字符串
  * @test
  */
-export const escHTML = (text: string): string => text.replace(/[\n<&]/gu, ch => dict[ch]!);
+export const escHTML = (text: string): string => text.replaceAll(/[\n<&]/gu, ch => dict[ch]!);
 
 /**
  * 将索引转换为位置

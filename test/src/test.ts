@@ -19,7 +19,7 @@ declare interface ObjNode {
 }
 
 const entities = {'<': '&lt;', '>': '&gt', '&': '&amp;'};
-const escape = (str: string): string => str.replace(/[<>&]/gu, m => entities[m as '<' | '>' | '&']);
+const escape = (str: string): string => str.replaceAll(/[<>&]/gu, m => entities[m as '<' | '>' | '&']);
 
 mochaTest(
 	tests,
@@ -31,7 +31,7 @@ mochaTest(
 			const {from, to} = node,
 				name = node.name.replaceAll('_', ' ')
 					.replaceAll('mw-', ''),
-				last = tokens[tokens.length - 1];
+				last = tokens.at(-1);
 			if (last?.name === name) {
 				last.text += wikitext.slice(from, to);
 			} else {

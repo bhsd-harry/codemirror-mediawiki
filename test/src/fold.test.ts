@@ -25,8 +25,7 @@ const inlineTest = (doc: string, pos: number, range: DocRange | false, refOnly?:
 			view = {
 				state,
 				viewport: {from: 0, to: text.length},
-				viewportLineBlocks: new Array(doc.lines).fill(undefined)
-					.map((_, i) => doc.line(i + 1) as DocRange as BlockInfo),
+				viewportLineBlocks: Array.from({length: doc.lines}, (_, i) => doc.line(i + 1) as DocRange as BlockInfo),
 			} as EditorView;
 		assert.deepStrictEqual(
 			foldableLine(view, doc.line(line)),

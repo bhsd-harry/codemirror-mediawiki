@@ -315,7 +315,7 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 	typeof style === 'string'
 		? style
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
-).trim().replace(/\s{2,}/gu, ' ') || ' ';
+).trim().replaceAll(/\s{2,}/gu, ' ') || ' ';
 
 /**
  * @ignore
@@ -433,7 +433,7 @@ const getEqual = (t: Tokenizer): string => t.name === 'inTemplateArgument' && t.
  * 转义字符类中的特殊字符
  * @param chars 字符类
  */
-const escapeCharClass = (chars: string): string => chars.replace(/[\]-]/gu, String.raw`\$&`);
+const escapeCharClass = (chars: string): string => chars.replaceAll(/[\]-]/gu, String.raw`\$&`);
 
 /**
  * 下一个字符是否为空白字符
@@ -1375,7 +1375,7 @@ export class MediaWiki {
 			if (dt.n && dt.html) {
 				dt.html--;
 			}
-			if (tagname === inHtmlTag[inHtmlTag.length - 1]) {
+			if (tagname === inHtmlTag.at(-1)) {
 				inHtmlTag.pop();
 			} else {
 				chain(state, this.inStr('>', 'error'));

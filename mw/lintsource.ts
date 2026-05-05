@@ -126,7 +126,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 		rest,
 		wikitext => rest.post(
 			`/v1/transform/wikitext/to/lint${title && '/'}${
-				encodeURIComponent(title.replace(/\s+/gu, '_'))
+				encodeURIComponent(title.replaceAll(/\s+/gu, '_'))
 			}`,
 			{wikitext},
 		),

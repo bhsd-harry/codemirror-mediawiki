@@ -580,7 +580,7 @@ export class FullMediaWiki extends MediaWiki {
 					const mt2 = context
 							.matchBefore(/<[a-z\d]+(?:\s[^<>]*)?>(?:(?!<\/?[a-z]).)*<\/[a-z\d]*$/iu),
 						target = /^<([a-z\d]+)/iu.exec(mt2?.text ?? '')?.[1]!.toLowerCase(),
-						extTag = extTags[extTags.length - 1],
+						extTag = extTags.at(-1),
 						closed = /^\s*>/u.test(state.sliceDoc(pos)),
 						options = [
 							...this.htmlTags.filter(({label}) => !this.voidHtmlTags.has(label)),

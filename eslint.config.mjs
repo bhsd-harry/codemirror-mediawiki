@@ -29,6 +29,7 @@ export default extend(
 			'no-unused-labels': 0,
 			'jsdoc/require-jsdoc': 0,
 			'jsdoc/require-param-description': 0,
+			'unicorn/prefer-regexp-test': 0,
 		},
 	},
 	{
