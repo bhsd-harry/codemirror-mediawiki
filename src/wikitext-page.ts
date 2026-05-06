@@ -17,8 +17,8 @@ import {
 	codeFolding,
 	openLinks,
 	closeTags,
-	wikilint,
 } from './index';
+import {wikilint} from './codemirror.js';
 import type {ConfigData} from 'wikiparser-node';
 
 (async () => {

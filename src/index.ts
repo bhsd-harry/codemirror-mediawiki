@@ -5,21 +5,17 @@ import {
 	autocompletion,
 } from '@codemirror/autocomplete';
 import {LanguageSupport} from '@codemirror/language';
-import {linter} from '@codemirror/lint';
-import elt from 'crelt';
+import bidiIsolates from './bidi.js';
 import closeTags from './closeTags.js';
-import mediawikiColorPicker from './color.js';
 import {
-	diagnosticSelector,
-} from './constants.js';
+	wikilint,
+} from './codemirror.js';
+import mediawikiColorPicker from './color.js';
 import escapeKeymap from './escape.js';
 import codeFolding from './fold.js';
 import magicWordHover from './hover.js';
 import inlayHints from './inlay.js';
 import formatKeymap from './keymap.js';
-import {
-	getWikiLintSource,
-} from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
 import {
@@ -32,34 +28,12 @@ import {
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
-import statusBar from './statusBar.js';
 import {updateCDN} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {
 	Language,
 } from '@codemirror/language';
-import type {Diagnostic} from '@codemirror/lint';
-import type {ConfigData, LintConfig as LintConfigBase} from 'wikiparser-node';
-
-export {default as bidiIsolates} from './bidi.js';
-
-declare type LintConfig = Extract<LintConfigBase, {h1?: unknown}>
-	| Extract<LintConfigBase, {rules: unknown}> & {statusBar?: boolean};
-
-/**
- * Get the stream [language](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#mediawikilanguage)
- * for Wikitext.
- * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- */
-export const mediawikiLanguage = (configData: ConfigData): Language =>
-	mediawikiBase(getStaticMwConfig(configData, tagModes));
-
-/**
- * Get the [bracketMatching](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#bracketmatching)
- * extension for Wikitext.
- */
-export const bracketMatching = (): Extension =>
-	[bracketMatchingBase({brackets: '()[]{}（）【】［］｛｝'}), tagMatchingState];
+import type {ConfigData} from 'wikiparser-node';
 
 /**
  * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
@@ -68,7 +42,10 @@ export const bracketMatching = (): Extension =>
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const hover = (configData: ConfigData, cdn?: string): Extension => [
-	magicWordHover(configData, cdn),
+	magicWordHover(
+		configData,
+		cdn,
+	),
 	wikiTheme,
 ];
 
@@ -79,49 +56,34 @@ export const hover = (configData: ConfigData, cdn?: string): Extension => [
  * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
 export const signatureHelp = (configData: ConfigData, cdn?: string): Extension => [
-	signatureHelpBase(configData, cdn),
+	signatureHelpBase(
+		configData,
+		cdn,
+	),
 	wikiTheme,
 ];
 
 /**
- * Get the [wikilint](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#wikilint)
+ * Get the [bracketMatching](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#bracketmatching)
  * extension for Wikitext.
- * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
- * @param lintConfig [Lint configuration](https://github.com/bhsd-harry/wikiparser-node/wiki/Rules#configuration).
- * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
  */
-export const wikilint = (configData: ConfigData, lintConfig?: LintConfig, cdn?: string): Extension => {
-	updateCDN(cdn);
-	const source = getWikiLintSource(configData, lintConfig);
-	return [
-		linter(async v => {
-			const diagnostics = (await (await source)(v)).map((diagnostic): Diagnostic => ({
-				...diagnostic,
-				renderMessage(view): HTMLElement {
-					const span = elt(
-						'span',
-						{class: diagnosticSelector.slice(1)},
-						diagnostic.message,
-					);
-					span.addEventListener('click', () => {
-						view.dispatch({
-							selection: {anchor: diagnostic.from, head: diagnostic.to},
-						});
-						view.focus();
-					});
-					return span;
-				},
-			}));
-			if (v.state.readOnly) {
-				for (const diagnostic of diagnostics) {
-					delete diagnostic.actions;
-				}
-			}
-			return diagnostics;
-		}),
-		lintConfig && 'statusBar' in lintConfig && !lintConfig.statusBar ? [] : statusBar(),
+export const bracketMatching = (): Extension =>
+	[
+		bracketMatchingBase(
+			{brackets: '()[]{}（）【】［］｛｝'},
+		),
+		tagMatchingState,
 	];
-};
+
+/**
+ * Get the stream [language](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#mediawikilanguage)
+ * for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ */
+export const mediawikiLanguage = (configData: ConfigData): Language =>
+	mediawikiBase(
+		getStaticMwConfig(configData, tagModes),
+	);
 
 /**
  * Get full language support for Wikitext.
@@ -155,6 +117,7 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 
 export {
 	escapeKeymap,
+	bidiIsolates, // eslint-disable-line unicorn/prefer-export-from
 	refHover,
 	inlayHints,
 	formatKeymap,

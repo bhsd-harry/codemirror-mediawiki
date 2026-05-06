@@ -28,6 +28,7 @@ export default extend(
 			'jsdoc/require-jsdoc': 0,
 			'jsdoc/require-param-description': 0,
 			'unicorn/prefer-regexp-test': 0,
+			'@stylistic/operator-linebreak': 0,
 		},
 	},
 	{
@@ -51,7 +52,9 @@ export default extend(
 	{
 		files: ['src/*.ts'],
 		rules: {
+			'arrow-body-style': 0,
 			'jsdoc/no-bad-blocks': 0,
+			'@stylistic/function-paren-newline': 0,
 		},
 	},
 );

@@ -10,14 +10,8 @@ import {
 	toConfigGetter,
 	updateCDN,
 } from './util.js';
-import type {
-	EditorView,
-	Command,
-	KeyBinding,
-} from '@codemirror/view';
-import type {
-	SelectionRange,
-} from '@codemirror/state';
+import type {EditorView, Command, KeyBinding} from '@codemirror/view';
+import type {SelectionRange} from '@codemirror/state';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
 

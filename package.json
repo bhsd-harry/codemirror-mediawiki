@@ -40,25 +40,25 @@
 		"diff": "bash diff.sh"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.3.0",
+		"@bhsd/browser": "^0.3.1",
 		"@bhsd/cm-util": "^1.1.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
 		"@bhsd/common": "^2.2.1",
 		"@bhsd/stylelint-util": "^1.0.2",
-		"@codemirror/autocomplete": "^6.20.1",
+		"@codemirror/autocomplete": "^6.20.2",
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/language": "^6.12.3",
-		"@codemirror/lint": "^6.9.5",
+		"@codemirror/lint": "^6.9.6",
 		"@codemirror/state": "^6.6.0",
-		"@codemirror/view": "^6.41.1",
+		"@codemirror/view": "^6.42.1",
 		"marked": "^18.0.3",
-		"wikiparser-node": "^1.39.1"
+		"wikiparser-node": "^1.40.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^2.4.2",
 		"@codemirror/search": "^6.7.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
-		"@types/node": "^24.11.0",
+		"@types/node": "^25.6.2",
 		"@typescript-eslint/parser": "^8.59.2",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",

@@ -101,11 +101,18 @@ const updatePosition = (doc: Text, {head, empty, from, to}: SelectionRange, posi
 	}
 };
 
-export default (): Extension => [
+export default (
+): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [];
-		const error = getLintMarker(view, 'error'),
-			warning = getLintMarker(view, 'warning'),
+		const error = getLintMarker(
+				view,
+				'error',
+			),
+			warning = getLintMarker(
+				view,
+				'warning',
+			),
 			worker = elt(
 				'div',
 				{class: workerSelector.slice(1)},

@@ -131,7 +131,7 @@ export const myBracketDeco = (state: EditorState, config: RequiredConfig): Decor
 				tryMatchBracetks(state, head, config)
 				|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
 				|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
-				|| // eslint-disable-line @stylistic/operator-linebreak
+				||
 				findEnclosingPlainBrackets(state, head, config);
 		if (match) {
 			decorations.push(...renderMatch(match, state));
@@ -175,11 +175,10 @@ export default (configs?: BracketConfig): Extension => {
 	plugins[0] = ViewPlugin.fromClass(
 		class implements PluginValue {
 			declare decorations;
-			declare paused;
+			paused = false;
 
 			constructor({state}: EditorView) {
 				this.decorations = myBracketDeco(state, state.facet(facet));
-				this.paused = false;
 			}
 
 			update({docChanged, selectionSet, changes, state, view: {composing}}: ViewUpdate): void {

@@ -16,7 +16,11 @@ import type {
 declare type asyncLinter<
 	T,
 > =
-	(text: string, obj?: object) => T;
+	(
+		text: string,
+		obj?: object,
+		// eslint-disable-next-line @stylistic/semi
+	) => T
 
 /**
  * @param opt 初始化选项
@@ -99,7 +103,7 @@ export const getWikiLinter: getAsyncLinter<
 	wikiparse.setLintConfig(obj);
 	const cssLint =
 		cssConfig === 0 || cssConfig === false || cssConfig === 'off'
-			? (): never[] => [] : // eslint-disable-line @stylistic/operator-linebreak
+			? (): never[] => [] :
 			await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (
 		text,
@@ -166,7 +170,11 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (c
 	await loadScript(cdn, 'stylelint');
 	const linter: asyncLinter<
 		Promise<Warning[]>
-	> = async code => {
+		/* eslint-disable @stylistic/arrow-parens */
+	> = async (
+		code,
+	) => {
+		/* eslint-enable @stylistic/arrow-parens */
 		const warnings = await styleLint(
 			stylelint,
 			code,

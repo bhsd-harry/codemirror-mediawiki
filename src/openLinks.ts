@@ -88,7 +88,6 @@ export const getLinkParser = (
 
 export const getOpenLinksExtension = (
 	linkParser: LinkParser,
-	// eslint-disable-next-line arrow-body-style
 ): Extension => {
 	return [
 		StateField.define<ActiveRangeSet>({
@@ -177,7 +176,6 @@ export const getOpenLinksExtension = (
  */
 export const openLinks = (
 	configData: ConfigData,
-	// eslint-disable-next-line arrow-body-style
 ): Extension => {
 	return getOpenLinksExtension(
 		getLinkParser(

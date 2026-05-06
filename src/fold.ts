@@ -491,7 +491,8 @@ export const foldAt: Command = view => {
  * Get the [codeFolding](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#codefolding)
  * extension for Wikitext.
  */
-export default (): Extension => [
+export default (
+): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
 			const element = elt(
