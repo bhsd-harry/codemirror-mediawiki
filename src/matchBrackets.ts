@@ -149,12 +149,12 @@ export const myBracketDeco = (state: EditorState, config: RequiredConfig): Decor
 		const tree = syntaxTree(state),
 			excluded = exclude?.(state, head),
 			match =
-				!excluded && // eslint-disable-line @stylistic/operator-linebreak
+				!excluded &&
 				tryMatchBracetks(state, head, config)
 				|| findEnclosingBrackets(tree.resolveInner(head, -1), head, brackets)
 				|| afterCursor && findEnclosingBrackets(tree.resolveInner(head, 1), head, brackets)
-				|| // eslint-disable-line @stylistic/operator-linebreak
-				!excluded && // eslint-disable-line @stylistic/operator-linebreak
+				||
+				!excluded &&
 				findEnclosingPlainBrackets(state, head, config);
 		if (match) {
 			decorations.push(...renderMatch(match, state));

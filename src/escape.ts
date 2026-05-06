@@ -1,4 +1,3 @@
-import {keymap} from '@codemirror/view';
 import {EditorSelection} from '@codemirror/state';
 import {indentMore, indentLess} from '@codemirror/commands';
 import {getLSP} from '@bhsd/browser';
@@ -12,14 +11,8 @@ import {
 	sliceDoc,
 	toConfigGetter,
 } from './util.js';
-import type {
-	EditorView,
-	Command,
-} from '@codemirror/view';
-import type {
-	SelectionRange,
-	Extension,
-} from '@codemirror/state';
+import type {EditorView, Command, KeyBinding} from '@codemirror/view';
+import type {SelectionRange} from '@codemirror/state';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {CodeMirror6} from './codemirror';
 
@@ -154,19 +147,23 @@ menuRegistry.push({
 
 export default (
 	articlePath?: string,
-) => (cm: CodeMirror6): Extension => keymap.of([
-	{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
-	{key: 'Mod-]', run: convert(escapeURI, indentMore)},
-	{
-		key: 'Mod-\\',
-		run(view): boolean {
-			return escapeWikiCommand(
-				view,
-				toConfigGetter(
-					cm.getWikiConfig,
-					articlePath,
-				),
-			);
+) => (
+	cm: CodeMirror6,
+): KeyBinding[] => {
+	return [
+		{key: 'Mod-[', run: convert(escapeHTML, indentLess)},
+		{key: 'Mod-]', run: convert(escapeURI, indentMore)},
+		{
+			key: 'Mod-\\',
+			run(view): boolean {
+				return escapeWikiCommand(
+					view,
+					toConfigGetter(
+						cm.getWikiConfig,
+						articlePath,
+					),
+				);
+			},
 		},
-	},
-]);
+	];
+};

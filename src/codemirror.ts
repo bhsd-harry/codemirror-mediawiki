@@ -24,19 +24,25 @@ import {
 	deleteCharBackwardStrict,
 } from '@codemirror/commands';
 import {search, searchKeymap} from '@codemirror/search';
-import {linter, lintGutter} from '@codemirror/lint';
+import {
+	linter,
+	lintGutter,
+} from '@codemirror/lint';
 import {tags} from '@lezer/highlight';
 import elt from 'crelt';
 import {
+	diagnosticSelector,
 	baseData,
 	panelSelector,
 	panelsSelector,
-	diagnosticSelector,
 	noDetectionLangs,
 	linkSelector,
 	guideColor,
 } from './constants.js';
-import {getHighlightExtension, leadingSpaces} from './util.js';
+import {
+	getHighlightExtension,
+	leadingSpaces,
+} from './util.js';
 import {light} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
@@ -44,14 +50,22 @@ import type {
 	KeyBinding,
 	DecorationSet,
 } from '@codemirror/view';
-import type {Extension, StateEffect, StateField, StateCommand, Text} from '@codemirror/state';
+import type {
+	Extension,
+	StateEffect,
+	StateField,
+	StateCommand,
+	Text,
+} from '@codemirror/state';
 import type {Language, TagStyle} from '@codemirror/language';
 import type {Diagnostic} from '@codemirror/lint';
 import type {SyntaxNode} from '@lezer/common';
 import type {Tag} from '@lezer/highlight';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from '@bhsd/cm-util';
-import type {ConfigData} from 'wikiparser-node';
+import type {
+	ConfigData,
+} from 'wikiparser-node';
 import type {LanguageServiceBase} from 'wikiparser-node/dist/extensions/typings';
 import type {foldHandler} from './fold';
 import type {DocRange} from './util';
@@ -462,34 +476,39 @@ export class CodeMirror6 {
 		const lintSources: LintSources | undefined = typeof lintSource === 'function' ? [lintSource] : lintSource;
 		const linterExtension = (cm: CodeMirror6): Extension => lintSources?.length
 			? [
-				...lintSources.map(source => linter(async ({state}) => {
-					if (source.disabled) {
-						return [];
-					}
-					const diagnostics = (await source(state)).map((diagnostic): Diagnostic => ({
-						...diagnostic,
-						renderMessage(view): HTMLElement {
-							const span = elt(
-								'span',
-								{class: diagnosticSelector.slice(1)},
-								diagnostic.renderMessage?.call(this, view) ?? this.message,
-							);
-							span.addEventListener('click', () => {
-								view.dispatch({
-									selection: {anchor: this.from, head: this.to},
-								});
-								view.focus();
-							});
-							return span;
-						},
-					}));
-					if (state.readOnly) {
-						for (const diagnostic of diagnostics) {
-							delete diagnostic.actions;
+				...lintSources.map(source =>
+					linter(async v => {
+						if (source.disabled) {
+							return [];
 						}
-					}
-					return diagnostics;
-				})),
+						const {state} = v,
+							diagnostics = (await source(
+								state,
+							)).map((diagnostic): Diagnostic => ({
+								...diagnostic,
+								renderMessage(view): HTMLElement {
+									const span = elt(
+										'span',
+										{class: diagnosticSelector.slice(1)},
+										diagnostic.renderMessage?.call(this, view) ??
+										this.message,
+									);
+									span.addEventListener('click', () => {
+										view.dispatch({
+											selection: {anchor: this.from, head: this.to},
+										});
+										view.focus();
+									});
+									return span;
+								},
+							}));
+						if (state.readOnly) {
+							for (const diagnostic of diagnostics) {
+								delete diagnostic.actions;
+							}
+						}
+						return diagnostics;
+					})),
 				lintGutter(),
 				keymap.of([{key: 'F8', run: () => nextDiagnostic(this)}]),
 				optionalFunctions.statusBar(cm, lintSources[0].fixer),

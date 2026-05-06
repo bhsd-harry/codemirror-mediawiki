@@ -171,7 +171,10 @@ const updatePosition = (doc: Text, {head, empty, from, to}: SelectionRange, posi
 	}
 };
 
-export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
+export default (
+	cm: CodeMirror6,
+	fixer: LintSource['fixer'],
+): Extension => [
 	showPanel.of(view => {
 		let diagnostics: readonly Diagnostic[] = [];
 		let menu: HTMLElement | undefined;
@@ -199,8 +202,14 @@ export default (cm: CodeMirror6, fixer: LintSource['fixer']): Extension => [
 			});
 			view.dom.append(menu);
 		}
-		const error = getLintMarker(cm, 'error'),
-			warning = getLintMarker(cm, 'warning'),
+		const error = getLintMarker(
+				cm,
+				'error',
+			),
+			warning = getLintMarker(
+				cm,
+				'warning',
+			),
 			fix = getLintMarker(cm, 'fix', menu),
 			{classList} = fix.firstChild as HTMLDivElement,
 			optionAll = elt('div', 'Fix all auto-fixable problems'),

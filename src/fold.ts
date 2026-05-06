@@ -43,7 +43,6 @@ import type {
 } from '@codemirror/view';
 import type {EditorState, StateEffect, Extension} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
-import type {AddonMain} from './codemirror';
 import type {TagName} from './config';
 import type {DocRange} from './util';
 
@@ -576,14 +575,16 @@ export const foldAt: Command = view => {
 	return false;
 };
 
-export default ((e = defaultFoldExtension): Extension => [
+export default (
+	e = defaultFoldExtension,
+): Extension => [
 	e,
 	EditorView.theme({
 		'.cm-foldGutter': {
 			order: 2,
 		},
 	}),
-]) satisfies AddonMain<Extension>;
+];
 
 export const mediawikiFold = /* @__PURE__ */ ((): Extension => [
 	codeFolding({

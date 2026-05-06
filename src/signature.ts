@@ -120,7 +120,8 @@ export default (
 						),
 						baseData.CDN,
 					);
-					let signatureHelp: SignatureHelp | undefined = await cm.lsp?.provideSignatureHelp(
+					const {lsp} = cm;
+					let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
 						text,
 						indexToPos(doc, cursor),
 					);

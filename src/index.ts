@@ -38,12 +38,12 @@ import {
 	themes,
 } from './codemirror.js';
 import mediawikiColorPicker from './color.js';
-import {
-	hoverSelector,
-} from './constants.js';
+import {hoverSelector} from './constants.js';
 import escapeKeymap from './escape.js';
-import codeFolding, {mediawikiFold, foldHandler} from './fold.js';
-import magicWordHover, {hoverStyle} from './hover.js';
+import codeFolding from './fold.js';
+import {mediawikiFold, foldHandler} from './fold.js';
+import magicWordHover from './hover.js';
+import {hoverStyle} from './hover.js';
 import {detectIndent} from './indent.js';
 import indentGuide from './indentGuide.js';
 import inlayHints from './inlay.js';
@@ -308,7 +308,8 @@ export const registerOpenLinks = (articlePath?: string): void => {
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerEscape = (articlePath?: string): void => {
-	registerExtensionForMediaWiki('escape', escapeKeymap(articlePath));
+	const getKeymap = escapeKeymap(articlePath);
+	registerExtensionForMediaWiki('escape', cm => keymap.of(getKeymap(cm)));
 };
 
 /**
@@ -326,7 +327,14 @@ export const registerRefHover = (articlePath?: string): void => {
  * for template information; enabled by default
  */
 export const registerHover = (articlePath?: string, templatedata?: boolean): void => {
-	registerLangExtension('mediawiki', 'hover', magicWordHover(articlePath, templatedata));
+	registerLangExtension(
+		'mediawiki',
+		'hover',
+		magicWordHover(
+			articlePath,
+			templatedata,
+		),
+	);
 };
 
 /**
@@ -334,7 +342,12 @@ export const registerHover = (articlePath?: string, templatedata?: boolean): voi
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerSignatureHelp = (articlePath?: string): void => {
-	registerExtensionForMediaWiki('signatureHelp', signatureHelpBase(articlePath));
+	registerExtensionForMediaWiki(
+		'signatureHelp',
+		signatureHelpBase(
+			articlePath,
+		),
+	);
 };
 
 /**
@@ -360,10 +373,14 @@ export const registerColorPickerForMediaWiki = (): void => {
 
 /** Register the `bracketMatching` extension for MediaWiki */
 export const registerBracketMatchingForMediaWiki = (): void => {
-	registerLangExtension<[BracketConfig, Extension]>('mediawiki', 'bracketMatching', [
-		{brackets: '()[]{}（）【】［］｛｝'},
-		tagMatchingState,
-	]);
+	registerLangExtension<[BracketConfig, Extension]>(
+		'mediawiki',
+		'bracketMatching',
+		[
+			{brackets: '()[]{}（）【】［］｛｝'},
+			tagMatchingState,
+		],
+	);
 };
 
 /** Register the `codeFolding` extension for MediaWiki */
@@ -399,7 +416,11 @@ const registerLintSource = (lang: string, lintSource: LintSourceGetter): void =>
 export const registerMediaWikiCore = (articlePath?: string, templatedata?: boolean): void => {
 	CodeMirror6.getMwConfig = (config): MwConfig => getStaticMwConfig(config, tagModes);
 	languages.set('mediawiki', (config: MwConfig, cm): Extension => [
-		mediawikiBase(config, cm, templatedata),
+		mediawikiBase(
+			config,
+			cm,
+			templatedata,
+		),
 		plain(),
 		keymap.of(formatKeymap),
 	]);

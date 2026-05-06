@@ -51,7 +51,7 @@
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/real.js",
 		"test:math": "mocha test/dist/math.js",
-		"diff": "git diff -w --color-moved --minimal npm wikitext"
+		"diff": "bash diff.sh"
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.3.0",
@@ -91,6 +91,7 @@
 		"@types/node": "^24.11.0",
 		"@types/oojs-ui": "^0.49.4",
 		"@typescript-eslint/parser": "^8.59.2",
+		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.22.1",

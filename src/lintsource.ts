@@ -13,10 +13,7 @@ import {
 	luacheckRepo,
 	isStylelintConfig,
 } from './linter.js';
-import {
-	posToIndex,
-	toConfigGetter,
-} from './util.js';
+import {posToIndex, toConfigGetter} from './util.js';
 import {baseData} from './constants.js';
 import {vue} from './javascript-globals.js';
 import type {EditorView} from '@codemirror/view';
@@ -136,32 +133,33 @@ const wikiLintSource = async (
  * @implements
  * @test
  */
-export const getWikiLintSource = (articlePath?: string): LintSourceGetter => async (
-	opt,
-	v,
-): Promise<LintSource> => {
-	const options = {...await getOpt(opt, false), cdn: baseData.CDN} as {
-		getConfig?: ConfigGetter | undefined;
-		cdn: string | undefined;
-	};
-	if (articlePath) {
-		options.getConfig = toConfigGetter(options.getConfig, articlePath);
-	}
-	const wikiLint = await getWikiLinter(options, v);
-	const lintSource: LintSource =
-		async ({doc}) => {
-			return wikiLintSource(
-				wikiLint,
-				doc.toString(),
-				await getOpt(opt),
-				doc,
-			);
+export const getWikiLintSource = (articlePath?: string): LintSourceGetter =>
+	async (
+		opt,
+		v,
+	): Promise<LintSource> => {
+		const options = {...await getOpt(opt, false), cdn: baseData.CDN} as {
+			getConfig?: ConfigGetter | undefined;
+			cdn: string | undefined;
 		};
-	if (wikiLint.fixer) {
-		lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
-	}
-	return lintSource;
-};
+		if (articlePath) {
+			options.getConfig = toConfigGetter(options.getConfig, articlePath);
+		}
+		const wikiLint = await getWikiLinter(options, v);
+		const lintSource: LintSource =
+			async ({doc}) => {
+				return wikiLintSource(
+					wikiLint,
+					doc.toString(),
+					await getOpt(opt),
+					doc,
+				);
+			};
+		if (wikiLint.fixer) {
+			lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
+		}
+		return lintSource;
+	};
 
 const jsLintSource = (
 	esLint: Awaited<ReturnType<typeof getJsLinter>>,

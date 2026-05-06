@@ -110,7 +110,7 @@ export type TagName = keyof typeof tokens;
  * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
  */
 export const tokenTable = /* @__PURE__ */ (() => {
-	const table: Record<string, Tag> = {
+	const table: Record<string, Tag | Tag[]> = {
 		//
 	};
 	for (const className of Object.values(tokens)) {

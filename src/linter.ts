@@ -19,7 +19,10 @@ declare type asyncLinter<
 	T,
 	S = Record<string, unknown>,
 > = (
-	(text: string, config?: Option) => T
+	(
+		text: string,
+		config?: Option,
+	) => T
 ) & {
 	config?: S;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
@@ -253,7 +256,10 @@ export const getCssLinter: getAsyncLinter<Promise<Warning[]>, string> = async (c
 	const linter: asyncLinter<
 		Promise<Warning[]>,
 		Config
-	> = async (code, opt) => {
+	> = async (
+		code,
+		opt,
+	) => {
 		const warnings = await styleLint(
 			stylelint,
 			code,
