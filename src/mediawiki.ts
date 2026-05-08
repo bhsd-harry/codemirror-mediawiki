@@ -32,7 +32,6 @@ import {
 	getHighlightExtension,
 	loadMarked,
 } from './util.js';
-import {hoverStyle} from './hover.js';
 import type {
 	TagStyle,
 } from '@codemirror/language';
@@ -833,7 +832,6 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		display: 'inline-block',
 		transform: 'scaleY(2)',
 	},
-	...hoverStyle,
 });
 
 /**

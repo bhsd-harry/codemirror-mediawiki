@@ -8,7 +8,6 @@ import {
 	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
-	EditorView,
 } from '@codemirror/view';
 import {EditorState, Prec} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
@@ -75,6 +74,7 @@ import html from './html.js';
 import javascript, {exclude} from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
+import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {
 	LanguageSupport,
@@ -603,7 +603,7 @@ export const registerAbuseFilter = (): void => {
 export const registerHoverForAbuseFilter = (): void => {
 	registerLangExtension('abusefilter', 'hover', () => [
 		getDefaultHoverTooltip(hoverSelector.slice(1)),
-		EditorView.theme(hoverStyle),
+		hoverStyle,
 	]);
 };
 

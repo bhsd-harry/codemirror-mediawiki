@@ -18,7 +18,6 @@ import type {
 	Extension,
 	EditorState,
 } from '@codemirror/state';
-import type {StyleSpec} from 'style-mod';
 import type {
 	MarkupContent,
 	Hover,
@@ -95,7 +94,7 @@ export const getHoverFromApi = async (
 };
 
 /** hover tooltip and signature tooltip */
-export const hoverStyle: Record<string, StyleSpec> = {
+export const hoverStyle = /* @__PURE__ */ EditorView.theme({
 	'.cm-tooltip-hover': {
 		maxHeight: '60vh',
 		overflow: 'hidden auto',
@@ -113,7 +112,7 @@ export const hoverStyle: Record<string, StyleSpec> = {
 			lineHeight: 1.4,
 		},
 	},
-};
+});
 
 export default (
 	articlePath?: string,
@@ -164,6 +163,7 @@ export default (
 				return null;
 			},
 		),
+		hoverStyle,
 		EditorView.theme({
 			[code]: {
 				color: 'inherit',
