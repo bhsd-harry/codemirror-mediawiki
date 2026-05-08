@@ -287,7 +287,7 @@ export class FullMediaWiki extends MediaWiki {
 							}
 							: {
 								// 位于不同命名空间的重定向
-								type: 'redirect',
+								type: 'text',
 								label: normalized,
 								detail: `↳ ${redirect[0]}`,
 							};
@@ -303,12 +303,10 @@ export class FullMediaWiki extends MediaWiki {
 								type: pageNs === namespace && type || 'text',
 								label: normalized,
 								displayLabel: label,
-								detail: `↲ ${redirect}`,
 							},
 							{
 								type: 'redirect',
 								label: normalized,
-								detail: `↳ ${label}`,
 							},
 						];
 				}),
@@ -459,6 +457,7 @@ export class FullMediaWiki extends MediaWiki {
 						// eslint-disable-next-line unicorn/explicit-length-check
 						from: start + suggestions.offset - (isPageFunc && prefix.length),
 						options: suggestions.options,
+						...isWMF && {filter: false},
 						...obj,
 					};
 				}
@@ -830,7 +829,9 @@ const wikiTheme = /* @__PURE__ */ EditorView.theme({
 		backgroundColor: 'var(--cm-ref)',
 	},
 	'.cm-completionIcon-redirect:after': {
-		content: '"↳"',
+		content: '"⬑"',
+		display: 'inline-block',
+		transform: 'scaleY(2)',
 	},
 	...hoverStyle,
 });
