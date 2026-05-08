@@ -76,7 +76,10 @@ import type {MwConfig} from './token';
 import type {Selection} from './matchBrackets';
 
 export type AddonMain<T> = (config?: T, cm?: CodeMirror6) => Extension;
-export type Addon<T> = [AddonMain<T>, Map<string, T>?, string[]?];
+export interface AddonConfig {
+	dep?: string[];
+}
+export type Addon<T> = [AddonMain<T>, Map<string, T>?, AddonConfig?];
 export type Dialect = 'sanitized-css' | undefined;
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
@@ -573,7 +576,7 @@ export class CodeMirror6 {
 					[
 						...new Set(
 							[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name))
-								.flatMap(name => [name, ...avail.get(name)?.[2] ?? []]),
+								.flatMap(name => [name, ...avail.get(name)?.[2]?.dep ?? []]),
 						),
 					].map(name => {
 						const [extension, configs] = avail.get(name)!;

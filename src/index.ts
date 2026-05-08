@@ -79,7 +79,7 @@ import type {Extension} from '@codemirror/state';
 import type {
 	LanguageSupport,
 } from '@codemirror/language';
-import type {Addon, AddonMain} from './codemirror';
+import type {Addon, AddonMain, AddonConfig} from './codemirror';
 import type {LintSourceGetter, LintSource} from './lintsource';
 import type {MwConfig} from './token';
 import type {BracketConfig} from './matchBrackets';
@@ -98,13 +98,13 @@ const getOrInsert = <T>(name: string, ext: Addon<T>): Addon<T> => {
  * 注册通用扩展
  * @param name 扩展名
  * @param ext 扩展
- * @param dep 依赖的扩展列表
+ * @param config 扩展的依赖信息
  */
-const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, dep?: string[]): void => {
+const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, config?: AddonConfig): void => {
 	const addon = getOrInsert<T>(name, [] as unknown as Addon<T>);
 	addon[0] = ext;
-	if (dep) {
-		addon[2] = dep;
+	if (config) {
+		addon[2] = config;
 	}
 };
 
@@ -165,7 +165,7 @@ export const registerAllowMultipleSelections = (): void => {
 			rectangularSelection(),
 			crosshairCursor(),
 		],
-		['drawSelection'],
+		{dep: ['drawSelection']},
 	);
 };
 
@@ -192,7 +192,7 @@ export const registerCodeFolding = (): void => {
  */
 export const registerBlockCursor = (): void => {
 	registerDrawSelection();
-	registerExtension('blockCursor', blockCursor, ['drawSelection']);
+	registerExtension('blockCursor', blockCursor, {dep: ['drawSelection']});
 };
 
 /**
