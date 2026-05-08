@@ -13,7 +13,7 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';
 
-export const isMac = /* @__PURE__ */ (() => {
+export const isMac = /* #__PURE__ */ (() => {
 	const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	return vendor?.includes('Apple Computer')

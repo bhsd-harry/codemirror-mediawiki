@@ -18,10 +18,7 @@ import inlayHints from './inlay.js';
 import formatKeymap from './keymap.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {
-	mediawikiBase,
-	wikiTheme,
-} from './mediawiki.js';
+import {mediawikiBase} from './mediawiki.js';
 import {
 	openLinks,
 } from './openLinks.js';
@@ -46,7 +43,6 @@ export const hover = (configData: ConfigData, cdn?: string): Extension => [
 		configData,
 		cdn,
 	),
-	wikiTheme,
 ];
 
 /**
@@ -60,7 +56,6 @@ export const signatureHelp = (configData: ConfigData, cdn?: string): Extension =
 		configData,
 		cdn,
 	),
-	wikiTheme,
 ];
 
 /**

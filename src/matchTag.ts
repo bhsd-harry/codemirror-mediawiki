@@ -147,10 +147,10 @@ export const matchTag = (state: EditorState, pos: number): TagMatchResult | null
 	return end ? {matched: true, start, end} : {matched: false, start};
 };
 
-const matchingTag = /* @__PURE__ */ Decoration.mark({class: matchingCls}),
-	nonmatchingTag = /* @__PURE__ */ Decoration.mark({class: nonmatchingCls});
+const matchingTag = /* #__PURE__ */ Decoration.mark({class: matchingCls}),
+	nonmatchingTag = /* #__PURE__ */ Decoration.mark({class: nonmatchingCls});
 
-export default /* @__PURE__ */ StateField.define<DecorationSet>({
+export default /* #__PURE__ */ StateField.define<DecorationSet>({
 	create() {
 		return Decoration.none;
 	},

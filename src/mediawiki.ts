@@ -8,7 +8,6 @@ import {
 	StreamLanguage,
 	syntaxTree,
 } from '@codemirror/language';
-import {EditorView} from '@codemirror/view';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
 import {htmlTags, tokens} from './config.js';
@@ -20,7 +19,6 @@ import {
 	getCompletions,
 	getExtTags,
 } from './util.js';
-import {hoverStyle} from './hover.js';
 import type {
 	StreamParser,
 	Language,
@@ -293,10 +291,6 @@ export class FullMediaWiki extends MediaWiki {
 		};
 	}
 }
-
-export const wikiTheme = /* @__PURE__ */ EditorView.theme({
-	...hoverStyle,
-});
 
 /**
  * Get the stream language for Wikitext.
