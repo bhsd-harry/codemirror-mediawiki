@@ -7,6 +7,11 @@
 
 - Language support for JSONC
 
+**Fixed**
+
+- When using the Monaco editor on a MediaWiki site, the default theme should follow the system color scheme if the user has not explicitly set a theme preference
+- When using the Monaco editor on a MediaWiki site, the diagnostic hover tooltip was not shown if the [hover](./README.md#hover) extension was disabled
+
 ## 3.16.0
 
 *2026-05-05*

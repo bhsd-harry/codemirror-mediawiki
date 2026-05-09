@@ -13,7 +13,7 @@ import {
 	registerBidiIsolates,
 	nord,
 } from '/codemirror-mediawiki/dist/main.min.js';
-import abusefilterDialect from '/lezer-abusefilter/dist/dialect.test.js';
+import abusefilterDialect from '@bhsd/lezer-abusefilter/test/src/dialect';
 import {linkSuggest, paramSuggest, templateSignature} from './suggest.test';
 import type {ConfigData} from 'wikiparser-node';
 import type {Dialect} from '@bhsd/lezer-abusefilter';

@@ -87,11 +87,14 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		['css', 'Stylelint'],
 		['lua', 'Luacheck'],
 	]),
+	monacoPrefLangs = new Map([
+		['mediawiki', 'wiki'],
+		['jsonc', 'json'],
+	]),
 	monacoLangs = new Map([
 		['mediawiki', 'wikitext'],
-		['template', 'wikitext'],
-		['gadget', 'javascript'],
 		['plain', 'plaintext'],
+		['jsonc', 'json'],
 	]),
 	monacoThemes = new Map([
 		['light', 'light-plus'],
@@ -109,7 +112,6 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		['highlightSelectionMatches', 'occurrencesHighlight', 'off', 'singleFile'],
 		['highlightSpecialChars', 'renderControlCharacters', false, true],
 		['highlightWhitespace', 'renderWhitespace', 'selection', 'all'],
-		['hover', 'hover', {enabled: false}, undefined],
 		['indentGuide', 'guides', {indentation: false}, {indentation: true}],
 		['inlayHints', 'inlayHints', {enabled: 'offUnlessPressed'}, {enabled: 'onUnlessPressed'}],
 		['openLinks', 'links', false, true],
@@ -379,6 +381,12 @@ export class CodeMirror extends CodeMirror6 {
 		this.#editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Comma, () => {
 			void openPreference();
 		});
+		if (language === 'json') {
+			monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+				allowComments: lang === 'jsonc',
+				trailingCommas: lang === 'jsonc' ? 'ignore' : 'error',
+			});
+		}
 		let timer: NodeJS.Timeout;
 		this.#model.onDidChangeContent(() => {
 			clearTimeout(timer);
@@ -806,7 +814,7 @@ export class CodeMirror extends CodeMirror6 {
 				prefs.delete('wikiEditor');
 			}
 		}
-		const isCM = !useMonaco.has(lang === 'mediawiki' ? 'wiki' : lang!),
+		const isCM = !useMonaco.has(monacoPrefLangs.get(lang!) ?? lang!),
 			isCMWiki = isCM && isWiki,
 			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
 		cm.dialect = dialect;
@@ -820,16 +828,14 @@ export class CodeMirror extends CodeMirror6 {
 		cm.prefer(allPrefs);
 		const indent = localStorage.getItem(indentKey),
 			col = Number(localStorage.getItem(colKey)),
-			theme = localStorage.getItem(themeKey);
+			theme = localStorage.getItem(themeKey) || 'auto';
 		if (indent) {
 			cm.setIndent(indent);
 		}
 		if (col > 0) {
 			cm.setColumnGuide(col);
 		}
-		if (theme) {
-			cm.setTheme(theme);
-		}
+		cm.setTheme(theme);
 		return cm;
 	}
 }
