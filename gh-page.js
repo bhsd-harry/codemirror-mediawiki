@@ -4,6 +4,7 @@ import {
   registerCSS,
   registerHTML,
   registerJSON,
+  registerJSONC,
   registerJavaScript,
   registerLua,
   registerMediaWiki,
@@ -58,12 +59,13 @@ var templateSignature = (templateName, parameterName) => {
 registerCSS();
 registerHTML();
 registerJSON();
+registerJSONC();
 registerJavaScript();
 registerLua();
 registerMediaWiki("https://www.mediawiki.org/wiki/", true);
 registerVue();
 registerAbuseFilter();
-registerTheme("nord", nord);
+registerTheme("dark", nord);
 registerBidiIsolates();
 if (location.pathname.startsWith("/codemirror-mediawiki")) {
   const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), col = document.querySelector("#col"), search = new URLSearchParams(location.search);
@@ -135,7 +137,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
   const prefer = function() {
     const { id, checked } = this;
     if (id === "dark") {
-      cm.setTheme(checked ? "nord" : "light");
+      cm.setTheme(checked ? "dark" : "light");
     } else {
       cm.prefer({ [id]: checked });
     }
@@ -174,6 +176,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     ["css", "css"],
     ["lua", "lua"],
     ["json", "json"],
+    ["jsonc", "jsonc"],
     ["vue", "vue"],
     ["html", "html"],
     ["abusefilter", "abusefilter"]
@@ -192,7 +195,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
   cm.prefer(extensions.filter(({ checked, id }) => checked && id !== "dark").map(({ id }) => id));
   cm.prefer({ bidiIsolates: true });
   if (extensions.some(({ checked, id }) => checked && id === "dark")) {
-    cm.setTheme("nord");
+    cm.setTheme("dark");
   }
   indent.addEventListener("change", indentChange);
   indentChange();

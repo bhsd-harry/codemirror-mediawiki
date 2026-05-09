@@ -8,6 +8,7 @@ import {
 	registerCSS,
 	registerHTML,
 	registerJSON,
+	registerJSONC,
 	registerJavaScript,
 	registerLua,
 	registerMediaWiki,
@@ -65,6 +66,7 @@ declare interface ExtCodeMirror {
 registerCSS();
 registerHTML();
 registerJSON();
+registerJSONC();
 registerJavaScript();
 registerLua();
 registerMediaWiki(undefined, isWMF);
@@ -72,7 +74,6 @@ registerVue();
 registerTheme('dark', nord);
 
 const cmLinters = new Map<string, LintSources | undefined>(),
-	cmLangs = new Set<string | undefined>(['javascript', 'css', 'lua', 'json', 'vue']),
 	langMap = new Map([
 		['sanitized-css', 'css'],
 		['js', 'javascript'],
@@ -768,6 +769,9 @@ export class CodeMirror extends CodeMirror6 {
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
 				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
+				if (/\bjsonconfig\b/iu.test(lang)) {
+					lang = 'jsonc';
+				}
 			} else if (wgCanonicalSpecialPageName === 'Upload') {
 				ns = 6;
 				lang = 'wikitext';
@@ -802,7 +806,7 @@ export class CodeMirror extends CodeMirror6 {
 				prefs.delete('wikiEditor');
 			}
 		}
-		const isCM = !useMonaco.has(cmLangs.has(lang) ? lang! : 'wiki'),
+		const isCM = !useMonaco.has(lang === 'mediawiki' ? 'wiki' : lang!),
 			isCMWiki = isCM && isWiki,
 			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
 		cm.dialect = dialect;

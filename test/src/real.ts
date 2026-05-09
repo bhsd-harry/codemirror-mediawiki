@@ -3,6 +3,7 @@ import * as path from 'path';
 import {Direction} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
 import {javascript} from '@codemirror/lang-javascript';
+import {jsonLanguage, jsoncLanguage} from '@bhsd/lezer-json';
 import {green, yellow, red, refreshStdout} from '@bhsd/nodejs';
 import {execute} from '@bhsd/test-util';
 import {computeIsolates} from '../../dist/bidi.js';
@@ -10,29 +11,41 @@ import {detectIndent} from '../../dist/indent.js';
 import {markGlobalsAndDocTag} from '../../dist/javascript.js';
 import lua, {markDocTag} from '../../dist/lua.js';
 import parse, {checkNode} from './parser.js';
-import jsonParse from './json.js';
+import jsonStreamParse from './json.js';
 import lyParse from './lilypond.js';
 import {createState} from './util.js';
 import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
+import type {LRLanguage} from '@codemirror/language';
 
 const [,, lang] = process.argv,
-	failed: string[] = [];
+	failed: [string, string][] = [];
 
 const log = (language: string): void => {
 	console.info(green(`Testing ${language}...`));
+};
+
+const strictParse = ({parser}: LRLanguage, model: string) => {
+	const strictParser = parser.configure({strict: true});
+	return (content: string, title: string): void => {
+		try {
+			strictParser.parse(content);
+		} catch {
+			failed.push([model, title]);
+		}
+	};
 };
 
 const singleScript = (langSupport: Extension, model: string, mark: typeof markDocTag) =>
 	(content: string, title: string): void => {
 		const state = createState(content, langSupport),
 			{length} = content,
-			tree = ensureSyntaxTree(state, length, 300);
+			tree = ensureSyntaxTree(state, length, 1e3);
 		detectIndent(state.doc, '\t', model);
 		if (tree) {
 			mark(tree, [{from: 0, to: length}], state);
 		} else {
-			failed.push(title);
+			failed.push([model, title]);
 		}
 	};
 
@@ -106,8 +119,30 @@ const tryScripts = (
 	}
 
 	if (!lang || lang === 'json' || lang === 'local') {
+		const jsonParse = strictParse(jsonLanguage, 'json'),
+			jsoncParse = strictParse(jsoncLanguage, 'jsonc'),
+			callback = (content: string, title: string): void => {
+				jsonStreamParse(content);
+				jsonParse(content, title);
+				jsoncParse(content, title);
+			};
 		log('JSON');
-		tryScripts(jsonParse, '*.json');
+		tryScripts(callback, '*.json');
+
+		if (lang !== 'local') {
+			await execute(
+				(content, title) => {
+					if (/\.(?:chart|tab|map)$/u.test(title)) {
+						callback(content, title);
+					}
+				},
+				undefined,
+				undefined,
+				'486',
+				'',
+				[['Commons', 'https://commons.wikimedia.org/w']],
+			);
+		}
 	}
 
 	if (!lang || lang === 'lilypond' || lang === 'local') {

@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import {javascript} from '@codemirror/lang-javascript';
 import {html} from '@codemirror/lang-html';
 import {vue} from '@codemirror/lang-vue';
-import {json} from '@codemirror/lang-json';
+import {json} from '@bhsd/lezer-json';
 import {syntaxTree} from '@codemirror/language';
 import {markGlobalsAndDocTag, exclude} from '../../dist/javascript.js';
 import {createState, convertFullRangeSet, filterFromRangeSet} from './util.js';

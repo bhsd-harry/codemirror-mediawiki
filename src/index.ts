@@ -18,7 +18,7 @@ import {
 	completionKeymap,
 	startCompletion,
 } from '@codemirror/autocomplete';
-import {json} from '@codemirror/lang-json';
+import {json} from '@bhsd/lezer-json';
 import {autoCloseTags} from '@codemirror/lang-html';
 import {abusefilter, analyzer, getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
@@ -52,6 +52,7 @@ import {
 	getJsLintSource,
 	getCssLintSource,
 	getJsonLintSource,
+	getJsoncLintSource,
 	getLuaLintSource,
 	getVueLintSource,
 	getHTMLLintSource,
@@ -527,6 +528,20 @@ export const registerJSON = (): void => {
 export const registerJSONCore = (): void => {
 	languages.set('json', json);
 	registerLintSource('json', getJsonLintSource);
+	optionalFunctions.detectIndent = detectIndent;
+};
+
+/** Register JSONC language support */
+export const registerJSONC = (): void => {
+	registerCommonExtensions();
+	registerJSONCCore();
+	registerIndentGuide();
+};
+
+/** Register JSONC core language support */
+export const registerJSONCCore = (): void => {
+	languages.set('jsonc', () => json('jsonc'));
+	registerLintSource('jsonc', getJsoncLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
 

@@ -28,9 +28,9 @@ const applyTest = applyFunctionTest(apply),
 const completion: Omit<CompletionResult, 'from'> = {
 	options: [
 		{label: 'a (article)', type: 'text'},
-		{label: 'a (user)', displayLabel: 'Alice (user)', detail: '↲ a (user)', type: 'text'},
-		{label: 'a (user)', type: 'redirect', detail: '↳ Alice (user)'},
-		{label: 'a (disambiguation)', type: 'redirect', detail: '↳ Help:a'},
+		{label: 'a (user)', displayLabel: 'Alice (user)', type: 'text'},
+		{label: 'a (user)', type: 'redirect'},
+		{label: 'a (disambiguation)', type: 'text', detail: '↳ Help:a'},
 	],
 	validFor: /^[^|{}<>[\]#]*$/u,
 };

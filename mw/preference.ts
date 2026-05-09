@@ -33,7 +33,6 @@ declare interface MediaWikiResponse {
 const prefKey = 'codemirror-mediawiki-addons',
 	monacoKey = 'codemirror-mediawiki-monaco',
 	nonBooleanKeys = new Set(['indent', 'col', 'theme', 'useMonaco'].map(k => `addon-${k}`)),
-	langs = ['wiki', 'javascript', 'css', 'lua', 'json', 'vue'],
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = ['ESLint', 'Stylelint', 'Luacheck'] as const,
@@ -43,7 +42,7 @@ const prefKey = 'codemirror-mediawiki-addons',
 	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
 
 export const prefs = new Set(getObject(prefKey) as string[] | null),
-	useMonaco = new Set(getObject(monacoKey) as string[] | null ?? (prefs.has('useMonaco') ? langs : [])),
+	useMonaco = new Set(getObject(monacoKey) as string[] | null),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
 	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
 	preferenceDialog: {layout?: OO.ui.IndexLayout} = {},
@@ -105,7 +104,7 @@ export const loadJSON = (async () => {
 					prefs.add(option);
 				}
 				useMonaco.clear();
-				for (const option of json.useMonaco ?? (prefs.has('useMonaco') ? langs : [])) {
+				for (const option of json.useMonaco ?? []) {
 					useMonaco.add(option);
 				}
 				if (json.indent) {
@@ -243,10 +242,11 @@ export const openPreference = async (): Promise<void> => {
 			value: [...prefs] as unknown as string,
 		});
 		monacoWidget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: langs.map((lang, i): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label'> => ({
-				data: lang,
-				label: labels[i]!,
-			})),
+			options: ['wiki', 'javascript', 'css', 'lua', 'json', 'vue']
+				.map((lang, i): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label'> => ({
+					data: lang,
+					label: labels[i]!,
+				})),
 			value: [...useMonaco] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
@@ -372,7 +372,6 @@ export const openPreference = async (): Promise<void> => {
 		}
 
 		// 插件
-		prefs.delete('useMonaco');
 		value = widget.getValue() as unknown as string[];
 		if (value.length !== prefs.size || !value.every(option => prefs.has(option))) {
 			changed = true;
@@ -383,9 +382,6 @@ export const openPreference = async (): Promise<void> => {
 			for (const cm of editors) {
 				cm?.prefer(value);
 			}
-		}
-		if (useMonaco.size > 0) {
-			prefs.add('useMonaco');
 		}
 		value = [...prefs];
 		setObject(prefKey, value);

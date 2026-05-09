@@ -1,7 +1,8 @@
 import {ensureSyntaxTree} from '@codemirror/language';
 import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
-import {sanitizeInlineStyle, lintJSON} from '@bhsd/common';
+import {jsonLinter, jsoncLinter} from '@bhsd/lezer-json';
+import {sanitizeInlineStyle} from '@bhsd/common';
 import {getOpt} from '@bhsd/cm-util';
 import {
 	getWikiLinter,
@@ -376,8 +377,13 @@ export const getHTMLLintSource: LintSourceGetter = async (opt, view, language): 
  * @implements
  * @test
  */
-export const getJsonLintSource: LintSourceGetter = (): LintSource => ({doc}) => lintJSON(doc.toString())
-	.map(({message, from, to = from, severity}): Diagnostic => ({message, severity, from, to}));
+export const getJsonLintSource: LintSourceGetter = (): LintSource => state => jsonLinter({state} as EditorView);
+
+/**
+ * @implements
+ * @test
+ */
+export const getJsoncLintSource: LintSourceGetter = (): LintSource => state => jsoncLinter({state} as EditorView);
 
 /**
  * @implements

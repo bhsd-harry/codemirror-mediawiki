@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.17.0
+
+*2026-05-10*
+
+**Added**
+
+- Language support for JSONC
+
 ## 3.16.0
 
 *2026-05-05*

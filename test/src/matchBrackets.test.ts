@@ -3,7 +3,7 @@ import {Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {javascript} from '@codemirror/lang-javascript';
 import {css} from '@codemirror/lang-css';
-import {json} from '@codemirror/lang-json';
+import {json} from '@bhsd/lezer-json';
 import lua from '../../dist/lua.js';
 import {exclude} from '../../dist/javascript.js';
 import {
@@ -24,6 +24,7 @@ declare type Result = [number, number];
 const javascriptLanguage = javascript(),
 	cssLanguage = css(),
 	jsonLanguage = json(),
+	jsoncLanguage = json('jsonc'),
 	luaLanguage = lua(),
 	mark = Decoration.mark({}),
 	toRange = ({from, to}: DocRange): Range<Decoration> => mark.range(from, to),
@@ -89,6 +90,29 @@ describe('bracketMatching (Lezer)', () => {
 		lezerTest('[1, {"a": 1}]', jsonLanguage, 12, [0, 12]);
 		lezerTest('[1, {"a": 1}]', jsonLanguage, 5, [4, 11]);
 	});
+	it('JSONC', () => {
+		lezerTest('[1, {"a": 1}]', jsoncLanguage, 4, [0, 12]);
+		lezerTest('[1, {"a": 1}]', jsoncLanguage, 12, [0, 12]);
+		lezerTest('[1, {"a": 1}]', jsoncLanguage, 5, [4, 11]);
+		lezerTest(
+			'[\n\t// line comment\n\t1,\n\t{\n\t\t/* block comment */\n\t\t"a": 1\n\t}\n]',
+			jsoncLanguage,
+			6,
+			[0, 60],
+		);
+		lezerTest(
+			'[\n\t// line comment\n\t1,\n\t{\n\t\t/* block comment */\n\t\t"a": 1\n\t}\n]',
+			jsoncLanguage,
+			60,
+			[0, 60],
+		);
+		lezerTest(
+			'[\n\t// line comment\n\t1,\n\t{\n\t\t/* block comment */\n\t\t"a": 1\n\t}\n]',
+			jsoncLanguage,
+			31,
+			[24, 58],
+		);
+	});
 });
 
 describe('bracketMatching (plain)', () => {
@@ -106,6 +130,15 @@ describe('bracketMatching (plain)', () => {
 		plainTest('"(a)"', jsonLanguage, 1, null);
 		plainTest('"(a)"', jsonLanguage, 4, null);
 		plainTest('"(a)"', jsonLanguage, 2, [3, 1]);
+	});
+	it('JSONC', () => {
+		plainTest('"(a)"', jsoncLanguage, 1, null);
+		plainTest('"(a)"', jsoncLanguage, 4, null);
+		plainTest('"(a)"', jsoncLanguage, 2, [3, 1]);
+		plainTest('// [a]', jsoncLanguage, 1, null);
+		plainTest('// [a]', jsoncLanguage, 4, [5, 3]);
+		plainTest('/* {a} */', jsoncLanguage, 1, null);
+		plainTest('/* {a} */', jsoncLanguage, 4, [5, 3]);
 	});
 	it('Lua', () => {
 		plainTest('a = { 1 }', luaLanguage, 4, null);

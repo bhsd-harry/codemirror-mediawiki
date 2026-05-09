@@ -69,7 +69,9 @@ cm = new CodeMirror6(textarea, 'html', 274, mwConfig);
 cm = new CodeMirror6(textarea, 'css');
 cm = new CodeMirror6(textarea, 'javascript');
 cm = new CodeMirror6(textarea, 'json');
+cm = new CodeMirror6(textarea, 'jsonc');
 cm = new CodeMirror6(textarea, 'lua');
+cm = new CodeMirror6(textarea, 'vue');
 ```
 
 </details>
@@ -200,7 +202,9 @@ CodeMirror6.fromTextArea(textarea, 'html');
 CodeMirror6.fromTextArea(textarea, 'css');
 CodeMirror6.fromTextArea(textarea, 'javascript');
 CodeMirror6.fromTextArea(textarea, 'json');
+CodeMirror6.fromTextArea(textarea, 'jsonc');
 CodeMirror6.fromTextArea(textarea, 'lua');
+CodeMirror6.fromTextArea(textarea, 'vue');
 ```
 
 </details>

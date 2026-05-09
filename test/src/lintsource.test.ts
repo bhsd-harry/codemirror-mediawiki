@@ -9,6 +9,7 @@ import {
 	getVueLintSource,
 	getHTMLLintSource,
 	getJsonLintSource,
+	getJsoncLintSource,
 	getLuaLintSource,
 } from '../../dist/lintsource.js';
 import vue from '../../dist/vue.js';
@@ -283,6 +284,28 @@ describe('lint sources', () => {
 				{
 					from: 16,
 					to: 16,
+					message: 'Expected "," or "}" instead of end of input',
+					severity: 'error',
+				},
+			],
+		);
+	});
+	it('JSONC', async () => {
+		const text = '{\n\t// line comment\n\t"a": 1,\n\t/* block comment */\n\t"a": 2';
+		const state = createState(text, []);
+		const lintsource = await getJsoncLintSource();
+		assert.deepStrictEqual(
+			await lintsource(state),
+			[
+				{
+					from: 51,
+					to: 52,
+					message: 'Duplicate key "a"',
+					severity: 'warning',
+				},
+				{
+					from: 56,
+					to: 56,
 					message: 'Expected "," or "}" instead of end of input',
 					severity: 'error',
 				},

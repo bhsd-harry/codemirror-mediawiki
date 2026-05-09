@@ -3,6 +3,7 @@ import {
 	registerCSS,
 	registerHTML,
 	registerJSON,
+	registerJSONC,
 	registerJavaScript,
 	registerLua,
 	registerMediaWiki,
@@ -21,6 +22,7 @@ import type {MwConfig, LintSource} from '/codemirror-mediawiki/src/index';
 registerCSS();
 registerHTML();
 registerJSON();
+registerJSONC();
 registerJavaScript();
 registerLua();
 registerMediaWiki('https://www.mediawiki.org/wiki/', true);
@@ -182,6 +184,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		['css', 'css'],
 		['lua', 'lua'],
 		['json', 'json'],
+		['jsonc', 'jsonc'],
 		['vue', 'vue'],
 		['html', 'html'],
 		['abusefilter', 'abusefilter'],

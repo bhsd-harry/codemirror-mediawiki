@@ -24,6 +24,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [html](#html)
 	- [javascript](#javascript)
 	- [json](#json)
+	- [jsonc](#jsonc)
 	- [lua](#lua)
 	- [mediawiki](#mediawiki)
 	- [vue](#vue)
@@ -109,6 +110,7 @@ import {
 	registerCSS,
 	registerJavaScript,
 	registerJSON,
+	registerJSONC,
 	registerLua,
 	registerVue,
 	registerAbuseFilter,
@@ -131,6 +133,7 @@ import {
 	registerCSS,
 	registerJavaScript,
 	registerJSON,
+	registerJSONC,
 	registerLua,
 	registerVue,
 	registerAbuseFilter,
@@ -147,6 +150,7 @@ import {
 	registerCSS,
 	registerJavaScript,
 	registerJSON,
+	registerJSONC,
 	registerLua,
 	registerVue,
 	registerAbuseFilter,
@@ -164,6 +168,7 @@ const {
 	registerCSS,
 	registerJavaScript,
 	registerJSON,
+	registerJSONC,
 	registerLua,
 	registerVue,
 	registerAbuseFilter,
@@ -180,6 +185,7 @@ const {
 	registerCSS,
 	registerJavaScript,
 	registerJSON,
+	registerJSONC,
 	registerLua,
 	registerVue,
 	registerAbuseFilter,
@@ -327,6 +333,27 @@ If you want a more granular control over the extensions, you can import the `reg
 ```js
 import {registerJSONCore} from '@bhsd/codemirror-mediawiki';
 registerJSONCore();
+```
+
+</details>
+
+### jsonc
+
+<details>
+	<summary>Expand</summary>
+
+You can bundle the JSONC mode by importing the `registerJSONC` function:
+
+```js
+import {registerJSONC} from '@bhsd/codemirror-mediawiki';
+registerJSONC();
+```
+
+If you want a more granular control over the extensions, you can import the `registerJSONCCore` function and the desired extensions:
+
+```js
+import {registerJSONCCore} from '@bhsd/codemirror-mediawiki';
+registerJSONCCore();
 ```
 
 </details>
@@ -522,6 +549,7 @@ cm = new CodeMirror6(textarea, 'html', mwConfig);
 cm = new CodeMirror6(textarea, 'css');
 cm = new CodeMirror6(textarea, 'javascript');
 cm = new CodeMirror6(textarea, 'json');
+cm = new CodeMirror6(textarea, 'jsonc');
 cm = new CodeMirror6(textarea, 'lua');
 cm = new CodeMirror6(textarea, 'vue');
 cm = new CodeMirror6(textarea, 'abusefilter', dialect);
@@ -945,6 +973,7 @@ cm.setLanguage('html', mwConfig);
 cm.setLanguage('css');
 cm.setLanguage('javascript');
 cm.setLanguage('json');
+cm.setLanguage('jsonc');
 cm.setLanguage('lua');
 cm.setLanguage('vue');
 cm.setLanguage('abusefilter', dialect);
