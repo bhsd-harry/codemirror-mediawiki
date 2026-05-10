@@ -487,6 +487,7 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
 		_: /^[\p{L}\p{N}_]+?__/u,
 		'＿': /^[\p{L}\p{N}_＿]+?＿{2}/u,
 	},
+	pipeTokenizers = new Set(['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']),
 	getExtLinkTextRegex = getRegex(pipe => new RegExp(
 		String.raw`^(?:[^\]&${pipe}${escapeCharClass(extLinkChars)}]|${lookahead(extLinkChars)})+`,
 		'iu',
@@ -750,8 +751,7 @@ export class MediaWiki {
 					state.redirect = false;
 				}
 				ch = stream.next()!;
-				const isTemplate = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable']
-					.includes(state.tokenize.name);
+				const isTemplate = pipeTokenizers.has(state.tokenize.name);
 				switch (ch) {
 					case '#':
 					case ';':
@@ -987,8 +987,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			const t = state.stack[0]!,
 				equal = getEqual(t),
-				isNested = ['inTemplateArgument', 'inParserFunctionArgument', 'inVariable', 'inTableCell']
-					.includes(t.name),
+				isNested = t.name === 'inTableCell' || pipeTokenizers.has(t.name),
 				pipe = (isNested ? '|' : '') + equal,
 				peek = stream.peek();
 			if (
@@ -1395,8 +1394,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('htmlTagBracket', state);
 			}
 			const t = state.stack[0]!,
-				pipe = (['inTemplateArgument', 'inParserFunctionArgument', 'inVariable'].includes(t.name) ? '|' : '')
-					+ getEqual(t);
+				pipe = (pipeTokenizers.has(t.name) ? '|' : '') + getEqual(t);
 			if (pipe.includes(stream.peek() || '')) {
 				pop(state);
 				return '';

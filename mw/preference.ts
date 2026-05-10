@@ -1,14 +1,12 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {preferenceId, indentKey, colKey, themeKey, RuleState, linterHook} from './constants';
+import {preferenceId, indentKey, colKey, themeKey, RuleState, linterHook, linterMap} from './constants';
 import {parsoidRules} from './lintsource';
 import {msg, parseMsg, i18n} from './msg';
 import {instances} from './util';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki-api';
-
-declare type codeKey = typeof codeKeys[number];
 
 declare type Preferences = {
 	addons: string[];
@@ -17,7 +15,7 @@ declare type Preferences = {
 	col: number;
 	theme: string;
 	wikilint: Record<LintError.Rule, RuleState>;
-} & Record<codeKey, unknown>;
+} & Record<string, unknown>;
 
 declare interface MediaWikiPage {
 	readonly revisions?: {
@@ -35,7 +33,7 @@ const prefKey = 'codemirror-mediawiki-addons',
 	nonBooleanKeys = new Set(['indent', 'col', 'theme', 'useMonaco'].map(k => `addon-${k}`)),
 	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
-	codeKeys = ['ESLint', 'Stylelint', 'Luacheck'] as const,
+	codeKeys = [...linterMap.values()].slice(1),
 	hook = mw.hook<string[]>(linterHook),
 	user = mw.config.get('wgUserGroups')?.includes('user')
 		&& mw.config.get('wgUserName'),
@@ -58,7 +56,7 @@ let dialog: OO.ui.MessageDialog | undefined,
 	indent = localStorage.getItem(indentKey) ?? '',
 	col = Number(localStorage.getItem(colKey)) || 0,
 	theme = localStorage.getItem(themeKey) ?? 'auto';
-const widgets: Partial<Record<codeKey, OO.ui.MultilineTextInputWidget>> = {};
+const widgets: Partial<Record<string, OO.ui.MultilineTextInputWidget>> = {};
 
 /**
  * 处理Api请求错误
@@ -193,7 +191,7 @@ export const openPreference = async (): Promise<void> => {
 		const panelMain = new OO.ui.TabPanelLayout('main', {label: msg('title')}),
 			panelWikilint = buildPanel('WikiLint', rules),
 			panelParsoid = buildPanel('Parsoid', [...parsoidRules, 'parsoid-template-data']),
-			panels: Partial<Record<codeKey, OO.ui.TabPanelLayout>> = {};
+			panels: Partial<Record<string, OO.ui.TabPanelLayout>> = {};
 		for (const label of codeKeys) {
 			const c = codeConfigs.get(label);
 			widgets[label] = new OO.ui.MultilineTextInputWidget({
@@ -220,7 +218,7 @@ export const openPreference = async (): Promise<void> => {
 			panels[label] = panel;
 		}
 		preferenceDialog.layout.addTabPanels(
-			[panelMain, ...panelWikilint, ...panelParsoid, ...Object.values(panels)],
+			[panelMain, ...panelWikilint, ...panelParsoid, ...Object.values(panels) as OO.ui.TabPanelLayout[]],
 			0,
 		);
 		widget = new OO.ui.CheckboxMultiselectInputWidget({

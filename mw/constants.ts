@@ -11,6 +11,12 @@ export const curVersion = $VERSION,
 		await mw.loader.using('mediawiki.language');
 		return mw.language.getFallbackLanguageChain();
 	})(),
+	linterMap = new Map([
+		['wikitext', 'WikiLint'],
+		['javascript', 'ESLint'],
+		['css', 'Stylelint'],
+		['lua', 'Luacheck'],
+	]),
 	indentKey = 'codemirror-mediawiki-indent',
 	colKey = 'codemirror-mediawiki-col',
 	themeKey = 'codemirror-mediawiki-theme',

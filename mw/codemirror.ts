@@ -32,6 +32,7 @@ import {
 	hook,
 	settingHook,
 	linterHook,
+	linterMap,
 } from './constants';
 import escape from './escape';
 import {
@@ -80,12 +81,6 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		['scribunto', 'lua'],
 		['wikitext', 'mediawiki'],
 		['proofread-page', 'mediawiki'],
-	]),
-	linterMap = new Map([
-		['wikitext', 'WikiLint'],
-		['javascript', 'ESLint'],
-		['css', 'Stylelint'],
-		['lua', 'Luacheck'],
 	]),
 	monacoPrefLangs = new Map([
 		['mediawiki', 'wiki'],
