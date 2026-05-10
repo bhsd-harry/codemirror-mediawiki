@@ -13,8 +13,8 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	panelsSelector = '.cm-panels',
 	actionSelector = '.cm-diagnosticAction',
 	linkSelector = '.cm-link',
-	doctagMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag'}),
-	typeMark = /* @__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
+	doctagMark = /* #__PURE__ */ Decoration.mark({class: 'cm-doctag'}),
+	typeMark = /* #__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
 	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	bgDark = '#4c566a',
 	cursorColor = '--cursor-color',
@@ -22,12 +22,12 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	matchingCls = 'cm-matchingTag',
 	nonmatchingCls = 'cm-nonmatchingTag';
 
-export const isWMF = /* @__PURE__ */ (
+export const isWMF = /* #__PURE__ */ (
 	() => typeof location === 'object'
 		&& new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname)
 )();
 
-export const isMac = /* @__PURE__ */ (() => {
+export const isMac = /* #__PURE__ */ (() => {
 	const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	return vendor?.includes('Apple Computer')

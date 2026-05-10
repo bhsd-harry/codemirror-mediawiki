@@ -59,9 +59,7 @@ import {
 } from './lintsource.js';
 import bracketMatchingBase from './matchBrackets.js';
 import tagMatchingState from './matchTag.js';
-import {
-	mediawikiBase,
-} from './mediawiki.js';
+import {mediawikiBase} from './mediawiki.js';
 import {
 	openLinks,
 	openLinksForLua,

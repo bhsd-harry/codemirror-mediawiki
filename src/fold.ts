@@ -50,7 +50,7 @@ declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 /** @returns 折叠范围或是否继续查找 */
 declare type FoldableLineEndCheck = (from: number, to?: number) => DocRange | boolean;
 
-const getExtRegex = /* @__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
+const getExtRegex = /* #__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
 export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos, to),
 	updateAll: AnchorUpdate = (pos, {from, to}) => from <= pos && to > pos ? to : pos;
@@ -63,13 +63,13 @@ const isComponent = (keys: TagName[]) =>
 		(node: SyntaxNode | null): boolean => keys.some(key => node?.name.includes(tokens[key])),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
-	isTemplateBracket = /* @__PURE__ */ isComponent(['templateBracket', 'parserFunctionBracket']),
+	isTemplateBracket = /* #__PURE__ */ isComponent(['templateBracket', 'parserFunctionBracket']),
 
 	/** Check if a SyntaxNode is a template name */
-	isTemplateName = /* @__PURE__ */ isComponent(['templateName', 'parserFunctionName']),
+	isTemplateName = /* #__PURE__ */ isComponent(['templateName', 'parserFunctionName']),
 
 	/** Check if a SyntaxNode is a template delimiter (`|` or `:`) */
-	isDelimiter = /* @__PURE__ */ isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
+	isDelimiter = /* #__PURE__ */ isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
 
 	/**
 	 * Check if a SyntaxNode is a template delimiter (`|` or `:`), excluding `subst:` and `safesubst:`
@@ -85,7 +85,7 @@ const isComponent = (keys: TagName[]) =>
 		/-(?:template|ext)[a-z\d-]+ground/u.test(node.name) && !isTemplateBracket(node),
 
 	/** Check if a SyntaxNode is an extension tag bracket (`<` or `>`) */
-	isExtBracket = /* @__PURE__ */ isComponent(['extTagBracket']),
+	isExtBracket = /* #__PURE__ */ isComponent(['extTagBracket']),
 
 	/**
 	 * Check if a SyntaxNode is part of a extension tag
@@ -321,8 +321,8 @@ class MyFoldMarker extends GutterMarker {
 	}
 }
 
-const canFold = /* @__PURE__ */ new MyFoldMarker(true),
-	canUnfold = /* @__PURE__ */ new MyFoldMarker(false);
+const canFold = /* #__PURE__ */ new MyFoldMarker(true),
+	canUnfold = /* #__PURE__ */ new MyFoldMarker(false);
 
 const myFindFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined => {
 	let found: DocRange | undefined;
@@ -436,7 +436,7 @@ export const buildMarkers = (view: EditorView): RangeSet<MyFoldMarker> => {
 	return builder.finish();
 };
 
-const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
+const markers = /* #__PURE__ */ ViewPlugin.fromClass(class implements PluginValue {
 	declare tree;
 	declare markers;
 
@@ -460,7 +460,7 @@ const markers = /* @__PURE__ */ ViewPlugin.fromClass(class implements PluginValu
 	}
 });
 
-const defaultFoldExtension = /* @__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
+const defaultFoldExtension = /* #__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
 
 /**
  * 生成折叠命令
@@ -495,7 +495,7 @@ export const foldCommand = (refOnly?: boolean): Command => view => {
 	return execute(view, effects, anchor);
 };
 
-export const foldRef = /* @__PURE__ */ foldCommand(true);
+export const foldRef = /* #__PURE__ */ foldCommand(true);
 export const unfoldRef: Command = (view): boolean => {
 	const {state} = view,
 		tree = syntaxTree(state),
@@ -586,7 +586,7 @@ export default (
 	}),
 ];
 
-export const mediawikiFold = /* @__PURE__ */ ((): Extension => [
+export const mediawikiFold = /* #__PURE__ */ ((): Extension => [
 	codeFolding({
 		placeholderDOM(view) {
 			const element = elt(

@@ -28,7 +28,7 @@ import type {CompletionSectionName, ApiSuggest} from './token';
 
 declare const marked: Marked;
 
-const code = /* @__PURE__ */ (() => `${hoverSelector} code`)();
+const code = /* #__PURE__ */ (() => `${hoverSelector} code`)();
 
 /**
  * @ignore
@@ -94,7 +94,7 @@ export const getHoverFromApi = async (
 };
 
 /** hover tooltip and signature tooltip */
-export const hoverStyle = /* @__PURE__ */ EditorView.theme({
+export const hoverStyle = /* #__PURE__ */ EditorView.theme({
 	'.cm-tooltip-hover': {
 		maxHeight: '60vh',
 		overflow: 'hidden auto',

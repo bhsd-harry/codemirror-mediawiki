@@ -18,12 +18,12 @@ const focused = '&.cm-focused',
 	matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
 
-export const lightHighlightStyle = /* @__PURE__ */ (() => getHighlightExtension(
+export const lightHighlightStyle = /* #__PURE__ */ (() => getHighlightExtension(
 	defaultHighlightStyle.specs,
 	{themeType: 'light'},
 ))();
 
-export const light = /* @__PURE__ */ EditorView.theme({
+export const light = /* #__PURE__ */ EditorView.theme({
 		'&': {
 			backgroundColor: '#fff',
 			'--cm-arg': '#b0c',
@@ -75,7 +75,7 @@ export const light = /* @__PURE__ */ EditorView.theme({
 	 * @author Bhsd
 	 * @see https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/nord-moeskin.css
 	 */
-	nordDark = /* @__PURE__ */ ((): Extension => [
+	nordDark = /* #__PURE__ */ ((): Extension => [
 		nord,
 		EditorView.theme({
 			'&': {

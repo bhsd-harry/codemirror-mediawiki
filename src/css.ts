@@ -5,7 +5,7 @@ import type {Extension} from '@codemirror/state';
 import type {CompletionSource, CompletionResult} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
 
-const cssWideKeywords = /* @__PURE__ */ getCompletions(['revert', 'revert-layer']);
+const cssWideKeywords = /* #__PURE__ */ getCompletions(['revert', 'revert-layer']);
 
 /**
  * CSS completion source with dialect-specific adjustments.

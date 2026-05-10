@@ -670,7 +670,7 @@ const getGrounds = (
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
-const wikiTheme = /* @__PURE__ */ EditorView.theme({
+const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[`.${mwPrefix}section--1`]: {
 		fontSize: '1.8em',
 		lineHeight: '1.2em',

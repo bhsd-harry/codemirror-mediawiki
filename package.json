@@ -23,6 +23,18 @@
 	"main": "./dist/index.js",
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"require": "./dist/index.js",
+			"import": "./dist/index.js"
+		},
+		"./*": {
+			"types": "./dist/*.d.ts",
+			"require": "./dist/*.js",
+			"import": "./dist/*.js"
+		}
+	},
 	"type": "module",
 	"sideEffects": false,
 	"repository": {
@@ -54,7 +66,7 @@
 		"diff": "bash diff.sh"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.3.1",
+		"@bhsd/browser": "^0.3.2",
 		"@bhsd/cm-util": "^1.1.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
 		"@bhsd/common": "^2.2.1",

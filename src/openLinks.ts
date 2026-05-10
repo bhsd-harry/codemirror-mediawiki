@@ -30,7 +30,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
 	pagename = `.${mwPrefix}pagename`,
-	wikiLinks = /* @__PURE__ */ (() => [
+	wikiLinks = /* #__PURE__ */ (() => [
 		'template-name',
 		'link-pagename',
 		`parserfunction${pagename}`,
