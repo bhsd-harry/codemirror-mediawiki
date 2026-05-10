@@ -40,7 +40,7 @@
 		"diff": "bash diff.sh"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.3.1",
+		"@bhsd/browser": "^0.3.2",
 		"@bhsd/cm-util": "^1.1.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
 		"@bhsd/common": "^2.2.1",
