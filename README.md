@@ -2,6 +2,7 @@
 
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-mediawiki.svg)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
+[![NPM downloads](https://img.shields.io/npm/dm/%40bhsd%2Fcodemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/972fd5f6684c4fd8ac2f26e01d349948)](https://app.codacy.com/gh/bhsd-harry/codemirror-mediawiki/dashboard)
 

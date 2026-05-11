@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.17.2
+
+*2026-05-12*
+
+**Removed**
+
+- Monaco editor support for the Vue mode on a MediaWiki site
+
 ## 3.17.1
 
 *2026-05-11*

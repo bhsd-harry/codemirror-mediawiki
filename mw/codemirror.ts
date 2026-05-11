@@ -332,13 +332,16 @@ export class CodeMirror extends CodeMirror6 {
 
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
-		if (typeof monaco !== 'object' || typeof monaco.editor !== 'object') {
-			const CDN = baseData.CDN || baseCDN;
+		const CDN = baseData.CDN || baseCDN;
+		if (typeof monaco !== 'object') {
 			Object.assign(globalThis, {monaco: {CDN}});
-			await $.ajax(
-				`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/all.min.js`,
-				{dataType: 'script', cache: true},
-			);
+		}
+		if (typeof monaco.editor !== 'object') {
+			Object.assign(globalThis, {
+				monaco: (await import(
+					`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/wiki.min.js`,
+				) as {default: Promise<unknown>}).default,
+			});
 		}
 		const {textarea, lang} = this,
 			language = monacoLangs.get(lang) ?? lang,
@@ -809,7 +812,8 @@ export class CodeMirror extends CodeMirror6 {
 				prefs.delete('wikiEditor');
 			}
 		}
-		const isCM = !useMonaco.has(monacoPrefLangs.get(lang!) ?? lang!),
+		/** @todo 已停止支持Vue，一段时间后移除额外逻辑 */
+		const isCM = lang === 'vue' || !useMonaco.has(monacoPrefLangs.get(lang!) ?? lang!),
 			isCMWiki = isCM && isWiki,
 			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
 		cm.dialect = dialect;

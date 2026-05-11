@@ -31,7 +31,7 @@ declare interface MediaWikiResponse {
 const prefKey = 'codemirror-mediawiki-addons',
 	monacoKey = 'codemirror-mediawiki-monaco',
 	nonBooleanKeys = new Set(['indent', 'col', 'theme', 'useMonaco'].map(k => `addon-${k}`)),
-	labels = ['Wikitext', 'JavaScript', 'CSS', 'Lua', 'JSON', 'Vue'],
+	labels = ['Wiki', 'JavaScript', 'CSS', 'Lua', 'JSON'],
 	wikilintKey = 'codemirror-mediawiki-wikilint',
 	codeKeys = [...linterMap.values()].slice(1),
 	hook = mw.hook<string[]>(linterHook),
@@ -240,11 +240,10 @@ export const openPreference = async (): Promise<void> => {
 			value: [...prefs] as unknown as string,
 		});
 		monacoWidget = new OO.ui.CheckboxMultiselectInputWidget({
-			options: ['wiki', 'javascript', 'css', 'lua', 'json', 'vue']
-				.map((lang, i): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label'> => ({
-					data: lang,
-					label: labels[i]!,
-				})),
+			options: labels.map((label): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label'> => ({
+				data: label.toLowerCase(),
+				label,
+			})),
 			value: [...useMonaco] as unknown as string,
 		});
 		indentWidget = new OO.ui.TextInputWidget({value: indent, placeholder: String.raw`\t`});
