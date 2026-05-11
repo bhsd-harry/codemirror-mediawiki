@@ -1,4 +1,16 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.17.1
+
+*2026-05-11*
+
+**Fixed**
+
+- Missing tooltip styles for the [signatureHelp](./README.md#signaturehelp) extension in the MediaWiki mode, since [v3.17.0](#3170)
+
+**Changed**
+
+- Adding an `exports` field to `package.json`
+
 ## 3.17.0
 
 *2026-05-10*

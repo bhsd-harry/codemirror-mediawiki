@@ -3,6 +3,7 @@ import {StateField, StateEffect} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
 import {baseData} from './constants.js';
+import {hoverStyle} from './hover.js';
 import {
 	createTooltipView,
 	indexToPos,
@@ -151,5 +152,6 @@ export default (
 				}
 			},
 		}),
+		hoverStyle,
 	];
 };
