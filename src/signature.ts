@@ -2,6 +2,7 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
 import {baseData} from './constants.js';
+import {hoverStyle} from './hover.js';
 import {
 	createTooltipView,
 	indexToPos,
@@ -118,5 +119,6 @@ export default (
 				}
 			},
 		}),
+		hoverStyle,
 	];
 };
