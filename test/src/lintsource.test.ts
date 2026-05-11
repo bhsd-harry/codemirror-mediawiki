@@ -212,7 +212,8 @@ describe('lint sources', () => {
 			`<script>console.log( !!!0 );</script>
 <style>* { top: 0; top: 0 }</style>
 <p style="top: 0; top: 0">
-<style>* { color: v-bind(color); }</style>`,
+<style>* { color: v-bind(color); }</style>
+<br style=top:0;top:0>`,
 			vue(),
 		);
 		const lintsource = await getVueLintSource();
@@ -221,6 +222,7 @@ describe('lint sources', () => {
 			[
 				getStylelintError(49, 52),
 				getStylelintError(84, 87),
+				getStylelintError(154, 157),
 				getESLintError(22, 25),
 			],
 		);
@@ -228,6 +230,7 @@ describe('lint sources', () => {
 		await viewTest('<script>console.log( !!!0 );</script>', lintsource, 22, 25, '0', vue());
 		await viewTest('<style>* { top: 0; top: 0 }</style>', lintsource, 17, 25, '', vue());
 		await viewTest('<p style="top: 0; top: 0">', lintsource, 10, 17, '', vue());
+		await viewTest('<p style=top:0;top:0>', lintsource, 14, 20, '', vue());
 	});
 	it('mixed MediaWiki-HTML', async () => {
 		const lang = html(mwConfig) as LanguageSupport & {nestedMWLanguage: Language};
@@ -235,7 +238,7 @@ describe('lint sources', () => {
 			`<script>console.log( !!!0 );</script>
 <style>* { top: 0; top: 0 }</style>
 <p style="top: 0; top: 0">
-<noinclude></br><br style="top: 0; top: 0"></noinclude>`,
+<noinclude></br><br style=top:0;top:0></noinclude>`,
 			lang,
 		);
 		const lintsource = await getHTMLLintSource({}, {} as EditorView, lang.nestedMWLanguage);
@@ -245,13 +248,13 @@ describe('lint sources', () => {
 				getStylelintError(49, 52),
 				getStylelintError(84, 87),
 				// from Vue Stylelint integration
-				getStylelintError(128, 131),
+				getStylelintError(127, 130),
 				getESLintError(22, 25),
 				getWikiLintError(112, 117),
 				// from WikiParser-Node Stylelint integration
-				getStylelintError(128, 131, true, false),
+				getStylelintError(127, 130, true, false),
 				// from `getWikiLintSource()` Stylelint integration
-				getStylelintError(128, 131, true),
+				getStylelintError(127, 130, true),
 			],
 		);
 
@@ -259,10 +262,10 @@ describe('lint sources', () => {
 		await viewTest('<style>* { top: 0; top: 0 }</style>', lintsource, 17, 25, '', lang);
 		await viewTest('<p style="top: 0; top: 0">', lintsource, 10, 17, '', lang);
 		await viewTest(
-			'<noinclude><br style="top: 0; top: 0"></noinclude>',
+			'<noinclude><br style=top:0;top:0></noinclude>',
 			lintsource,
-			22,
-			29,
+			26,
+			32,
 			'',
 			lang,
 		);

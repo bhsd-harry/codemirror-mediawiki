@@ -6,6 +6,7 @@
 **Fixed**
 
 - Missing tooltip styles for the [signatureHelp](./README.md#signaturehelp) extension in the MediaWiki mode, since [v3.17.0](#3170)
+- Stylelint for unquoted style attribute values in the mixed MediaWiki-HTML and Vue modes
 
 **Changed**
 

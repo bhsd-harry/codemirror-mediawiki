@@ -309,13 +309,13 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.Legacy
 				...(await Promise.all(
 					cssLanguage.findRegions(state).map(async ({from, to}): Promise<Diagnostic[]> => {
 						const node = ensureSyntaxTree(state, from)?.resolve(from, 1);
-						if (node?.name === 'AttributeValue') {
+						if (node?.name === 'AttributeValue' || node?.name === 'UnquotedAttributeValue') {
 							return (await cssLintSource(
 								styleLint,
-								`a {${sanitizeInlineStyle(state.sliceDoc(from, to))}}`,
+								`*{${sanitizeInlineStyle(state.sliceDoc(from, to))}}`,
 								css,
 								doc,
-								from - 3,
+								from - 2,
 								to + 1,
 							)).filter(({from: f, to: t}) => f <= to && t >= from)
 								.map((diagnostic): Diagnostic => {
