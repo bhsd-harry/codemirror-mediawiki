@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.17.2
 
-*2026-05-12*
+*2026-05-15*
+
+**Added**
+
+- ESLint for the Vue mode now supports the [eslint-plugin-vue](https://eslint.vuejs.org/) plugin
 
 **Removed**
 

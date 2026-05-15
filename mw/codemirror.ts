@@ -626,7 +626,10 @@ export class CodeMirror extends CodeMirror6 {
 					break;
 				case 'vue':
 					opt = (): Option => ({
-						js: this.#getBasicOpt('javascript'),
+						js: {
+							...this.#getBasicOpt('javascript'),
+							parserOptions: {ecmaVersion: 8, sourceType: 'script'},
+						},
 						css: this.#getBasicOpt('css'),
 					});
 					break;

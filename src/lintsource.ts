@@ -292,8 +292,9 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.Legacy
 		const lintSource: LintSource = async state => {
 			const {doc} = state,
 				option = await getOpt(opt) ?? {};
-			let js = option['js'] as Linter.LegacyConfig | null | undefined,
-				css = option['css'] as Config | Config['rules'];
+			let js = option['js'] as Linter.LegacyConfig & {filename?: string} | null | undefined,
+				css = option['css'] as Config | Config['rules'],
+				pluginEnabled = false;
 			if (rules) {
 				css = isStylelintConfig(css)
 					? {
@@ -304,6 +305,19 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.Legacy
 			}
 			if (globals) {
 				js = {...js, globals: {...globals, ...js?.globals}};
+				if ('defineProps' in globals && typeof eslint.loadPlugin === 'function') {
+					await eslint.loadPlugin('eslint-plugin-vue');
+					pluginEnabled = true;
+					const extendsArray = js.extends ?? [];
+					js = {
+						...js,
+						extends: [
+							...Array.isArray(extendsArray) ? extendsArray : [extendsArray],
+							'plugin:vue/essential',
+						],
+						filename: 'app.vue',
+					};
+				}
 			}
 			return [
 				...(await Promise.all(
@@ -327,9 +341,11 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.Legacy
 						return node ? cssLintSource(styleLint, state.sliceDoc(from, to), css, doc, from, to) : [];
 					}),
 				)).flat(),
-				...javascriptLanguage.findRegions(state).flatMap(
-					({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js as Option, doc, from, to),
-				),
+				...pluginEnabled
+					? jsLintSource(esLint, doc.toString(), js as Option, doc)
+					: javascriptLanguage.findRegions(state).flatMap(
+						({from, to}) => jsLintSource(esLint, state.sliceDoc(from, to), js as Option, doc, from, to),
+					),
 			];
 		};
 		Object.defineProperty(lintSource, 'config', {
