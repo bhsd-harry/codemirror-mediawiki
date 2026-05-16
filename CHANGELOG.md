@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.6.1
+
+*2026-05-17*
+
+**Added**
+
+- The [wikilint](./README.md#wikilint) extension now reports unknown macros in `<math>` and `<score>` extension tags
+
 ## 0.6.0
 
 *2026-05-05*

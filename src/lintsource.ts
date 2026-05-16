@@ -1,4 +1,7 @@
 import {
+	syntaxTree,
+} from '@codemirror/language';
+import {
 	getWikiLinter,
 } from './linter.js';
 import {posToIndex, toConfigGetter} from './util.js';
@@ -105,13 +108,28 @@ export const getWikiLintSource: LintSourceGetter =
 		const wikiLint = await getWikiLinter(options, v);
 		const lintSource: LintSource =
 			async view => {
-				const {doc} = view.state;
-				return wikiLintSource(
-					wikiLint,
-					doc.toString(),
-					view,
-					doc,
-				);
+				const {state} = view;
+				const {doc} = state,
+					diagnostics = await wikiLintSource(
+						wikiLint,
+						doc.toString(),
+						view,
+						doc,
+					);
+				syntaxTree(state).iterate({
+					enter({name, from, to}) {
+						if (/(?:^|_)mw-unknown(?:$|_)/u.test(name)) {
+							diagnostics.push({
+								from,
+								to,
+								source: 'WikiLint',
+								severity: 'warning',
+								message: 'Unknown macro',
+							});
+						}
+					},
+				});
+				return diagnostics;
 			};
 		return lintSource;
 	};

@@ -112,7 +112,10 @@ const eatCommand = (stream: StringStream, state: State, parent: Tokenizer, base?
 	} else if (isUnset || isNew || setCommands.has(cmd)) {
 		state.tokenize = inAssignment(parent, isUnset ? -1 : 1, isNew);
 	}
-	return mt && extData['score']?.has(`\\${cmd}`) !== false ? /* #708 */ 'keyword' : '';
+	if (!mt) {
+		return '';
+	}
+	return extData['score']?.has(`\\${cmd}`) === false ? 'mw-unknown' : /* #708 */ 'keyword';
 };
 
 const inAssignment = (parent: Tokenizer, step: -1 | 0 | 1, cls?: boolean): Tokenizer => (stream, state) => {

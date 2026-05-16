@@ -642,6 +642,7 @@ export class MediaWiki {
 		for (let i = 1; i < 7; i++) {
 			this.addToken(`section--${i}`);
 		}
+		this.addToken('unknown', true);
 		for (const tag of this.tags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre' && tag !== 'ref');
 			if (tag === 'score') {

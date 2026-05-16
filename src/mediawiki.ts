@@ -196,7 +196,7 @@ export class FullMediaWiki extends MediaWiki {
 			} else if (
 				'math' in extCompletion
 				&& hasTag(types, ['mw-tag-math', 'mw-tag-chem', 'mw-tag-ce'] as string[] as TagName[])
-				&& (types.size === 1 || types.has('keyword') || types.has('invalid'))
+				&& (types.size === 1 || hasTag(types, ['keyword', 'invalid', 'mw-unknown'] as string[] as TagName[]))
 			) {
 				const mt = context.matchBefore(/\\[a-z]*$/iu);
 				return mt && {
@@ -207,7 +207,7 @@ export class FullMediaWiki extends MediaWiki {
 			} else if (
 				'score' in extCompletion
 				&& hasTag(types, 'mw-tag-score' as TagName)
-				&& (types.size === 1 || types.has('keyword'))
+				&& (types.size === 1 || hasTag(types, ['keyword', 'mw-unknown'] as string[] as TagName[]))
 			) {
 				const mt = context.matchBefore(/\\[-a-z]*$/iu);
 				return mt && {
