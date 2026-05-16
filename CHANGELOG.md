@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 3.17.2
 
-*2026-05-15*
+*2026-05-17*
 
 **Added**
 
 - ESLint for the Vue mode now supports the [eslint-plugin-vue](https://eslint.vuejs.org/) plugin
+- WikiLint now reports unknown macros in `<math>` and `<score>` extension tags in the MediaWiki mode
 
 **Removed**
 

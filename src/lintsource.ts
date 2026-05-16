@@ -1,4 +1,7 @@
-import {ensureSyntaxTree} from '@codemirror/language';
+import {
+	syntaxTree,
+	ensureSyntaxTree,
+} from '@codemirror/language';
 import {cssLanguage} from '@codemirror/lang-css';
 import {javascriptLanguage} from '@codemirror/lang-javascript';
 import {jsonLinter, jsoncLinter} from '@bhsd/lezer-json';
@@ -148,13 +151,28 @@ export const getWikiLintSource = (articlePath?: string): LintSourceGetter =>
 		}
 		const wikiLint = await getWikiLinter(options, v);
 		const lintSource: LintSource =
-			async ({doc}) => {
-				return wikiLintSource(
-					wikiLint,
-					doc.toString(),
-					await getOpt(opt),
-					doc,
-				);
+			async state => {
+				const {doc} = state,
+					diagnostics = await wikiLintSource(
+						wikiLint,
+						doc.toString(),
+						await getOpt(opt),
+						doc,
+					);
+				syntaxTree(state).iterate({
+					enter({name, from, to}) {
+						if (/(?:^|_)mw-unknown(?:$|_)/u.test(name)) {
+							diagnostics.push({
+								from,
+								to,
+								source: 'WikiLint',
+								severity: 'warning',
+								message: 'Unknown macro',
+							});
+						}
+					},
+				});
+				return diagnostics;
 			};
 		if (wikiLint.fixer) {
 			lintSource.fixer = (_, rule): Promise<string> => wikiLint.fixer!('', rule) as Promise<string>;
