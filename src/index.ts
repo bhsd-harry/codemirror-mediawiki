@@ -90,7 +90,6 @@ export const mediawiki = (configData: ConfigData, cdn?: string): LanguageSupport
 	return new LanguageSupport(
 		mediawikiLanguage(configData),
 		[
-			wikiTheme,
 			keymap.of([
 				...formatKeymap,
 				...escapeKeymap(configData),

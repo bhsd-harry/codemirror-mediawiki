@@ -67,7 +67,7 @@ export const getStaticMwConfig = (
 	],
 	urlProtocols: `${protocol}|//`,
 	nsid,
-	img: Object.fromEntries(Object.entries(img).map(([k, v]) => [k, `img_${v}`])),
+	imageKeywords: img,
 	variants,
 	redirection,
 });

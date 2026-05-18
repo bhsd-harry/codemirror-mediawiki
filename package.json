@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
@@ -41,7 +41,7 @@
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.3.2",
-		"@bhsd/cm-util": "^1.1.0",
+		"@bhsd/cm-util": "^2.0.0",
 		"@bhsd/codemirror-css-color-picker": "^7.1.0",
 		"@bhsd/common": "^2.2.1",
 		"@bhsd/stylelint-util": "^1.0.2",
@@ -55,11 +55,11 @@
 		"wikiparser-node": "^1.40.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.4.2",
+		"@bhsd/code-standard": "^2.5.0",
 		"@codemirror/search": "^6.7.0",
 		"@stylistic/stylelint-plugin": "^5.1.0",
-		"@types/node": "^25.8.0",
-		"@typescript-eslint/parser": "^8.59.2",
+		"@types/node": "^25.9.0",
+		"@typescript-eslint/parser": "^8.59.4",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",
 		"eslint": "^10.4.0",
