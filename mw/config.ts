@@ -55,7 +55,10 @@ export const getMwConfig: MwConfigGetter = async modes => {
 	const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true as unknown as string),
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
-	if (config?.img && config.redirection && config.variants && config.variableIDs && config.functionHooks && !isIPE) {
+	if (
+		config?.imageKeywords && config.redirection && config.variants && config.variableIDs && config.functionHooks
+		&& !isIPE
+	) {
 		config.urlProtocols = config.urlProtocols.replaceAll(String.raw`\:`, ':');
 		config.tagModes = modes;
 		return {...config, nsid};
@@ -138,7 +141,7 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 	if (config) {
 		return config;
 	}
-	const {nsid, variants, functionSynonyms, img} = mwConfig,
+	const {nsid, variants, functionSynonyms} = mwConfig,
 		[insensitive] = functionSynonyms;
 	config = {
 		...getParserConfigBase(minConfig, mwConfig),
@@ -156,9 +159,6 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 		} else if (noCM && !key.startsWith('#')) {
 			config.parserFunction[0][`#${key}`] = val;
 		}
-	}
-	for (const key in img) {
-		config.img[key] = img[key]!.slice(4).replaceAll('_', '-');
 	}
 	return config;
 };

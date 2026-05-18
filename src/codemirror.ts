@@ -30,6 +30,7 @@ import {
 } from '@codemirror/lint';
 import {tags} from '@lezer/highlight';
 import elt from 'crelt';
+import {getParserConfig} from '@bhsd/cm-util';
 import {
 	diagnosticSelector,
 	baseData,
@@ -859,6 +860,12 @@ export class CodeMirror6 {
 	 * @test
 	 */
 	static replaceSelections = replaceSelections;
+
+	/**
+	 * Internal use only
+	 * @ignore
+	 */
+	static getParserConfig = getParserConfig;
 
 	/**
 	 * Convert a [WikiParser-Node](https://npmjs.com/package/wikiparser-node) configuration

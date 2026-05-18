@@ -608,7 +608,7 @@ export class FullMediaWiki extends MediaWiki {
 			const isDelimiter = explicit && hasTag(types, 'fileDelimiter');
 			if (
 				isDelimiter
-				|| hasTag(types, 'fileText')
+				|| hasTag(types, ['fileText', 'imageParameter'])
 				&& prevSibling?.name.includes(tokens.fileDelimiter)
 				&& !search.includes('[')
 			) {

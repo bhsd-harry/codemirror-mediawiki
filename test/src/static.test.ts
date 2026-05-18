@@ -73,11 +73,11 @@ const config: MwConfig = {
 	],
 	urlProtocols: 'http://|mailto:|//',
 	nsid,
-	img: {
-		'alt=$1': 'img_alt',
-		'thumb=$1': 'img_manualthumb',
-		none: 'img_none',
-		thumb: 'img_thumbnail',
+	imageKeywords: {
+		'alt=$1': 'alt',
+		'thumb=$1': 'manualthumb',
+		none: 'none',
+		thumb: 'thumbnail',
 	},
 	variants,
 	redirection,

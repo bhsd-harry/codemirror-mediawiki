@@ -79,7 +79,6 @@ export type ApiSuggest<T = ParamSuggestion> = (
 export interface MwConfig extends MwConfigBase {
 	nsid: Record<string, number>;
 	variants?: string[];
-	img?: Record<string, string>;
 	permittedHtmlTags?: string[];
 	implicitlyClosedHtmlTags?: string[];
 	articlePath?: string;
@@ -555,7 +554,7 @@ export class MediaWiki {
 			variants,
 			functionSynonyms: [insensitive],
 			redirection = ['#REDIRECT'],
-			img = {},
+			imageKeywords = {},
 		} = config;
 		this.config = config;
 		this.permittedHtmlTags = new Set<string | undefined>([
@@ -578,8 +577,8 @@ export class MediaWiki {
 			String.raw`^\s*(?:${redirection.join('|')})(\s*:)?\s*(?=\[\[|$)`,
 			'iu',
 		);
-		this.img = Object.keys(img).filter(word => !/\$1./u.test(word));
-		const spImgKeys = Object.keys(img).filter(word => word.startsWith('$1'));
+		this.img = Object.keys(imageKeywords).filter(word => !/\$1./u.test(word));
+		const spImgKeys = Object.keys(imageKeywords).filter(word => word.startsWith('$1'));
 		this.imgRegex = new RegExp(
 			String.raw`^(?:${
 				this.img.filter(word => word.endsWith('$1')).map(word => word.slice(0, -2))
@@ -587,10 +586,10 @@ export class MediaWiki {
 			}|(?:${
 				this.img.filter(word => !word.endsWith('$1')).join('|')
 			}|(?:(?:\d+x?|\d*x\d+)\s*(?:px)?(?:${
-				spImgKeys.filter(word => img[word] === 'img_width').map(word => word.slice(2))
+				spImgKeys.filter(word => imageKeywords[word] === 'width').map(word => word.slice(2))
 					.join('|')
 			}))|\d+\s*(?:${
-				spImgKeys.filter(word => img[word] !== 'img_width').map(word => word.slice(2))
+				spImgKeys.filter(word => imageKeywords[word] !== 'width').map(word => word.slice(2))
 					.join('|')
 			}))\s*(?=\||\]\]|$))`,
 			'u',
@@ -1138,7 +1137,7 @@ export class MediaWiki {
 		state.imgLink = false;
 		const mt = stream.match(this.imgRegex, false);
 		if (mt) {
-			if (this.config.img?.[`${mt[0]}$1`] === 'img_link') {
+			if (this.config.imageKeywords?.[`${mt[0]}$1`] === 'link') {
 				state.imgLink = true;
 			}
 			chain(state, this.inChars(mt[0], 'imageParameter'));
