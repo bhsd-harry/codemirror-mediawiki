@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.17.2
+## 3.18.0
 
-*2026-05-17*
+*2026-05-19*
 
 **Added**
 

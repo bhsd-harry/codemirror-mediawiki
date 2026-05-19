@@ -339,7 +339,10 @@ export class CodeMirror extends CodeMirror6 {
 		if (typeof monaco.editor !== 'object') {
 			Object.assign(globalThis, {
 				monaco: (await import(
-					`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? 'latest'}/dist/wiki.min.js`,
+					/** @todo 移除对 monaco-wiki@1 的支持 */
+					`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? '2'}/dist/${
+						CodeMirror.monacoVersion ? 'all' : 'wiki'
+					}.min.js`,
 				) as {default: Promise<unknown>}).default,
 			});
 		}

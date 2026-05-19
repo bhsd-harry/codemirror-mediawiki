@@ -1,11 +1,13 @@
 import * as path from 'path';
 import {StreamLanguage} from '@codemirror/language';
+import {Tag} from '@lezer/highlight';
 import {math} from '../../dist/math.js';
 import {extData} from '../../dist/constants.js';
 import mathData from 'wikiparser-node/data/ext/math.json' with {type: 'json'};
 
 extData['math'] = new Set(mathData);
 
+math.tokenTable = {'mw-unknown': Tag.define()};
 const {parser} = StreamLanguage.define(math);
 
 const mathTest = async <T>(file: string, callback: (tests: T) => [string, string | unknown[]][]): Promise<void> => {
