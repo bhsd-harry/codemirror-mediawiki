@@ -1,4 +1,4 @@
-import {CDN as baseCDN} from '@bhsd/browser';
+import {CDN as baseCDN, compareVersion} from '@bhsd/browser';
 import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
 import {keymap} from '@codemirror/view';
@@ -337,12 +337,13 @@ export class CodeMirror extends CodeMirror6 {
 			Object.assign(globalThis, {monaco: {CDN}});
 		}
 		if (typeof monaco.editor !== 'object') {
+			const {monacoVersion} = CodeMirror,
+				version = monacoVersion && compareVersion(monacoVersion, '2')
+					? monacoVersion
+					: '2';
 			Object.assign(globalThis, {
 				monaco: (await import(
-					/** @todo 移除对 monaco-wiki@1 的支持 */
-					`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion ?? '2'}/dist/${
-						CodeMirror.monacoVersion ? 'all' : 'wiki'
-					}.min.js`,
+					`${CDN}/npm/monaco-wiki@${version}/dist/wiki.min.js`,
 				) as {default: Promise<unknown>}).default,
 			});
 		}

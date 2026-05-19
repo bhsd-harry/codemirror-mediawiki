@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.18.1
+
+*2026-05-20*
+
+**Fixed**
+
+- Issues with user-specified versions of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) when using the Monaco editor on a MediaWiki site
+
 ## 3.18.0
 
 *2026-05-19*
