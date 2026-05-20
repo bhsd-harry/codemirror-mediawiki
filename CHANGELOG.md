@@ -6,6 +6,7 @@
 **Fixed**
 
 - Issues with user-specified versions of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) when using the Monaco editor on a MediaWiki site
+- Incompatibility between the [indentGuide](./README.md#indentguide) extension and the [codeFolding](./README.md#codefolding) extension
 
 ## 3.18.0
 

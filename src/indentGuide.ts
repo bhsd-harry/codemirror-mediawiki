@@ -30,7 +30,9 @@ export default (): Extension => [
 				let prevWidth = 0;
 				for (let line = doc.lineAt(from); line.from < to;) {
 					const {text, from: f, number} = line;
-					if (text.trim()) {
+					if (f !== view.lineBlockAt(f).from) {
+						// 跳过被折叠的行
+					} else if (text.trim()) {
 						const width = (view.coordsAtPos(f + numLeadingSpaces(text))?.left ?? NaN)
 							- (view.coordsAtPos(f)?.left ?? NaN)
 							|| 0;
