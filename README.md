@@ -1544,38 +1544,47 @@ registerSignatureHelp('https://www.mediawiki.org/wiki/');
 <details>
 	<summary>Expand</summary>
 
+#### Redirect
+
+1. Redirect target cannot contain illegal characters ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#4.%20Redirect%20to%20a%20templated%20destination)).
+
 #### Extension
 
-1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should prevent preformatted text ([Example](http://bhsd-harry.github.io/monaco-wiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
+1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should prevent preformatted text ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
 
 #### Transclusion
 
-1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
-1. Wikitext in template parameter names is not highlighted ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
-1. Template parameter names followed by a newline are not recognized ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
-1. Template-like syntax without a template name ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#T408631%3A%20Invalid%20templates%20inside%20template%20parameters)).
+1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
+1. Wikitext in template parameter names is not highlighted ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
+1. Template parameter names followed by a newline are not recognized ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
+1. Template-like syntax without a template name ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#T408631%3A%20Invalid%20templates%20inside%20template%20parameters)).
 
 #### Heading
 
 1. Comments at the SOL should not break section headings ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Section%20extraction%20prefixed%20by%20comment%20(section%201))).
+1. Section headings containing multiline extension tags are not highlighted ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Heading%20with%20line%20break%20in%20nowiki)).
 
 #### Table
 
 1. Comments at the SOL should not break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
-1. `!!` in links should start a new `<th>` ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Precedence%20of%20table%20over%20links)).
+1. `!!` in links should start a new `<th>` ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Precedence%20of%20table%20over%20links)).
+
+### Behavior switch
+
+1. Behavior switch following URL protocols should not be highlighted as a URL ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Fuzz%20testing%3A%20Parser14)).
 
 #### External link
 
-1. IPv6 addresses are not supported ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).
-1. External links inside double brackets are highlighted incorrectly ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
+1. IPv6 addresses are not supported ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).
+1. External links inside double brackets are highlighted incorrectly ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Render%20invalid%20page%20names%20as%20plain%20text%20(T53090))).
 
 #### Block element
 
 1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
-1. False positives of preformatted text when there are categories ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](http://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
+1. False positives of preformatted text when there are categories ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
 
 #### Language conversion
 
-1. BCP 47 language codes are not supported in language conversion ([Example](https://bhsd-harry.github.io/wikiparser-node/tests.html#Explicit%20definition%20of%20language%20variant%20alternatives%20(BCP%2047%20codes))).
+1. BCP 47 language codes are not supported in language conversion ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Explicit%20definition%20of%20language%20variant%20alternatives%20(BCP%2047%20codes))).
 
 </details>

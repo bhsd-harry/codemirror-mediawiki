@@ -8,5 +8,6 @@ dist/
 /*.map
 /package-lock.json
 .eslintcache
+.stylelintcache
 /test/*.wiki
 /test/prof*.json
