@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.8.0
+
+*2026-06-01*
+
+**Changed**
+
+- [CodeMirror 6](https://codemirror.net/) packages and [wikiparser-node](https://www.npmjs.com/package/wikiparser-node) are now peer dependencies
+
 ## 0.7.0
 
 *2026-05-19*

@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
@@ -39,35 +39,40 @@
 		"test:end": "pkill -x http-server",
 		"diff": "bash diff.sh"
 	},
+	"peerDependencies": {
+		"@codemirror/autocomplete": "^6.0.0",
+		"@codemirror/commands": "^6.0.0",
+		"@codemirror/language": "^6.1.0",
+		"@codemirror/lint": "^6.7.0",
+		"@codemirror/search": "^6.0.0",
+		"@codemirror/state": "^6.0.0",
+		"@codemirror/view": "^6.39.0",
+		"wikiparser-node": ">=1.19.0"
+	},
 	"dependencies": {
 		"@bhsd/browser": "^0.4.0",
-		"@bhsd/cm-util": "^2.0.1",
-		"@bhsd/codemirror-css-color-picker": "^7.1.1",
+		"@bhsd/cm-util": "^2.1.0",
+		"@bhsd/codemirror-css-color-picker": "^7.2.0",
 		"@bhsd/common": "^2.2.1",
 		"@bhsd/stylelint-util": "^1.0.3",
+		"marked": "^18.0.4"
+	},
+	"devDependencies": {
+		"@bhsd/code-standard": "^2.6.2",
 		"@codemirror/autocomplete": "^6.20.2",
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/language": "^6.12.3",
 		"@codemirror/lint": "^6.9.6",
+		"@codemirror/search": "^6.7.0",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.42.1",
-		"marked": "^18.0.4",
-		"wikiparser-node": "^1.42.0"
-	},
-	"devDependencies": {
-		"@bhsd/code-standard": "^2.5.1",
-		"@codemirror/search": "^6.7.0",
-		"@stylistic/stylelint-plugin": "^5.2.0",
-		"@types/node": "^25.9.0",
-		"@typescript-eslint/parser": "^8.59.4",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.0",
 		"eslint": "^10.4.1",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.22.1",
 		"stylelint": "^17.12.0",
-		"stylelint-config-recommended": "^18.0.0",
-		"stylelint-plugin-use-baseline": "^1.4.2",
-		"typescript": "^6.0.3"
+		"typescript": "^6.0.3",
+		"wikiparser-node": "^1.43.0"
 	}
 }
