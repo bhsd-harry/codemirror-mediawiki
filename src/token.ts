@@ -163,9 +163,8 @@ const copyState = (state: State): State => {
 			// @ts-expect-error initial value
 			result[key] = [...val];
 		} else if (key === 'extState') {
-			const f = state.extName && typeof state.extMode !== 'boolean'
-				&& state.extMode.copyState?.bind(state.extMode)
-				|| copyState;
+			const {extName, extMode} = state,
+				f = extName && typeof extMode !== 'boolean' && extMode.copyState?.bind(extMode) || copyState;
 			result[key] = f(val as State);
 		} else if (key !== 'data' && key !== 'extMode' && val && typeof val === 'object') {
 			// @ts-expect-error initial value
@@ -248,8 +247,8 @@ export const lookahead = (chars: string, comment?: boolean | State): string => {
  * @param state
  */
 const needColon = (state: State): boolean => {
-	const {dt} = state;
-	return Boolean(dt.n) && dt.html === 0 && !state.bold && !state.italic && cmpNesting(dt, state, true);
+	const {dt, bold, italic} = state;
+	return Boolean(dt.n) && dt.html === 0 && !bold && !italic && cmpNesting(dt, state, true);
 };
 
 /**
@@ -731,7 +730,8 @@ export class MediaWiki {
 			if (stream.eol()) {
 				return '';
 			} else if (stream.sol()) {
-				if (state.sof) {
+				const {sof, redirect, tokenize} = state;
+				if (sof) {
 					if (stream.match(/^\s+$/u)) {
 						return '';
 					}
@@ -741,17 +741,17 @@ export class MediaWiki {
 						state.redirect = {colon: !mt[1]};
 						return tokens.redirect;
 					}
-				} else if (state.redirect) {
+				} else if (redirect) {
 					if (stream.match(/^\s+(?=$|\[\[)/u)) {
 						return '';
-					} else if (state.redirect.colon && stream.match(/^\s*:\s*(?=$|\[\[)/u)) {
-						state.redirect.colon = false;
+					} else if (redirect.colon && stream.match(/^\s*:\s*(?=$|\[\[)/u)) {
+						redirect.colon = false;
 						return tokens.redirect;
 					}
 					state.redirect = false;
 				}
 				ch = stream.next()!;
-				const isTemplate = pipeTokenizers.has(state.tokenize.name);
+				const isTemplate = pipeTokenizers.has(tokenize.name);
 				switch (ch) {
 					case '#':
 					case ';':
@@ -1086,16 +1086,17 @@ export class MediaWiki {
 		const linkState = {bold: false, italic: false},
 			regex = linkTextRegex[file ? 1 : 0];
 		return (stream, state) => {
-			const tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
+			const {imgLink, stack} = state,
+				tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
-				} ${file && state.imgLink ? tokens.pageName : ''}`,
+				} ${file && imgLink ? tokens.pageName : ''}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (
 				closing
 				|| !file && stream.match('[[', false)
 				|| !gallery
-				&& state.stack[0]?.name === 'inTableCell'
+				&& stack[0]?.name === 'inTableCell'
 				&& stream.sol() && stream.match(tableCellRegex, false)
 			) {
 				if (gallery) {
@@ -1526,12 +1527,13 @@ export class MediaWiki {
 	@getTokenizer<string>
 	inExtTokens(origString: string): Tokenizer<string> {
 		return (stream, state) => {
-			let ret: string;
-			if (typeof state.extMode === 'boolean') {
-				ret = `mw-tag-${state.extName} ${tokens.extTag}`;
+			const {extMode, extName, extState, section} = state;
+			let ret = `mw-tag-${extName} ${section ? `mw-section--${section}` : ''}`;
+			if (typeof extMode === 'boolean') {
+				ret += ` ${tokens.extTag}`;
 				stream.skipToEnd();
 			} else {
-				ret = `mw-tag-${state.extName} ${state.extMode.token(stream, state.extState as object) ?? ''}`;
+				ret += ` ${extMode.token(stream, extState as object) ?? ''}`;
 			}
 			if (stream.eol()) {
 				if (origString) {
@@ -1929,7 +1931,7 @@ export class MediaWiki {
 			copyState,
 
 			token(stream: StringStream, state): string {
-				const {data} = state,
+				const {data, tokenize} = state,
 					{readyTokens} = data;
 				let {oldToken} = data;
 				while (
@@ -1937,7 +1939,7 @@ export class MediaWiki {
 					&& (
 						// 如果 PartialParse 的起点位于当前位置之后
 						stream.pos > oldToken.pos
-						|| stream.pos === oldToken.pos && state.tokenize !== oldToken.state.tokenize
+						|| stream.pos === oldToken.pos && tokenize !== oldToken.state.tokenize
 					)
 				) {
 					oldToken = readyTokens.shift()!;
@@ -2084,8 +2086,9 @@ export class MediaWiki {
 			},
 
 			indent(state, textAfter, context): number | null {
-				return state.extName && typeof state.extMode !== 'boolean' && state.extMode.indent
-					? state.extMode.indent(state.extState as object, textAfter, context)
+				const {extName, extMode, extState} = state;
+				return extName && typeof extMode !== 'boolean' && extMode.indent
+					? extMode.indent(extState as object, textAfter, context)
 					: null;
 			},
 

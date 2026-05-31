@@ -5439,6 +5439,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>inputbox</><exttag-bracket>&gt</><tag-inputbox>type=searchprefix=</><tag-inputbox ext-ground parserfunction-bracket>{{</><tag-inputbox ext-ground parserfunction-name>FULLPAGENAME</><tag-inputbox ext-ground parserfunction-bracket>}}</><tag-inputbox>/Archive</><exttag-bracket>&lt;/</><exttag-name>inputbox</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "HTML attribute XSS",
+		"wikitext": "<p itemscope itemtype=\"javascript:alert('XSS')\">XSS</p>",
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>p </><htmltag-attribute html-p>itemscope itemtype=</><htmltag-attribute-value>\"javascript:alert('XSS')\"</><htmltag-bracket>&gt</>XSS<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
@@ -6350,7 +6355,7 @@
 	{
 		"desc": "Handle extension content in section headers properly",
 		"wikitext": "==c<ref>d</ref>==",
-		"parsed": "<section-header section--2>==</><section section--2>c</><exttag-bracket section--2>&lt;</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><tag-ref>d</><exttag-bracket section--2>&lt;/</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2>c</><exttag-bracket section--2>&lt;</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><tag-ref section--2>d</><exttag-bracket section--2>&lt;/</><exttag-name section--2>ref</><exttag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Non-diffing cite error",
@@ -7896,7 +7901,7 @@
 	{
 		"desc": "Heading with literal wikitext - the wikitext is not parsed in section edit link tooltip",
 		"wikitext": "== <nowiki>{{PAGENAME}}</nowiki> ==\n== &#123;&#123;PAGENAME}} ==",
-		"parsed": "<section-header section--2>==</><section section--2> </><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki>{{PAGENAME}}</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section section--2> </><section-header section--2>====</><section section--2> </><entity section--2>&amp;#123;&amp;#123;</><section section--2>PAGENAME}} </><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><section section--2> </><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki section--2>{{PAGENAME}}</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section section--2> </><section-header section--2>====</><section section--2> </><entity section--2>&amp;#123;&amp;#123;</><section section--2>PAGENAME}} </><section-header section--2>==</>"
 	},
 	{
 		"desc": "T8563: Edit link generation for section shown by <includeonly>",
@@ -7941,7 +7946,7 @@
 	{
 		"desc": "nowiki inside link inside heading (T20295)",
 		"wikitext": "==[[foo|x<nowiki>y</nowiki>z]]==",
-		"parsed": "<section-header section--2>==</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>foo</><link-ground link-delimiter section--2>|</><link-ground link-text section--2>x</><link-ground exttag-bracket section--2>&lt;</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><tag-nowiki>y</><link-ground exttag-bracket section--2>&lt;/</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><link-ground link-text section--2>z</><link-ground link-bracket section--2>]]</><section-header section--2>==</>"
+		"parsed": "<section-header section--2>==</><link-ground link-bracket section--2>[[</><link-ground link-pagename pagename section--2>foo</><link-ground link-delimiter section--2>|</><link-ground link-text section--2>x</><link-ground exttag-bracket section--2>&lt;</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><tag-nowiki section--2>y</><link-ground exttag-bracket section--2>&lt;/</><link-ground exttag-name section--2>nowiki</><link-ground exttag-bracket section--2>&gt</><link-ground link-text section--2>z</><link-ground link-bracket section--2>]]</><section-header section--2>==</>"
 	},
 	{
 		"desc": "Decoding of HTML entities in headings and links for IDs and link fragments (T103714)",
@@ -13561,7 +13566,7 @@
 	{
 		"desc": "Headings: 1. Nested inside html",
 		"wikitext": "= =foo= =\n\n== =foo= ==\n\n=== =foo= ===\n\n=<nowiki>=foo=</nowiki>=\n==<nowiki>=foo=</nowiki>==\n===<nowiki>=foo=</nowiki>===\n====<nowiki>=foo=</nowiki>====\n=====<nowiki>=foo=</nowiki>=====\n======<nowiki>=foo=</nowiki>======",
-		"parsed": "<section-header section--1>=</><section section--1> =foo= </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo= </><section-header section--2>==</><section-header section--3>===</><section section--3> =foo= </><section-header section--3>===</><section-header section--1>=</><exttag-bracket section--1>&lt;</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><tag-nowiki>=foo=</><exttag-bracket section--1>&lt;/</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><section-header section--1>=</><section-header section--2>==</><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki>=foo=</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section-header section--2>==</><section-header section--3>===</><exttag-bracket section--3>&lt;</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><tag-nowiki>=foo=</><exttag-bracket section--3>&lt;/</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><section-header section--3>===</><section-header section--4>====</><exttag-bracket section--4>&lt;</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><tag-nowiki>=foo=</><exttag-bracket section--4>&lt;/</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><section-header section--4>====</><section-header section--5>=====</><exttag-bracket section--5>&lt;</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><tag-nowiki>=foo=</><exttag-bracket section--5>&lt;/</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><section-header section--5>=====</><section-header section--6>======</><exttag-bracket section--6>&lt;</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><tag-nowiki>=foo=</><exttag-bracket section--6>&lt;/</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><section-header section--6>======</>"
+		"parsed": "<section-header section--1>=</><section section--1> =foo= </><section-header section--1>=</><section-header section--2>==</><section section--2> =foo= </><section-header section--2>==</><section-header section--3>===</><section section--3> =foo= </><section-header section--3>===</><section-header section--1>=</><exttag-bracket section--1>&lt;</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><tag-nowiki section--1>=foo=</><exttag-bracket section--1>&lt;/</><exttag-name section--1>nowiki</><exttag-bracket section--1>&gt</><section-header section--1>=</><section-header section--2>==</><exttag-bracket section--2>&lt;</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><tag-nowiki section--2>=foo=</><exttag-bracket section--2>&lt;/</><exttag-name section--2>nowiki</><exttag-bracket section--2>&gt</><section-header section--2>==</><section-header section--3>===</><exttag-bracket section--3>&lt;</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><tag-nowiki section--3>=foo=</><exttag-bracket section--3>&lt;/</><exttag-name section--3>nowiki</><exttag-bracket section--3>&gt</><section-header section--3>===</><section-header section--4>====</><exttag-bracket section--4>&lt;</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><tag-nowiki section--4>=foo=</><exttag-bracket section--4>&lt;/</><exttag-name section--4>nowiki</><exttag-bracket section--4>&gt</><section-header section--4>====</><section-header section--5>=====</><exttag-bracket section--5>&lt;</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><tag-nowiki section--5>=foo=</><exttag-bracket section--5>&lt;/</><exttag-name section--5>nowiki</><exttag-bracket section--5>&gt</><section-header section--5>=====</><section-header section--6>======</><exttag-bracket section--6>&lt;</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><tag-nowiki section--6>=foo=</><exttag-bracket section--6>&lt;/</><exttag-name section--6>nowiki</><exttag-bracket section--6>&gt</><section-header section--6>======</>"
 	},
 	{
 		"desc": "Headings: 2. Outside heading nest on a single line <h1>foo</h1>*bar",

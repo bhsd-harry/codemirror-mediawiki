@@ -1,6 +1,7 @@
 import {CodeMirror6} from '/codemirror-mediawiki/dist/demo.min.js';
 import {
 	prepareDoneBtn,
+	hideOptGroup,
 	addOption,
 	changeHandler,
 	hashChangeHandler,
@@ -31,6 +32,7 @@ declare interface Test {
 	for (let i = 0; i < tests.length; i++) {
 		optgroup = addOption(optgroup, select, tests, dones, i);
 	}
+	hideOptGroup(optgroup);
 	select.addEventListener('change', () => {
 		cm.setContent(tests[Number(select.value)]!.wikitext!, true);
 		changeHandler(pre, btn, select, tests);

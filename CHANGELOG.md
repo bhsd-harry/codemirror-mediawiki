@@ -1,4 +1,16 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.19.0
+
+*2026-06-01*
+
+**Fixed**
+
+- Font size of extension tags in section headers in the MediaWiki mode
+
+**Changed**
+
+- Packages [globals](https://www.npmjs.com/package/globals) and [wikiparser-node](https://www.npmjs.com/package/wikiparser-node) are now peer dependencies
+
 ## 3.18.1
 
 *2026-05-20*

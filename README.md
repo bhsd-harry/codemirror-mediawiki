@@ -1573,6 +1573,10 @@ registerSignatureHelp('https://www.mediawiki.org/wiki/');
 
 1. Behavior switch following URL protocols should not be highlighted as a URL ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Fuzz%20testing%3A%20Parser14)).
 
+#### Link
+
+1. Inverse pipe trick ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#pre-save%20transform%3A%20context%20links%20(%22pipe%20trick%22)%20with%20parens%20in%20title)).
+
 #### External link
 
 1. IPv6 addresses are not supported ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#IPv6%20urls%2C%20autolink%20format%20(T23261))).
