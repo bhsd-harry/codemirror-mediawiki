@@ -562,10 +562,10 @@ export class MediaWiki {
 		);
 		this.convertSemicolon = variants && new RegExp(
 			String.raw`^;\s*(?=(?:[^;]*?=>\s*)?(?:${variants.join('|')})\s*:|(?:$|\}-))`,
-			'iu',
+			'u',
 		);
 		this.convertLang = variants
-			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'iu');
+			&& new RegExp(String.raw`^(?:=>\s*)?(?:${variants.join('|')})\s*:`, 'u');
 		this.hasVariants = Boolean(variants?.length);
 		this.preRegex = [false, true].map(
 			begin => new RegExp(String.raw`^(?:[^<&\-]|-${
