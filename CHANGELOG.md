@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 3.19.0
+## 3.19.1
 
-*2026-06-01*
+*2026-06-02*
 
 **Fixed**
 
@@ -9,7 +9,7 @@
 
 **Changed**
 
-- Packages [globals](https://www.npmjs.com/package/globals) and [wikiparser-node](https://www.npmjs.com/package/wikiparser-node) are now peer dependencies
+- [CodeMirror 6](https://codemirror.net/) packages are now peer dependencies
 
 ## 3.18.1
 

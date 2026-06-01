@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "3.19.0",
+	"version": "3.19.1",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -42,7 +42,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --omit=dev",
+		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --include=peer --omit=dev",
 		"prepublishOnly": "npm run build",
 		"checkout": "git checkout wikitext wikitext.html wikitext-page.js wikitext-page.css",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css --supported:nesting=false",
@@ -66,8 +66,18 @@
 		"diff": "bash diff.sh"
 	},
 	"peerDependencies": {
-		"globals": ">=12.0.0",
-		"wikiparser-node": ">=1.39.0"
+		"@codemirror/autocomplete": "^6.9.0",
+		"@codemirror/commands": "^6.5.0",
+		"@codemirror/language": "^6.3.0",
+		"@codemirror/lang-css": "^6.0.0",
+		"@codemirror/lang-html": "^6.0.0",
+		"@codemirror/lang-javascript": "^6.1.0",
+		"@codemirror/lang-vue": ">=0.1.2",
+		"@codemirror/legacy-modes": "^6.0.0",
+		"@codemirror/lint": "^6.7.0",
+		"@codemirror/search": "^6.4.0",
+		"@codemirror/state": "^6.0.0",
+		"@codemirror/view": "^6.39.0"
 	},
 	"dependencies": {
 		"@bhsd/browser": "^0.4.0",
@@ -76,7 +86,15 @@
 		"@bhsd/common": "^2.2.1",
 		"@bhsd/lezer-abusefilter": "^0.4.0",
 		"@bhsd/lezer-json": "^2.1.0",
-		"@bhsd/stylelint-util": "^1.0.3",
+		"@bhsd/stylelint-util": "^1.1.0",
+		"cm6-theme-nord": "^0.2.0",
+		"wikiparser-node": "^1.43.0"
+	},
+	"devDependencies": {
+		"@bhsd/code-standard": "^2.6.2",
+		"@bhsd/nodejs": "^1.0.1",
+		"@bhsd/eslint-browserify": "^10.4.1",
+		"@bhsd/test-util": "^1.5.0",
 		"@codemirror/autocomplete": "^6.20.2",
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/language": "^6.12.3",
@@ -89,13 +107,6 @@
 		"@codemirror/search": "^6.7.0",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.42.1",
-		"cm6-theme-nord": "^0.2.0"
-	},
-	"devDependencies": {
-		"@bhsd/code-standard": "^2.6.2",
-		"@bhsd/nodejs": "^1.0.1",
-		"@bhsd/eslint-browserify": "^10.4.1",
-		"@bhsd/test-util": "^1.5.0",
 		"@types/jquery": "^3.5.34",
 		"@types/oojs-ui": "^0.50.0",
 		"diff2html-cli": "^5.2.15",
@@ -110,7 +121,6 @@
 		"monaco-editor": "~0.53.0",
 		"stylelint": "^17.12.0",
 		"types-mediawiki": "^2.0.0",
-		"typescript": "^6.0.3",
-		"wikiparser-node": "^1.43.0"
+		"typescript": "^6.0.3"
 	}
 }
