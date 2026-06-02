@@ -22,11 +22,10 @@ declare interface Test {
 		select = document.querySelector('select')!,
 		btn = document.querySelector('button')!,
 		textarea = document.querySelector('textarea')!,
-		pre = document.querySelector('pre')!,
-		config: ConfigData = await (await fetch('/wikiparser-node/config/default.json')).json();
-	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(config));
+		pre = document.querySelector('pre')!;
+	wikiparse.setConfig(await (await fetch('/wikiparser-node/config/default.json')).json() as ConfigData);
+	const cm = new CodeMirror6(textarea, 'mediawiki', CodeMirror6.getMwConfig(await wikiparse.getConfig()));
 	Object.assign(globalThis, {cm});
-	wikiparse.setConfig(config);
 	await wikiparse.highlight!(pre, false, true);
 	let optgroup: HTMLOptGroupElement | undefined;
 	for (let i = 0; i < tests.length; i++) {

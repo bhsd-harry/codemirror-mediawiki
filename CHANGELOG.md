@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.19.2
+
+*2026-06-03*
+
+**Fixed**
+
+- Support BCP 47 language tags in language conversion syntax in the MediaWiki mode
+
 ## 3.19.1
 
 *2026-06-02*

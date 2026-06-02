@@ -13,7 +13,7 @@ const tagModes = {
 		'': 0,
 		file: 6,
 	},
-	variants = ['zh'],
+	variants = ['zh', 'zh-hans', 'zh-cn'],
 	redirection = ['#redirect'];
 const ref: Omit<ConfigData, 'html' | 'namespaces' | 'interwiki' | 'doubleUnderscore'> = {
 	parserFunction: [
@@ -79,7 +79,7 @@ const config: MwConfig = {
 		none: 'none',
 		thumb: 'thumbnail',
 	},
-	variants,
+	variants: [...variants, 'zh-Hans', 'zh-Hans-CN'],
 	redirection,
 };
 

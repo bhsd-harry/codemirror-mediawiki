@@ -1,4 +1,4 @@
-import {isUnderscore} from '@bhsd/cm-util';
+import {isUnderscore, getBCP47Variants} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
@@ -72,6 +72,6 @@ export const getStaticMwConfig = (
 	urlProtocols: `${protocol}|//`,
 	nsid,
 	imageKeywords: img,
-	variants,
+	variants: getBCP47Variants(variants),
 	redirection,
 });

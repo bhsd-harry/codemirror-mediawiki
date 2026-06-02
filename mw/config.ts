@@ -4,6 +4,7 @@ import {
 	getParserConfig as getParserConfigBase,
 	getConfig,
 	getVariants,
+	getBCP47Variants,
 	getKeywords,
 	otherParserFunctions,
 } from '@bhsd/cm-util';
@@ -61,6 +62,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 	) {
 		config.urlProtocols = config.urlProtocols.replaceAll(String.raw`\:`, ':');
 		config.tagModes = modes;
+		config.variants = getBCP47Variants(config.variants);
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: ConfigData = await (await fetch(`${
@@ -121,7 +123,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		Object.assign(config!, {
 			...getKeywords(magicwords, true),
 			tagModes: modes,
-			variants: langconversion ? getVariants(variants) : [],
+			variants: langconversion ? getBCP47Variants(getVariants(variants)) : [],
 			urlProtocols: mw.config.get('wgUrlProtocols').replaceAll(String.raw`\:`, ':'),
 		});
 		config!.variableIDs ??= variables;

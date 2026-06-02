@@ -9,10 +9,10 @@ import {
   inputHandler
 } from "/wikiparser-node/extensions/dist/test-page-common.js";
 (async () => {
-  const tests = await (await fetch("./test/parserTests.json")).json(), key = "codemirror-mediawiki-done", dones = new Set(JSON.parse(localStorage.getItem(key))), input = document.getElementById("search"), select = document.querySelector("select"), btn = document.querySelector("button"), textarea = document.querySelector("textarea"), pre = document.querySelector("pre"), config = await (await fetch("/wikiparser-node/config/default.json")).json();
-  const cm = new CodeMirror6(textarea, "mediawiki", CodeMirror6.getMwConfig(config));
+  const tests = await (await fetch("./test/parserTests.json")).json(), key = "codemirror-mediawiki-done", dones = new Set(JSON.parse(localStorage.getItem(key))), input = document.getElementById("search"), select = document.querySelector("select"), btn = document.querySelector("button"), textarea = document.querySelector("textarea"), pre = document.querySelector("pre");
+  wikiparse.setConfig(await (await fetch("/wikiparser-node/config/default.json")).json());
+  const cm = new CodeMirror6(textarea, "mediawiki", CodeMirror6.getMwConfig(await wikiparse.getConfig()));
   Object.assign(globalThis, { cm });
-  wikiparse.setConfig(config);
   await wikiparse.highlight(pre, false, true);
   let optgroup;
   for (let i = 0; i < tests.length; i++) {

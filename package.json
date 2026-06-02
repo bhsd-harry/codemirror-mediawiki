@@ -42,7 +42,7 @@
 		"url": "git+https://github.com/bhsd-harry/codemirror-mediawiki.git"
 	},
 	"scripts": {
-		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --include=peer --omit=dev",
+		"ls": "npm i --package-lock-only && npm ls --package-lock-only --all --omit=dev",
 		"prepublishOnly": "npm run build",
 		"checkout": "git checkout wikitext wikitext.html wikitext-page.js wikitext-page.css",
 		"build:css": "esbuild ./css/index.css --bundle --minify --outfile=mediawiki.css --supported:nesting=false",
@@ -119,7 +119,7 @@
 		"marked": "^18.0.4",
 		"mocha": "^11.7.6",
 		"monaco-editor": "~0.53.0",
-		"stylelint": "^17.12.0",
+		"stylelint": "^17.13.0",
 		"types-mediawiki": "^2.0.0",
 		"typescript": "^6.0.3"
 	}
