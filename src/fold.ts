@@ -23,6 +23,7 @@ import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
 import {
+	placeholder,
 	mwTag,
 } from './constants.js';
 import {searchTag, getTag} from './matchTag.js';
@@ -497,7 +498,7 @@ export default (
 		placeholderDOM(view) {
 			const element = elt(
 				'span',
-				{'aria-label': 'folded code', title: view.state.phrase('unfold'), class: 'cm-foldPlaceholder'},
+				{'aria-label': 'folded code', title: view.state.phrase('unfold'), class: placeholder},
 				'…',
 			);
 			element.addEventListener('click', ({target}) => {
