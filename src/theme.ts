@@ -1,21 +1,18 @@
 import {EditorView} from '@codemirror/view';
 import {defaultHighlightStyle} from '@codemirror/language';
-import {nord} from 'cm6-theme-nord';
+import nord from './nord.js';
 import {
 	matchingCls,
 	nonmatchingCls,
-	actionSelector,
-	panelsSelector,
 	bgDark,
 	cursorColor,
 	guideColor,
+	focused,
 } from './constants.js';
 import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
 
-const focused = '&.cm-focused',
-	searchMatch = '.cm-searchMatch.cm-searchMatch-selected',
-	matching = `${focused} .${matchingCls}`,
+const matching = `${focused} .${matchingCls}`,
 	nonmatching = `${focused} .${nonmatchingCls}`;
 
 export const lightHighlightStyle = /* #__PURE__ */ (() => getHighlightExtension(
@@ -70,13 +67,14 @@ export const light = /* #__PURE__ */ EditorView.theme({
 		},
 	}),
 
-	/**
-	 * @author 鬼影233
-	 * @author Bhsd
-	 * @see https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/nord-moeskin.css
-	 */
 	nordDark = /* #__PURE__ */ ((): Extension => [
 		nord,
+
+		/**
+		 * @author 鬼影233
+		 * @author Bhsd
+		 * @see https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/nord-moeskin.css
+		 */
 		EditorView.theme({
 			'&': {
 				'--cm-arg': '#9f78a5',
@@ -115,38 +113,12 @@ export const light = /* #__PURE__ */ EditorView.theme({
 			'.cm-doctag-var>*': {
 				color: '#8fbcbb',
 			},
-			'div.cm-activeLine': {
-				backgroundColor: 'rgb(76,86,106,.27)',
-			},
 			[matching]: {
 				backgroundColor: '#eceff4',
 				color: '#434c5e',
 			},
 			[nonmatching]: {
 				backgroundColor: 'rgb(235,203,139,.32)',
-			},
-			[`${focused}>.cm-scroller>.cm-selectionLayer div.cm-selectionBackground,${actionSelector}`]: {
-				backgroundColor: bgDark,
-			},
-			[`div${panelsSelector}`]: {
-				color: '#d8dee9',
-			},
-			[`${searchMatch} span`]: {
-				color: '#2e3440',
-			},
-			[`${focused} ${searchMatch}`]: {
-				'&,& span': {
-					color: '#b48ead',
-				},
-			},
-			'div.cm-tooltip-autocomplete ul li[aria-selected]': {
-				color: 'inherit',
-			},
-			'div.cm-gutters': {
-				color: '#5e81ac',
-			},
-			'span.cm-foldPlaceholder': {
-				backgroundColor: bgDark,
 			},
 		}),
 	])();

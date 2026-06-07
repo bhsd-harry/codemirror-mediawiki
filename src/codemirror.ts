@@ -39,6 +39,8 @@ import {
 	noDetectionLangs,
 	linkSelector,
 	guideColor,
+	contentSelector,
+	scrollerSelector,
 } from './constants.js';
 import {
 	getHighlightExtension,
@@ -361,7 +363,7 @@ export class CodeMirror6 {
 					},
 				]),
 				EditorView.theme({
-					'.cm-scroller': {
+					[scrollerSelector]: {
 						minHeight: '2em',
 					},
 					[panelsSelector]: {
@@ -632,7 +634,7 @@ export class CodeMirror6 {
 			padding = this.#view!.coordsAtPos(0)!.left
 				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x;
 		return EditorView.theme({
-			'.cm-content': {
+			[contentSelector]: {
 				backgroundImage: `linear-gradient(${color} 0 100%)`,
 				backgroundPosition: `calc(${col}ch + ${padding}px) 0`,
 				backgroundRepeat: 'no-repeat',

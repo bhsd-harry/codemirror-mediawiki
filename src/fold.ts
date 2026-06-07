@@ -28,6 +28,7 @@ import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
 import {
+	placeholder,
 	mwTag,
 	bgDark,
 } from './constants.js';
@@ -591,7 +592,7 @@ export const mediawikiFold = /* #__PURE__ */ ((): Extension => [
 		placeholderDOM(view) {
 			const element = elt(
 				'span',
-				{'aria-label': 'folded code', title: view.state.phrase('unfold'), class: 'cm-foldPlaceholder'},
+				{'aria-label': 'folded code', title: view.state.phrase('unfold'), class: placeholder},
 				'…',
 			);
 			element.addEventListener('click', ({target}) => {
