@@ -1,4 +1,4 @@
-import {CDN, setObject, getObject} from '@bhsd/browser';
+import {CDN, setObject, getObject, isGlobal} from '@bhsd/browser';
 import {
 	cleanAliases,
 	getParserConfig as getParserConfigBase,
@@ -9,6 +9,7 @@ import {
 	otherParserFunctions,
 } from '@bhsd/cm-util';
 import {getStaticMwConfig} from '../src/static';
+import {isWikiparseLoaded} from '../src/util';
 import type {MagicWord, MagicRule} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfigGetter, ParserConfigGetter} from '../src/mwConfig';
@@ -36,7 +37,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 	// 和本地缓存有关的常数
 	const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 			getObject('InPageEditMwConfig') ?? {},
-		SITE_ID = typeof mw === 'object'
+		SITE_ID = typeof mw === 'object' && isGlobal('mw')
 			? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
 			: location.origin,
 		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
@@ -66,7 +67,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		return {...config, nsid};
 	} else if (location.hostname.endsWith('.moegirl.org.cn')) {
 		const parserConfig: ConfigData = await (await fetch(`${
-			typeof wikiparse === 'object' ? wikiparse.CDN : `${CDN}/npm/wikiparser-node`
+			isWikiparseLoaded() ? wikiparse.CDN : `${CDN}/npm/wikiparser-node`
 		}/config/moegirl.json`)).json();
 		setObject('wikilintConfig', parserConfig);
 		config = getStaticMwConfig(parserConfig, modes);

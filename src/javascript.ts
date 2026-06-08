@@ -7,6 +7,7 @@ import {
 import {ViewPlugin, Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
+import {isGlobal} from '@bhsd/browser';
 import {builtin} from './javascript-globals.js';
 import {doctagMark} from './constants.js';
 import {markDocTagType, pushDecoration} from './util.js';
@@ -47,7 +48,7 @@ export const markGlobalsAndDocTag = (
 ): DecorationSet => {
 	const decorations: Range<Decoration>[] = [];
 	let allGlobals = builtinGlobals;
-	if (cm?.lintSources.length && typeof eslint === 'object' && 'environments' in eslint) {
+	if (cm?.lintSources.length && typeof eslint === 'object' && isGlobal('eslint') && 'environments' in eslint) {
 		const {env, globals} = (cm.lintSources[0] as LintSource<Linter.LegacyConfig> | undefined)?.config ?? {};
 		if (env || globals) {
 			allGlobals = new Set(builtinGlobals);

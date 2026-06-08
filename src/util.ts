@@ -1,6 +1,9 @@
 import {syntaxHighlighting, HighlightStyle} from '@codemirror/language';
 import elt from 'crelt';
-import {loadScript} from '@bhsd/browser';
+import {
+	isGlobal,
+	loadScript,
+} from '@bhsd/browser';
 import {tokens} from './config.js';
 import {
 	hoverSelector,
@@ -153,6 +156,9 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  */
 export const getExtTags = (types: string[]): string[] =>
 	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
+
+/** 检测 wikiparse 是否可用 */
+export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' && isGlobal('wikiparse');
 
 /**
  * 获取字符串开头的空白字符

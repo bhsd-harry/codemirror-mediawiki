@@ -1,4 +1,4 @@
-import {CDN as baseCDN, compareVersion} from '@bhsd/browser';
+import {CDN as baseCDN, compareVersion, isGlobal} from '@bhsd/browser';
 import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
 import {keymap} from '@codemirror/view';
@@ -304,10 +304,10 @@ export class CodeMirror extends CodeMirror6 {
 		}
 	}
 
-	override initialize(config?: unknown, monaco?: boolean): void {
+	override initialize(config?: unknown, isMonaco?: boolean): void {
 		if (this.#model) {
 			throw new Error('A Monaco editor is already initialized!');
-		} else if (monaco) {
+		} else if (isMonaco) {
 			this.#init = this.#initMonaco();
 			this.$textarea.data('jquery.textSelection', monacoTextSelection);
 			return;
@@ -333,7 +333,7 @@ export class CodeMirror extends CodeMirror6 {
 	/** 初始化 Monaco 编辑器 */
 	async #initMonaco(): Promise<void> {
 		const CDN = baseData.CDN || baseCDN;
-		if (typeof monaco !== 'object') {
+		if (typeof monaco !== 'object' || !isGlobal('monaco')) {
 			Object.assign(globalThis, {monaco: {CDN}});
 		}
 		if (typeof monaco.editor !== 'object') {

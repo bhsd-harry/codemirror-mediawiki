@@ -1,5 +1,5 @@
 import {extCompletion, extData} from './constants.js';
-import {getCompletions} from './util.js';
+import {getCompletions, isWikiparseLoaded} from './util.js';
 import type {StreamParser} from '@codemirror/language';
 
 let mathFetch: Promise<void> | undefined;
@@ -7,7 +7,7 @@ let mathFetch: Promise<void> | undefined;
 /** @test */
 export const math: StreamParser<object> = {
 	startState() {
-		if (typeof wikiparse === 'object') {
+		if (isWikiparseLoaded()) {
 			mathFetch ??= (async () => {
 				const data: string[] = await (await fetch(`${wikiparse.CDN}/data/ext/math.json`)).json();
 				extData['math'] = new Set(data);

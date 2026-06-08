@@ -73,6 +73,9 @@ import html from './html.js';
 import javascript, {exclude} from './javascript.js';
 import lua from './lua.js';
 import vue from './vue.js';
+import {
+	isWikiparseLoaded,
+} from './util.js';
 import type {EditorView} from '@codemirror/view';
 import type {Extension} from '@codemirror/state';
 import type {
@@ -425,7 +428,7 @@ export const registerMediaWikiCore = (articlePath?: string, templatedata?: boole
 	]);
 	registerLintSource('mediawiki', getWikiLintSource(articlePath));
 	destroyListeners.push(view => {
-		if (typeof wikiparse === 'object' && wikiparse.LanguageService) {
+		if (isWikiparseLoaded() && wikiparse.LanguageService) {
 			void getLSP(view)?.destroy();
 		}
 	});
