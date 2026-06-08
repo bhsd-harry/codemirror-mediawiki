@@ -1,5 +1,8 @@
 import elt from 'crelt';
 import {
+	isGlobal,
+} from '@bhsd/browser';
+import {
 	hoverSelector,
 	baseData,
 	mwTag,
@@ -153,3 +156,6 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  */
 export const getExtTags = (types: string[]): string[] =>
 	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
+
+/** 检测 wikiparse 是否可用 */
+export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' && isGlobal('wikiparse');

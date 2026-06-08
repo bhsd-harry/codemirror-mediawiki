@@ -25,7 +25,9 @@ import {
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
-import {updateCDN} from './util.js';
+import {
+	updateCDN,
+} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {
 	Language,

@@ -1,4 +1,4 @@
-import {inComment, getCompletions} from './util.js';
+import {inComment, getCompletions, isWikiparseLoaded} from './util.js';
 import {extData, extCompletion} from './constants.js';
 import type {StreamParser, StringStream} from '@codemirror/language';
 
@@ -246,7 +246,7 @@ const inLyrics: Tokenizer = (stream, state) => {
 
 export const lilypond: StreamParser<State> = {
 	startState() {
-		if (typeof wikiparse === 'object') {
+		if (isWikiparseLoaded()) {
 			scoreFetch ??= (async () => {
 				const data: string[] = await (await fetch(`${wikiparse.CDN}/data/ext/score.json`)).json();
 				extData['score'] = new Set(data.flatMap(item => item.split('.')));
