@@ -33,8 +33,9 @@ declare type getAsyncLinter<
 	opt?: S,
 	obj?: R,
 ) => Promise<asyncLinter<T>>;
-declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
+declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range' | 'message'> {
 	range?: Range;
+	message: string;
 	from?: number;
 	to?: number;
 }
@@ -102,7 +103,7 @@ export const getWikiLinter: getAsyncLinter<
 	}
 	wikiparse.setLintConfig(obj);
 	const cssLint =
-		cssConfig === 0 || cssConfig === false || cssConfig === 'off'
+		([0, false, 'off'] as unknown[]).includes(cssConfig)
 			? (): never[] => [] :
 			await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);
 	const linter: asyncLinter<Promise<MixedDiagnostic[]>> = async (
@@ -110,7 +111,7 @@ export const getWikiLinter: getAsyncLinter<
 		view,
 	) => {
 		const lsp = getLSP(view!, true)!,
-			diagnostics = await lsp.provideDiagnostics(text),
+			diagnostics = await lsp.provideDiagnostics(text) as MixedDiagnostic[],
 			tokens = 'findStyleTokens' in lsp
 				? await lsp.findStyleTokens()
 				: [];

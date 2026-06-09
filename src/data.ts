@@ -28,7 +28,7 @@ export class MediaWikiData {
 	constructor(tags: string[], urlProtocols: string) {
 		this.tags = tags.includes('translate') ? tags.filter(tag => tag !== 'tvar') : tags;
 		this.urlProtocols = new RegExp(
-			String.raw`^(${this.tags.includes('tvar') ? '<tvar name=[^>]+>' : ''})?${urlProtocols}`,
+			`^(${this.tags.includes('tvar') ? '<tvar name=[^>]+>' : ''})?${urlProtocols}`,
 			'iu',
 		);
 	}

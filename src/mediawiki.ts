@@ -240,7 +240,7 @@ export class FullMediaWiki extends MediaWiki {
 						],
 						i = this.permittedHtmlTags.has(target) && options.findIndex(({label}) => label === target);
 					if (i !== false && i !== -1) {
-						options.splice(i, 1, {type: 'type', label: target!, boost: 99});
+						options[i] = {type: 'type', label: target!, boost: 99};
 					}
 					return {
 						from: mt.from + 2,
