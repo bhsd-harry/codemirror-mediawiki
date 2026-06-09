@@ -28,7 +28,7 @@ export const cssCompletion = (dialect?: Dialect): Extension => {
 					for (let i = 0; i < options.length; i++) {
 						const option = options[i]!;
 						if (CSS.supports(sliceDoc(state, prevSibling), option.label)) {
-							options.splice(i, 1, {...option, boost: 50});
+							options[i] = {...option, boost: 50};
 						}
 					}
 				}

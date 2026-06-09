@@ -465,9 +465,9 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
 		);
 	}) as [RegExp, RegExp],
 	linkErrorRegex = [
-		new RegExp(String.raw`^(?:[<>{}]|%(?:3[ce]|[57][bd])|${lookahead('[]')})+`, 'iu'),
+		new RegExp(`^(?:[<>{}]|%(?:3[ce]|[57][bd])|${lookahead('[]')})+`, 'iu'),
 		new RegExp(String.raw`^(?:\}|${lookahead('[]{')})+`, 'u'),
-		new RegExp(String.raw`^(?:[>}]|%(?:3[ce]|[57][bd])|${lookahead('[]{<')})+`, 'iu'),
+		new RegExp(`^(?:[>}]|%(?:3[ce]|[57][bd])|${lookahead('[]{<')})+`, 'iu'),
 	] as const,
 	tableDefinitionValueRegex = ['', '='].map(equal => new RegExp(
 		String.raw`^(?:[^\s&${tableDefinitionChars}${equal}]|${tableDefinitionLookAhead})+`,

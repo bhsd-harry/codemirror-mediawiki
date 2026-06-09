@@ -41,8 +41,9 @@ declare type getAsyncLinter<
 	opt?: S,
 	obj?: R,
 ) => Promise<asyncLinter<T>>;
-declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range'> {
+declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range' | 'message'> {
 	range?: Range;
+	message: string;
 	from?: number;
 	to?: number;
 }
@@ -122,7 +123,7 @@ export const getWikiLinter: getAsyncLinter<
 		config,
 	) => {
 		const defaultSeverity = config?.['defaultSeverity'] as string | number | undefined ?? 2,
-			diagnostics = (await lsp.provideDiagnostics(text))
+			diagnostics = (await lsp.provideDiagnostics(text) as MixedDiagnostic[])
 				.filter(({code, severity}) => Number(config?.[code!] ?? defaultSeverity) > Number(severity === 2)),
 			tokens = 'findStyleTokens' in lsp
 				&& config?.['invalid-css'] !== '0'
