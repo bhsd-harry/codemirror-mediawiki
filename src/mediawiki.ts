@@ -715,6 +715,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[getSelector(['template', 'parserfunction'])]: {
 		fontWeight: 'normal',
 		fontStyle: 'normal',
+		color: 'inherit',
 	},
 	[`${
 		getSelector(['pagename', 'link-tosection', 'magic-link'])

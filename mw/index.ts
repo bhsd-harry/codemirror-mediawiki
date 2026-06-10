@@ -8,8 +8,8 @@ import {instances} from './util';
 declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
-const baseVersion = '3.18',
-	addons = ['lint'];
+const baseVersion = '3.21',
+	addons = ['colorPicker'];
 
 mw.loader.addStyleTag($STYLE);
 
@@ -41,7 +41,6 @@ document.body.addEventListener('click', e => {
 (async () => {
 	const portletContainer: Record<string, string> = {
 		minerva: 'page-actions-overflow',
-		moeskin: 'moe-global-toolbar:visible #p-tb,#moe-mobile-toolbar:visible',
 		citizen: 'p-tb',
 	};
 	await Promise.all([

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 3.21.0
+
+*2026-06-11*
+
+**Added**
+
+- The [colorPicker](./README.md#colorpicker) extension now also supports named CSS colors in `style` attributes in the MediaWiki mode
+
 ## 3.20.0
 
 *2026-06-09*

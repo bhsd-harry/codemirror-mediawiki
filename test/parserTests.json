@@ -55,7 +55,7 @@
 	{
 		"desc": "Non-html5 tags should be accepted",
 		"wikitext": "<center>''foo''</center>\n<big>''foo''</big>\n<font style=\"123\">''foo''</font>\n<strike>''foo''</strike>\n<tt>''foo''</tt>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>center</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>center</><htmltag-bracket>&gt&lt;</><htmltag-name>big</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>big</><htmltag-bracket>&gt&lt;</><htmltag-name>font </><htmltag-attribute html-font>style=</><htmltag-attribute-value>\"123\"</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>font</><htmltag-bracket>&gt&lt;</><htmltag-name>strike</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>strike</><htmltag-bracket>&gt&lt;</><htmltag-name>tt</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>tt</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>center</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>center</><htmltag-bracket>&gt&lt;</><htmltag-name>big</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>big</><htmltag-bracket>&gt&lt;</><htmltag-name>font </><htmltag-attribute html-font>style=</><htmltag-attribute-value css>\"123\"</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>font</><htmltag-bracket>&gt&lt;</><htmltag-name>strike</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>strike</><htmltag-bracket>&gt&lt;</><htmltag-name>tt</><htmltag-bracket>&gt</><apostrophes>''</><em>foo</><apostrophes>''</><htmltag-bracket>&lt;/</><htmltag-name>tt</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "<wbr> is valid wikitext (T54468)",
@@ -855,12 +855,12 @@
 	{
 		"desc": "Incorrectly removing closing slashes from correctly formed XHTML",
 		"wikitext": "<br style=\"clear:both;\" />",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\"clear:both;\"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value css>\"clear:both;\"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Failing to transform badly formed HTML into correct XHTML",
 		"wikitext": "<br style=\"clear: left;\">\n<br style=\"clear: right;\">\n<br style=\"clear: both;\">",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\"clear: left;\"</><htmltag-bracket>&gt&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\"clear: right;\"</><htmltag-bracket>&gt&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\"clear: both;\"</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value css>\"clear: left;\"</><htmltag-bracket>&gt&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value css>\"clear: right;\"</><htmltag-bracket>&gt&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value css>\"clear: both;\"</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Handling html with a div self-closing tag",
@@ -880,7 +880,7 @@
 	{
 		"desc": "Quoted attributes without spaces",
 		"wikitext": "<div class=\"foo\"style=\"color:red\">red</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"color:red\"</><htmltag-bracket>&gt</>red<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"foo\"</><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"color:red\"</><htmltag-bracket>&gt</>red<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Horizontal ruler (should it add that extra space?)",
@@ -1515,7 +1515,7 @@
 	{
 		"desc": "3. includeonly in part of an attr value",
 		"wikitext": "<span style=\"color:<noinclude>red</noinclude><includeonly>blue</includeonly>;\">bar</span>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>style=</><htmltag-attribute-value>\"color:</><exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>red</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>blue</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</><htmltag-attribute-value>;\"</><htmltag-bracket>&gt</>bar<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>style=</><htmltag-attribute-value css>\"color:</><exttag-bracket>&lt;</><exttag-name>noinclude</><exttag-bracket>&gt</><tag-noinclude>red</><exttag-bracket>&lt;/</><exttag-name>noinclude</><exttag-bracket>&gt&lt;</><exttag-name>includeonly</><exttag-bracket>&gt</><tag-includeonly>blue</><exttag-bracket>&lt;/</><exttag-name>includeonly</><exttag-bracket>&gt</><htmltag-attribute-value css>;\"</><htmltag-bracket>&gt</>bar<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "4. includeonly in table attributes",
@@ -2390,7 +2390,7 @@
 	{
 		"desc": "Element with broken attribute syntax",
 		"wikitext": "<div style=\" style=\"123\">hi</div>\n<div =>ho</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\" style=\"</><htmltag-attribute html-div>123\"</><htmltag-bracket>&gt</>hi<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>=</><htmltag-bracket>&gt</>ho<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\" style=\"</><htmltag-attribute html-div>123\"</><htmltag-bracket>&gt</>hi<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>=</><htmltag-bracket>&gt</>ho<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Ensure that HTML adoption agency algorithm is properly implemented.",
@@ -2445,7 +2445,7 @@
 	{
 		"desc": "Media link with nasty text",
 		"wikitext": "[[Media:Foobar.jpg|Safe Link<div style=display:none>\" onmouseover=\"alert(document.cookie)\" onfoo=\"</div>]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Safe Link</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>div </><link-ground htmltag-attribute html-div>style=</><link-ground htmltag-attribute-value>display:none</><link-ground htmltag-bracket>&gt</><link-ground link-text>\" onmouseover=\"alert(document.cookie)\" onfoo=\"</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>div</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Media:Foobar.jpg</><link-ground link-delimiter>|</><link-ground link-text>Safe Link</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>div </><link-ground htmltag-attribute html-div>style=</><link-ground htmltag-attribute-value css>display:none</><link-ground htmltag-bracket>&gt</><link-ground link-text>\" onmouseover=\"alert(document.cookie)\" onfoo=\"</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>div</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Media link from missing resource (parsoid-only)",
@@ -2535,7 +2535,7 @@
 	{
 		"desc": "T4304: HTML attribute safety (dangerous style template; 2309)",
 		"wikitext": "<div style=\"{{dangerous style attribute}}\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"</><template-ground template-bracket>{{</><template-ground template-name pagename>dangerous style attribute</><template-ground template-bracket>}}</><htmltag-attribute-value>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"</><template-ground template-bracket>{{</><template-ground template-name pagename>dangerous style attribute</><template-ground template-bracket>}}</><htmltag-attribute-value css>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "T4304: HTML attribute safety (safe parameter; 2309)",
@@ -2585,42 +2585,42 @@
 	{
 		"desc": "T5244: HTML attribute safety (extension; safe)",
 		"wikitext": "<div style=\"<nowiki>background:blue</nowiki>\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>background:blue</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><htmltag-attribute-value>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>background:blue</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><htmltag-attribute-value css>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "T5244: HTML attribute safety (extension; unsafe)",
 		"wikitext": "<div style=\"<nowiki>border-left:expression(alert(document.cookie))</nowiki>\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>border-left:expression(alert(document.cookie))</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><htmltag-attribute-value>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"</><exttag-bracket>&lt;</><exttag-name>nowiki</><exttag-bracket>&gt</><tag-nowiki>border-left:expression(alert(document.cookie))</><exttag-bracket>&lt;/</><exttag-name>nowiki</><exttag-bracket>&gt</><htmltag-attribute-value css>\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "MSIE CSS safety test: spurious slash",
 		"wikitext": "<div style=\"background-image:u\\rl(javascript:alert('boo'))\">evil</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image:u\\rl(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image:u\\rl(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "MSIE CSS safety test: hex code",
 		"wikitext": "<div style=\"background-image:u\\72l(javascript:alert('boo'))\">evil</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image:u\\72l(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image:u\\72l(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "MSIE CSS safety test: comment in url",
 		"wikitext": "<div style=\"background-image:u/**/rl(javascript:alert('boo'))\">evil</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image:u/**/rl(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image:u/**/rl(javascript:alert('boo'))\"</><htmltag-bracket>&gt</>evil<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "MSIE CSS safety test: comment in expression",
 		"wikitext": "<div style=\"background-image:expres/**/sion(alert('boo4'))\">evil4</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image:expres/**/sion(alert('boo4'))\"</><htmltag-bracket>&gt</>evil4<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image:expres/**/sion(alert('boo4'))\"</><htmltag-bracket>&gt</>evil4<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "CSS safety test (all browsers): vertical tab (T57332 / CVE-2013-4567)",
 		"wikitext": "<p style=\"font-size: 100px; background-image:url\\b(https://www.google.com/images/srpr/logo6w.png)\">A</p>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>p </><htmltag-attribute html-p>style=</><htmltag-attribute-value>\"font-size: 100px; background-image:url\\b(https://www.google.com/images/srpr/logo6w.png)\"</><htmltag-bracket>&gt</>A<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>p </><htmltag-attribute html-p>style=</><htmltag-attribute-value css>\"font-size: 100px; background-image:url\\b(https://www.google.com/images/srpr/logo6w.png)\"</><htmltag-bracket>&gt</>A<htmltag-bracket>&lt;/</><htmltag-name>p</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Opera -o-link CSS",
 		"wikitext": "<div\ntitle=\"&#100;&#97;&#116;&#97;&#58;&#116;&#101;&#120;&#116;&#47;&#104;&#116;&#109;&#108;&#44;&#60;&#105;&#109;&#103;&#32;&#115;&#114;&#99;&#61;&#49;&#32;&#111;&#110;&#101;&#114;&#114;&#111;&#114;&#61;&#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;&#62;\"\nstyle=\"-o-link:attr(title);-o-link-source:current\">X</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"</><entity>&amp;#100;&amp;#97;&amp;#116;&amp;#97;&amp;#58;&amp;#116;&amp;#101;&amp;#120;&amp;#116;&amp;#47;&amp;#104;&amp;#116;&amp;#109;&amp;#108;&amp;#44;&amp;#60;&amp;#105;&amp;#109;&amp;#103;&amp;#32;&amp;#115;&amp;#114;&amp;#99;&amp;#61;&amp;#49;&amp;#32;&amp;#111;&amp;#110;&amp;#101;&amp;#114;&amp;#114;&amp;#111;&amp;#114;&amp;#61;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#49;&amp;#41;&amp;#62;</><htmltag-attribute-value>\"</><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"-o-link:attr(title);-o-link-source:current\"</><htmltag-bracket>&gt</>X<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div</><htmltag-attribute html-div>title=</><htmltag-attribute-value>\"</><entity>&amp;#100;&amp;#97;&amp;#116;&amp;#97;&amp;#58;&amp;#116;&amp;#101;&amp;#120;&amp;#116;&amp;#47;&amp;#104;&amp;#116;&amp;#109;&amp;#108;&amp;#44;&amp;#60;&amp;#105;&amp;#109;&amp;#103;&amp;#32;&amp;#115;&amp;#114;&amp;#99;&amp;#61;&amp;#49;&amp;#32;&amp;#111;&amp;#110;&amp;#101;&amp;#114;&amp;#114;&amp;#111;&amp;#114;&amp;#61;&amp;#97;&amp;#108;&amp;#101;&amp;#114;&amp;#116;&amp;#40;&amp;#49;&amp;#41;&amp;#62;</><htmltag-attribute-value>\"</><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"-o-link:attr(title);-o-link-source:current\"</><htmltag-bracket>&gt</>X<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Table attribute legitimate extension",
@@ -2635,12 +2635,12 @@
 	{
 		"desc": "CSS line continuation 1",
 		"wikitext": "<div style=\"background-image: u\\&#10;rl(test.jpg);\"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image: u\\</><entity>&amp;#10;</><htmltag-attribute-value>rl(test.jpg);\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image: u\\</><entity>&amp;#10;</><htmltag-attribute-value css>rl(test.jpg);\"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "CSS line continuation 2",
 		"wikitext": "<div style=\"background-image: u\\&#13;rl(test.jpg); \"></div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background-image: u\\</><entity>&amp;#13;</><htmltag-attribute-value>rl(test.jpg); \"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background-image: u\\</><entity>&amp;#13;</><htmltag-attribute-value css>rl(test.jpg); \"</><htmltag-bracket>&gt&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Allow aria attributes",
@@ -2650,22 +2650,22 @@
 	{
 		"desc": "Expansion of multi-line templates in attribute values (T8255)",
 		"wikitext": "<div style=\"background: {{1x|#00FF00}}\">-</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background: </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>#00FF00</><template-ground template-bracket>}}</><htmltag-attribute-value>\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background: </><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>#00FF00</><template-ground template-bracket>}}</><htmltag-attribute-value css>\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Expansion of multi-line parser-functions in attribute values (T8255)",
 		"wikitext": "<div style=\"background: {{#if:1|#00FF00|#FF00FF}}\">-</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background: </><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>#00FF00</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>#FF00FF</><ext-ground parserfunction-bracket>}}</><htmltag-attribute-value>\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background: </><ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#if</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction>1</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>#00FF00</><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction>#FF00FF</><ext-ground parserfunction-bracket>}}</><htmltag-attribute-value css>\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Expansion of multi-line templates in attribute values (T8255 check)",
 		"wikitext": "<div style=\"background:\n#00FF00\">-</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background:#00FF00\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background:#00FF00\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Expansion of multi-line templates in attribute values (T8255 check 2)",
 		"wikitext": "<div style=\"background: &#10;#00FF00\">-</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"background: </><entity>&amp;#10;</><htmltag-attribute-value>#00FF00\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"background: </><entity>&amp;#10;</><htmltag-attribute-value css>#00FF00\"</><htmltag-bracket>&gt</>-<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Tags which are hidden from tidiers cannot pass through the Sanitizer",
@@ -2730,7 +2730,7 @@
 	{
 		"desc": "Sanitizer: Strip comments from CSS attributes",
 		"wikitext": "<span style=\"margin:/*negate mbox-text padding */-0.125em -0.45em; /*rainbow*/rgba(255, 0, 0, 0.3)\">2013</span>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>style=</><htmltag-attribute-value>\"margin:/*negate mbox-text padding */-0.125em -0.45em; /*rainbow*/rgba(255, 0, 0, 0.3)\"</><htmltag-bracket>&gt</>2013<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>span </><htmltag-attribute html-span>style=</><htmltag-attribute-value css>\"margin:/*negate mbox-text padding */-0.125em -0.45em; /*rainbow*/rgba(255, 0, 0, 0.3)\"</><htmltag-bracket>&gt</>2013<htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Sanitizer: Avoid unnecessary percent encoded characters in interwiki links",
@@ -2755,12 +2755,12 @@
 	{
 		"desc": "Punctuation: CSS !important (T13874)",
 		"wikitext": "<div style=\"width:50% !important\">important</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"width:50% !important\"</><htmltag-bracket>&gt</>important<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"width:50% !important\"</><htmltag-bracket>&gt</>important<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Punctuation: CSS ! important (T13874; with space after)",
 		"wikitext": "<div style=\"width:50% ! important\">important</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"width:50% ! important\"</><htmltag-bracket>&gt</>important<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"width:50% ! important\"</><htmltag-bracket>&gt</>important<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "HTML bullet list, closed tags (T7497)",
@@ -3635,12 +3635,12 @@
 	{
 		"desc": "Verify that displaytitle handles inline CSS styles (T28547) - rejected value",
 		"wikitext": "this is not the title\n{{DISPLAYTITLE:<span style=\"display: none;\">s</span>creen}}",
-		"parsed": "this is not the title<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>span </><ext-ground htmltag-attribute html-span>style=</><ext-ground htmltag-attribute-value>\"display: none;\"</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>s</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>span</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>creen</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "this is not the title<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>span </><ext-ground htmltag-attribute html-span>style=</><ext-ground htmltag-attribute-value css>\"display: none;\"</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>s</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>span</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>creen</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Verify that displaytitle handles inline CSS styles (T28547) - accepted value",
 		"wikitext": "this is not the title\n{{DISPLAYTITLE:<span style=\"color: red;\">s</span>creen}}",
-		"parsed": "this is not the title<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>span </><ext-ground htmltag-attribute html-span>style=</><ext-ground htmltag-attribute-value>\"color: red;\"</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>s</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>span</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>creen</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "this is not the title<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>DISPLAYTITLE</><ext-ground parserfunction-delimiter>:</><ext-ground htmltag-bracket>&lt;</><ext-ground htmltag-name>span </><ext-ground htmltag-attribute html-span>style=</><ext-ground htmltag-attribute-value css>\"color: red;\"</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>s</><ext-ground htmltag-bracket>&lt;/</><ext-ground htmltag-name>span</><ext-ground htmltag-bracket>&gt</><ext-ground parserfunction>creen</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "Verify that displaytitle encodes & to &amp; (T291985)",
@@ -3680,7 +3680,7 @@
 	{
 		"desc": "Play a bit with r67090 and T5158",
 		"wikitext": "<div style=\"width:50% !important\">&nbsp;</div>\n<div style=\"width:50%&nbsp;!important\">&nbsp;</div>\n<div style=\"width:50%&#160;!important\">&nbsp;</div>\n<div style=\"border : solid;\">&nbsp;</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"width:50% !important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"width:50%</><entity>&amp;nbsp;</><htmltag-attribute-value>!important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"width:50%</><entity>&amp;#160;</><htmltag-attribute-value>!important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"border : solid;\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"width:50% !important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"width:50%</><entity>&amp;nbsp;</><htmltag-attribute-value css>!important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"width:50%</><entity>&amp;#160;</><htmltag-attribute-value css>!important\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"border : solid;\"</><htmltag-bracket>&gt</><entity>&amp;nbsp;</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "French spaces in wikitext",
@@ -3695,7 +3695,7 @@
 	{
 		"desc": "T5158: Test for French spaces in attributes",
 		"wikitext": "<br style=\" clear : both ; \" />",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value>\" clear : both ; \"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>br </><htmltag-attribute html-br>style=</><htmltag-attribute-value css>\" clear : both ; \"</><htmltag-attribute html-br> </><htmltag-bracket>/&gt</>"
 	},
 	{
 		"desc": "Displayspace processing on embedded fragments",
@@ -3815,7 +3815,7 @@
 	{
 		"desc": "Ignore pipe between table row attributes",
 		"wikitext": "{|\n|quux\n|- id=foo | style='color: red'\n|bar\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>quux</><table-delimiter>|- </><table-definition html-tr>id=</><table-definition-value>foo</><table-definition html-tr> | style=</><table-definition-value>'color: red'</><table-delimiter>|</><table-td>bar</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-delimiter>|</><table-td>quux</><table-delimiter>|- </><table-definition html-tr>id=</><table-definition-value>foo</><table-definition html-tr> | style=</><table-definition-value css>'color: red'</><table-delimiter>|</><table-td>bar</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Language parser function (autonym)",
@@ -4295,7 +4295,7 @@
 	{
 		"desc": "Ignore single-line context for wikilinks",
 		"wikitext": "* [[Foo|\nbar]]\n\n== [[Foo|\nbar]] ==\n\n* [[Foo|bar\n<span style=\"background-color:green;\ncolor:blue\">x</span>]]",
-		"parsed": "<list>*</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground link-bracket>]]</>== <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground link-bracket>]]</> ==<list>*</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>style=</><link-ground htmltag-attribute-value>\"background-color:green;color:blue\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>x</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
+		"parsed": "<list>*</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground link-bracket>]]</>== <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground link-bracket>]]</> ==<list>*</> <link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground link-text>bar</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>style=</><link-ground htmltag-attribute-value css>\"background-color:green;color:blue\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>x</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "Selser: Ignore single-line context for wikilinks",
@@ -4360,7 +4360,7 @@
 	{
 		"desc": "4. Do not move format tags outside of WikiLink which includes attributes color, style and class",
 		"wikitext": "[[Foo|<font color=\"red\">Foo</font>]]\n[[Foo|<span style=\"color: blue; font-size: 46px;\">Foo></span>]]\n[[Foo|<span class=\"Bar\">Foo</span>]]",
-		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>font </><link-ground htmltag-attribute html-font>color=</><link-ground htmltag-attribute-value>\"red\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>font</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>style=</><link-ground htmltag-attribute-value>\"color: blue; font-size: 46px;\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo&gt</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>class=</><link-ground htmltag-attribute-value>\"Bar\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
+		"parsed": "<link-ground link-bracket>[[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>font </><link-ground htmltag-attribute html-font>color=</><link-ground htmltag-attribute-value>\"red\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>font</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>style=</><link-ground htmltag-attribute-value css>\"color: blue; font-size: 46px;\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo&gt</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]][[</><link-ground link-pagename pagename>Foo</><link-ground link-delimiter>|</><link-ground htmltag-bracket>&lt;</><link-ground htmltag-name>span </><link-ground htmltag-attribute html-span>class=</><link-ground htmltag-attribute-value>\"Bar\"</><link-ground htmltag-bracket>&gt</><link-ground link-text>Foo</><link-ground htmltag-bracket>&lt;/</><link-ground htmltag-name>span</><link-ground htmltag-bracket>&gt</><link-ground link-bracket>]]</>"
 	},
 	{
 		"desc": "5. T194083 Regression test: Manual edit test to move format tags outside wikilinks",
@@ -4780,7 +4780,7 @@
 	{
 		"desc": "DOMDiff: Edits to content nested in elements with templated attributes should not be lost (T139388)",
 		"wikitext": "<div style=\"{{1x|color:red;}}%\">foo</div>",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>color:red;</><template-ground template-bracket>}}</><htmltag-attribute-value>%\"</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"</><template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground template>color:red;</><template-ground template-bracket>}}</><htmltag-attribute-value css>%\"</><htmltag-bracket>&gt</>foo<htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Empty LI (T49673)",
@@ -4930,7 +4930,7 @@
 	{
 		"desc": "Preserve the order invalid attributes",
 		"wikitext": "<div width=\"95%\" style=\"border: 3px solid darkblue\">hi",
-		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>width=</><htmltag-attribute-value>\"95%\"</><htmltag-attribute html-div> style=</><htmltag-attribute-value>\"border: 3px solid darkblue\"</><htmltag-bracket>&gt</>hi"
+		"parsed": "<htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>width=</><htmltag-attribute-value>\"95%\"</><htmltag-attribute html-div> style=</><htmltag-attribute-value css>\"border: 3px solid darkblue\"</><htmltag-bracket>&gt</>hi"
 	},
 	{
 		"desc": "Include directive string gluing",
@@ -6759,7 +6759,7 @@
 	{
 		"desc": "Definition lists: colon in HTML attribute",
 		"wikitext": ";<b style=\"display: inline\">bold</b>",
-		"parsed": "<list>;</><htmltag-bracket>&lt;</><htmltag-name>b </><htmltag-attribute html-b>style=</><htmltag-attribute-value>\"display: inline\"</><htmltag-bracket>&gt</><strong>bold</><htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</>"
+		"parsed": "<list>;</><htmltag-bracket>&lt;</><htmltag-name>b </><htmltag-attribute html-b>style=</><htmltag-attribute-value css>\"display: inline\"</><htmltag-bracket>&gt</><strong>bold</><htmltag-bracket>&lt;/</><htmltag-name>b</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "Definition lists: self-closed tag",
@@ -7951,7 +7951,7 @@
 	{
 		"desc": "span tags with directionality in TOC",
 		"wikitext": "__TOC__\n==<span dir=\"ltr\">C++</span>==\n\n==<span dir=\"rtl\">זבנג!</span>==\n\n==<span style=\"font-style: italic\" dir=\"ltr\" title=\"hello\">Attributes other than dir</span>==",
-		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-bracket section--2>&gt</><section section--2>C++</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"rtl\"</><htmltag-bracket section--2>&gt</><section section--2>זבנג!</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>style=</><htmltag-attribute-value section--2>\"font-style: italic\"</><htmltag-attribute html-span section--2> dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-attribute html-span section--2> title=</><htmltag-attribute-value section--2>\"hello\"</><htmltag-bracket section--2>&gt</><section section--2>Attributes other than dir</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
+		"parsed": "<double-underscore>__TOC__</><section-header section--2>==</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-bracket section--2>&gt</><section section--2>C++</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>dir=</><htmltag-attribute-value section--2>\"rtl\"</><htmltag-bracket section--2>&gt</><section section--2>זבנג!</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>====</><htmltag-bracket section--2>&lt;</><htmltag-name section--2>span </><htmltag-attribute html-span section--2>style=</><htmltag-attribute-value css section--2>\"font-style: italic\"</><htmltag-attribute html-span section--2> dir=</><htmltag-attribute-value section--2>\"ltr\"</><htmltag-attribute html-span section--2> title=</><htmltag-attribute-value section--2>\"hello\"</><htmltag-bracket section--2>&gt</><section section--2>Attributes other than dir</><htmltag-bracket section--2>&lt;/</><htmltag-name section--2>span</><htmltag-bracket section--2>&gt</><section-header section--2>==</>"
 	},
 	{
 		"desc": "T74884: bdi element in ToC",
@@ -8076,7 +8076,7 @@
 	{
 		"desc": "Fuzz testing: Parser14-table",
 		"wikitext": "==a==\n{| STYLE=__TOC__",
-		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>==</><table-bracket>{| </><table-definition html-table>STYLE=</><table-definition-value>__TOC__</>"
+		"parsed": "<section-header section--2>==</><section section--2>a</><section-header section--2>==</><table-bracket>{| </><table-definition html-table>STYLE=</><table-definition-value css>__TOC__</>"
 	},
 	{
 		"desc": "Inclusion of !userCanEdit() content",
@@ -8136,7 +8136,7 @@
 	{
 		"desc": "mw-heading wrapper edge cases",
 		"wikitext": "==Normal heading!==\n\n<h2>HTML heading!</h2>\n\n<h2 style=\"border: 1px solid green; background: lightgreen; padding: 5px; font-size: 1.5em;\">HTML heading with attributes!</h2>\n\n<div class=\"mw-heading mw-heading2\">\n==Normal heading with existing wrapper!==\n</div>",
-		"parsed": "<section-header section--2>==</><section section--2>Normal heading!</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>h2</><htmltag-bracket>&gt</>HTML heading!<htmltag-bracket>&lt;/</><htmltag-name>h2</><htmltag-bracket>&gt&lt;</><htmltag-name>h2 </><htmltag-attribute html-h2>style=</><htmltag-attribute-value>\"border: 1px solid green; background: lightgreen; padding: 5px; font-size: 1.5em;\"</><htmltag-bracket>&gt</>HTML heading with attributes!<htmltag-bracket>&lt;/</><htmltag-name>h2</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"mw-heading mw-heading2\"</><htmltag-bracket>&gt</><section-header section--2>==</><section section--2>Normal heading with existing wrapper!</><section-header section--2>==</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
+		"parsed": "<section-header section--2>==</><section section--2>Normal heading!</><section-header section--2>==</><htmltag-bracket>&lt;</><htmltag-name>h2</><htmltag-bracket>&gt</>HTML heading!<htmltag-bracket>&lt;/</><htmltag-name>h2</><htmltag-bracket>&gt&lt;</><htmltag-name>h2 </><htmltag-attribute html-h2>style=</><htmltag-attribute-value css>\"border: 1px solid green; background: lightgreen; padding: 5px; font-size: 1.5em;\"</><htmltag-bracket>&gt</>HTML heading with attributes!<htmltag-bracket>&lt;/</><htmltag-name>h2</><htmltag-bracket>&gt&lt;</><htmltag-name>div </><htmltag-attribute html-div>class=</><htmltag-attribute-value>\"mw-heading mw-heading2\"</><htmltag-bracket>&gt</><section-header section--2>==</><section section--2>Normal heading with existing wrapper!</><section-header section--2>==</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</>"
 	},
 	{
 		"desc": "T365413: Headings with dollar signs",
@@ -9037,7 +9037,7 @@
 	{
 		"desc": "Title with HTML",
 		"wikitext": "-{T|zh:Title <i style=\"color:red\">with</i> HTML&amp;Entities}-\nShould be stripped!",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>style=</><htmltag-attribute-value>\"color:red\"</><htmltag-bracket>&gt</>with<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> HTML<entity>&amp;amp;</>Entities<convert-bracket>}-</>Should be stripped!"
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>i </><htmltag-attribute html-i>style=</><htmltag-attribute-value css>\"color:red\"</><htmltag-bracket>&gt</>with<htmltag-bracket>&lt;/</><htmltag-name>i</><htmltag-bracket>&gt</> HTML<entity>&amp;amp;</>Entities<convert-bracket>}-</>Should be stripped!"
 	},
 	{
 		"desc": "Title with Wiki syntax",
@@ -9057,7 +9057,7 @@
 	{
 		"desc": "Test 2 from T298401/T67747",
 		"wikitext": "-{T|zh:Title <code style=\"display:none\">}-\nShould be stripped!",
-		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>code </><htmltag-attribute html-code>style=</><htmltag-attribute-value>\"display:none\"</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
+		"parsed": "<convert-bracket>-{</><convert-flag>T</><convert-delimiter>|</><convert-lang>zh:</>Title <htmltag-bracket>&lt;</><htmltag-name>code </><htmltag-attribute html-code>style=</><htmltag-attribute-value css>\"display:none\"</><htmltag-bracket>&gt</><convert-bracket>}-</>Should be stripped!"
 	},
 	{
 		"desc": "Test 3 from T298401/T67747",
@@ -11237,7 +11237,7 @@
 	{
 		"desc": "Gallery with class and style attributes",
 		"wikitext": "<gallery class=\"center\" style=\"text-align: center;\">\nFile:Foobar.jpg\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>class=</><exttag-attribute-value>\"center\"</><exttag-attribute ext-gallery> style=</><exttag-attribute-value>\"text-align: center;\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>class=</><exttag-attribute-value>\"center\"</><exttag-attribute ext-gallery> style=</><exttag-attribute-value css>\"text-align: center;\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery in nolines mode",
@@ -11632,7 +11632,7 @@
 	{
 		"desc": "Inline gallery attributes are appended to the defaults",
 		"wikitext": "<gallery perrow=\"1\" style=\"color: red\">\nFile:Foobar.jpg|One\nFile:Foobar.jpg|Two\n</gallery>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>perrow=</><exttag-attribute-value>\"1\"</><exttag-attribute ext-gallery> style=</><exttag-attribute-value>\"color: red\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery file-delimiter>|</><tag-gallery file-text>One</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery file-delimiter>|</><tag-gallery file-text>Two</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>gallery </><exttag-attribute ext-gallery>perrow=</><exttag-attribute-value>\"1\"</><exttag-attribute ext-gallery> style=</><exttag-attribute-value css>\"color: red\"</><exttag-bracket>&gt</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery file-delimiter>|</><tag-gallery file-text>One</><tag-gallery link-pagename pagename>File:Foobar.jpg</><tag-gallery file-delimiter>|</><tag-gallery file-text>Two</><exttag-bracket>&lt;/</><exttag-name>gallery</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Gallery line with trailing closing square brackets",
@@ -11819,7 +11819,7 @@
 	{
 		"desc": "Basic <poem> usage with style",
 		"wikitext": "<poem style=\"border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;\">\nA stately pleasure-dome decree:\nWhere Alph, the sacred river, ran\nThrough caverns measureless to man\nDown to a sunless sea.\n</poem>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>poem </><exttag-attribute ext-poem>style=</><exttag-attribute-value>\"border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;\"</><exttag-bracket>&gt</><tag-poem>A stately pleasure-dome decree:Where Alph, the sacred river, ranThrough caverns measureless to manDown to a sunless sea.</><exttag-bracket>&lt;/</><exttag-name>poem</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>poem </><exttag-attribute ext-poem>style=</><exttag-attribute-value css>\"border: 2px solid #d6d2c5; background-color: #f9f4e6; padding: 1em;\"</><exttag-bracket>&gt</><tag-poem>A stately pleasure-dome decree:Where Alph, the sacred river, ranThrough caverns measureless to manDown to a sunless sea.</><exttag-bracket>&lt;/</><exttag-name>poem</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Verify Parsoid handles entities in nowikis in poem correctly",
@@ -11857,7 +11857,7 @@
 	{
 		"desc": "<pre> with attributes (T5202)",
 		"wikitext": "<pre style=\"background: blue; color:white\">Bluescreen of WikiDeath</pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>style=</><exttag-attribute-value>\"background: blue; color:white\"</><exttag-bracket>&gt</><tag-pre>Bluescreen of WikiDeath</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>style=</><exttag-attribute-value css>\"background: blue; color:white\"</><exttag-bracket>&gt</><tag-pre>Bluescreen of WikiDeath</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "<pre> with width attribute (T5202)",
@@ -11877,7 +11877,7 @@
 	{
 		"desc": "<pre> with forbidden attribute values (T5202)",
 		"wikitext": "<pre width=\"8\" style=\"border-width: expression(alert(document.cookie))\">Narrow screen goodies</pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>width=</><exttag-attribute-value>\"8\"</><exttag-attribute ext-pre> style=</><exttag-attribute-value>\"border-width: expression(alert(document.cookie))\"</><exttag-bracket>&gt</><tag-pre>Narrow screen goodies</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>width=</><exttag-attribute-value>\"8\"</><exttag-attribute ext-pre> style=</><exttag-attribute-value css>\"border-width: expression(alert(document.cookie))\"</><exttag-bracket>&gt</><tag-pre>Narrow screen goodies</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "<nowiki> inside <pre> (T15238)",
@@ -11937,7 +11937,7 @@
 	{
 		"desc": "Parsoid: handle pre with space after attribute",
 		"wikitext": "<pre style=\"width:50%;\" >{{1x|foo}}</pre>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>style=</><exttag-attribute-value>\"width:50%;\"</><exttag-attribute ext-pre> </><exttag-bracket>&gt</><tag-pre>{{1x|foo}}</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>pre </><exttag-attribute ext-pre>style=</><exttag-attribute-value css>\"width:50%;\"</><exttag-attribute ext-pre> </><exttag-bracket>&gt</><tag-pre>{{1x|foo}}</><exttag-bracket>&lt;/</><exttag-name>pre</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Self-closed pre",
@@ -13121,7 +13121,7 @@
 	{
 		"desc": "Custom attributes",
 		"wikitext": "<source lang=\"javascript\" id=\"foo\" class=\"bar\" dir=\"rtl\" style=\"font-size: larger;\">var a;</source>",
-		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-source> id=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-source> class=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-source> dir=</><exttag-attribute-value>\"rtl\"</><exttag-attribute ext-source> style=</><exttag-attribute-value>\"font-size: larger;\"</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>source </><exttag-attribute ext-source>lang=</><exttag-attribute-value>\"javascript\"</><exttag-attribute ext-source> id=</><exttag-attribute-value>\"foo\"</><exttag-attribute ext-source> class=</><exttag-attribute-value>\"bar\"</><exttag-attribute ext-source> dir=</><exttag-attribute-value>\"rtl\"</><exttag-attribute ext-source> style=</><exttag-attribute-value css>\"font-size: larger;\"</><exttag-bracket>&gt</><tag-source exttag>var a;</><exttag-bracket>&lt;/</><exttag-name>source</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "Inline attribute (inline code)",
@@ -13194,7 +13194,7 @@
 	{
 		"desc": "A table with stray table end tags on start tag line (wt2html)",
 		"wikitext": "{|style=\"color: red;\"|}\n\n{|style=\"color: red;\" |}\n|foo\n|}\n\n{|style=\"color: red;\"|} id=\"foo\"\n|foo\n|}\n\n{|style=\"color: red;\" |} id=\"foo\"\n|foo\n|}",
-		"parsed": "<table-bracket>{|</><table-definition html-table>style=</><table-definition-value>\"color: red;\"</><table-definition html-table>|}</><table-bracket>{|</><table-definition html-table>style=</><table-definition-value>\"color: red;\"</><table-definition html-table> |}</><table-delimiter>|</><table-td>foo</><table-bracket>|}{|</><table-definition html-table>style=</><table-definition-value>\"color: red;\"</><table-definition html-table>|} id=</><table-definition-value>\"foo\"</><table-delimiter>|</><table-td>foo</><table-bracket>|}{|</><table-definition html-table>style=</><table-definition-value>\"color: red;\"</><table-definition html-table> |} id=</><table-definition-value>\"foo\"</><table-delimiter>|</><table-td>foo</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-definition html-table>style=</><table-definition-value css>\"color: red;\"</><table-definition html-table>|}</><table-bracket>{|</><table-definition html-table>style=</><table-definition-value css>\"color: red;\"</><table-definition html-table> |}</><table-delimiter>|</><table-td>foo</><table-bracket>|}{|</><table-definition html-table>style=</><table-definition-value css>\"color: red;\"</><table-definition html-table>|} id=</><table-definition-value>\"foo\"</><table-delimiter>|</><table-td>foo</><table-bracket>|}{|</><table-definition html-table>style=</><table-definition-value css>\"color: red;\"</><table-definition html-table> |} id=</><table-definition-value>\"foo\"</><table-delimiter>|</><table-td>foo</><table-bracket>|}</>"
 	},
 	{
 		"desc": "A table with nothing but a caption",
@@ -13324,7 +13324,7 @@
 	{
 		"desc": "! and || in element attributes should not be parsed as <th>/<td>",
 		"wikitext": "{|\n|<div style=\"color: red !important;\" data-contrived=\"put this here ||\">hi</div>\n|}",
-		"parsed": "<table-bracket>{|</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value>\"color: red !important;\"</><htmltag-attribute html-div> data-contrived=</><htmltag-attribute-value>\"put this here ||\"</><htmltag-bracket>&gt</><table-td>hi</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{|</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>div </><htmltag-attribute html-div>style=</><htmltag-attribute-value css>\"color: red !important;\"</><htmltag-attribute html-div> data-contrived=</><htmltag-attribute-value>\"put this here ||\"</><htmltag-bracket>&gt</><table-td>hi</><htmltag-bracket>&lt;/</><htmltag-name>div</><htmltag-bracket>&gt</><table-bracket>|}</>"
 	},
 	{
 		"desc": "! and || in td attributes should not be parsed as <th>/<td>",
@@ -13334,12 +13334,12 @@
 	{
 		"desc": "Invalid text in table attributes should be discarded",
 		"wikitext": "{| <span>boo</span> style='border:1px solid black'\n|  <span>boo</span> style='color:blue'  |1\n|<span>boo</span> style='color:blue'|2\n|}",
-		"parsed": "<table-bracket>{| </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table> style=</><table-definition-value>'border:1px solid black'</><table-delimiter>|  </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'  </><table-delimiter2>|</><table-td>1</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'</><table-delimiter2>|</><table-td>2</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table> style=</><table-definition-value css>'border:1px solid black'</><table-delimiter>|  </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'  </><table-delimiter2>|</><table-td>1</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'</><table-delimiter2>|</><table-td>2</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Invalid text in table attributes should be preserved by selective serializer",
 		"wikitext": "{| <span>boo</span> style='border:1px solid black'\n|  <span>boo</span> style='color:blue'  | 1\n|<span>boo</span> style='color:blue'| 2\n|}",
-		"parsed": "<table-bracket>{| </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table> style=</><table-definition-value>'border:1px solid black'</><table-delimiter>|  </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'  </><table-delimiter2>| </><table-td>1</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'</><table-delimiter2>| </><table-td>2</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><table-definition html-table> style=</><table-definition-value css>'border:1px solid black'</><table-delimiter>|  </><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'  </><table-delimiter2>| </><table-td>1</><table-delimiter>|</><htmltag-bracket>&lt;</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition>boo</><htmltag-bracket>&lt;/</><htmltag-name>span</><htmltag-bracket>&gt</><html-td table-definition> style='color:blue'</><table-delimiter2>| </><table-td>2</><table-bracket>|}</>"
 	},
 	{
 		"desc": "1. Template-generated table cell attributes and cell content",
@@ -13409,7 +13409,7 @@
 	{
 		"desc": "Build table with {{!}}",
 		"wikitext": "{{{!}} class=\"wikitable\"\n!header\n!second header\n{{!}}- style=\"color:red;\"\n{{!}}data{{!}}{{!}} style=\"color:red;\"{{!}}second data\n{{!}}data{{!}}| style=\"color:green;\"{{!}}third data\n{{!}}data|{{!}} style=\"color:blue;\"{{!}}fourth data\n{{!}}}",
-		"parsed": "<table-bracket>{{{!}} </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>!</><table-th>second header</><table-delimiter>{{!}}- </><table-definition html-tr>style=</><table-definition-value>\"color:red;\"</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}{{!}} </><html-td table-definition>style=\"color:red;\"</><table-delimiter2>{{!}}</><table-td>second data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}| </><html-td table-definition>style=\"color:green;\"</><table-delimiter2>{{!}}</><table-td>third data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>|{{!}} </><html-td table-definition>style=\"color:blue;\"</><table-delimiter2>{{!}}</><table-td>fourth data</><table-bracket>{{!}}}</>"
+		"parsed": "<table-bracket>{{{!}} </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>!</><table-th>second header</><table-delimiter>{{!}}- </><table-definition html-tr>style=</><table-definition-value css>\"color:red;\"</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}{{!}} </><html-td table-definition>style=\"color:red;\"</><table-delimiter2>{{!}}</><table-td>second data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>{{!}}| </><html-td table-definition>style=\"color:green;\"</><table-delimiter2>{{!}}</><table-td>third data</><table-delimiter>{{!}}</><table-td>data</><table-delimiter>|{{!}} </><html-td table-definition>style=\"color:blue;\"</><table-delimiter2>{{!}}</><table-td>fourth data</><table-bracket>{{!}}}</>"
 	},
 	{
 		"desc": "Edge cases with use of {{!}}",
@@ -13419,12 +13419,12 @@
 	{
 		"desc": "Build table with pipe as data",
 		"wikitext": "{| class=\"wikitable\"\n!header\n!second header\n|- style=\"color:red;\"\n|data|| style=\"color:red;\" |second data\n|-\n| style=\"color:red;\" |data with | || style=\"color:red;\" | second data with |\n|-\n||data with | |||second data with |\n|}",
-		"parsed": "<table-bracket>{| </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>!</><table-th>second header</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value>\"color:red;\"</><table-delimiter>|</><table-td>data</><table-delimiter>|| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>|</><table-td>second data</><table-delimiter>|-| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>|</><table-td>data with | </><table-delimiter>|| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>| </><table-td>second data with |</><table-delimiter>|-|</><table-delimiter2>|</><table-td>data with | </><table-delimiter>||</><table-delimiter2>|</><table-td>second data with |</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>!</><table-th>second header</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value css>\"color:red;\"</><table-delimiter>|</><table-td>data</><table-delimiter>|| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>|</><table-td>second data</><table-delimiter>|-| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>|</><table-td>data with | </><table-delimiter>|| </><html-td table-definition>style=\"color:red;\" </><table-delimiter2>| </><table-td>second data with |</><table-delimiter>|-|</><table-delimiter2>|</><table-td>data with | </><table-delimiter>||</><table-delimiter2>|</><table-td>second data with |</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Build table with wikilink",
 		"wikitext": "{| class=\"wikitable\"\n!header||second header\n|- style=\"color:red;\"\n|data [[Main Page|linktext]]||second data [[Main Page|linktext]]\n|-\n|data||second data [[Main Page|link|text with pipe]]\n|}",
-		"parsed": "<table-bracket>{| </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>||</><table-th>second header</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value>\"color:red;\"</><table-delimiter>|</><table-td>data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>linktext</><link-ground link-bracket>]]</><table-delimiter>||</><table-td>second data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>linktext</><link-ground link-bracket>]]</><table-delimiter>|-|</><table-td>data</><table-delimiter>||</><table-td>second data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>link|text with pipe</><link-ground link-bracket>]]</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><table-definition html-table>class=</><table-definition-value>\"wikitable\"</><table-delimiter>!</><table-th>header</><table-delimiter>||</><table-th>second header</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value css>\"color:red;\"</><table-delimiter>|</><table-td>data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>linktext</><link-ground link-bracket>]]</><table-delimiter>||</><table-td>second data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>linktext</><link-ground link-bracket>]]</><table-delimiter>|-|</><table-td>data</><table-delimiter>||</><table-td>second data </><link-ground link-bracket>[[</><link-ground link-pagename pagename>Main Page</><link-ground link-delimiter>|</><link-ground link-text>link|text with pipe</><link-ground link-bracket>]]</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Wikitext table with html-syntax row",
@@ -13614,17 +13614,17 @@
 	{
 		"desc": "Pipe within attribute without quotes",
 		"wikitext": "{| style=font-size:85%|0 – 2\n|- style=font-size:85%|0 – 2\n| style=font-size:85%|0 – 2 hi\n|}",
-		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value>font-size:85%|0</><table-definition html-table> – 2</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value>font-size:85%|0</><table-definition html-tr> – 2</><table-delimiter>| </><html-td table-definition>style=font-size:85%</><table-delimiter2>|</><table-td>0 – 2 hi</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value css>font-size:85%|0</><table-definition html-table> – 2</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value css>font-size:85%|0</><table-definition html-tr> – 2</><table-delimiter>| </><html-td table-definition>style=font-size:85%</><table-delimiter2>|</><table-td>0 – 2 hi</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Pipe within attribute with single quotes",
 		"wikitext": "{| style='font-size:85%|0 – 2'\n|- style='font-size:85%|0 – 2'\n| style='font-size:85%|0 – 2' hi\n|}",
-		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value>'font-size:85%|0 – 2'</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value>'font-size:85%|0 – 2'</><table-delimiter>| </><html-td table-definition>style='font-size:85%</><table-delimiter2>|</><table-td>0 – 2' hi</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value css>'font-size:85%|0 – 2'</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value css>'font-size:85%|0 – 2'</><table-delimiter>| </><html-td table-definition>style='font-size:85%</><table-delimiter2>|</><table-td>0 – 2' hi</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Pipe within attribute with double quotes",
 		"wikitext": "{| style=\"font-size:85%|0 – 2\"\n|- style=\"font-size:85%|0 – 2\"\n|hi\n|}",
-		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value>\"font-size:85%|0 – 2\"</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value>\"font-size:85%|0 – 2\"</><table-delimiter>|</><table-td>hi</><table-bracket>|}</>"
+		"parsed": "<table-bracket>{| </><table-definition html-table>style=</><table-definition-value css>\"font-size:85%|0 – 2\"</><table-delimiter>|- </><table-definition html-tr>style=</><table-definition-value css>\"font-size:85%|0 – 2\"</><table-delimiter>|</><table-td>hi</><table-bracket>|}</>"
 	},
 	{
 		"desc": "Asciiart template should display the right number of spaces",

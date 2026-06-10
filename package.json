@@ -82,15 +82,15 @@
 	"dependencies": {
 		"@bhsd/browser": "^0.5.0",
 		"@bhsd/cm-util": "^2.2.0",
-		"@bhsd/codemirror-css-color-picker": "^7.2.0",
-		"@bhsd/common": "^2.2.1",
+		"@bhsd/codemirror-css-color-picker": "^8.0.0",
+		"@bhsd/common": "^3.0.0",
 		"@bhsd/lezer-abusefilter": "^0.4.0",
 		"@bhsd/lezer-json": "^2.1.0",
 		"@bhsd/stylelint-util": "^1.1.0",
 		"wikiparser-node": "^1.44.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.6.2",
+		"@bhsd/code-standard": "^2.7.0",
 		"@bhsd/nodejs": "^1.0.1",
 		"@bhsd/eslint-browserify": "^10.4.1",
 		"@bhsd/test-util": "^1.5.0",
@@ -102,7 +102,7 @@
 		"@codemirror/lang-javascript": "^6.2.5",
 		"@codemirror/lang-vue": "^0.1.3",
 		"@codemirror/legacy-modes": "^6.5.3",
-		"@codemirror/lint": "^6.9.6",
+		"@codemirror/lint": "6.9.6",
 		"@codemirror/search": "^6.7.0",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.42.1",

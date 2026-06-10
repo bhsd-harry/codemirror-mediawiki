@@ -735,12 +735,7 @@ export class CodeMirror extends CodeMirror6 {
 			this.#editor.updateOptions({theme: monacoThemes.get(theme) ?? theme});
 			return;
 		}
-		super.setTheme(
-			mw.config.get('skin') === 'moeskin'
-			&& mw.loader.getState('ext.CodeMirror.v6') === 'ready'
-				? 'light'
-				: theme,
-		);
+		super.setTheme(theme);
 	}
 
 	override replaceSelections(func: ReplaceFunction): void {

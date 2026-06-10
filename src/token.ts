@@ -679,6 +679,7 @@ export class MediaWiki {
 			this.addToken(`section--${i}`);
 		}
 		this.addToken('unknown', true);
+		this.addToken('css', true);
 		for (const tag of this.tags) {
 			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre' && tag !== 'ref');
 			if (tag === 'score') {
@@ -1183,10 +1184,10 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inTableDefinition(tr?: boolean, quote?: string): Tokenizer {
+	inTableDefinition(tr?: boolean, quote?: string, css?: boolean): Tokenizer {
 		const style = quote === undefined
 			? `${tokens.tableDefinition} mw-html-${tr ? 'tr' : 'table'}`
-			: tokens.tableDefinitionValue;
+			: tokens.tableDefinitionValue + (css ? ' mw-css' : '');
 		return (stream, state) => {
 			if (stream.sol()) {
 				state.tokenize = this.inTable;
@@ -1201,7 +1202,7 @@ export class MediaWiki {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					state.tokenize = this.inTableDefinition(tr, quote[1]);
+					state.tokenize = this.inTableDefinition(tr, quote[1], css);
 				} else {
 					stream.match(getTableDefinitionRegex(equal + quote[0]));
 				}
@@ -1214,10 +1215,13 @@ export class MediaWiki {
 				stream.match(tableDefinitionValueRegex[equal ? 1 : 0]);
 				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
-				state.tokenize = this.inTableDefinition(tr, getQuote(stream));
+				state.tokenize = this.inTableDefinition(tr, getQuote(stream), css);
 				return makeLocalStyle(style, state);
 			}
-			stream.match(tableDefinitionRegex);
+			const mt = stream.match(tableDefinitionRegex);
+			if (mt && stream.peek() === '=') {
+				state.tokenize = this.inTableDefinition(tr, undefined, /(?:^|\s)style\s*$/iu.test(mt[0]));
+			}
 			return makeLocalStyle(style, state);
 		};
 	}
@@ -1376,16 +1380,16 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inHtmlTagAttribute(name: string, quote?: string): Tokenizer {
+	inHtmlTagAttribute(name: string, quote?: string, css?: boolean): Tokenizer {
 		const style = quote === undefined
 			? `${tokens.htmlTagAttribute} mw-html-${name}`
-			: tokens.htmlTagAttributeValue;
+			: tokens.htmlTagAttributeValue + (css ? ' mw-css' : '');
 		return (stream, state) => {
 			if (stream.match(new RegExp(`^${lookahead('<', state)}`, 'iu'), false)) {
 				pop(state);
 				return '';
 			}
-			const mt = stream.match(/^\/?>/u);
+			let mt = stream.match(/^\/?>/u);
 			if (mt) {
 				if (!this.voidHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.push(name);
@@ -1403,7 +1407,7 @@ export class MediaWiki {
 				return this.eatWikiText(style)(stream, state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
-					state.tokenize = this.inHtmlTagAttribute(name, quote[1]);
+					state.tokenize = this.inHtmlTagAttribute(name, quote[1], css);
 				} else {
 					stream.match(getHtmlAttrRegex(pipe + quote[0]));
 				}
@@ -1416,17 +1420,27 @@ export class MediaWiki {
 				stream.match(getHtmlAttrRegex(String.raw`\s${pipe}`));
 				return makeLocalStyle(style, state);
 			} else if (stream.match(/^=\s*/u)) {
-				state.tokenize = this.inHtmlTagAttribute(name, getQuote(stream));
+				state.tokenize = this.inHtmlTagAttribute(name, getQuote(stream), css);
 				return makeLocalStyle(style, state);
 			}
-			stream.match(getHtmlAttrKeyRegex(pipe));
+			mt = stream.match(getHtmlAttrKeyRegex(pipe));
+			if (mt && stream.peek() === '=') {
+				state.tokenize = this.inHtmlTagAttribute(name, undefined, /(?:^|\s)style\s*$/iu.test(mt[0]));
+			}
 			return makeLocalStyle(style, state);
 		};
 	}
 
 	@getTokenizer<string>
-	inExtTagAttribute(name: string, quote?: string, isLang?: boolean, isPage?: boolean): Tokenizer<string> {
-		const style = `${tokens.extTagAttribute} mw-ext-${name}`;
+	inExtTagAttribute(
+		name: string,
+		quote?: string,
+		isLang?: boolean,
+		isPage?: boolean,
+		css?: boolean,
+	): Tokenizer<string> {
+		const style = `${tokens.extTagAttribute} mw-ext-${name}`,
+			cssStyle = css ? ' mw-css' : '';
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re)!;
 			if (isLang) {
@@ -1442,7 +1456,10 @@ export class MediaWiki {
 					state.extMode = true;
 				}
 			}
-			return makeLocalStyle(tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : ''), state);
+			return makeLocalStyle(
+				tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : '') + cssStyle,
+				state,
+			);
 		};
 		return (stream, state) => {
 			if (stream.match('/>')) {
@@ -1474,8 +1491,9 @@ export class MediaWiki {
 						remains,
 						isLang && Boolean(remains),
 						isPage && Boolean(remains),
+						css,
 					);
-					return makeLocalTagStyle('extTagAttributeValue', state);
+					return makeLocalStyle(tokens.extTagAttributeValue + cssStyle, state);
 				}
 				return advance(stream, state, getExtAttrRegex(quote[0]!));
 			} else if (quote === '') { // 无引号的属性值
@@ -1485,7 +1503,7 @@ export class MediaWiki {
 				}
 				return advance(stream, state, /^(?:[^>/\s]|\/(?!>))+/u);
 			} else if (stream.match(/^=\s*/u)) {
-				state.tokenize = this.inExtTagAttribute(name, getQuote(stream), isLang, isPage);
+				state.tokenize = this.inExtTagAttribute(name, getQuote(stream), isLang, isPage, css);
 				return makeLocalStyle(style, state);
 			}
 			const mt = stream.match(/^(?:[^>/=]|\/(?!>))+/u)!;
@@ -1495,6 +1513,7 @@ export class MediaWiki {
 					undefined,
 					syntaxHighlight.has(name) && /(?:^|\s)lang\s*$/iu.test(mt[0]),
 					name === 'templatestyles' && /(?:^|\s)src\s*$/iu.test(mt[0]),
+					/(?:^|\s)style\s*$/iu.test(mt[0]),
 				);
 			}
 			return makeLocalStyle(style, state);

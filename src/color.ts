@@ -1,7 +1,9 @@
-import {splitColors} from '@bhsd/common';
+import {splitColors, colorsNamed} from '@bhsd/common';
 import {makeColorPicker} from '@bhsd/codemirror-css-color-picker';
 import type {DiscoverColors} from '@bhsd/codemirror-css-color-picker';
 import type {DocRange} from './util';
+
+const colorNames = Object.keys(colorsNamed);
 
 /**
  * @implements
@@ -22,7 +24,7 @@ export const discoverColors: DiscoverColors = (_, {from, to, name}, doc) =>
 	&& doc.sliceString(from - 1, from) === '|'
 	&& (doc.sliceString(to, to + 1) === '|' || doc.sliceString(to, to + 3) === '}}}')
 
-		? splitColors(doc.sliceString(from, to))
+		? splitColors(doc.sliceString(from, to), name.includes('mw-css') && colorNames)
 			.filter(([,,, isColor]) => isColor)
 			.map(([, start, end]): DocRange => ({
 				from: from + start,
