@@ -641,7 +641,7 @@
 
 **Changed**
 
-- Migrate from [markdown-it](https://www.npmjs.com/package/markdown-it) to [marked](https://www.npmjs.com/package/marked) for the [hover](./README.md#hover) extension
+- Migrate from [markdown-it](https://www.npmjs.com/package/markdown-it) to [marked](https://marked.js.org/) for the [hover](./README.md#hover) extension
 
 ## 2.30.2
 
