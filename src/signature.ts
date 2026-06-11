@@ -115,11 +115,13 @@ export default (
 					cm.lsp ??= getLSP(
 						view,
 						false,
-						toConfigGetter(
-							cm.getWikiConfig,
-							articlePath,
-						),
-						baseData.CDN,
+						{
+							getConfig: toConfigGetter(
+								cm.getWikiConfig,
+								articlePath,
+							),
+							cdn: baseData.CDN,
+						},
 					);
 					const {lsp} = cm;
 					let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(

@@ -95,8 +95,7 @@ const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean 
 	const lsp = getLSP(
 		view,
 		false,
-		getConfig,
-		baseData.CDN,
+		{getConfig, cdn: baseData.CDN},
 	);
 	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
 		void escapeWiki(view, lsp);
@@ -131,7 +130,7 @@ menuRegistry.push({
 				handlerBase(view, e);
 			});
 			items = [btnHTML, btnURI];
-			const lsp = getLSP(view, false, cm.getWikiConfig, baseData.CDN);
+			const lsp = getLSP(view, false, {getConfig: cm.getWikiConfig, cdn: baseData.CDN});
 			if (lsp && 'provideRefactoringAction' in lsp) {
 				const btnWiki = elt('div', 'Escape with magic words');
 				btnWiki.addEventListener('click', e => {

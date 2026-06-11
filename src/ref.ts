@@ -116,11 +116,13 @@ export default (
 						ref = await getLSP(
 							view,
 							false,
-							toConfigGetter(
-								cm.getWikiConfig,
-								articlePath,
-							),
-							baseData.CDN,
+							{
+								getConfig: toConfigGetter(
+									cm.getWikiConfig,
+									articlePath,
+								),
+								cdn: baseData.CDN,
+							},
 						)?.provideDefinition(doc.toString(), indexToPos(doc, tag.first.to));
 					return {
 						pos,

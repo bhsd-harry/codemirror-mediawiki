@@ -133,11 +133,13 @@ export default (
 				cm.lsp ??= getLSP(
 					view,
 					false,
-					toConfigGetter(
-						cm.getWikiConfig,
-						articlePath,
-					),
-					baseData.CDN,
+					{
+						getConfig: toConfigGetter(
+							cm.getWikiConfig,
+							articlePath,
+						),
+						cdn: baseData.CDN,
+					},
 				);
 				const {lsp} = cm;
 				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));

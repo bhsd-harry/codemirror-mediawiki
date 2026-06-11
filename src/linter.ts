@@ -110,11 +110,11 @@ export const getWikiLinter: getAsyncLinter<
 	object
 > = async (opt, obj) => {
 	const cdn = opt?.['cdn'] as string | undefined;
-	await getWikiparse(
-		opt?.['getConfig'] as ConfigGetter | undefined,
-		opt?.['i18n'] as string | string[] | undefined,
+	await getWikiparse({
+		getConfig: opt?.['getConfig'] as ConfigGetter | undefined,
+		langs: opt?.['i18n'] as string | string[] | undefined,
 		cdn,
-	);
+	});
 	const lsp = getLSP(obj!, opt?.['include'] as boolean | undefined)!;
 	const cssLint =
 		await getCssLinter(cdn && `${cdn}/${stylelintRepo}`);

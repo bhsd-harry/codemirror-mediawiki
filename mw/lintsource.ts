@@ -165,7 +165,7 @@ export const getTemplateDataLintSource = async (
 	if (!('templatedata' in langConfig!.tags!)) {
 		return voidLintSource;
 	}
-	const lsp = getLSP(view!, false, getWikiConfig, baseData.CDN);
+	const lsp = getLSP(view!, false, {getConfig: getWikiConfig, cdn: baseData.CDN});
 	if (!(lsp && 'findTemplateTokens' in lsp)) {
 		return voidLintSource;
 	}
