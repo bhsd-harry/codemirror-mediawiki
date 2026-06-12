@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-wikitext",
-	"version": "0.9.0",
+	"version": "0.9.1",
 	"description": "Wikitext mode based on wikimedia/mediawiki-extensions-CodeMirror and language support extensions",
 	"keywords": [
 		"mediawiki",
@@ -49,7 +49,7 @@
 		"@codemirror/view": "^6.39.0"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^0.5.0",
+		"@bhsd/browser": "^1.0.0",
 		"@bhsd/cm-util": "^2.2.0",
 		"@bhsd/codemirror-css-color-picker": "^8.0.0",
 		"@bhsd/common": "^3.0.0",
@@ -58,17 +58,17 @@
 		"wikiparser-node": "^1.44.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^2.7.0",
-		"@codemirror/autocomplete": "^6.20.2",
+		"@bhsd/code-standard": "^3.0.0",
+		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.10.3",
 		"@codemirror/language": "^6.12.3",
-		"@codemirror/lint": "6.9.6",
-		"@codemirror/search": "^6.7.0",
+		"@codemirror/lint": "^6.9.7",
+		"@codemirror/search": "^6.7.1",
 		"@codemirror/state": "^6.6.0",
 		"@codemirror/view": "^6.42.1",
 		"diff2html-cli": "^5.2.15",
-		"esbuild": "^0.28.0",
-		"eslint": "^10.4.1",
+		"esbuild": "^0.28.1",
+		"eslint": "^10.5.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.22.1",
 		"stylelint": "^17.13.0",

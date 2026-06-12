@@ -131,6 +131,7 @@ export default (
 					return {
 						pos,
 						end: tag.to,
+						above: true,
 						create(): TooltipView {
 							const dom = elt('div', {class: selector.slice(1)});
 							dom.style.font = getComputedStyle(view.contentDOM).font;
