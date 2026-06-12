@@ -75,8 +75,7 @@ const escapeWikiCommand = (view: EditorView, getConfig?: ConfigGetter): boolean 
 	const lsp = getLSP(
 		view,
 		true,
-		getConfig,
-		baseData.CDN,
+		{getConfig, cdn: baseData.CDN},
 	);
 	if (lsp && 'provideRefactoringAction' in lsp && view.state.selection.ranges.some(({empty}) => !empty)) {
 		void escapeWiki(view, lsp);

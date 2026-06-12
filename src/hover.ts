@@ -57,10 +57,12 @@ export default (
 				const lsp = getLSP(
 					view,
 					true,
-					toConfigGetter(
-						configData,
-					),
-					baseData.CDN,
+					{
+						getConfig: toConfigGetter(
+							configData,
+						),
+						cdn: baseData.CDN,
+					},
 				);
 				// eslint-disable-next-line prefer-const
 				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));

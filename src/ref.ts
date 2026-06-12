@@ -121,10 +121,12 @@ export default (
 						ref = await getLSP(
 							view,
 							true,
-							toConfigGetter(
-								configData,
-							),
-							baseData.CDN,
+							{
+								getConfig: toConfigGetter(
+									configData,
+								),
+								cdn: baseData.CDN,
+							},
 						)?.provideDefinition(doc.toString(), indexToPos(doc, tag.first.to));
 					return {
 						pos,

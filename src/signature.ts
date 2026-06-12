@@ -97,10 +97,12 @@ export default (
 					const lsp = getLSP(
 						view,
 						true,
-						toConfigGetter(
-							configData,
-						),
-						baseData.CDN,
+						{
+							getConfig: toConfigGetter(
+								configData,
+							),
+							cdn: baseData.CDN,
+						},
 					);
 					// eslint-disable-next-line prefer-const
 					let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(

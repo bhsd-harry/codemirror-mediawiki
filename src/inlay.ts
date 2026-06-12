@@ -92,10 +92,12 @@ export default (
 					getLSP(
 						view,
 						true,
-						toConfigGetter(
-							configData,
-						),
-						baseData.CDN,
+						{
+							getConfig: toConfigGetter(
+								configData,
+							),
+							cdn: baseData.CDN,
+						},
 					)
 				) {
 					clearInterval(timer);

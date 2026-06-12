@@ -88,11 +88,10 @@ export const getWikiLinter: getAsyncLinter<
 	LintConfig
 > = async (opt, obj) => {
 	const cdn = baseData.CDN;
-	await getWikiparse(
-		opt,
-		undefined,
+	await getWikiparse({
+		getConfig: opt,
 		cdn,
-	);
+	});
 	const isFull = obj && 'rules' in obj,
 		cssConfig = isFull ? obj.rules['invalid-css'] : obj?.['invalid-css'],
 		isWarning = cssConfig === 1 || cssConfig === 'warning';
