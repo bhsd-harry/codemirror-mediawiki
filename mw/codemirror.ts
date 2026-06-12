@@ -64,6 +64,12 @@ declare interface ExtCodeMirror {
 	destroy(): void;
 }
 
+declare interface CodeMirrorOptions {
+	ns?: number | undefined;
+	page?: string | undefined;
+	extensions?: string[] | undefined;
+}
+
 registerCSS();
 registerHTML();
 registerJSON();
@@ -220,17 +226,17 @@ export class CodeMirror extends CodeMirror6 {
 	/**
 	 * @param textarea 文本框
 	 * @param lang 语言
-	 * @param ns 命名空间
 	 * @param config 语言设置
 	 * @param isCM 是否使用 CodeMirror
+	 * @param ns 命名空间
 	 * @param page 页面标题
 	 */
 	constructor(
 		textarea: HTMLTextAreaElement,
 		lang?: string,
-		ns?: number,
 		config?: unknown,
 		isCM = true,
+		ns?: number,
 		page = mw.config.get('wgPageName'),
 	) {
 		if (instances.get(textarea)) {
@@ -757,16 +763,15 @@ export class CodeMirror extends CodeMirror6 {
 	 * 将 textarea 替换为 CodeMirror
 	 * @param textarea textarea 元素
 	 * @param lang 语言
-	 * @param ns 命名空间
-	 * @param page 页面标题
-	 * @param extensions 扩展名列表
+	 * @param opt 选项
+	 * @param opt.ns 命名空间
+	 * @param opt.page 页面标题
+	 * @param opt.extensions 扩展名列表
 	 */
 	static async fromTextArea(
 		textarea: HTMLTextAreaElement,
 		lang?: string,
-		ns?: number,
-		page?: string,
-		extensions: string[] = [],
+		{ns, page, extensions = []}: CodeMirrorOptions = {},
 	): Promise<CodeMirror> {
 		if (instances.has(textarea)) {
 			throwInitError();
@@ -819,7 +824,7 @@ export class CodeMirror extends CodeMirror6 {
 		/** @todo 已停止支持Vue，一段时间后移除额外逻辑 */
 		const isCM = lang === 'vue' || !useMonaco.has(monacoPrefLangs.get(lang!) ?? lang!),
 			isCMWiki = isCM && isWiki,
-			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, ns, dialect, isCM, page);
+			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, dialect, isCM, ns, page);
 		cm.dialect = dialect;
 		$textarea.data('CodeMirror6', cm);
 		if (isCMWiki) {

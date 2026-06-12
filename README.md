@@ -1042,6 +1042,10 @@ cm.toggle(false); // hide CodeMirror
 
 Refresh linting immediately.
 
+```js
+cm.update();
+```
+
 </details>
 
 ## Static accessors

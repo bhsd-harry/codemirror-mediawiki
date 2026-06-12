@@ -55,7 +55,7 @@ const coding = (
 	contentmodel: string,
 	mark: typeof markDocTag,
 ): Promise<void> =>
-	execute(singleScript(langSupport, contentmodel, mark), undefined, {grcnamespace, contentmodel});
+	execute(singleScript(langSupport, contentmodel, mark), {grcnamespace, contentmodel});
 
 const tryScripts = (
 	callback: (content: string, title: string) => void,
@@ -141,7 +141,6 @@ const tryScripts = (
 						callback(content, title);
 					}
 				},
-				undefined,
 				{grcnamespace: '486', contentmodel: ''},
 				[['Commons', 'https://commons.wikimedia.org/w']],
 			);

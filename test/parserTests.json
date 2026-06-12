@@ -5156,6 +5156,77 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>DynamicPageList </><exttag-bracket>/&gt</>"
 	},
 	{
+		"desc": "PhonosParserTests"
+	},
+	{
+		"desc": "Empty parser function",
+		"wikitext": "Phonos<phonos />END",
+		"parsed": "Phonos<exttag-bracket>&lt;</><exttag-name>phonos </><exttag-bracket>/&gt</>END"
+	},
+	{
+		"desc": "Given the ipa, file and text parameters",
+		"wikitext": "Phonos<phonos ipa=\"hɛˈloʊ\" text=\"Hello\" file=\"does-not-exist.ogg\" />END",
+		"parsed": "Phonos<exttag-bracket>&lt;</><exttag-name>phonos </><exttag-attribute ext-phonos>ipa=</><exttag-attribute-value>\"hɛˈloʊ\"</><exttag-attribute ext-phonos> text=</><exttag-attribute-value>\"Hello\"</><exttag-attribute ext-phonos> file=</><exttag-attribute-value>\"does-not-exist.ogg\"</><exttag-attribute ext-phonos> </><exttag-bracket>/&gt</>END"
+	},
+	{
+		"desc": "Given the ipa, file, text and label parameters, with label having a leading space",
+		"wikitext": "Phonos<phonos ipa=\"hɛˈloʊ\" text=\"Hello\" file=\"does-not-exist.ogg\"> Foo'''bar'''</phonos>END",
+		"parsed": "Phonos<exttag-bracket>&lt;</><exttag-name>phonos </><exttag-attribute ext-phonos>ipa=</><exttag-attribute-value>\"hɛˈloʊ\"</><exttag-attribute ext-phonos> text=</><exttag-attribute-value>\"Hello\"</><exttag-attribute ext-phonos> file=</><exttag-attribute-value>\"does-not-exist.ogg\"</><exttag-bracket>&gt</><tag-phonos exttag> Foo'''bar'''</><exttag-bracket>&lt;/</><exttag-name>phonos</><exttag-bracket>&gt</>END"
+	},
+	{
+		"desc": "Given a file and a blank label",
+		"wikitext": "Phonos<phonos file=\"does-not-exist.ogg\"></phonos>END",
+		"parsed": "Phonos<exttag-bracket>&lt;</><exttag-name>phonos </><exttag-attribute ext-phonos>file=</><exttag-attribute-value>\"does-not-exist.ogg\"</><exttag-bracket>&gt&lt;/</><exttag-name>phonos</><exttag-bracket>&gt</>END"
+	},
+	{
+		"desc": "WikiSEOParserTests"
+	},
+	{
+		"desc": "Tag only title",
+		"wikitext": "<seo>\n|title=SeoWiki\n</seo>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo</><exttag-bracket>&gt</><tag-seo exttag>|title=SeoWiki</><exttag-bracket>&lt;/</><exttag-name>seo</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag only title internal",
+		"wikitext": "<seo title=\"SeoWiki\"></seo>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo </><exttag-attribute ext-seo>title=</><exttag-attribute-value>\"SeoWiki\"</><exttag-bracket>&gt&lt;/</><exttag-name>seo</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag only title internal self-closing",
+		"wikitext": "<seo title=\"SeoWiki\" />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo </><exttag-attribute ext-seo>title=</><exttag-attribute-value>\"SeoWiki\"</><exttag-attribute ext-seo> </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Tag empty",
+		"wikitext": "<seo></seo>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo</><exttag-bracket>&gt&lt;/</><exttag-name>seo</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag empty self-closing",
+		"wikitext": "<seo />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Parser empty",
+		"wikitext": "{{#seo:}}",
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#seo</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction-bracket>}}</>"
+	},
+	{
+		"desc": "Tag internal a lot of args",
+		"wikitext": "<seo>\n|title=SeoWiki\n|title_mode=append\n|keywords=SEO, Wiki, MediaWiki, Extension\n|description=Allows per page meta settings (keywords, description), changing the title and various site verifications.\n|image_alt=SeoWiki Logo\n|site_name=SeoWiki\n|type=WebPage\n|locale=en_EN\n|published_time=2012-01-01\n</seo>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo</><exttag-bracket>&gt</><tag-seo exttag>|title=SeoWiki|title_mode=append|keywords=SEO, Wiki, MediaWiki, Extension|description=Allows per page meta settings (keywords, description), changing the title and various site verifications.|image_alt=SeoWiki Logo|site_name=SeoWiki|type=WebPage|locale=en_EN|published_time=2012-01-01</><exttag-bracket>&lt;/</><exttag-name>seo</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag attributes a lot of args",
+		"wikitext": "<seo\ntitle=\"SeoWiki\"\ntitle_mode=\"append\"\nkeywords=\"SEO, Wiki, MediaWiki, Extension\"\ndescription=\"Allows per page meta settings (keywords, description), changing the title and various site verifications.\"\nimage_alt=\"SeoWiki Logo\"\nsite_name=\"SeoWiki\"\ntype=\"WebPage\"\nlocale=\"en_EN\"\npublished_time=\"2012-01-01\">\n</seo>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo</><exttag-attribute ext-seo>title=</><exttag-attribute-value>\"SeoWiki\"</><exttag-attribute ext-seo>title_mode=</><exttag-attribute-value>\"append\"</><exttag-attribute ext-seo>keywords=</><exttag-attribute-value>\"SEO, Wiki, MediaWiki, Extension\"</><exttag-attribute ext-seo>description=</><exttag-attribute-value>\"Allows per page meta settings (keywords, description), changing the title and various site verifications.\"</><exttag-attribute ext-seo>image_alt=</><exttag-attribute-value>\"SeoWiki Logo\"</><exttag-attribute ext-seo>site_name=</><exttag-attribute-value>\"SeoWiki\"</><exttag-attribute ext-seo>type=</><exttag-attribute-value>\"WebPage\"</><exttag-attribute ext-seo>locale=</><exttag-attribute-value>\"en_EN\"</><exttag-attribute ext-seo>published_time=</><exttag-attribute-value>\"2012-01-01\"</><exttag-bracket>&gt&lt;/</><exttag-name>seo</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "Tag attributes a lot of args self-closing",
+		"wikitext": "<seo\ntitle=\"SeoWiki\"\ntitle_mode=\"append\"\nkeywords=\"SEO, Wiki, MediaWiki, Extension\"\ndescription=\"Allows per page meta settings (keywords, description), changing the title and various site verifications.\"\nimage_alt=\"SeoWiki Logo\"\nsite_name=\"SeoWiki\"\ntype=\"WebPage \"\nlocale=\"en_EN\"\npublished_time=\"2012-01-01\"\n/>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>seo</><exttag-attribute ext-seo>title=</><exttag-attribute-value>\"SeoWiki\"</><exttag-attribute ext-seo>title_mode=</><exttag-attribute-value>\"append\"</><exttag-attribute ext-seo>keywords=</><exttag-attribute-value>\"SEO, Wiki, MediaWiki, Extension\"</><exttag-attribute ext-seo>description=</><exttag-attribute-value>\"Allows per page meta settings (keywords, description), changing the title and various site verifications.\"</><exttag-attribute ext-seo>image_alt=</><exttag-attribute-value>\"SeoWiki Logo\"</><exttag-attribute ext-seo>site_name=</><exttag-attribute-value>\"SeoWiki\"</><exttag-attribute ext-seo>type=</><exttag-attribute-value>\"WebPage \"</><exttag-attribute ext-seo>locale=</><exttag-attribute-value>\"en_EN\"</><exttag-attribute ext-seo>published_time=</><exttag-attribute-value>\"2012-01-01\"</><exttag-bracket>/&gt</>"
+	},
+	{
 		"desc": "additionalTests"
 	},
 	{
@@ -13630,6 +13701,19 @@
 		"desc": "Asciiart template should display the right number of spaces",
 		"wikitext": "{{Asciiart}}",
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>Asciiart</><template-ground template-bracket>}}</>"
+	},
+	{
+		"desc": "templatedata"
+	},
+	{
+		"desc": "Empty",
+		"wikitext": "<templatedata />",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>templatedata </><exttag-bracket>/&gt</>"
+	},
+	{
+		"desc": "Minimal JSON",
+		"wikitext": "<templatedata>{\"params\":{}}</templatedata>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>templatedata</><exttag-bracket>&gt</><tag-templatedata brace>{</><tag-templatedata propertyName.definition>\"params\"</><tag-templatedata separator>:</><tag-templatedata brace>{}}</><exttag-bracket>&lt;/</><exttag-name>templatedata</><exttag-bracket>&gt</>"
 	},
 	{
 		"desc": "translateParserTests"

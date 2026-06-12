@@ -1,11 +1,13 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 4.0.0
 
-*2026-06-12*
+*2026-06-20*
 
 **Changed**
 
 - Tooltips are now displayed above the associated text
+- When used on a MediaWiki site, direct usage of the `CodeMirror` constructor is now discouraged in favor of the static method [`fromTextArea`](./mw/README.md#fromtextarea)
+- When used on a MediaWiki site, the static method [`fromTextArea`](./mw/README.md#fromtextarea) now require an object argument to specify extra options instead of multiple parameters
 
 ## 3.21.0
 
@@ -1239,7 +1241,7 @@
 
 **Added**
 
-- [`CodeMirror` constructor](./mw/README.md#constructor) now takes an optional string argument for the page title on a MediaWiki site
+- `CodeMirror` constructor now takes an optional string argument for the page title on a MediaWiki site
 
 **Fixed**
 

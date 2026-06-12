@@ -2,7 +2,6 @@
 	<summary>Expand</summary>
 
 - [Usage](#usage)
-- [Constructor](#constructor)
 - [Accessors](#accessors)
 	- [editor](#editor)
 	- [model](#model)
@@ -44,37 +43,6 @@ mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
 All supported [languages](../README.md#language-modes) are included in this bundle. The script also adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
-
-# Constructor
-
-<details>
-	<summary>Expand</summary>
-
-*version added: 2.2.2*
-
-The `CodeMirror` class extends the [`CodeMirror6`](../README.md#constructor) class with one more argument to specify the namespace.
-
-**param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
-**param**: `string` the language mode to be used, default as plain text  
-**param**: `number` the namespace id associated with the content, default as the current namespace  
-**param**: `unknown` the language configuration, only required for the MediaWiki mode and the mixed MediaWiki-HTML mode  
-**param**: `boolean` whether to use CodeMirror or Monaco editor, default as CodeMirror  
-**param**: `string` the optional page title, default as the current page title  
-
-```js
-let cm;
-cm = new CodeMirror6(textarea); // plain text
-cm = new CodeMirror6(textarea, 'mediawiki', undefined, mwConfig);
-cm = new CodeMirror6(textarea, 'html', 274, mwConfig);
-cm = new CodeMirror6(textarea, 'css');
-cm = new CodeMirror6(textarea, 'javascript');
-cm = new CodeMirror6(textarea, 'json');
-cm = new CodeMirror6(textarea, 'jsonc');
-cm = new CodeMirror6(textarea, 'lua');
-cm = new CodeMirror6(textarea, 'vue');
-```
-
-</details>
 
 # Accessors
 
@@ -190,9 +158,7 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 
 **param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `number` the namespace id associated with the content, default as the current namespace  
-**param**: `string` the optional page title, default as the current page title  
-**param**: `string[]` the optional list of additional extensions to be enabled  
+**param**: `{ns?: number, page?: string, extensions?: string[]}` the namespace id and the page title associated with the content, and an optional list of additional extensions to be enabled  
 **returns**: `Promise<CodeMirror>`  
 Replace the textarea with a CodeMirror or Monaco editor.
 
