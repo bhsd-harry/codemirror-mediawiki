@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.0.0
+
+*2026-06-12*
+
+**Changed**
+
+- Tooltips are now displayed above the associated text
+
 ## 3.21.0
 
 *2026-06-11*

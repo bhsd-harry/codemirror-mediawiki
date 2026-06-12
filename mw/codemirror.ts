@@ -1,7 +1,7 @@
 import {CDN as baseCDN, compareVersion, isGlobal} from '@bhsd/browser';
 import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
-import {keymap} from '@codemirror/view';
+import {keymap, tooltips} from '@codemirror/view';
 import {CodeMirror6} from '../src/codemirror';
 import {baseData, isWMF} from '../src/constants';
 import {
@@ -801,12 +801,14 @@ export class CodeMirror extends CodeMirror6 {
 		const $textarea = $(textarea),
 			allPrefs = [...prefs, ...extensions],
 			isWiki = lang === 'mediawiki' || lang === 'html';
+		let resize = true;
 		if (
 			$textarea.data('wikiEditorContext')
 			|| allPrefs.includes('wikiEditor') && isEditor(textarea)
 		) {
 			try {
 				await wikiEditor($textarea, textarea.readOnly, isWiki);
+				resize = false;
 			} catch (e) {
 				if (e instanceof Error && e.message === 'no-wikiEditor') {
 					void mw.notify(msg(e.message), {type: 'error'});
@@ -837,6 +839,23 @@ export class CodeMirror extends CodeMirror6 {
 			cm.setColumnGuide(col);
 		}
 		cm.setTheme(theme);
+		if (resize) {
+			cm.view?.dispatch({
+				effects: StateEffect.appendConfig.of(
+					tooltips({
+						tooltipSpace(view) {
+							const {top, bottom} = view.dom.getBoundingClientRect();
+							return {
+								left: 0,
+								right: documentElement.clientWidth,
+								top: Math.max(0, top),
+								bottom: Math.min(documentElement.clientHeight, bottom),
+							};
+						},
+					}),
+				),
+			});
+		}
 		return cm;
 	}
 }

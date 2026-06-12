@@ -153,6 +153,7 @@ export default (
 					return {
 						pos,
 						end: posToIndex(doc, end),
+						above: true,
 						create(): TooltipView {
 							const {kind, value} = hover.contents as MarkupContent;
 							return createTooltipView(
