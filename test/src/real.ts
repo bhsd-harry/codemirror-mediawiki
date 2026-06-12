@@ -49,8 +49,13 @@ const singleScript = (langSupport: Extension, model: string, mark: typeof markDo
 		}
 	};
 
-const coding = (langSupport: Extension, ns: string, model: string, mark: typeof markDocTag): Promise<void> =>
-	execute(singleScript(langSupport, model, mark), undefined, undefined, ns, model);
+const coding = (
+	langSupport: Extension,
+	grcnamespace: string,
+	contentmodel: string,
+	mark: typeof markDocTag,
+): Promise<void> =>
+	execute(singleScript(langSupport, contentmodel, mark), undefined, {grcnamespace, contentmodel});
 
 const tryScripts = (
 	callback: (content: string, title: string) => void,
@@ -137,9 +142,7 @@ const tryScripts = (
 					}
 				},
 				undefined,
-				undefined,
-				'486',
-				'',
+				{grcnamespace: '486', contentmodel: ''},
 				[['Commons', 'https://commons.wikimedia.org/w']],
 			);
 		}
