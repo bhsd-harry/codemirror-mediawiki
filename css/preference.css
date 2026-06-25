@@ -20,5 +20,5 @@
 
 .minerva-icon-portletlink-cm-settings {
 	-webkit-mask-image: var(--cm-icon);
-	mask-image: var(--cm-icon); /* stylelint-disable-line plugin/use-baseline */
+	mask-image: var(--cm-icon);
 }

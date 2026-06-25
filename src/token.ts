@@ -1435,7 +1435,7 @@ export class MediaWiki {
 	inExtTagAttribute(
 		name: string,
 		quote?: string,
-		isLang?: boolean,
+		isLang?: 'lang' | 'format' | false,
 		isPage?: boolean,
 		css?: boolean,
 	): Tokenizer<string> {
@@ -1446,8 +1446,10 @@ export class MediaWiki {
 			if (isLang) {
 				if (name !== 'score') {
 					let lang = mt[0].trim().toLowerCase();
-					if (lang === 'wiki' || lang === 'wikitext') {
+					if (lang === 'wikitext' || lang === 'wiki' && isLang === 'lang') {
 						lang = 'mediawiki';
+					} else if (isLang === 'format') {
+						lang = '';
 					}
 					if (Object.values(this.config.tagModes).includes(lang) && lang in this) {
 						state.extMode = this[lang as 'text/pre']();
@@ -1489,7 +1491,7 @@ export class MediaWiki {
 					state.tokenize = this.inExtTagAttribute(
 						name,
 						remains,
-						isLang && Boolean(remains),
+						Boolean(remains) && isLang,
 						isPage && Boolean(remains),
 						css,
 					);
@@ -1508,10 +1510,16 @@ export class MediaWiki {
 			}
 			const mt = stream.match(/^(?:[^>/=]|\/(?!>))+/u)!;
 			if (stream.peek() === '=') {
+				let lang: 'lang' | 'format' | false = false;
+				if (name === 'pre' && /(?:^|\s)format\s*$/iu.test(mt[0])) {
+					lang = 'format';
+				} else if (syntaxHighlight.has(name) && /(?:^|\s)lang\s*$/iu.test(mt[0])) {
+					lang = 'lang';
+				}
 				state.tokenize = this.inExtTagAttribute(
 					name,
 					undefined,
-					syntaxHighlight.has(name) && /(?:^|\s)lang\s*$/iu.test(mt[0]),
+					lang,
 					name === 'templatestyles' && /(?:^|\s)src\s*$/iu.test(mt[0]),
 					/(?:^|\s)style\s*$/iu.test(mt[0]),
 				);

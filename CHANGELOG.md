@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.1.0
+
+*2026-07-02*
+
+**Added**
+
+- Highlight `<pre format="wikitext">` tags in the MediaWiki mode
+
 ## 4.0.0
 
 *2026-06-20*

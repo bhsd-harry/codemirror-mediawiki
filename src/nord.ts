@@ -34,14 +34,12 @@ const base0b = '#bf616a', // red
 	base0F = '#b48ead'; // purple
 
 const invalid = '#d30102',
-	darkBackground = '#252a33',
 	darkBorder = '2px solid black',
 	outline = `1px solid ${base07}`;
 
 const selectionSelector = '.cm-selectionBackground',
 	searchMatch = '.cm-searchMatch',
-	searchMatchSelected = `${searchMatch}-selected`,
-	matching = '.cm-matchingBracket';
+	searchMatchSelected = `${searchMatch}-selected`;
 
 // Extension to enable the Nord theme (both the editor theme and the highlight style).
 export default [
@@ -63,7 +61,7 @@ export default [
 				backgroundColor: base03,
 			},
 			[panelsSelector]: {
-				backgroundColor: darkBackground,
+				backgroundColor: '#252a33',
 				color: base04,
 				[`&${panelsSelector}-top`]: {
 					borderBottom: darkBorder,
@@ -91,7 +89,7 @@ export default [
 				'& .cm-nonmatchingBracket': {
 					outline,
 				},
-				[`& ${matching}`]: {
+				'& .cm-matchingBracket': {
 					outline,
 					backgroundColor: base06,
 					color: base02,

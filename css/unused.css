@@ -475,7 +475,6 @@
 }
 .cm-status-fix-disabled,
 .cm-status-fix-enabled {
-	/* stylelint-disable plugin/use-baseline */
 	-webkit-mask-image: var(--fix-icon);
 	mask-image: var(--fix-icon);
 	-webkit-mask-size: 100%;
@@ -484,7 +483,6 @@
 	mask-repeat: no-repeat;
 	-webkit-mask-position: center;
 	mask-position: center;
-	/* stylelint-enable plugin/use-baseline */
 }
 .cm-status-fix-disabled {
 	background-color: #dadde3;
