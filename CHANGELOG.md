@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.10.0
+
+*2026-07-02*
+
+**Added**
+
+- Highlight `<pre format="wikitext">` tags
+
 ## 0.9.1
 
 *2026-06-20*
