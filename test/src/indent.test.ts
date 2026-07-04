@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {detectIndent, getLines} from '../../dist/indent.js';
 import {createState} from './util.js';
 

@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as assert from 'assert';
-import {mochaTest, split} from '@bhsd/test-util';
+import {describe, it, after} from '@bhsd/test-util/mocha';
+import {mochaTest, split} from '@bhsd/test-util/parser';
 import parse, {checkNode, parsers} from './parser.js';
 import tests from '../parserTests.json' with {type: 'json'};
 import lezerTests from '../lezerTests.json' with {type: 'json'};

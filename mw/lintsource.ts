@@ -1,3 +1,4 @@
+import elt from 'crelt';
 import {getLSP} from '@bhsd/browser';
 import {getOpt} from '@bhsd/cm-util';
 import {baseData} from '../src/constants';
@@ -277,7 +278,7 @@ export const getTemplateStylesLintSource = async (title: string): Promise<LintSo
 				message,
 				renderMessage(): HTMLSpanElement {
 					map.set('', this.message);
-					const span = document.createElement('span');
+					const span = elt('span');
 					span.innerHTML = new mw.Message(map, '').parse();
 					return span;
 				},

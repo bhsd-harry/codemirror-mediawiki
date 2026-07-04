@@ -1,4 +1,5 @@
 import {pathToFileURL} from 'url';
+import {describe, it} from '@bhsd/test-util/mocha';
 import css from '../../dist/css.js';
 import {autocompletionTest, createState} from './util.js';
 import type {CompletionSource, CompletionResult} from '@codemirror/autocomplete';

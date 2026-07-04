@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {encapsulateLines} from '../../dist/keybindings.js';
 
 let text = '= a = \n \n b ';

@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {syntaxTree} from '@codemirror/language';
 import {highlightRef, needHover} from '../../dist/ref.js';
 import {getTag} from '../../dist/matchTag.js';

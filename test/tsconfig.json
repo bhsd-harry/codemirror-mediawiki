@@ -4,9 +4,6 @@
 		"src/*.ts"
 	],
 	"compilerOptions": {
-		"types": [
-			"mocha"
-		],
 		"target": "ES2024",
 		"module": "esnext",
 		"declaration": false,

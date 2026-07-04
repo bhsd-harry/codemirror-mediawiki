@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {Direction} from '@codemirror/view';
 import {computeIsolates} from '../../dist/bidi.js';
 import {createState, convertRangeSet} from './util.js';

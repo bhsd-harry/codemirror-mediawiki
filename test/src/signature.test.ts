@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe} from '@bhsd/test-util/mocha';
 import {getSignatureHelp} from '../../dist/signature.js';
 
 const signatures = [

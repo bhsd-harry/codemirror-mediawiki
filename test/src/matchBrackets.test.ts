@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {javascript} from '@codemirror/lang-javascript';

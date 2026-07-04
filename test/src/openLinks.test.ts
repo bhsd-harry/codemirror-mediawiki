@@ -1,5 +1,6 @@
 import {EventEmitter} from 'events';
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {getLinkParser, getISBNParser} from '../../dist/openLinks.js';
 import {createState} from './util.js';
 

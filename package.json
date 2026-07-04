@@ -59,10 +59,10 @@
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
 		"prof": "node test/dist/prof.js",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
-		"test": "mocha test/dist/*.test.js && mocha test/dist/test.js",
+		"test": "npx testUtil test/dist/*.test.js test/dist/test.js",
 		"test:end": "pkill -x http-server",
 		"test:real": "node test/dist/real.js",
-		"test:math": "mocha test/dist/math.js",
+		"test:math": "npx testUtil test/dist/math.js",
 		"diff": "bash diff.sh"
 	},
 	"peerDependencies": {
@@ -87,13 +87,13 @@
 		"@bhsd/lezer-abusefilter": "^0.4.1",
 		"@bhsd/lezer-json": "^2.1.0",
 		"@bhsd/stylelint-util": "^1.1.0",
-		"wikiparser-node": "^1.44.0"
+		"wikiparser-node": "^1.45.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^3.1.0",
-		"@bhsd/nodejs": "^1.1.0",
+		"@bhsd/nodejs": "^1.2.0",
 		"@bhsd/eslint-browserify": "^10.6.0",
-		"@bhsd/test-util": "^2.0.0",
+		"@bhsd/test-util": "^3.1.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.10.4",
 		"@codemirror/language": "^6.12.4",
@@ -104,8 +104,8 @@
 		"@codemirror/legacy-modes": "^6.5.3",
 		"@codemirror/lint": "^6.9.7",
 		"@codemirror/search": "^6.7.1",
-		"@codemirror/state": "^6.7.0",
-		"@codemirror/view": "^6.43.4",
+		"@codemirror/state": "^6.7.1",
+		"@codemirror/view": "^6.43.6",
 		"@types/jquery": "^3.5.34",
 		"@types/oojs-ui": "^0.50.0",
 		"diff2html-cli": "^5.2.15",
@@ -115,11 +115,10 @@
 		"http-server": "^14.1.1",
 		"luacheck-browserify": "^1.0.0",
 		"markdownlint-cli2": "^0.23.0",
-		"marked": "^18.0.5",
-		"mocha": "^11.7.6",
+		"marked": "^18.0.6",
 		"monaco-editor": "~0.53.0",
 		"stylelint": "^17.14.0",
-		"types-mediawiki": "^2.0.0",
+		"types-mediawiki": "^2.1.0",
 		"typescript": "^6.0.3"
 	}
 }

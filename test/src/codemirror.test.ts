@@ -1,3 +1,4 @@
+import {describe, it} from '@bhsd/test-util/mocha';
 import {replaceSelections} from '../../dist/codemirror.js';
 import {createDispatchableView} from './util.js';
 import type {ReplaceFunction} from '../../dist/codemirror';

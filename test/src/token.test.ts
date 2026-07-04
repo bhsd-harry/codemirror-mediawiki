@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {StringStream as StringStreamBase} from '@codemirror/language';
 import {isSolSyntax, lookahead, makeLocalStyle} from '../../dist/token.js';
 import type {StringStream, State, NestCount} from '../../dist/token';

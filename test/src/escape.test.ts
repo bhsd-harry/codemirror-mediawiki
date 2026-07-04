@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import Parser from 'wikiparser-node';
 import {escapeHTML, escapeURI, escapeWiki} from '../../dist/escape.js';
 import {createDispatchableView} from './util.js';

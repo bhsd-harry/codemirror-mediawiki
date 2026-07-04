@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import html from '../../dist/html.js';
 import {autocompletionTest, createState, mwConfig} from './util.js';
 import type {CompletionSource} from '@codemirror/autocomplete';

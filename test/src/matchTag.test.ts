@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {syntaxTree} from '@codemirror/language';
 import {matchTag, WikiTag, getTag} from '../../dist/matchTag.js';
 import {tokens} from '../../dist/config.js';

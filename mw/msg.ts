@@ -57,8 +57,9 @@ export const msg = (key: string, ...args: string[]): string => mw.msg(mwPrefix +
  * 为所有链接添加`target="_blank"`
  * @param $dom 容器
  */
-const blankTarget = ($dom: JQuery): JQuery => {
-	$dom.find('a').add($dom.filter('a')).attr('target', '_blank');
+const blankTarget = <T = HTMLElement>($dom: JQuery<T>): JQuery<T> => {
+	$dom.find('a').add($dom.filter('a') as JQuery)
+		.attr('target', '_blank');
 	return $dom;
 };
 
@@ -69,7 +70,7 @@ const blankTarget = ($dom: JQuery): JQuery => {
  */
 export function parseMsg(key: string, text: boolean): string;
 export function parseMsg(key: string): JQuery;
-export function parseMsg(key: string, text?: boolean): string | JQuery {
+export function parseMsg(key: string, text?: boolean): string | JQuery | JQuery<Text> {
 	const message = mw.message(mwPrefix + key);
 	return text ? message.parse() : blankTarget(message.parseDom());
 }

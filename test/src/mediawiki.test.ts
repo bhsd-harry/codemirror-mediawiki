@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {FullMediaWiki, apply, applyDisplayLabel, hasTag} from '../../dist/mediawiki.js';
 import {tokens} from '../../dist/config.js';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util.js';

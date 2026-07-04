@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {syntaxTree} from '@codemirror/language';
 import {discoverColors} from '../../dist/color.js';
 import {createState} from './util.js';

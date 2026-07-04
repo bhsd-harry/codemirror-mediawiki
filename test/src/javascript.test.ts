@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {javascript} from '@codemirror/lang-javascript';
 import {html} from '@codemirror/lang-html';
 import {vue} from '@codemirror/lang-vue';

@@ -1,4 +1,5 @@
 import * as assert from 'assert';
+import {describe, it} from '@bhsd/test-util/mocha';
 import {foldable, syntaxTree} from '@codemirror/language';
 import lua, {markDocTag, getStringOffset, getStringOffsetFull} from '../../dist/lua.js';
 import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util.js';
