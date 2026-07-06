@@ -1,11 +1,11 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {getLSP} from '@bhsd/browser';
+import {createTooltipView} from '@bhsd/cm-util';
 import {marked} from 'marked';
 import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
 	posToIndex,
-	createTooltipView,
 	toConfigGetter,
 	updateCDN,
 } from './util.js';
@@ -77,6 +77,7 @@ export default (
 							return createTooltipView(
 								view,
 								kind === 'plaintext' ? value : marked.parse(value) as string,
+								hoverSelector.slice(1),
 							);
 						},
 					};

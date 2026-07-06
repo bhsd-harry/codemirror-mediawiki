@@ -1,10 +1,10 @@
 import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {getLSP} from '@bhsd/browser';
-import {baseData} from './constants.js';
+import {createTooltipView} from '@bhsd/cm-util';
+import {baseData, hoverSelector} from './constants.js';
 import {hoverStyle} from './hover.js';
 import {
-	createTooltipView,
 	indexToPos,
 	escHTML,
 	toConfigGetter,
@@ -51,7 +51,7 @@ const signatureEffect = StateEffect.define<SignatureEffect>(),
 						pos: cursor,
 						above: true,
 						create(view): TooltipView {
-							return createTooltipView(view, getSignatureHelp(signatureHelp));
+							return createTooltipView(view, getSignatureHelp(signatureHelp), hoverSelector.slice(1));
 						},
 					}
 					: null;

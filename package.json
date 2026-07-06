@@ -54,8 +54,8 @@
 		"@bhsd/codemirror-css-color-picker": "^8.0.0",
 		"@bhsd/common": "^3.0.0",
 		"@bhsd/stylelint-util": "^1.1.0",
-		"marked": "^18.0.5",
-		"wikiparser-node": "^1.44.0"
+		"marked": "^18.0.6",
+		"wikiparser-node": "^1.45.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^3.1.0",
@@ -64,8 +64,8 @@
 		"@codemirror/language": "^6.12.4",
 		"@codemirror/lint": "^6.9.7",
 		"@codemirror/search": "^6.7.1",
-		"@codemirror/state": "^6.7.0",
-		"@codemirror/view": "^6.43.4",
+		"@codemirror/state": "^6.7.1",
+		"@codemirror/view": "^6.43.6",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.1",
 		"eslint": "^10.6.0",
