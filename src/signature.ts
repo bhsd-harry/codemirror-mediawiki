@@ -49,43 +49,46 @@ export default (
 	articlePath?: string,
 ) => (
 	cm: CodeMirror6,
-): Extension => [
-	getSignatureHelpExtension<SignatureHelp>({
-		className: hoverSelector.slice(1),
-		render: getSignatureHelp,
-		async update(view, state, {text, cursor}) {
-			cm.lsp ??= getLSP(
-				view,
-				false,
-				{
-					getConfig: toConfigGetter(
-						cm.getWikiConfig,
-						articlePath,
-					),
-					cdn: baseData.CDN,
-				},
-			);
-			const {lsp} = cm;
-			let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
-				text,
-				indexToPos(state.doc, cursor),
-			);
-			if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
-				const tree = syntaxTree(state);
-				let node = tree.resolve(cursor, -1);
-				if (node.to === cursor && !isTemplateParam(node)) {
-					node = tree.resolve(cursor, 1);
-				}
-				if (isTemplateParam(node)) {
-					const [templateName, parameterName] = findTemplateName(state, node),
-						tooltip = cm.langConfig.templateSignature(templateName, parameterName);
-					if (tooltip) {
-						signatureHelp = {signatures: [tooltip]};
+): Extension => {
+	return [
+		getSignatureHelpExtension<SignatureHelp>({
+			className: hoverSelector.slice(1),
+			render: getSignatureHelp,
+			async update(view, state, {text, cursor}) {
+				cm.lsp ??=
+					getLSP(
+						view,
+						false,
+						{
+							getConfig: toConfigGetter(
+								cm.getWikiConfig,
+								articlePath,
+							),
+							cdn: baseData.CDN,
+						},
+					);
+				const {lsp} = cm;
+				let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
+					text,
+					indexToPos(state.doc, cursor),
+				);
+				if (!signatureHelp && typeof cm.langConfig?.templateSignature === 'function') {
+					const tree = syntaxTree(state);
+					let node = tree.resolve(cursor, -1);
+					if (node.to === cursor && !isTemplateParam(node)) {
+						node = tree.resolve(cursor, 1);
+					}
+					if (isTemplateParam(node)) {
+						const [templateName, parameterName] = findTemplateName(state, node),
+							tooltip = cm.langConfig.templateSignature(templateName, parameterName);
+						if (tooltip) {
+							signatureHelp = {signatures: [tooltip]};
+						}
 					}
 				}
-			}
-			return signatureHelp;
-		},
-	}),
-	hoverStyle,
-];
+				return signatureHelp;
+			},
+		}),
+		hoverStyle,
+	];
+};

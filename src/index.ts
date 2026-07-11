@@ -20,7 +20,7 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@bhsd/lezer-json';
 import {autoCloseTags} from '@codemirror/lang-html';
-import {abusefilter, analyzer, getDefaultHoverTooltip} from '@bhsd/lezer-abusefilter';
+import {abusefilterCore, analyzer, getDefaultHoverTooltip, getDefaultSignatureHelp} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
@@ -344,7 +344,8 @@ export const registerHover = (articlePath?: string, templatedata?: boolean): voi
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerSignatureHelp = (articlePath?: string): void => {
-	registerExtensionForMediaWiki(
+	registerLangExtension(
+		'mediawiki',
 		'signatureHelp',
 		signatureHelpBase(
 			articlePath,
@@ -613,6 +614,7 @@ export const registerAbuseFilter = (): void => {
 	registerAbuseFilterCore();
 	registerIndentGuide();
 	registerHoverForAbuseFilter();
+	registerSignatureHelpForAbuseFilter();
 };
 
 /** Register the `hover` extension for AbuseFilter */
@@ -623,9 +625,17 @@ export const registerHoverForAbuseFilter = (): void => {
 	]);
 };
 
+/** Register the `signatureHelp` extension for AbuseFilter */
+export const registerSignatureHelpForAbuseFilter = (): void => {
+	registerLangExtension('abusefilter', 'signatureHelp', () => [
+		getDefaultSignatureHelp(hoverSelector.slice(1)),
+		hoverStyle,
+	]);
+};
+
 /** Register AbuseFilter core language support */
 export const registerAbuseFilterCore = (): void => {
-	languages.set('abusefilter', abusefilter);
+	languages.set('abusefilter', abusefilterCore);
 	registerLintSource('abusefilter', (): LintSource => state => analyzer({state} as EditorView));
 	optionalFunctions.detectIndent = detectIndent;
 };

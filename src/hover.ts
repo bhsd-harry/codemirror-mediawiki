@@ -132,17 +132,18 @@ export default (
 				const {state} = view,
 					{doc} = state;
 				const {paramSuggest, tags} = cm.langConfig!;
-				cm.lsp ??= getLSP(
-					view,
-					false,
-					{
-						getConfig: toConfigGetter(
-							cm.getWikiConfig,
-							articlePath,
-						),
-						cdn: baseData.CDN,
-					},
-				);
+				cm.lsp ??=
+					getLSP(
+						view,
+						false,
+						{
+							getConfig: toConfigGetter(
+								cm.getWikiConfig,
+								articlePath,
+							),
+							cdn: baseData.CDN,
+						},
+					);
 				const {lsp} = cm;
 				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (!hover && paramSuggest && 'templatedata' in tags!) {

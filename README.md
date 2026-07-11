@@ -1531,12 +1531,16 @@ registerScrollPastEnd();
 
 Show the parser function signature when typing.
 
-For granular control over the bundled extensions, you can import the `registerSignatureHelp` function:
+For granular control over the bundled extensions, you need to register this extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
 
 ```js
-import {registerSignatureHelp} from '@bhsd/codemirror-mediawiki';
+import {
+	registerSignatureHelp, // for MediaWiki
+	registerSignatureHelpForAbuseFilter,
+} from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerSignatureHelp('https://www.mediawiki.org/wiki/');
+registerSignatureHelpForAbuseFilter();
 ```
 
 </details>

@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.2.0
+
+*2026-07-12*
+
+**Added**
+
+- The [signatureHelp](./README.md#signaturehelp) extension now also supports AbuseFilter built-in functions
+
 ## 4.1.0
 
 *2026-07-02*
