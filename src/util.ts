@@ -1,18 +1,16 @@
 import {syntaxHighlighting, HighlightStyle} from '@codemirror/language';
-import elt from 'crelt';
 import {
 	isGlobal,
 	loadScript,
 } from '@bhsd/browser';
 import {tokens} from './config.js';
 import {
-	hoverSelector,
 	baseData,
 	mwTag,
 	doctagMark,
 	typeMark,
 } from './constants.js';
-import type {EditorView, TooltipView, Decoration} from '@codemirror/view';
+import type {Decoration} from '@codemirror/view';
 import type {
 	Text,
 	EditorState,
@@ -60,19 +58,6 @@ export const indexToPos = (doc: Text, index: number): Position => {
 export const posToIndex = (doc: Text, pos: Position): number => {
 	const line = doc.line(pos.line + 1);
 	return Math.min(line.from + pos.character, line.to);
-};
-
-/**
- * 创建 TooltipView
- * @param view EditorView 实例
- * @param innerHTML 提示内容
- */
-export const createTooltipView = (view: EditorView, innerHTML: string): TooltipView => {
-	const inner = elt('div'),
-		dom = elt('div', {class: hoverSelector.slice(1)}, inner);
-	dom.style.font = getComputedStyle(view.contentDOM).font;
-	inner.innerHTML = innerHTML;
-	return {dom};
 };
 
 /**

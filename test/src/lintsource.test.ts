@@ -23,7 +23,7 @@ import type {LanguageSupport, Language} from '@codemirror/language';
 import type {Diagnostic as DiagnosticBase} from '@codemirror/lint';
 import type {LintSource} from '../../dist/lintsource';
 
-interface Diagnostic extends Omit<DiagnosticBase, 'actions'> {
+declare interface Diagnostic extends Omit<DiagnosticBase, 'actions'> {
 	actions?: {name: string, tooltip?: undefined}[];
 }
 

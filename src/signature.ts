@@ -2,10 +2,10 @@ import {EditorView, showTooltip} from '@codemirror/view';
 import {StateField, StateEffect} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {getLSP} from '@bhsd/browser';
-import {baseData} from './constants.js';
+import {createTooltipView} from '@bhsd/cm-util';
+import {baseData, hoverSelector} from './constants.js';
 import {hoverStyle} from './hover.js';
 import {
-	createTooltipView,
 	indexToPos,
 	escHTML,
 	toConfigGetter,
@@ -20,7 +20,7 @@ import type {
 } from 'vscode-languageserver-types';
 import type {CodeMirror6} from './codemirror';
 
-interface SignatureHelp extends Omit<SignatureHelpBase, 'signatures'> {
+declare interface SignatureHelp extends Omit<SignatureHelpBase, 'signatures'> {
 	signatures: SignatureInformation[] | string[];
 }
 declare interface SignatureEffect {
@@ -57,7 +57,7 @@ const signatureEffect = StateEffect.define<SignatureEffect>(),
 						pos: cursor,
 						above: true,
 						create(view): TooltipView {
-							return createTooltipView(view, getSignatureHelp(signatureHelp));
+							return createTooltipView(view, getSignatureHelp(signatureHelp), hoverSelector.slice(1));
 						},
 					}
 					: null;
