@@ -23,8 +23,6 @@ export interface DocRange {
 	to: number;
 }
 
-const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
-
 /**
  * 更新 CDN 地址
  * @param cdn jsDelivr CDN
@@ -34,12 +32,6 @@ export const updateCDN = (cdn?: string): void => {
 		baseData.CDN = cdn;
 	}
 };
-
-/**
- * 转义HTML字符串
- * @param text 原字符串
- */
-export const escHTML = (text: string): string => text.replaceAll(/[\n<&]/gu, ch => dict[ch]!);
 
 /**
  * 将索引转换为位置
