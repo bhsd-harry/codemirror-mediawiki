@@ -3,7 +3,6 @@ import {describe, it} from '@bhsd/test-util/mocha';
 import {Text} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {
-	escHTML,
 	indexToPos,
 	posToIndex,
 	sliceDoc,
@@ -37,10 +36,6 @@ const luaTest = (str: string, results: [number, number][], end: number): void =>
 };
 
 describe('util functions', () => {
-	it('HTML escape', () => {
-		assert.strictEqual(escHTML('<a>&\nb</a>'), '&lt;a>&amp;<br>b&lt;/a>');
-	});
-
 	it('index to position', () => {
 		assert.deepStrictEqual(indexToPos(doc, 13), {line: 1, character: 1});
 	});

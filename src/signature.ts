@@ -1,11 +1,10 @@
 import {syntaxTree} from '@codemirror/language';
-import {getLSP} from '@bhsd/browser';
+import {getLSP, escHTML} from '@bhsd/browser';
 import {getSignatureHelpExtension} from '@bhsd/cm-util/cm';
 import {baseData, hoverSelector} from './constants.js';
 import {hoverStyle} from './hover.js';
 import {
 	indexToPos,
-	escHTML,
 	toConfigGetter,
 	findTemplateName,
 	isTemplateParam,

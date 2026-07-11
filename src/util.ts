@@ -29,15 +29,6 @@ export interface DocRange {
 	to: number;
 }
 
-const dict: Record<string, string> = {'\n': '<br>', '&': '&amp;', '<': '&lt;'};
-
-/**
- * 转义HTML字符串
- * @param text 原字符串
- * @test
- */
-export const escHTML = (text: string): string => text.replaceAll(/[\n<&]/gu, ch => dict[ch]!);
-
 /**
  * 将索引转换为位置
  * @param doc Text 实例

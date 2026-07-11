@@ -1,6 +1,9 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {getLSP} from '@bhsd/browser';
+import {
+	getLSP,
+	escHTML,
+} from '@bhsd/browser';
 import {createTooltipView} from '@bhsd/cm-util/cm';
 import {tokens} from './config.js';
 import {baseData, hoverSelector, bgDark} from './constants.js';
@@ -8,7 +11,6 @@ import {
 	indexToPos,
 	posToIndex,
 	toConfigGetter,
-	escHTML,
 	sliceDoc,
 	findTemplateName,
 	loadMarked,
