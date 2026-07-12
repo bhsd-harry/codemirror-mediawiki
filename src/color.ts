@@ -1,4 +1,5 @@
-import {splitColors, colorsNamed} from '@bhsd/common';
+import {splitColors} from '@bhsd/common';
+import {colorsNamed} from '@bhsd/common/color';
 import {makeColorPicker} from '@bhsd/codemirror-css-color-picker';
 import type {DiscoverColors} from '@bhsd/codemirror-css-color-picker';
 import type {DocRange} from './util';
