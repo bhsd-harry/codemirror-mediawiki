@@ -229,7 +229,9 @@ export default (configs?: BracketConfig): Extension => {
 			/** @ignore */
 			mousedown(e, view) {
 				const n = e.detail % 4;
-				selection = e.detail > 0 && n in customSelection && clickHandler(e, view, facet, customSelection[n]!);
+				selection = e.detail > 0
+					&& Object.hasOwn(customSelection, n)
+					&& clickHandler(e, view, facet, customSelection[n]!);
 				return Boolean(selection);
 			},
 

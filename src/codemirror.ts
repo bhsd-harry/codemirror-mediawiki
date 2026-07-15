@@ -578,8 +578,11 @@ export class CodeMirror6 {
 				this.#extensions.reconfigure(
 					[
 						...new Set(
-							[...this.#preferred].filter(name => !readOnly || !editExtensions.has(name))
-								.flatMap(name => [name, ...avail.get(name)?.[2]?.dep ?? []]),
+							[...this.#preferred].flatMap(
+								name => readOnly && editExtensions.has(name)
+									? []
+									: [name, ...avail.get(name)?.[2]?.dep ?? []],
+							),
 						),
 					].map(name => {
 						const [extension, configs] = avail.get(name)!;

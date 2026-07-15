@@ -175,54 +175,50 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			...readOnly || isWiki
-				? {}
-				: {
-					'codemirror6-format': {
-						tools: {
-							indent: getTool(
-								'indent',
-								[indentMore, 'editor.action.indentLines'],
-								msgFallback('codeeditor-indent'),
-							),
-							outdent: getTool(
-								'outdent',
-								[indentLess, 'editor.action.outdentLines'],
-								msgFallback('codeeditor-outdent'),
-							),
-						},
+			...!readOnly && !isWiki && {
+				'codemirror6-format': {
+					tools: {
+						indent: getTool(
+							'indent',
+							[indentMore, 'editor.action.indentLines'],
+							msgFallback('codeeditor-indent'),
+						),
+						outdent: getTool(
+							'outdent',
+							[indentLess, 'editor.action.outdentLines'],
+							msgFallback('codeeditor-outdent'),
+						),
 					},
 				},
+			},
 			'codemirror6-more': {
 				tools: {
-					...hasCodeEditor
-						? {
-							invisibleChars: getTool(
-								'pilcrow',
-								(_, cm) => {
-									const state = !isActive($toolbar, 'invisibleChars');
-									cm.prefer({
-										highlightSpecialChars: state,
-										highlightWhitespace: state,
-									});
-								},
-								msgFallback('codeeditor-invisibleChars-toggle'),
-							),
-							lineWrapping: getTool(
-								'wrapping',
-								(_, cm) => {
-									const state = !isActive($toolbar, 'lineWrapping');
-									cm.setLineWrapping(state);
-								},
-								msgFallback('codeeditor-lineWrapping-toggle'),
-							),
-							gotoLine: getTool(
-								'gotoLine',
-								[gotoLine, 'editor.action.gotoLine'],
-								msgFallback('codeeditor-gotoline'),
-							),
-						}
-						: {},
+					...hasCodeEditor && {
+						invisibleChars: getTool(
+							'pilcrow',
+							(_, cm) => {
+								const state = !isActive($toolbar, 'invisibleChars');
+								cm.prefer({
+									highlightSpecialChars: state,
+									highlightWhitespace: state,
+								});
+							},
+							msgFallback('codeeditor-invisibleChars-toggle'),
+						),
+						lineWrapping: getTool(
+							'wrapping',
+							(_, cm) => {
+								const state = !isActive($toolbar, 'lineWrapping');
+								cm.setLineWrapping(state);
+							},
+							msgFallback('codeeditor-lineWrapping-toggle'),
+						),
+						gotoLine: getTool(
+							'gotoLine',
+							[gotoLine, 'editor.action.gotoLine'],
+							msgFallback('codeeditor-gotoline'),
+						),
+					},
 					autocomplete: getTool(
 						'checkAll',
 						(_, cm) => {
@@ -231,28 +227,26 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 						},
 						msgFallback('codemirror-prefs-autocomplete'),
 					),
-					...isWiki
-						? {
-							foldRef: getTool(
-								'viewCompact',
-								(_, {view}) => {
-									if (!view) {
-										return;
-									}
-									const button: OO.ui.ButtonWidget = findButton($toolbar, 'foldRef')
-											.data('ooui'),
-										isNormal = button.getIcon() === 'viewCompact';
-									button.setIcon(isNormal ? 'viewDetails' : 'viewCompact');
-									if (isNormal) {
-										foldRef(view);
-									} else {
-										unfoldRef(view);
-									}
-								},
-								msg('toolbar-fold-ref'),
-							),
-						}
-						: {},
+					...isWiki && {
+						foldRef: getTool(
+							'viewCompact',
+							(_, {view}) => {
+								if (!view) {
+									return;
+								}
+								const button: OO.ui.ButtonWidget = findButton($toolbar, 'foldRef')
+										.data('ooui'),
+									isNormal = button.getIcon() === 'viewCompact';
+								button.setIcon(isNormal ? 'viewDetails' : 'viewCompact');
+								if (isNormal) {
+									foldRef(view);
+								} else {
+									unfoldRef(view);
+								}
+							},
+							msg('toolbar-fold-ref'),
+						),
+					},
 					preferences: getTool(
 						'settings',
 						() => {
@@ -262,26 +256,24 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 					),
 				},
 			},
-			...isWiki
-				? {}
-				: {
-					'codemirror6-search': {
-						tools: {
-							cmSearch: getTool(
-								'articleSearch',
-								[
-									(view): boolean =>
-										(searchPanelOpen(view.state) ? closeSearchPanel : openSearchPanel)(view),
-									'editor.action.startFindReplaceAction',
-									(ctx): void => {
-										$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
-									},
-								],
-								mw.msg('wikieditor-toolbar-tool-replace'),
-							),
-						},
+			...!isWiki && {
+				'codemirror6-search': {
+					tools: {
+						cmSearch: getTool(
+							'articleSearch',
+							[
+								(view): boolean =>
+									(searchPanelOpen(view.state) ? closeSearchPanel : openSearchPanel)(view),
+								'editor.action.startFindReplaceAction',
+								(ctx): void => {
+									$.wikiEditor.modules.dialogs.api.openDialog(ctx, 'search-and-replace');
+								},
+							],
+							mw.msg('wikieditor-toolbar-tool-replace'),
+						),
 					},
 				},
+			},
 		},
 	});
 	setButtonActive($toolbar, true);

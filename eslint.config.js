@@ -95,6 +95,15 @@ export default extend(
 				OO: 'readonly',
 			},
 		},
+		rules: {
+			'unicorn/prefer-await': 0,
+		},
+	},
+	{
+		files: ['mw/*.ts', 'bundle/*.ts'],
+		rules: {
+			'unicorn/no-top-level-side-effects': 0,
+		},
 	},
 	{
 		files: ['test/src/*.ts'],

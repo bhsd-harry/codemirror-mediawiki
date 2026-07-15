@@ -68,7 +68,7 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 				.replace(/x$/u, 'X')
 		}`;
 		return articlePath.includes('$1')
-			? articlePath.replace('$1', page)
+			? articlePath.replace('$1', page) // eslint-disable-line unicorn/no-unsafe-string-replacement
 			: articlePath + (articlePath.endsWith('/') ? '' : '/') + page;
 	}
 	: undefined;

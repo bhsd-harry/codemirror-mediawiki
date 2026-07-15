@@ -5,6 +5,13 @@ import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-medi
 import type {ApiSuggest, ApiSuggestions, LinkSuggestion, MwConfig, CompletionSectionName} from '../src/token';
 import type {TemplateData} from './util';
 
+declare interface Response {
+	query?: {
+		pages?: {title: string, ns: number, contentmodel?: string}[];
+		redirects?: {from: string, to: string}[];
+	};
+}
+
 const templateParameters = new Map<string, ApiSuggestions>();
 
 /**
@@ -51,12 +58,7 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggesti
 							...!subpage && {redirects: true},
 							...contentmodel && {prop: 'info'},
 						},
-						{query}: {
-							query?: {
-								pages?: {title: string, ns: number, contentmodel?: string}[];
-								redirects?: {from: string, to: string}[];
-							};
-						} = await api.get(params);
+						{query}: Response = await api.get(params);
 					let pages = query?.pages ?? [];
 					if (contentmodel) {
 						pages = pages.filter(({contentmodel: m}) => m === contentmodel);

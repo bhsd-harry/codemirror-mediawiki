@@ -115,7 +115,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 			config = abusefilterDialect;
 		}
 		await cm.setLanguage(lang, config);
-		if (search.get('lint') !== '0' && !(lang in linters)) {
+		if (search.get('lint') !== '0' && !Object.hasOwn(linters, lang)) {
 			linters[lang] = await cm.getLinter();
 			if (isMediaWiki && typeof wikiparse === 'object') {
 				wikiparse.setConfig(Object.assign(await wikiparse.getConfig(), parserConfig!));
@@ -138,7 +138,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		} else {
 			url.searchParams.delete(key);
 		}
-		history.replaceState(null, '', url.toString()); // eslint-disable-line no-restricted-globals
+		history.replaceState(null, '', url.href); // eslint-disable-line no-restricted-globals
 	};
 
 	/** 设置扩展 */

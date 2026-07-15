@@ -399,9 +399,9 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 				}
 				return {
 					from,
-					options: Object.keys(cur).map((label): Completion => ({
+					options: Object.entries(cur).map(([label, value]): Completion => ({
 						label,
-						type: typeof cur[label] === 'object' ? 'namespace' : map[cur[label]!],
+						type: typeof value === 'object' ? 'namespace' : map[value],
 					})),
 					validFor,
 				};
@@ -468,6 +468,7 @@ const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRang
 		return null;
 	}
 	const getIndent = (line: string): number =>
+		// eslint-disable-next-line unicorn/no-unsafe-string-replacement
 		leadingSpaces(line).replaceAll('\t', ' '.repeat(tabSize)).length;
 	const indent = getIndent(text);
 	let j = number,
