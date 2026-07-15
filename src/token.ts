@@ -1985,7 +1985,7 @@ export class MediaWiki {
 						}
 					}
 					if (
-						!(state.extName && typeof state.extMode !== 'boolean')
+						(!state.extName || typeof state.extMode === 'boolean')
 						&& state.nLink === 0
 						&& typeof style === 'string'
 						&& style.includes(tokens.apostrophes)

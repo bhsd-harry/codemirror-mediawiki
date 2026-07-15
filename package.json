@@ -82,7 +82,7 @@
 	"dependencies": {
 		"@bhsd/browser": "^1.1.0",
 		"@bhsd/cm-util": "^2.3.0",
-		"@bhsd/codemirror-css-color-picker": "^8.0.0",
+		"@bhsd/codemirror-css-color-picker": "^8.0.1",
 		"@bhsd/common": "^4.0.0",
 		"@bhsd/lezer-abusefilter": "^0.5.0",
 		"@bhsd/lezer-json": "^2.1.0",
@@ -90,7 +90,7 @@
 		"wikiparser-node": "^1.46.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^3.1.0",
+		"@bhsd/code-standard": "^3.2.0",
 		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/eslint-browserify": "^10.7.0",
 		"@bhsd/test-util": "^3.1.0",

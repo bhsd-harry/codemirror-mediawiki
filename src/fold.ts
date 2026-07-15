@@ -141,7 +141,7 @@ export const foldableInline = (
 				[tag] = /^[a-z]+/u.exec(name.slice(name.lastIndexOf(mwTag) + 7))!,
 				regex = getExtRegex(tag);
 			let {nextSibling} = node;
-			while (nextSibling && !(isExtBracket(nextSibling) && !regex.test(nextSibling.name))) {
+			while (nextSibling && (!isExtBracket(nextSibling) || regex.test(nextSibling.name))) {
 				({nextSibling} = nextSibling);
 			}
 			const next = nextSibling?.nextSibling,
