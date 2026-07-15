@@ -299,7 +299,7 @@ const makeStyle = (style: string, state: ExtState, endGround?: NestCount): [stri
 const makeTagStyle = (tag: TagName, state: State, endGround?: NestCount): [string] =>
 	makeStyle(tokens[tag], state, endGround);
 
-const getTagStyle = (tag: string): string => tag in tokens ? tokens[tag as TagName] : tag;
+const getTagStyle = (tag: string): string => Object.hasOwn(tokens, tag) ? tokens[tag as TagName] : tag;
 
 /**
  * Remembers position and status for rollbacking.
@@ -653,7 +653,7 @@ export class MediaWiki {
 			this.addToken(`html-${tag}`, true);
 		}
 		for (const i in this.autocompleteNamespaces) {
-			if (Number.isInteger(Number(i))) {
+			if (Number.isSafeInteger(Number(i))) {
 				this.addToken(`function-${i}`, true);
 			}
 		}
@@ -1437,7 +1437,7 @@ export class MediaWiki {
 			} else if (stream.eat('>')) {
 				const {tagModes} = this.config;
 				state.extName = name;
-				state.extMode ||= name in tagModes && (tagModes[name]!) in this
+				state.extMode ||= Object.hasOwn(tagModes, name) && (tagModes[name]!) in this
 					&& this[tagModes[name] as MimeTypes]([
 						...state.data.tags.filter(tag => tag !== name),
 						...name === 'translate' ? ['tvar'] : [],
@@ -2088,15 +2088,13 @@ export class MediaWiki {
 				} satisfies CloseBracketConfig,
 			},
 
-			...tags
-				? undefined
-				: {
-					tokenTable: {
-						...this.tokenTable,
-						...this.hiddenTable,
-						'': Tag.define(),
-					},
+			...!tags && {
+				tokenTable: {
+					...this.tokenTable,
+					...this.hiddenTable,
+					'': Tag.define(),
 				},
+			},
 		};
 	}
 

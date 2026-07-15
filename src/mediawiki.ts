@@ -42,7 +42,8 @@ export const hasTag = (types: Set<string> | string, names: TagName | TagName[]):
 	if (typeof types === 'string') {
 		types = new Set(types.split('_'));
 	}
-	return (Array.isArray(names) ? names : [names]).some(name => types.has(name in tokens ? tokens[name] : name));
+	return (Array.isArray(names) ? names : [names])
+		.some(name => types.has(Object.hasOwn(tokens, name) ? tokens[name] : name));
 };
 
 export class FullMediaWiki extends MediaWiki {
@@ -160,7 +161,7 @@ export class FullMediaWiki extends MediaWiki {
 						from: mt.from + 1,
 						options: [
 							...tagName === 'meta' || tagName === 'link'
-							|| tagName in this.config.tags && !this.elementAttrs.has(tagName)
+							|| Object.hasOwn(this.config.tags, tagName) && !this.elementAttrs.has(tagName)
 								? []
 								: this.htmlAttrs,
 							...this.elementAttrs.get(tagName) ?? [],

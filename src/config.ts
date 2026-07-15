@@ -174,7 +174,7 @@ export const tokenTable = /* #__PURE__ */ (() => {
 		}
 	}
 	for (const className of Object.values(tokens)) {
-		if (!(className in table)) {
+		if (!Object.hasOwn(table, className)) {
 			table[className] = Tag.define();
 		}
 	}
