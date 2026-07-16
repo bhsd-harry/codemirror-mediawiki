@@ -139,7 +139,8 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 			error = await highSet!;
 		await api.loadMessagesIfMissing(errors.map(({type}) => getMsgKey(type)));
 		return errors
-			.filter(({type}) => Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)))
+			.filter(({type, dsr: [from, to]}) => from <= to
+				&& Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)))
 			.reduce<ParsoidError[]>((acc, cur) => { // eslint-disable-line unicorn/no-array-reduce
 				if (!acc.some(err => isEqualParsoidError(err, cur))) {
 					acc.push(cur);

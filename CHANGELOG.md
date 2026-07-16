@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.2.1
+
+*2026-07-16*
+
+**Fixed**
+
+- Filter out Parsoid diagnostics with invalid ranges in the MediaWiki mode on a MediaWiki site
+
 ## 4.2.0
 
 *2026-07-12*
