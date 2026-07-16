@@ -135,8 +135,8 @@ export const getOpenLinksExtension = (
 							{activeRange} = deco;
 						if (
 							activeRange
-							&& (activeRange[0] < pos || activeRange[0] === pos && assoc === 1)
-							&& (activeRange[1] > pos || activeRange[1] === pos && assoc === -1)
+							&& (activeRange[0] < pos || assoc === 1 && activeRange[0] === pos)
+							&& (activeRange[1] > pos || assoc === -1 && activeRange[1] === pos)
 						) {
 							return deco;
 						}

@@ -8,7 +8,7 @@ import type {TagName} from './config';
 const brackets: TagName[] = ['extTagBracket', 'htmlTagBracket'];
 
 export default (): Extension => EditorView.inputHandler.of((view, from, to, text, insert) => {
-	if (view.composing || view.state.readOnly || from !== to || text !== '>') {
+	if (from !== to || text !== '>' || view.composing || view.state.readOnly) {
 		return false;
 	}
 	const base = insert(),

@@ -341,7 +341,7 @@ const map = {
 const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource => async context => {
 	const {state, pos, explicit} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
-	if ((explicit || isWMF) && linkSuggest && node.name === 'string' && pos > node.from) {
+	if (linkSuggest && (explicit || isWMF) && node.name === 'string' && pos > node.from) {
 		const offsetFull = getStringOffsetFull(state, node, state.sliceDoc(node.from, pos));
 		if (!offsetFull || pos <= node.from + offsetFull[0]) {
 			return null;

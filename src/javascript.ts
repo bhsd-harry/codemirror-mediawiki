@@ -48,7 +48,7 @@ export const markGlobalsAndDocTag = (
 ): DecorationSet => {
 	const decorations: Range<Decoration>[] = [];
 	let allGlobals = builtinGlobals;
-	if (cm?.lintSources.length && typeof eslint === 'object' && isGlobal('eslint') && 'environments' in eslint) {
+	if (typeof eslint === 'object' && 'environments' in eslint && cm?.lintSources.length && isGlobal('eslint')) {
 		const {env, globals} = (cm.lintSources[0] as LintSource<Linter.LegacyConfig> | undefined)?.config ?? {};
 		if (env || globals) {
 			allGlobals = new Set(builtinGlobals);

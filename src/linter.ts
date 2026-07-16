@@ -192,9 +192,8 @@ export const getWikiLinter: getAsyncLinter<
 	return linter;
 };
 
-// eslint-disable-next-line unicorn/no-unreadable-iife
 const jsEnv = /* #__PURE__ */ ((): Linter.LegacyConfig['env'] => ({browser: true, es2024: true}))();
-export const jsConfig = /* #__PURE__ */ ((): Option => ({ // eslint-disable-line unicorn/no-unreadable-iife
+export const jsConfig = /* #__PURE__ */ ((): Option => ({
 	env: {...jsEnv, jquery: true},
 	globals: {
 		mw: 'readonly',

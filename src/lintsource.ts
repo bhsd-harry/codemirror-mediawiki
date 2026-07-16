@@ -293,7 +293,6 @@ export const getCssLintSource: LintSourceGetter = async (opt): Promise<LintSourc
  * @license MIT
  * @see https://github.com/ota-meshi/stylelint-config-recommended-vue/blob/main/lib/vue-specific-rules.js
  */
-// eslint-disable-next-line unicorn/no-unreadable-iife
 const stylelintConfigVue = /* #__PURE__ */ ((): Exclude<Config['rules'], undefined> => ({
 	'selector-pseudo-class-no-unknown': [true, {ignorePseudoClasses: ['deep', 'global', 'slotted']}],
 	'selector-pseudo-element-no-unknown': [true, {ignorePseudoElements: ['v-deep', 'v-global', 'v-slotted']}],

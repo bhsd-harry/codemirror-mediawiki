@@ -3,7 +3,7 @@
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
-/* eslint-disable @typescript-eslint/class-methods-use-this */
+/* eslint-disable @typescript-eslint/class-methods-use-this, unicorn/prefer-simple-condition-first */
 import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
@@ -825,7 +825,7 @@ export class MediaWiki {
 					if (mt) {
 						const tagname = mt[1]!.toLowerCase();
 						if (
-							(mt[0] === 'onlyinclude>' || tagname !== 'onlyinclude')
+							(tagname !== 'onlyinclude' || mt[0] === 'onlyinclude>')
 							&& state.data.tags.includes(tagname)
 						) {
 							// Extension tag
@@ -1635,13 +1635,13 @@ export class MediaWiki {
 				canonicalName = Object.hasOwn(functionSynonyms[1], ff) && functionSynonyms[1][ff]
 					|| Object.hasOwn(functionSynonyms[0], ffLower) && functionSynonyms[0][ffLower];
 			if (
-				(!delimiter || fullWidth || delimiter === ':' || delimiter === '}')
-				&& canonicalName
+				canonicalName
+				&& (!delimiter || fullWidth || delimiter === ':' || delimiter === '}')
 				&& !substs.has(canonicalName)
 				&& (fullWidth || delimiter === ':' || !variableIDs || variableIDs.includes(canonicalName))
 				&& (
-					!fullWidth && delimiter !== ':'
-					|| !functionHooks
+					!functionHooks
+					|| !fullWidth && delimiter !== ':'
 					|| functionHooks.includes(canonicalName) || otherParserFunctions.has(canonicalName)
 				)
 			) {
@@ -1985,9 +1985,9 @@ export class MediaWiki {
 						}
 					}
 					if (
-						(!state.extName || typeof state.extMode === 'boolean')
+						typeof style === 'string'
+						&& (!state.extName || typeof state.extMode === 'boolean')
 						&& state.nLink === 0
-						&& typeof style === 'string'
 						&& style.includes(tokens.apostrophes)
 					) {
 						if (data.mark === pos) {

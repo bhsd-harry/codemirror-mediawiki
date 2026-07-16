@@ -43,7 +43,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 		VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1e3 * 30;
 	// 只在localStorage过期时才会重新加载ext.CodeMirror.data
-	if (mw.loader.getState('ext.CodeMirror') !== null && !VALID) {
+	if (!VALID && mw.loader.getState('ext.CodeMirror') !== null) {
 		await mw.loader.using(
 			mw.loader.getState('ext.CodeMirror.data') ? 'ext.CodeMirror.data' : 'ext.CodeMirror',
 		);
@@ -58,8 +58,12 @@ export const getMwConfig: MwConfigGetter = async modes => {
 		nsid = mw.config.get('wgNamespaceIds');
 	// 情形1：config已更新，可能来自localStorage
 	if (
-		config?.imageKeywords && config.redirection && config.variants && config.variableIDs && config.functionHooks
-		&& !isIPE
+		!isIPE
+		&& config?.imageKeywords
+		&& config.redirection
+		&& config.variants
+		&& config.variableIDs
+		&& config.functionHooks
 	) {
 		config.urlProtocols = config.urlProtocols.replaceAll(String.raw`\:`, ':');
 		config.tagModes = modes;
@@ -156,7 +160,7 @@ export const getParserConfig: ParserConfigGetter = (minConfig, mwConfig) => {
 	const noCM = mw.loader.getState('ext.CodeMirror') === null;
 	for (const key in insensitive) {
 		const val = insensitive[key]!;
-		if (others.has(val) && val !== 'msgnw') {
+		if (val !== 'msgnw' && others.has(val)) {
 			delete config.parserFunction[0][key];
 			config.parserFunction[val === 'msg' || val === 'raw' ? 2 : 3].push(key);
 		} else if (noCM && !key.startsWith('#')) {

@@ -391,9 +391,9 @@ export class FullMediaWiki extends MediaWiki {
 				start = pos - search.length;
 			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
 			if (explicit || isWMF || isParserFunction && search.includes('#')) {
-				const obj = isWMF
-					? null
-					: {
+				const obj =
+					!isWMF &&
+					{
 						validFor: /^[^|{}<>[\]#]*$/u,
 					};
 				// 模板名
@@ -422,7 +422,7 @@ export class FullMediaWiki extends MediaWiki {
 				const isPage = hasTag(types, 'pageName'),
 					isPageFunc = isPage && hasTag(types, 'parserFunction') || 0,
 					isTemplateStyles = isPage && hasTag(types, 'extTagAttributeValue');
-				if (isPageFunc && search.trim() || isTemplateStyles || hasTag(types, 'linkPageName')) {
+				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPageName')) {
 					if (!this.config.linkSuggest) {
 						return null;
 					}
@@ -441,7 +441,7 @@ export class FullMediaWiki extends MediaWiki {
 					} else if (isTemplateStyles) {
 						ns = this.config.templateStylesDefaultNamespace ?? 10;
 						contentmodel = 'sanitized-css';
-					} else if (hasTag(types, 'mw-tag-gallery' as TagName) && !isLink) {
+					} else if (!isLink && hasTag(types, 'mw-tag-gallery' as TagName)) {
 						ns = 6;
 					}
 					const suggestions = await this.#linkSuggest(prefix + search, ns, undefined, contentmodel);
@@ -475,7 +475,7 @@ export class FullMediaWiki extends MediaWiki {
 				if (
 					isDelimiter
 					|| isArgument && !search.includes('=')
-					|| hasTag(types, 'template') && prevIsDelimiter
+					|| prevIsDelimiter && hasTag(types, 'template')
 				) {
 					const [page] = findTemplateName(state, node);
 					if (page) {
@@ -639,9 +639,9 @@ export class FullMediaWiki extends MediaWiki {
 	}
 }
 
-const getSelector = (cls: string[], prefix: string | string[] = ''): string => typeof prefix === 'string'
-	? cls.map(c => `.${mwPrefix}${prefix}${c}`).join()
-	: prefix.map(p => getSelector(cls, p)).join();
+const getSelector = (cls: string[], prefix: string | string[] = ''): string =>
+	(typeof prefix === 'string' ? cls.map(c => `.${mwPrefix}${prefix}${c}`) : prefix.map(p => getSelector(cls, p)))
+		.join();
 
 const getGround = (type: 'link' | 'ext' | 'template', ground?: number): string =>
 	ground ? `${type}${ground === 1 ? '' : ground}-` : '';
