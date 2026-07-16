@@ -153,6 +153,7 @@ const clickHandler = (
 	if (
 		// eslint-disable-next-line @stylistic/no-extra-parens
 		select !== customSelection[0] && (
+			// eslint-disable-next-line unicorn/prefer-simple-condition-first
 			pos === null
 		)
 	) {

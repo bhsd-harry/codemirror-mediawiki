@@ -128,10 +128,11 @@ export class FullMediaWiki extends MediaWiki {
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
-			const obj = {
-				options: this.functionSynonyms,
-				validFor: /^[^|{}<>[\]#]*$/u,
-			};
+			const obj =
+				{
+					options: this.functionSynonyms,
+					validFor: /^[^|{}<>[\]#]*$/u,
+				};
 			if (isParserFunction || hasTag(types, 'templateName')) {
 				return search.includes(':')
 					? null

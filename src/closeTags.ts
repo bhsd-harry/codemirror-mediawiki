@@ -13,7 +13,7 @@ const brackets: TagName[] = ['extTagBracket', 'htmlTagBracket'];
  * @since 0.4.0
  */
 export default (): Extension => EditorView.inputHandler.of((view, from, to, text, insert) => {
-	if (view.composing || view.state.readOnly || from !== to || text !== '>') {
+	if (from !== to || text !== '>' || view.composing || view.state.readOnly) {
 		return false;
 	}
 	const base = insert(),
