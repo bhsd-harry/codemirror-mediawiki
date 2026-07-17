@@ -11,8 +11,8 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	panelSelector = '.cm-panel',
 	actionSelector = '.cm-diagnosticAction',
 	bgDark = '#4c566a',
-	matchingCls = 'cm-matchingTag',
-	nonmatchingCls = 'cm-nonmatchingTag';
+	matchingCls = 'cm-matchingBracket',
+	nonmatchingCls = 'cm-nonmatchingBracket';
 
 export const isMac = /* #__PURE__ */ (() => {
 	const {vendor, userAgent, maxTouchPoints, platform} = navigator;

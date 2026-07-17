@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.10.1
+
+*2026-07-17*
+
+**Fixed**
+
+- Missing styles for [tag matching](./README.md#bracketmatching)
+
 ## 0.10.0
 
 *2026-07-02*
