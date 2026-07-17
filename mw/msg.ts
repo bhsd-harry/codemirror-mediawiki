@@ -29,8 +29,6 @@ export const cmSetI18N = async (cdn: string): Promise<void> => {
 			storageKey,
 			i18n,
 		);
-		/** @todo 2026-01-05 过一段时间后移除下一行 */
-		delete i18n['addon-tagMatching'];
 	} catch (e) {
 		if (e instanceof Error) {
 			void mw.notify(e.message, {type: 'error'});

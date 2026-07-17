@@ -104,36 +104,36 @@ describe('getTag', () => {
 
 describe('tagMatching', () => {
 	it('void extension tag', () => {
-		mockTest('<templatestyles src="styles.css" />', 1, {matched: true, start: [0, 35]});
+		mockTest('<templatestyles src="styles.css" />', 1, {matched: true, start: [1, 15]});
 	});
 	it('opening extension tag', () => {
-		mockTest('<pre>a</pre>', 1, {matched: true, start: [0, 5], end: [6, 12]});
+		mockTest('<pre>a</pre>', 1, {matched: true, start: [1, 4], end: [8, 11]});
 	});
 	it('closing extension tag', () => {
-		mockTest('<pre>a</pre>', 8, {matched: true, start: [6, 12], end: [0, 5]});
+		mockTest('<pre>a</pre>', 8, {matched: true, start: [8, 11], end: [1, 4]});
 	});
 	it('unmatched extension tag', () => {
-		mockTest('<pre>', 1, {matched: false, start: [0, 5]});
+		mockTest('<pre>', 1, {matched: false, start: [1, 4]});
 	});
 	it('void HTML tag', () => {
-		mockTest('<br>', 1, {matched: true, start: [0, 4]});
+		mockTest('<br>', 1, {matched: true, start: [1, 3]});
 	});
 	it('opening HTML tag', () => {
-		mockTest('<span><span></span></span>', 1, {matched: true, start: [0, 6], end: [19, 26]});
-		mockTest('<span><span></span></span>', 7, {matched: true, start: [6, 12], end: [12, 19]});
+		mockTest('<span><span></span></span>', 1, {matched: true, start: [1, 5], end: [21, 25]});
+		mockTest('<span><span></span></span>', 7, {matched: true, start: [7, 11], end: [14, 18]});
 	});
 	it('closing HTML tag', () => {
-		mockTest('<span><span></span></span>', 21, {matched: true, start: [19, 26], end: [0, 6]});
+		mockTest('<span><span></span></span>', 21, {matched: true, start: [21, 25], end: [1, 5]});
 	});
 	it('unmatched HTML tag', () => {
-		mockTest('<span><span></span>', 1, {matched: false, start: [0, 6]});
+		mockTest('<span><span></span>', 1, {matched: false, start: [1, 5]});
 	});
 	it('valid self-closing HTML tag', () => {
-		mockTest('<li/>', 1, {matched: true, start: [0, 5]});
-		mockTest('<li><li/></li>', 1, {matched: true, start: [0, 4], end: [9, 14]});
-		mockTest('<li><li/></li>', 11, {matched: true, start: [9, 14], end: [0, 4]});
+		mockTest('<li/>', 1, {matched: true, start: [1, 3]});
+		mockTest('<li><li/></li>', 1, {matched: true, start: [1, 3], end: [11, 13]});
+		mockTest('<li><li/></li>', 11, {matched: true, start: [11, 13], end: [1, 3]});
 	});
 	it('invalid self-closing HTML tag', () => {
-		mockTest('<p/>', 1, {matched: false, start: [0, 4]});
+		mockTest('<p/>', 1, {matched: false, start: [1, 2]});
 	});
 });

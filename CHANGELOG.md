@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.3.0
+
+*2026-07-17*
+
+**Changed**
+
+- The [tag matching](./README.md#bracketmatching) behavior in the MediaWiki mode now follows the [@codemirror/lang-html](https://www.npmjs.com/package/@codemirror/lang-html) package
+
 ## 4.2.1
 
 *2026-07-16*

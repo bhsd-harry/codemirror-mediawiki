@@ -16,15 +16,14 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	linkSelector = '.cm-link',
 	contentSelector = '.cm-content',
 	scrollerSelector = '.cm-scroller',
-	focused = '&.cm-focused',
 	doctagMark = /* #__PURE__ */ Decoration.mark({class: 'cm-doctag'}),
 	typeMark = /* #__PURE__ */ Decoration.mark({class: 'cm-doctag-type'}),
 	noDetectionLangs = new Set(['plain', 'mediawiki']),
 	bgDark = '#4c566a',
 	cursorColor = '--cursor-color',
 	guideColor = '--col-guide',
-	matchingCls = 'cm-matchingTag',
-	nonmatchingCls = 'cm-nonmatchingTag';
+	matchingCls = 'cm-matchingBracket',
+	nonmatchingCls = 'cm-nonmatchingBracket';
 
 export const isWMF = /* #__PURE__ */ (
 	() => typeof location === 'object'

@@ -585,12 +585,6 @@
 	.cm-doctag-var > * {
 		color: #00f;
 	}
-	.cm-editor.cm-focused .cm-matchingTag {
-		background-color: rgb(50, 140, 130, .32);
-	}
-	.cm-editor.cm-focused .cm-nonmatchingTag {
-		background-color: rgb(187, 85, 85, .27);
-	}
 }
 @media (prefers-color-scheme: dark) {
 	.cm-editor {
@@ -632,13 +626,6 @@
 	}
 	div.cm-activeLine {
 		background-color: rgb(76, 86, 106, .27);
-	}
-	.cm-editor.cm-focused .cm-matchingTag {
-		background-color: #eceff4;
-		color: #434c5e;
-	}
-	.cm-editor.cm-focused .cm-nonmatchingTag {
-		background-color: rgb(235, 203, 139, .32);
 	}
 	.cm-editor.cm-focused > .cm-scroller > .cm-selectionLayer div.cm-selectionBackground,
 	.cm-diagnosticAction {

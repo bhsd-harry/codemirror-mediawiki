@@ -2,18 +2,12 @@ import {EditorView} from '@codemirror/view';
 import {defaultHighlightStyle} from '@codemirror/language';
 import nord from './nord.js';
 import {
-	matchingCls,
-	nonmatchingCls,
 	bgDark,
 	cursorColor,
 	guideColor,
-	focused,
 } from './constants.js';
 import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
-
-const matching = `${focused} .${matchingCls}`,
-	nonmatching = `${focused} .${nonmatchingCls}`;
 
 export const lightHighlightStyle = /* #__PURE__ */ (() => getHighlightExtension(
 	defaultHighlightStyle.specs,
@@ -58,12 +52,6 @@ export const light = /* #__PURE__ */ EditorView.theme({
 		},
 		'.cm-doctag-var>*': {
 			color: '#00f',
-		},
-		[matching]: {
-			backgroundColor: 'rgb(50,140,130,.32)',
-		},
-		[nonmatching]: {
-			backgroundColor: 'rgb(187,85,85,.27)',
 		},
 	}),
 
@@ -112,13 +100,6 @@ export const light = /* #__PURE__ */ EditorView.theme({
 			},
 			'.cm-doctag-var>*': {
 				color: '#8fbcbb',
-			},
-			[matching]: {
-				backgroundColor: '#eceff4',
-				color: '#434c5e',
-			},
-			[nonmatching]: {
-				backgroundColor: 'rgb(235,203,139,.32)',
 			},
 		}),
 	])();

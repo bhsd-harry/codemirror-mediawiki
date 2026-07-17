@@ -5,7 +5,15 @@
 import {EditorView} from '@codemirror/view';
 import {HighlightStyle, syntaxHighlighting} from '@codemirror/language';
 import {tags} from '@lezer/highlight';
-import {contentSelector, scrollerSelector, panelsSelector, actionSelector, focused, placeholder} from './constants.js';
+import {
+	contentSelector,
+	scrollerSelector,
+	panelsSelector,
+	actionSelector,
+	placeholder,
+	matchingCls,
+	nonmatchingCls,
+} from './constants.js';
 import type {Extension} from '@codemirror/state';
 
 // Colors from https://www.nordtheme.com/docs/colors-and-palettes
@@ -39,7 +47,8 @@ const invalid = '#d30102',
 
 const selectionSelector = '.cm-selectionBackground',
 	searchMatch = '.cm-searchMatch',
-	searchMatchSelected = `${searchMatch}-selected`;
+	searchMatchSelected = `${searchMatch}-selected`,
+	focused = '&.cm-focused';
 
 // Extension to enable the Nord theme (both the editor theme and the highlight style).
 export default [
@@ -86,10 +95,10 @@ export default [
 						color: base0F,
 					},
 				},
-				'& .cm-nonmatchingBracket': {
+				[`& .${nonmatchingCls}`]: {
 					outline,
 				},
-				'& .cm-matchingBracket': {
+				[`& .${matchingCls}`]: {
 					outline,
 					backgroundColor: base06,
 					color: base02,

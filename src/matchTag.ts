@@ -10,10 +10,6 @@ import type {MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
 
 declare type TagType = 'ext' | 'html';
-export interface TagMatchResult extends MatchResult {
-	start: WikiTag;
-	end?: WikiTag;
-}
 
 /** @test */
 export class WikiTag {
@@ -43,6 +39,11 @@ export class WikiTag {
 		return from + state.sliceDoc(from, to).indexOf('>') + 1;
 	}
 
+	get tag(): {from: number, to: number} {
+		const from = this.from + (this.closing ? 2 : 1);
+		return {from, to: from + this.name.length};
+	}
+
 	constructor(type: TagType, name: string, first: SyntaxNode, last: SyntaxNode, state: EditorState) {
 		this.type = type;
 		this.name = name;
@@ -53,6 +54,7 @@ export class WikiTag {
 }
 
 const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.test(name),
+	isTagName = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-name/u.test(name),
 	isTagComponent = (s: string) => {
 		const reHtml = new RegExp(`-htmltag-${s}`, 'u'),
 			reExt = new RegExp(`-exttag-${s}`, 'u');
@@ -131,23 +133,26 @@ export const searchTag = (state: EditorState, origin: WikiTag): WikiTag | null =
  * @param pos 位置
  * @test
  */
-export const matchTag = (state: EditorState, pos: number): TagMatchResult | null => {
+export const matchTag = (state: EditorState, pos: number): MatchResult | null => {
 	const tree = ensureSyntaxTree(state, pos);
 	if (!tree) {
 		return null;
 	}
 	let node = tree.resolveInner(pos, -1);
-	if (node.to === pos && !isTag(node)) {
+	if (node.to === pos && !isTagName(node)) {
 		node = tree.resolveInner(pos, 1);
+	}
+	if (!isTagName(node)) {
+		return null;
 	}
 	const start = getTag(state, node);
 	if (!start) {
 		return null;
 	} else if (start.selfClosing) {
-		return {matched: true, start};
+		return {matched: true, start: start.tag};
 	}
 	const end = searchTag(state, start);
-	return end ? {matched: true, start, end} : {matched: false, start};
+	return end ? {matched: true, start: start.tag, end: end.tag} : {matched: false, start: start.tag};
 };
 
 const matchingTag = /* #__PURE__ */ Decoration.mark({class: matchingCls}),
