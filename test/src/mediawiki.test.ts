@@ -316,7 +316,7 @@ describe('autocompletion', () => {
 			{
 				from: 0,
 				options: [
-					{label: '__nogallery__', type: 'constant'},
+					{label: '__NOGALLERY__', type: 'constant'},
 					{label: '__NOGLOBAL__', type: 'constant'},
 				],
 				validFor: /^[\p{L}\p{N}]*$/u,

@@ -206,7 +206,7 @@ export class FullMediaWiki extends MediaWiki {
 			? {type: 'property', label: label.slice(0, -2), detail: '$1'}
 			: {type: 'keyword', label});
 		this.#doubleUnderscore = getCompletions(
-			doubleUnderscore.flatMap(Object.keys).filter(isUnderscore),
+			doubleUnderscore.flatMap(obj => Object.keys(obj).map(s => s.toUpperCase())).filter(isUnderscore),
 			'constant',
 		);
 		this.#functionSynonyms = functionSynonyms.flatMap((obj, i) => Object.keys(obj).map((label): Completion => ({

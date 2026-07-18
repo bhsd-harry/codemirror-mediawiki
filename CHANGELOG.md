@@ -6,6 +6,7 @@
 **Changed**
 
 - The [tag matching](./README.md#bracketmatching) behavior in the MediaWiki mode now follows the [@codemirror/lang-html](https://www.npmjs.com/package/@codemirror/lang-html) package
+- [Autocompletion](./README.md#autocompletion) for behavior switches in the MediaWiki mode now always suggest the uppercase form
 
 ## 4.2.1
 
