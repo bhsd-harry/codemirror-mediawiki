@@ -70,7 +70,7 @@
 		"esbuild": "^0.28.1",
 		"eslint": "^10.7.0",
 		"http-server": "^14.1.1",
-		"markdownlint-cli2": "^0.23.0",
+		"markdownlint-cli2": "^0.23.1",
 		"stylelint": "^17.14.0",
 		"typescript": "^6.0.3"
 	}

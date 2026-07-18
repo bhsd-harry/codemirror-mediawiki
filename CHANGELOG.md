@@ -1,11 +1,15 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 0.10.1
 
-*2026-07-17*
+*2026-07-18*
 
 **Fixed**
 
 - Missing styles for [tag matching](./README.md#bracketmatching)
+
+**Changed**
+
+- Autocompletion for behavior switches now always suggest the uppercase form
 
 ## 0.10.0
 
