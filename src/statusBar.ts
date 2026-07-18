@@ -137,13 +137,14 @@ export default (
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
 				for (const tr of transactions) {
 					for (const effect of tr.effects) {
-						if (effect.is(setDiagnosticsEffect)) {
-							diagnostics = effect.value;
-							worker.classList.toggle(workerCls, diagnostics.length > 0);
-							updateDiagnosticsCount(diagnostics, 'error', error);
-							updateDiagnosticsCount(diagnostics, 'warning', warning);
-							updateDiagnosticMessage(view, diagnostics, main, message);
+						if (!effect.is(setDiagnosticsEffect)) {
+							continue;
 						}
+						diagnostics = effect.value;
+						worker.classList.toggle(workerCls, diagnostics.length > 0);
+						updateDiagnosticsCount(diagnostics, 'error', error);
+						updateDiagnosticsCount(diagnostics, 'warning', warning);
+						updateDiagnosticMessage(view, diagnostics, main, message);
 					}
 				}
 				if (docChanged || selectionSet) {
