@@ -595,7 +595,7 @@ export class CodeMirror extends CodeMirror6 {
 					defaultOpt = {include: false};
 				} else if (lang === 'javascript') {
 					defaultOpt = (
-						isRLModule(page, ns) ? {parserOptions: {ecmaVersion: 8}} : {}
+						isRLModule(page, ns) ? {parserOptions: {ecmaVersion: 10}} : {}
 					) satisfies Linter.LegacyConfig;
 				}
 			}
@@ -638,7 +638,7 @@ export class CodeMirror extends CodeMirror6 {
 					opt = (): Option => ({
 						js: {
 							...this.#getBasicOpt('javascript'),
-							parserOptions: {ecmaVersion: 8, sourceType: 'script'},
+							parserOptions: {ecmaVersion: 10, sourceType: 'script'},
 						},
 						css: this.#getBasicOpt('css'),
 					});
