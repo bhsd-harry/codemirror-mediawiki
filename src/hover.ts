@@ -1,8 +1,8 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
+import {getLSP} from '@bhsd/browser';
 import {
-	getLSP,
-} from '@bhsd/browser';
-import {createTooltipView} from '@bhsd/cm-util/cm';
+	createTooltipView,
+} from '@bhsd/cm-util/cm';
 import {marked} from 'marked';
 import {baseData, hoverSelector, bgDark} from './constants.js';
 import {

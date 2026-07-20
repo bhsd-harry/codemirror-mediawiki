@@ -49,16 +49,16 @@
 		"@codemirror/view": "^6.39.0"
 	},
 	"dependencies": {
-		"@bhsd/browser": "^1.1.0",
-		"@bhsd/cm-util": "^2.3.0",
+		"@bhsd/browser": "^2.0.0",
+		"@bhsd/cm-util": "^2.4.0",
 		"@bhsd/codemirror-css-color-picker": "^8.0.1",
-		"@bhsd/common": "^4.0.0",
+		"@bhsd/common": "^4.0.1",
 		"@bhsd/stylelint-util": "^1.1.0",
 		"marked": "^18.0.6",
 		"wikiparser-node": "^1.46.1"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^3.2.0",
+		"@bhsd/code-standard": "^3.3.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.10.4",
 		"@codemirror/language": "^6.12.4",
@@ -71,7 +71,7 @@
 		"eslint": "^10.7.0",
 		"http-server": "^14.1.1",
 		"markdownlint-cli2": "^0.23.1",
-		"stylelint": "^17.14.0",
+		"stylelint": "^17.14.1",
 		"typescript": "^6.0.3"
 	}
 }
