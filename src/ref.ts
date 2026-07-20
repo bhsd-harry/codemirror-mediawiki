@@ -1,7 +1,8 @@
 import {hoverTooltip, EditorView} from '@codemirror/view';
 import {ensureSyntaxTree, language, highlightingFor} from '@codemirror/language';
 import {highlightCode} from '@lezer/highlight';
-import {getLSP, escHTML} from '@bhsd/browser';
+import {getLSP} from '@bhsd/browser';
+import {escHTML} from '@bhsd/cm-util/cm';
 import elt from 'crelt';
 import {baseData} from './constants.js';
 import {tokens} from './config.js';
