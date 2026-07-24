@@ -201,7 +201,8 @@ export default (configs?: BracketConfig): Extension => {
 			},
 		},
 	);
-	let selection: EditorSelection | false = false;
+	let selection: EditorSelection | false = false,
+		frame: number | undefined;
 	return [
 		extension,
 		EditorView.domEventHandlers({
@@ -221,6 +222,9 @@ export default (configs?: BracketConfig): Extension => {
 
 			/** @ignore */
 			mousemove(e, view) {
+				if (frame) {
+					cancelAnimationFrame(frame);
+				}
 				if (!selection) {
 					return false;
 				}
@@ -229,8 +233,10 @@ export default (configs?: BracketConfig): Extension => {
 				if (head === null || head >= from && head <= to) {
 					return false;
 				}
-				view.dispatch({
-					selection: {head, anchor: head < from ? to : from},
+				frame = requestAnimationFrame(() => {
+					view.dispatch({
+						selection: {head, anchor: head < from ? to : from},
+					});
 				});
 				return true;
 			},

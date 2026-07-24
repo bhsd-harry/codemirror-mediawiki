@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.11.0
+
+*2026-08-17*
+
+**Changed**
+
+- The [colorPicker](./README.md#colorpicker) extension now parses CSS colors natively using [OffscreenCanvas](https://developer.mozilla.org/en-US/docs/Web/API/OffscreenCanvas) instead of [culori](https://culorijs.org/)
+
 ## 0.10.1
 
 *2026-07-20*
