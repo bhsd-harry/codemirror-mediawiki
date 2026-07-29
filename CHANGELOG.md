@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.2.3
+
+*2026-07-29*
+
+**Changed**
+
+- When editing ResourceLoader modules (including [site JS](https://www.mediawiki.org/wiki/ResourceLoader/Core_modules#site), [user JS](https://www.mediawiki.org/wiki/ResourceLoader/Core_modules#user) and gadgets) on a MediaWiki site, the default [ESLint](./mw/README.md#eslint) configuration now supports [ES2019](https://phabricator.wikimedia.org/T419142)
+
 ## 4.2.2
 
 *2026-07-20*

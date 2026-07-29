@@ -3,6 +3,7 @@ import {
 	isGlobal,
 	loadScript,
 } from '@bhsd/browser';
+import {numLeadingSpaces} from '@bhsd/common';
 import {tokens} from './config.js';
 import {
 	baseData,
@@ -141,7 +142,7 @@ export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' &&
  * @param str 字符串
  * @test
  */
-export const leadingSpaces = (str: string): string => /^\s*/u.exec(str)![0];
+export const leadingSpaces = (str: string): string => str.slice(0, numLeadingSpaces(str));
 
 /**
  * Mark the type in a JSDoc/LDoc comment
