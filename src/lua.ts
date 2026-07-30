@@ -157,6 +157,7 @@ const map = {
 				contentNamespaces: 3,
 				subjectNamespaces: 3,
 				talkNamespaces: 3,
+				interwikiMap: 2,
 				stats: {
 					pages: 1,
 					articles: 1,
