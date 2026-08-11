@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.3.0
+
+*2026-08-11*
+
+**Added**
+
+- New [WikiEditor](./mw/README.md#wikieditor) toolbar buttons to sort selected lines on a MediaWiki site
+
 ## 4.2.3
 
 *2026-07-29*

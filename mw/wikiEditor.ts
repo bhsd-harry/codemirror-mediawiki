@@ -4,6 +4,7 @@ import {foldRef, unfoldRef} from '../src/fold';
 import {msg} from './msg';
 import {getInstance} from './util';
 import {openPreference} from './preference';
+import {sortAscending, sortDescending} from './sortLines';
 import type {Command} from '@codemirror/view';
 import type {CodeMirror} from './codemirror';
 
@@ -17,6 +18,8 @@ const messages = {
 	'codeeditor-lineWrapping-toggle': 'Toggle line wrapping',
 	'codeeditor-gotoline': 'Go to line number...',
 	'codemirror-prefs-autocomplete': 'Enable autocompletion',
+	'codemirror-keymap-sortlines': 'Sort lines',
+	'codemirror-keymap-sortlinesdescending': 'Sort lines descending',
 };
 
 /**
@@ -226,6 +229,16 @@ export default async ($textarea: JQuery<HTMLTextAreaElement>, readOnly: boolean,
 							cm.prefer({autocompletion: state});
 						},
 						msgFallback('codemirror-prefs-autocomplete'),
+					),
+					sortAscending: getTool(
+						'sortAscending',
+						[sortAscending, 'editor.action.sortLinesAscending'],
+						msgFallback('codemirror-keymap-sortlines'),
+					),
+					sortDescending: getTool(
+						'sortDescending',
+						[sortDescending, 'editor.action.sortLinesDescending'],
+						msgFallback('codemirror-keymap-sortlinesdescending'),
 					),
 					...isWiki && {
 						foldRef: getTool(

@@ -1,4 +1,4 @@
-import {CDN as baseCDN, compareVersion, isGlobal} from '@bhsd/browser';
+import {CDN as baseCDN, isGlobal} from '@bhsd/browser';
 import elt from 'crelt';
 import {StateEffect} from '@codemirror/state';
 import {keymap, tooltips} from '@codemirror/view';
@@ -343,13 +343,9 @@ export class CodeMirror extends CodeMirror6 {
 			Object.assign(globalThis, {monaco: {CDN}});
 		}
 		if (typeof monaco.editor !== 'object') {
-			const {monacoVersion} = CodeMirror,
-				version = monacoVersion && compareVersion(monacoVersion, '2')
-					? monacoVersion
-					: '2';
 			Object.assign(globalThis, {
 				monaco: (await import(
-					`${CDN}/npm/monaco-wiki@${version}/dist/wiki.min.js`,
+					`${CDN}/npm/monaco-wiki@${CodeMirror.monacoVersion || '3'}/dist/wiki.min.js`,
 				) as {default: Promise<unknown>}).default,
 			});
 		}
@@ -829,7 +825,7 @@ export class CodeMirror extends CodeMirror6 {
 		$textarea.data('CodeMirror6', cm);
 		if (isCMWiki) {
 			await cm.setLanguage(lang, await getMwConfig(tagModes));
-		} else if (lang === 'lua') {
+		} else if (isCM && lang === 'lua') {
 			await cm.setLanguage(lang, await prepareSuggest(cm.page, true));
 		}
 		await Promise.all([loadJSON, cm.#init]);

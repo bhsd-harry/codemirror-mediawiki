@@ -102,8 +102,10 @@ export const loadJSON = (async () => {
 					prefs.add(option);
 				}
 				useMonaco.clear();
-				for (const option of json.useMonaco ?? []) {
-					useMonaco.add(option);
+				if (json.useMonaco) {
+					for (const option of json.useMonaco) {
+						useMonaco.add(option);
+					}
 				}
 				if (json.indent) {
 					localStorage.setItem(indentKey, json.indent);
