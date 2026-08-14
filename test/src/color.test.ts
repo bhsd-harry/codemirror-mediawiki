@@ -77,4 +77,13 @@ describe('colorPicker', () => {
 			},
 		);
 	});
+	it('hwb()', () => {
+		mockTest(
+			'{{{|hwb(120 0% 0%)}}}',
+			{
+				from: 4,
+				to: 18,
+			},
+		);
+	});
 });

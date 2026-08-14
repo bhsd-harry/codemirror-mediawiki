@@ -41,6 +41,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	activeLinkCls = 'cm-active-link',
 	activeLink = Decoration.mark({class: activeLinkCls}),
 	openLinksEffect = StateEffect.define<Pos | null>();
+let frame: number | undefined;
 
 const toggleOpenLinks = (view: EditorView, toggle = false): void => {
 	view.dom.classList.toggle(openLinksCls, toggle);
@@ -170,11 +171,16 @@ export const getOpenLinksExtension = (
 				}
 			},
 			mousemove(e, view) {
-				const toggle = e[modKey];
-				toggleOpenLinks(view, toggle);
-				if (toggle) {
-					view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
+				if (frame) {
+					cancelAnimationFrame(frame);
 				}
+				frame = requestAnimationFrame(() => {
+					const toggle = e[modKey];
+					toggleOpenLinks(view, toggle);
+					if (toggle) {
+						view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
+					}
+				});
 			},
 			mousedown(e, view) {
 				if (
