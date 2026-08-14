@@ -269,10 +269,11 @@ export default (
 			WebkitUserSelect: 'none',
 			userSelect: 'none',
 			'--fix-icon': "url('data:image/svg+xml,"
-				+ '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">'
 				// eslint-disable-next-line @stylistic/max-len
-				+ '<path d="M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7"/>'
-				+ '</svg>'
+				+ '%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22%3E'
+				// eslint-disable-next-line @stylistic/max-len
+				+ '%3Cpath d=%22M8 19a1 1 0 001 1h2a1 1 0 001-1v-1H8zm9-12a7 7 0 10-12 4.9S7 14 7 15v1a1 1 0 001 1h4a1 1 0 001-1v-1c0-1 2-3.1 2-3.1A7 7 0 0017 7%22/%3E'
+				+ '%3C/svg%3E'
 				+ "')",
 			'&>*': {
 				display: 'table-cell',
