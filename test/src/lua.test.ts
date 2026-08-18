@@ -216,11 +216,13 @@ describe('Lua folding', () => {
 		foldTest('a\n\nb', null);
 		foldTest('\ta\n\t\t\n    b', null);
 		foldTest('\ta\nb', null);
+		foldTest('\ta\n    b', null);
 	});
 	it('folding', () => {
 		foldTest('a\n\tb\n\tc\nd', {from: 1, to: 7});
 		foldTest('a\n  b\n    c\n  d\ne', {from: 1, to: 15});
 		foldTest('\ta\n\t\tb\n\tc', {from: 2, to: 6});
+		foldTest('    a\n\t\tb\n\tc', {from: 5, to: 9});
 	});
 });
 

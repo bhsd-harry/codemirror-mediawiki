@@ -1,6 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {ViewPlugin, Decoration} from '@codemirror/view';
+import {countColumn} from '@codemirror/state';
 import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
@@ -460,34 +461,6 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 };
 
 /**
- * @implements
- * @test
- */
-const fold = ({doc, tabSize}: EditorState, start: number, from: number): DocRange | null => {
-	const {text, number} = doc.lineAt(start);
-	if (!text.trim()) {
-		return null;
-	}
-	const getIndent = (line: string): number =>
-		// eslint-disable-next-line unicorn/no-unsafe-string-replacement
-		leadingSpaces(line).replaceAll('\t', ' '.repeat(tabSize)).length;
-	const indent = getIndent(text);
-	let j = number,
-		empty = true;
-	for (; j < doc.lines; j++) {
-		const {text: next} = doc.line(j + 1);
-		if (next.trim()) {
-			const nextIndent = getIndent(next);
-			if (indent >= nextIndent) {
-				break;
-			}
-			empty = false;
-		}
-	}
-	return empty || j === number ? null : {from, to: doc.line(j).to};
-};
-
-/**
  * 高亮显示LDoc标签
  * @ignore
  * @test
@@ -599,7 +572,27 @@ const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 	lightHighlightStyle,
 	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 	lang.data.of({autocomplete: getSource(linkSuggest)}),
-	foldService.of(fold),
+	foldService.of(({doc, tabSize}, start, from) => {
+		const {text, number} = doc.lineAt(start);
+		if (!text.trim()) {
+			return null;
+		}
+		const getIndent = (line: string): number => countColumn(leadingSpaces(line), tabSize);
+		const indent = getIndent(text);
+		let j = number,
+			empty = true;
+		for (; j < doc.lines; j++) {
+			const {text: next} = doc.line(j + 1);
+			if (next.trim()) {
+				const nextIndent = getIndent(next);
+				if (indent >= nextIndent) {
+					break;
+				}
+				empty = false;
+			}
+		}
+		return empty || j === number ? null : {from, to: doc.line(j).to};
+	}),
 	markDocTagPlugin,
 ];
 
