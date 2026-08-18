@@ -1,9 +1,8 @@
 import * as assert from 'assert';
 import {describe, it} from '@bhsd/test-util/mocha';
-import {syntaxTree} from '@codemirror/language';
+import {syntaxTree, foldable} from '@codemirror/language';
 import {
 	foldableInline,
-	foldableLine,
 	traverse,
 	updateAll,
 	updateSelection,
@@ -20,19 +19,19 @@ import type {DocRange} from '../../dist/util';
 const inlineTest = (doc: string, pos: number, range: DocRange | false, refOnly?: boolean): void => {
 		assert.deepStrictEqual(foldableInline(createState(doc), pos, undefined, refOnly), range);
 	},
-	blockTest = (text: string, line: number, range: DocRange | false): EditorView => {
+	blockTest = (text: string, line: number, range: DocRange | null = null): EditorView => {
 		const state = createState(text),
 			{doc} = state,
-			view = {
-				state,
-				viewport: {from: 0, to: text.length},
-				viewportLineBlocks: Array.from({length: doc.lines}, (_, i) => doc.line(i + 1) as DocRange as BlockInfo),
-			} as EditorView;
+			{from, to} = doc.line(line);
 		assert.deepStrictEqual(
-			foldableLine(view, doc.line(line)),
+			foldable(state, from, to),
 			range,
 		);
-		return view;
+		return {
+			state,
+			viewport: {from: 0, to: text.length},
+			viewportLineBlocks: Array.from({length: doc.lines}, (_, i) => doc.line(i + 1) as DocRange as BlockInfo),
+		} as EditorView;
 	},
 	allTest = (doc: string, head: number, end: number | true, anchor: number, ranges: [number, number][]): void => {
 		const state = createState(doc),
@@ -119,7 +118,7 @@ describe('codeFolding', () => {
 		blockTest(sections, 2, {from: 8, to: 9});
 		blockTest(sections, 4, {from: 15, to: 32});
 		blockTest(sections, 5, {from: 23, to: 24});
-		blockTest(sections, 7, false);
+		blockTest(sections, 7);
 		const view = blockTest(sections, 8, {from: 38, to: 40});
 		assert.deepStrictEqual(
 			convertRangeSet(buildMarkers(view), sections.length),
@@ -140,7 +139,7 @@ describe('codeFolding', () => {
 {{!}}}
 }}`;
 	it('table', () => {
-		blockTest(table, 2, false);
+		blockTest(table, 2);
 		blockTest(table, 4, {from: 13, to: 20});
 		const view = blockTest(table, 9, {from: 36, to: 42});
 		assert.deepStrictEqual(
@@ -186,24 +185,24 @@ describe('codeFolding', () => {
 		mockTest([[0, 1], [10, 8]], [1]);
 	});
 
-	const mix = `<ref>foo</ref>{{bar|{{baz|1=}}}}
+	const mix = `<ref>foo</ref>
 {|
-|
+|{{bar|{{baz|1=}}}}
 |}
 ===
 
 `;
 	it('fold command', async () => {
-		await commandTest(mix, false, 16, [[5, 8], [20, 30], [35, 37], [44, 46]], 16);
-		await commandTest(mix, false, 20, [[5, 8], [20, 30], [35, 37], [44, 46]], 30);
-		await commandTest(mix, false, 36, [[5, 8], [20, 30], [35, 37], [44, 46]], 37);
+		await commandTest(mix, false, 16, [[5, 8], [17, 37], [25, 35], [44, 46]], 16);
+		await commandTest(mix, false, 20, [[5, 8], [17, 37], [25, 35], [44, 46]], 37);
+		await commandTest(mix, false, 44, [[5, 8], [17, 37], [25, 35], [44, 46]], 46);
 		await commandTest(mix, true, 6, [[5, 8]], 8);
 	});
 
 	it('fold at cursor', async () => {
-		await commandAtTest(mix, [6, [20, 22], 35], [[5, 8], [26, 28]], 35);
-		await commandAtTest(mix, [6, [19, 22]], [[5, 8], [20, 30]], 30);
-		await commandAtTest(mix, [35, 44], [[35, 37]]);
+		await commandAtTest(mix, [6, [25, 27], 35], [[5, 8], [31, 33]], 35);
+		await commandAtTest(mix, [6, [24, 27]], [[5, 8], [25, 35]], 35);
+		await commandAtTest(mix, [17, 44], [[17, 37]]);
 		await commandAtTest(mix, [44], [[44, 46]]);
 	});
 });

@@ -6,13 +6,11 @@ import {
 	EditorView,
 	showTooltip,
 } from '@codemirror/view';
-import {
-	RangeSetBuilder,
-	RangeSet,
-	StateField,
-} from '@codemirror/state';
+import {RangeSetBuilder, RangeSet, StateField} from '@codemirror/state';
 import {
 	syntaxTree,
+	foldGutter,
+	foldKeymap,
 	ensureSyntaxTree,
 	foldEffect,
 	unfoldEffect,
@@ -21,35 +19,125 @@ import {
 	codeFolding,
 	foldState,
 	language,
-	foldGutter,
-	foldKeymap,
+	foldable,
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
 import {tokens} from './config.js';
-import {
-	placeholder,
-	mwTag,
-	bgDark,
-} from './constants.js';
+import {placeholder, mwTag, bgDark} from './constants.js';
 import {searchTag, getTag} from './matchTag.js';
-import {braceStackUpdate, sliceDoc} from './util.js';
+import {
+	sliceDoc,
+	braceStackUpdate,
+} from './util.js';
+import type {ViewUpdate, BlockInfo, PluginValue, Command, Tooltip, TooltipView} from '@codemirror/view';
 import type {
-	ViewUpdate,
-	BlockInfo,
-	PluginValue,
-	Command,
-	Tooltip,
-	TooltipView,
-} from '@codemirror/view';
-import type {EditorState, StateEffect, Extension} from '@codemirror/state';
+	EditorState,
+	Extension,
+	StateEffect,
+} from '@codemirror/state';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {TagName} from './config';
 import type {DocRange} from './util';
 
-declare type AnchorUpdate = (pos: number, range: DocRange) => number;
 /** @returns 折叠范围或是否继续查找 */
 declare type FoldableLineEndCheck = (from: number, to?: number) => DocRange | boolean;
+declare type AnchorUpdate = (pos: number, range: DocRange) => number;
+
+/**
+ * 寻找可折叠的行范围
+ * @ignore
+ * @test
+ */
+export const myService = (state: EditorState, f: number, t: number): DocRange | null => {
+	const tree = syntaxTree(state),
+		{doc} = state,
+		{length, lines} = doc;
+
+	/**
+	 * 获取标题层级
+	 * @param pos 行首位置
+	 */
+	const getLevel = (pos: number): number => {
+			const {name} = tree.resolve(pos, 1);
+			return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
+		},
+
+		/**
+		 * 获取表格语法
+		 * @param from 行首位置
+		 * @param to 行尾位置
+		 */
+		getTable = (from: number, to: number): 0 | 1 | -1 => {
+			const node = tree.resolve(from, 1),
+				{nextSibling} = node,
+				bracket = node.name.includes(tokens.tableBracket)
+					? node
+					: node.to < to && nextSibling?.name.includes(tokens.tableBracket) && nextSibling;
+			if (bracket) {
+				return /\|\}$|\{\{\s*!(?:\s*\}|\)\s*)\}\}$/u.test(sliceDoc(state, bracket)) ? -1 : 1;
+			}
+			return 0;
+		},
+
+		/**
+		 * 逐行检查是否是折叠终点
+		 * @param checkLine 检查函数
+		 * @returns 折叠范围或是否继续查找
+		 */
+		loop = (checkLine: FoldableLineEndCheck): DocRange | true | null => {
+			let i = 1;
+			while (i <= lines) {
+				const {from, to} = doc.line(i);
+				if (from >= tree.topNode.to) {
+					return from === length || null;
+				} else if (from > f) {
+					/** 折叠范围或是否继续查找 */
+					const result = checkLine(from, to);
+					if (result !== true) {
+						return result || null;
+					}
+				}
+				i++;
+				if (i === length) {
+					i = doc.lineAt(to).number + 1;
+				}
+			}
+			return true;
+		};
+
+	const level = getLevel(f);
+	if (level < 7) {
+		const checkLine: FoldableLineEndCheck = from =>
+			getLevel(from) > level || t < from - 1 && {from: t, to: from - 1};
+		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
+		if (result === true) {
+			return t === length ? null : {from: t, to: length};
+		}
+		return result;
+	} else if (getTable(f, t) === 1) {
+		const checkLine: FoldableLineEndCheck = (from, to) => {
+			const bracket = getTable(from, to!);
+			return bracket === -1 ? t < from - 1 && {from: t, to: from - 1} : bracket !== 1 && getLevel(from) === 7;
+		};
+		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
+		return typeof result === 'object' ? result : null;
+	}
+	return null;
+};
+
+const defaultFoldExtension = /* #__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
+
+export default (
+	e = defaultFoldExtension,
+): Extension => [
+	e,
+	EditorView.theme({
+		'.cm-foldGutter': {
+			order: 2,
+		},
+	}),
+];
 
 const getExtRegex = /* #__PURE__ */ getRegex(tag => new RegExp(`mw-tag-${tag}(?![a-z])`, 'u'));
 
@@ -337,102 +425,23 @@ const myFindFold = ({state}: EditorView, line: BlockInfo): DocRange | undefined 
 };
 
 /**
- * 寻找可折叠的行范围
- * @ignore
- * @test
- */
-export const foldableLine = ({state, viewportLineBlocks}: EditorView, {from: f, to: t}: DocRange): DocRange | false => {
-	const tree = syntaxTree(state),
-		{doc} = state,
-		{length} = viewportLineBlocks;
-
-	/**
-	 * 获取标题层级
-	 * @param pos 行首位置
-	 */
-	const getLevel = (pos: number): number => {
-			const {name} = tree.resolve(pos, 1);
-			return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
-		},
-
-		/**
-		 * 获取表格语法
-		 * @param from 行首位置
-		 * @param to 行尾位置
-		 */
-		getTable = (from: number, to: number): 0 | 1 | -1 => {
-			const node = tree.resolve(from, 1),
-				{nextSibling} = node,
-				bracket = node.name.includes(tokens.tableBracket)
-					? node
-					: node.to < to && nextSibling?.name.includes(tokens.tableBracket) && nextSibling;
-			if (bracket) {
-				return /\|\}$|\{\{\s*!(?:\s*\}|\)\s*)\}\}$/u.test(sliceDoc(state, bracket)) ? -1 : 1;
-			}
-			return 0;
-		},
-
-		/**
-		 * 逐行检查是否是折叠终点
-		 * @param checkLine 检查函数
-		 * @returns 折叠范围或是否继续查找
-		 */
-		loop = (checkLine: FoldableLineEndCheck): DocRange | boolean => {
-			let i = 0;
-			while (i <= doc.lines) {
-				const {from, to} = i < length ? viewportLineBlocks[i]! : doc.line(i);
-				if (from >= tree.topNode.to) {
-					return from === doc.length;
-				} else if (from > f) {
-					/** 折叠范围或是否继续查找 */
-					const result = checkLine(from, to);
-					if (result !== true) {
-						return result;
-					}
-				}
-				i++;
-				if (i === length) {
-					i = doc.lineAt(to).number + 1;
-				}
-			}
-			return true;
-		};
-
-	const level = getLevel(f);
-	if (level < 7) {
-		const checkLine: FoldableLineEndCheck = from =>
-			getLevel(from) > level || t < from - 1 && {from: t, to: from - 1};
-		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
-		return result === true
-			? t < doc.length && {from: t, to: doc.length}
-			: result;
-	} else if (getTable(f, t) === 1) {
-		const checkLine: FoldableLineEndCheck = (from, to) => {
-			const bracket = getTable(from, to!);
-			return bracket === -1 ? t < from - 1 && {from: t, to: from - 1} : bracket !== 1 && getLevel(from) === 7;
-		};
-		const /** 折叠范围或是否继续查找 */ result = loop(checkLine);
-		return typeof result === 'object' && result;
-	}
-	return false;
-};
-
-/**
  * 生成行号旁的折叠标记
  * @param view
  * @test
  */
 export const buildMarkers = (view: EditorView): RangeSet<MyFoldMarker> => {
-	const builder = new RangeSetBuilder<MyFoldMarker>();
-	for (const line of view.viewportLineBlocks) {
+	const builder = new RangeSetBuilder<MyFoldMarker>(),
+		{state, viewportLineBlocks} = view;
+	for (const line of viewportLineBlocks) {
+		const {from, to} = line;
 		let mark: MyFoldMarker | undefined;
 		if (myFindFold(view, line)) {
 			mark = canUnfold;
-		} else if (foldableLine(view, line)) {
+		} else if (foldable(state, from, to)) {
 			mark = canFold;
 		}
 		if (mark) {
-			builder.add(line.from, line.from, mark);
+			builder.add(from, from, mark);
 		}
 	}
 	return builder.finish();
@@ -462,8 +471,6 @@ const markers = /* #__PURE__ */ ViewPlugin.fromClass(class implements PluginValu
 	}
 });
 
-const defaultFoldExtension = /* #__PURE__ */ (() => [foldGutter(), keymap.of(foldKeymap)])();
-
 /**
  * 生成折叠命令
  * @param refOnly 是否仅检查`<ref>`标签
@@ -485,14 +492,15 @@ export const foldCommand = (refOnly?: boolean): Command => view => {
 	);
 	if (!refOnly) {
 		for (let pos = 0; pos < state.doc.length;) {
-			const line = view.lineBlockAt(pos),
-				range = foldableLine(view, line);
+			const {from, to} = view.lineBlockAt(pos),
+				range = foldable(state, from, to);
 			if (range) {
 				effects.push(foldEffect.of(range));
 				anchor = updateAll(anchor, range);
 			}
-			pos = (range ? view.lineBlockAt(range.to) : line).to + 1;
+			pos = (range ? view.lineBlockAt(range.to).to : to) + 1;
 		}
+		effects.sort((a, b) => a.value.from - b.value.from);
 	}
 	return execute(view, effects, anchor);
 };
@@ -531,8 +539,8 @@ export const mySelectedLines = (view: EditorView): BlockInfo[] => {
 	return lines;
 };
 
-const myFoldCode = (view: EditorView, line: BlockInfo): boolean => {
-	const range = foldableLine(view, line);
+const myFoldCode = (view: EditorView, {from, to}: BlockInfo): boolean => {
+	const range = foldable(view.state, from, to);
 	if (range) {
 		view.dispatch({effects: foldEffect.of(range)});
 		return true;
@@ -576,17 +584,6 @@ export const foldAt: Command = view => {
 	}
 	return false;
 };
-
-export default (
-	e = defaultFoldExtension,
-): Extension => [
-	e,
-	EditorView.theme({
-		'.cm-foldGutter': {
-			order: 2,
-		},
-	}),
-];
 
 export const mediawikiFold = /* #__PURE__ */ ((): Extension => [
 	codeFolding({

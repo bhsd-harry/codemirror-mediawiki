@@ -10,6 +10,7 @@ import {
 	LanguageSupport,
 } from '@codemirror/language';
 import {EditorView} from '@codemirror/view';
+import {foldService} from '@codemirror/language';
 import {insertCompletionText, pickedCompletion} from '@codemirror/autocomplete';
 import elt from 'crelt';
 import {numLeadingSpaces} from '@bhsd/common';
@@ -21,6 +22,7 @@ import {
 	isWMF,
 	mwPrefix,
 } from './constants.js';
+import {myService} from './fold.js';
 import {lightHighlightStyle} from './theme.js';
 import {MediaWiki} from './token.js';
 import {
@@ -858,5 +860,6 @@ export const mediawikiBase = (
 		getHighlightExtension(mode.getTagStyles()),
 		wikiTheme,
 		lang.data.of({autocomplete: mode.completionSource}),
+		foldService.of(myService),
 	]);
 };

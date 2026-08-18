@@ -104,7 +104,7 @@ export default (
 			[`.${cls}`]: {
 				color: '#969696',
 				fontStyle: 'italic',
-				'-webkitUserSelect': 'none',
+				WebkitUserSelect: 'none',
 				userSelect: 'none',
 			},
 		}),

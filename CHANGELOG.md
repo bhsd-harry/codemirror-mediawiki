@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.4.1
+
+*2026-08-18*
+
+**Fixed**
+
+- [foldAll](https://codemirror.net/docs/ref/#language.foldAll) command in the MediaWiki mode when there are both inline and block foldable ranges
+
 ## 4.4.0
 
 *2026-08-17*
