@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 0.11.1
+
+*2026-08-21*
+
+**Fixed**
+
+- [foldAll](https://codemirror.net/docs/ref/#language.foldAll) command
+
 ## 0.11.0
 
 *2026-08-17*

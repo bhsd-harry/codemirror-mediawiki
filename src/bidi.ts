@@ -108,7 +108,7 @@ export default (): Extension => [
 		},
 	),
 	EditorView.theme({
-		[`${isolateSelector}, &[dir="rtl"] .${mwPrefix}template-name`]: {
+		[`${isolateSelector}, &[dir=rtl] .${mwPrefix}template-name`]: {
 			unicodeBidi: 'isolate',
 		},
 		[ltrSelector]: {

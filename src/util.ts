@@ -13,7 +13,6 @@ import type {
 } from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
-import type {SyntaxNode} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
@@ -60,16 +59,6 @@ export const posToIndex = (doc: Text, pos: Position): number => {
  */
 export const sliceDoc = (state: EditorState, node: DocRange): string =>
 	state.sliceDoc(node.from, node.to);
-
-/**
- * Update the stack of opening (+) or closing (-) braces
- * @param state
- * @param node 语法树节点
- */
-export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
-	const brackets = sliceDoc(state, node);
-	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
-};
 
 /**
  * Push a decoration to the array if the range is not empty
