@@ -232,6 +232,7 @@ export class CodeMirror6 {
 	#nestedMWLanguage: Language | undefined;
 	#lintSources: LintSource[] = [];
 	#customHighlightStyles = getDefaultCustomHighlightStyles();
+	#font: string | false | undefined;
 
 	/** textarea element */
 	get textarea(): HTMLTextAreaElement {
@@ -266,6 +267,11 @@ export class CodeMirror6 {
 	/** @private */
 	get columnGuide(): number {
 		return this.#col;
+	}
+
+	/** @private */
+	get font(): string | false | undefined {
+		return this.#font;
 	}
 
 	/**
@@ -306,7 +312,10 @@ export class CodeMirror6 {
 	initialize(config?: unknown): void {
 		let timer: NodeJS.Timeout | undefined;
 		const {textarea, lang} = this,
-			{value, dir: d, accessKey, tabIndex, lang: l, readOnly} = textarea,
+			{value, dir: d, accessKey, tabIndex, lang: l, readOnly, classList} = textarea,
+			// 继承编辑字体
+			font = (lang === 'mediawiki' || lang === 'plain')
+				&& [...classList].find(cls => cls.startsWith('mw-editfont-')),
 			extensions = [
 				this.#language.of(this.#getLanguage(config)),
 				this.#linter.of(linters.get(lang)?.(this) ?? []),
@@ -323,6 +332,7 @@ export class CodeMirror6 {
 				EditorView.contentAttributes.of({
 					accesskey: accessKey,
 					tabindex: String(tabIndex),
+					...font && {class: font},
 				}),
 				EditorView.editorAttributes.of({lang: l}),
 				lineNumbers(),
@@ -375,7 +385,7 @@ export class CodeMirror6 {
 					[`.cm-textfield, .cm-button,${panelSelector}.cm-search label,${panelSelector}.cm-dialog label`]: {
 						fontSize: 'inherit',
 					},
-					[`${panelSelector} [name="close"]`]: {
+					[`${panelSelector} [name=close]`]: {
 						color: 'inherit',
 					},
 					[`${linkSelector}>span`]: {
@@ -431,6 +441,7 @@ export class CodeMirror6 {
 						]),
 					],
 			];
+		this.#font = font;
 		this.#view = new EditorView({
 			extensions,
 			doc: value,

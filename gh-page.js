@@ -250,7 +250,7 @@ registerAbuseFilter();
 registerTheme("dark", nord);
 registerBidiIsolates();
 if (location.pathname.startsWith("/codemirror-mediawiki")) {
-  const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll('input[name="language"]')], extensions = [...document.querySelectorAll('input[type="checkbox"]')], indent = document.querySelector("#indent"), col = document.querySelector("#col"), search = new URLSearchParams(location.search);
+  const textarea = document.querySelector("#wpTextbox"), languages = [...document.querySelectorAll("input[name=language]")], extensions = [...document.querySelectorAll("input[type=checkbox]")], indent = document.querySelector("#indent"), col = document.querySelector("#col"), search = new URLSearchParams(location.search);
   if (search.has("rtl")) {
     textarea.dir = "rtl";
   }
@@ -300,7 +300,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
       config = dialect_default;
     }
     await cm.setLanguage(lang, config);
-    if (search.get("lint") !== "0" && !(lang in linters)) {
+    if (search.get("lint") !== "0" && !Object.hasOwn(linters, lang)) {
       linters[lang] = await cm.getLinter();
       if (isMediaWiki && typeof wikiparse === "object") {
         wikiparse.setConfig(Object.assign(await wikiparse.getConfig(), parserConfig));
@@ -317,7 +317,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
     } else {
       url.searchParams.delete(key);
     }
-    history.replaceState(null, "", url.toString());
+    history.replaceState(null, "", url.href);
   };
   const prefer = function() {
     const { id, checked } = this;

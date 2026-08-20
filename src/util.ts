@@ -62,17 +62,6 @@ export const sliceDoc = (state: EditorState, node: DocRange): string =>
 	state.sliceDoc(node.from, node.to);
 
 /**
- * Update the stack of opening (+) or closing (-) braces
- * @param state
- * @param node 语法树节点
- * @test
- */
-export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
-	const brackets = sliceDoc(state, node);
-	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
-};
-
-/**
  * Push a decoration to the array if the range is not empty
  * @param decorations Decoration 数组
  * @param decoration Decoration 实例
@@ -136,6 +125,17 @@ export const getExtTags = (types: string[]): string[] =>
 
 /** 检测 wikiparse 是否可用 */
 export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' && isGlobal('wikiparse');
+
+/**
+ * Update the stack of opening (+) or closing (-) braces
+ * @param state
+ * @param node 语法树节点
+ * @test
+ */
+export const braceStackUpdate = (state: EditorState, node: SyntaxNode): [number, number] => {
+	const brackets = sliceDoc(state, node);
+	return [brackets.split('{{').length - 1, 1 - brackets.split('}}').length];
+};
 
 /**
  * 获取字符串开头的空白字符

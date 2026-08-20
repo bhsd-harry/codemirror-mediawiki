@@ -34,8 +34,8 @@ registerBidiIsolates();
 if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	// 初始化DOM元素
 	const textarea = document.querySelector<HTMLTextAreaElement>('#wpTextbox')!,
-		languages = [...document.querySelectorAll<HTMLInputElement>('input[name="language"]')],
-		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]')],
+		languages = [...document.querySelectorAll<HTMLInputElement>('input[name=language]')],
+		extensions = [...document.querySelectorAll<HTMLInputElement>('input[type=checkbox]')],
 		indent = document.querySelector<HTMLInputElement>('#indent')!,
 		col = document.querySelector<HTMLInputElement>('#col')!,
 		search = new URLSearchParams(location.search);
