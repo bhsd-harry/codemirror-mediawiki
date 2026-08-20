@@ -17,8 +17,9 @@ import {
 	codeFolding,
 	openLinks,
 	closeTags,
+	stickyScroll,
+	wikilint,
 } from './index';
-import {wikilint} from './codemirror.js';
 import type {ConfigData} from 'wikiparser-node';
 
 (async () => {
@@ -45,6 +46,7 @@ import type {ConfigData} from 'wikiparser-node';
 					colorPicker(),
 					codeFolding(),
 					openLinks(configData),
+					stickyScroll(),
 					wikilint(configData, {'invalid-css': 1, 'arg-in-ext': 2}),
 				],
 			),

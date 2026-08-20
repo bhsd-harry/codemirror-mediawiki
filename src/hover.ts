@@ -43,6 +43,12 @@ export const hoverStyle = /* #__PURE__ */ EditorView.theme({
 	},
 });
 
+/**
+ * Get the [hover](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#hover)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
+ */
 export default (
 	configData: ConfigData,
 	cdn?: string,

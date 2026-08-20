@@ -26,6 +26,12 @@ export const getSignatureHelp = ({signatures, activeParameter: active}: Signatur
 		return `${safeLabel.slice(0, colon)}:${parts.join('|')}}}`;
 	}).join('<br>');
 
+/**
+ * Get the [signatureHelp](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#signaturehelp)
+ * extension for Wikitext.
+ * @param configData [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) configuration data.
+ * @param cdn [jsDelivr CDN](https://www.jsdelivr.com/network), defaulting to `https://fastly.jsdelivr.net`
+ */
 export default (
 	configData: ConfigData,
 	cdn?: string,

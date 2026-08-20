@@ -340,6 +340,24 @@ const extension: Extension = signatureHelp(
 
 </details>
 
+### stickyScroll
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 0.12.0*
+
+Sticky section and table headers at the top of the editor when scrolling. This extension is *not* included in the default [`mediawiki`](#basic-usage) language support.
+
+```ts
+import {stickyScroll} from '@bhsd/codemirror-wikitext';
+import type {Extension} from '@codemirror/state';
+
+const extension: Extension = stickyScroll();
+```
+
+</details>
+
 ### wikilint
 
 <details>

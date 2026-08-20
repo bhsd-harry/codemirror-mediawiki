@@ -82,14 +82,6 @@ export const pushDecoration = (
 };
 
 /**
- * 将解析设置转换为返回Promise的函数
- * @param configData 解析设置
- */
-export const toConfigGetter = (
-	configData: ConfigData,
-): ConfigGetter => () => Promise.resolve(configData);
-
-/**
  * Tokenizer for multiline comments
  * @param parent 外层 Tokenizer
  * @param end 注释结束标志
@@ -122,6 +114,14 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  */
 export const getExtTags = (types: string[]): string[] =>
 	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
+
+/**
+ * 将解析设置转换为返回Promise的函数
+ * @param configData 解析设置
+ */
+export const toConfigGetter = (
+	configData: ConfigData,
+): ConfigGetter => () => Promise.resolve(configData);
 
 /** 检测 wikiparse 是否可用 */
 export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' && isGlobal('wikiparse');
