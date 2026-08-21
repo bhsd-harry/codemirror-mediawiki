@@ -118,6 +118,7 @@ const cmLinters = new Map<string, LintSources | undefined>(),
 		['openLinks', 'links', false, true],
 		['scrollPastEnd', 'scrollBeyondLastLine', false, true],
 		['signatureHelp', 'parameterHints', {enabled: false}, undefined],
+		['stickyScroll', 'stickyScroll', {enabled: false}, undefined],
 	],
 	{documentElement} = document,
 	userModuleRegex = new RegExp(

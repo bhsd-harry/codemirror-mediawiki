@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 -->
-## 4.4.2
+## 4.5.0
 
 *2026-08-28*
+
+**Added**
+
+- New extension option: [stickyScroll](./README.md#stickyscroll)
 
 **Fixed**
 

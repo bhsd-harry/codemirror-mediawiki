@@ -545,6 +545,15 @@
 	}
 }
 
+/* src/stickyScroll */
+.cm-stickyscroll-code {
+	& .cm-mw-section--1, & .cm-mw-section--2 {
+		font-size: inherit;
+		line-height: inherit;
+		font-weight: bold;
+	}
+}
+
 /* src/theme */
 @media (prefers-color-scheme: light) {
 	.cm-editor {

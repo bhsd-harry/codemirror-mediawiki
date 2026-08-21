@@ -90,6 +90,7 @@ If you are just looking for a CodeMirror 6 language mode and language support ex
 	- [refHover](#refhover)
 	- [scrollPastEnd](#scrollpastend)
 	- [signatureHelp](#signaturehelp)
+	- [stickyScroll](#stickyscroll)
 - [Known issues](#known-issues)
 	- [Syntax Highlighting](#syntax-highlighting)
 
@@ -1541,6 +1542,24 @@ import {
 // optionally pass the article path of a MediaWiki site
 registerSignatureHelp('https://www.mediawiki.org/wiki/');
 registerSignatureHelpForAbuseFilter();
+```
+
+</details>
+
+### stickyScroll
+
+<details>
+	<summary>Expand</summary>
+
+*version added: 4.5.0*
+
+Sticky opening lines of the enclosing scopes at the top of the editor when scrolling.
+
+For granular control over the bundled extensions, you can import the `registerStickyScroll` function:
+
+```js
+import {registerStickyScroll} from '@bhsd/codemirror-mediawiki';
+registerStickyScroll();
 ```
 
 </details>

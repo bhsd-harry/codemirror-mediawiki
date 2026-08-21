@@ -1,5 +1,5 @@
 {
-	"version": "4.4.1",
+	"version": "4.5.0",
 	"lang": "en",
 	"title": "CodeMirror Addons",
 	"label": "Please select the addons you wish to load",
@@ -33,6 +33,7 @@
 	"addon-save": "Save your preferences on a [[special:mypage/codemirror-mediawiki.json|user subpage]]",
 	"addon-scrollPastEnd": "Scroll down past the end of the document",
 	"addon-signatureHelp": "Show parser function signatures",
+	"addon-stickyScroll": "Sticky opening lines of enclosing scopes",
 	"addon-theme": "Theme",
 	"addon-useMonaco": "Use Monaco Editor for new editors",
 	"addon-wikiEditor": "Load WikiEditor toolbar",

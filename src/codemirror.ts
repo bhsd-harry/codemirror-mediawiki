@@ -313,6 +313,7 @@ export class CodeMirror6 {
 		let timer: NodeJS.Timeout | undefined;
 		const {textarea, lang} = this,
 			{value, dir: d, accessKey, tabIndex, lang: l, readOnly, classList} = textarea,
+			{fontSize, lineHeight, border} = getComputedStyle(textarea),
 			// 继承编辑字体
 			font = (lang === 'mediawiki' || lang === 'plain')
 				&& [...classList].find(cls => cls.startsWith('mw-editfont-')),
@@ -375,6 +376,10 @@ export class CodeMirror6 {
 				EditorView.theme({
 					[scrollerSelector]: {
 						minHeight: '2em',
+					},
+					[`${scrollerSelector},.cm-stickyscroll-container`]: {
+						fontSize,
+						lineHeight,
 					},
 					[panelsSelector]: {
 						direction: document.dir,
@@ -446,11 +451,8 @@ export class CodeMirror6 {
 			extensions,
 			doc: value,
 		});
-		const {fontSize, lineHeight, border} = getComputedStyle(textarea);
 		textarea.before(this.#view.dom);
 		this.#view.dom.style.border = border;
-		this.#view.scrollDOM.style.fontSize = fontSize;
-		this.#view.scrollDOM.style.lineHeight = lineHeight;
 		this.toggle(true);
 		this.#view.dom.addEventListener('click', optionalFunctions.foldHandler(this.#view));
 		this.prefer({});

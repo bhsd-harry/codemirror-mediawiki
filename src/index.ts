@@ -67,6 +67,7 @@ import {
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
+import stickyScroll, {mediawikiStickyScroll} from './stickyScroll.js';
 import statusBar from './statusBar.js';
 import css from './css.js';
 import html from './html.js';
@@ -214,6 +215,14 @@ export const registerIndentGuide = (): void => {
  */
 export const registerColorPicker = (): void => {};
 
+/**
+ * Register the `stickyScroll` extension
+ * @since 4.5.0
+ */
+export const registerStickyScroll = (): void => {
+	registerExtension('stickyScroll', stickyScroll);
+};
+
 /** Register all common extensions */
 export const registerCommonExtensions = (): void => {
 	registerHighlightSpecialChars();
@@ -228,6 +237,7 @@ export const registerCommonExtensions = (): void => {
 	registerAutocompletion();
 	registerCodeFolding();
 	registerBlockCursor();
+	registerStickyScroll();
 };
 
 /**
@@ -286,6 +296,7 @@ export const registerMediaWiki = (articlePath?: string, templatedata?: boolean):
 	registerBracketMatchingForMediaWiki();
 	registerCodeFoldingForMediaWiki();
 	registerCloseTagsForMediaWiki();
+	registerStickyScrollForMediaWiki();
 };
 
 /**
@@ -398,6 +409,14 @@ export const registerCodeFoldingForMediaWiki = (): void => {
  */
 export const registerCloseTagsForMediaWiki = (): void => {
 	registerLangExtension('mediawiki', 'closeTags', closeTags());
+};
+
+/**
+ * Register the `stickyScroll` extension for MediaWiki
+ * @since 4.5.0
+ */
+export const registerStickyScrollForMediaWiki = (): void => {
+	registerLangExtension('mediawiki', 'stickyScroll', mediawikiStickyScroll);
 };
 
 /**

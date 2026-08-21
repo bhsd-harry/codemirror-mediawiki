@@ -1,0 +1,9 @@
+.mw-editfont-monospace .cm-stickyscroll-code {
+	font-family: monospace;
+}
+.mw-editfont-serif .cm-stickyscroll-code {
+	font-family: serif;
+}
+.mw-editfont-sans-serif .cm-stickyscroll-code {
+	font-family: sans-serif;
+}

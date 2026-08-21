@@ -1,5 +1,5 @@
 {
-	"version": "4.4.1",
+	"version": "4.5.0",
 	"lang": "zh-hant",
 	"title": "CodeMirror外掛程式",
 	"label": "請選擇您希望載入的外掛程式",
@@ -33,6 +33,7 @@
 	"addon-save": "將設定儲存至[[special:mypage/codemirror-mediawiki.json|使用者子頁面]]",
 	"addon-scrollPastEnd": "允許向下滾動超過文件末尾",
 	"addon-signatureHelp": "顯示解析器函數的簽名",
+	"addon-stickyScroll": "在作用域中固定顯示開頭的行",
 	"addon-theme": "主題",
 	"addon-useMonaco": "新增的編輯區使用Monaco編輯器",
 	"addon-wikiEditor": "載入WikiEditor工具列",
