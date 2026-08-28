@@ -50,7 +50,8 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range' | 'messag
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 export const eslintRepo = 'npm/@bhsd/eslint-browserify@10',
-	luacheckRepo = 'npm/luacheck-browserify/dist/es10.min.js';
+	/** @todo 替换为专为MediaWiki准备的ES10 bundle以减小体积 */
+	luacheckRepo = 'npm/luacheck-browserify';
 
 /**
  * 计算位置
