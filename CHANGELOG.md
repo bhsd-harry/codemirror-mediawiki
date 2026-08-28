@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.4.2
+
+*2026-08-28*
+
+**Fixed**
+
+- The Lua linter now ignores [unused argument](https://luacheck.readthedocs.io/en/stable/warnings.html#list-of-warnings) `...` in vararg functions
+
 ## 4.4.1
 
 *2026-08-21*

@@ -50,7 +50,7 @@ declare interface MixedDiagnostic extends Omit<DiagnosticBase, 'range' | 'messag
 
 export const stylelintRepo = 'npm/@bhsd/stylelint-browserify';
 export const eslintRepo = 'npm/@bhsd/eslint-browserify@10',
-	luacheckRepo = 'npm/luacheck-browserify';
+	luacheckRepo = 'npm/luacheck-browserify/dist/es10.min.js';
 
 /**
  * 计算位置
@@ -295,7 +295,9 @@ export const getLuaLinter: getAsyncLinter<Promise<Diagnostic[]>, string> = async
 		linter.config = (opt ?? undefined)!;
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		luachecker.setConfig?.(linter.config as Parameters<typeof luacheck>[0]);
-		return (await luachecker.queue(text)).filter(({severity}) => severity);
+		return (await luachecker.queue(text)).filter(
+			({severity, code, name}: Diagnostic & {name?: string}) => severity && (code !== '212' || name !== '...'),
+		);
 	};
 	return linter;
 };

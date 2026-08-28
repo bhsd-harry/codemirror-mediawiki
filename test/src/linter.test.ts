@@ -244,5 +244,20 @@ describe('linters', () => {
 				},
 			],
 		);
+		assert.deepStrictEqual(
+			await lint('local function f(...)\nend'),
+			[
+				{
+					line: 1,
+					column: 16,
+					end_column: 16,
+					code: '211',
+					msg: 'Unused local function',
+					func: true,
+					name: 'f',
+					severity: 1,
+				},
+			],
+		);
 	});
 });
