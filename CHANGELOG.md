@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.5.1
+
+**2026-09-01**
+
+**Fixed**
+
+- [WikiEditor](./mw/README.md#wikieditor) toolbar icon for sorting selected lines in an ascending order on a MediaWiki site
+
 ## 4.5.0
 
 *2026-08-28*
