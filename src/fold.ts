@@ -5,11 +5,11 @@ import {
 	syntaxTree,
 	foldGutter,
 	foldKeymap,
-	foldService,
 } from '@codemirror/language';
 import {tokens} from './config.js';
 import {
 	sliceDoc,
+	getFoldService,
 } from './util.js';
 import type {
 	EditorState,
@@ -109,6 +109,6 @@ const defaultFoldExtension = /* #__PURE__ */ (() => [foldGutter(), keymap.of(fol
  */
 export default (
 ): Extension => [
-	foldService.of(myService),
+	getFoldService(myService),
 	defaultFoldExtension,
 ];

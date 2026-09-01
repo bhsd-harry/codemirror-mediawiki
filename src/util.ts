@@ -1,4 +1,8 @@
 import {
+	foldService,
+	syntaxTree,
+} from '@codemirror/language';
+import {
 	isGlobal,
 } from '@bhsd/browser';
 import {
@@ -6,13 +10,12 @@ import {
 	mwTag,
 } from './constants.js';
 import type {Decoration} from '@codemirror/view';
-import type {
-	Text,
-	EditorState,
-	Range,
-} from '@codemirror/state';
+import type {Text, EditorState, Range, Extension} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
+import type {
+	Tree,
+} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
@@ -114,6 +117,28 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  */
 export const getExtTags = (types: string[]): string[] =>
 	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
+
+const treeCache = new WeakMap<Tree, Map<number, DocRange | null>>();
+
+/**
+ * Get a fold service with caching
+ * @param service Fold service function
+ */
+export const getFoldService = (
+	service: (state: EditorState, start: number, end: number) => DocRange | null,
+): Extension => foldService.of((state: EditorState, start: number, end: number) => {
+	const tree = syntaxTree(state);
+	let cache = treeCache.get(tree);
+	if (!cache) {
+		cache = new Map();
+		treeCache.set(tree, cache);
+	} else if (cache.has(start)) {
+		return cache.get(start)!;
+	}
+	const range = service(state, start, end);
+	cache.set(start, range);
+	return range;
+});
 
 /**
  * 将解析设置转换为返回Promise的函数
