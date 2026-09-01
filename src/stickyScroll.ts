@@ -34,5 +34,8 @@ export const mediawikiStickyScroll = /* #__PURE__*/ EditorView.theme({
 			lineHeight: 'inherit',
 			fontWeight: 'bold',
 		},
+		'& .cm-mw-section-header': {
+			fontWeight: 'normal',
+		},
 	},
 });

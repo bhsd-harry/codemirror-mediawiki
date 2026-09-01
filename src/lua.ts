@@ -2,7 +2,7 @@
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {ViewPlugin, Decoration} from '@codemirror/view';
 import {countColumn} from '@codemirror/state';
-import {syntaxTree, LanguageSupport, StreamLanguage, foldService} from '@codemirror/language';
+import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
 import {linkSelector, isWMF} from './constants.js';
@@ -14,6 +14,7 @@ import {
 	pushDecoration,
 	useUnderscore,
 	getHighlightExtension,
+	getFoldService,
 } from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
@@ -572,7 +573,7 @@ const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 	lightHighlightStyle,
 	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 	lang.data.of({autocomplete: getSource(linkSuggest)}),
-	foldService.of(({doc, tabSize}, start, from) => {
+	getFoldService(({doc, tabSize}, start, from) => {
 		const {text, number} = doc.lineAt(start);
 		if (!text.trim()) {
 			return null;

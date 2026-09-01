@@ -1,4 +1,9 @@
-import {syntaxHighlighting, HighlightStyle} from '@codemirror/language';
+import {
+	foldService,
+	syntaxTree,
+	syntaxHighlighting,
+	HighlightStyle,
+} from '@codemirror/language';
 import {
 	isGlobal,
 	loadScript,
@@ -12,15 +17,13 @@ import {
 	typeMark,
 } from './constants.js';
 import type {Decoration} from '@codemirror/view';
-import type {
-	Text,
-	EditorState,
-	Range,
-	Extension,
-} from '@codemirror/state';
+import type {Text, EditorState, Range, Extension} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
-import type {SyntaxNode} from '@lezer/common';
+import type {
+	Tree,
+	SyntaxNode,
+} from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
@@ -82,13 +85,6 @@ export const pushDecoration = (
 	}
 };
 
-export const toConfigGetter = (
-	configGetter?: ConfigGetter,
-	articlePath?: string,
-): ConfigGetter | undefined => articlePath
-	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
-	: configGetter;
-
 /**
  * Tokenizer for multiline comments
  * @param parent 外层 Tokenizer
@@ -122,6 +118,35 @@ export const getCompletions = (labels: string[], type = 'keyword'): Completion[]
  */
 export const getExtTags = (types: string[]): string[] =>
 	types.filter(type => type.startsWith(mwTag)).map(type => type.slice(7));
+
+const treeCache = new WeakMap<Tree, Map<number, DocRange | null>>();
+
+/**
+ * Get a fold service with caching
+ * @param service Fold service function
+ */
+export const getFoldService = (
+	service: (state: EditorState, start: number, end: number) => DocRange | null,
+): Extension => foldService.of((state: EditorState, start: number, end: number) => {
+	const tree = syntaxTree(state);
+	let cache = treeCache.get(tree);
+	if (!cache) {
+		cache = new Map();
+		treeCache.set(tree, cache);
+	} else if (cache.has(start)) {
+		return cache.get(start)!;
+	}
+	const range = service(state, start, end);
+	cache.set(start, range);
+	return range;
+});
+
+export const toConfigGetter = (
+	configGetter?: ConfigGetter,
+	articlePath?: string,
+): ConfigGetter | undefined => articlePath
+	? async (): Promise<ConfigData> => Object.assign(await (configGetter ?? wikiparse.getConfig)(), {articlePath})
+	: configGetter;
 
 /** 检测 wikiparse 是否可用 */
 export const isWikiparseLoaded = (): boolean => typeof wikiparse === 'object' && isGlobal('wikiparse');
