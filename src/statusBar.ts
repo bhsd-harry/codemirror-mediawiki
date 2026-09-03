@@ -176,9 +176,13 @@ export default (
 	fixer: LintSource['fixer'],
 ): Extension => [
 	showPanel.of(view => {
+		const {
+			state: st,
+			dom: editor,
+		} = view;
 		let diagnostics: readonly Diagnostic[] = [];
 		let menu: HTMLElement | undefined;
-		if (!view.state.readOnly && (fixer || menuRegistry.length > 0)) {
+		if (!st.readOnly && (fixer || menuRegistry.length > 0)) {
 			menu = elt('div', {class: menuSelector.slice(1), tabIndex: -1});
 			if (fixer) {
 				menu.addEventListener('click', ({target}) => {
@@ -200,7 +204,7 @@ export default (
 			menu.addEventListener('focusout', () => {
 				menu!.style.display = 'none';
 			});
-			view.dom.append(menu);
+			editor.append(menu);
 		}
 		const error = getLintMarker(
 				cm,
@@ -232,7 +236,7 @@ export default (
 		position.addEventListener('click', () => {
 			gotoLine(view);
 		});
-		updatePosition(view.state.doc, view.state.selection.main, position);
+		updatePosition(st.doc, st.selection.main, position);
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
@@ -254,6 +258,9 @@ export default (
 					updateMenu(cm, diagnostics, main, classList, optionAll, menu, fixer);
 					updatePosition(doc, main, position);
 				}
+			},
+			destroy(): void {
+				editor.querySelector(menuSelector)?.remove();
 			},
 		};
 	}),

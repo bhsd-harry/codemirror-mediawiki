@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
 ## 4.5.1
 
-**2026-09-01**
+**2026-09-03**
 
 **Fixed**
 
 - [WikiEditor](./mw/README.md#wikieditor) toolbar icon for sorting selected lines in an ascending order on a MediaWiki site
+- Switching off the [linter](./README.md#lint) should also destroy the auto-fix menu in the status bar
 
 ## 4.5.0
 
