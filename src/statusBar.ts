@@ -104,6 +104,9 @@ const updatePosition = (doc: Text, {head, empty, from, to}: SelectionRange, posi
 export default (
 ): Extension => [
 	showPanel.of(view => {
+		const {
+			state: st,
+		} = view;
 		let diagnostics: readonly Diagnostic[] = [];
 		const error = getLintMarker(
 				view,
@@ -131,7 +134,7 @@ export default (
 		position.addEventListener('click', () => {
 			gotoLine(view);
 		});
-		updatePosition(view.state.doc, view.state.selection.main, position);
+		updatePosition(st.doc, st.selection.main, position);
 		return {
 			dom,
 			update({state: {selection: {main}, doc}, transactions, docChanged, selectionSet}): void {
