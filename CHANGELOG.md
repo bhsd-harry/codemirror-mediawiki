@@ -7,6 +7,7 @@
 
 - [WikiEditor](./mw/README.md#wikieditor) toolbar icon for sorting selected lines in an ascending order on a MediaWiki site
 - Switching off the [linter](./README.md#lint) should also destroy the auto-fix menu in the status bar
+- Draw the [dropCursor](https://codemirror.net/docs/ref/#view.dropCursor) when [allowMultipleSelections](./README.md#allowmultipleselections) or [blockCursor](./README.md#blockcursor) extensions are enabled
 
 ## 4.5.0
 

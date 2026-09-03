@@ -8,6 +8,7 @@ import {
 	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
+	dropCursor,
 } from '@codemirror/view';
 import {EditorState, Prec} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
@@ -112,7 +113,10 @@ const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, confi
 };
 
 const registerDrawSelection = (): void => {
-	registerExtension('drawSelection', drawSelection);
+	registerExtension('drawSelection', () => [
+		drawSelection(),
+		dropCursor(),
+	]);
 };
 
 /** Register the `highlightSpecialChars` extension */
