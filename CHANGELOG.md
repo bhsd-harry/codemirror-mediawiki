@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 -->
+## 4.6.0
+
+*2026-09-08*
+
+**Added**
+
+- Method [`getNodeAt`](./README.md#getnodeat) now takes an optional second argument to specify the side to [resolve](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) the node
+
 ## 4.5.1
 
 *2026-09-04*

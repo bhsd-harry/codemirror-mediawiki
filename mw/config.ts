@@ -1,4 +1,4 @@
-import {CDN, setObject, getObject, isGlobal} from '@bhsd/browser';
+import {CDN, setObject, getObject} from '@bhsd/browser';
 import {
 	cleanAliases,
 	getParserConfig as getParserConfigBase,
@@ -37,9 +37,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 	// 和本地缓存有关的常数
 	const ALL_SETTINGS_CACHE: Record<string, {time: number, config: MwConfig}> =
 			getObject('InPageEditMwConfig') ?? {},
-		SITE_ID = typeof mw === 'object' && isGlobal('mw')
-			? mw.config.get('wgServerName') + mw.config.get('wgScriptPath')
-			: location.origin,
+		SITE_ID = mw.config.get('wgServerName') + mw.config.get('wgScriptPath'),
 		SITE_SETTINGS = ALL_SETTINGS_CACHE[SITE_ID],
 		VALID = Number(SITE_SETTINGS?.time) > Date.now() - 86_400 * 1e3 * 30;
 	// 只在localStorage过期时才会重新加载ext.CodeMirror.data

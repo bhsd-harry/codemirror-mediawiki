@@ -728,8 +728,9 @@ const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
 *version added: 2.4.2*
 
 **param**: `number` position  
+**param**: [`-1 | 0 | 1`](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) side, optional  
 **returns**: [`SyntaxNode | undefined`](https://lezer.codemirror.net/docs/ref/#common.SyntaxNode)  
-Get the syntax node at the given position.
+Get the syntax node at the given position and side.
 
 ```js
 const tree = cm.getNodeAt(0);

@@ -769,9 +769,10 @@ export class CodeMirror6 {
 	/**
 	 * Get the syntax node at the specified position
 	 * @param position position
+	 * @param side which [side](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) to get the node
 	 */
-	getNodeAt(position: number): SyntaxNode | undefined {
-		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolveInner(position, 1);
+	getNodeAt(position: number, side: -1 | 0 | 1 = 1): SyntaxNode | undefined {
+		return this.#view && ensureSyntaxTree(this.#view.state, position)?.resolveInner(position, side);
 	}
 
 	/**
