@@ -1,4 +1,4 @@
-<!-- markdownlint-disable first-line-h1 -->
+<!-- markdownlint-disable first-line-h1 line-length -->
 ## 0.12.0
 
 *2026-09-04*

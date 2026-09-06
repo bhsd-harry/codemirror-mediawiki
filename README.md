@@ -3,7 +3,9 @@
 [![npm version](https://badge.fury.io/js/@bhsd%2Fcodemirror-wikitext.svg)](https://www.npmjs.com/package/@bhsd/codemirror-wikitext)
 [![CodeQL](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml/badge.svg)](https://github.com/bhsd-harry/codemirror-mediawiki/actions/workflows/codeql.yml)
 
-This repository contains a modified Wikitext [language](#mediawikilanguage) from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror) and various [language support extensions](#extensions).
+This repository contains a modified Wikitext [language](#mediawikilanguage) from
+[MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror)
+and various [language support extensions](#extensions).
 
 <details>
 	<summary>Expand</summary>
@@ -38,7 +40,8 @@ You can install the package via npm and import it as a module:
 npm install @bhsd/codemirror-wikitext
 ```
 
-You may also want to install [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) for pre-defined parser configurations:
+You may also want to install [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node)
+for pre-defined parser configurations:
 
 ```bash
 npm install wikiparser-node
@@ -46,7 +49,8 @@ npm install wikiparser-node
 
 ## Basic Usage
 
-You can simply import the `mediawiki` function to get the Wikitext language with full [language support](#extensions):
+You can simply import the `mediawiki` function to get the Wikitext language with
+full [language support](#extensions):
 
 ```ts
 import {mediawiki} from '@bhsd/codemirror-wikitext';
@@ -69,7 +73,8 @@ Here is an online [demo](https://bhsd-harry.github.io/codemirror-mediawiki/wikit
 <details>
 	<summary>Expand</summary>
 
-You can import the [stream language](https://codemirror.net/docs/ref/#language.StreamLanguage) for Wikitext:
+You can import the [stream language](https://codemirror.net/docs/ref/#language.StreamLanguage)
+for Wikitext:
 
 ```ts
 import {mediawikiLanguage} from '@bhsd/codemirror-wikitext';
@@ -94,7 +99,8 @@ Key bindings:
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
 - `Ctrl`/`Cmd` + `\`: Escape the selected text with [magic words](https://www.mediawiki.org/wiki/Help:Magic_words#Escaped_characters)
 
-You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec) of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
+You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec)
+of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
 
 ```ts
 import {escapeKeymap} from '@bhsd/codemirror-wikitext';
@@ -132,7 +138,8 @@ Formatting key bindings:
 - `Ctrl`/`Cmd` + `Shift` + `6`: Inline code
 - `Ctrl`/`Cmd` + `Shift` + `K`: Ref tag
 
-You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec) of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
+You may want to increase the [precedence](https://codemirror.net/docs/ref/#state.Prec)
+of these key bindings to override the [default ones](https://codemirror.net/docs/ref/#commands.defaultKeymap).
 
 ```ts
 import {formatKeymap} from '@bhsd/codemirror-wikitext';
@@ -152,7 +159,9 @@ const keymap: KeyBinding[] = formatKeymap;
 
 *version added: 0.2.0*
 
-When the editor contains right-to-left text, isolate bidirectional text from the surrounding text. This extension is *not* included in the default [`mediawiki`](#basic-usage) language support.
+When the editor contains right-to-left text, isolate bidirectional text from the
+surrounding text. This extension is *not* included in the default [`mediawiki`](#basic-usage)
+language support.
 
 ```ts
 import {bidiIsolates} from '@bhsd/codemirror-wikitext';
@@ -168,7 +177,8 @@ const extension: Extension = bidiIsolates();
 <details>
 	<summary>Expand</summary>
 
-Matched or unmatched brackets or tags are highlighted in cyan or dark red when the cursor is next to them.
+Matched or unmatched brackets or tags are highlighted in cyan or dark red when
+the cursor is next to them.
 
 ```ts
 import {bracketMatching} from '@bhsd/codemirror-wikitext';
@@ -286,7 +296,9 @@ const extension: Extension = inlayHints(
 
 *version added: 0.2.0*
 
-CTRL/CMD-click opens a link in a new tab. You may want to supply the [`articlePath`](https://github.com/bhsd-harry/wikiparser-node/wiki/types-%28EN%29#config) field in the parser configuration for internal links to work properly.
+CTRL/CMD-click opens a link in a new tab. You may want to supply the
+[`articlePath`](https://github.com/bhsd-harry/wikiparser-node/wiki/types-%28EN%29#config)
+field in the parser configuration for internal links to work properly.
 
 ```ts
 import {openLinks} from '@bhsd/codemirror-wikitext';
@@ -347,7 +359,9 @@ const extension: Extension = signatureHelp(
 
 *version added: 0.12.0*
 
-Sticky section and table headers at the top of the editor when scrolling. This extension is *not* included in the default [`mediawiki`](#basic-usage) language support.
+Sticky section and table headers at the top of the editor when scrolling. This
+extension is *not* included in the default [`mediawiki`](#basic-usage) language
+support.
 
 ```ts
 import {stickyScroll} from '@bhsd/codemirror-wikitext';
