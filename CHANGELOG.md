@@ -6,6 +6,7 @@
 **Added**
 
 - Method [`getNodeAt`](./README.md#getnodeat) now takes an optional second argument to specify the side to [resolve](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) the node
+- The [autocompletion](./README.md#autocompletion) extension now also suggests root CSS variables in the CSS mode on a MediaWiki site
 
 ## 4.5.1
 

@@ -2,8 +2,10 @@ import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
 import {sliceDoc, getCompletions} from './util.js';
 import type {Extension} from '@codemirror/state';
-import type {CompletionSource, CompletionResult} from '@codemirror/autocomplete';
+import type {CompletionSource, CompletionResult, Completion} from '@codemirror/autocomplete';
 import type {Dialect} from './codemirror';
+
+declare const mediaWiki: object | undefined;
 
 const cssWideKeywords = /* #__PURE__ */ getCompletions(['revert', 'revert-layer']);
 
@@ -13,12 +15,14 @@ const cssWideKeywords = /* #__PURE__ */ getCompletions(['revert', 'revert-layer'
  * @test
  */
 export const cssCompletion = (dialect?: Dialect): Extension => {
+	let tokens: Completion[] | undefined;
 	const source: CompletionSource = context => {
 		const {state, pos} = context,
 			node = syntaxTree(state).resolveInner(pos, -1),
-			result = cssCompletionSource(context) as CompletionResult | null;
+			{name, parent, from} = node;
+		let result = cssCompletionSource(context) as CompletionResult | null;
 		if (result) {
-			if (node.name === 'ValueName') {
+			if (name === 'ValueName') {
 				const options = [...cssWideKeywords, ...result.options];
 				let {prevSibling} = node;
 				while (prevSibling && prevSibling.name !== 'PropertyName') {
@@ -38,6 +42,19 @@ export const cssCompletion = (dialect?: Dialect): Extension => {
 					({type, label}) => type !== 'property'
 						|| !label.startsWith('-') || label.endsWith('-user-select'),
 				);
+			}
+		}
+		if (name === 'VariableName' && typeof mediaWiki === 'object' && parent?.name === 'ArgList') {
+			tokens ??= [...getComputedStyle(document.documentElement)].filter(k => k.startsWith('--'))
+				.map(label => ({label, type: 'variable'}));
+			if (result) {
+				result.options = [...result.options, ...tokens];
+			} else {
+				result = {
+					from,
+					options: tokens,
+					validFor: /^-(-[\w-]*)?$/u,
+				};
 			}
 		}
 		return result;
