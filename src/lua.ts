@@ -332,9 +332,9 @@ const map = {
 	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
 	linkDeco = Decoration.mark({class: linkSelector.slice(1)}),
 	reLink = ['', String.raw`module\s*:`]
-		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')),
+		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')) as [RegExp, RegExp],
 	reLinkIncomplete = ['', String.raw`module\s*:`]
-		.map(s => new RegExp(String.raw`^(['"]|\[=*\[)${s}.*$`, 'iu')),
+		.map(s => new RegExp(String.raw`^(['"]|\[=*\[)${s}.*$`, 'iu')) as [RegExp, RegExp],
 	lang = StreamLanguage.define(lua);
 
 /**
@@ -345,11 +345,11 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 	const {state, pos, explicit} = context,
 		node = syntaxTree(state).resolveInner(pos, -1);
 	if (linkSuggest && (explicit || isWMF) && node.name === 'string' && pos > node.from) {
-		const offsetFull = getStringOffsetFull(state, node, state.sliceDoc(node.from, pos));
+		const offsetFull = getStringOffset(state, node, state.sliceDoc(node.from, pos));
 		if (!offsetFull || pos <= node.from + offsetFull[0]) {
 			return null;
 		}
-		const [offset, isJson] = offsetFull,
+		const [offset, contentmodel] = offsetFull,
 			search = state.sliceDoc(node.from + offset, pos);
 		if (/[|{}<>[\]#]/u.test(search)) {
 			return null;
@@ -357,8 +357,8 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 		const suggestions = await linkSuggest(
 				search,
 				false,
-				0,
-				isJson ? 'json' : 'Scribunto',
+				contentmodel === 'sanitized-css' ? 10 : 0,
+				contentmodel,
 			),
 			underscore = search.includes('_');
 		return suggestions.length === 0
@@ -501,7 +501,7 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 					}
 				}
 			} else {
-				const offset = getStringOffsetFull(state, node);
+				const offset = getStringOffset(state, node);
 				if (offset) {
 					pushDecoration(decorations, linkDeco, node.from + offset[0], node.to - offset[0]);
 				}
@@ -516,16 +516,7 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
  * @ignore
  * @test
  */
-export const getStringOffset = (state: EditorState, node: SyntaxNode | string, re = reLink[0]!): number | null => {
-	const mt = re.exec(typeof node === 'string' ? node : sliceDoc(state, node));
-	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
-};
-
-/**
- * @ignore
- * @test
- */
-export const getStringOffsetFull = (state: EditorState, node: SyntaxNode, str?: string): [number, boolean] | null => {
+export const getStringOffset = (state: EditorState, node: SyntaxNode, str?: string): [number, string] | null => {
 	if (node.name !== 'string') {
 		return null;
 	}
@@ -535,10 +526,19 @@ export const getStringOffsetFull = (state: EditorState, node: SyntaxNode, str?: 
 		&& /^[\s(]*$/u.test(state.sliceDoc(prevSibling.to, node.from))
 	) {
 		const func = sliceDoc(state, prevSibling),
-			isJson = func === 'mw.loadJsonData';
-		if (isJson || func === 'require' || func === 'mw.loadData') {
-			const offset = getStringOffset(state, str ?? node, (str ? reLinkIncomplete : reLink)[isJson ? 0 : 1]);
-			return offset === null ? null : [offset, isJson];
+			isLua = func === 'require' || func === 'mw.loadData';
+		let contentmodel: string | undefined;
+		if (isLua) {
+			contentmodel = 'Scribunto';
+		} else if (func === 'mw.loadJsonData') {
+			contentmodel = 'json';
+		} else if (func === 'mw.ext.TemplateStyles.link') {
+			contentmodel = 'sanitized-css';
+		}
+		if (contentmodel) {
+			const mt = (str ? reLinkIncomplete : reLink)[isLua ? 1 : 0].exec(str ?? sliceDoc(state, node)),
+				offset = mt && (mt[1]?.length ?? mt[2]!.length + 2);
+			return offset === null ? null : [offset, contentmodel];
 		}
 	}
 	return null;

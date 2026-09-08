@@ -6,13 +6,26 @@
 [![jsDelivr hits (npm scoped)](https://img.shields.io/jsdelivr/npm/hm/%40bhsd/codemirror-mediawiki)](https://www.npmjs.com/package/@bhsd/codemirror-mediawiki)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/972fd5f6684c4fd8ac2f26e01d349948)](https://app.codacy.com/gh/bhsd-harry/codemirror-mediawiki/dashboard)
 
-This repository contains a modified version of the frontend scripts and styles from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror). The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net) and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a [MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
+This repository contains a modified version of the frontend scripts and styles
+from [MediaWiki extension CodeMirror](https://www.mediawiki.org/wiki/Extension:CodeMirror).
+The goal is to support a standalone integration between [CodeMirror](https://codemimrror.net)
+and [Wikitext](https://www.mediawiki.org/wiki/Wikitext), without the need for a
+[MediaWiki environment](https://doc.wikimedia.org/mediawiki-core/master/js/).
 
-Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the URL.
+Here is a [demo](https://bhsd-harry.github.io/codemirror-mediawiki). To
+experiment with the RTL (right-to-left) support, you can append `?rtl=1` to the
+URL.
 
-Nonetheless, this repository also provides a customized version with additional functionality for use on a MediaWiki site. Browser editing tools such as [Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight) and an [InPageEdit plugin](https://github.com/inpageedit/Plugins/blob/master/src/plugins/code-mirror/cm6.js) are built upon it. Please refer to a separate [README](./mw/README.md) file for the information.
+Nonetheless, this repository also provides a customized version with additional
+functionality for use on a MediaWiki site. Browser editing tools such as
+[Wikiplus-highlight](https://www.npmjs.com/package/wikiplus-highlight) and an
+[InPageEdit plugin](https://github.com/inpageedit/Plugins/blob/master/src/plugins/code-mirror/cm6.js)
+are built upon it. Please refer to a separate [README](./mw/README.md) file for
+the information.
 
-If you are just looking for a CodeMirror 6 language mode and language support extensions for MediaWiki Wikitext, you can use [@bhsd/codemirror-wikitext](https://www.npmjs.com/package/@bhsd/codemirror-wikitext) instead.
+If you are just looking for a CodeMirror 6 language mode and language support
+extensions for MediaWiki Wikitext, you can use [@bhsd/codemirror-wikitext](https://www.npmjs.com/package/@bhsd/codemirror-wikitext)
+instead.
 
 <details>
 	<summary>Expand</summary>
@@ -205,21 +218,25 @@ const {
 <details>
 	<summary>Expand</summary>
 
-You can bundle the [AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter) mode by importing the `registerAbuseFilter` function:
+You can bundle the [AbuseFilter](https://www.mediawiki.org/wiki/Extension:AbuseFilter)
+mode by importing the `registerAbuseFilter` function:
 
 ```js
 import {registerAbuseFilter} from '@bhsd/codemirror-mediawiki';
 registerAbuseFilter();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerAbuseFilterCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerAbuseFilterCore` function and the desired extensions:
 
 ```js
 import {registerAbuseFilterCore} from '@bhsd/codemirror-mediawiki';
 registerAbuseFilterCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some AbuseFilter-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some
+AbuseFilter-specific extensions. Note that these extensions may not take effect
+if the corresponding common extensions are not registered:
 
 ```js
 import {registerHoverForAbuseFilter} from '@bhsd/codemirror-mediawiki';
@@ -233,21 +250,25 @@ registerHoverForAbuseFilter();
 <details>
 	<summary>Expand</summary>
 
-The CSS mode contains a [dialect](#dialect) for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles). You can bundle the CSS mode by importing the `registerCSS` function:
+The CSS mode contains a [dialect](#dialect) for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles).
+You can bundle the CSS mode by importing the `registerCSS` function:
 
 ```js
 import {registerCSS} from '@bhsd/codemirror-mediawiki';
 registerCSS();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerCSSCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerCSSCore` function and the desired extensions:
 
 ```js
 import {registerCSSCore} from '@bhsd/codemirror-mediawiki';
 registerCSSCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some CSS-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some CSS-specific
+extensions. Note that these extensions may not take effect if the corresponding
+common extensions are not registered:
 
 ```js
 import {registerColorPickerForCSS} from '@bhsd/codemirror-mediawiki';
@@ -261,21 +282,25 @@ registerColorPickerForCSS();
 <details>
 	<summary>Expand</summary>
 
-This is a mixed MediaWiki-HTML mode, which is used for [Extension:Widgets](https://www.mediawiki.org/wiki/Extension:Widgets). You can bundle the HTML mode by importing the `registerHTML` function:
+This is a mixed MediaWiki-HTML mode, which is used for [Extension:Widgets](https://www.mediawiki.org/wiki/Extension:Widgets).
+You can bundle the HTML mode by importing the `registerHTML` function:
 
 ```js
 import {registerHTML} from '@bhsd/codemirror-mediawiki';
 registerHTML();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerHTMLCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerHTMLCore` function and the desired extensions:
 
 ```js
 import {registerHTMLCore} from '@bhsd/codemirror-mediawiki';
 registerHTMLCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some HTML-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some HTML-specific
+extensions. Note that these extensions may not take effect if the corresponding
+common extensions are not registered:
 
 ```js
 import {
@@ -302,14 +327,17 @@ import {registerJavaScript} from '@bhsd/codemirror-mediawiki';
 registerJavaScript();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerJavaScriptCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerJavaScriptCore` function and the desired extensions:
 
 ```js
 import {registerJavaScriptCore} from '@bhsd/codemirror-mediawiki';
 registerJavaScriptCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some JavaScript-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some
+JavaScript-specific extensions. Note that these extensions may not take effect
+if the corresponding common extensions are not registered:
 
 ```js
 import {registerBracketMatchingForJavaScript} from '@bhsd/codemirror-mediawiki';
@@ -330,7 +358,8 @@ import {registerJSON} from '@bhsd/codemirror-mediawiki';
 registerJSON();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerJSONCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerJSONCore` function and the desired extensions:
 
 ```js
 import {registerJSONCore} from '@bhsd/codemirror-mediawiki';
@@ -351,7 +380,8 @@ import {registerJSONC} from '@bhsd/codemirror-mediawiki';
 registerJSONC();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerJSONCCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerJSONCCore` function and the desired extensions:
 
 ```js
 import {registerJSONCCore} from '@bhsd/codemirror-mediawiki';
@@ -372,14 +402,17 @@ import {registerLua} from '@bhsd/codemirror-mediawiki';
 registerLua();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerLuaCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerLuaCore` function and the desired extensions:
 
 ```js
 import {registerLuaCore} from '@bhsd/codemirror-mediawiki';
 registerLuaCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some Lua-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some Lua-specific
+extensions. Note that these extensions may not take effect if the corresponding
+common extensions are not registered:
 
 ```js
 import {registerOpenLinksForLua} from '@bhsd/codemirror-mediawiki';
@@ -418,7 +451,8 @@ The MediaWiki mode provides the following key bindings for quick formatting:
 - `Ctrl`/`Cmd` + `Shift` + `6`: Inline code
 - `Ctrl`/`Cmd` + `Shift` + `K`: Ref tag
 
-If you want a more granular control over the extensions, you can import the `registerMediaWikiCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerMediaWikiCore` function and the desired extensions:
 
 ```js
 import {registerMediaWikiCore} from '@bhsd/codemirror-mediawiki';
@@ -426,7 +460,9 @@ import {registerMediaWikiCore} from '@bhsd/codemirror-mediawiki';
 registerMediaWikiCore('https://www.mediawiki.org/wiki/');
 ```
 
-In addition to the common [extensions](#extensions), here are some MediaWiki-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some
+MediaWiki-specific extensions. Note that these extensions may not take effect if
+the corresponding common extensions are not registered:
 
 ```js
 import {
@@ -453,14 +489,17 @@ import {registerVue} from '@bhsd/codemirror-mediawiki';
 registerVue();
 ```
 
-If you want a more granular control over the extensions, you can import the `registerVueCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerVueCore` function and the desired extensions:
 
 ```js
 import {registerVueCore} from '@bhsd/codemirror-mediawiki';
 registerVueCore();
 ```
 
-In addition to the common [extensions](#extensions), here are some Vue-specific extensions. Note that these extensions may not take effect if the corresponding common extensions are not registered:
+In addition to the common [extensions](#extensions), here are some Vue-specific
+extensions. Note that these extensions may not take effect if the corresponding
+common extensions are not registered:
 
 ```js
 import {
@@ -488,7 +527,8 @@ import {python} from '@codemirror/lang-python';
 registerLanguage('python', python);
 ```
 
-If you want a more granular control over the extensions, you can import the `registerLanguageCore` function and the desired extensions:
+If you want a more granular control over the extensions, you can import the
+`registerLanguageCore` function and the desired extensions:
 
 ```js
 import {registerLanguageCore} from '@bhsd/codemirror-mediawiki';
@@ -509,7 +549,9 @@ This is the default theme, which is a light theme.
 <details>
 	<summary>Expand</summary>
 
-This is a dark theme created by [Takuya Matsuyama](https://www.npmjs.com/package/cm6-theme-nord) and [鬼影233](https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/Nord). You need to register this theme before using it:
+This is a dark theme created by [Takuya Matsuyama](https://www.npmjs.com/package/cm6-theme-nord)
+and [鬼影233](https://zh.moegirl.org.cn/User:%E9%AC%BC%E5%BD%B1233/Nord). You need
+to register this theme before using it:
 
 ```js
 import {registerTheme, nord} from '@bhsd/codemirror-mediawiki';
@@ -538,9 +580,11 @@ registerTheme('one-dark', oneDark);
 <details>
 	<summary>Expand</summary>
 
-**param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
+**param**: `HTMLTextAreaElement` the textarea element to be replaced by
+CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `unknown` the language configuration, only required for the [MediaWiki](#mediawiki) mode and the [mixed MediaWiki-HTML](#html) mode  
+**param**: `unknown` the language configuration, only required for the [MediaWiki](#mediawiki)
+mode and the [mixed MediaWiki-HTML](#html) mode  
 **param**: `boolean` whether to initialize immediately, default as true  
 
 ```js
@@ -569,7 +613,8 @@ cm = new CodeMirror6(textarea, 'abusefilter', dialect);
 *version added: 2.28.0*
 
 **type**: `'sanitized-css' | undefined`  
-Only used for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles) as a dialect of the CSS mode.
+Only used for [Extension:TemplateStyles](https://www.mediawiki.org/wiki/Extension:TemplateStyles)
+as a dialect of the CSS mode.
 
 </details>
 
@@ -600,7 +645,8 @@ The textarea element replaced by CodeMirror, read-only.
 <details>
 	<summary>Expand</summary>
 
-**type**: [`EditorView | undefined`](https://codemirror.net/6/docs/ref/#view.EditorView)  
+**type**:
+[`EditorView | undefined`](https://codemirror.net/6/docs/ref/#view.EditorView)  
 The CodeMirror EditorView instance, read-only.
 
 </details>
@@ -641,9 +687,12 @@ cm.clearCustomHighlight();
 
 *version added: 3.13.1*
 
-Add custom syntax highlighting styles. This method works for all non-MediaWiki modes. You can call this method multiple times to add different styles, with later styles having higher priority.
+Add custom syntax highlighting styles. This method works for all non-MediaWiki
+modes. You can call this method multiple times to add different styles, with
+later styles having higher priority.
 
-Custom styles have higher priority than [theme](#themes) styles, and light-mode/dark-mode custom styles have higher priority than common custom styles.
+Custom styles have higher priority than [theme](#themes) styles, and
+light-mode/dark-mode custom styles have higher priority than common custom styles.
 
 ```js
 cm.customHighlight([
@@ -674,7 +723,8 @@ cm.customHighlight(
 
 *version added: 2.28.2*
 
-Destroy the instance. This method is irrevocable and not recommended for general use. Instead, you should call the [`toggle`](#toggle) method to hide the editor.
+Destroy the instance. This method is irrevocable and not recommended for general
+use. Instead, you should call the [`toggle`](#toggle) method to hide the editor.
 
 ```js
 cm.destroy();
@@ -689,7 +739,8 @@ cm.destroy();
 
 *version added: 2.2.2*
 
-**param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding) the extra key bindings  
+**param**: [`KeyBinding[]`](https://codemirror.net/docs/ref/#view.KeyBinding)
+the extra key bindings  
 Add extra key bindings. Need initialization first.
 
 ```js
@@ -708,7 +759,8 @@ cm.extraKeys([
 *version added: 2.1.3*
 
 **param**: `Record<string, any>` the optional linter configuration  
-**returns**: `Promise<(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>>`  
+**returns**:
+`Promise<(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>>`  
 Get the default linting function, which can be used as the argument of [`lint`](#lint).
 
 ```js
@@ -728,8 +780,10 @@ const linterCSS = await cm.getLinter({rules}); // Stylelint configuration
 *version added: 2.4.2*
 
 **param**: `number` position  
-**param**: [`-1 | 0 | 1`](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) side, optional  
-**returns**: [`SyntaxNode | undefined`](https://lezer.codemirror.net/docs/ref/#common.SyntaxNode)  
+**param**: [`-1 | 0 | 1`](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve)
+side, optional  
+**returns**:
+[`SyntaxNode | undefined`](https://lezer.codemirror.net/docs/ref/#common.SyntaxNode)  
 Get the syntax node at the given position and side.
 
 ```js
@@ -776,7 +830,8 @@ cm.initialize();
 <details>
 	<summary>Expand</summary>
 
-**param**: `(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>` the linting function  
+**param**: `(state: EditorState) => Diagnostic[] | Promise<Diagnostic[]>` the
+linting function  
 Set the linting function.
 
 ```js
@@ -821,7 +876,8 @@ cm.localize({
 
 *version added: 2.0.9*
 
-**param**: `string[] | Record<string, boolean>` the [extensions](#extensions) to enable  
+**param**: `string[] | Record<string, boolean>` the [extensions](#extensions) to
+enable  
 Set the preferred CodeMirror extensions. Available extensions are introduced [later](#extensions).
 
 ```js
@@ -886,7 +942,9 @@ cm.prefer({
 
 *version added: 3.9.0*
 
-**param**: `(str: string, range: {from: number, to: number}) => string | [string, number, number?]` the replacement function  
+**param**:
+`(str: string, range: {from: number, to: number}) => string | [string, number, number?]`
+the replacement function  
 Replace the selected text with the return value of the replacement function.
 
 ```js
@@ -902,7 +960,8 @@ cm.replaceSelections(str => str.toUpperCase());
 
 *version added: 2.6.2*
 
-**param**: [`number | {anchor: number, head: number}`](https://codemirror.net/docs/ref/#state.SelectionRange.anchor) the position or range to scroll to, default as the current cursor position  
+**param**: [`number | {anchor: number, head: number}`](https://codemirror.net/docs/ref/#state.SelectionRange.anchor)
+the position or range to scroll to, default as the current cursor position  
 Scroll to the given position or range. Need initialization first.
 
 ```js
@@ -918,7 +977,8 @@ cm.scrollTo();
 
 *version added: 3.15.0*
 
-**param**: `number` the column number to show the guide at, or 0 to disable the column guide  
+**param**: `number` the column number to show the guide at, or 0 to disable the
+column guide  
 
 ```js
 cm.setColumnGuide(80);
@@ -934,7 +994,8 @@ cm.setColumnGuide(80);
 *version added: 2.1.8*
 
 **param**: `string` new content  
-**param**: `boolean` whether to force the content to be set in the read-only mode, default as false  
+**param**: `boolean` whether to force the content to be set in the read-only
+mode, default as false  
 Reset the content of the editor. Need initialization first.
 
 ```js
@@ -950,7 +1011,8 @@ cm.setContent('');
 
 *version added: 2.0.9*
 
-**param**: `string | number` the indentation string or the number of spaces, default as tab  
+**param**: `string | number` the indentation string or the number of spaces,
+default as tab  
 Set the indentation string.
 
 ```js
@@ -967,7 +1029,8 @@ cm.setIndent('\t');
 	<summary>Expand</summary>
 
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `unknown` the language configuration, only required for the [MediaWiki](#mediawiki) mode and the [mixed MediaWiki-HTML](#html) mode  
+**param**: `unknown` the language configuration, only required for the
+[MediaWiki](#mediawiki) mode and the [mixed MediaWiki-HTML](#html) mode  
 Set the language mode.
 
 ```js
@@ -1009,7 +1072,8 @@ cm.setLineWrapping(true);
 *version added: 3.3.0*
 
 **param**: `string` the theme name  
-Set the theme of the editor. The default theme is [`light`](#light), other themes need to be registered using the `registerTheme` function first:
+Set the theme of the editor. The default theme is [`light`](#light), other
+themes need to be registered using the `registerTheme` function first:
 
 ```js
 import {registerTheme, nord} from '@bhsd/codemirror-mediawiki';
@@ -1027,7 +1091,8 @@ cm.setTheme('nord');
 *version added: 2.1.3*
 
 **param**: `boolean` whether to show the editor, optional  
-Switch between the CodeMirror editor and the native textarea. Need initialization first.
+Switch between the CodeMirror editor and the native textarea. Need
+initialization first.
 
 ```js
 cm.toggle();
@@ -1060,7 +1125,9 @@ cm.update();
 *version added: 3.8.0*
 
 **type**: `string`  
-By default, libraries such as [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node) are loaded from `fastly.jsdelivr.net`. You can change the [jsDelivr CDN](https://www.jsdelivr.com/network) by setting this property.
+By default, libraries such as [WikiParser-Node](https://www.npmjs.com/package/wikiparser-node)
+are loaded from `fastly.jsdelivr.net`. You can change the [jsDelivr CDN](https://www.jsdelivr.com/network)
+by setting this property.
 
 ```js
 CodeMirror6.CDN = 'https://cdn.jsdelivr.net';
@@ -1077,7 +1144,8 @@ CodeMirror6.CDN = 'https://cdn.jsdelivr.net';
 
 *version added: 2.4.7*
 
-**param**: [`Config`](https://github.com/bhsd-harry/wikiparser-node/wiki/types#config) the [WikiLint](https://www.npmjs.com/package/wikilint) configuration  
+**param**: [`Config`](https://github.com/bhsd-harry/wikiparser-node/wiki/types#config)
+the [WikiLint](https://www.npmjs.com/package/wikilint) configuration  
 **returns**: `MwConfig`  
 Derive the configuration for the MediaWiki mode from WikiLint configuration.
 
@@ -1094,8 +1162,11 @@ const mwConfig = CodeMirror6.getMwConfig(config);
 
 *version added: 2.2.2*
 
-**param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView) the CodeMirror EditorView instance  
-**param**: `(str: string, range: {from: number, to: number}) => string | [string, number, number?]` the replacement function  
+**param**: [`EditorView`](https://codemirror.net/6/docs/ref/#view.EditorView)
+the CodeMirror EditorView instance  
+**param**:
+`(str: string, range: {from: number, to: number}) => string | [string, number, number?]`
+the replacement function  
 Replace the selected text with the return value of the replacement function.
 
 ```js
@@ -1113,9 +1184,11 @@ CodeMirror6.replaceSelections(cm.view, str => str.toUpperCase());
 
 *version added: 2.1.11*
 
-Allow multiple selections. This extension also enables rectangular selections by holding down the `Alt` key.
+Allow multiple selections. This extension also enables rectangular selections by
+holding down the `Alt` key.
 
-For granular control over the bundled extensions, you can import the `registerAllowMultipleSelections` function:
+For granular control over the bundled extensions, you can import the
+`registerAllowMultipleSelections` function:
 
 ```js
 import {registerAllowMultipleSelections} from '@bhsd/codemirror-mediawiki';
@@ -1138,7 +1211,8 @@ Key bindings:
 - `Shift` + `Enter`: Trigger autocompletion
 - `Tab`: Accept the selected suggestion
 
-For granular control over the bundled extensions, you can import the `registerAutocompletion` function:
+For granular control over the bundled extensions, you can import the
+`registerAutocompletion` function:
 
 ```js
 import {registerAutocompletion} from '@bhsd/codemirror-mediawiki';
@@ -1154,9 +1228,11 @@ registerAutocompletion();
 
 *version added: 3.10.0*
 
-When Wikitext contains right-to-left text, isolate bidirectional text from the surrounding text.
+When Wikitext contains right-to-left text, isolate bidirectional text from the
+surrounding text.
 
-This extension is not included in the [`mediawiki`](#mediawiki) language support by default. You need to import the `registerBidiIsolates` function:
+This extension is not included in the [`mediawiki`](#mediawiki) language support
+by default. You need to import the `registerBidiIsolates` function:
 
 ```js
 import {registerBidiIsolates} from '@bhsd/codemirror-mediawiki';
@@ -1174,7 +1250,8 @@ registerBidiIsolates();
 
 Render the cursor as a block.
 
-For granular control over the bundled extensions, you can import the `registerBlockCursor` function:
+For granular control over the bundled extensions, you can import the
+`registerBlockCursor` function:
 
 ```js
 import {registerBlockCursor} from '@bhsd/codemirror-mediawiki';
@@ -1190,9 +1267,11 @@ registerBlockCursor();
 
 *version added: 2.0.9*
 
-Matched or unmatched brackets or tags are highlighted in cyan or dark red when the cursor is next to them.
+Matched or unmatched brackets or tags are highlighted in cyan or dark red when
+the cursor is next to them.
 
-For granular control over the bundled extensions, you can import the `registerBracketMatching` function:
+For granular control over the bundled extensions, you can import the
+`registerBracketMatching` function:
 
 ```js
 import {registerBracketMatching} from '@bhsd/codemirror-mediawiki';
@@ -1208,9 +1287,11 @@ registerBracketMatching();
 
 *version added: 2.0.9*
 
-Automatically close brackets (`{`, `[` and `(`) and quotes (`"`, and `'` except for the MediaWiki mode).
+Automatically close brackets (`{`, `[` and `(`) and quotes (`"`, and `'` except
+for the MediaWiki mode).
 
-For granular control over the bundled extensions, you can import the `registerCloseBrackets` function:
+For granular control over the bundled extensions, you can import the
+`registerCloseBrackets` function:
 
 ```js
 import {registerCloseBrackets} from '@bhsd/codemirror-mediawiki';
@@ -1228,7 +1309,8 @@ registerCloseBrackets();
 
 Automatically close HTML/XML tags.
 
-For granular control over the bundled extensions, you need to register this extension for specific languages([HTML](#html), [MediaWiki](#mediawiki) or [Vue](#vue)):
+For granular control over the bundled extensions, you need to register this
+extension for specific languages([HTML](#html), [MediaWiki](#mediawiki) or [Vue](#vue)):
 
 ```js
 import {
@@ -1250,7 +1332,8 @@ registerCloseTagsForVue();
 
 *version added: 2.3.0*
 
-Fold sections, templates, parser functions and extension tags in the MediaWiki mode, and code blocks in other modes.
+Fold sections, templates, parser functions and extension tags in the MediaWiki
+mode, and code blocks in other modes.
 
 Key bindings:
 
@@ -1260,7 +1343,8 @@ Key bindings:
 - `Ctrl` + `Alt` + `]`: Unfold all
 - `Ctrl` + `Alt` + `.`: Fold all `<ref>` tags
 
-For granular control over the bundled extensions, you can import the `registerCodeFolding` function:
+For granular control over the bundled extensions, you can import the
+`registerCodeFolding` function:
 
 ```js
 import {registerCodeFolding} from '@bhsd/codemirror-mediawiki';
@@ -1278,7 +1362,9 @@ registerCodeFolding();
 
 Provide color pickers for CSS and MediaWiki modes.
 
-For granular control over the bundled extensions, you need to register this extension for specific languages([CSS](#css), [HTML](#html), [MediaWiki](#mediawiki) or [Vue](#vue)):
+For granular control over the bundled extensions, you need to register this
+extension for specific languages([CSS](#css), [HTML](#html), [MediaWiki](#mediawiki)
+or [Vue](#vue)):
 
 ```js
 import {
@@ -1308,7 +1394,8 @@ Key bindings:
 - `Ctrl`/`Cmd` + `]`: Escape the selected text with URL encoding
 - `Ctrl`/`Cmd` + `\`: Escape the selected text with [magic words](https://www.mediawiki.org/wiki/Help:Magic_words#Escaped_characters)
 
-For granular control over the bundled extensions, you can import the `registerEscape` function:
+For granular control over the bundled extensions, you can import the
+`registerEscape` function:
 
 ```js
 import {registerEscape} from '@bhsd/codemirror-mediawiki';
@@ -1325,7 +1412,8 @@ registerEscape('https://www.mediawiki.org/wiki/');
 
 Highlight the line the cursor is on in light cyan.
 
-For granular control over the bundled extensions, you can import the `registerHighlightActiveLine` function:
+For granular control over the bundled extensions, you can import the
+`registerHighlightActiveLine` function:
 
 ```js
 import {registerHighlightActiveLine} from '@bhsd/codemirror-mediawiki';
@@ -1343,7 +1431,8 @@ registerHighlightActiveLine();
 
 Highlight texts that match the selection in light green.
 
-For granular control over the bundled extensions, you can import the `registerHighlightSelectionMatches` function:
+For granular control over the bundled extensions, you can import the
+`registerHighlightSelectionMatches` function:
 
 ```js
 import {registerHighlightSelectionMatches} from '@bhsd/codemirror-mediawiki';
@@ -1359,7 +1448,8 @@ registerHighlightSelectionMatches();
 
 Show invisible characters as red dots.
 
-For granular control over the bundled extensions, you can import the `registerHighlightSpecialChars` function:
+For granular control over the bundled extensions, you can import the
+`registerHighlightSpecialChars` function:
 
 ```js
 import {registerHighlightSpecialChars} from '@bhsd/codemirror-mediawiki';
@@ -1377,7 +1467,8 @@ registerHighlightSpecialChars();
 
 Highlight trailing whitespace in a red-orange color.
 
-For granular control over the bundled extensions, you can import the `registerHighlightTrailingWhitespace` function:
+For granular control over the bundled extensions, you can import the
+`registerHighlightTrailingWhitespace` function:
 
 ```js
 import {registerHighlightTrailingWhitespace} from '@bhsd/codemirror-mediawiki';
@@ -1395,7 +1486,8 @@ registerHighlightTrailingWhitespace();
 
 Show spaces and tabs as dots and arrows.
 
-For granular control over the bundled extensions, you can import the `registerHighlightWhitespace` function:
+For granular control over the bundled extensions, you can import the
+`registerHighlightWhitespace` function:
 
 ```js
 import {registerHighlightWhitespace} from '@bhsd/codemirror-mediawiki';
@@ -1413,7 +1505,8 @@ registerHighlightWhitespace();
 
 Show the help information of a magic word or a template name when hovering.
 
-For granular control over the bundled extensions, you need to register this extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
+For granular control over the bundled extensions, you need to register this
+extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
 
 ```js
 import {
@@ -1434,9 +1527,11 @@ registerHoverForAbuseFilter();
 
 *version added: 3.16.0*
 
-Show indent guides as vertical lines. This extension is not available in the MediaWiki mode.
+Show indent guides as vertical lines. This extension is not available in the
+MediaWiki mode.
 
-For granular control over the bundled extensions, you can import the `registerIndentGuide` function:
+For granular control over the bundled extensions, you can import the
+`registerIndentGuide` function:
 
 ```js
 import {registerIndentGuide} from '@bhsd/codemirror-mediawiki';
@@ -1454,7 +1549,8 @@ registerIndentGuide();
 
 Show inlay hints for anonymous parameters.
 
-For granular control over the bundled extensions, you can import the `registerInlayHints` function:
+For granular control over the bundled extensions, you can import the
+`registerInlayHints` function:
 
 ```js
 import {registerInlayHints} from '@bhsd/codemirror-mediawiki';
@@ -1473,7 +1569,8 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 
 CTRL/CMD-click opens a link in a new tab.
 
-For granular control over the bundled extensions, you need to register this extension for specific languages([Lua](#lua) or [MediaWiki](#mediawiki)):
+For granular control over the bundled extensions, you need to register this
+extension for specific languages([Lua](#lua) or [MediaWiki](#mediawiki)):
 
 ```js
 import {
@@ -1496,7 +1593,8 @@ registerOpenLinksForLua();
 
 Show the content of the `<ref>` tag defined elsewhere when hovering.
 
-For granular control over the bundled extensions, you can import the `registerRefHover` function:
+For granular control over the bundled extensions, you can import the
+`registerRefHover` function:
 
 ```js
 import {registerRefHover} from '@bhsd/codemirror-mediawiki';
@@ -1515,7 +1613,8 @@ registerRefHover('https://www.mediawiki.org/wiki/');
 
 Allow the editor to be scrolled down past the end of the document.
 
-For granular control over the bundled extensions, you can import the `registerScrollPastEnd` function:
+For granular control over the bundled extensions, you can import the
+`registerScrollPastEnd` function:
 
 ```js
 import {registerScrollPastEnd} from '@bhsd/codemirror-mediawiki';
@@ -1533,7 +1632,8 @@ registerScrollPastEnd();
 
 Show the parser function signature when typing.
 
-For granular control over the bundled extensions, you need to register this extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
+For granular control over the bundled extensions, you need to register this
+extension for specific languages([AbuseFilter](#abusefilter) or [MediaWiki](#mediawiki)):
 
 ```js
 import {
@@ -1556,7 +1656,8 @@ registerSignatureHelpForAbuseFilter();
 
 Sticky opening lines of the enclosing scopes at the top of the editor when scrolling.
 
-For granular control over the bundled extensions, you can import the `registerStickyScroll` function:
+For granular control over the bundled extensions, you can import the
+`registerStickyScroll` function:
 
 ```js
 import {registerStickyScroll} from '@bhsd/codemirror-mediawiki';
@@ -1578,11 +1679,13 @@ registerStickyScroll();
 
 #### Extension
 
-1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should prevent preformatted text ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
+1. [Extension:Poem](https://www.mediawiki.org/wiki/Extension:Poem) should
+   prevent preformatted text ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#%3Cpoem%3E%20with%20leading%20whitespace)).
 
 #### Transclusion
 
-1. Non-existing parser functions starting with `#` are highlighted as parser functions ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
+1. Non-existing parser functions starting with `#` are highlighted as parser
+   functions ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsoid%3A%20unknown%20parser%20function%20(T314524))).
 1. Wikitext in template parameter names is not highlighted ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Other%20wikitext%20in%20parameter%20names%20(T69657))).
 1. Template parameter names followed by a newline are not recognized ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Templates%3A%20Handle%20comments%20in%20parameter%20names%20(T69657))).
 1. Template-like syntax without a template name ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#T408631%3A%20Invalid%20templates%20inside%20template%20parameters)).
@@ -1613,7 +1716,8 @@ registerStickyScroll();
 #### Block element
 
 1. Comments at the SOL break the highlighting ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#1.%20Lists%20with%20start-of-line-transparent%20tokens%20before%20bullets%3A%20Comments)).
-1. False positives of preformatted text when there are categories ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions)) or HTML tags ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
+1. False positives of preformatted text when there are categories ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Category%20%2F%20paragraph%20interactions))
+   or HTML tags ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Parsing%20optional%20HTML%20elements%20(T8171))).
 
 #### Language conversion
 

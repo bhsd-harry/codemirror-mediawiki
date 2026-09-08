@@ -1,7 +1,7 @@
 import * as assert from 'assert';
 import {describe, it} from '@bhsd/test-util/mocha';
 import {foldable, syntaxTree} from '@codemirror/language';
-import lua, {markDocTag, getStringOffset, getStringOffsetFull} from '../../dist/lua.js';
+import lua, {markDocTag, getStringOffset} from '../../dist/lua.js';
 import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util.js';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
@@ -37,16 +37,10 @@ const markTest = (
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-link'), link);
 };
 
-const stringTest = (doc: string, result: number | null): void => {
-	const state = createState(doc, lang),
-		node = syntaxTree(state).resolveInner(0, 1);
-	assert.strictEqual(getStringOffset(state, node), result);
-};
-
-const stringFullTest = (doc: string, result: [number, boolean] | null): void => {
+const stringFullTest = (doc: string, result: [number, string] | null): void => {
 	const state = createState(doc, lang),
 		node = syntaxTree(state).resolveInner(doc.length, -1);
-	assert.deepStrictEqual(getStringOffsetFull(state, node), result, doc);
+	assert.deepStrictEqual(getStringOffset(state, node), result, doc);
 };
 
 describe('Lua autocompletion', () => {
@@ -264,23 +258,6 @@ describe('LDoc', () => {
 });
 
 describe('getStringOffset', () => {
-	it('single quote', () => {
-		stringTest("'abc'", 1);
-		stringTest("'abc", null);
-	});
-	it('double quote', () => {
-		stringTest('"abc"', 1);
-		stringTest('"abc', null);
-	});
-	it('long string', () => {
-		stringTest('[[abc]]', 2);
-		stringTest('[[abc', null);
-		stringTest('[=[abc]=]', 3);
-		stringTest('[=[abc', null);
-	});
-});
-
-describe('getStringOffsetFull', () => {
 	it('not a string', () => {
 		stringFullTest('abc', null);
 	});
@@ -292,14 +269,19 @@ describe('getStringOffsetFull', () => {
 		stringFullTest('mw.f "abc"', null);
 	});
 	it('mw.loadJsonData', () => {
-		stringFullTest('mw.loadJsonData [[abc]]', [2, true]);
-		stringFullTest('mw.loadJsonData( [=[abc]=]', [3, true]);
-		stringFullTest('mw.loadJsonData "abc"', [1, true]);
+		stringFullTest('mw.loadJsonData [[abc]]', [2, 'json']);
+		stringFullTest('mw.loadJsonData( [=[abc]=]', [3, 'json']);
+		stringFullTest('mw.loadJsonData "abc"', [1, 'json']);
+	});
+	it('mw.ext.TemplateStyles.link', () => {
+		stringFullTest('mw.ext.TemplateStyles.link [[abc]]', [2, 'sanitized-css']);
+		stringFullTest('mw.ext.TemplateStyles.link( [=[abc]=]', [3, 'sanitized-css']);
+		stringFullTest('mw.ext.TemplateStyles.link "abc"', [1, 'sanitized-css']);
 	});
 	it('require and mw.loadData', () => {
 		stringFullTest('require( "abc"', null);
 		stringFullTest('mw.loadData "abc"', null);
-		stringFullTest('require "module:abc"', [1, false]);
-		stringFullTest('mw.loadData("Module : abc"', [1, false]);
+		stringFullTest('require "module:abc"', [1, 'Scribunto']);
+		stringFullTest('mw.loadData("Module : abc"', [1, 'Scribunto']);
 	});
 });

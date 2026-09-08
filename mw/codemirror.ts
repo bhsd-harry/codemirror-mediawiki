@@ -295,10 +295,13 @@ export class CodeMirror extends CodeMirror6 {
 					if (!offset) {
 						return undefined;
 					}
-					const from = node.from + offset,
-						to = node.to - offset;
+					const from = node.from + offset[0],
+						to = node.to - offset[0];
 					return {
-						page: mw.Title.newFromText(sliceDoc(state, {from, to}))?.getUrl(undefined),
+						page: mw.Title.newFromText(
+							sliceDoc(state, {from, to}),
+							offset[1] === 'sanitized-css' ? 10 : 0,
+						)?.getUrl(undefined),
 						range: [from, to],
 					};
 				},

@@ -42,11 +42,14 @@ or
 mw.loader.load('https://unpkg.com/@bhsd/codemirror-mediawiki/dist/wiki.min.js');
 ```
 
-All supported [languages](../README.md#language-modes) are included in this bundle. The script also adds a button to configure user preferences, and watches `Shift`-clicks of any textarea.
+All supported [languages](../README.md#language-modes) are included in this
+bundle. The script also adds a button to configure user preferences, and watches
+`Shift`-clicks of any textarea.
 
 # Accessors
 
-The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from the `CodeMirror6` class.
+The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from
+the `CodeMirror6` class.
 
 ## editor
 
@@ -55,7 +58,8 @@ The `CodeMirror` class inherits all the [accessors](../README.md#accessors) from
 
 *version added: 2.11.1*
 
-**type**: [`Monaco.editor.IStandaloneCodeEditor | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html)  
+**type**:
+[`Monaco.editor.IStandaloneCodeEditor | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.IStandaloneCodeEditor.html)  
 The Monaco editor instance.
 
 </details>
@@ -67,7 +71,8 @@ The Monaco editor instance.
 
 *version added: 2.11.1*
 
-**type**: [`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
+**type**:
+[`Monaco.editor.ITextModel | undefined`](https://microsoft.github.io/monaco-editor/docs.html#interfaces/editor.ITextModel.html)  
 The Monaco text model instance.
 
 </details>
@@ -86,7 +91,8 @@ The WikiEditor toolbar instance.
 
 # Methods
 
-The `CodeMirror` class inherits all the [methods](../README.md#methods) from the `CodeMirror6` class and addes more.
+The `CodeMirror` class inherits all the [methods](../README.md#methods) from the
+`CodeMirror6` class and addes more.
 
 ## defaultLint
 
@@ -130,7 +136,8 @@ cm.getContent();
 *version added: 3.8.0*
 
 **type**: `string`  
-You can set this property to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki) to be used. The default value is `latest`.
+You can set this property to specify the version of [Monaco-Wiki](https://www.npmjs.com/package/monaco-wiki)
+to be used. The default value is `latest`.
 
 </details>
 
@@ -147,7 +154,8 @@ The version number.
 
 # Static methods
 
-The `CodeMirror` class inherits all the [static methods](../README.md#static-methods) from the `CodeMirror6` class and addes more.
+The `CodeMirror` class inherits all the [static methods](../README.md#static-methods)
+from the `CodeMirror6` class and addes more.
 
 ## fromTextArea
 
@@ -156,9 +164,12 @@ The `CodeMirror` class inherits all the [static methods](../README.md#static-met
 
 *version added: 2.2.2*
 
-**param**: `HTMLTextAreaElement` the textarea element to be replaced by CodeMirror  
+**param**: `HTMLTextAreaElement` the textarea element to be replaced by
+CodeMirror  
 **param**: `string` the language mode to be used, default as plain text  
-**param**: `{ns?: number, page?: string, extensions?: string[]}` the namespace id and the page title associated with the content, and an optional list of additional extensions to be enabled  
+**param**: `{ns?: number, page?: string, extensions?: string[]}` the namespace
+id and the page title associated with the content, and an optional list of
+additional extensions to be enabled  
 **returns**: `Promise<CodeMirror>`  
 Replace the textarea with a CodeMirror or Monaco editor.
 
@@ -177,13 +188,16 @@ CodeMirror6.fromTextArea(textarea, 'vue');
 
 # Extensions
 
-The `CodeMirror` class inherits all the [extensions](../README.md#extensions) from the `CodeMirror6` class and addes more.
+The `CodeMirror` class inherits all the [extensions](../README.md#extensions)
+from the `CodeMirror6` class and addes more.
 
 ## wikiEditor
 
 *version added: 2.4.5*
 
-Load the WikiEditor toolbar. This extension can only be used before CodeMirror instantiation, which means it is inaccessible by the [`prefer`](../README.md#prefer) method.
+Load the WikiEditor toolbar. This extension can only be used before CodeMirror
+instantiation, which means it is inaccessible by the [`prefer`](../README.md#prefer)
+method.
 
 ## save
 
@@ -199,19 +213,37 @@ Use the Monaco editor instead of the CodeMirror editor.
 
 # Preference dialog
 
-Users can configure their preferences in a multi-tab dialog. The first tab is for general settings with checkboxes and dropdowns to enable or disable certain features. The next tabs are for language-specific linter settings, which are either dropdowns or textareas depending on the linter. For linters configured with textareas (including [ESLint](#eslint), [Stylelint](#stylelint) and [Luacheck](#luacheck)), only valid JSON input is accepted.
+Users can configure their preferences in a multi-tab dialog. The first tab is
+for general settings with checkboxes and dropdowns to enable or disable certain
+features. The next tabs are for language-specific linter settings, which are
+either dropdowns or textareas depending on the linter. For linters configured
+with textareas (including [ESLint](#eslint), [Stylelint](#stylelint) and [Luacheck](#luacheck)),
+only valid JSON input is accepted.
 
 ## ESLint
 
-ESLint is used for linting [JavaScript](../README.md#javascript) code, including the code embedded in `<script>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue) modes. It can be configured with a JSON input in the legacy [eslintrc format](https://eslint.org/docs/v8.x/use/configure/). In particular, [`eslint:recommended`](https://eslint.org/docs/v8.x/use/configure/configuration-files#using-eslintrecommended) is supported and is the default.
+ESLint is used for linting [JavaScript](../README.md#javascript) code, including
+the code embedded in `<script>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue)
+modes. It can be configured with a JSON input in the legacy [eslintrc format](https://eslint.org/docs/v8.x/use/configure/).
+In particular, [`eslint:recommended`](https://eslint.org/docs/v8.x/use/configure/configuration-files#using-eslintrecommended)
+is supported and is the default.
 
 ## Stylelint
 
-Stylelint is used for linting [CSS](../README.md#css) code, including the code embedded in `<style>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue) modes and the code in `style` attributes in [MediaWiki](../README.md#mediawiki) and [HTML](../README.md#html) modes. It can be [configured](https://stylelint.io/user-guide/configure/) with a JSON input. In particular, [`stylelint-config-recommended`](https://www.npmjs.com/package/stylelint-config-recommended) is supported and is the default.
+Stylelint is used for linting [CSS](../README.md#css) code, including the code
+embedded in `<style>` tags in [HTML](../README.md#html) and [Vue](../README.md#vue)
+modes and the code in `style` attributes in [MediaWiki](../README.md#mediawiki)
+and [HTML](../README.md#html) modes. It can be [configured](https://stylelint.io/user-guide/configure/)
+with a JSON input. In particular, [`stylelint-config-recommended`](https://www.npmjs.com/package/stylelint-config-recommended)
+is supported and is the default.
 
 ## Luacheck
 
-Luacheck is used for linting [Lua](../README.md#lua) code. It can be [configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options) with a JSON input. In particular, a custom set of standard globals named `mediawiki` is provided for the [Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto) environment and is the default.
+Luacheck is used for linting [Lua](../README.md#lua) code. It can be
+[configured](https://luacheck.readthedocs.io/en/stable/config.html#config-options)
+with a JSON input. In particular, a custom set of standard globals named
+`mediawiki` is provided for the [Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto)
+environment and is the default.
 
 # Integration with editors
 
