@@ -1700,7 +1700,7 @@ registerStickyScroll();
 1. Comments at the SOL should not break table syntax ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#3c.%20Table%20cells%20without%20escapable%20prefixes%20after%20edits)).
 1. `!!` in links should start a new `<th>` ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Precedence%20of%20table%20over%20links)).
 
-### Behavior switch
+#### Behavior switch
 
 1. Behavior switch following URL protocols should not be highlighted as a URL ([Example](https://bhsd-harry.github.io/codemirror-mediawiki/tests.html#Fuzz%20testing%3A%20Parser14)).
 
