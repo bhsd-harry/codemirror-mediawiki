@@ -122,7 +122,7 @@ export const autocompletionTest = (source: CompletionSource, lang?: LanguageSupp
 					return option;
 				}),
 			},
-			validFor ? result && {...result, validFor} : result,
+			validFor ? result && {validFor, ...result} : result,
 		);
 	};
 

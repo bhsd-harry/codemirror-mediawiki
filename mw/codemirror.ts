@@ -19,7 +19,7 @@ import {
 import {jsConfig} from '../src/linter';
 import {tagModes} from '../src/static';
 import {sliceDoc} from '../src/util';
-import {getStringOffset} from '../src/lua';
+import {getStringOffsetFull} from '../src/lua';
 import {getMwConfig, getParserConfig} from './config';
 import {
 	preferenceId,
@@ -291,7 +291,7 @@ export class CodeMirror extends CodeMirror6 {
 			this.langConfig = {
 				...config,
 				titleParser(state, node): {page: string | undefined, range: [number, number]} | undefined {
-					const offset = getStringOffset(state, node);
+					const offset = getStringOffsetFull(state, node);
 					if (!offset) {
 						return undefined;
 					}

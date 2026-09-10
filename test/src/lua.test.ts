@@ -1,7 +1,8 @@
 import * as assert from 'assert';
 import {describe, it} from '@bhsd/test-util/mocha';
 import {foldable, syntaxTree} from '@codemirror/language';
-import lua, {markDocTag, getStringOffset} from '../../dist/lua.js';
+import lua, {markDocTag, getStringOffset, getStringOffsetFull} from '../../dist/lua.js';
+import {sliceDoc} from '../../dist/util.js';
 import {autocompletionTest, createState, convertFullRangeSet, filterFromRangeSet} from './util.js';
 import type {CompletionSource} from '@codemirror/autocomplete';
 
@@ -37,10 +38,16 @@ const markTest = (
 	assert.deepStrictEqual(filterFromRangeSet(arr, 'cm-link'), link);
 };
 
-const stringFullTest = (doc: string, result: [number, string] | null): void => {
+const stringTest = (doc: string, result: number | null): void => {
+	const state = createState(doc, lang),
+		node = syntaxTree(state).resolveInner(0, 1);
+	assert.strictEqual(getStringOffset(sliceDoc(state, node)), result);
+};
+
+const stringFullTest = (doc: string, result: [number, string, string] | null): void => {
 	const state = createState(doc, lang),
 		node = syntaxTree(state).resolveInner(doc.length, -1);
-	assert.deepStrictEqual(getStringOffset(state, node), result, doc);
+	assert.deepStrictEqual(getStringOffsetFull(state, node), result, doc);
 };
 
 describe('Lua autocompletion', () => {
@@ -203,6 +210,27 @@ describe('Lua autocompletion', () => {
 			},
 		);
 	});
+	it('library', async () => {
+		await mockTest(
+			'require( "luabit.',
+			{
+				from: 10,
+				options: [
+					{label: 'luabit.bit', type: 'namespace'},
+					{label: 'luabit.hex', type: 'namespace'},
+				],
+				validFor: /^[\w.]*$/u,
+			},
+		);
+		await mockTest(
+			'require [=[bit3',
+			{
+				from: 11,
+				options: [{label: 'bit32', type: 'namespace'}],
+				validFor: /^[\w.]*$/u,
+			},
+		);
+	});
 });
 
 describe('Lua folding', () => {
@@ -258,6 +286,23 @@ describe('LDoc', () => {
 });
 
 describe('getStringOffset', () => {
+	it('single quote', () => {
+		stringTest("'abc'", 1);
+		stringTest("'abc", 1);
+	});
+	it('double quote', () => {
+		stringTest('"abc"', 1);
+		stringTest('"abc', 1);
+	});
+	it('long string', () => {
+		stringTest('[[abc]]', 2);
+		stringTest('[[abc', 2);
+		stringTest('[=[abc]=]', 3);
+		stringTest('[=[abc', 3);
+	});
+});
+
+describe('getStringOffsetFull', () => {
 	it('not a string', () => {
 		stringFullTest('abc', null);
 	});
@@ -269,19 +314,22 @@ describe('getStringOffset', () => {
 		stringFullTest('mw.f "abc"', null);
 	});
 	it('mw.loadJsonData', () => {
-		stringFullTest('mw.loadJsonData [[abc]]', [2, 'json']);
-		stringFullTest('mw.loadJsonData( [=[abc]=]', [3, 'json']);
-		stringFullTest('mw.loadJsonData "abc"', [1, 'json']);
+		stringFullTest('mw.loadJsonData [[abc]]', [2, 'json', 'mw.loadJsonData']);
+		stringFullTest('mw.loadJsonData( [=[abc]=]', [3, 'json', 'mw.loadJsonData']);
+		stringFullTest('mw.loadJsonData "abc"', [1, 'json', 'mw.loadJsonData']);
 	});
 	it('mw.ext.TemplateStyles.link', () => {
-		stringFullTest('mw.ext.TemplateStyles.link [[abc]]', [2, 'sanitized-css']);
-		stringFullTest('mw.ext.TemplateStyles.link( [=[abc]=]', [3, 'sanitized-css']);
-		stringFullTest('mw.ext.TemplateStyles.link "abc"', [1, 'sanitized-css']);
+		stringFullTest('mw.ext.TemplateStyles.link [[abc]]', [2, 'sanitized-css', 'mw.ext.TemplateStyles.link']);
+		stringFullTest(
+			'mw.ext.TemplateStyles.link( [=[abc]=]',
+			[3, 'sanitized-css', 'mw.ext.TemplateStyles.link'],
+		);
+		stringFullTest('mw.ext.TemplateStyles.link "abc"', [1, 'sanitized-css', 'mw.ext.TemplateStyles.link']);
 	});
 	it('require and mw.loadData', () => {
 		stringFullTest('require( "abc"', null);
 		stringFullTest('mw.loadData "abc"', null);
-		stringFullTest('require "module:abc"', [1, 'Scribunto']);
-		stringFullTest('mw.loadData("Module : abc"', [1, 'Scribunto']);
+		stringFullTest('require "module:abc"', [1, 'Scribunto', 'require']);
+		stringFullTest('mw.loadData("Module : abc"', [1, 'Scribunto', 'mw.loadData']);
 	});
 });

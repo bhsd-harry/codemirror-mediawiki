@@ -244,6 +244,7 @@ const map = {
 		},
 	},
 	luaBuiltin = ['false', 'nil', 'true'],
+	libraries = getCompletions(['bit32', 'libraryUtil', 'luabit.bit', 'luabit.hex', 'strict'], 'namespace'),
 	luaBuiltins = getCompletions(luaBuiltin, 'constant'),
 	tables = getCompletions(['_G', ...Object.keys(globals)], 'namespace'),
 	constants = [
@@ -341,37 +342,30 @@ const map = {
  * @implements
  * @test
  */
-const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource => async context => {
-	const {state, pos, explicit} = context,
-		node = syntaxTree(state).resolveInner(pos, -1);
-	if (linkSuggest && (explicit || isWMF) && node.name === 'string' && pos > node.from) {
-		const offsetFull = getStringOffset(state, node, state.sliceDoc(node.from, pos));
-		if (!offsetFull || pos <= node.from + offsetFull[0]) {
+const basicSource: CompletionSource = context => {
+	const {state, pos} = context,
+		node = syntaxTree(state).resolveInner(pos, -1),
+		{name, from: fr, prevSibling: prev} = node;
+	if (
+		name === 'string'
+		&& pos > fr
+		&& prev?.name === 'variableName.standard'
+		&& sliceDoc(state, prev) === 'require'
+	) {
+		const offset = getStringOffset(state.sliceDoc(fr, pos));
+		if (!offset || pos <= fr + offset) {
 			return null;
 		}
-		const [offset, contentmodel] = offsetFull,
-			search = state.sliceDoc(node.from + offset, pos);
-		if (/[|{}<>[\]#]/u.test(search)) {
+		const search = state.sliceDoc(fr + offset, pos);
+		if (search.includes(':')) {
 			return null;
 		}
-		const suggestions = await linkSuggest(
-				search,
-				false,
-				contentmodel === 'sanitized-css' ? 10 : 0,
-				contentmodel,
-			),
-			underscore = search.includes('_');
-		return suggestions.length === 0
-			? null
-			: {
-				from: node.from + offset,
-				options: suggestions.map(([label]): Completion => ({
-					label: useUnderscore(label, underscore),
-					type: 'text',
-				})),
-				...!isWMF && {validFor: /^[^|{}<>[\]#]*$/u},
-			};
-	} else if (!excludedTypes.has(node.name)) {
+		return {
+			from: fr + offset,
+			options: libraries,
+			validFor: /^[\w.]*$/u,
+		};
+	} else if (!excludedTypes.has(name)) {
 		return null;
 	}
 	const match = context.matchBefore(/(?:(?:^|\S|\.\.)\s+|^|[^\w\s]|\.\.)\w+$|\.{1,2}$/u);
@@ -461,6 +455,41 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource =
 	return null;
 };
 
+const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource => async context => {
+	const {state, pos, explicit} = context,
+		node = syntaxTree(state).resolveInner(pos, -1),
+		{name, from: fr} = node;
+	if (linkSuggest && name === 'string' && (explicit || isWMF) && pos > fr) {
+		const offsetFull = getStringOffsetFull(state, node, state.sliceDoc(fr, pos));
+		if (!offsetFull || pos <= fr + offsetFull[0]) {
+			return null;
+		}
+		const [offset, contentmodel] = offsetFull,
+			search = state.sliceDoc(fr + offset, pos);
+		if (/[|{}<>[\]#]/u.test(search)) {
+			return null;
+		}
+		const suggestions = await linkSuggest(
+				search,
+				false,
+				contentmodel === 'sanitized-css' ? 10 : 0,
+				contentmodel,
+			),
+			underscore = search.includes('_');
+		return suggestions.length === 0
+			? null
+			: {
+				from: fr + offset,
+				options: suggestions.map(([label]): Completion => ({
+					label: useUnderscore(label, underscore),
+					type: 'text',
+				})),
+				...isWMF ? {filter: false} : {validFor: /^[^|{}<>[\]#]*$/u},
+			};
+	}
+	return null;
+};
+
 /**
  * 高亮显示LDoc标签
  * @ignore
@@ -501,7 +530,7 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 					}
 				}
 			} else {
-				const offset = getStringOffset(state, node);
+				const offset = getStringOffsetFull(state, node);
 				if (offset) {
 					pushDecoration(decorations, linkDeco, node.from + offset[0], node.to - offset[0]);
 				}
@@ -516,7 +545,20 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
  * @ignore
  * @test
  */
-export const getStringOffset = (state: EditorState, node: SyntaxNode, str?: string): [number, string] | null => {
+export const getStringOffset = (str: string, re = reLinkIncomplete[0]): number | null => {
+	const mt = re.exec(str);
+	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
+};
+
+/**
+ * @ignore
+ * @test
+ */
+export const getStringOffsetFull = (
+	state: EditorState,
+	node: SyntaxNode,
+	str?: string,
+): [number, string, string] | null => {
 	if (node.name !== 'string') {
 		return null;
 	}
@@ -536,9 +578,11 @@ export const getStringOffset = (state: EditorState, node: SyntaxNode, str?: stri
 			contentmodel = 'sanitized-css';
 		}
 		if (contentmodel) {
-			const mt = (str ? reLinkIncomplete : reLink)[isLua ? 1 : 0].exec(str ?? sliceDoc(state, node)),
-				offset = mt && (mt[1]?.length ?? mt[2]!.length + 2);
-			return offset === null ? null : [offset, contentmodel];
+			const offset = getStringOffset(
+				str ?? sliceDoc(state, node),
+				(str ? reLinkIncomplete : reLink)[isLua ? 1 : 0],
+			);
+			return offset === null ? null : [offset, contentmodel, func];
 		}
 	}
 	return null;
@@ -572,6 +616,7 @@ export const markDocTagPlugin = ViewPlugin.fromClass(
 const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 	lightHighlightStyle,
 	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
+	lang.data.of({autocomplete: basicSource}),
 	lang.data.of({autocomplete: getSource(linkSuggest)}),
 	getFoldService(({doc, tabSize}, start, from) => {
 		const {text, number} = doc.lineAt(start);
