@@ -32,7 +32,9 @@ export const tagModes = {
 	chem: 'text/math',
 	ce: 'text/math',
 	score: 'lilypond',
-};
+} as const;
+
+export type MimeTypes = typeof tagModes[keyof typeof tagModes] | 'text/mediawiki';
 
 const getDoubleUnderscore = (newSchema: Record<string, string>): Record<string, string> =>
 	Object.fromEntries(Object.entries(newSchema).map(([k, v]) => [isUnderscore(k) ? `__${k}__` : k, v]));

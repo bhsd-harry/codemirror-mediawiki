@@ -57,7 +57,7 @@
 		"@bhsd/stylelint-util": "^1.1.0",
 		"culori": "^4.0.2",
 		"marked": "^18.0.11",
-		"wikiparser-node": "^1.46.4"
+		"wikiparser-node": "^1.47.0"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^4.2.0",
@@ -66,8 +66,8 @@
 		"@codemirror/language": "^6.12.4",
 		"@codemirror/lint": "^6.9.7",
 		"@codemirror/search": "^6.7.2",
-		"@codemirror/state": "^6.7.1",
-		"@codemirror/view": "^6.43.9",
+		"@codemirror/state": "^6.7.4",
+		"@codemirror/view": "^6.43.11",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.10.0",
