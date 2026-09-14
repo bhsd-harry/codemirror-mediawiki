@@ -565,7 +565,7 @@ export const getStringOffsetFull = (
 	const {prevSibling} = node;
 	if (
 		(prevSibling?.name === 'variableName' || prevSibling?.name === 'variableName.standard')
-		&& /^[\s(]*$/u.test(state.sliceDoc(prevSibling.to, node.from))
+		&& !/[^\s(]/u.test(state.sliceDoc(prevSibling.to, node.from))
 	) {
 		const func = sliceDoc(state, prevSibling),
 			isLua = func === 'require' || func === 'mw.loadData';

@@ -782,14 +782,16 @@ export class CodeMirror extends CodeMirror6 {
 				}
 			} else if (wgCanonicalSpecialPageName === 'Upload') {
 				ns = 6;
-				lang = 'wikitext';
+				lang = 'mediawiki';
 			} else if (wgCanonicalSpecialPageName === 'ExpandTemplates' && textarea.name === 'wpInput') {
 				ns = 0;
-				lang = 'wikitext';
+				lang = 'mediawiki';
 			} else {
 				await mw.loader.using('oojs-ui-windows');
 				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
 			}
+		} else if (lang === 'wikitext' && ns === 274) {
+			lang = 'html';
 		}
 		let dialect: Dialect;
 		if (lang && langMap.has(lang)) {
