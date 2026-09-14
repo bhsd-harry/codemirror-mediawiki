@@ -10,7 +10,7 @@ import {
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
 import type {CodeMirror6} from './codemirror';
-import type {MwConfig} from './token';
+import type {TitleParser} from './token';
 
 declare type ISBNParser = (link: string) => string;
 declare type ActiveRange = readonly [number, number];
@@ -80,7 +80,7 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
  */
 export const getLinkParser = (
 	isbnParser?: ISBNParser,
-	titleParser?: MwConfig['titleParser'],
+	titleParser?: TitleParser,
 ): LinkParser =>
 	((state, {pos, assoc}, str) => {
 		const tree = ensureSyntaxTree(state, pos);

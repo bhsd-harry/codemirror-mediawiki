@@ -61,6 +61,11 @@ export type CompletionSectionName = 'Required' | 'Suggested' | 'Optional' | 'Dep
 declare type ParamSuggestion = [string[], string, string, CompletionSectionName];
 export type ApiSuggestions<T = ParamSuggestion> = T[] & {description?: string};
 export type LinkSuggestion = [string, number, (string | [string] | undefined)?];
+export type TitleParser = (state: EditorState, node: SyntaxNode) => {
+	page: string | undefined;
+	contentmodel?: string;
+	range?: [number, number];
+} | undefined;
 
 /**
  * 获取维基链接建议
@@ -85,13 +90,9 @@ export interface MwConfig extends MwConfigBase {
 	templateStylesDefaultNamespace?: number;
 	linkSuggest?: ApiSuggest<LinkSuggestion>;
 	paramSuggest?: ApiSuggest;
-	/* eslint-disable @typescript-eslint/method-signature-style */
-	titleParser?: (state: EditorState, node: SyntaxNode) => {
-		page: string | undefined;
-		range?: [number, number];
-	} | undefined;
+	titleParser?: TitleParser;
+	// eslint-disable-next-line @typescript-eslint/method-signature-style
 	templateSignature?: (templateName: string | null, parameterName: string) => string | undefined;
-	/* eslint-enable @typescript-eslint/method-signature-style */
 }
 
 /**

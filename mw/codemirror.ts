@@ -56,7 +56,7 @@ import type {ConfigData} from 'wikiparser-node';
 import type {Option, LiveOption, IWikitextModel} from '@bhsd/cm-util';
 import type {Dialect, ReplaceFunction} from '../src/codemirror';
 import type {LintSources, LintSource} from '../src/lintsource';
-import type {MwConfig} from '../src/token';
+import type {MwConfig, TitleParser} from '../src/token';
 
 /** Extension:CodeMirror */
 declare interface ExtCodeMirror {
@@ -285,25 +285,29 @@ export class CodeMirror extends CodeMirror6 {
 					articlePath: mw.config.get('wgArticlePath'),
 				},
 				config,
-			) as MwConfig;
+			);
 		} else if (this.lang === 'lua') {
 			mw.loader.load('mediawiki.Title');
 			this.langConfig = {
 				...config,
-				titleParser(state, node): {page: string | undefined, range: [number, number]} | undefined {
+				titleParser(state, node): ReturnType<TitleParser> {
 					const offset = getStringOffsetFull(state, node);
 					if (!offset) {
 						return undefined;
 					}
 					const from = node.from + offset[0],
-						to = node.to - offset[0];
-					return {
-						page: mw.Title.newFromText(
+						to = node.to - offset[0],
+						title = mw.Title.newFromText(
 							sliceDoc(state, {from, to}),
 							offset[1] === 'sanitized-css' ? 10 : 0,
-						)?.getUrl(undefined),
-						range: [from, to],
-					};
+						);
+					return offset[1] === 'Scribunto' && title?.getNamespaceId() !== 828
+						? undefined
+						: {
+							page: title?.getUrl(undefined),
+							contentmodel: offset[1],
+							range: [from, to],
+						};
 				},
 			};
 		}

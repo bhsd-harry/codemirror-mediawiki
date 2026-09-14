@@ -4,14 +4,12 @@ import {isWikiLink} from '../src/mediawiki';
 import {sliceDoc, getSubpageLevel} from '../src/util';
 import {getParentDir} from './util';
 import type {SyntaxNode} from '@lezer/common';
-import type {MwConfig} from '../src/token';
+import type {MwConfig, TitleParser} from '../src/token';
 
 const isSameToken = (node: SyntaxNode, name: string): boolean =>
 	node.name === name || node.name.includes(tokens.comment);
 
-export const getTitleParser = (
-	{urlProtocols, templateStylesDefaultNamespace = 10}: MwConfig,
-): MwConfig['titleParser'] => {
+export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 10}: MwConfig): TitleParser => {
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
 	return (state, node) => {
 		const {name} = node;

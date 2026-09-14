@@ -273,16 +273,6 @@ describe('LDoc', () => {
 			[[36, 38], [52, 64]],
 		);
 	});
-	it('page link', () => {
-		markTest(
-			`require( 'module:a' )
-				mw.loadData"Module : A"
-				mw.loadJsonData [=[A]=]`,
-			[],
-			[],
-			[[10, 18], [38, 48], [73, 74]],
-		);
-	});
 });
 
 describe('getStringOffset', () => {
@@ -327,8 +317,8 @@ describe('getStringOffsetFull', () => {
 		stringFullTest('mw.ext.TemplateStyles.link "abc"', [1, 'sanitized-css', 'mw.ext.TemplateStyles.link']);
 	});
 	it('require and mw.loadData', () => {
-		stringFullTest('require( "abc"', null);
-		stringFullTest('mw.loadData "abc"', null);
+		stringFullTest('require( "abc"', [1, 'Scribunto', 'require']);
+		stringFullTest('mw.loadData "abc"', [1, 'Scribunto', 'mw.loadData']);
 		stringFullTest('require "module:abc"', [1, 'Scribunto', 'require']);
 		stringFullTest('mw.loadData("Module : abc"', [1, 'Scribunto', 'mw.loadData']);
 	});

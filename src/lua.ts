@@ -21,8 +21,9 @@ import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirr
 import type {Extension, EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 import type {Tree, SyntaxNode} from '@lezer/common';
-import type {ApiSuggest, LinkSuggestion} from './token';
+import type {ApiSuggest, LinkSuggestion, TitleParser} from './token';
 import type {DocRange} from './util';
+import type {CodeMirror6} from './codemirror';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
@@ -332,10 +333,8 @@ const map = {
 	],
 	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
 	linkDeco = Decoration.mark({class: linkSelector.slice(1)}),
-	reLink = ['', String.raw`module\s*:`]
-		.map(s => new RegExp(String.raw`^(['"])${s}.+\1$|^\[(=*)\[${s}.+\]\2\]$`, 'iu')) as [RegExp, RegExp],
-	reLinkIncomplete = ['', String.raw`module\s*:`]
-		.map(s => new RegExp(String.raw`^(['"]|\[=*\[)${s}.*$`, 'iu')) as [RegExp, RegExp],
+	reLink = /^(['"]).+\1$|^\[(=*)\[.+\]\2\]$/u,
+	reLinkIncomplete = /^(['"]|\[=*\[).*$/u,
 	lang = StreamLanguage.define(lua);
 
 /**
@@ -455,47 +454,57 @@ const basicSource: CompletionSource = context => {
 	return null;
 };
 
-const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>): CompletionSource => async context => {
-	const {state, pos, explicit} = context,
-		node = syntaxTree(state).resolveInner(pos, -1),
-		{name, from: fr} = node;
-	if (linkSuggest && name === 'string' && (explicit || isWMF) && pos > fr) {
-		const offsetFull = getStringOffsetFull(state, node, state.sliceDoc(fr, pos));
-		if (!offsetFull || pos <= fr + offsetFull[0]) {
-			return null;
+const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>, titleParser?: TitleParser): CompletionSource =>
+	async context => {
+		const {state, pos, explicit} = context,
+			node = syntaxTree(state).resolveInner(pos, -1),
+			{name, from: fr} = node;
+		if (linkSuggest && name === 'string' && (explicit || isWMF) && pos > fr) {
+			const title = titleParser?.(state, node);
+			if (!title) {
+				return null;
+			}
+			const {range, contentmodel} = title,
+				[from] = range!;
+			if (pos <= from) {
+				return null;
+			}
+			const search = state.sliceDoc(from, pos);
+			if (/[|{}<>[\]#]/u.test(search)) {
+				return null;
+			}
+			const suggestions = await linkSuggest(
+					search,
+					false,
+					contentmodel === 'sanitized-css' ? 10 : 0,
+					contentmodel,
+				),
+				underscore = search.includes('_');
+			return suggestions.length === 0
+				? null
+				: {
+					from,
+					options: suggestions.map(([label]): Completion => ({
+						label: useUnderscore(label, underscore),
+						type: 'text',
+					})),
+					...isWMF ? {filter: false} : {validFor: /^[^|{}<>[\]#]*$/u},
+				};
 		}
-		const [offset, contentmodel] = offsetFull,
-			search = state.sliceDoc(fr + offset, pos);
-		if (/[|{}<>[\]#]/u.test(search)) {
-			return null;
-		}
-		const suggestions = await linkSuggest(
-				search,
-				false,
-				contentmodel === 'sanitized-css' ? 10 : 0,
-				contentmodel,
-			),
-			underscore = search.includes('_');
-		return suggestions.length === 0
-			? null
-			: {
-				from: fr + offset,
-				options: suggestions.map(([label]): Completion => ({
-					label: useUnderscore(label, underscore),
-					type: 'text',
-				})),
-				...isWMF ? {filter: false} : {validFor: /^[^|{}<>[\]#]*$/u},
-			};
-	}
-	return null;
-};
+		return null;
+	};
 
 /**
  * 高亮显示LDoc标签
  * @ignore
  * @test
  */
-export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state: EditorState): DecorationSet => {
+export const markDocTag = (
+	tree: Tree,
+	visibleRanges: readonly DocRange[],
+	state: EditorState,
+	titleParser?: TitleParser,
+): DecorationSet => {
 	const decorations: Range<Decoration>[] = [];
 	for (const {from, to} of visibleRanges) {
 		let node: SyntaxNode | null | undefined = tree.resolveInner(from, 1);
@@ -529,10 +538,10 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
 						node = nextSibling;
 					}
 				}
-			} else {
-				const offset = getStringOffsetFull(state, node);
-				if (offset) {
-					pushDecoration(decorations, linkDeco, node.from + offset[0], node.to - offset[0]);
+			} else if (titleParser) {
+				const title = titleParser(state, node);
+				if (title) {
+					pushDecoration(decorations, linkDeco, title.range![0], title.range![1]);
 				}
 			}
 			node = node.nextSibling;
@@ -545,7 +554,7 @@ export const markDocTag = (tree: Tree, visibleRanges: readonly DocRange[], state
  * @ignore
  * @test
  */
-export const getStringOffset = (str: string, re = reLinkIncomplete[0]): number | null => {
+export const getStringOffset = (str: string, re = reLinkIncomplete): number | null => {
 	const mt = re.exec(str);
 	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
 };
@@ -578,31 +587,28 @@ export const getStringOffsetFull = (
 			contentmodel = 'sanitized-css';
 		}
 		if (contentmodel) {
-			const offset = getStringOffset(
-				str ?? sliceDoc(state, node),
-				(str ? reLinkIncomplete : reLink)[isLua ? 1 : 0],
-			);
+			const offset = getStringOffset(str ?? sliceDoc(state, node), str ? reLinkIncomplete : reLink);
 			return offset === null ? null : [offset, contentmodel, func];
 		}
 	}
 	return null;
 };
 
-export const markDocTagPlugin = ViewPlugin.fromClass(
+const getMarkDocTagPlugin = (titleParser?: TitleParser): Extension => ViewPlugin.fromClass(
 	class implements PluginValue {
 		declare tree;
 		declare decorations;
 
 		constructor({state, visibleRanges}: EditorView) {
 			this.tree = syntaxTree(state);
-			this.decorations = markDocTag(this.tree, visibleRanges, state);
+			this.decorations = markDocTag(this.tree, visibleRanges, state, titleParser);
 		}
 
 		update({docChanged, viewportChanged, state, view: {visibleRanges}}: ViewUpdate): void {
 			const tree = syntaxTree(state);
 			if (docChanged || viewportChanged || tree !== this.tree) {
 				this.tree = tree;
-				this.decorations = markDocTag(tree, visibleRanges, state);
+				this.decorations = markDocTag(tree, visibleRanges, state, titleParser);
 			}
 		}
 	},
@@ -613,11 +619,11 @@ export const markDocTagPlugin = ViewPlugin.fromClass(
 	},
 );
 
-const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
+const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>, titleParser?: TitleParser): Extension => [
 	lightHighlightStyle,
 	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 	lang.data.of({autocomplete: basicSource}),
-	lang.data.of({autocomplete: getSource(linkSuggest)}),
+	lang.data.of({autocomplete: getSource(linkSuggest, titleParser)}),
 	getFoldService(({doc, tabSize}, start, from) => {
 		const {text, number} = doc.lineAt(start);
 		if (!text.trim()) {
@@ -639,8 +645,8 @@ const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>): Extension => [
 		}
 		return empty || j === number ? null : {from, to: doc.line(j).to};
 	}),
-	markDocTagPlugin,
+	getMarkDocTagPlugin(titleParser),
 ];
 
-export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}): LanguageSupport =>
-	new LanguageSupport(lang, getSupport(config?.linkSuggest));
+export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport =>
+	new LanguageSupport(lang, getSupport(config?.linkSuggest, cm?.langConfig?.titleParser));

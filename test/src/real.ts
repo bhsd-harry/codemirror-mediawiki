@@ -15,8 +15,12 @@ import jsonStreamParse from './json.js';
 import lyParse from './lilypond.js';
 import {createState} from './util.js';
 import type {EditorView} from '@codemirror/view';
-import type {Extension} from '@codemirror/state';
+import type {Extension, EditorState} from '@codemirror/state';
 import type {LRLanguage} from '@codemirror/language';
+import type {Tree} from '@lezer/common';
+import type {DocRange} from '../../dist/util';
+
+declare type Mark = (tree: Tree, ranges: DocRange[], state: EditorState) => void;
 
 const [,, lang] = process.argv,
 	failed: [string, string][] = [];
@@ -36,7 +40,7 @@ const strictParse = ({parser}: LRLanguage, model: string) => {
 	};
 };
 
-const singleScript = (langSupport: Extension, model: string, mark: typeof markDocTag) =>
+const singleScript = (langSupport: Extension, model: string, mark: Mark) =>
 	(content: string, title: string): void => {
 		const state = createState(content, langSupport),
 			{length} = content,
@@ -49,12 +53,7 @@ const singleScript = (langSupport: Extension, model: string, mark: typeof markDo
 		}
 	};
 
-const coding = (
-	langSupport: Extension,
-	grcnamespace: string,
-	contentmodel: string,
-	mark: typeof markDocTag,
-): Promise<void> =>
+const coding = (langSupport: Extension, grcnamespace: string, contentmodel: string, mark: Mark): Promise<void> =>
 	execute(singleScript(langSupport, contentmodel, mark), {grcnamespace, contentmodel});
 
 const tryScripts = (
