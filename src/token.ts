@@ -19,16 +19,8 @@ import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/l
 import type {CloseBracketConfig} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {TagName} from './config';
+import type {MimeTypes} from './static';
 
-declare type MimeTypes = 'mediawiki'
-	| 'text/mediawiki'
-	| 'text/nowiki'
-	| 'text/pre'
-	| 'text/references'
-	| 'text/choose'
-	| 'text/combobox'
-	| 'text/inputbox'
-	| 'text/gallery';
 export type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
 export type NestCount = 'nTemplate' | 'nExt' | 'nVar' | 'nLink' | 'nExtLink';
