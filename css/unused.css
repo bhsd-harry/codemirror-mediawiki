@@ -395,6 +395,7 @@
 	.cm-mw-magic-link,
 	.cm-mw-template-name, /* stylelint-disable-line no-descending-specificity */
 	.cm-mw-link-pagename,
+	.cm-mw-link-pagename + .cm-mw-link-tosection,
 	.cm-mw-parserfunction.cm-mw-pagename,
 	.cm-mw-exttag-attribute-value.cm-mw-pagename,
 	.cm-mw-file-text.cm-mw-pagename {
@@ -413,14 +414,23 @@
 	.cm-mw-magic-link,
 	.cm-mw-template-name,
 	.cm-mw-link-pagename,
+	.cm-mw-link-pagename + .cm-mw-link-tosection,
 	.cm-mw-parserfunction.cm-mw-pagename,
 	.cm-mw-exttag-attribute-value.cm-mw-pagename,
 	.cm-mw-file-text.cm-mw-pagename {
 		cursor: pointer;
+
+		&:hover {
+			color: var(--cm-active);
+		}
 	}
 
 	.cm-link {
 		cursor: pointer;
+
+		&:hover {
+			color: var(--cm-active);
+		}
 	}
 }
 /* stylelint-enable relative-selector-nesting-notation */

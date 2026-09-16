@@ -33,6 +33,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	wikiLinks = /* #__PURE__ */ (() => [
 		'template-name',
 		'link-pagename',
+		'link-pagename+.cm-mw-link-tosection',
 		`parserfunction${pagename}`,
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
@@ -106,8 +107,10 @@ export const getLinkParser = (
 			return link.startsWith('RFC')
 				? `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`
 				: `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
-		} else if (name.includes(tokens.pageName)) {
-			return titleParser && (str ? titleParser(state, node)?.page : [from, to]);
+		} else if (titleParser && name.includes(tokens.pageName)) {
+			return str
+				? titleParser(state, node)?.page
+				: [from, nextSibling?.name.includes(tokens.linkToSection) ? nextSibling.to : to];
 		}
 		return undefined;
 	}) as LinkParser;
@@ -116,7 +119,8 @@ export const getOpenLinksExtension = (
 	linkParser: LinkParser,
 	selectors: string[],
 ): Extension => {
-	const selector = selectors.map(sel => `& ${sel}`).join();
+	const selector = selectors.map(sel => `& ${sel}`).join(),
+		activeStyle = {color: 'var(--cm-active)'};
 	return [
 		StateField.define<ActiveRangeSet>({
 			create() {
@@ -201,13 +205,13 @@ export const getOpenLinksExtension = (
 		}),
 		EditorView.theme({
 			[`.${activeLinkCls}`]: {
-				[selector]: {
-					color: 'var(--cm-active)',
-				},
+				[selector]: activeStyle,
 			},
 			[`&.${openLinksCls}`]: {
 				[selector]: {
 					cursor: 'pointer',
+
+					'&:hover': activeStyle,
 				},
 			},
 		}),
