@@ -15,12 +15,9 @@ import jsonStreamParse from './json.js';
 import lyParse from './lilypond.js';
 import {createState} from './util.js';
 import type {EditorView} from '@codemirror/view';
-import type {Extension, EditorState} from '@codemirror/state';
+import type {Extension} from '@codemirror/state';
 import type {LRLanguage} from '@codemirror/language';
-import type {Tree} from '@lezer/common';
-import type {DocRange} from '../../dist/util';
-
-declare type Mark = (tree: Tree, ranges: DocRange[], state: EditorState) => void;
+import type {Mark} from '../../dist/util';
 
 const [,, lang] = process.argv,
 	failed: [string, string][] = [];

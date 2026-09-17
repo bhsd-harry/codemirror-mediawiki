@@ -1,6 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
-import {ViewPlugin, Decoration} from '@codemirror/view';
+import {Decoration} from '@codemirror/view';
 import {countColumn} from '@codemirror/state';
 import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
@@ -16,15 +16,15 @@ import {
 	getHighlightExtension,
 	getFoldService,
 	markLinks,
+	getMarkPlugin,
 } from './util.js';
 import {lightHighlightStyle} from './theme.js';
-import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
-import type {Tree, SyntaxNode} from '@lezer/common';
+import type {SyntaxNode} from '@lezer/common';
 import type {ApiSuggest, LinkSuggestion, TitleParser} from './token';
-import type {DocRange} from './util';
-import type {CodeMirror6, DecorationPlugin} from './codemirror';
+import type {Mark} from './util';
+import type {CodeMirror6} from './codemirror';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
@@ -499,13 +499,9 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>, titleParser?: Title
  * @ignore
  * @test
  */
-export const markDocTag = (
-	tree: Tree,
-	visibleRanges: readonly DocRange[],
-	state: EditorState,
-	titleParser?: TitleParser,
-): DecorationSet => {
-	const decorations: Range<Decoration>[] = [];
+export const markDocTag: Mark = (tree, visibleRanges, state, cm) => {
+	const decorations: Range<Decoration>[] = [],
+		titleParser = cm?.langConfig?.titleParser;
 	for (const {from, to} of visibleRanges) {
 		let node: SyntaxNode | null | undefined = tree.resolveInner(from, 1);
 		while (node && node.from < to) {
@@ -596,34 +592,8 @@ export const getStringOffsetFull = (
 	return null;
 };
 
-const getMarkDocTagPlugin = (titleParser?: TitleParser): DecorationPlugin => ViewPlugin.fromClass(
-	class implements PluginValue {
-		declare tree;
-		declare decorations;
-
-		constructor({state, visibleRanges}: EditorView) {
-			this.tree = syntaxTree(state);
-			this.decorations = markDocTag(this.tree, visibleRanges, state, titleParser);
-		}
-
-		update({docChanged, viewportChanged, state, view: {visibleRanges}}: ViewUpdate): void {
-			const tree = syntaxTree(state);
-			if (docChanged || viewportChanged || tree !== this.tree) {
-				this.tree = tree;
-				this.decorations = markDocTag(tree, visibleRanges, state, titleParser);
-			}
-		}
-	},
-	{
-		decorations(v) {
-			return v.decorations;
-		},
-	},
-);
-
 export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport => {
-	const titleParser = cm?.langConfig?.titleParser,
-		plugin = getMarkDocTagPlugin(titleParser);
+	const plugin = getMarkPlugin(markDocTag, cm);
 	if (cm) {
 		cm.decorationPlugin = plugin;
 	}
@@ -631,7 +601,7 @@ export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMi
 		lightHighlightStyle,
 		getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 		lang.data.of({autocomplete: basicSource}),
-		lang.data.of({autocomplete: getSource(config?.linkSuggest, titleParser)}),
+		lang.data.of({autocomplete: getSource(config?.linkSuggest, cm?.langConfig?.titleParser)}),
 		plugin,
 		getFoldService(({doc, tabSize}, start, from) => {
 			const {text, number} = doc.lineAt(start);

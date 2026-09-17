@@ -4,19 +4,17 @@ import {
 	scopeCompletionSource,
 	localCompletionSource,
 } from '@codemirror/lang-javascript';
-import {ViewPlugin, Decoration} from '@codemirror/view';
+import {Decoration} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
 import {isGlobal} from '@bhsd/browser';
 import {builtin} from './javascript-globals.js';
 import {doctag, doctagMark} from './constants.js';
-import {markDocTagType, pushDecoration, markLinks} from './util.js';
+import {markDocTagType, pushDecoration, markLinks, getMarkPlugin} from './util.js';
 import type {Extension, Range, EditorState} from '@codemirror/state';
-import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
-import type {Tree} from '@lezer/common';
 import type {Linter} from 'eslint';
-import type {DocRange} from './util';
+import type {Mark} from './util';
 import type {CodeMirror6, DecorationPlugin} from './codemirror';
 import type {LintSource} from './lintsource';
 
@@ -40,12 +38,7 @@ export const exclude = (state: EditorState, pos: number): boolean => javascriptL
  * @ignore
  * @test
  */
-export const markGlobalsAndDocTag = (
-	tree: Tree,
-	visibleRanges: readonly DocRange[],
-	state: EditorState,
-	cm?: CodeMirror6,
-): DecorationSet => {
+export const markGlobalsAndDocTag: Mark = (tree, visibleRanges, state, cm) => {
 	const decorations: Range<Decoration>[] = [];
 	let allGlobals = builtinGlobals;
 	if (typeof eslint === 'object' && 'environments' in eslint && cm?.lintSources.length && isGlobal('eslint')) {
@@ -111,35 +104,10 @@ export const markGlobalsAndDocTag = (
 	return Decoration.set(decorations, true);
 };
 
-export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): DecorationPlugin => ViewPlugin.fromClass(
-	class implements PluginValue {
-		declare tree;
-		declare decorations;
-
-		constructor({state, visibleRanges}: EditorView) {
-			this.tree = syntaxTree(state);
-			this.decorations = markGlobalsAndDocTag(this.tree, visibleRanges, state, cm);
-		}
-
-		update({docChanged, viewportChanged, state, view: {visibleRanges}, transactions}: ViewUpdate): void {
-			const tree = syntaxTree(state);
-			let flag: boolean;
-			if (docChanged || viewportChanged || tree !== this.tree) {
-				this.tree = tree;
-				flag = true;
-			} else {
-				flag = transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect)));
-			}
-			if (flag) {
-				this.decorations = markGlobalsAndDocTag(tree, visibleRanges, state, cm);
-			}
-		}
-	},
-	{
-		decorations(v) {
-			return v.decorations;
-		},
-	},
+export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): DecorationPlugin => getMarkPlugin(
+	markGlobalsAndDocTag,
+	cm,
+	({transactions}) => transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect))),
 );
 
 export default (_?: unknown, cm?: CodeMirror6): Extension => {

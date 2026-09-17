@@ -1,3 +1,4 @@
+import {ViewPlugin} from '@codemirror/view';
 import {
 	foldService,
 	syntaxTree,
@@ -17,7 +18,13 @@ import {
 	typeMark,
 	linkMark,
 } from './constants.js';
-import type {Decoration} from '@codemirror/view';
+import type {
+	Decoration,
+	DecorationSet,
+	PluginValue,
+	EditorView,
+	ViewUpdate,
+} from '@codemirror/view';
 import type {Text, EditorState, Range, Extension} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
@@ -28,6 +35,9 @@ import type {
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
+import type {CodeMirror6, DecorationPlugin} from './codemirror';
+
+export type Mark = (tree: Tree, ranges: readonly DocRange[], state: EditorState, cm?: CodeMirror6) => DecorationSet;
 
 export interface DocRange {
 	from: number;
@@ -304,3 +314,45 @@ export const markLinks = (str: string, decorations: Range<Decoration>[], from: n
 		pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
 	}
 };
+
+/**
+ * 标注链接和文档标签等
+ * @param mark 标注函数
+ * @param cm
+ * @param needUpdate 是否需要更新标注
+ */
+export const getMarkPlugin = (
+	mark: Mark,
+	cm?: CodeMirror6,
+	needUpdate?: (update: ViewUpdate) => boolean,
+): DecorationPlugin => ViewPlugin.fromClass(
+	class implements PluginValue {
+		declare tree;
+		declare decorations;
+
+		constructor({state, visibleRanges}: EditorView) {
+			this.tree = syntaxTree(state);
+			this.decorations = mark(this.tree, visibleRanges, state, cm);
+		}
+
+		update(update: ViewUpdate): void {
+			const {docChanged, viewportChanged, state, view: {visibleRanges}} = update,
+				tree = syntaxTree(state);
+			let flag: boolean | undefined;
+			if (docChanged || viewportChanged || tree !== this.tree) {
+				this.tree = tree;
+				flag = true;
+			} else {
+				flag = needUpdate?.(update);
+			}
+			if (flag) {
+				this.decorations = mark(tree, visibleRanges, state, cm);
+			}
+		}
+	},
+	{
+		decorations(v) {
+			return v.decorations;
+		},
+	},
+);
