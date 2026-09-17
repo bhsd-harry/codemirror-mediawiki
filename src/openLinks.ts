@@ -5,7 +5,7 @@ import {tokens} from './config.js';
 import {
 	isMac,
 	linkSelector,
-	mwPrefix,
+	mwSelector,
 } from './constants.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
@@ -29,11 +29,11 @@ declare interface LinkParser {
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	key = isMac ? 'Meta' : 'Control',
 	links = ['extlink-protocol', 'extlink', 'free-extlink-protocol', 'free-extlink', 'magic-link'],
-	pagename = `.${mwPrefix}pagename`,
+	pagename = '.pagename',
 	wikiLinks = /* #__PURE__ */ (() => [
 		'template-name',
 		'link-pagename',
-		'link-pagename+.cm-mw-link-tosection',
+		'link-pagename+.link-tosection',
 		`parserfunction${pagename}`,
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
@@ -213,6 +213,9 @@ export const getOpenLinksExtension = (
 
 					'&:hover': activeStyle,
 				},
+				/** @todo `:has()`的支持更广泛后可以合并选择器 */
+				[`& ${mwSelector}link-pagename:hover+${mwSelector}link-tosection`]: activeStyle,
+				[`& ${mwSelector}link-pagename:has(+${mwSelector}link-tosection:hover)`]: activeStyle,
 			},
 		}),
 	];
@@ -231,7 +234,8 @@ export const openLinks = (
 			),
 			titleParser,
 		),
-		[...links, ...titleParser ? wikiLinks : []].map(type => `.${mwPrefix}${type}`),
+		// eslint-disable-next-line unicorn/no-unsafe-string-replacement
+		[...links, ...titleParser ? wikiLinks : []].map(type => `.${type}`.replaceAll('.', mwSelector)),
 	);
 };
 

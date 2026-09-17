@@ -3,6 +3,7 @@ import {
 	stickyScroll,
 	defaultExcludeNode,
 } from '@bhsd/codemirror-stickyscroll';
+import {mwSelector} from './constants.js';
 import type {Extension} from '@codemirror/state';
 import type {CodeMirror6} from './codemirror';
 
@@ -29,12 +30,12 @@ export default (
 
 export const mediawikiStickyScroll = /* #__PURE__*/ EditorView.theme({
 	'.cm-stickyscroll-code': {
-		'& .cm-mw-section--1, & .cm-mw-section--2': {
+		[[1, 2].map(level => `& ${mwSelector}section--${level}`).join()]: {
 			fontSize: 'inherit',
 			lineHeight: 'inherit',
 			fontWeight: 'bold',
 		},
-		'& .cm-mw-section-header': {
+		[`& ${mwSelector}section-header`]: {
 			fontWeight: 'normal',
 		},
 	},

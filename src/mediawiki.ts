@@ -19,7 +19,7 @@ import {htmlTags, tokens} from './config.js';
 import {
 	extCompletion,
 	isWMF,
-	mwPrefix,
+	mwSelector,
 } from './constants.js';
 import {myService} from './fold.js';
 import {lightHighlightStyle} from './theme.js';
@@ -642,7 +642,7 @@ export class FullMediaWiki extends MediaWiki {
 }
 
 const getSelector = (cls: string[], prefix: string | string[] = ''): string =>
-	(typeof prefix === 'string' ? cls.map(c => `.${mwPrefix}${prefix}${c}`) : prefix.map(p => getSelector(cls, p)))
+	(typeof prefix === 'string' ? cls.map(c => mwSelector + prefix + c) : prefix.map(p => getSelector(cls, p)))
 		.join();
 
 const getGround = (type: 'link' | 'ext' | 'template', ground?: number): string =>
@@ -656,7 +656,7 @@ const getGrounds = (
 	a: number,
 ): Record<string, StyleSpec> => ({
 	[grounds.map(
-		([template, ext, link]) => `.${mwPrefix}${
+		([template, ext, link]) => `${mwSelector}${
 			getGround('template', template)
 		}${
 			getGround('ext', ext)
@@ -674,11 +674,11 @@ const getGrounds = (
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
 const wikiTheme = /* #__PURE__ */ EditorView.theme({
-	[`.${mwPrefix}section--1`]: {
+	[`${mwSelector}section--1`]: {
 		fontSize: '1.8em',
 		lineHeight: '1.2em',
 	},
-	[`.${mwPrefix}section--2`]: {
+	[`${mwSelector}section--2`]: {
 		fontSize: '1.5em',
 		lineHeight: '1.2em',
 	},
@@ -711,7 +711,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	}`]: {
 		fontWeight: 'bold',
 	},
-	[`.${mwPrefix}em`]: {
+	[`${mwSelector}em`]: {
 		fontStyle: 'italic',
 	},
 	// 模板和解析器函数的参数不加粗不斜体
@@ -730,10 +730,10 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
 		color: 'var(--cm-hr)',
 	},
-	[`.${mwPrefix}error`]: {
+	[`${mwSelector}error`]: {
 		color: 'var(--cm-error)',
 	},
-	[`.${mwPrefix}skipformatting`]: {
+	[`${mwSelector}skipformatting`]: {
 		backgroundColor: 'var(--cm-sp)',
 	},
 	[getSelector(['double-underscore', 'signature', 'hr'])]: {
@@ -786,17 +786,17 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[getSelector(['bracket', 'delimiter', 'delimiter2', 'definition'], 'table-')]: {
 		color: 'var(--cm-table)',
 	},
-	[`.${mwPrefix}table-definition-value`]: {
+	[`${mwSelector}table-definition-value`]: {
 		color: 'var(--cm-table-attr)',
 		fontWeight: 'normal',
 	},
 	[getSelector(['bracket', 'delimiter', 'flag', 'lang'], 'convert-')]: {
 		color: 'var(--cm-convert)',
 	},
-	[`.${mwPrefix}entity`]: {
+	[`${mwSelector}entity`]: {
 		color: 'var(--cm-entity)',
 	},
-	[`.${mwPrefix}exttag,.${mwPrefix}tag-score-scheme`]: {
+	[`${mwSelector}exttag,${mwSelector}tag-score-scheme`]: {
 		backgroundColor: 'rgb(119,0,170,.04)',
 	},
 	/* eslint-disable no-sparse-arrays */
@@ -828,7 +828,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},
-	[`.${mwPrefix}tag-ref`]: {
+	[`${mwSelector}tag-ref`]: {
 		backgroundColor: 'var(--cm-ref)',
 	},
 	'.cm-completionIcon-redirect:after': {
