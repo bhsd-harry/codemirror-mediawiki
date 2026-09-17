@@ -655,7 +655,7 @@ export class CodeMirror6 {
 			return [];
 		}
 		const color = `var(${guideColor})`,
-			padding = this.#view!.coordsAtPos(0)!.left
+			padding = this.#view!.coordsAtPos(this.#view!.viewport.from)!.left
 				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x;
 		return EditorView.theme({
 			[contentSelector]: {
