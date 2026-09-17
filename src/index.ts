@@ -73,6 +73,7 @@ import statusBar from './statusBar.js';
 import css from './css.js';
 import html from './html.js';
 import javascript, {exclude} from './javascript.js';
+import jsonc from './jsonc.js';
 import lua from './lua.js';
 import vue from './vue.js';
 import {
@@ -563,7 +564,7 @@ export const registerJSON = (): void => {
 
 /** Register JSON core language support */
 export const registerJSONCore = (): void => {
-	languages.set('json', json);
+	languages.set('json', () => json());
 	registerLintSource('json', getJsonLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };
@@ -573,11 +574,17 @@ export const registerJSONC = (): void => {
 	registerCommonExtensions();
 	registerJSONCCore();
 	registerIndentGuide();
+	registerOpenLinksForJSONC();
+};
+
+/** Register the `openLinks` extension for JSONC */
+export const registerOpenLinksForJSONC = (): void => {
+	registerLangExtension('jsonc', 'openLinks', openLinksForOthers);
 };
 
 /** Register JSONC core language support */
 export const registerJSONCCore = (): void => {
-	languages.set('jsonc', () => json('jsonc'));
+	languages.set('jsonc', jsonc);
 	registerLintSource('jsonc', getJsoncLintSource);
 	optionalFunctions.detectIndent = detectIndent;
 };

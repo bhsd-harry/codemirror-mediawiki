@@ -400,6 +400,15 @@ import {registerJSONCCore} from '@bhsd/codemirror-mediawiki';
 registerJSONCCore();
 ```
 
+In addition to the common [extensions](#extensions), here are some JSONC-specific
+extensions. Note that these extensions may not take effect if the corresponding
+common extensions are not registered:
+
+```js
+import {registerOpenLinksForJSONC} from '@bhsd/codemirror-mediawiki';
+registerOpenLinksForJSONC();
+```
+
 </details>
 
 ### lua
@@ -1582,19 +1591,22 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 CTRL/CMD-click opens a link in a new tab.
 
 For granular control over the bundled extensions, you need to register this
-extension for specific languages([JavaScript](#javascript), [Lua](#lua) or [MediaWiki](#mediawiki)):
+extension for specific languages([CSS](#css), [JavaScript](#javascript),
+[JSONC](#jsonc), [Lua](#lua) or [MediaWiki](#mediawiki)):
 
 ```js
 import {
 	registerOpenLinks, // for MediaWiki
 	registerOpenLinksForCSS,
 	registerOpenLinksForJavaScript,
+	registerOpenLinksForJSONC,
 	registerOpenLinksForLua,
 } from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerOpenLinks('https://www.mediawiki.org/wiki/');
 registerOpenLinksForCSS();
 registerOpenLinksForJavaScript();
+registerOpenLinksForJSONC();
 registerOpenLinksForLua();
 ```
 
