@@ -38,7 +38,8 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 				table = 0,
 				parameter = 0;
 			while (node && node.to <= to) {
-				const {name, from: f, to: t, nextSibling} = node;
+				// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+				const {name, from: f, to: t, nextSibling} = node as SyntaxNode;
 				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, t).includes('<')) {
 					const tag = getTag(state, nextSibling!);
 					if (tag) {
@@ -67,7 +68,7 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 					}
 					parameter = 0;
 				}
-				node = node.nextSibling;
+				node = nextSibling;
 			}
 		}
 	}
