@@ -15,15 +15,16 @@ import {
 	useUnderscore,
 	getHighlightExtension,
 	getFoldService,
+	markLinks,
 } from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
-import type {Extension, EditorState, Range} from '@codemirror/state';
+import type {EditorState, Range} from '@codemirror/state';
 import type {CompletionSource, Completion} from '@codemirror/autocomplete';
 import type {Tree, SyntaxNode} from '@lezer/common';
 import type {ApiSuggest, LinkSuggestion, TitleParser} from './token';
 import type {DocRange} from './util';
-import type {CodeMirror6} from './codemirror';
+import type {CodeMirror6, DecorationPlugin} from './codemirror';
 
 declare interface LuaGlobal {
 	[x: string]: LuaGlobal | 1 | 2 | 3 | 4;
@@ -511,6 +512,7 @@ export const markDocTag = (
 			if (node.name === 'comment') {
 				const firstLine = sliceDoc(state, node),
 					block = firstLine.startsWith('--[[--');
+				markLinks(firstLine, decorations, node.from);
 				if (
 					block
 					|| firstLine.startsWith('---')
@@ -518,17 +520,18 @@ export const markDocTag = (
 				) {
 					while (node.name === 'comment') {
 						const comment = sliceDoc(state, node),
+							// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+							{from: f, to: t, nextSibling} = node as SyntaxNode,
 							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{)?/diu.exec(comment);
+						markLinks(comment, decorations, f);
 						if (mt) {
-							markDocTagType(decorations, node.from, mt, 1);
+							markDocTagType(decorations, f, mt, 1);
 						}
-						// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-						const {nextSibling} = node as SyntaxNode;
 						if (
 							!nextSibling || (
 								block
 									? comment.endsWith(']]')
-									: state.sliceDoc(node.to, nextSibling.from)
+									: state.sliceDoc(t, nextSibling.from)
 										.split('\n', 3).length > 2
 							)
 						) {
@@ -593,7 +596,7 @@ export const getStringOffsetFull = (
 	return null;
 };
 
-const getMarkDocTagPlugin = (titleParser?: TitleParser): Extension => ViewPlugin.fromClass(
+const getMarkDocTagPlugin = (titleParser?: TitleParser): DecorationPlugin => ViewPlugin.fromClass(
 	class implements PluginValue {
 		declare tree;
 		declare decorations;
@@ -618,34 +621,38 @@ const getMarkDocTagPlugin = (titleParser?: TitleParser): Extension => ViewPlugin
 	},
 );
 
-const getSupport = (linkSuggest?: ApiSuggest<LinkSuggestion>, titleParser?: TitleParser): Extension => [
-	lightHighlightStyle,
-	getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
-	lang.data.of({autocomplete: basicSource}),
-	lang.data.of({autocomplete: getSource(linkSuggest, titleParser)}),
-	getFoldService(({doc, tabSize}, start, from) => {
-		const {text, number} = doc.lineAt(start);
-		if (!text.trim()) {
-			return null;
-		}
-		const getIndent = (line: string): number => countColumn(leadingSpaces(line), tabSize);
-		const indent = getIndent(text);
-		let j = number,
-			empty = true;
-		for (; j < doc.lines; j++) {
-			const {text: next} = doc.line(j + 1);
-			if (next.trim()) {
-				const nextIndent = getIndent(next);
-				if (indent >= nextIndent) {
-					break;
-				}
-				empty = false;
+export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport => {
+	const titleParser = cm?.langConfig?.titleParser,
+		plugin = getMarkDocTagPlugin(titleParser);
+	if (cm) {
+		cm.decorationPlugin = plugin;
+	}
+	return new LanguageSupport(lang, [
+		lightHighlightStyle,
+		getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
+		lang.data.of({autocomplete: basicSource}),
+		lang.data.of({autocomplete: getSource(config?.linkSuggest, titleParser)}),
+		plugin,
+		getFoldService(({doc, tabSize}, start, from) => {
+			const {text, number} = doc.lineAt(start);
+			if (!text.trim()) {
+				return null;
 			}
-		}
-		return empty || j === number ? null : {from, to: doc.line(j).to};
-	}),
-	getMarkDocTagPlugin(titleParser),
-];
-
-export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport =>
-	new LanguageSupport(lang, getSupport(config?.linkSuggest, cm?.langConfig?.titleParser));
+			const getIndent = (line: string): number => countColumn(leadingSpaces(line), tabSize);
+			const indent = getIndent(text);
+			let j = number,
+				empty = true;
+			for (; j < doc.lines; j++) {
+				const {text: next} = doc.line(j + 1);
+				if (next.trim()) {
+					const nextIndent = getIndent(next);
+					if (indent >= nextIndent) {
+						break;
+					}
+					empty = false;
+				}
+			}
+			return empty || j === number ? null : {from, to: doc.line(j).to};
+		}),
+	]);
+};

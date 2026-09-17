@@ -52,7 +52,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		extension.checked = search.has(extension.id);
 	}
 
-	const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints', 'openLinks'],
+	const mediawikiOnly = ['escape', 'refHover', 'hover', 'signatureHelp', 'inlayHints'],
 		nonMediawiki = ['indentGuide', 'col'],
 		htmlOnly = ['closeTags'],
 		htmlLangs = new Set(['mediawiki', 'html', 'vue']),

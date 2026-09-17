@@ -5,6 +5,7 @@ import {tokens} from './config.js';
 import {
 	isMac,
 	linkCls,
+	linkMark,
 	mwSelector,
 } from './constants.js';
 import type {Extension, EditorState} from '@codemirror/state';
@@ -239,12 +240,27 @@ export const openLinks = (
 	);
 };
 
-export const openLinksForLua = ({langConfig}: CodeMirror6): Extension => langConfig?.titleParser
-	? getOpenLinksExtension(
-		((state, {pos}, str) => {
-			const node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
-			return node?.name === 'string' ? langConfig.titleParser!(state, node)?.[str ? 'page' : 'range'] : undefined;
-		}) as LinkParser,
-		[`.${linkCls}>span`],
-	)
-	: [];
+export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksExtension(
+	((state, {pos}, str) => {
+		const {langConfig, decorationPlugin, view} = cm,
+			node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
+		if (langConfig?.titleParser && node?.name === 'string') {
+			return langConfig.titleParser(state, node)?.[str ? 'page' : 'range'];
+		} else if (
+			decorationPlugin
+			&& (node?.name === 'comment' || node?.type.is('Comment') || node?.type.is('BlockComment'))
+		) {
+			let link: string | [number, number] | undefined;
+			view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
+				if (value === linkMark) {
+					link = str ? state.sliceDoc(from, to) : [from, to];
+				}
+			});
+			if (link !== undefined) {
+				return link;
+			}
+		}
+		return undefined;
+	}) as LinkParser,
+	[`.${linkCls}>span`],
+);

@@ -263,7 +263,7 @@ if (location.pathname.startsWith("/codemirror-mediawiki")) {
   for (const extension of extensions) {
     extension.checked = search.has(extension.id);
   }
-  const mediawikiOnly = ["escape", "refHover", "hover", "signatureHelp", "inlayHints", "openLinks"], nonMediawiki = ["indentGuide", "col"], htmlOnly = ["closeTags"], htmlLangs = /* @__PURE__ */ new Set(["mediawiki", "html", "vue"]), cssOnly = ["colorPicker"], cssLangs = /* @__PURE__ */ new Set([...htmlLangs, "css"]), abusefilterOnly = ["hover", "signatureHelp"], cm = new CodeMirror6(textarea), linters = {};
+  const mediawikiOnly = ["escape", "refHover", "hover", "signatureHelp", "inlayHints"], nonMediawiki = ["indentGuide", "col"], htmlOnly = ["closeTags"], htmlLangs = /* @__PURE__ */ new Set(["mediawiki", "html", "vue"]), cssOnly = ["colorPicker"], cssLangs = /* @__PURE__ */ new Set([...htmlLangs, "css"]), abusefilterOnly = ["hover", "signatureHelp"], cm = new CodeMirror6(textarea), linters = {};
   let config, mwConfig, fetchConfig;
   const getLayoutStyle = (id) => document.getElementById(id).closest(".fieldLayout").style;
   const init = async (lang) => {

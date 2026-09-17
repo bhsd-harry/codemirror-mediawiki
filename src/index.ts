@@ -63,7 +63,7 @@ import tagMatchingState from './matchTag.js';
 import {mediawikiBase} from './mediawiki.js';
 import {
 	openLinks,
-	openLinksForLua,
+	openLinksForOthers,
 } from './openLinks.js';
 import refHover from './ref.js';
 import signatureHelpBase from './signature.js';
@@ -580,7 +580,7 @@ export const registerLua = (): void => {
 
 /** Register the `openLinks` extension for Lua */
 export const registerOpenLinksForLua = (): void => {
-	registerLangExtension('lua', 'openLinks', openLinksForLua);
+	registerLangExtension('lua', 'openLinks', openLinksForOthers);
 };
 
 /** Register Lua core language support */

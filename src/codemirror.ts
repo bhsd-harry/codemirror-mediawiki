@@ -87,6 +87,8 @@ export type Dialect = 'sanitized-css' | undefined;
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
 
+export type DecorationPlugin = ViewPlugin<{decorations: DecorationSet}>;
+
 declare interface MenuItem {
 	name: string;
 	isActionable(this: void, cm: CodeMirror6): boolean;
@@ -211,6 +213,8 @@ export class CodeMirror6 {
 	declare getWikiConfig?: ConfigGetter;
 	declare langConfig: Partial<MwConfig> & Pick<MwConfig, 'titleParser'> | undefined;
 	declare lsp: LanguageServiceBase | undefined;
+	/** @private */
+	declare decorationPlugin: DecorationPlugin | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
