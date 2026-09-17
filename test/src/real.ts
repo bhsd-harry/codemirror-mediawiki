@@ -2,12 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import {Direction} from '@codemirror/view';
 import {ensureSyntaxTree} from '@codemirror/language';
+import {css} from '@codemirror/lang-css';
 import {javascript} from '@codemirror/lang-javascript';
 import {jsonLanguage, jsoncLanguage} from '@bhsd/lezer-json';
 import {green, yellow, red, refreshStdout} from '@bhsd/nodejs';
 import {execute} from '@bhsd/test-util';
 import {computeIsolates} from '../../dist/bidi.js';
 import {detectIndent} from '../../dist/indent.js';
+import {markLink} from '../../dist/css.js';
 import {markGlobalsAndDocTag} from '../../dist/javascript.js';
 import lua, {markDocTag} from '../../dist/lua.js';
 import parse, {checkNode} from './parser.js';
@@ -92,6 +94,16 @@ const tryScripts = (
 				textDirection: Direction.RTL,
 			} as Partial<EditorView> as EditorView);
 		});
+	}
+
+	if (!lang || lang === 'css' || lang === 'local') {
+		log('CSS');
+		const langSupport = css();
+		tryScripts(singleScript(langSupport, 'css', markLink), '*.css');
+
+		if (lang !== 'local') {
+			await coding(langSupport, '2|8', 'css', markLink);
+		}
 	}
 
 	if (!lang || lang === 'javascript' || lang === 'local') {

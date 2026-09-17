@@ -236,7 +236,6 @@ export default (configs?: BracketConfig): Extension => {
 				return Boolean(selection);
 			},
 
-			/** @ignore */
 			mouseup() {
 				selection = false;
 			},

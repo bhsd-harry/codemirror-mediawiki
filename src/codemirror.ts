@@ -884,10 +884,7 @@ export class CodeMirror6 {
 	 */
 	static replaceSelections = replaceSelections;
 
-	/**
-	 * Internal use only
-	 * @ignore
-	 */
+	/** Internal use only */
 	static getParserConfig = getParserConfig;
 
 	/**

@@ -8,6 +8,7 @@ import {
 	linkMark,
 	mwSelector,
 } from './constants.js';
+import {commentTypes} from './util.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
 import type {CodeMirror6} from './codemirror';
@@ -239,8 +240,6 @@ export const openLinks = (
 		[...links, ...titleParser ? wikiLinks : []].map(type => `.${type}`.replaceAll('.', mwSelector)),
 	);
 };
-
-const commentTypes = new Set<string | undefined>(['comment', 'Comment', 'BlockComment', 'LineComment']);
 
 export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksExtension(
 	((state, {pos}, str) => {

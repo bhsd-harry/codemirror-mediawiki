@@ -3,7 +3,7 @@ import {htmlLanguage, htmlCompletionSourceWith} from '@codemirror/lang-html';
 import {javascript, javascriptLanguage} from '@codemirror/lang-javascript';
 import {cssLanguage} from '@codemirror/lang-css';
 import {LanguageSupport} from '@codemirror/language';
-import {cssCompletion} from './css.js';
+import {cssCompletion, markLinkPlugin} from './css.js';
 import {jsCompletion, markGlobalsAndDocTagPlugin} from './javascript.js';
 import {mediawikiBase} from './mediawiki.js';
 import {lightHighlightStyle} from './theme.js';
@@ -41,6 +41,7 @@ export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
 				support,
 				lightHighlightStyle,
 				markGlobalsAndDocTagPlugin(cm),
+				markLinkPlugin(cm),
 			],
 		);
 	Object.assign(langSupport, {nestedMWLanguage: language});

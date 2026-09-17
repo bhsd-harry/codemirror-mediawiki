@@ -275,8 +275,12 @@ extensions. Note that these extensions may not take effect if the corresponding
 common extensions are not registered:
 
 ```js
-import {registerColorPickerForCSS} from '@bhsd/codemirror-mediawiki';
+import {
+	registerColorPickerForCSS,
+	registerOpenLinksForCSS,
+} from '@bhsd/codemirror-mediawiki';
 registerColorPickerForCSS();
+registerOpenLinksForCSS();
 ```
 
 </details>
@@ -1583,11 +1587,13 @@ extension for specific languages([JavaScript](#javascript), [Lua](#lua) or [Medi
 ```js
 import {
 	registerOpenLinks, // for MediaWiki
+	registerOpenLinksForCSS,
 	registerOpenLinksForJavaScript,
 	registerOpenLinksForLua,
 } from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerOpenLinks('https://www.mediawiki.org/wiki/');
+registerOpenLinksForCSS();
 registerOpenLinksForJavaScript();
 registerOpenLinksForLua();
 ```

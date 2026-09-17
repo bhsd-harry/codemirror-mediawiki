@@ -1,4 +1,4 @@
-import {ViewPlugin} from '@codemirror/view';
+import {ViewPlugin, Decoration} from '@codemirror/view';
 import {
 	foldService,
 	syntaxTree,
@@ -19,7 +19,6 @@ import {
 	linkMark,
 } from './constants.js';
 import type {
-	Decoration,
 	DecorationSet,
 	PluginValue,
 	EditorView,
@@ -31,6 +30,7 @@ import type {Completion} from '@codemirror/autocomplete';
 import type {
 	Tree,
 	SyntaxNode,
+	SyntaxNodeRef,
 } from '@lezer/common';
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
@@ -356,3 +356,27 @@ export const getMarkPlugin = (
 		},
 	},
 );
+
+export const commentTypes = new Set<string | undefined>(['comment', 'Comment', 'BlockComment', 'LineComment']);
+
+/**
+ * 高亮显示注释中的链接
+ * @param condition 条件函数，返回`true`时不标注链接
+ */
+export const markLinkBasic: (condition?: (state: EditorState, node: SyntaxNodeRef) => boolean) => Mark = condition =>
+	(tree, visibleRanges, state) => {
+		const decorations: Range<Decoration>[] = [];
+		for (const {from, to} of visibleRanges) {
+			tree.iterate({
+				from,
+				to,
+				enter(node) {
+					const {name, from: f, to: t} = node;
+					if (commentTypes.has(name) && !condition?.(state, node)) {
+						markLinks(state.sliceDoc(f, t), decorations, f);
+					}
+				},
+			});
+		}
+		return Decoration.set(decorations, true);
+	};

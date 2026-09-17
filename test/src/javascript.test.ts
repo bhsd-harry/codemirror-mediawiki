@@ -100,7 +100,7 @@ const sublangTest = (name: string, lang: LanguageSupport): void => {
 					 * @throws e - error
 					 * @internal
 					 */</script>`,
-				state = createState(doc, javascript());
+				state = createState(doc, lang);
 			mockTest(
 				state,
 				[],
@@ -112,7 +112,7 @@ const sublangTest = (name: string, lang: LanguageSupport): void => {
 		});
 		it('inline tag', () => {
 			const doc = '<script>/** value of {@link X} */</script>',
-				state = createState(doc, javascript());
+				state = createState(doc, lang);
 			mockTest(state, [], [], [[22, 27]]);
 		});
 	});

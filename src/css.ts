@@ -1,9 +1,9 @@
 import {cssLanguage, cssCompletionSource} from '@codemirror/lang-css';
 import {LanguageSupport, syntaxTree} from '@codemirror/language';
-import {sliceDoc, getCompletions} from './util.js';
+import {sliceDoc, getCompletions, getMarkPlugin, markLinkBasic} from './util.js';
 import type {Extension} from '@codemirror/state';
 import type {CompletionSource, CompletionResult, Completion} from '@codemirror/autocomplete';
-import type {Dialect} from './codemirror';
+import type {Dialect, DecorationPlugin, CodeMirror6} from './codemirror';
 
 declare const mediaWiki: object | undefined;
 
@@ -62,4 +62,21 @@ export const cssCompletion = (dialect?: Dialect): Extension => {
 	return cssLanguage.data.of({autocomplete: source});
 };
 
-export default (dialect: Dialect): LanguageSupport => new LanguageSupport(cssLanguage, cssCompletion(dialect));
+/**
+ * 高亮显示注释中的链接
+ * @test
+ */
+export const markLink = markLinkBasic((state, {from}) => !cssLanguage.isActiveAt(state, from));
+
+export const markLinkPlugin = (cm?: CodeMirror6): DecorationPlugin => getMarkPlugin(markLink, cm);
+
+export default (dialect: Dialect, cm?: CodeMirror6): LanguageSupport => {
+	const plugin = markLinkPlugin(cm);
+	if (cm) {
+		cm.decorationPlugin = plugin;
+	}
+	return new LanguageSupport(cssLanguage, [
+		cssCompletion(dialect),
+		plugin,
+	]);
+};

@@ -534,11 +534,17 @@ export const registerCSS = (): void => {
 	registerCSSCore();
 	registerIndentGuide();
 	registerColorPickerForCSS();
+	registerOpenLinksForCSS();
 };
 
 /** Register the `colorPicker` extension for CSS */
 export const registerColorPickerForCSS = (): void => {
 	registerLangExtension('css', 'colorPicker', colorPicker);
+};
+
+/** Register the `openLinks` extension for CSS */
+export const registerOpenLinksForCSS = (): void => {
+	registerLangExtension('css', 'openLinks', openLinksForOthers);
 };
 
 /** Register CSS core language support */
