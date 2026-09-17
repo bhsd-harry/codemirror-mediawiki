@@ -10,6 +10,7 @@ import {
 	markDocTagType,
 	leadingSpaces,
 	findTemplateName,
+	markLinks,
 } from '../../dist/util.js';
 import {createState} from './util.js';
 import type {Decoration} from '@codemirror/view';
@@ -22,17 +23,26 @@ const doc = Text.of([
 const state = createState('{{a}}{{b}}'),
 	node = syntaxTree(state).resolve(3, 1);
 
+const cmpRange = (decorations: Range<Decoration>[], results: [number, number][], msg: string): void => {
+	assert.deepStrictEqual(decorations.map(({from, to}) => [from, to]), results, msg);
+};
+
 const jsTest = (str: string, results: [number, number][], end: number): void => {
 	const decorations: Range<Decoration>[] = [],
 		mt = /(@[a-z]+)(\s*\{)?/diu.exec(str)!;
 	assert.strictEqual(markDocTagType(decorations, 0, mt), end, str);
-	assert.deepStrictEqual(decorations.map(({from, to}) => [from, to]), results);
+	cmpRange(decorations, results, str);
 };
 const luaTest = (str: string, results: [number, number][], end: number): void => {
 	const decorations: Range<Decoration>[] = [],
 		mt = /(@[a-z]+)(\s*\{)?/diu.exec(str)!;
 	assert.strictEqual(markDocTagType(decorations, 0, mt, 1), end, str);
-	assert.deepStrictEqual(decorations.map(({from, to}) => [from, to]), results);
+	cmpRange(decorations, results, str);
+};
+const linkTest = (str: string, results: [number, number][]): void => {
+	const decorations: Range<Decoration>[] = [];
+	markLinks(str, decorations, 0);
+	cmpRange(decorations, results, str);
 };
 
 describe('util functions', () => {
@@ -88,5 +98,32 @@ describe('util functions', () => {
 		luaTest('@type {}}', [[0, 5], [6, 8]], 8);
 		luaTest('@type {string|number}}', [[0, 5], [6, 21]], 21);
 		luaTest('@param {{a: {b: string}}}}', [[0, 6], [7, 25]], 25);
+	});
+
+	it('find links', () => {
+		linkTest(
+			'/** access to the upstream {@link https://codemirror.net/docs/ref/ CodeMirror API} */',
+			[[34, 66]],
+		);
+		linkTest(
+			'/* which [side](https://lezer.codemirror.net/docs/ref/#common.Tree.resolve) to get the node */',
+			[[16, 74]],
+		);
+		linkTest(
+			'// see https://github.com/svg/svgo/blob/main/lib/stringifier.js#L39 for available options.',
+			[[7, 67]],
+		);
+		linkTest(
+			"// article path (e.g., 'https://www.mediawiki.org/wiki/')",
+			[[24, 55]],
+		);
+		linkTest(
+			'// [standardized lezer highlighting tags]{@link https://lezer.codemirror.net/docs/ref/#highlight.tags}.',
+			[[48, 101]],
+		);
+		linkTest(
+			'-- Constants (see: https://github.com/minetest/minetest/blob/master/builtin/game/constants.lua)',
+			[[19, 94]],
+		);
 	});
 });

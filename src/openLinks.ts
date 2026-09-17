@@ -4,7 +4,7 @@ import {ensureSyntaxTree} from '@codemirror/language';
 import {tokens} from './config.js';
 import {
 	isMac,
-	linkSelector,
+	linkCls,
 	mwSelector,
 } from './constants.js';
 import type {Extension, EditorState} from '@codemirror/state';
@@ -245,6 +245,6 @@ export const openLinksForLua = ({langConfig}: CodeMirror6): Extension => langCon
 			const node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
 			return node?.name === 'string' ? langConfig.titleParser!(state, node)?.[str ? 'page' : 'range'] : undefined;
 		}) as LinkParser,
-		[`${linkSelector}>span`],
+		[`.${linkCls}>span`],
 	)
 	: [];

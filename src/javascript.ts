@@ -9,8 +9,8 @@ import {syntaxTree} from '@codemirror/language';
 import {setDiagnosticsEffect} from '@codemirror/lint';
 import {isGlobal} from '@bhsd/browser';
 import {builtin} from './javascript-globals.js';
-import {doctagMark} from './constants.js';
-import {markDocTagType, pushDecoration} from './util.js';
+import {doctag, doctagMark} from './constants.js';
+import {markDocTagType, pushDecoration, markLinks} from './util.js';
 import type {Extension, Range, EditorState} from '@codemirror/state';
 import type {PluginValue, EditorView, ViewUpdate, DecorationSet} from '@codemirror/view';
 import type {CompletionContext} from '@codemirror/autocomplete';
@@ -23,7 +23,7 @@ import type {LintSource} from './lintsource';
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
 
 const globalsMark = Decoration.mark({class: 'cm-globals'}),
-	varMark = Decoration.mark({class: 'cm-doctag-var'}),
+	varMark = Decoration.mark({class: `${doctag}-var`}),
 	builtinGlobals = new Set(Object.keys(builtin));
 
 /**
@@ -75,7 +75,8 @@ export const markGlobalsAndDocTag = (
 			from,
 			to,
 			enter({type, from: f, to: t}) {
-				const name = state.sliceDoc(f, t);
+				const name = state.sliceDoc(f, t),
+					isBlockComment = type.is('BlockComment');
 				if (!javascriptLanguage.isActiveAt(state, f)) {
 					//
 				} else if (type.is('VariableName') && allGlobals.has(name)) {
@@ -83,28 +84,31 @@ export const markGlobalsAndDocTag = (
 					if (!completions?.options.some(({label}) => label === name)) {
 						pushDecoration(decorations, globalsMark, f, t);
 					}
-				} else if (type.is('BlockComment') && /^\/\*{2}(?!\*)/u.test(name)) {
-					const comment = name.slice(2),
-						pos = f + 2,
-						mtAll = comment.matchAll(/^[ \t]*\*\s*(@[a-z]+)(\s+\{)?|\{(@[a-z]+)/dgimu);
-					for (const mt of mtAll) {
-						if (mt[3]) {
-							const [start, end] = mt.indices![3]!;
-							pushDecoration(decorations, doctagMark, pos + start, pos + end);
-						} else {
-							const index = markDocTagType(decorations, pos, mt),
-								m = /^\s+([a-z_]\w*)\s+-/diu.exec(comment.slice(index));
-							if (m) {
-								const [start, end] = m.indices![1]!;
-								pushDecoration(decorations, varMark, pos + index + start, pos + index + end);
+				} else if (isBlockComment || type.is('Comment')) {
+					if (isBlockComment && /^\/\*{2}(?!\*)/u.test(name)) {
+						const comment = name.slice(2),
+							pos = f + 2,
+							mtAll = comment.matchAll(/^[ \t]*\*\s*(@[a-z]+)(\s+\{)?|\{(@[a-z]+)/dgimu);
+						for (const mt of mtAll) {
+							if (mt[3]) {
+								const [start, end] = mt.indices![3]!;
+								pushDecoration(decorations, doctagMark, pos + start, pos + end);
+							} else {
+								const index = markDocTagType(decorations, pos, mt),
+									m = /^\s+([a-z_]\w*)\s+-/diu.exec(comment.slice(index));
+								if (m) {
+									const [start, end] = m.indices![1]!;
+									pushDecoration(decorations, varMark, pos + index + start, pos + index + end);
+								}
 							}
 						}
 					}
+					markLinks(name, decorations, f);
 				}
 			},
 		});
 	}
-	return Decoration.set(decorations);
+	return Decoration.set(decorations, true);
 };
 
 export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fromClass(

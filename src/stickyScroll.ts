@@ -28,7 +28,7 @@ export default (
 	e,
 ];
 
-export const mediawikiStickyScroll = /* #__PURE__*/ EditorView.theme({
+export const mediawikiStickyScroll = /* #__PURE__*/ (() => EditorView.theme({
 	'.cm-stickyscroll-code': {
 		[[1, 2].map(level => `& ${mwSelector}section--${level}`).join()]: {
 			fontSize: 'inherit',
@@ -39,4 +39,4 @@ export const mediawikiStickyScroll = /* #__PURE__*/ EditorView.theme({
 			fontWeight: 'normal',
 		},
 	},
-});
+}))();

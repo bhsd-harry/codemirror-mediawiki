@@ -5,6 +5,7 @@ import {
 	bgDark,
 	cursorColor,
 	guideColor,
+	doctag,
 } from './constants.js';
 import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
@@ -44,13 +45,13 @@ export const light = /* #__PURE__ */ EditorView.theme({
 				color: '#164',
 			},
 		},
-		'.cm-doctag>*': {
+		[`.${doctag}>*`]: {
 			color: '#219',
 		},
-		'.cm-doctag-type>*': {
+		[`.${doctag}-type>*`]: {
 			color: '#085',
 		},
-		'.cm-doctag-var>*': {
+		[`.${doctag}-var>*`]: {
 			color: '#00f',
 		},
 	}),
@@ -92,13 +93,13 @@ export const light = /* #__PURE__ */ EditorView.theme({
 					color: '#d08770',
 				},
 			},
-			'.cm-doctag>*': {
+			[`.${doctag}>*`]: {
 				color: '#81a1c1',
 			},
-			'.cm-doctag-type>*': {
+			[`.${doctag}-type>*`]: {
 				color: '#ebcb8b',
 			},
-			'.cm-doctag-var>*': {
+			[`.${doctag}-var>*`]: {
 				color: '#8fbcbb',
 			},
 		}),

@@ -15,6 +15,7 @@ import {
 	mwTag,
 	doctagMark,
 	typeMark,
+	linkMark,
 } from './constants.js';
 import type {Decoration} from '@codemirror/view';
 import type {Text, EditorState, Range, Extension} from '@codemirror/state';
@@ -282,4 +283,24 @@ export const getHighlightExtension = (...args: Parameters<(typeof HighlightStyle
 export const loadMarked = async (): Promise<void> => {
 	const {CDN = ''} = baseData;
 	await loadScript(`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`, 'marked', true);
+};
+
+/**
+ * 从注释中标注链接
+ * @param str 注释字符串
+ * @param decorations Decoration 数组
+ * @param from 注释起点
+ * @test
+ */
+export const markLinks = (str: string, decorations: Range<Decoration>[], from: number): void => {
+	const mt = str
+		.matchAll(/(?:^|[^\p{L}\p{N}_])(https?:\/\/(?:\[[\da-f:.]+\])?[^{}[\]()<>"'\t\n\r\v\p{Zs}]+)/dgiu);
+	for (const m of mt) {
+		const range = m.indices![1]!,
+			trail = /[^,;\\.:!?][,;\\.:!?]+$/u.exec(m[1]!);
+		if (trail) {
+			range[1] -= trail[0].length - 1;
+		}
+		pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
+	}
 };

@@ -5,7 +5,7 @@ import {countColumn} from '@codemirror/state';
 import {syntaxTree, LanguageSupport, StreamLanguage} from '@codemirror/language';
 import {snippetCompletion} from '@codemirror/autocomplete';
 import {tags} from '@lezer/highlight';
-import {linkSelector, isWMF} from './constants.js';
+import {linkMark, isWMF} from './constants.js';
 import {
 	leadingSpaces,
 	sliceDoc,
@@ -332,7 +332,6 @@ const map = {
 		}),
 	],
 	excludedTypes = new Set(['variableName', 'variableName.standard', 'keyword']),
-	linkDeco = Decoration.mark({class: linkSelector.slice(1)}),
 	reLink = /^(['"]).+\1$|^\[(=*)\[.+\]\2\]$/u,
 	reLinkIncomplete = /^(['"]|\[=*\[).*$/u,
 	lang = StreamLanguage.define(lua);
@@ -541,7 +540,7 @@ export const markDocTag = (
 			} else if (titleParser) {
 				const title = titleParser(state, node);
 				if (title) {
-					pushDecoration(decorations, linkDeco, title.range![0], title.range![1]);
+					pushDecoration(decorations, linkMark, title.range![0], title.range![1]);
 				}
 			}
 			node = node.nextSibling;

@@ -209,7 +209,6 @@ export default [
 			tag: tags.link,
 			color: base0E,
 			textDecoration: 'underline',
-			textUnderlinePosition: 'under',
 		},
 		{
 			tag: tags.monospace,

@@ -37,7 +37,7 @@ import {
 	panelSelector,
 	panelsSelector,
 	noDetectionLangs,
-	linkSelector,
+	linkCls,
 	guideColor,
 	contentSelector,
 	scrollerSelector,
@@ -393,7 +393,7 @@ export class CodeMirror6 {
 					[`${panelSelector} [name=close]`]: {
 						color: 'inherit',
 					},
-					[`${linkSelector}>span`]: {
+					[`.${linkCls}>span`]: {
 						color: 'var(--cm-link)',
 						textDecoration: 'underline',
 					},
