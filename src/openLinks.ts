@@ -240,16 +240,15 @@ export const openLinks = (
 	);
 };
 
+const commentTypes = new Set<string | undefined>(['comment', 'Comment', 'BlockComment', 'LineComment']);
+
 export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksExtension(
 	((state, {pos}, str) => {
 		const {langConfig, decorationPlugin, view} = cm,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
 		if (langConfig?.titleParser && node?.name === 'string') {
 			return langConfig.titleParser(state, node)?.[str ? 'page' : 'range'];
-		} else if (
-			decorationPlugin
-			&& (node?.name === 'comment' || node?.type.is('Comment') || node?.type.is('BlockComment'))
-		) {
+		} else if (decorationPlugin && commentTypes.has(node?.name)) {
 			let link: string | [number, number] | undefined;
 			view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
 				if (value === linkMark) {

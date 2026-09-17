@@ -17,7 +17,7 @@ import type {CompletionContext} from '@codemirror/autocomplete';
 import type {Tree} from '@lezer/common';
 import type {Linter} from 'eslint';
 import type {DocRange} from './util';
-import type {CodeMirror6} from './codemirror';
+import type {CodeMirror6, DecorationPlugin} from './codemirror';
 import type {LintSource} from './lintsource';
 
 export const jsCompletion = javascriptLanguage.data.of({autocomplete: scopeCompletionSource(globalThis)});
@@ -84,7 +84,8 @@ export const markGlobalsAndDocTag = (
 					if (!completions?.options.some(({label}) => label === name)) {
 						pushDecoration(decorations, globalsMark, f, t);
 					}
-				} else if (isBlockComment || type.is('Comment')) {
+				} else if (isBlockComment || type.is('LineComment')) {
+					markLinks(name, decorations, f);
 					if (isBlockComment && /^\/\*{2}(?!\*)/u.test(name)) {
 						const comment = name.slice(2),
 							pos = f + 2,
@@ -103,7 +104,6 @@ export const markGlobalsAndDocTag = (
 							}
 						}
 					}
-					markLinks(name, decorations, f);
 				}
 			},
 		});
@@ -111,7 +111,7 @@ export const markGlobalsAndDocTag = (
 	return Decoration.set(decorations, true);
 };
 
-export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): Extension => ViewPlugin.fromClass(
+export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): DecorationPlugin => ViewPlugin.fromClass(
 	class implements PluginValue {
 		declare tree;
 		declare decorations;
@@ -142,8 +142,14 @@ export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): Extension => ViewP
 	},
 );
 
-export default (_?: unknown, cm?: CodeMirror6): Extension => [
-	js(),
-	jsCompletion,
-	markGlobalsAndDocTagPlugin(cm),
-];
+export default (_?: unknown, cm?: CodeMirror6): Extension => {
+	const plugin = markGlobalsAndDocTagPlugin(cm);
+	if (cm) {
+		cm.decorationPlugin = plugin;
+	}
+	return [
+		js(),
+		jsCompletion,
+		plugin,
+	];
+};

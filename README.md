@@ -239,8 +239,12 @@ AbuseFilter-specific extensions. Note that these extensions may not take effect
 if the corresponding common extensions are not registered:
 
 ```js
-import {registerHoverForAbuseFilter} from '@bhsd/codemirror-mediawiki';
+import {
+	registerHoverForAbuseFilter,
+	registerSignatureHelpForAbuseFilter,
+} from '@bhsd/codemirror-mediawiki';
 registerHoverForAbuseFilter();
+registerSignatureHelpForAbuseFilter();
 ```
 
 </details>
@@ -340,8 +344,12 @@ JavaScript-specific extensions. Note that these extensions may not take effect
 if the corresponding common extensions are not registered:
 
 ```js
-import {registerBracketMatchingForJavaScript} from '@bhsd/codemirror-mediawiki';
+import {
+	registerBracketMatchingForJavaScript,
+	registerOpenLinksForJavaScript,
+} from '@bhsd/codemirror-mediawiki';
 registerBracketMatchingForJavaScript();
+registerOpenLinksForJavaScript();
 ```
 
 </details>
@@ -1570,15 +1578,17 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 CTRL/CMD-click opens a link in a new tab.
 
 For granular control over the bundled extensions, you need to register this
-extension for specific languages([Lua](#lua) or [MediaWiki](#mediawiki)):
+extension for specific languages([JavaScript](#javascript), [Lua](#lua) or [MediaWiki](#mediawiki)):
 
 ```js
 import {
 	registerOpenLinks, // for MediaWiki
+	registerOpenLinksForJavaScript,
 	registerOpenLinksForLua,
 } from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerOpenLinks('https://www.mediawiki.org/wiki/');
+registerOpenLinksForJavaScript();
 registerOpenLinksForLua();
 ```
 

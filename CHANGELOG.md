@@ -10,6 +10,7 @@
 - The [openLinks](./README.md#openlinks) extension now also supports Lua functions `mw.ext.TemplateStyles.link` on a MediaWiki site
 - The [autocompletion](./README.md#autocompletion) extension now also suggests [loadable libraries](https://www.mediawiki.org/wiki/Extension:Scribunto/Lua_reference_manual#Loadable_libraries) in the Lua mode on a MediaWiki site
 - The [openLinks](./README.md#openlinks) and [autocompletion](./README.md#autocompletion) extensions now also support localized aliases for the `Module` namespace in the Lua mode on a MediaWiki site
+- The [openLinks](./README.md#openlinks) extension now also supports external links in comments JavaScript and Lua modes
 
 **Fixed**
 

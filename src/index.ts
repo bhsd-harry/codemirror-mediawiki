@@ -508,11 +508,17 @@ export const registerJavaScript = (): void => {
 	registerJavaScriptCore();
 	registerIndentGuide();
 	registerBracketMatchingForJavaScript();
+	registerOpenLinksForJavaScript();
 };
 
 /** Register the `bracketMatching` extension for JavaScript */
 export const registerBracketMatchingForJavaScript = (): void => {
 	registerLangExtension<[BracketConfig]>('javascript', 'bracketMatching', [{exclude}]);
+};
+
+/** Register the `openLinks` extension for JavaScript */
+export const registerOpenLinksForJavaScript = (): void => {
+	registerLangExtension('javascript', 'openLinks', openLinksForOthers);
 };
 
 /** Register JavaScript core language support */
