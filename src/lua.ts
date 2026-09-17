@@ -508,7 +508,7 @@ export const markDocTag: Mark = (tree, visibleRanges, state, cm) => {
 			if (node.name === 'comment') {
 				const firstLine = sliceDoc(state, node),
 					block = firstLine.startsWith('--[[--');
-				markLinks(firstLine, decorations, node.from);
+				markLinks(firstLine, decorations, node.from, false);
 				if (
 					block
 					|| firstLine.startsWith('---')
@@ -519,7 +519,7 @@ export const markDocTag: Mark = (tree, visibleRanges, state, cm) => {
 							// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 							{from: f, to: t, nextSibling} = node as SyntaxNode,
 							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{)?/diu.exec(comment);
-						markLinks(comment, decorations, f);
+						markLinks(comment, decorations, f, false);
 						if (mt) {
 							markDocTagType(decorations, f, mt, 1);
 						}

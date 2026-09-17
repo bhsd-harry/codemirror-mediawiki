@@ -276,8 +276,10 @@ export class CodeMirror extends CodeMirror6 {
 	 * @param config 语言设置
 	 */
 	#setLangConfig(config: MwConfig): void {
-		if (this.lang === 'mediawiki') {
+		if (this.lang !== 'json') {
 			mw.loader.load('mediawiki.Title');
+		}
+		if (this.lang === 'mediawiki') {
 			this.langConfig = $.extend(
 				true,
 				{
@@ -287,7 +289,6 @@ export class CodeMirror extends CodeMirror6 {
 				config,
 			);
 		} else if (this.lang === 'lua') {
-			mw.loader.load('mediawiki.Title');
 			this.langConfig = {
 				...config,
 				titleParser(state, node): ReturnType<TitleParser> {

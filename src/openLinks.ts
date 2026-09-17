@@ -11,6 +11,7 @@ import {
 import {commentTypes} from './util.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
+import type {} from 'types-mediawiki';
 import type {CodeMirror6} from './codemirror';
 import type {TitleParser} from './token';
 
@@ -252,7 +253,16 @@ export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksEx
 				let link: string | [number, number] | undefined;
 				view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
 					if (value === linkMark) {
-						link = str ? state.sliceDoc(from, to) : [from, to];
+						if (str) {
+							link = state.sliceDoc(from, to);
+							const isTemplate = /^\{\{.+\}\}$/u.test(link);
+							if (isTemplate || /^\[\[.+\]\]$/u.test(link)) {
+								link = mw.Title.newFromText(link.slice(2, -2), isTemplate ? 10 : 0)!
+									.getUrl();
+							}
+						} else {
+							link = [from, to];
+						}
 					}
 				});
 				if (link !== undefined) {

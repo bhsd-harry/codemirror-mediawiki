@@ -35,6 +35,7 @@ import type {
 import type {Position} from 'vscode-languageserver-types';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {ConfigData} from 'wikiparser-node';
+import type {} from 'types-mediawiki';
 import type {CodeMirror6, DecorationPlugin} from './codemirror';
 
 export type Mark = (tree: Tree, ranges: readonly DocRange[], state: EditorState, cm?: CodeMirror6) => DecorationSet;
@@ -295,26 +296,49 @@ export const loadMarked = async (): Promise<void> => {
 	await loadScript(`${CDN}${CDN && '/'}npm/marked/lib/marked.umd.js`, 'marked', true);
 };
 
+const sourceExternal = /* #__PURE__ */ (
+		() => String.raw`(?:^|[^\p{L}\p{N}_])(https?:\/\/(?:\[[\da-f:.]+\])?[^{}[\]()<>"'\t\n\r\v\p{Zs}]+)`
+	)(),
+	sourceLink = /* #__PURE__ */ (() => String.raw`\[\[\s*(?!\s)[^<>[\]{}|#\n]+(?:#[^[\]{}|\n]*)?\]\]`)(),
+	sourceTemplate = /* #__PURE__ */ (() => String.raw`\{\{\s*(?!\s)[^<>[\]{}|#\n]+\}\}(?!\})`)(),
+	reExternal = /* #__PURE__ */ new RegExp(sourceExternal, 'dgiu'),
+	reLua = /* #__PURE__ */ (() => new RegExp(`${sourceExternal}|${sourceTemplate}`, 'dgiu'))(),
+	reWiki = /* #__PURE__ */ (
+		() => new RegExp(`${sourceExternal}|${sourceLink}|${sourceTemplate}`, 'dgiu')
+	)();
+
 /**
  * 从注释中标注链接
  * @param str 注释字符串
  * @param decorations Decoration 数组
  * @param from 注释起点
+ * @param wikiLink 是否标注维基链接
  * @test
  */
-export const markLinks = (str: string, decorations: Range<Decoration>[], from: number): void => {
-	const mt = str
-		.matchAll(/(?:^|[^\p{L}\p{N}_])(https?:\/\/(?:\[[\da-f:.]+\])?[^{}[\]()<>"'\t\n\r\v\p{Zs}]+)/dgiu);
+export const markLinks = (str: string, decorations: Range<Decoration>[], from: number, wikiLink = true): void => {
+	let re = reExternal;
+	if (typeof mw === 'object' && typeof mw.Title === 'function') {
+		re = wikiLink ? reWiki : reLua;
+	}
+	const mt = str.matchAll(re);
 	for (const m of mt) {
-		const range = m.indices![1]!,
-			trail = /[^,;\\.:!?][,;\\.:!?]+$/u.exec(m[1]!);
-		if (trail) {
-			range[1] -= trail[0].length - 1;
+		if (m[1]) {
+			const range = m.indices![1]!,
+				trail = /[^,;\\.:!?][,;\\.:!?]+$/u.exec(m[1]);
+			if (trail) {
+				range[1] -= trail[0].length - 1;
+			}
+			try {
+				new URL(str.slice(...range)); // eslint-disable-line no-new
+				pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
+			} catch {}
+		} else {
+			const range = m.indices![0]!,
+				title = mw.Title.newFromText(str.slice(range[0] + 2, range[1] - 2));
+			if (title) {
+				pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
+			}
 		}
-		try {
-			new URL(str.slice(...range)); // eslint-disable-line no-new
-			pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
-		} catch {}
 	}
 };
 
