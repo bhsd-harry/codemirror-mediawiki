@@ -213,8 +213,6 @@ export class CodeMirror6 {
 	declare getWikiConfig?: ConfigGetter;
 	declare langConfig: Partial<MwConfig> & Pick<MwConfig, 'titleParser'> | undefined;
 	declare lsp: LanguageServiceBase | undefined;
-	/** @private */
-	declare decorationPlugin: DecorationPlugin | undefined;
 	readonly #textarea;
 	readonly #language = new Compartment();
 	readonly #linter = new Compartment();
@@ -227,6 +225,7 @@ export class CodeMirror6 {
 	readonly #lineWrapping = new Compartment();
 	readonly #theme = new Compartment();
 	readonly #customHighlight = new Compartment();
+	readonly #decorationPlugins: DecorationPlugin[] = [];
 	#view: EditorView | undefined;
 	#lang;
 	#visible = false;
@@ -276,6 +275,11 @@ export class CodeMirror6 {
 	/** @private */
 	get font(): string | false | undefined {
 		return this.#font;
+	}
+
+	/** @private */
+	get decorationPlugins(): DecorationPlugin[] {
+		return this.#decorationPlugins;
 	}
 
 	/**

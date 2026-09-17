@@ -243,19 +243,21 @@ export const openLinks = (
 
 export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksExtension(
 	((state, {pos}, str) => {
-		const {langConfig, decorationPlugin, view} = cm,
+		const {langConfig, decorationPlugins, view} = cm,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
 		if (langConfig?.titleParser && node?.name === 'string') {
 			return langConfig.titleParser(state, node)?.[str ? 'page' : 'range'];
-		} else if (decorationPlugin && commentTypes.has(node?.name)) {
-			let link: string | [number, number] | undefined;
-			view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
-				if (value === linkMark) {
-					link = str ? state.sliceDoc(from, to) : [from, to];
+		} else if (commentTypes.has(node?.name)) {
+			for (const decorationPlugin of decorationPlugins) {
+				let link: string | [number, number] | undefined;
+				view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
+					if (value === linkMark) {
+						link = str ? state.sliceDoc(from, to) : [from, to];
+					}
+				});
+				if (link !== undefined) {
+					return link;
 				}
-			});
-			if (link !== undefined) {
-				return link;
 			}
 		}
 		return undefined;

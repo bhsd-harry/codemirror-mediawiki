@@ -7,8 +7,19 @@ import {cssCompletion, markLinkPlugin} from './css.js';
 import {jsCompletion, markGlobalsAndDocTagPlugin} from './javascript.js';
 import {mediawikiBase} from './mediawiki.js';
 import {lightHighlightStyle} from './theme.js';
+import {markLinkBasic, getMarkPlugin} from './util.js';
+import type {Extension} from '@codemirror/state';
 import type {MwConfig} from './token';
 import type {CodeMirror6} from './codemirror';
+
+export const getCommonSupport = (cm?: CodeMirror6): Extension => [
+	javascript().support,
+	jsCompletion,
+	cssCompletion(),
+	markGlobalsAndDocTagPlugin(cm),
+	markLinkPlugin(cm),
+	getMarkPlugin(markLinkBasic((state, {to}) => !htmlLanguage.isActiveAt(state, to)), cm),
+];
 
 export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
 	const {language, support} = mediawikiBase(config),
@@ -35,13 +46,9 @@ export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
 			lang,
 			[
 				autocomplete,
-				javascript().support,
-				jsCompletion,
-				cssCompletion(),
 				support,
 				lightHighlightStyle,
-				markGlobalsAndDocTagPlugin(cm),
-				markLinkPlugin(cm),
+				getCommonSupport(cm),
 			],
 		);
 	Object.assign(langSupport, {nestedMWLanguage: language});

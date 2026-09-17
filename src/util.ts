@@ -311,7 +311,10 @@ export const markLinks = (str: string, decorations: Range<Decoration>[], from: n
 		if (trail) {
 			range[1] -= trail[0].length - 1;
 		}
-		pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
+		try {
+			new URL(str.slice(...range)); // eslint-disable-line no-new
+			pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
+		} catch {}
 	}
 };
 
@@ -358,7 +361,7 @@ export const getMarkPlugin = (
 		},
 	);
 	if (cm) {
-		cm.decorationPlugin = plugin;
+		cm.decorationPlugins.push(plugin);
 	}
 	return plugin;
 };

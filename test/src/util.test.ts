@@ -113,17 +113,16 @@ describe('util functions', () => {
 			'// see https://github.com/svg/svgo/blob/main/lib/stringifier.js#L39 for available options.',
 			[[7, 67]],
 		);
+		linkTest("// article path (e.g., 'https://www.mediawiki.org/wiki/')", [[24, 55]]);
 		linkTest(
-			"// article path (e.g., 'https://www.mediawiki.org/wiki/')",
-			[[24, 55]],
-		);
-		linkTest(
-			'// [standardized lezer highlighting tags]{@link https://lezer.codemirror.net/docs/ref/#highlight.tags}.',
-			[[48, 101]],
+			'// [lezer highlighting tags]{@link https://lezer.codemirror.net/docs/ref/#highlight.tags}.',
+			[[35, 88]],
 		);
 		linkTest(
 			'-- Constants (see: https://github.com/minetest/minetest/blob/master/builtin/game/constants.lua)',
 			[[19, 94]],
 		);
+		linkTest('<!-- https://www.mediawiki.org/wiki/Help:Magic_words -->', [[5, 52]]);
+		linkTest('<!-- http://%20 -->', []);
 	});
 });

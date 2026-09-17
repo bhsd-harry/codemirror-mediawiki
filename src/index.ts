@@ -285,7 +285,7 @@ const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T
 
 /** Register the `openLinks` extension for non-MediaWiki languages */
 export const registerOpenLinksForNonMediaWiki = (): void => {
-	for (const lang of ['abusefilter', 'css', 'javascript', 'jsonc', 'lua']) {
+	for (const lang of ['abusefilter', 'css', 'javascript', 'jsonc', 'lua', 'html', 'vue']) {
 		registerLangExtension(lang, 'openLinks', openLinksForOthers);
 	}
 };
@@ -475,6 +475,7 @@ export const registerHTML = (): void => {
 	registerBracketMatchingForHTML();
 	registerCloseTagsForHTML();
 	registerColorPickerForHTML();
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register the `bracketMatching` extension for mixed MediaWiki-HTML */
@@ -611,6 +612,7 @@ export const registerVue = (): void => {
 	registerBracketMatchingForVue();
 	registerCloseTagsForVue();
 	registerColorPickerForVue();
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register the `bracketMatching` extension for Vue */

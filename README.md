@@ -317,10 +317,12 @@ import {
 	registerBracketMatchingForHTML,
 	registerCloseTagsForHTML,
 	registerColorPickerForHTML,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 registerBracketMatchingForHTML();
 registerCloseTagsForHTML();
 registerColorPickerForHTML();
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
@@ -529,10 +531,12 @@ import {
 	registerBracketMatchingForVue,
 	registerCloseTagsForVue,
 	registerColorPickerForVue,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 registerBracketMatchingForVue();
 registerCloseTagsForVue();
 registerColorPickerForVue();
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
