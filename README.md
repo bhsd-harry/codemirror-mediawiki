@@ -242,9 +242,11 @@ if the corresponding common extensions are not registered:
 import {
 	registerHoverForAbuseFilter,
 	registerSignatureHelpForAbuseFilter,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 registerHoverForAbuseFilter();
 registerSignatureHelpForAbuseFilter();
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
@@ -277,10 +279,10 @@ common extensions are not registered:
 ```js
 import {
 	registerColorPickerForCSS,
-	registerOpenLinksForCSS,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 registerColorPickerForCSS();
-registerOpenLinksForCSS();
+registerOpenLinksForNonMediaWiki;
 ```
 
 </details>
@@ -350,10 +352,10 @@ if the corresponding common extensions are not registered:
 ```js
 import {
 	registerBracketMatchingForJavaScript,
-	registerOpenLinksForJavaScript,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 registerBracketMatchingForJavaScript();
-registerOpenLinksForJavaScript();
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
@@ -405,8 +407,8 @@ extensions. Note that these extensions may not take effect if the corresponding
 common extensions are not registered:
 
 ```js
-import {registerOpenLinksForJSONC} from '@bhsd/codemirror-mediawiki';
-registerOpenLinksForJSONC();
+import {registerOpenLinksForNonMediaWiki} from '@bhsd/codemirror-mediawiki';
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
@@ -436,8 +438,8 @@ extensions. Note that these extensions may not take effect if the corresponding
 common extensions are not registered:
 
 ```js
-import {registerOpenLinksForLua} from '@bhsd/codemirror-mediawiki';
-registerOpenLinksForLua();
+import {registerOpenLinksForNonMediaWiki} from '@bhsd/codemirror-mediawiki';
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>
@@ -1591,23 +1593,16 @@ registerInlayHints('https://www.mediawiki.org/wiki/');
 CTRL/CMD-click opens a link in a new tab.
 
 For granular control over the bundled extensions, you need to register this
-extension for specific languages([CSS](#css), [JavaScript](#javascript),
-[JSONC](#jsonc), [Lua](#lua) or [MediaWiki](#mediawiki)):
+extension for specific languages([MediaWiki](#mediawiki) or non-MediaWiki languages):
 
 ```js
 import {
 	registerOpenLinks, // for MediaWiki
-	registerOpenLinksForCSS,
-	registerOpenLinksForJavaScript,
-	registerOpenLinksForJSONC,
-	registerOpenLinksForLua,
+	registerOpenLinksForNonMediaWiki,
 } from '@bhsd/codemirror-mediawiki';
 // optionally pass the article path of a MediaWiki site
 registerOpenLinks('https://www.mediawiki.org/wiki/');
-registerOpenLinksForCSS();
-registerOpenLinksForJavaScript();
-registerOpenLinksForJSONC();
-registerOpenLinksForLua();
+registerOpenLinksForNonMediaWiki();
 ```
 
 </details>

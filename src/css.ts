@@ -70,13 +70,7 @@ export const markLink = markLinkBasic((state, {from}) => !cssLanguage.isActiveAt
 
 export const markLinkPlugin = (cm?: CodeMirror6): DecorationPlugin => getMarkPlugin(markLink, cm);
 
-export default (dialect: Dialect, cm?: CodeMirror6): LanguageSupport => {
-	const plugin = markLinkPlugin(cm);
-	if (cm) {
-		cm.decorationPlugin = plugin;
-	}
-	return new LanguageSupport(cssLanguage, [
-		cssCompletion(dialect),
-		plugin,
-	]);
-};
+export default (dialect: Dialect, cm?: CodeMirror6): LanguageSupport => new LanguageSupport(cssLanguage, [
+	cssCompletion(dialect),
+	markLinkPlugin(cm),
+]);

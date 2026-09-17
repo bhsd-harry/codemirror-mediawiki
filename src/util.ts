@@ -325,37 +325,43 @@ export const getMarkPlugin = (
 	mark: Mark,
 	cm?: CodeMirror6,
 	needUpdate?: (update: ViewUpdate) => boolean,
-): DecorationPlugin => ViewPlugin.fromClass(
-	class implements PluginValue {
-		declare tree;
-		declare decorations;
+): DecorationPlugin => {
+	const plugin = ViewPlugin.fromClass(
+		class implements PluginValue {
+			declare tree;
+			declare decorations;
 
-		constructor({state, visibleRanges}: EditorView) {
-			this.tree = syntaxTree(state);
-			this.decorations = mark(this.tree, visibleRanges, state, cm);
-		}
+			constructor({state, visibleRanges}: EditorView) {
+				this.tree = syntaxTree(state);
+				this.decorations = mark(this.tree, visibleRanges, state, cm);
+			}
 
-		update(update: ViewUpdate): void {
-			const {docChanged, viewportChanged, state, view: {visibleRanges}} = update,
-				tree = syntaxTree(state);
-			let flag: boolean | undefined;
-			if (docChanged || viewportChanged || tree !== this.tree) {
-				this.tree = tree;
-				flag = true;
-			} else {
-				flag = needUpdate?.(update);
+			update(update: ViewUpdate): void {
+				const {docChanged, viewportChanged, state, view: {visibleRanges}} = update,
+					tree = syntaxTree(state);
+				let flag: boolean | undefined;
+				if (docChanged || viewportChanged || tree !== this.tree) {
+					this.tree = tree;
+					flag = true;
+				} else {
+					flag = needUpdate?.(update);
+				}
+				if (flag) {
+					this.decorations = mark(tree, visibleRanges, state, cm);
+				}
 			}
-			if (flag) {
-				this.decorations = mark(tree, visibleRanges, state, cm);
-			}
-		}
-	},
-	{
-		decorations(v) {
-			return v.decorations;
 		},
-	},
-);
+		{
+			decorations(v) {
+				return v.decorations;
+			},
+		},
+	);
+	if (cm) {
+		cm.decorationPlugin = plugin;
+	}
+	return plugin;
+};
 
 export const commentTypes = new Set<string | undefined>(['comment', 'Comment', 'BlockComment', 'LineComment']);
 

@@ -110,14 +110,8 @@ export const markGlobalsAndDocTagPlugin = (cm?: CodeMirror6): DecorationPlugin =
 	({transactions}) => transactions.some(tr => tr.effects.some(e => e.is(setDiagnosticsEffect))),
 );
 
-export default (_?: unknown, cm?: CodeMirror6): Extension => {
-	const plugin = markGlobalsAndDocTagPlugin(cm);
-	if (cm) {
-		cm.decorationPlugin = plugin;
-	}
-	return [
-		js(),
-		jsCompletion,
-		plugin,
-	];
-};
+export default (_?: unknown, cm?: CodeMirror6): Extension => [
+	js(),
+	jsCompletion,
+	markGlobalsAndDocTagPlugin(cm),
+];

@@ -21,7 +21,7 @@ import {
 } from '@codemirror/autocomplete';
 import {json} from '@bhsd/lezer-json';
 import {autoCloseTags} from '@codemirror/lang-html';
-import {abusefilterCore, analyzer, getDefaultHoverTooltip, getDefaultSignatureHelp} from '@bhsd/lezer-abusefilter';
+import {analyzer, getDefaultHoverTooltip, getDefaultSignatureHelp} from '@bhsd/lezer-abusefilter';
 import {getLSP} from '@bhsd/browser';
 import {colorPicker} from '@bhsd/codemirror-css-color-picker';
 import bidiIsolates from './bidi.js';
@@ -70,6 +70,7 @@ import signatureHelpBase from './signature.js';
 import {tagModes, getStaticMwConfig} from './static.js';
 import stickyScroll, {mediawikiStickyScroll} from './stickyScroll.js';
 import statusBar from './statusBar.js';
+import abusefilter from './abusefilter.js';
 import css from './css.js';
 import html from './html.js';
 import javascript, {exclude} from './javascript.js';
@@ -282,6 +283,13 @@ const registerLangExtension = <T = Extension>(lang: string, name: string, ext: T
 	addon[1].set(lang, ext);
 };
 
+/** Register the `openLinks` extension for non-MediaWiki languages */
+export const registerOpenLinksForNonMediaWiki = (): void => {
+	for (const lang of ['abusefilter', 'css', 'javascript', 'jsonc', 'lua']) {
+		registerLangExtension(lang, 'openLinks', openLinksForOthers);
+	}
+};
+
 /**
  * Register MediaWiki language support
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
@@ -314,7 +322,7 @@ const registerExtensionForMediaWiki = (name: string, ext: Extension | ((cm: Code
 };
 
 /**
- * Register the `openLinks` extension
+ * Register the `openLinks` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerOpenLinks = (articlePath?: string): void => {
@@ -322,7 +330,7 @@ export const registerOpenLinks = (articlePath?: string): void => {
 };
 
 /**
- * Register the `escape` extension
+ * Register the `escape` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerEscape = (articlePath?: string): void => {
@@ -331,7 +339,7 @@ export const registerEscape = (articlePath?: string): void => {
 };
 
 /**
- * Register the `refHover` extension
+ * Register the `refHover` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerRefHover = (articlePath?: string): void => {
@@ -339,7 +347,7 @@ export const registerRefHover = (articlePath?: string): void => {
 };
 
 /**
- * Register the `hover` extension
+ * Register the `hover` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  * @param templatedata whether to use [Extension:TemplateData](https://www.mediawiki.org/wiki/Extension:TemplateData)
  * for template information; enabled by default
@@ -356,7 +364,7 @@ export const registerHover = (articlePath?: string, templatedata?: boolean): voi
 };
 
 /**
- * Register the `signatureHelp` extension
+ * Register the `signatureHelp` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerSignatureHelp = (articlePath?: string): void => {
@@ -370,7 +378,7 @@ export const registerSignatureHelp = (articlePath?: string): void => {
 };
 
 /**
- * Register the `inlayHints` extension
+ * Register the `inlayHints` extension for MediaWiki
  * @param articlePath article path (e.g., 'https://www.mediawiki.org/wiki/')
  */
 export const registerInlayHints = (articlePath?: string): void => {
@@ -378,7 +386,7 @@ export const registerInlayHints = (articlePath?: string): void => {
 };
 
 /**
- * Register the `bidiIsolates` extension
+ * Register the `bidiIsolates` extension for MediaWiki
  * @since 3.10.0
  */
 export const registerBidiIsolates = (): void => {
@@ -509,17 +517,12 @@ export const registerJavaScript = (): void => {
 	registerJavaScriptCore();
 	registerIndentGuide();
 	registerBracketMatchingForJavaScript();
-	registerOpenLinksForJavaScript();
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register the `bracketMatching` extension for JavaScript */
 export const registerBracketMatchingForJavaScript = (): void => {
 	registerLangExtension<[BracketConfig]>('javascript', 'bracketMatching', [{exclude}]);
-};
-
-/** Register the `openLinks` extension for JavaScript */
-export const registerOpenLinksForJavaScript = (): void => {
-	registerLangExtension('javascript', 'openLinks', openLinksForOthers);
 };
 
 /** Register JavaScript core language support */
@@ -535,17 +538,12 @@ export const registerCSS = (): void => {
 	registerCSSCore();
 	registerIndentGuide();
 	registerColorPickerForCSS();
-	registerOpenLinksForCSS();
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register the `colorPicker` extension for CSS */
 export const registerColorPickerForCSS = (): void => {
 	registerLangExtension('css', 'colorPicker', colorPicker);
-};
-
-/** Register the `openLinks` extension for CSS */
-export const registerOpenLinksForCSS = (): void => {
-	registerLangExtension('css', 'openLinks', openLinksForOthers);
 };
 
 /** Register CSS core language support */
@@ -574,12 +572,7 @@ export const registerJSONC = (): void => {
 	registerCommonExtensions();
 	registerJSONCCore();
 	registerIndentGuide();
-	registerOpenLinksForJSONC();
-};
-
-/** Register the `openLinks` extension for JSONC */
-export const registerOpenLinksForJSONC = (): void => {
-	registerLangExtension('jsonc', 'openLinks', openLinksForOthers);
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register JSONC core language support */
@@ -594,13 +587,14 @@ export const registerLua = (): void => {
 	registerCommonExtensions();
 	registerLuaCore();
 	registerIndentGuide();
-	registerOpenLinksForLua();
+	registerOpenLinksForNonMediaWiki();
 };
 
-/** Register the `openLinks` extension for Lua */
-export const registerOpenLinksForLua = (): void => {
-	registerLangExtension('lua', 'openLinks', openLinksForOthers);
-};
+/**
+ * Register the `openLinks` extension for Lua
+ * @deprecated Use `registerOpenLinksForNonMediaWiki` instead.
+ */
+export const registerOpenLinksForLua = registerOpenLinksForNonMediaWiki;
 
 /** Register Lua core language support */
 export const registerLuaCore = (): void => {
@@ -657,6 +651,7 @@ export const registerAbuseFilter = (): void => {
 	registerIndentGuide();
 	registerHoverForAbuseFilter();
 	registerSignatureHelpForAbuseFilter();
+	registerOpenLinksForNonMediaWiki();
 };
 
 /** Register the `hover` extension for AbuseFilter */
@@ -677,7 +672,7 @@ export const registerSignatureHelpForAbuseFilter = (): void => {
 
 /** Register AbuseFilter core language support */
 export const registerAbuseFilterCore = (): void => {
-	languages.set('abusefilter', abusefilterCore);
+	languages.set('abusefilter', abusefilter);
 	registerLintSource('abusefilter', (): LintSource => state => analyzer({state} as EditorView));
 	optionalFunctions.detectIndent = detectIndent;
 };

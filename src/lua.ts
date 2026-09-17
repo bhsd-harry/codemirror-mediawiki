@@ -592,17 +592,13 @@ export const getStringOffsetFull = (
 	return null;
 };
 
-export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport => {
-	const plugin = getMarkPlugin(markDocTag, cm);
-	if (cm) {
-		cm.decorationPlugin = plugin;
-	}
-	return new LanguageSupport(lang, [
+export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMirror6): LanguageSupport =>
+	new LanguageSupport(lang, [
 		lightHighlightStyle,
 		getHighlightExtension([{tag: tags.standard(tags.variableName), class: 'cm-globals'}]),
 		lang.data.of({autocomplete: basicSource}),
 		lang.data.of({autocomplete: getSource(config?.linkSuggest, cm?.langConfig?.titleParser)}),
-		plugin,
+		getMarkPlugin(markDocTag, cm),
 		getFoldService(({doc, tabSize}, start, from) => {
 			const {text, number} = doc.lineAt(start);
 			if (!text.trim()) {
@@ -625,4 +621,3 @@ export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMi
 			return empty || j === number ? null : {from, to: doc.line(j).to};
 		}),
 	]);
-};
