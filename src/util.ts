@@ -9,7 +9,9 @@ import {
 	baseData,
 	mwTag,
 } from './constants.js';
-import type {Decoration} from '@codemirror/view';
+import type {
+	Decoration,
+} from '@codemirror/view';
 import type {Text, EditorState, Range, Extension} from '@codemirror/state';
 import type {StringStream} from '@codemirror/language';
 import type {Completion} from '@codemirror/autocomplete';
