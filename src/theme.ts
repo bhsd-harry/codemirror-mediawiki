@@ -103,4 +103,11 @@ export const light = /* #__PURE__ */ EditorView.theme({
 				color: '#8fbcbb',
 			},
 		}),
-	])();
+	])(),
+	linkStyles = {
+		textDecoration: 'underline',
+		textDecorationColor: 'transparent',
+		'&:hover': {
+			textDecorationColor: 'currentColor',
+		},
+	};

@@ -22,7 +22,7 @@ import {
 	mwSelector,
 } from './constants.js';
 import {myService} from './fold.js';
-import {lightHighlightStyle} from './theme.js';
+import {lightHighlightStyle, linkStyles} from './theme.js';
 import {MediaWiki} from './token.js';
 import {
 	getCompletions,
@@ -727,9 +727,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 		getSelector(['pagename', 'link-tosection', 'magic-link'])
 	},${
 		getSelector(['extlink', 'extlink-protocol'], ['', 'free-'])
-	}`]: {
-		textDecoration: 'underline',
-	},
+	}`]: linkStyles,
 	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
 		color: 'var(--cm-hr)',
 	},

@@ -46,7 +46,11 @@
 }
 .cm-link > span {
 	color: var(--cm-link);
-	text-decoration: underline;
+	text-underline-position: under;
+
+	&:hover {
+		text-decoration: underline;
+	}
 }
 
 .cm-content {
@@ -191,7 +195,11 @@
 .cm-mw-free-extlink,
 .cm-mw-extlink-protocol,
 .cm-mw-free-extlink-protocol {
-	text-decoration: underline;
+	text-underline-position: under;
+
+	&:hover {
+		text-decoration: underline;
+	}
 }
 .cm-mw-section-header,
 .cm-mw-redirect,

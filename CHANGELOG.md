@@ -17,6 +17,10 @@
 - When the [openLinks](./README.md#openlinks) extension is enabled in the MediaWiki mode, hover styles for links are now also applied to the link fragments
 - Potential TypeError from the [`setColumnGuide`](./README.md#setcolumnguide)
 
+**Changed**
+
+- Links are no longer underlined unless hovered
+
 ## 4.5.1
 
 *2026-09-04*

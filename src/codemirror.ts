@@ -46,7 +46,7 @@ import {
 	getHighlightExtension,
 	leadingSpaces,
 } from './util.js';
-import {light} from './theme.js';
+import {light, linkStyles} from './theme.js';
 import {nextDiagnostic} from './lint.js';
 import type {
 	ViewPlugin,
@@ -403,7 +403,7 @@ export class CodeMirror6 {
 					},
 					[`.${linkCls}>span`]: {
 						color: 'var(--cm-link)',
-						textDecoration: 'underline',
+						...linkStyles,
 					},
 				}),
 				EditorView.updateListener.of(({
