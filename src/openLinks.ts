@@ -183,11 +183,14 @@ export const getOpenLinksExtension = (
 export const openLinks = (
 	configData: ConfigData,
 ): Extension => {
-	return getOpenLinksExtension(
-		getLinkParser(
-			getISBNParser(
-				configData.articlePath,
-			),
+	const linkParser = getLinkParser(
+		getISBNParser(
+			configData.articlePath,
 		),
+	);
+	return getOpenLinksExtension(
+		((state, posAndSide, str) => {
+			return linkParser(state, posAndSide, str as true);
+		}) as LinkParser,
 	);
 };
