@@ -248,7 +248,7 @@ export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksEx
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
 		if (langConfig?.titleParser && node?.name === 'string') {
 			return langConfig.titleParser(state, node)?.[str ? 'page' : 'range'];
-		} else if (commentTypes.has(node?.name)) {
+		} else if (commentTypes.test(node?.name ?? '')) {
 			for (const decorationPlugin of decorationPlugins) {
 				let link: string | [number, number] | undefined;
 				view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {

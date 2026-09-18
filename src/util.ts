@@ -312,13 +312,13 @@ const sourceExternal = /* #__PURE__ */ (
  * @param str 注释字符串
  * @param decorations Decoration 数组
  * @param from 注释起点
- * @param wikiLink 是否标注维基链接
+ * @param lua 是否Lua
  * @test
  */
-export const markLinks = (str: string, decorations: Range<Decoration>[], from: number, wikiLink = true): void => {
+export const markLinks = (str: string, decorations: Range<Decoration>[], from: number, lua?: boolean): void => {
 	let re = reExternal;
 	if (typeof mw === 'object' && typeof mw.Title === 'function') {
-		re = wikiLink ? reWiki : reLua;
+		re = lua ? reLua : reWiki;
 	}
 	const mt = str.matchAll(re);
 	for (const m of mt) {
@@ -390,7 +390,7 @@ export const getMarkPlugin = (
 	return plugin;
 };
 
-export const commentTypes = new Set<string | undefined>(['comment', 'Comment', 'BlockComment', 'LineComment']);
+export const commentTypes = /^(?:line|block)?comment$/iu;
 
 /**
  * 高亮显示注释中的链接
@@ -405,7 +405,7 @@ export const markLinkBasic: (condition?: (state: EditorState, node: SyntaxNodeRe
 				to,
 				enter(node) {
 					const {name, from: f, to: t} = node;
-					if (commentTypes.has(name) && !condition?.(state, node)) {
+					if (commentTypes.test(name) && !condition?.(state, node)) {
 						markLinks(state.sliceDoc(f, t), decorations, f);
 					}
 				},
