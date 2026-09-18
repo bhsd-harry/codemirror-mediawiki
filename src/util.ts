@@ -299,13 +299,12 @@ export const loadMarked = async (): Promise<void> => {
 const sourceExternal = /* #__PURE__ */ (
 		() => String.raw`(?:^|[^\p{L}\p{N}_])(https?:\/\/(?:\[[\da-f:.]+\])?[^{}[\]()<>"'\t\n\r\v\p{Zs}]+)`
 	)(),
-	sourceLink = /* #__PURE__ */ (() => String.raw`\[\[\s*(?!\s)[^<>[\]{}|#\n]+(?:#[^[\]{}|\n]*)?\]\]`)(),
-	sourceTemplate = /* #__PURE__ */ (() => String.raw`\{\{\s*(?!\s)[^<>[\]{}|#\n]+\}\}(?!\})`)(),
+	sourceWiki = /* #__PURE__ */ (() => String.raw`${
+		sourceExternal
+	}|\{\{\s*(?!\s)[^<>[\]{}|#\n]+\}\}(?!\})|\[\[\s*(?!\s)[^<>[\]{}|#\n]+(?:#[^[\]{}|\n]*)?\]\]`)(),
 	reExternal = /* #__PURE__ */ new RegExp(sourceExternal, 'dgiu'),
-	reLua = /* #__PURE__ */ (() => new RegExp(`${sourceExternal}|${sourceTemplate}`, 'dgiu'))(),
-	reWiki = /* #__PURE__ */ (
-		() => new RegExp(`${sourceExternal}|${sourceLink}|${sourceTemplate}`, 'dgiu')
-	)();
+	reLua = /* #__PURE__ */ (() => new RegExp(`${sourceWiki}(?!$|--)`, 'dgiu'))(),
+	reWiki = /* #__PURE__ */ new RegExp(sourceWiki, 'dgiu');
 
 /**
  * 从注释中标注链接

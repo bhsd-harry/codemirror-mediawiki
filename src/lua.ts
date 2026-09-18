@@ -17,7 +17,6 @@ import {
 	getFoldService,
 	markLinks,
 	getMarkPlugin,
-	commentTypes,
 } from './util.js';
 import {lightHighlightStyle} from './theme.js';
 import type {EditorState, Range} from '@codemirror/state';
@@ -506,21 +505,21 @@ export const markDocTag: Mark = (tree, visibleRanges, state, cm) => {
 	for (const {from, to} of visibleRanges) {
 		let node: SyntaxNode | null | undefined = tree.resolveInner(from, 1);
 		while (node && node.from < to) {
-			if (commentTypes.test(node.name)) {
+			if (node.name === 'comment') {
 				const firstLine = sliceDoc(state, node),
 					block = firstLine.startsWith('--[[--');
-				markLinks(firstLine, decorations, node.from, node.name !== 'lineComment');
+				markLinks(firstLine, decorations, node.from, true);
 				if (
 					block
 					|| firstLine.startsWith('---')
 					&& !(firstLine.endsWith('--') && /[^-]/u.test(firstLine))
 				) {
-					while (commentTypes.test(node.name)) {
+					while (node.name === 'comment') {
 						const comment = sliceDoc(state, node),
 							// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-							{from: f, to: t, nextSibling, name} = node as SyntaxNode,
+							{from: f, to: t, nextSibling} = node as SyntaxNode,
 							mt = /^\s*(?:-{2,}\s*)?(@[a-z]+)(\s+\{)?/diu.exec(comment);
-						markLinks(comment, decorations, f, name !== 'lineComment');
+						markLinks(comment, decorations, f, true);
 						if (mt) {
 							markDocTagType(decorations, f, mt, 1);
 						}

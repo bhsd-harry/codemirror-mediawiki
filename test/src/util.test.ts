@@ -1,5 +1,5 @@
 import * as assert from 'assert';
-import {describe, it} from '@bhsd/test-util/mocha';
+import {describe, it, before, after} from '@bhsd/test-util/mocha';
 import {Text} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {
@@ -39,9 +39,9 @@ const luaTest = (str: string, results: [number, number][], end: number): void =>
 	assert.strictEqual(markDocTagType(decorations, 0, mt, 1), end, str);
 	cmpRange(decorations, results, str);
 };
-const linkTest = (str: string, results: [number, number][]): void => {
+const linkTest = (str: string, results: [number, number][], lua?: boolean): void => {
 	const decorations: Range<Decoration>[] = [];
-	markLinks(str, decorations, 0);
+	markLinks(str, decorations, 0, lua);
 	cmpRange(decorations, results, str);
 };
 
@@ -99,8 +99,27 @@ describe('util functions', () => {
 		luaTest('@type {string|number}}', [[0, 5], [6, 21]], 21);
 		luaTest('@param {{a: {b: string}}}}', [[0, 6], [7, 25]], 25);
 	});
+});
 
-	it('find links', () => {
+describe('find links in comments', () => {
+	before(() => {
+		Object.assign(globalThis, {
+			mw: {
+				Title: class { // eslint-disable-line unicorn/no-static-only-class
+					static newFromText(): true {
+						return true;
+					}
+				},
+			},
+		});
+	});
+	after(() => {
+		Object.assign(globalThis, {
+			mw: undefined,
+		});
+	});
+
+	it('find external links', () => {
 		linkTest(
 			'/** access to the upstream {@link https://codemirror.net/docs/ref/ CodeMirror API} */',
 			[[34, 66]],
@@ -124,5 +143,26 @@ describe('util functions', () => {
 		);
 		linkTest('<!-- https://www.mediawiki.org/wiki/Help:Magic_words -->', [[5, 52]]);
 		linkTest('<!-- http://%20 -->', []);
+	});
+	it('find wiki links', () => {
+		linkTest('// [[Foo]]', [[3, 10]]);
+		linkTest('// [[Foo#Bar]]', [[3, 14]]);
+		linkTest('// [[Foo|Bar]]', []);
+		linkTest('// [[<Foo>]]', []);
+		linkTest('// [[Foo#<Bar>]]', [[3, 16]]);
+		linkTest('-- [[Foo]] Bar', [[3, 10]], true);
+		linkTest('--[[Foo]]', [], true);
+		linkTest('-- [[Foo]]', [], true);
+		linkTest('--Bar [[Foo]]', [], true);
+		linkTest('--[=[ [[Foo]] ]=]', [[6, 13]], true);
+		linkTest('--[[Foo]]--Bar', [], true);
+	});
+	it('find wiki templates', () => {
+		linkTest('// {{Foo}}', [[3, 10]]);
+		linkTest('// {{Foo#Bar}}', []);
+		linkTest('// {{Foo|Bar}}', []);
+		linkTest('// {{{Foo}}}', []);
+		linkTest('--{{Foo}}', [[2, 9]], true);
+		linkTest('--[[{{Foo}}]]', [[4, 11]], true);
 	});
 });

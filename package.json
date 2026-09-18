@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "4.5.1",
+	"version": "4.6.0",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -95,7 +95,7 @@
 	"devDependencies": {
 		"@bhsd/code-standard": "^4.2.0",
 		"@bhsd/nodejs": "^1.2.1",
-		"@bhsd/eslint-browserify": "^10.10.0",
+		"@bhsd/eslint-browserify": "^10.11.0",
 		"@bhsd/test-util": "^3.2.1",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.11.0",
@@ -113,12 +113,12 @@
 		"@types/oojs-ui": "^0.50.0",
 		"diff2html-cli": "^5.2.15",
 		"esbuild": "^0.28.2",
-		"eslint": "^10.10.0",
+		"eslint": "^10.11.0",
 		"globals": "^17.12.0",
 		"http-server": "^14.1.1",
 		"luacheck-browserify": "^1.1.1",
-		"markdownlint-cli2": "^0.23.2",
-		"marked": "^18.0.11",
+		"markdownlint-cli2": "^0.23.3",
+		"marked": "^18.0.13",
 		"monaco-editor": "~0.53.0",
 		"stylelint": "^17.15.0",
 		"types-mediawiki": "^2.1.0",
