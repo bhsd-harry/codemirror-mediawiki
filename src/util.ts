@@ -405,7 +405,10 @@ export const markLinkBasic: (condition?: (state: EditorState, node: SyntaxNodeRe
 				to,
 				enter(node) {
 					const {name, from: f, to: t} = node;
-					if (commentTypes.test(name) && !condition?.(state, node)) {
+					if (
+						!condition?.(state, node)
+						&& (commentTypes.test(name) || /(?:^|_)mw-comment(?=$|_)/u.test(name))
+					) {
 						markLinks(state.sliceDoc(f, t), decorations, f);
 					}
 				},

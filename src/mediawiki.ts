@@ -27,12 +27,15 @@ import {MediaWiki} from './token.js';
 import {
 	getCompletions,
 	getExtTags,
+	getMarkPlugin,
+	markLinkBasic,
 	getFoldService,
 	findTemplateName,
 	getSubpageLevel,
 	useUnderscore,
 	getHighlightExtension,
 	loadMarked,
+	commentTypes,
 } from './util.js';
 import type {
 	TagStyle,
@@ -861,5 +864,6 @@ export const mediawikiBase = (
 		wikiTheme,
 		lang.data.of({autocomplete: mode.completionSource}),
 		getFoldService(myService),
+		getMarkPlugin(markLinkBasic((_, {name}) => commentTypes.test(name)), cm),
 	]);
 };

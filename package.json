@@ -56,6 +56,7 @@
 		"lint:ts": "tsc --noEmit && tsc --project mw/tsconfig.json --noEmit && tsc --project test/tsconfig.json --noEmit && tsc --project bundle/tsconfig.json --noEmit && eslint --cache .",
 		"lint:css": "stylelint --cache '**/*.css'",
 		"lint:md": "markdownlint-cli2 '**/*.md'",
+		"lint:bundle": "eslint --no-config-lookup --no-inline-config --rule 'no-unused-vars: [2, {args: none, caughtErrors: none}]' build/*.js",
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
 		"prof": "node test/dist/prof.js",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",

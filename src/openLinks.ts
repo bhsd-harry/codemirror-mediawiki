@@ -120,9 +120,9 @@ export const getLinkParser = (
 
 export const getOpenLinksExtension = (
 	linkParser: LinkParser,
-	selectors: string[],
+	selectors: string[] = [],
 ): Extension => {
-	const selector = selectors.map(sel => `& ${sel}`).join(),
+	const selector = [...selectors, `.${linkCls}>span`].map(sel => `& ${sel}`).join(),
 		activeStyle = {color: 'var(--cm-active)'};
 	return [
 		StateField.define<ActiveRangeSet>({
@@ -227,50 +227,66 @@ export const getOpenLinksExtension = (
 export const openLinks = (
 	articlePath?: string,
 ) => (
-	{langConfig}: CodeMirror6,
+	cm: CodeMirror6,
 ): Extension => {
-	const titleParser = langConfig?.titleParser;
-	return getOpenLinksExtension(
-		getLinkParser(
-			getISBNParser(
-				articlePath || langConfig?.articlePath,
-			),
-			titleParser,
+	const {langConfig} = cm,
+		titleParser = langConfig?.titleParser,
+		linkParserForComment = getLinkParserForComment(cm);
+	const linkParser = getLinkParser(
+		getISBNParser(
+			articlePath || langConfig?.articlePath,
 		),
+		titleParser,
+	);
+	return getOpenLinksExtension(
+		((state, posAndSide, str) => {
+			const {pos} = posAndSide,
+				node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
+			if (node?.name === tokens.comment) {
+				return linkParserForComment(state, posAndSide, str as true);
+			}
+			return linkParser(state, posAndSide, str as true);
+		}) as LinkParser,
 		// eslint-disable-next-line unicorn/no-unsafe-string-replacement
 		[...links, ...titleParser ? wikiLinks : []].map(type => `.${type}`.replaceAll('.', mwSelector)),
 	);
 };
 
-export const openLinksForOthers = (cm: CodeMirror6): Extension => getOpenLinksExtension(
-	((state, {pos}, str) => {
-		const {langConfig, decorationPlugins, view} = cm,
+const getLinkParserForComment = ({decorationPlugins, view}: CodeMirror6): LinkParser => ((state, {pos}, str) => {
+	for (const decorationPlugin of decorationPlugins) {
+		let link: string | [number, number] | undefined;
+		view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
+			if (value === linkMark) {
+				if (str) {
+					link = state.sliceDoc(from, to);
+					const isTemplate = /^\{\{.+\}\}$/u.test(link);
+					if (isTemplate || /^\[\[.+\]\]$/u.test(link)) {
+						link = mw.Title.newFromText(link.slice(2, -2), isTemplate ? 10 : 0)!
+							.getUrl();
+					}
+				} else {
+					link = [from, to];
+				}
+			}
+		});
+		if (link !== undefined) {
+			return link;
+		}
+	}
+	return undefined;
+}) as LinkParser;
+
+export const openLinksForOthers = (cm: CodeMirror6): Extension => {
+	const linkParser = getLinkParserForComment(cm);
+	return getOpenLinksExtension(((state, posAndSide, str) => {
+		const {langConfig} = cm,
+			{pos} = posAndSide,
 			node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
 		if (langConfig?.titleParser && node?.name === 'string') {
 			return langConfig.titleParser(state, node)?.[str ? 'page' : 'range'];
 		} else if (commentTypes.test(node?.name ?? '')) {
-			for (const decorationPlugin of decorationPlugins) {
-				let link: string | [number, number] | undefined;
-				view?.plugin(decorationPlugin)?.decorations.between(pos, pos, (from, to, value) => {
-					if (value === linkMark) {
-						if (str) {
-							link = state.sliceDoc(from, to);
-							const isTemplate = /^\{\{.+\}\}$/u.test(link);
-							if (isTemplate || /^\[\[.+\]\]$/u.test(link)) {
-								link = mw.Title.newFromText(link.slice(2, -2), isTemplate ? 10 : 0)!
-									.getUrl();
-							}
-						} else {
-							link = [from, to];
-						}
-					}
-				});
-				if (link !== undefined) {
-					return link;
-				}
-			}
+			return linkParser(state, posAndSide, str as true);
 		}
 		return undefined;
-	}) as LinkParser,
-	[`.${linkCls}>span`],
-);
+	}) as LinkParser);
+};
