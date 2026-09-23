@@ -8,11 +8,7 @@ import {
 	inputHandler,
 } from '/wikiparser-node/extensions/dist/test-page-common.js';
 import type {ConfigData} from 'wikiparser-node';
-
-declare interface Test {
-	desc: string;
-	wikitext?: string;
-}
+import type {Test} from '@bhsd/test-util/parser';
 
 (async () => {
 	const tests: Test[] = await (await fetch('./test/parserTests.json')).json(),
