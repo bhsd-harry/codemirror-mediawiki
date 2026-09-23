@@ -352,18 +352,13 @@ const basicSource: CompletionSource = context => {
 		&& sliceDoc(state, prev) === 'require'
 	) {
 		const offset = getStringOffset(state.sliceDoc(fr, pos));
-		if (!offset || pos <= fr + offset) {
-			return null;
-		}
-		const search = state.sliceDoc(fr + offset, pos);
-		if (search.includes(':')) {
-			return null;
-		}
-		return {
-			from: fr + offset,
-			options: libraries,
-			validFor: /^[\w.]*$/u,
-		};
+		return !offset || pos <= fr + offset || state.sliceDoc(fr + offset, pos).includes(':')
+			? null
+			: {
+				from: fr + offset,
+				options: libraries,
+				validFor: /^[\w.]*$/u,
+			};
 	} else if (!excludedTypes.has(name)) {
 		return null;
 	}
@@ -609,14 +604,13 @@ export default (config?: {linkSuggest?: ApiSuggest<LinkSuggestion>}, cm?: CodeMi
 			let j = number,
 				empty = true;
 			for (; j < doc.lines; j++) {
-				const {text: next} = doc.line(j + 1);
-				if (next.trim()) {
-					const nextIndent = getIndent(next);
-					if (indent >= nextIndent) {
-						break;
-					}
-					empty = false;
+				const next = doc.line(j + 1).text;
+				if (!next.trim()) {
+					continue;
+				} else if (indent >= getIndent(next)) {
+					break;
 				}
+				empty = false;
 			}
 			return empty || j === number ? null : {from, to: doc.line(j).to};
 		}),

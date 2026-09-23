@@ -188,15 +188,13 @@ const jsLintSource = (
 	f = 0,
 	t?: number,
 ): Diagnostic[] => esLint(code, opt)
-	.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => {
-		const diagnostic: Diagnostic = {
-			source: 'ESLint',
-			message: message + (ruleId ? ` (${ruleId})` : ''),
-			severity: severity === 1 ? 'warning' : 'error',
-			...getRange(doc, line, column, endLine, endColumn, f, t),
-		};
-		if (fix || suggestions.length > 0) {
-			diagnostic.actions = [
+	.map(({ruleId, message, severity, line, column, endLine, endColumn, fix, suggestions = []}) => ({
+		source: 'ESLint',
+		message: message + (ruleId ? ` (${ruleId})` : ''),
+		severity: severity === 1 ? 'warning' : 'error',
+		...getRange(doc, line, column, endLine, endColumn, f, t),
+		...(fix || suggestions.length > 0) && {
+			actions: [
 				...fix ? [{name: 'fix', fix} as {name: string, fix: Rule.Fix, tooltip?: string}] : [],
 				...suggestions.map(suggestion => ({
 					name: suggestion.messageId || 'suggestion',
@@ -211,10 +209,9 @@ const jsLintSource = (
 						changes: {from: from + f, to: to + f, insert: text},
 					});
 				},
-			}));
-		}
-		return diagnostic;
-	});
+			})),
+		},
+	}));
 
 /**
  * @implements
@@ -247,15 +244,13 @@ const cssLintSource = async (
 		option = {rules: option};
 	}
 	return (await styleLint(code, option))
-		.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => {
-			const diagnostic: Diagnostic = {
-				source: 'Stylelint',
-				message: text,
-				severity,
-				...getRange(doc, line, column, endLine, endColumn, f, t),
-			};
-			if (fix) {
-				diagnostic.actions = [
+		.map(({text, severity, line, column, endLine, endColumn, fix}): Diagnostic => ({
+			source: 'Stylelint',
+			message: text,
+			severity,
+			...getRange(doc, line, column, endLine, endColumn, f, t),
+			...fix && {
+				actions: [
 					{
 						name: 'fix',
 						apply(view): void {
@@ -264,10 +259,9 @@ const cssLintSource = async (
 							});
 						},
 					},
-				];
-			}
-			return diagnostic;
-		});
+				],
+			},
+		}));
 };
 
 /**

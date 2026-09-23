@@ -2059,7 +2059,7 @@ export class MediaWiki {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
-								const {style: s} = token,
+								const s = token.style,
 									local = typeof s === 'string',
 									type = !local
 										&& s[0].split(' ')
@@ -2078,7 +2078,7 @@ export class MediaWiki {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
-								const {style: s} = token;
+								const s = token.style;
 								if (typeof s === 'string' && s.includes(tokens.convertBracket)) {
 									count += token.char === '-' ? 1 : -1;
 									if (count === 1) {
