@@ -16,7 +16,7 @@ declare interface ObjNode {
 	name: string;
 	from: number;
 	to: number;
-	children: ObjNode[];
+	children: this[];
 }
 
 const entities = {'<': '&lt;', '>': '&gt', '&': '&amp;'};

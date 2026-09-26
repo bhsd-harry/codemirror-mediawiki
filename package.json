@@ -87,7 +87,7 @@
 		"@bhsd/codemirror-stickyscroll": "^0.1.1",
 		"@bhsd/common": "^4.1.0",
 		"@bhsd/lezer-abusefilter": "^0.5.1",
-		"@bhsd/lezer-json": "^2.2.0",
+		"@bhsd/lezer-json": "^2.2.1",
 		"@bhsd/stylelint-util": "^1.1.0",
 		"culori": "^4.0.2",
 		"wikiparser-node": "^1.47.0"

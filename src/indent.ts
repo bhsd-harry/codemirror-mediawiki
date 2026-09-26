@@ -2,7 +2,7 @@ import {noDetectionLangs} from './constants.js';
 import type {Text} from '@codemirror/state';
 
 declare interface ExtendedText extends Text {
-	children: readonly ExtendedText[] | null;
+	children: readonly this[] | null;
 	text?: string[];
 }
 
