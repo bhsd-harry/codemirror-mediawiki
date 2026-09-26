@@ -390,7 +390,7 @@ export class CodeMirror extends CodeMirror6 {
 			void openPreference();
 		});
 		if (language === 'json') {
-			monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+			monaco.json.jsonDefaults.setDiagnosticsOptions({
 				allowComments: lang === 'jsonc',
 				trailingCommas: lang === 'jsonc' ? 'ignore' : 'error',
 			});

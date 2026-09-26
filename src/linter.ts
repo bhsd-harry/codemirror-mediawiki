@@ -26,7 +26,7 @@ declare type asyncLinter<
 ) & {
 	config?: S;
 	// eslint-disable-next-line @typescript-eslint/method-signature-style
-	fixer?: (code: string, rule?: string) => string | Promise<string>;
+	fixer?: (this: void, code: string, rule?: string) => string | Promise<string>;
 };
 
 /**

@@ -5,10 +5,8 @@ import {
 	highlightWhitespace,
 	highlightTrailingWhitespace,
 	scrollPastEnd,
-	drawSelection,
 	rectangularSelection,
 	crosshairCursor,
-	dropCursor,
 } from '@codemirror/view';
 import {EditorState, Prec} from '@codemirror/state';
 import {highlightSelectionMatches} from '@codemirror/search';
@@ -85,7 +83,7 @@ import type {Extension} from '@codemirror/state';
 import type {
 	LanguageSupport,
 } from '@codemirror/language';
-import type {Addon, AddonMain, AddonConfig} from './codemirror';
+import type {Addon, AddonMain} from './codemirror';
 import type {LintSourceGetter, LintSource} from './lintsource';
 import type {MwConfig} from './token';
 import type {BracketConfig} from './matchBrackets';
@@ -104,21 +102,10 @@ const getOrInsert = <T>(name: string, ext: Addon<T>): Addon<T> => {
  * 注册通用扩展
  * @param name 扩展名
  * @param ext 扩展
- * @param config 扩展的依赖信息
  */
-const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>, config?: AddonConfig): void => {
+const registerExtension = <T = Extension>(name: string, ext: AddonMain<T>): void => {
 	const addon = getOrInsert<T>(name, [] as unknown as Addon<T>);
 	addon[0] = ext;
-	if (config) {
-		addon[2] = config;
-	}
-};
-
-const registerDrawSelection = (): void => {
-	registerExtension('drawSelection', () => [
-		drawSelection(),
-		dropCursor(),
-	]);
 };
 
 /** Register the `highlightSpecialChars` extension */
@@ -166,7 +153,6 @@ export const registerScrollPastEnd = (): void => {
 
 /** Register the `allowMultipleSelections` extension */
 export const registerAllowMultipleSelections = (): void => {
-	registerDrawSelection();
 	registerExtension(
 		'allowMultipleSelections',
 		(): Extension => [
@@ -174,7 +160,6 @@ export const registerAllowMultipleSelections = (): void => {
 			rectangularSelection(),
 			crosshairCursor(),
 		],
-		{dep: ['drawSelection']},
 	);
 };
 
@@ -200,8 +185,7 @@ export const registerCodeFolding = (): void => {
  * @since 3.16.0
  */
 export const registerBlockCursor = (): void => {
-	registerDrawSelection();
-	registerExtension('blockCursor', blockCursor, {dep: ['drawSelection']});
+	registerExtension('blockCursor', blockCursor);
 };
 
 /**
