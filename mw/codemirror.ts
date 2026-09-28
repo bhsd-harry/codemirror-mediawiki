@@ -292,21 +292,22 @@ export class CodeMirror extends CodeMirror6 {
 			this.langConfig = {
 				...config,
 				titleParser(state, node): ReturnType<TitleParser> {
-					const offset = getStringOffsetFull(state, node);
-					if (!offset) {
+					const offsetAndContentmodel = getStringOffsetFull(state, node);
+					if (!offsetAndContentmodel) {
 						return undefined;
 					}
-					const from = node.from + offset[0],
-						to = node.to - offset[0],
+					const [offset, contentmodel] = offsetAndContentmodel,
+						from = node.from + offset,
+						to = node.to - offset,
 						title = mw.Title.newFromText(
 							sliceDoc(state, {from, to}),
-							offset[1] === 'sanitized-css' ? 10 : 0,
+							contentmodel === 'sanitized-css' ? 10 : 0,
 						);
-					return offset[1] === 'Scribunto' && title?.getNamespaceId() !== 828
+					return contentmodel === 'Scribunto' && title?.getNamespaceId() !== 828
 						? undefined
 						: {
 							page: title?.getUrl(undefined),
-							contentmodel: offset[1],
+							contentmodel,
 							range: [from, to],
 						};
 				},

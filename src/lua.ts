@@ -552,6 +552,13 @@ export const getStringOffset = (str: string, re = reLinkIncomplete): number | nu
 	return mt && (mt[1]?.length ?? mt[2]!.length + 2);
 };
 
+const contentmodels: Record<string, string> = {
+	require: 'Scribunto',
+	'mw.loadData': 'Scribunto',
+	'mw.loadJsonData': 'json',
+	'mw.ext.TemplateStyles.link': 'sanitized-css',
+};
+
 /**
  * @ignore
  * @test
@@ -570,15 +577,7 @@ export const getStringOffsetFull = (
 		&& !/[^\s(]/u.test(state.sliceDoc(prevSibling.to, node.from))
 	) {
 		const func = sliceDoc(state, prevSibling),
-			isLua = func === 'require' || func === 'mw.loadData';
-		let contentmodel: string | undefined;
-		if (isLua) {
-			contentmodel = 'Scribunto';
-		} else if (func === 'mw.loadJsonData') {
-			contentmodel = 'json';
-		} else if (func === 'mw.ext.TemplateStyles.link') {
-			contentmodel = 'sanitized-css';
-		}
+			contentmodel = contentmodels[func];
 		if (contentmodel) {
 			const offset = getStringOffset(str ?? sliceDoc(state, node), str ? reLinkIncomplete : reLink);
 			return offset === null ? null : [offset, contentmodel, func];
