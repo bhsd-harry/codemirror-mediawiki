@@ -225,6 +225,7 @@ export class CodeMirror6 {
 	readonly #decorationPlugins: DecorationPlugin[] = [];
 	#view: EditorView | undefined;
 	#lang;
+	#init = false;
 	#visible = false;
 	#preferred = new Set<string>();
 	#indentStr = '\t';
@@ -463,6 +464,7 @@ export class CodeMirror6 {
 		this.toggle(true);
 		this.#view.dom.addEventListener('click', optionalFunctions.foldHandler(this.#view));
 		this.prefer({});
+		this.#init = true;
 	}
 
 	/**
@@ -701,7 +703,9 @@ export class CodeMirror6 {
 		} else if (show && !this.#visible) {
 			const {value, selectionStart, selectionEnd, scrollTop, offsetHeight, style: {height}} = this.#textarea,
 				hasFocus = document.activeElement === this.#textarea;
-			this.setContent(value);
+			if (this.#init) {
+				this.setContent(value);
+			}
 			this.#view.dom.style.height = offsetHeight ? `${offsetHeight}px` : height;
 			this.#view.dom.style.removeProperty('display');
 			this.#textarea.style.display = 'none';

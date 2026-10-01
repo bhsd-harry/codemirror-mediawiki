@@ -328,7 +328,7 @@ export const openPreference = async (): Promise<void> => {
 		// WikiLint
 		let wikilintConfigured = false;
 		for (const [rule, dropdown] of wikilintWidgets) {
-			const val = dropdown.getValue() as RuleState,
+			const val = dropdown.getValue() as unknown as RuleState,
 				configured = val !== wikilint[rule];
 			changed ||= configured;
 			wikilintConfigured ||= configured;

@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 4.6.1
 
-*2026-09-27*
+*2026-10-02*
 
 **Fixed**
 
 - Cursor misalignment when both the [allowMultipleSelections](./README.md#allowmultipleselections) and the [blockCursor](./README.md#blockcursor) extensions are disabled in Firefox
+- The [undo history](https://codemirror.net/docs/ref/#h_undo_history) when no changes have been made to the content
 
 ## 4.6.0
 
