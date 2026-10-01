@@ -296,14 +296,15 @@ export class CodeMirror extends CodeMirror6 {
 					if (!offsetAndContentmodel) {
 						return undefined;
 					}
-					const [offset, contentmodel] = offsetAndContentmodel,
+					const [offset, contentmodel, func] = offsetAndContentmodel,
 						from = node.from + offset,
 						to = node.to - offset,
 						title = mw.Title.newFromText(
 							sliceDoc(state, {from, to}),
 							contentmodel === 'sanitized-css' ? 10 : 0,
-						);
-					return contentmodel === 'Scribunto' && title?.getNamespaceId() !== 828
+						),
+						nsid = title?.getNamespaceId();
+					return func === 'mw.loadData' && nsid !== 828 || func === 'require' && nsid !== 828 && nsid !== 850
 						? undefined
 						: {
 							page: title?.getUrl(undefined),
