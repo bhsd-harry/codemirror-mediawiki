@@ -772,7 +772,7 @@ export class CodeMirror extends CodeMirror6 {
 	 */
 	static async fromTextArea(
 		textarea: HTMLTextAreaElement,
-		lang?: string,
+		lang?: string | null,
 		{ns, page, extensions = []}: CodeMirrorOptions = {},
 	): Promise<CodeMirror> {
 		if (instances.has(textarea)) {
@@ -783,33 +783,33 @@ export class CodeMirror extends CodeMirror6 {
 			const {wgAction, wgNamespaceNumber, wgPageContentModel, wgCanonicalSpecialPageName} = mw.config.get();
 			if (wgAction === 'edit' || wgAction === 'submit') {
 				ns = wgNamespaceNumber;
-				lang = wgNamespaceNumber === 274 ? 'html' : wgPageContentModel.toLowerCase();
-				if (/\bjsonconfig\b/iu.test(lang)) {
-					lang = 'jsonc';
-				}
+				lang = wgPageContentModel;
 			} else if (wgCanonicalSpecialPageName === 'Upload') {
 				ns = 6;
 				lang = 'mediawiki';
-			} else if (wgCanonicalSpecialPageName === 'ExpandTemplates' && textarea.name === 'wpInput') {
+			} else if (
+				wgCanonicalSpecialPageName === 'ExpandTemplates'
+				&& (textarea.name === 'wpInput' || textarea.id === 'output')
+			) {
 				ns = 0;
 				lang = 'mediawiki';
 			} else {
 				await mw.loader.using('oojs-ui-windows');
-				lang = (await OO.ui.prompt(msg('contentmodel')) || undefined)?.toLowerCase();
+				lang = await OO.ui.prompt(msg('contentmodel'));
 			}
-		} else if (lang === 'wikitext' && ns === 274) {
-			lang = 'html';
 		}
-		let dialect: Dialect;
-		if (lang && langMap.has(lang)) {
-			if (lang === 'sanitized-css') {
-				dialect = lang;
-			}
-			lang = langMap.get(lang);
+		let language = lang?.toLowerCase() || 'plain';
+		const dialect: Dialect = language === 'sanitized-css' ? language : undefined;
+		if (/\bjsonconfig\b/u.test(language)) {
+			language = 'jsonc';
+		} else if (language === 'wikitext' && ns === 274 && !page?.endsWith('/doc')) {
+			language = 'html';
+		} else if (langMap.has(language)) {
+			language = langMap.get(language)!;
 		}
 		const $textarea = $(textarea),
 			allPrefs = [...prefs, ...extensions],
-			isWiki = lang === 'mediawiki' || lang === 'html';
+			isWiki = language === 'mediawiki' || language === 'html';
 		let resize = true;
 		if (
 			$textarea.data('wikiEditorContext')
@@ -826,15 +826,16 @@ export class CodeMirror extends CodeMirror6 {
 			}
 		}
 		/** @todo 已停止支持Vue，一段时间后移除额外逻辑 */
-		const isCM = lang === 'vue' || !useMonaco.has(monacoPrefLangs.get(lang!) ?? lang!),
-			isCMWiki = isCM && isWiki,
-			cm = new CodeMirror(textarea, isCMWiki ? undefined : lang, dialect, isCM, ns, page);
+		const isCM = language === 'vue' || !useMonaco.has(monacoPrefLangs.get(language) ?? language),
+			defer = isCM && (isWiki || language === 'lua'),
+			cm = new CodeMirror(textarea, defer ? undefined : language, dialect, isCM, ns, page);
 		cm.dialect = dialect;
 		$textarea.data('CodeMirror6', cm);
-		if (isCMWiki) {
-			await cm.setLanguage(lang, await getMwConfig(tagModes));
-		} else if (isCM && lang === 'lua') {
-			await cm.setLanguage(lang, await prepareSuggest(cm.page, true));
+		if (defer) {
+			await cm.setLanguage(
+				language,
+				isWiki ? await getMwConfig(tagModes) : await prepareSuggest(cm.page, true),
+			);
 		}
 		await Promise.all([loadJSON, cm.#init]);
 		cm.prefer(allPrefs);

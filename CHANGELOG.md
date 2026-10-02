@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 4.6.2
+
+*2026-10-04*
+
+**Fixed**
+
+- Failure to recognize the `Scribunto` content model in [`fromTextArea`](./mw/README.md#fromtextarea) on a MediaWiki site
+
 ## 4.6.1
 
 *2026-10-02*
