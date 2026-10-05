@@ -134,6 +134,9 @@ textarea, .cm-editor {
 .cm-tooltip-hover-mw ul {
 	padding-left: 1.6em;
 }
+.cm-mw-strike {
+	text-decoration: line-through;
+}
 
 @media screen and (max-width: 720px) {
 	main {
