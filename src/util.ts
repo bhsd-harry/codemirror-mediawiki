@@ -17,6 +17,7 @@ import {
 	doctagMark,
 	typeMark,
 	linkMark,
+	mwSelector,
 } from './constants.js';
 import type {
 	DecorationSet,
@@ -415,3 +416,9 @@ export const markLinkBasic: (condition?: (state: EditorState, node: SyntaxNodeRe
 		}
 		return Decoration.set(decorations, true);
 	};
+
+export const getNeighborSelector = (prefix: string, prev: string, next = ''): string => {
+	const p = `& ${mwSelector}${prefix}${prev}`,
+		n = mwSelector + prefix + next;
+	return `${p}:hover+${n},${p}:has(+${n}:hover)`;
+};

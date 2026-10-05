@@ -11,11 +11,11 @@ import {getHighlightExtension} from './util.js';
 import type {Extension} from '@codemirror/state';
 
 export const lightHighlightStyle = /* #__PURE__ */ (() => getHighlightExtension(
-	defaultHighlightStyle.specs,
-	{themeType: 'light'},
-))();
+		defaultHighlightStyle.specs,
+		{themeType: 'light'},
+	))(),
 
-export const light = /* #__PURE__ */ EditorView.theme({
+	light = /* #__PURE__ */ EditorView.theme({
 		'&': {
 			backgroundColor: '#fff',
 			'--cm-arg': '#b0c',
@@ -104,10 +104,9 @@ export const light = /* #__PURE__ */ EditorView.theme({
 			},
 		}),
 	])(),
+	hoverDecoration = {textDecorationColor: 'currentcolor'},
 	linkStyles = {
 		textDecoration: 'underline',
 		textDecorationColor: 'transparent',
-		'&:hover': {
-			textDecorationColor: 'currentColor',
-		},
+		'&:hover': hoverDecoration,
 	};

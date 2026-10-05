@@ -46,10 +46,11 @@
 }
 .cm-link > span {
 	color: var(--cm-link);
-	text-underline-position: under;
+	text-decoration: underline;
+	text-decoration-color: transparent;
 
 	&:hover {
-		text-decoration: underline;
+		text-decoration-color: currentcolor;
 	}
 }
 
@@ -195,10 +196,11 @@
 .cm-mw-free-extlink,
 .cm-mw-extlink-protocol,
 .cm-mw-free-extlink-protocol {
-	text-underline-position: under;
+	text-decoration: underline;
+	text-decoration-color: transparent;
 
 	&:hover {
-		text-decoration: underline;
+		text-decoration-color: currentcolor;
 	}
 }
 .cm-mw-section-header,
@@ -264,6 +266,14 @@
 .cm-mw-link-tosection {
 	color: var(--cm-sect);
 	font-weight: normal;
+}
+.cm-mw-link-pagename:hover + .cm-mw-link-tosection,
+.cm-mw-link-pagename:has(+ .cm-mw-link-tosection:hover),
+.cm-mw-extlink-protocol:hover + .cm-mw-extlink,
+.cm-mw-extlink-protocol:has(+ .cm-mw-extlink:hover),
+.cm-mw-free-extlink-protocol:hover + .cm-mw-free-extlink,
+.cm-mw-free-extlink-protocol:has(+ .cm-mw-free-extlink:hover) {
+	text-decoration-color: currentcolor;
 }
 .cm-mw-exttag-name,
 .cm-mw-htmltag-name,
@@ -396,13 +406,15 @@
 /* src/openLinks */
 /* stylelint-disable relative-selector-nesting-notation */
 .cm-active-link {
+	/* stylelint-disable no-descending-specificity */
 	.cm-mw-extlink-protocol,
 	.cm-mw-extlink,
 	.cm-mw-free-extlink-protocol,
 	.cm-mw-free-extlink,
 	.cm-mw-magic-link,
-	.cm-mw-template-name, /* stylelint-disable-line no-descending-specificity */
+	.cm-mw-template-name,
 	.cm-mw-link-pagename,
+	/* stylelint-enable no-descending-specificity */
 	.cm-mw-link-pagename + .cm-mw-link-tosection,
 	.cm-mw-parserfunction.cm-mw-pagename,
 	.cm-mw-exttag-attribute-value.cm-mw-pagename,
@@ -431,6 +443,11 @@
 		&:hover {
 			color: var(--cm-active);
 		}
+	}
+
+	.cm-mw-link-pagename:hover + .cm-mw-link-tosection,
+	.cm-mw-link-pagename:has(+ .cm-mw-link-tosection:hover) {
+		color: var(--cm-active);
 	}
 
 	.cm-link {

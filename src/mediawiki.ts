@@ -22,7 +22,7 @@ import {
 	mwSelector,
 } from './constants.js';
 import {myService} from './fold.js';
-import {lightHighlightStyle, linkStyles} from './theme.js';
+import {lightHighlightStyle, linkStyles, hoverDecoration} from './theme.js';
 import {MediaWiki} from './token.js';
 import {
 	getCompletions,
@@ -36,6 +36,7 @@ import {
 	getHighlightExtension,
 	loadMarked,
 	commentTypes,
+	getNeighborSelector,
 } from './util.js';
 import type {
 	TagStyle,
@@ -728,6 +729,13 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	},${
 		getSelector(['extlink', 'extlink-protocol'], ['', 'free-'])
 	}`]: linkStyles,
+	[
+	([
+		['link-', 'pagename', 'tosection'],
+		['extlink', '-protocol'],
+		['free-extlink', '-protocol'],
+	] as [string, string, string?][]).map(params => getNeighborSelector(...params)).join()
+	]: hoverDecoration,
 	[getSelector(['section-header', 'redirect', 'list', 'apostrophes'])]: {
 		color: 'var(--cm-hr)',
 	},

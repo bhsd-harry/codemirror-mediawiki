@@ -8,7 +8,7 @@ import {
 	linkMark,
 	mwSelector,
 } from './constants.js';
-import {commentTypes} from './util.js';
+import {commentTypes, getNeighborSelector} from './util.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
 import type {} from 'types-mediawiki';
@@ -41,6 +41,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
 	])(),
+	activeStyle = {color: 'var(--cm-active)'},
 	openLinksCls = 'cm-open-links',
 	activeLinkCls = 'cm-active-link',
 	activeLink = Decoration.mark({class: activeLinkCls}),
@@ -122,8 +123,7 @@ export const getOpenLinksExtension = (
 	linkParser: LinkParser,
 	selectors: string[] = [],
 ): Extension => {
-	const selector = [...selectors, `.${linkCls}>span`].map(sel => `& ${sel}`).join(),
-		activeStyle = {color: 'var(--cm-active)'};
+	const selector = [...selectors, `.${linkCls}>span`].map(sel => `& ${sel}`).join();
 	return [
 		StateField.define<ActiveRangeSet>({
 			create() {
@@ -216,9 +216,6 @@ export const getOpenLinksExtension = (
 
 					'&:hover': activeStyle,
 				},
-				/** @todo `:has()`的支持更广泛后可以合并选择器 */
-				[`& ${mwSelector}link-pagename:hover+${mwSelector}link-tosection`]: activeStyle,
-				[`& ${mwSelector}link-pagename:has(+${mwSelector}link-tosection:hover)`]: activeStyle,
 			},
 		}),
 	];
@@ -238,18 +235,29 @@ export const openLinks = (
 		),
 		titleParser,
 	);
-	return getOpenLinksExtension(
-		((state, posAndSide, str) => {
-			const {pos} = posAndSide,
-				node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
-			if (node?.name === tokens.comment) { // 不用于 @bhsd/codemirror-wikitext
-				return linkParserForComment(state, posAndSide, str as true);
-			}
-			return linkParser(state, posAndSide, str as true);
-		}) as LinkParser,
-		// eslint-disable-next-line unicorn/no-unsafe-string-replacement
-		[...links, ...titleParser ? wikiLinks : []].map(type => `.${type}`.replaceAll('.', mwSelector)),
-	);
+	return [
+		getOpenLinksExtension(
+			((state, posAndSide, str) => {
+				const {pos} = posAndSide,
+					node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
+				if (node?.name === tokens.comment) { // 不用于 @bhsd/codemirror-wikitext
+					return linkParserForComment(state, posAndSide, str as true);
+				}
+				return linkParser(state, posAndSide, str as true);
+			}) as LinkParser,
+			// eslint-disable-next-line unicorn/no-unsafe-string-replacement
+			[...links, ...titleParser ? wikiLinks : []].map(type => `.${type}`.replaceAll('.', mwSelector)),
+		),
+		...titleParser
+			? [
+				EditorView.theme({
+					[`&.${openLinksCls}`]: {
+						[getNeighborSelector('link-', 'pagename', 'tosection')]: activeStyle,
+					},
+				}),
+			]
+			: [],
+	];
 };
 
 const getLinkParserForComment = ({decorationPlugins, view}: CodeMirror6): LinkParser => ((state, {pos}, str) => {
