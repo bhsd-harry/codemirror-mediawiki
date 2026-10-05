@@ -188,9 +188,11 @@ export const openLinks = (
 			configData.articlePath,
 		),
 	);
-	return getOpenLinksExtension(
-		((state, posAndSide, str) => {
-			return linkParser(state, posAndSide, str as true);
-		}) as LinkParser,
-	);
+	return [
+		getOpenLinksExtension(
+			((state, posAndSide, str) => {
+				return linkParser(state, posAndSide, str as true);
+			}) as LinkParser,
+		),
+	];
 };
