@@ -57,17 +57,12 @@ import type {Option, LiveOption, IWikitextModel} from '@bhsd/cm-util';
 import type {Dialect, ReplaceFunction} from '../src/codemirror';
 import type {LintSources, LintSource} from '../src/lintsource';
 import type {MwConfig, TitleParser} from '../src/token';
+import type {CodeMirror as CodeMirrorBase, CodeMirrorOptions} from '../src/mwConfig';
 
 /** Extension:CodeMirror */
 declare interface ExtCodeMirror {
 	textarea: HTMLTextAreaElement;
 	destroy(): void;
-}
-
-declare interface CodeMirrorOptions {
-	ns?: number | undefined;
-	page?: string | undefined;
-	extensions?: string[] | undefined;
 }
 
 registerCSS();
@@ -179,6 +174,12 @@ const isRLModule = (title: string, ns = 2): boolean =>
 const isEditor = (textarea: HTMLTextAreaElement): boolean => !textarea.closest(`#${preferenceId}`);
 
 /**
+ * 判断是否非文档页面
+ * @param page 页面标题
+ */
+const notDoc = (page?: string): boolean => !page?.endsWith('/doc');
+
+/**
  * 抛出重复初始化错误
  * @throws `RangeError` 重复初始化
  */
@@ -187,7 +188,7 @@ const throwInitError = (): never => {
 };
 
 /** 专用于MW环境的 CodeMirror 6 编辑器 */
-export class CodeMirror extends CodeMirror6 {
+export class CodeMirror extends CodeMirror6 implements CodeMirrorBase {
 	static readonly version = curVersion;
 	static readonly instances = instances;
 	declare static monacoVersion: string | undefined;
@@ -593,7 +594,7 @@ export class CodeMirror extends CodeMirror6 {
 		if (!loaded) {
 			let defaultOpt: Option;
 			if (typeof ns === 'number') {
-				if (lang === 'mediawiki' && ns !== 10 && ns !== 828 && ns !== 2) {
+				if (lang === 'mediawiki' && ns !== 10 && ns !== 828 && ns !== 2 && notDoc(page)) {
 					defaultOpt = {include: false};
 				} else if (lang === 'javascript') {
 					defaultOpt = (
@@ -802,7 +803,7 @@ export class CodeMirror extends CodeMirror6 {
 		const dialect: Dialect = language === 'sanitized-css' ? language : undefined;
 		if (/\bjsonconfig\b/u.test(language)) {
 			language = 'jsonc';
-		} else if (language === 'wikitext' && ns === 274 && !page?.endsWith('/doc')) {
+		} else if (language === 'wikitext' && ns === 274 && notDoc(page)) {
 			language = 'html';
 		} else if (langMap.has(language)) {
 			language = langMap.get(language)!;
