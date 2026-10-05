@@ -1,14 +1,15 @@
 import {getObject, compareVersion, setI18N} from '@bhsd/browser';
 import {isMac, mwPrefix} from '../src/constants';
-import {curVersion, languageFallbacks} from './constants';
+import {curVersion, languageFallbacks, REPO} from './constants';
 import {openPreference} from './preference';
 import type {CodeMirror} from './codemirror';
 
 declare const $LANGS: string[];
 
-const storageKey = 'codemirror-mediawiki-i18n';
+const storageKey = `${REPO}-i18n`;
 
-export const REPO_CDN = `npm/@bhsd/codemirror-mediawiki@${curVersion}`,
+export const REPO_CDN = `npm/@bhsd/${REPO}@${curVersion}`,
+	owner = 'https://github.com/bhsd-harry',
 
 	/** 预存的I18N，可以用于判断是否是首次安装 */
 	i18n: Record<string, string> = getObject(storageKey) ?? {};
@@ -97,7 +98,7 @@ export const welcome = async (baseVersion: string, addons: string[]): Promise<vo
 		await mw.loader.using('mediawiki.jqueryMsg');
 		notification = await notify(
 			'welcome-addons',
-			`<a href="https://github.com/bhsd-harry/codemirror-mediawiki/blob/npm/CHANGELOG.md#${
+			`<a href="${owner}/${REPO}/blob/npm/CHANGELOG.md#${
 				curVersion.replaceAll('.', '')
 			}" rel="noreferrer">${curVersion}</a>`,
 			String(addons.length),

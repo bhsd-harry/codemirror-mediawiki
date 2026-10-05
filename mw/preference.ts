@@ -1,9 +1,19 @@
 import {rules} from 'wikiparser-node/dist/base.mjs';
 import {getObject, setObject} from '@bhsd/browser';
 import {CodeMirror} from './codemirror';
-import {preferenceId, indentKey, colKey, themeKey, RuleState, linterHook, linterMap} from './constants';
+import {
+	preferenceId,
+	indentKey,
+	colKey,
+	themeKey,
+	RuleState,
+	linterHook,
+	linterMap,
+	REPO,
+	curVersion,
+} from './constants';
 import {parsoidRules} from './lintsource';
-import {msg, parseMsg, i18n} from './msg';
+import {msg, parseMsg, i18n, owner} from './msg';
 import {instances} from './util';
 import type {LintError} from 'wikiparser-node';
 import type {ApiEditPageParams, ApiQueryRevisionsParams} from 'types-mediawiki-api';
@@ -28,23 +38,24 @@ declare interface MediaWikiResponse {
 	};
 }
 
-const prefKey = 'codemirror-mediawiki-addons',
-	monacoKey = 'codemirror-mediawiki-monaco',
+const prefKey = `${REPO}-addons`,
+	monacoKey = `${REPO}-monaco`,
 	nonBooleanKeys = new Set(['indent', 'col', 'theme', 'useMonaco'].map(k => `addon-${k}`)),
+	mwExts = new Set(['save', 'usemonaco', 'wikieditor', 'eslint', 'stylelint', 'luacheck']),
 	labels = ['Wiki', 'JavaScript', 'CSS', 'Lua', 'JSON'],
-	wikilintKey = 'codemirror-mediawiki-wikilint',
+	wikilintKey = `${REPO}-wikilint`,
 	codeKeys = [...linterMap.values()].slice(1),
 	hook = mw.hook<string[]>(linterHook),
 	user = mw.config.get('wgUserGroups')?.includes('user')
 		&& mw.config.get('wgUserName'),
-	userPage = user ? `User:${user}/codemirror-mediawiki.json` : undefined;
+	userPage = user ? `User:${user}/${REPO}.json` : undefined;
 
 export const prefs = new Set(getObject(prefKey) as string[] | null),
 	useMonaco = new Set(getObject(monacoKey) as string[] | null),
 	wikilint = (getObject(wikilintKey) ?? {}) as Record<string, RuleState | undefined>,
 	wikilintWidgets = new Map<string, OO.ui.DropdownInputWidget>(),
 	preferenceDialog: {layout?: OO.ui.IndexLayout} = {},
-	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`codemirror-mediawiki-${k}`)]));
+	codeConfigs = new Map(codeKeys.map(k => [k, getObject(`${REPO}-${k}`)]));
 
 // OOUI组件
 let dialog: OO.ui.MessageDialog | undefined,
@@ -130,6 +141,9 @@ export const loadJSON = (async () => {
 	);
 })();
 
+const getAnchor = (text: string, href: string): JQuery =>
+	$('<a>', {text, href, target: '_blank', rel: 'noreferrer'});
+
 export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.TabPanelLayout[] => {
 	if (ruleArr.length === 0) {
 		return [];
@@ -150,14 +164,12 @@ export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.Tab
 				}),
 				text = isWikiLint ? rule : rule.slice(8),
 				f = new OO.ui.FieldLayout(dropdown, {
-					label: $('<a>', {
+					label: getAnchor(
 						text,
-						href: isWikiLint
-							? `https://github.com/bhsd-harry/wikiparser-node/wiki/${text}`
+						isWikiLint
+							? `${owner}/wikiparser-node/wiki/${text}`
 							: `https://www.mediawiki.org/wiki/Help:Lint_errors/${text}`,
-						target: '_blank',
-						rel: 'noreferrer',
-					}),
+					),
 				});
 			wikilintWidgets.set(rule, dropdown);
 			wikilint[rule] ??= state;
@@ -166,6 +178,27 @@ export const buildPanel = (label: string, ruleArr: readonly string[]): OO.ui.Tab
 	);
 	return [panel];
 };
+
+const getHelpLink = (ext: string): string =>
+	`${owner}/${REPO}/blob/${curVersion}${mwExts.has(ext) ? '/mw' : ''}/README.md#${ext}`;
+
+const getFieldWithHelp = (w: OO.ui.Widget, ext: string, label: string): OO.ui.FieldLayout =>
+	new OO.ui.FieldLayout(w, {
+		label: msg(`addon-${label}`),
+		help: new OO.ui.HtmlSnippet(
+			`<a href="${getHelpLink(ext)}" target="_blank" rel="noreferrer" style="font-size:small">${
+				msg('addon-help')
+			}</a>`,
+		),
+		helpInline: true,
+	});
+
+const getHelpSpan = (ele: string | JQuery, ext: string): JQuery => $('<span>', {
+	html: [
+		ele,
+		getAnchor(msg('addon-help'), getHelpLink(ext)).css('font-size', 'small'),
+	],
+});
 
 /** 打开设置对话框 */
 export const openPreference = async (): Promise<void> => {
@@ -199,7 +232,10 @@ export const openPreference = async (): Promise<void> => {
 			widgets[label] = new OO.ui.MultilineTextInputWidget({
 				value: c ? JSON.stringify(c, null, indent || '\t') : '',
 			});
-			const codeField = new OO.ui.FieldLayout(widgets[label], {label: msg(`${label}-config`), align: 'top'}),
+			const codeField = new OO.ui.FieldLayout(widgets[label], {
+					label: getHelpSpan(msg(`${label}-config`), label.toLowerCase()),
+					align: 'top',
+				}),
 				panel = new OO.ui.TabPanelLayout(label, {label, $content: codeField.$element});
 			panel.on('active', active => {
 				const [textarea] = panel.$element.find(
@@ -232,12 +268,15 @@ export const openPreference = async (): Promise<void> => {
 							&& !k.endsWith('-mac')
 							&& !nonBooleanKeys.has(k),
 					)
-					.map((k): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label' | 'disabled'> => ({
-						data: k.slice(6),
-						label: parseMsg(k),
-						disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor')
-							|| k === 'addon-save' && !user,
-					})),
+					.map((k): Pick<OO.ui.MultioptionWidget.ConfigOptions, 'data' | 'label' | 'disabled'> => {
+						const data = k.slice(6);
+						return {
+							data,
+							label: getHelpSpan(parseMsg(k), data.toLowerCase()),
+							disabled: k === 'addon-wikiEditor' && !mw.loader.getState('ext.wikiEditor')
+								|| k === 'addon-save' && !user,
+						};
+					}),
 			],
 			value: [...prefs] as unknown as string,
 		});
@@ -263,19 +302,19 @@ export const openPreference = async (): Promise<void> => {
 				align: 'top',
 			}),
 			monacoField = new OO.ui.FieldLayout(monacoWidget, {
-				label: msg('addon-useMonaco'),
+				label: getHelpSpan(msg('addon-useMonaco'), 'usemonaco'),
 				align: 'top',
 			}),
-			indentField = new OO.ui.FieldLayout(indentWidget, {label: msg('addon-indent')}),
-			colField = new OO.ui.FieldLayout(colWidget as unknown as OO.ui.Widget, {label: msg('addon-col')}),
-			themeField = new OO.ui.FieldLayout(themeWidget, {label: msg('addon-theme')});
+			indentField = getFieldWithHelp(indentWidget, 'setindent', 'indent'),
+			colField = getFieldWithHelp(colWidget as unknown as OO.ui.Widget, 'setcolumnguide', 'col'),
+			themeField = getFieldWithHelp(themeWidget, 'themes', 'theme');
 		panelMain.$element.append(
 			field.$element,
 			indentField.$element,
 			colField.$element,
 			themeField.$element,
 			monacoField.$element,
-			$('<p>', {html: msg('feedback', 'codemirror-mediawiki')}),
+			$('<p>', {html: msg('feedback', REPO)}),
 		);
 		panelWikilint[0]!.$element.append($('<p>', {html: msg('feedback', 'wikiparser-node')}));
 	}
@@ -347,7 +386,7 @@ export const openPreference = async (): Promise<void> => {
 					configured = JSON.stringify(config) !== JSON.stringify(codeConfigs.get(key));
 				changed ||= configured;
 				codeConfigs.set(key, config);
-				setObject(`codemirror-mediawiki-${key}`, config);
+				setObject(`${REPO}-${key}`, config);
 				if (configured) {
 					hook.fire(key);
 				}

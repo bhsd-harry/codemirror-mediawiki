@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
-## 4.6.2
+## 4.7.0
 
-*2026-10-04*
+*2026-10-06*
+
+**Added**
+
+- When used on a MediaWiki site, the extension options in the preference dialog now link to the corresponding sections in the README file on GitHub
 
 **Fixed**
 

@@ -14,9 +14,9 @@
 - [Static methods](#static-methods)
 	- [fromTextArea](#fromtextarea)
 - [Extensions](#extensions)
-	- [wikiEditor](#wikieditor)
 	- [save](#save)
 	- [useMonaco](#usemonaco)
+	- [wikiEditor](#wikieditor)
 - [Preference dialog](#preference-dialog)
 	- [ESLint](#eslint)
 	- [Stylelint](#stylelint)
@@ -191,14 +191,6 @@ CodeMirror6.fromTextArea(textarea, 'vue');
 The `CodeMirror` class inherits all the [extensions](../README.md#extensions)
 from the `CodeMirror6` class and addes more.
 
-## wikiEditor
-
-*version added: 2.4.5*
-
-Load the WikiEditor toolbar. This extension can only be used before CodeMirror
-instantiation, which means it is inaccessible by the [`prefer`](../README.md#prefer)
-method.
-
 ## save
 
 *version added: 2.7.0*
@@ -210,6 +202,14 @@ Save preferences as JSON on a user subpage (`Special:Mypage/codemirror-mediawiki
 *version added: 2.11.1*
 
 Use the Monaco editor instead of the CodeMirror editor.
+
+## wikiEditor
+
+*version added: 2.4.5*
+
+Load the WikiEditor toolbar. This extension can only be used before CodeMirror
+instantiation, which means it is inaccessible by the [`prefer`](../README.md#prefer)
+method.
 
 # Preference dialog
 
