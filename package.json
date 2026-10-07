@@ -33,7 +33,7 @@
 		"build": "rm -rf dist/ && npm run build:core && gsed -i '/^\\/\\/ /d' dist/*.js",
 		"lint:ts": "tsc --noEmit && eslint --cache .",
 		"lint:css": "stylelint *.css",
-		"lint:md": "markdownlint-cli2 '**/*.md'",
+		"lint:md": "myMarkdownlint",
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
 		"test:end": "pkill -x http-server",
@@ -52,7 +52,7 @@
 		"@bhsd/browser": "^2.1.1",
 		"@bhsd/cm-util": "^2.4.1",
 		"@bhsd/codemirror-css-color-picker": "^9.0.1",
-		"@bhsd/codemirror-stickyscroll": "^0.2.0",
+		"@bhsd/codemirror-stickyscroll": "^0.3.0",
 		"@bhsd/common": "^4.1.0",
 		"@bhsd/stylelint-util": "^1.1.0",
 		"culori": "^4.0.2",
@@ -60,7 +60,7 @@
 		"wikiparser-node": "^1.48.0"
 	},
 	"devDependencies": {
-		"@bhsd/code-standard": "^4.3.0",
+		"@bhsd/code-standard": "^5.0.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.11.1",
 		"@codemirror/language": "^6.12.4",
@@ -72,7 +72,6 @@
 		"esbuild": "^0.28.2",
 		"eslint": "^10.12.0",
 		"http-server": "^14.1.1",
-		"markdownlint-cli2": "^0.23.3",
 		"stylelint": "^17.16.0",
 		"typescript": "^6.0.3"
 	}
