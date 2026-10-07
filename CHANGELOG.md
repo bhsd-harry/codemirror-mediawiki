@@ -1,7 +1,7 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 4.7.0
 
-*2026-10-06*
+*2026-10-07*
 
 **Added**
 
@@ -10,6 +10,7 @@
 **Fixed**
 
 - Failure to recognize the `Scribunto` content model in [`fromTextArea`](./mw/README.md#fromtextarea) on a MediaWiki site
+- The [stickyScroll](./README.md#stickyscroll) extension is now compatible with [`setTheme`](./README.md#settheme)
 
 ## 4.6.1
 

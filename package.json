@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "4.6.1",
+	"version": "4.7.0",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -83,7 +83,7 @@
 		"@bhsd/browser": "^2.1.1",
 		"@bhsd/cm-util": "^2.4.1",
 		"@bhsd/codemirror-css-color-picker": "^9.0.1",
-		"@bhsd/codemirror-stickyscroll": "^0.2.0",
+		"@bhsd/codemirror-stickyscroll": "^0.3.0",
 		"@bhsd/common": "^4.1.0",
 		"@bhsd/lezer-abusefilter": "^0.5.1",
 		"@bhsd/lezer-json": "^2.3.0",

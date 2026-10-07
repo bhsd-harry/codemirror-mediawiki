@@ -30,6 +30,7 @@ import {
 } from '@codemirror/lint';
 import {tags} from '@lezer/highlight';
 import elt from 'crelt';
+import {stickyScrollEffect} from '@bhsd/codemirror-stickyscroll';
 import {getParserConfig} from '@bhsd/cm-util';
 import {
 	diagnosticSelector,
@@ -803,7 +804,12 @@ export class CodeMirror6 {
 	 */
 	setTheme(theme: string): void {
 		if (themes.has(theme)) {
-			this.#view?.dispatch({effects: this.#theme.reconfigure(themes.get(theme)!)});
+			this.#view?.dispatch({
+				effects: [
+					this.#theme.reconfigure(themes.get(theme)!),
+					stickyScrollEffect.of(true),
+				],
+			});
 		}
 	}
 
