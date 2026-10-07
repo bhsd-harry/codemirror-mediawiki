@@ -8,8 +8,8 @@ import {instances} from './util';
 declare const $STYLE: string;
 
 // 每次新增插件都需要修改这里
-const baseVersion = '3.21',
-	addons = ['colorPicker'];
+const baseVersion = '4.5',
+	addons = ['stickyScroll'];
 
 mw.loader.addStyleTag($STYLE);
 

@@ -1,11 +1,11 @@
 {
-	"version": "4.7.0",
+	"version": "4.7.1",
 	"lang": "en",
 	"title": "CodeMirror Addons",
 	"label": "Please select the addons you wish to load",
 	"feedback": "Bug reports or suggestions are welcome at <a href=\"https://github.com/bhsd-harry/$1/issues\" target=\"_blank\" rel=\"noreferrer\">GitHub</a> .",
 	"contentmodel": "Please indicate the content model:",
-	"addon-help": " (Help)",
+	"help": " (Help)",
 	"addon-allowMultipleSelections": "Allow multiple selections",
 	"addon-autocompletion": "<span title=\"Shift-Enter\">Autocompletion</span>",
 	"addon-blockCursor": "Block cursor",

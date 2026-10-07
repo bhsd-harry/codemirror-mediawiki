@@ -187,7 +187,7 @@ const getFieldWithHelp = (w: OO.ui.Widget, ext: string, label: string): OO.ui.Fi
 		label: msg(`addon-${label}`),
 		help: new OO.ui.HtmlSnippet(
 			`<a href="${getHelpLink(ext)}" target="_blank" rel="noreferrer" style="font-size:small">${
-				msg('addon-help')
+				msg('help')
 			}</a>`,
 		),
 		helpInline: true,
@@ -196,7 +196,7 @@ const getFieldWithHelp = (w: OO.ui.Widget, ext: string, label: string): OO.ui.Fi
 const getHelpSpan = (ele: string | JQuery, ext: string): JQuery => $('<span>', {
 	html: [
 		ele,
-		getAnchor(msg('addon-help'), getHelpLink(ext)).css('font-size', 'small'),
+		getAnchor(msg('help'), getHelpLink(ext)).css('font-size', 'small'),
 	],
 });
 

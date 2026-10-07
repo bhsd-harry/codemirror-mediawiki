@@ -1,5 +1,5 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
-## 4.7.0
+## 4.7.1
 
 *2026-10-07*
 
