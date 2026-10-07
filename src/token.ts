@@ -38,8 +38,6 @@ export interface State extends Nesting {
 	lbrack: boolean | undefined;
 	bold: boolean;
 	italic: boolean;
-	nStrike: number;
-	nUnderline: number;
 	sof: boolean;
 	redirect: {colon: boolean} | false;
 	imgLink: boolean;
@@ -135,8 +133,6 @@ const startState = (tokenize: Tokenizer, tags: string[], urlProtocols: RegExp, s
 	nVar: 0,
 	nLink: 0,
 	nExtLink: 0,
-	nStrike: 0,
-	nUnderline: 0,
 	lbrack: false,
 	bold: false,
 	italic: false,
@@ -277,9 +273,7 @@ const getTokenizer = <T = Style>(
 const makeFullStyle = (style: Style, state: ExtState): string => (
 	typeof style === 'string'
 		? style
-		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''} ${
-			state.nStrike ? tokens.strike : ''
-		} ${state.nUnderline ? tokens.underline : ''}`
+		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
 ).trim().replaceAll(/\s{2,}/gu, ' ') || ' ';
 
 /**
@@ -411,20 +405,6 @@ const peekSpace = (stream: StringStream, sol?: boolean): boolean => {
 	}
 	const peek = stream.peek();
 	return Boolean(peek && !peek.trim());
-};
-
-/**
- * 处理 HTML 标签关联的状态
- * @param state
- * @param tagname 标签名
- * @param increment 增量
- */
-const updateHtmlTag = (state: State, tagname: string, increment: 1 | -1 = -1): void => {
-	if (tagname === 'u') {
-		state.nUnderline += increment;
-	} else if (tagname === 's' || tagname === 'strike') {
-		state.nStrike += increment;
-	}
 };
 
 const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
@@ -1361,12 +1341,12 @@ export class MediaWiki {
 				dt.html--;
 			}
 			if (tagname === inHtmlTag.at(-1)) {
-				updateHtmlTag(state, inHtmlTag.pop()!);
+				inHtmlTag.pop();
 			} else {
 				chain(state, this.inStr('>', 'error'));
 				const i = inHtmlTag.lastIndexOf(tagname);
 				if (i !== -1) {
-					updateHtmlTag(state, inHtmlTag.splice(i, 1)[0]!);
+					inHtmlTag.splice(i, 1);
 				}
 				return makeLocalTagStyle('error', state);
 			}
@@ -1406,7 +1386,6 @@ export class MediaWiki {
 			if (mt) {
 				if (!this.voidHtmlTags.has(name) && (mt[0] === '>' || !selfClosingTags.includes(name))) {
 					state.inHtmlTag.push(name);
-					updateHtmlTag(state, name, 1);
 					state.dt.html++;
 				}
 				pop(state);

@@ -81,7 +81,6 @@ export const htmlTags = /* #__PURE__ */ html.flat(),
 		sectionHeader: 'mw-section-header',
 		signature: 'mw-signature',
 		skipFormatting: 'mw-skipformatting',
-		strike: 'mw-strike',
 		strong: 'mw-strong',
 		tableBracket: 'mw-table-bracket',
 		tableCaption: 'mw-table-caption',
@@ -100,7 +99,6 @@ export const htmlTags = /* #__PURE__ */ html.flat(),
 		templateVariableBracket: 'mw-templatevariable-bracket',
 		templateVariableDelimiter: 'mw-templatevariable-delimiter',
 		templateVariableName: 'mw-templatevariable-name',
-		underline: 'mw-underline',
 	};
 
 export type TagName = keyof typeof tokens;
