@@ -68,8 +68,10 @@ const wikiLintSource = async (
 	text: string,
 	opt: EditorView,
 	doc: Text,
+	/* eslint-disable unicorn/no-unnecessary-parameters */
 	f = 0,
 	t?: number,
+	/* eslint-enable unicorn/no-unnecessary-parameters */
 ): Promise<Diagnostic[]> => (await wikiLint(text, opt))
 	.map(({severity, code, message, range: r, from, to, data = [], source}): Diagnostic => ({
 		source: source!,

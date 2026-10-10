@@ -130,4 +130,5 @@ export const getWikiKeymap = ({key, pre = '', post = '', splitlines}: KeymapConf
  * The [formatting](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#formatkeymap)
  * key bindings for Wikitext.
  */
-export default keybindings.map(getWikiKeymap);
+const formatKeymap = keybindings.map(getWikiKeymap);
+export default formatKeymap;
