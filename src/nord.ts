@@ -51,7 +51,7 @@ const selectionSelector = '.cm-selectionBackground',
 	focused = '&.cm-focused';
 
 // Extension to enable the Nord theme (both the editor theme and the highlight style).
-export default [
+const nord = [
 	EditorView.theme(
 		{
 			'&': {
@@ -253,3 +253,5 @@ export default [
 		},
 	])),
 ] satisfies Extension;
+
+export default nord;

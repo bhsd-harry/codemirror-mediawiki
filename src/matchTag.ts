@@ -158,7 +158,7 @@ export const matchTag = (state: EditorState, pos: number): MatchResult | null =>
 const matchingTag = /* #__PURE__ */ Decoration.mark({class: matchingCls}),
 	nonmatchingTag = /* #__PURE__ */ Decoration.mark({class: nonmatchingCls});
 
-export default /* #__PURE__ */ StateField.define<DecorationSet>({
+const tagMatchingState = /* #__PURE__ */ StateField.define<DecorationSet>({
 	create() {
 		return Decoration.none;
 	},
@@ -186,3 +186,5 @@ export default /* #__PURE__ */ StateField.define<DecorationSet>({
 		return EditorView.decorations.from(f);
 	},
 });
+
+export default tagMatchingState;

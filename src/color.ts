@@ -1,6 +1,7 @@
 import {splitColors} from '@bhsd/common';
 import {colorsNamed} from '@bhsd/common/color';
 import {makeColorPicker} from '@bhsd/codemirror-css-color-picker';
+import type {Extension} from '@codemirror/state';
 import type {DiscoverColors} from '@bhsd/codemirror-css-color-picker';
 import type {DocRange} from './util';
 
@@ -33,4 +34,4 @@ export const discoverColors: DiscoverColors = (_, {from, to, name}, doc) =>
 			}))
 		: undefined;
 
-export default makeColorPicker(discoverColors);
+export default (): Extension => makeColorPicker(discoverColors);

@@ -75,7 +75,7 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 	return Decoration.set(set, true);
 };
 
-export default [
+export default (): Extension => [
 	ViewPlugin.fromClass(
 		class implements PluginValue {
 			declare isolates;

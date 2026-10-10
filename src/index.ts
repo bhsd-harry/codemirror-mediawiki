@@ -374,12 +374,12 @@ export const registerInlayHints = (articlePath?: string): void => {
  * @since 3.10.0
  */
 export const registerBidiIsolates = (): void => {
-	registerExtensionForMediaWiki('bidiIsolates', bidiIsolates);
+	registerExtensionForMediaWiki('bidiIsolates', bidiIsolates());
 };
 
 /** Register the `colorPicker` extension for MediaWiki */
 export const registerColorPickerForMediaWiki = (): void => {
-	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker);
+	registerLangExtension('mediawiki', 'colorPicker', mediawikiColorPicker());
 };
 
 /** Register the `bracketMatching` extension for MediaWiki */

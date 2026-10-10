@@ -128,4 +128,5 @@ export const getWikiKeymap = ({key, pre = '', post = '', splitlines}: KeymapConf
 	preventDefault: true,
 });
 
-export default keybindings.map(getWikiKeymap);
+const formatKeymap = keybindings.map(getWikiKeymap);
+export default formatKeymap;

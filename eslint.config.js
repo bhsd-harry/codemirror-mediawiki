@@ -1,7 +1,7 @@
 import {jsDoc, browser, extend} from '@bhsd/code-standard';
 import globals from 'globals';
 
-export default extend(
+const config = extend(
 	jsDoc,
 	browser,
 	{
@@ -107,7 +107,10 @@ export default extend(
 	{
 		files: ['test/src/*.ts'],
 		rules: {
+			'unicorn/no-unnecessary-parameters': 0,
 			'@typescript-eslint/strict-void-return': 0,
 		},
 	},
 );
+
+export default config;
