@@ -31,6 +31,11 @@ declare type LintConfig = Extract<LintConfigBase, {h1?: unknown}>
 
 export type ReplaceFunction = (str: string, range: DocRange) => string | [string, number, number?];
 
+/**
+ * 替换选中内容
+ * @param view
+ * @param func 用于生成替换文本和光标位置的函数
+ */
 export const replaceSelections = (view: EditorView, func: ReplaceFunction): void => {
 	const {state} = view;
 	view.dispatch(state.changeByRange(range => {

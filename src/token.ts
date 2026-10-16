@@ -8,6 +8,7 @@ import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';
 import {otherParserFunctions} from '@bhsd/cm-util';
+import {autocompleteNamespaces} from './constants.js';
 import {htmlTags, voidHtmlTags, selfClosingTags, tokenTable, tokens} from './config.js';
 import {MediaWikiData} from './data.js';
 import {jsonBasic, jsonc} from './json.js';
@@ -241,6 +242,9 @@ const makeFullStyle = (style: Style, state: ExtState): string => (
 		: `${style[0]} ${state.bold || state.dt?.n ? tokens.strong : ''} ${state.italic ? tokens.em : ''}`
 ).trim().replaceAll(/\s{2,}/gu, ' ') || ' ';
 
+/**
+ * @ignore
+ */
 export const makeLocalStyle = (style: string, state: ExtState, endGround?: NestCount): string => {
 	const {nTemplate, nExt, nLink, nExtLink, dt, section} = state;
 	let ground = '';
@@ -488,14 +492,6 @@ export class MediaWiki {
 
 	readonly tokenTable = {...tokenTable};
 	readonly hiddenTable: Record<string, Tag> = {};
-	readonly autocompleteNamespaces = {
-		0: '',
-		6: 'File:',
-		8: 'MediaWiki:',
-		10: 'Template:',
-		274: 'Widget:',
-		828: 'Module:',
-	};
 
 	constructor(config: MwConfig) {
 		const {
@@ -644,7 +640,7 @@ export class MediaWiki {
 		for (const tag of this.permittedHtmlTags) {
 			this.addToken(`html-${tag}`, true);
 		}
-		for (const i in this.autocompleteNamespaces) {
+		for (const i in autocompleteNamespaces) {
 			if (Number.isSafeInteger(Number(i))) {
 				this.addToken(`function-${i}`, true);
 			}

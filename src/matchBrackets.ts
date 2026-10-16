@@ -16,6 +16,9 @@ export interface BracketConfig extends Config {
 
 export type RequiredConfig = Required<Config> & BracketConfig;
 
+/**
+ * @ignore
+ */
 export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: string): MatchResult | undefined => {
 	let parent: SyntaxNode | null = node;
 	while (parent) {
@@ -32,6 +35,9 @@ export const findEnclosingBrackets = (node: SyntaxNode, pos: number, brackets: s
 	return undefined;
 };
 
+/**
+ * @ignore
+ */
 export const findEnclosingPlainBrackets = (
 	state: EditorState,
 	pos: number,
@@ -57,6 +63,9 @@ export const findEnclosingPlainBrackets = (
 	return null;
 };
 
+/**
+ * @ignore
+ */
 export const trySelectMatchingBrackets = (
 	state: EditorState,
 	pos: number,
@@ -115,6 +124,9 @@ const tryMatchBracetks = (
 		|| pos < state.doc.length && matchBrackets(state, pos + 1, -1, config)
 	);
 
+/**
+ * @ignore
+ */
 export const myBracketDeco = (state: EditorState, config: RequiredConfig): DecorationSet => {
 	const decorations: Range<Decoration>[] = [],
 		{

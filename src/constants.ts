@@ -5,7 +5,7 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	extCompletion: Record<string, Completion[]> = {},
 	mwPrefix = 'cm-mw-',
 	mwTag = 'mw-tag-',
-	mwSelector = `.${mwPrefix}`,
+	mwSelector = /* #__PURE__ */ (() => `.${mwPrefix}`)(),
 	hoverSelector = '.cm-tooltip-hover-mw',
 	diagnosticSelector = '.cm-diagnosticText-clickable',
 	panelSelector = '.cm-panel',
@@ -13,6 +13,15 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	bgDark = '#4c566a',
 	matchingCls = 'cm-matchingBracket',
 	nonmatchingCls = 'cm-nonmatchingBracket';
+
+export const autocompleteNamespaces = {
+	0: '',
+	6: 'File:',
+	8: 'MediaWiki:',
+	10: 'Template:',
+	274: 'Widget:',
+	828: 'Module:',
+};
 
 export const isMac = /* #__PURE__ */ (() => {
 	const {vendor, userAgent, maxTouchPoints, platform} = navigator;

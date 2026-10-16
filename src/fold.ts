@@ -6,7 +6,7 @@ import {
 	foldGutter,
 	foldKeymap,
 } from '@codemirror/language';
-import {tokens} from './config.js';
+import {hasTag} from './config.js';
 import {
 	sliceDoc,
 	getFoldService,
@@ -35,7 +35,7 @@ export const myService = (state: EditorState, f: number, t: number): DocRange | 
 	 */
 	const getLevel = (pos: number): number => {
 			const {name} = tree.resolve(pos, 1);
-			return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
+			return hasTag(name, 'sectionHeader') ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
 		},
 
 		/**
@@ -46,9 +46,9 @@ export const myService = (state: EditorState, f: number, t: number): DocRange | 
 		getTable = (from: number, to: number): 0 | 1 | -1 => {
 			const node = tree.resolve(from, 1),
 				{nextSibling} = node,
-				bracket = node.name.includes(tokens.tableBracket)
+				bracket = hasTag(node.name, 'tableBracket')
 					? node
-					: node.to < to && nextSibling?.name.includes(tokens.tableBracket) && nextSibling;
+					: node.to < to && hasTag(nextSibling?.name, 'tableBracket') && nextSibling;
 			if (bracket) {
 				return /\|\}$|\{\{\s*!(?:\s*\}|\)\s*)\}\}$/u.test(sliceDoc(state, bracket)) ? -1 : 1;
 			}

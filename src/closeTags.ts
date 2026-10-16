@@ -1,7 +1,7 @@
 import {EditorView} from '@codemirror/view';
 import {syntaxTree} from '@codemirror/language';
 import {getTag, searchTag} from './matchTag.js';
-import {hasTag} from './mediawiki.js';
+import {hasTag} from './config.js';
 import type {Extension} from '@codemirror/state';
 import type {TagName} from './config';
 

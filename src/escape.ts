@@ -36,6 +36,11 @@ const convert = (func: (str: string) => string, cmd: Command): Command => (view)
 	}
 	return cmd(view);
 };
+
+/**
+ * 转义HTML
+ * @param str 输入字符串
+ */
 export const escapeHTML = (str: string): string => [...str].map(c => {
 		if (entity.has(c)) {
 			return `&${entity.get(c)};`;
@@ -43,6 +48,11 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		const code = c.codePointAt(0)!;
 		return code < 256 ? `&#${code};` : `&#x${code.toString(16)};`;
 	}).join(''),
+
+	/**
+	 * 转义URI
+	 * @param str 输入字符串
+	 */
 	escapeURI = (str: string): string => {
 		if (str.includes('%')) {
 			try {
@@ -51,6 +61,12 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 		}
 		return encodeURIComponent(str);
 	},
+
+	/**
+	 * 使用魔术字转义选中文本
+	 * @param view
+	 * @param lsp LSP实例
+	 */
 	escapeWiki = async (view: EditorView, lsp: Exclude<ReturnType<typeof getLSP>, undefined>): Promise<void> => {
 		const {state} = view,
 			{ranges} = state.selection,

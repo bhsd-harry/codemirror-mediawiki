@@ -1,7 +1,10 @@
 import {EditorView, Decoration} from '@codemirror/view';
 import {StateEffect, StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {tokens} from './config.js';
+import {
+	hasTag,
+	getTypes,
+} from './config.js';
 import {
 	isMac,
 } from './constants.js';
@@ -44,6 +47,9 @@ const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string 
 	return url.startsWith('//') ? location.protocol + url : url;
 };
 
+/**
+ * @implements
+ */
 export const getISBNParser = (articlePath?: string): ISBNParser | undefined => articlePath
 	? (link: string): string => {
 		const page = `Special:Booksources/${
@@ -56,6 +62,9 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 	}
 	: undefined;
 
+/**
+ * @ignore
+ */
 export const getLinkParser = (
 	isbnParser?: ISBNParser,
 ): LinkParser =>
@@ -65,15 +74,16 @@ export const getLinkParser = (
 			return undefined;
 		}
 		let node = tree.resolve(pos, assoc);
-		if (node.name.includes(tokens.linkToSection)) {
+		if (hasTag(node.name, 'linkToSection')) {
 			node = node.prevSibling!;
 		}
-		const {name, from, to, nextSibling, prevSibling} = node;
-		if (name.includes('-extlink-protocol')) {
+		const {name, from, to, nextSibling, prevSibling} = node,
+			types = getTypes(name);
+		if (hasTag(types, ['extLinkProtocol', 'freeExtLinkProtocol'])) {
 			return wrapURL(state, [from, nextSibling!.to], str);
-		} else if (/-extlink(?:_|$)/u.test(name)) {
+		} else if (hasTag(types, ['extLink', 'freeExtLink'])) {
 			return wrapURL(state, [prevSibling!.from, to], str);
-		} else if (name.includes(tokens.magicLink)) {
+		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);
 			if (link.startsWith('ISBN')) {
 				return isbnParser && (str ? isbnParser(link) : [from, to]);

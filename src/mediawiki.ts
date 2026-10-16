@@ -10,7 +10,7 @@ import {
 } from '@codemirror/language';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
-import {htmlTags, tokens} from './config.js';
+import {htmlTags, hasTag, getTypes} from './config.js';
 import {
 	extCompletion,
 } from './constants.js';
@@ -32,19 +32,6 @@ import type {
 	MwConfig,
 } from './token';
 import type {TagName} from './config';
-
-/**
- * 判断节点是否包含指定类型
- * @param types 节点类型
- * @param names 指定类型
- */
-export const hasTag = (types: Set<string> | string, names: TagName | TagName[]): boolean => {
-	if (typeof types === 'string') {
-		types = new Set(types.split('_'));
-	}
-	return (Array.isArray(names) ? names : [names])
-		.some(name => types.has(Object.hasOwn(tokens, name) ? tokens[name] : name));
-};
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly extTags;
@@ -124,7 +111,7 @@ export class FullMediaWiki extends MediaWiki {
 					prevSibling,
 					from: f,
 				} = node,
-				types = new Set(n.split('_')),
+				types = getTypes(n),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
@@ -265,7 +252,7 @@ export class FullMediaWiki extends MediaWiki {
 			if (
 				isDelimiter
 				|| hasTag(types, ['fileText', 'imageParameter'])
-				&& prevSibling?.name.includes(tokens.fileDelimiter)
+				&& hasTag(prevSibling?.name, 'fileDelimiter')
 				&& !search.includes('[')
 			) {
 				const equal = state.sliceDoc(pos, pos + 1) === '=';

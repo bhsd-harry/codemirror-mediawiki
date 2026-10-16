@@ -5,6 +5,7 @@ import {
 	getWikiLinter,
 } from './linter.js';
 import {posToIndex, toConfigGetter} from './util.js';
+import {hasTag} from './config.js';
 import type {EditorView} from '@codemirror/view';
 import type {
 	Text,
@@ -20,6 +21,7 @@ import type {
 	LintConfig,
 } from 'wikiparser-node';
 import type {DocRange} from './util';
+import type {TagName} from './config';
 
 export type LintSourceGetter = (
 	opt: ConfigData,
@@ -47,6 +49,10 @@ export const pos = (doc: Text, line: number, column: number, from = 0): number =
 	});
 };
 
+/**
+ * 将行列范围转换为位置范围
+ * @ignore
+ */
 export const getRange = (
 	doc: Text,
 	line: number,
@@ -101,6 +107,9 @@ const wikiLintSource = async (
 			: {from: from + f, to: (to ?? from) + f},
 	}));
 
+/**
+ * @implements
+ */
 export const getWikiLintSource: LintSourceGetter =
 	async (
 		opt,
@@ -120,7 +129,7 @@ export const getWikiLintSource: LintSourceGetter =
 					);
 				syntaxTree(state).iterate({
 					enter({name, from, to}) {
-						if (/(?:^|_)mw-unknown(?:$|_)/u.test(name)) {
+						if (hasTag(name, 'mw-unknown' as TagName)) {
 							diagnostics.push({
 								from,
 								to,

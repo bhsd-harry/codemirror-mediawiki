@@ -24,6 +24,7 @@ declare type asyncLinter<
 
 /**
  * @param opt 初始化选项
+ * @param obj 仅用于wikiparse.LanguageService
  */
 declare type getAsyncLinter<
 	T,
@@ -92,14 +93,8 @@ export const getWikiLinter: getAsyncLinter<
 		getConfig: opt,
 		cdn,
 	});
-	const isFull = obj && 'rules' in obj,
-		cssConfig = isFull ? obj.rules['invalid-css'] : obj?.['invalid-css'],
+	const cssConfig = obj && 'rules' in obj ? obj.rules['invalid-css'] : obj?.['invalid-css'],
 		isWarning = cssConfig === 1 || cssConfig === 'warning';
-	if (isFull) {
-		delete obj.rules['invalid-css'];
-	} else if (obj) {
-		delete obj['invalid-css'];
-	}
 	wikiparse.setLintConfig(obj);
 	const cssLint =
 		([0, false, 'off'] as unknown[]).includes(cssConfig)
