@@ -1,10 +1,7 @@
-import * as assert from 'assert';
 import {describe, it} from '@bhsd/test-util/mocha';
-import {FullMediaWiki, apply, applyDisplayLabel, hasTag} from '../../dist/mediawiki.js';
-import {tokens} from '../../dist/config.js';
+import {FullMediaWiki, apply, applyDisplayLabel} from '../../dist/mediawiki.js';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util.js';
 import type {Completion, CompletionResult} from '@codemirror/autocomplete';
-import type {TagName} from '../../dist/config';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
@@ -105,7 +102,7 @@ describe('autocompletion', () => {
 			'{{raw: a',
 			{
 				from: 7,
-				options: [{label: 'a (template)', type: 'text'}],
+				options: [{label: 'a', type: 'text'}],
 				validFor: /^[^|{}<>[\]#]*$/u,
 			},
 		);
@@ -436,30 +433,5 @@ describe('apply page completion', () => {
 	});
 	it('gallery', async () => {
 		await applyDisplayLabelTest('<gallery>f', 10, 9, 'Foo', [9, [1, 'Foo']], 12);
-	});
-});
-
-describe('util functions', () => {
-	it('has tag', () => {
-		const types = new Set([tokens.em, tokens.error]),
-			typesStr = [...types].join('_');
-		const yes = (tag: string | string[]): void => {
-				assert.ok(hasTag(types, tag as TagName | TagName[]));
-				assert.ok(hasTag(typesStr, tag as TagName | TagName[]));
-			},
-			no = (tag: string | string[]): void => {
-				assert.ok(!hasTag(types, tag as TagName | TagName[]));
-				assert.ok(!hasTag(typesStr, tag as TagName | TagName[]));
-			};
-		yes(tokens.em);
-		yes(tokens.error);
-		yes('em');
-		yes('error');
-		no(tokens.strong);
-		no('strong');
-		yes([tokens.em, tokens.strong]);
-		yes(['em', 'strong']);
-		no([tokens.strong, 'list']);
-		no(['strong', 'list']);
 	});
 });

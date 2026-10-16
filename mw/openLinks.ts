@@ -1,13 +1,15 @@
 import {normalizeTitle} from '@bhsd/browser';
-import {tokens} from '../src/config';
+import {autocompleteNamespaces} from '../src/constants';
+import {getTypes, hasTag} from '../src/config';
 import {isWikiLink} from '../src/mediawiki';
 import {sliceDoc, getSubpageLevel} from '../src/util';
 import {getParentDir} from './util';
 import type {SyntaxNode} from '@lezer/common';
 import type {MwConfig, TitleParser} from '../src/token';
+import type {TagName} from '../src/config';
 
 const isSameToken = (node: SyntaxNode, name: string): boolean =>
-	node.name === name || node.name.includes(tokens.comment);
+	node.name === name || hasTag(node.name, 'comment');
 
 export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 10}: MwConfig): TitleParser => {
 	const re = new RegExp(`^(?:${urlProtocols})`, 'iu');
@@ -28,11 +30,28 @@ export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 1
 			({to, nextSibling} = nextSibling);
 		}
 		page = page.trim();
-		if (name.includes(tokens.fileText) && re.test(page)) {
+		const types = getTypes(name);
+		if (hasTag(types, 'fileText') && re.test(page)) {
 			return {page};
 		}
-		const isTemplateStyles = name.includes(tokens.extTagAttributeValue);
-		if (!isTemplateStyles) {
+		let ns = 0;
+		if (hasTag(types, 'extTagAttributeValue')) {
+			ns = templateStylesDefaultNamespace;
+		} else {
+			if (hasTag(types, 'templateName')) {
+				ns = 10;
+			} else if (
+				hasTag(types, 'mw-tag-gallery' as TagName) && hasTag(types, 'linkPageName') && !isWikiLink(name)
+			) {
+				ns = 6;
+			} else if (hasTag(types, 'parserFunction')) {
+				ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
+				if (ns !== 10) {
+					page = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces] + page;
+				}
+			} else if (hasTag(nextSibling?.name, 'linkToSection')) {
+				page += sliceDoc(state, nextSibling!).trim();
+			}
 			const pageName = mw.config.get('wgPageName');
 			if (page.startsWith('/')) {
 				page = `:${pageName}${page}`;
@@ -45,20 +64,6 @@ export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 1
 				const sub = page.slice(length);
 				page = `:${parent}${sub && '/'}${sub}`;
 			}
-		}
-		let ns = 0;
-		if (isTemplateStyles) {
-			ns = templateStylesDefaultNamespace;
-		} else if (name.includes(tokens.templateName)) {
-			ns = 10;
-		} else if (
-			name.includes('mw-tag-gallery') && name.includes(tokens.linkPageName) && !isWikiLink(name)
-		) {
-			ns = 6;
-		} else if (name.includes(tokens.parserFunction)) {
-			ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
-		} else if (nextSibling?.name.includes(tokens.linkToSection)) {
-			page += sliceDoc(state, nextSibling).trim();
 		}
 		return {page: mw.Title.newFromText(normalizeTitle(page), ns)?.getUrl(undefined)};
 	};

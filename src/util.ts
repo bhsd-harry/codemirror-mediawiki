@@ -10,7 +10,7 @@ import {
 	loadScript,
 } from '@bhsd/browser';
 import {numLeadingSpaces} from '@bhsd/common';
-import {tokens} from './config.js';
+import {hasTag, getTypes} from './config.js';
 import {
 	baseData,
 	mwTag,
@@ -221,7 +221,7 @@ export const markDocTagType = (
  * Check if the node is a template parameter value
  * @param node 语法树节点
  */
-export const isTemplateParam = (node: SyntaxNode): boolean => node.name.split('_').includes(tokens.template);
+export const isTemplateParam = (node: SyntaxNode): boolean => hasTag(node.name, 'template');
 
 /**
  * Find the current template name and parameter name
@@ -236,8 +236,8 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): [string 
 		parameter = '',
 		need = isTemplateParam(node);
 	while (prevSibling) {
-		const {name} = prevSibling;
-		if (name.includes(tokens.templateBracket)) {
+		const types = getTypes(prevSibling.name);
+		if (hasTag(types, 'templateBracket')) {
 			if (need && parameter) {
 				need = false;
 				parameter = '';
@@ -249,19 +249,19 @@ export const findTemplateName = (state: EditorState, node: SyntaxNode): [string 
 			}
 			stack += rbrace;
 		} else if (stack === -1) {
-			if (name.includes(tokens.templateName)) {
+			if (hasTag(types, 'templateName')) {
 				page = sliceDoc(state, prevSibling) + page;
 			} else if (need) {
-				if (name.includes(tokens.templateDelimiter)) {
+				if (hasTag(types, 'templateDelimiter')) {
 					need = false;
-				} else if (name.includes(tokens.templateArgumentName)) {
+				} else if (hasTag(types, 'templateArgumentName')) {
 					parameter = sliceDoc(state, prevSibling) + parameter;
-				} else if (parameter && !name.includes(tokens.comment)) {
+				} else if (parameter && !hasTag(types, 'comment')) {
 					need = false;
 					parameter = '';
 				}
 			}
-		} else if (page && !name.includes(tokens.comment)) {
+		} else if (page && !hasTag(types, 'comment')) {
 			prevSibling = null;
 			break;
 		}

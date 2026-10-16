@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 4.7.2
+
+*2026-10-16*
+
+**Fixed**
+
+- The [openLinks](./README.md#openlinks) extension for parser function arguments in the MediaWiki mode on a MediaWiki site
+
 ## 4.7.1
 
 *2026-10-07*

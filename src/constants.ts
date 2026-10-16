@@ -28,6 +28,15 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	matchingCls = 'cm-matchingBracket',
 	nonmatchingCls = 'cm-nonmatchingBracket';
 
+export const autocompleteNamespaces = {
+	0: '',
+	6: 'File:',
+	8: 'MediaWiki:',
+	10: 'Template:',
+	274: 'Widget:',
+	828: 'Module:',
+};
+
 export const isWMF = /* #__PURE__ */ (
 	() => typeof location === 'object'
 		&& new RegExp(String.raw`\.(?:${wmf})\.org$`, 'u').test(location.hostname)

@@ -2,8 +2,9 @@ import * as assert from 'assert';
 import {describe, it} from '@bhsd/test-util/mocha';
 import {syntaxTree} from '@codemirror/language';
 import {matchTag, WikiTag, getTag} from '../../dist/matchTag.js';
-import {tokens} from '../../dist/config.js';
+import {tokens, hasTag} from '../../dist/config.js';
 import {createState} from './util.js';
+import type {TagName} from '../../dist/config';
 
 declare interface TagMatchResult {
 	matched: boolean;
@@ -25,7 +26,7 @@ const classTest = (
 		tree = syntaxTree(state),
 		first = pos === undefined ? tree.topNode.firstChild! : tree.resolve(pos, 1);
 	let {nextSibling} = first;
-	while (nextSibling && !nextSibling.name.includes(tokens[`${type}TagBracket`])) {
+	while (nextSibling && !hasTag(nextSibling.name, `${type}TagBracket`)) {
 		({nextSibling} = nextSibling);
 	}
 	const tag = new WikiTag(type, name, first, nextSibling!, state);
@@ -39,7 +40,7 @@ const tagTest = (doc: string, pos: number, name: string, range: [number, number]
 	const state = createState(doc),
 		node = syntaxTree(state).resolve(pos, 1),
 		tag = getTag(state, node);
-	assert.ok(node.name.split('_').includes(name));
+	assert.ok(hasTag(node.name, name as TagName));
 	assert.deepStrictEqual(tag && [tag.from, tag.to], range);
 };
 

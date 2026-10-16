@@ -5,7 +5,7 @@ import {
 	createTooltipView,
 	escHTML,
 } from '@bhsd/cm-util/cm';
-import {tokens} from './config.js';
+import {hasTag} from './config.js';
 import {baseData, hoverSelector, bgDark} from './constants.js';
 import {
 	indexToPos,
@@ -53,7 +53,7 @@ export const getHoverFromApi = async (
 ): Promise<Hover | undefined> => {
 	const node = ensureSyntaxTree(state, pos + Math.max(side, 0))?.resolve(pos, side),
 		{doc} = state;
-	if (node?.name.includes(tokens.templateName)) {
+	if (node && hasTag(node.name, 'templateName')) {
 		const result = await paramSuggest(sliceDoc(state, node), templatedata),
 			{description, length} = result;
 		if (description || length > 0) {
@@ -75,7 +75,7 @@ export const getHoverFromApi = async (
 				range: {start: indexToPos(doc, node.from), end: indexToPos(doc, node.to)},
 			};
 		}
-	} else if (node?.name.includes(tokens.templateArgumentName)) {
+	} else if (node && hasTag(node.name, 'templateArgumentName')) {
 		const [name] = findTemplateName(state, node);
 		if (name) {
 			const result = await paramSuggest(name, templatedata),

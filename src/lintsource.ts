@@ -19,6 +19,7 @@ import {
 } from './linter.js';
 import {posToIndex, toConfigGetter} from './util.js';
 import {baseData} from './constants.js';
+import {hasTag} from './config.js';
 import {vue} from './javascript-globals.js';
 import type {EditorView} from '@codemirror/view';
 import type {
@@ -38,6 +39,7 @@ import type {Config} from 'stylelint';
 import type {ConfigGetter} from '@bhsd/browser';
 import type {Option, LiveOption} from '@bhsd/cm-util';
 import type {DocRange} from './util';
+import type {TagName} from './config';
 
 export type LintSource<T = unknown> = (
 	(state: EditorState) => readonly Diagnostic[] | Promise<readonly Diagnostic[]>
@@ -161,7 +163,7 @@ export const getWikiLintSource = (articlePath?: string): LintSourceGetter =>
 					);
 				syntaxTree(state).iterate({
 					enter({name, from, to}) {
-						if (/(?:^|_)mw-unknown(?:$|_)/u.test(name)) {
+						if (hasTag(name, 'mw-unknown' as TagName)) {
 							diagnostics.push({
 								from,
 								to,

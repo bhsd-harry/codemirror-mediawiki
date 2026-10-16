@@ -4,6 +4,7 @@ import {keybindings, encapsulateLines} from './keybindings.js';
 import {getTag} from './matchTag.js';
 import {sliceDoc, getExtTags} from './util.js';
 import {mwTag} from './constants.js';
+import {hasTag} from './config.js';
 import type {KeyBinding} from '@codemirror/view';
 import type {EditorState} from '@codemirror/state';
 import type {Tree} from '@lezer/common';
@@ -32,7 +33,7 @@ export const getExtNames = (state: EditorState, tree: Tree, pos: number, side: 1
 		return [];
 	}
 	const ext = name.includes(mwTag) ? getExtTags(name.split('_')) : [];
-	if (name.includes('mw-exttag-bracket')) {
+	if (hasTag(name, 'extTagBracket')) {
 		const bracket = sliceDoc(state, node),
 			{from} = node;
 		// `<score>`、`<maplink>`和`<mapfram>`内部均不可包含其他扩展标签，所以可以省略一些情形

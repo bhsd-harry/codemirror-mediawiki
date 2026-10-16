@@ -1,7 +1,11 @@
 import {EditorView, Decoration} from '@codemirror/view';
 import {StateEffect, StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {tokens} from './config.js';
+import {
+	hasTag,
+	getTypes,
+	tokens,
+} from './config.js';
 import {
 	isMac,
 	linkCls,
@@ -93,15 +97,16 @@ export const getLinkParser = (
 			return undefined;
 		}
 		let node = tree.resolve(pos, assoc);
-		if (node.name.includes(tokens.linkToSection)) {
+		if (hasTag(node.name, 'linkToSection')) {
 			node = node.prevSibling!;
 		}
-		const {name, from, to, nextSibling, prevSibling} = node;
-		if (name.includes('-extlink-protocol')) {
+		const {name, from, to, nextSibling, prevSibling} = node,
+			types = getTypes(name);
+		if (hasTag(types, ['extLinkProtocol', 'freeExtLinkProtocol'])) {
 			return wrapURL(state, [from, nextSibling!.to], str);
-		} else if (/-extlink(?:_|$)/u.test(name)) {
+		} else if (hasTag(types, ['extLink', 'freeExtLink'])) {
 			return wrapURL(state, [prevSibling!.from, to], str);
-		} else if (name.includes(tokens.magicLink)) {
+		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);
 			if (link.startsWith('ISBN')) {
 				return isbnParser && (str ? isbnParser(link) : [from, to]);
@@ -111,10 +116,10 @@ export const getLinkParser = (
 			return link.startsWith('RFC')
 				? `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`
 				: `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
-		} else if (titleParser && name.includes(tokens.pageName)) {
+		} else if (titleParser && hasTag(types, 'pageName')) {
 			return str
 				? titleParser(state, node)?.page
-				: [from, nextSibling?.name.includes(tokens.linkToSection) ? nextSibling.to : to];
+				: [from, hasTag(nextSibling?.name, 'linkToSection') ? nextSibling!.to : to];
 		}
 		return undefined;
 	}) as LinkParser;

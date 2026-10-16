@@ -60,6 +60,16 @@ describe('openLinks', () => {
 		mockTest('[//c]', 4, 1);
 		mockTest('[//c]', 3, 1, 'https://c', [1, 4]);
 	});
+	it('free-extlink-protocol', () => {
+		mockTest(' news:a', 1, 1, 'news:a', [1, 7]);
+		mockTest(' news:a', 1, -1);
+		mockTest(' news:a', 6, -1, 'news:a', [1, 7]);
+	});
+	it('free-extlink', () => {
+		mockTest('git://b ', 7, -1, 'git://b', [0, 7]);
+		mockTest('git://b ', 7, 1);
+		mockTest('git://b ', 6, 1, 'git://b', [0, 7]);
+	});
 	it('RFC', () => {
 		mockTest('RFC 1', 0, 1, 'https://datatracker.ietf.org/doc/html/rfc1', [0, 5]);
 		mockTest('RFC 1', 0, -1);

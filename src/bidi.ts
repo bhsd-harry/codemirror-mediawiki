@@ -8,12 +8,13 @@ import {EditorView, Direction, ViewPlugin, Decoration} from '@codemirror/view';
 import {Prec} from '@codemirror/state';
 import {syntaxTree} from '@codemirror/language';
 import {mwSelector} from './constants.js';
-import {tokens} from './config.js';
+import {hasTag, getTypes} from './config.js';
 import {getTag} from './matchTag.js';
 import {pushDecoration} from './util.js';
 import type {ViewUpdate, DecorationSet, PluginValue} from '@codemirror/view';
 import type {Extension, Range} from '@codemirror/state';
 import type {SyntaxNode} from '@lezer/common';
+import type {TagName} from './config';
 
 const isolateSelector = '.cm-bidi-isolate',
 	ltrSelector = '.cm-bidi-ltr',
@@ -39,14 +40,18 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 				parameter = 0;
 			while (node && node.to <= to) {
 				// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-				const {name, from: f, to: t, nextSibling} = node as SyntaxNode;
-				if (/-(?:ext|html)tag-bracket/u.test(name) && state.sliceDoc(f, t).includes('<')) {
+				const {name, from: f, to: t, nextSibling} = node as SyntaxNode,
+					types = getTypes(name);
+				if (
+					hasTag(types, ['extTagBracket', 'htmlTagBracket'])
+					&& state.sliceDoc(f, t).includes('<')
+				) {
 					const tag = getTag(state, nextSibling!);
 					if (tag) {
 						pushDecoration(set, isolateLTR, tag);
 					}
-				} else if (!td && !table && name.includes(tokens.tableDefinition)) {
-					if (/-html-(?:table|tr)/u.test(name)) {
+				} else if (!td && !table && hasTag(types, 'tableDefinition')) {
+					if (hasTag(types, ['mw-html-table', 'mw-html-tr'] as string[] as TagName[])) {
 						table = state.doc.lineAt(f).to;
 						pushDecoration(set, isolateLTR, f, table);
 					} else {
@@ -54,15 +59,15 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 					}
 				} else if (table && f > table) {
 					table = 0;
-				} else if (td && name.includes(tokens.tableDelimiter2)) {
+				} else if (td && hasTag(types, 'tableDelimiter2')) {
 					pushDecoration(set, isolateLTR, td, f);
 					td = 0;
-				} else if (/-(?:template|parserfunction)-delimiter/u.test(name)) {
+				} else if (hasTag(types, ['templateDelimiter', 'parserFunctionDelimiter'])) {
 					if (parameter) {
 						pushDecoration(set, isolate, parameter, f);
 					}
 					parameter = t;
-				} else if (parameter && /-(?:template|parserfunction)-bracket/u.test(name)) {
+				} else if (parameter && hasTag(types, ['templateBracket', 'parserFunctionBracket'])) {
 					if (state.sliceDoc(f, f + 1) === '}') {
 						pushDecoration(set, isolate, parameter, f);
 					}

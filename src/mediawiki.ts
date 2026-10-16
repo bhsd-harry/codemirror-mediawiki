@@ -15,9 +15,10 @@ import elt from 'crelt';
 import {numLeadingSpaces} from '@bhsd/common';
 import {isUnderscore} from '@bhsd/cm-util';
 import {commonHtmlAttrs, htmlAttrs, extAttrs} from 'wikiparser-node/dist/util/sharable.mjs';
-import {htmlTags, tokens} from './config.js';
+import {htmlTags, hasTag, getTypes} from './config.js';
 import {
 	extCompletion,
+	autocompleteNamespaces,
 	isWMF,
 	mwSelector,
 } from './constants.js';
@@ -110,20 +111,6 @@ export const apply = (view: EditorView, completion: Completion, from: number, to
 		annotations: pickedCompletion.of(completion),
 		selection,
 	});
-};
-
-/**
- * 判断节点是否包含指定类型
- * @param types 节点类型
- * @param names 指定类型
- * @test
- */
-export const hasTag = (types: Set<string> | string, names: TagName | TagName[]): boolean => {
-	if (typeof types === 'string') {
-		types = new Set(types.split('_'));
-	}
-	return (Array.isArray(names) ? names : [names])
-		.some(name => types.has(Object.hasOwn(tokens, name) ? tokens[name] : name));
 };
 
 /**
@@ -391,7 +378,7 @@ export class FullMediaWiki extends MediaWiki {
 					from: f,
 					to: t,
 				} = node,
-				types = new Set(n.split('_')),
+				types = getTypes(n),
 				isParserFunction = hasTag(types, 'parserFunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
@@ -440,9 +427,11 @@ export class FullMediaWiki extends MediaWiki {
 						ns = Number(
 							[...types].find(type => type.startsWith('mw-function-'))!.slice(12),
 						);
-						prefix = this.autocompleteNamespaces[ns as keyof typeof this.autocompleteNamespaces];
-						if (prefix === 'Module:') {
-							contentmodel = 'Scribunto';
+						if (ns !== 10) {
+							prefix = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces];
+							if (prefix === 'Module:') {
+								contentmodel = 'Scribunto';
+							}
 						}
 					} else if (isTemplateStyles) {
 						ns = this.config.templateStylesDefaultNamespace ?? 10;
@@ -475,7 +464,7 @@ export class FullMediaWiki extends MediaWiki {
 				&& this.tags.includes('templatedata')
 			) {
 				const isArgument = hasTag(types, 'templateArgumentName'),
-					prevIsDelimiter = prevSibling?.name.includes(tokens.templateDelimiter),
+					prevIsDelimiter = hasTag(prevSibling?.name, 'templateDelimiter'),
 					isDelimiter = hasTag(types, 'templateDelimiter')
 						|| hasTag(types, 'templateBracket') && prevIsDelimiter;
 				if (
@@ -616,7 +605,7 @@ export class FullMediaWiki extends MediaWiki {
 			if (
 				isDelimiter
 				|| hasTag(types, ['fileText', 'imageParameter'])
-				&& prevSibling?.name.includes(tokens.fileDelimiter)
+				&& hasTag(prevSibling?.name, 'fileDelimiter')
 				&& !search.includes('[')
 			) {
 				const equal = state.sliceDoc(pos, pos + 1) === '=';

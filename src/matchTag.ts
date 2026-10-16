@@ -1,13 +1,14 @@
 import {Decoration, EditorView} from '@codemirror/view';
 import {StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {voidHtmlTags, selfClosingTags} from './config.js';
+import {voidHtmlTags, selfClosingTags, hasTag} from './config.js';
 import {matchingCls, nonmatchingCls} from './constants.js';
 import {sliceDoc, pushDecoration} from './util.js';
 import type {DecorationSet} from '@codemirror/view';
 import type {EditorState, Range} from '@codemirror/state';
 import type {MatchResult} from '@codemirror/language';
 import type {SyntaxNode} from '@lezer/common';
+import type {TagName} from './config';
 
 declare type TagType = 'ext' | 'html';
 
@@ -54,14 +55,11 @@ export class WikiTag {
 }
 
 const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.test(name),
-	isTagName = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-name/u.test(name),
-	isTagComponent = (s: string) => {
-		const reHtml = new RegExp(`-htmltag-${s}`, 'u'),
-			reExt = new RegExp(`-exttag-${s}`, 'u');
-		return ({name}: SyntaxNode, type: TagType): boolean => (type === 'ext' ? reExt : reHtml).test(name);
-	},
-	isBracket = isTagComponent('bracket'),
-	isName = isTagComponent('name'),
+	isTagName = ({name}: SyntaxNode): boolean => hasTag(name, ['extTagName', 'htmlTagName']),
+	isTagComponent = (s: string) => ({name}: SyntaxNode, type: TagType): boolean =>
+		hasTag(name, `${type === 'ext' ? 'ext' : 'html'}Tag${s}` as TagName),
+	isBracket = isTagComponent('Bracket'),
+	isName = isTagComponent('Name'),
 	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean => isBracket(node, type)
 		&& sliceDoc(state, node)[first ? 'endsWith' : 'startsWith']('/'),
 	getName = (state: EditorState, node: SyntaxNode): string => sliceDoc(state, node).trim().toLowerCase();

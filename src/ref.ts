@@ -5,7 +5,7 @@ import {getLSP} from '@bhsd/browser';
 import {escHTML} from '@bhsd/cm-util/cm';
 import elt from 'crelt';
 import {baseData} from './constants.js';
-import {tokens} from './config.js';
+import {hasTag} from './config.js';
 import {getTag} from './matchTag.js';
 import {
 	sliceDoc,
@@ -75,10 +75,7 @@ export const needHover = (state: EditorState, {name, selfClosing, first, last}: 
 			nextSibling: SyntaxNode | null = null;
 		while (prevSibling && prevSibling.from > first.to) {
 			const key = getRefName(state, prevSibling);
-			if (
-				prevSibling.name.split('_').includes(tokens.extTagAttribute)
-				&& /(?:^|\s)name(?:$|[\s=])/iu.test(key)
-			) {
+			if (hasTag(prevSibling.name, 'extTagAttribute') && /(?:^|\s)name(?:$|[\s=])/iu.test(key)) {
 				if (/(?:^|\s)name\s*=/iu.test(key)) {
 					({nextSibling} = prevSibling);
 				}
@@ -86,8 +83,8 @@ export const needHover = (state: EditorState, {name, selfClosing, first, last}: 
 			}
 			({prevSibling} = prevSibling);
 		}
-		if (nextSibling?.name.includes(tokens.extTagAttributeValue)) {
-			let target = getRefName(state, nextSibling);
+		if (hasTag(nextSibling?.name, 'extTagAttributeValue')) {
+			let target = getRefName(state, nextSibling!);
 			const quote = target.charAt(0);
 			if (quote === '"' || quote === "'") {
 				target = target.slice(1, target.slice(-1) === quote ? -1 : undefined).trim();

@@ -23,7 +23,7 @@ import {
 } from '@codemirror/language';
 import {getRegex} from '@bhsd/common';
 import elt from 'crelt';
-import {tokens} from './config.js';
+import {hasTag} from './config.js';
 import {placeholder, mwTag, bgDark} from './constants.js';
 import {searchTag, getTag} from './matchTag.js';
 import {
@@ -60,7 +60,7 @@ export const myService = (state: EditorState, f: number, t: number): DocRange | 
 	 */
 	const getLevel = (pos: number): number => {
 			const {name} = tree.resolve(pos, 1);
-			return name.includes(tokens.sectionHeader) ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
+			return hasTag(name, 'sectionHeader') ? Number(/mw-section--(\d)/u.exec(name)![1]) : 7;
 		},
 
 		/**
@@ -71,9 +71,9 @@ export const myService = (state: EditorState, f: number, t: number): DocRange | 
 		getTable = (from: number, to: number): 0 | 1 | -1 => {
 			const node = tree.resolve(from, 1),
 				{nextSibling} = node,
-				bracket = node.name.includes(tokens.tableBracket)
+				bracket = hasTag(node.name, 'tableBracket')
 					? node
-					: node.to < to && nextSibling?.name.includes(tokens.tableBracket) && nextSibling;
+					: node.to < to && hasTag(nextSibling?.name, 'tableBracket') && nextSibling;
 			if (bracket) {
 				return /\|\}$|\{\{\s*!(?:\s*\}|\)\s*)\}\}$/u.test(sliceDoc(state, bracket)) ? -1 : 1;
 			}
@@ -148,8 +148,7 @@ export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos
  * Check if a SyntaxNode is among the specified components
  * @param keys The keys of the tokens to check
  */
-const isComponent = (keys: TagName[]) =>
-		(node: SyntaxNode | null): boolean => keys.some(key => node?.name.includes(tokens[key])),
+const isComponent = (keys: TagName[]) => (node: SyntaxNode | null): boolean => hasTag(node?.name, keys),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
 	isTemplateBracket = /* #__PURE__ */ isComponent(['templateBracket', 'parserFunctionBracket']),

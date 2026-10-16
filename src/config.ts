@@ -118,3 +118,25 @@ export const tokenTable = /* #__PURE__ */ (() => {
 	}
 	return table;
 })();
+
+/**
+ * 从节点名称中获取节点类型集合
+ * @param name 节点名称
+ */
+export const getTypes = (name: string): Set<string> => new Set(name.split('_'));
+
+/**
+ * 判断节点是否包含指定类型
+ * @param types 节点类型
+ * @param names 指定类型
+ * @test
+ */
+export const hasTag = (types: Set<string> | string | undefined, names: TagName | TagName[]): boolean => {
+	if (!types) {
+		return false;
+	} else if (typeof types === 'string') {
+		types = getTypes(types);
+	}
+	return (Array.isArray(names) ? names : [names])
+		.some(name => types.has(Object.hasOwn(tokens, name) ? tokens[name] : name));
+};
