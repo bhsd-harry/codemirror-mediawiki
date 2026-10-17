@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 4.7.2
 
-*2026-10-16*
+*2026-10-17*
+
+**Added**
+
+- The [autocompletion](./README.md#autocompletion) and [openLinks](./README.md#openlinks) extensions now support more parser functions in the MediaWiki mode
 
 **Fixed**
 

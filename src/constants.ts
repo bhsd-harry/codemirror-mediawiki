@@ -29,6 +29,7 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	nonmatchingCls = 'cm-nonmatchingBracket';
 
 export const autocompleteNamespaces = {
+	'-1': 'Special:',
 	0: '',
 	6: 'File:',
 	8: 'MediaWiki:',

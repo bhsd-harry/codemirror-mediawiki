@@ -409,18 +409,26 @@ const peekSpace = (stream: StringStream, sol?: boolean): boolean => {
 };
 
 const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
-	pageFunctions = new Set<string | undefined>([
-		'raw',
-		'msg',
-		'filepath',
-		'localurl',
-		'localurle',
-		'fullurl',
-		'fullurle',
-		'canonicalurl',
-		'canonicalurle',
-		'int',
-		'msgnw',
+	pageFunctions = new Map<string | undefined, number>([
+		['raw', 10],
+		['msg', 10],
+		['filepath', 6],
+		['localurl', 0],
+		['localurle', 0],
+		['fullurl', 0],
+		['fullurle', 0],
+		['canonicalurl', 0],
+		['canonicalurle', 0],
+		['pageid', 0],
+		['int', 8],
+		['msgnw', 10],
+		['special', -1],
+		['speciale', -1],
+		['ifexist', 0],
+		['titleparts', 0],
+		['lst', 0],
+		['lstx', 0],
+		['lsth', 0],
 	]),
 	substs = new Set(['subst', 'safesubst']),
 	extLinkChars = "[{'<-",
@@ -1664,7 +1672,11 @@ export class MediaWiki {
 	}
 
 	@getTokenizer<string>
-	inParserFunctionName(invoke?: number, n?: number, ns?: number): Tokenizer<string> {
+	inParserFunctionName(
+		invoke?: number,
+		n?: number,
+		ns?: number,
+	): Tokenizer<string> {
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1688,52 +1700,43 @@ export class MediaWiki {
 			}
 			const ch = stream.eat(/[:：|]/u);
 			if (ch) {
-				state.tokenize = this.inParserFunctionArgument(invoke, n, ns);
+				state.tokenize = this.inParserFunctionArgument(
+					invoke,
+					n,
+					ns,
+				);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
 			if (mt) {
 				const name = mt[0].trim().toLowerCase() + (stream.peek() === '：' ? '：' : ''),
-					[insensitive] = this.config.functionSynonyms;
-				if (name.startsWith('#')) {
-					switch (insensitive[name] ?? insensitive[name.slice(1)]!) {
-						case 'invoke':
-							state.tokenize = this.inParserFunctionName(2);
-							break;
-						case 'widget':
-							state.tokenize = this.inParserFunctionName(1);
-							break;
-						case 'switch':
-							state.tokenize = this.inParserFunctionName(undefined, 1);
-							break;
-						case 'tag':
-							state.tokenize = this.inParserFunctionName(undefined, 2);
-							break;
-						case 'ifexist':
-						case 'lst':
-						case 'lstx':
-						case 'lsth':
-							state.tokenize = this.inParserFunctionName(Infinity);
-						// no default
-					}
-				} else {
-					const canonicalName = insensitive[name];
-					if (pageFunctions.has(canonicalName)) {
-						let namespace = 0;
-						switch (canonicalName) {
-							case 'filepath':
-								namespace = 6;
-								break;
-							case 'int':
-								namespace = 8;
-								break;
-							case 'raw':
-							case 'msg':
-							case 'msgnw':
-								namespace = 10;
-							// no default
+					[insensitive] = this.config.functionSynonyms,
+					cmName = insensitive[name],
+					canonicalName = name.startsWith('#')
+						? cmName ?? insensitive[name.slice(1)]
+						: cmName;
+				switch (canonicalName) {
+					case 'invoke':
+						state.tokenize = this.inParserFunctionName(2);
+						break;
+					case 'widget':
+						state.tokenize = this.inParserFunctionName(1);
+						break;
+					case 'switch':
+						state.tokenize = this.inParserFunctionName(undefined, 1);
+						break;
+					case 'tag':
+						state.tokenize = this.inParserFunctionName(undefined, 2);
+						break;
+					default: {
+						const namespace = pageFunctions.get(canonicalName);
+						if (namespace !== undefined) {
+							state.tokenize = this.inParserFunctionName(
+								Infinity,
+								Infinity,
+								namespace,
+							);
 						}
-						state.tokenize = this.inParserFunctionName(Infinity, Infinity, namespace);
 					}
 				}
 				return makeLocalTagStyle('parserFunctionName', state);
@@ -1804,7 +1807,11 @@ export class MediaWiki {
 	}
 
 	@getTokenizer
-	inParserFunctionArgument(module?: number, n = module ?? Infinity, ns = 0): Tokenizer {
+	inParserFunctionArgument(
+		module?: number,
+		n = module ?? Infinity,
+		ns = 0,
+	): Tokenizer {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}

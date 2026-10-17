@@ -5,7 +5,7 @@ then
 elif [[ $2 == 'gh' ]]
 then
 	gsed -n "/## $1/,/##/{/^## .*/d;/./,\$!d;p}" CHANGELOG.md > release-notes.md
-	gh release create "$1" --notes-file release-notes.md -t "v$1" --verify-tag --latest="${3-true}"
+	gh release create "$1" -F release-notes.md -t "v$1" --verify-tag --latest="${3-true}"
 	rm release-notes.md
 else
 	for x in i18n/* package.json

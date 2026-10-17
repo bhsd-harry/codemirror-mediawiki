@@ -45,7 +45,7 @@ export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 1
 			) {
 				ns = 6;
 			} else if (hasTag(types, 'parserFunction')) {
-				ns = Number(/mw-function-(\d+)/u.exec(name)?.[1] ?? 0);
+				ns = Number(/mw-function-(-?\d+)/u.exec(name)?.[1] ?? 0);
 				if (ns !== 10) {
 					page = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces] + page;
 				}
