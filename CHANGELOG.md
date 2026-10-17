@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 0.12.1
+
+*2026-10-17*
+
+**Added**
+
+- More parser functions now have their first argument highlighted as a page name
+
 ## 0.12.0
 
 *2026-09-04*

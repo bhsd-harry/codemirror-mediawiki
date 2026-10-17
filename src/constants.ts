@@ -14,15 +14,6 @@ export const baseData: Record<'CDN', string | undefined> = {CDN: undefined},
 	matchingCls = 'cm-matchingBracket',
 	nonmatchingCls = 'cm-nonmatchingBracket';
 
-export const autocompleteNamespaces = {
-	0: '',
-	6: 'File:',
-	8: 'MediaWiki:',
-	10: 'Template:',
-	274: 'Widget:',
-	828: 'Module:',
-};
-
 export const isMac = /* #__PURE__ */ (() => {
 	const {vendor, userAgent, maxTouchPoints, platform} = navigator;
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

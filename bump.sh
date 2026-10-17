@@ -5,7 +5,7 @@ then
 elif [[ $2 == 'gh' ]]
 then
 	gsed -n "/## $1/,/##/{/^## .*/d;/./,\$!d;p}" CHANGELOG.md > release-notes.md
-	gh release create "$1-w" --notes-file release-notes.md -t "@bhsd/codemirror-wikitext $1" --verify-tag --latest=false
+	gh release create "$1-w" -F release-notes.md -t "@bhsd/codemirror-wikitext $1" --verify-tag --latest=false
 	rm release-notes.md
 else
 	gsed -i -E "s/\"version\": \".+\"/\"version\": \"$1\"/" package.json
