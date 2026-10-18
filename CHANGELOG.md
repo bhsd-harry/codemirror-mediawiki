@@ -1,11 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 0.12.1
 
-*2026-10-17*
+*2026-10-18*
 
 **Added**
 
 - More parser functions now have their first argument highlighted as a page name
+- Highlighting of language conversion syntax in a template argument
 
 ## 0.12.0
 

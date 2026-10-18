@@ -359,6 +359,13 @@ const getEqual = (t: Tokenizer): string => t.name === 'inTemplateArgument' && t.
 const escapeCharClass = (chars: string): string => chars.replaceAll(/[\]-]/gu, String.raw`\$&`);
 
 /**
+ * 判断样式是否包含指定字符串
+ * @param style 样式
+ * @param str 字符串
+ */
+const contains = (style: Style, str: string): boolean => typeof style === 'string' && style.includes(str);
+
+/**
  * 下一个字符是否为空白字符
  * @param stream StringStream
  * @param sol 是否在行首
@@ -677,7 +684,7 @@ export class MediaWiki {
 	eatWikiText(style: string): Tokenizer {
 		style = getTagStyle(style);
 		const regex =
-			/^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\t-]?)?(?:\d[\p{Zs}\t-]?){9}[\dxX])\b/u;
+			/^(?:(?:RFC|PMID)[\p{Zs}\t]+\d+|ISBN[\p{Zs}\t]+(?:97[89][\p{Zs}\-\t]?)?(?:\d[\p{Zs}\-\t]?){9}[\dxX])\b/u;
 		return (stream, state) => {
 			let ch: string;
 			if (stream.eol()) {
@@ -1815,14 +1822,15 @@ export class MediaWiki {
 				);
 			} else if (stream.sol() && stream.peek() === '=') {
 				const style = this.eatWikiText(tag)(stream, state);
-				if (style.includes(tokens.sectionHeader)) {
+				if (contains(style, tokens.sectionHeader)) {
 					return style;
 				}
 				stream.pos = 0;
 			}
 			if (
-				expectName
-				&& stream.match(new RegExp(`^(?:[^=|}{[<]|${lookahead('}{[<', state)})*=`, 'iu'))
+				expectName && stream.match(
+					new RegExp(String.raw`^(?:[^=|}{[<\-]|${lookahead('}{[<-', state)})*=`, 'iu'),
+				)
 			) {
 				state.tokenize = this.inTemplateArgument(false, parserFunction);
 				return makeLocalTagStyle(
@@ -1845,7 +1853,7 @@ export class MediaWiki {
 			if (stream.match('}-')) {
 				pop(state);
 				return makeLocalTagStyle('convertBracket', state);
-			} else if (needFlag && stream.match(/^[;\sa-z-]*(?=\|)/iu)) {
+			} else if (needFlag && stream.match(/^[;\s\-a-z]*(?=\|)/iu)) {
 				state.tokenize = this.inConvert(style, false, true, plain);
 				chain(state, this.inStr('|', 'convertDelimiter'));
 				return makeLocalTagStyle('convertFlag', state);
@@ -1921,10 +1929,9 @@ export class MediaWiki {
 						}
 					}
 					if (
-						typeof style === 'string'
+						state.nLink === 0
 						&& (!state.extName || typeof state.extMode === 'boolean')
-						&& state.nLink === 0
-						&& style.includes(tokens.apostrophes)
+						&& contains(style, tokens.apostrophes)
 					) {
 						if (data.mark === pos) {
 							// rollback
@@ -1944,7 +1951,7 @@ export class MediaWiki {
 						if (length !== 2) {
 							state.bold = !state.bold;
 						}
-					} else if (typeof style === 'string' && style.includes(tokens.tableDelimiter)) {
+					} else if (contains(style, tokens.tableDelimiter)) {
 						state.bold = false;
 						state.italic = false;
 					}
@@ -1980,7 +1987,7 @@ export class MediaWiki {
 					stream.start = stream.pos;
 					const char = stream.peek(),
 						style = state.tokenize(stream, state);
-					if (typeof style === 'string' && style.includes('-argument-name')) {
+					if (contains(style, '-argument-name')) {
 						const isTemplate = style.includes(tokens.templateArgumentName),
 							argument = tokens[isTemplate ? 'template' : 'parserFunction'],
 							argumentName = tokens[isTemplate ? 'templateArgumentName' : 'parserFunctionArgumentName'],
@@ -1998,7 +2005,7 @@ export class MediaWiki {
 								}
 							}
 						}
-					} else if (typeof style === 'string' && style.includes(tokens.tableDelimiter2)) {
+					} else if (contains(style, tokens.tableDelimiter2)) {
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
@@ -2016,13 +2023,13 @@ export class MediaWiki {
 								}
 							}
 						}
-					} else if (char === '|' && typeof style === 'string' && style.includes(tokens.convertDelimiter)) {
+					} else if (char === '|' && contains(style, tokens.convertDelimiter)) {
 						let count = 0;
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
 								const s = token.style;
-								if (typeof s === 'string' && s.includes(tokens.convertBracket)) {
+								if (contains(s, tokens.convertBracket)) {
 									count += token.char === '-' ? 1 : -1;
 									if (count === 1) {
 										break;
