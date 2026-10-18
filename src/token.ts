@@ -437,6 +437,39 @@ const syntaxHighlight = new Set(['syntaxhighlight', 'source', 'pre', 'score']),
 		['lstx', 0],
 		['lsth', 0],
 	]),
+	pageVariables = new Set<string | undefined>([
+		'pagesize',
+		'cascadingsources',
+		'revisionid',
+		'revisionday',
+		'revisionday2',
+		'revisionmonth',
+		'revisionmonth1',
+		'revisionyear',
+		'revisiontimestamp',
+		'revisionuser',
+		'fullpagename',
+		'fullpagenamee',
+		'pagename',
+		'pagenamee',
+		'basepagename',
+		'basepagenamee',
+		'rootpagename',
+		'rootpagenamee',
+		'subpagename',
+		'subpagenamee',
+		'subjectpagename',
+		'subjectpagenamee',
+		'talkpagename',
+		'talkpagenamee',
+		'namespace',
+		'namespacee',
+		'subjectspace',
+		'subjectspacee',
+		'talkspace',
+		'talkspacee',
+		'namespacenumber',
+	]),
 	substs = new Set(['subst', 'safesubst']),
 	extLinkChars = "[{'<-",
 	tableDefinitionChars = '{<',
@@ -1716,11 +1749,12 @@ export class MediaWiki {
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
 			if (mt) {
-				const name = mt[0].trim().toLowerCase() + (stream.peek() === '：' ? '：' : ''),
-					[insensitive] = this.config.functionSynonyms,
-					cmName = insensitive[name],
+				const name = mt[0].trim() + (stream.peek() === '：' ? '：' : ''),
+					nameAfterHash = name.slice(1),
+					[insensitive, sensitive] = this.config.functionSynonyms,
+					cmName = insensitive[name.toLowerCase()] ?? sensitive[name],
 					canonicalName = name.startsWith('#')
-						? cmName ?? insensitive[name.slice(1)]
+						? cmName ?? insensitive[nameAfterHash.toLowerCase()] ?? sensitive[nameAfterHash]
 						: cmName;
 				switch (canonicalName) {
 					case 'invoke':
@@ -1737,7 +1771,7 @@ export class MediaWiki {
 						break;
 					default: {
 						const namespace = pageFunctions.get(canonicalName);
-						if (namespace !== undefined) {
+						if (namespace !== undefined || pageVariables.has(canonicalName)) {
 							state.tokenize = this.inParserFunctionName(
 								Infinity,
 								Infinity,
