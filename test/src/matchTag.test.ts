@@ -26,7 +26,7 @@ const classTest = (
 		tree = syntaxTree(state),
 		first = pos === undefined ? tree.topNode.firstChild! : tree.resolve(pos, 1);
 	let {nextSibling} = first;
-	while (nextSibling && !hasTag(nextSibling.name, `${type}TagBracket`)) {
+	while (nextSibling && !hasTag(nextSibling.name, `${type}tagBracket`)) {
 		({nextSibling} = nextSibling);
 	}
 	const tag = new WikiTag(type, name, first, nextSibling!, state);
@@ -81,25 +81,25 @@ describe('getTag', () => {
 		tagTest('<ref/>{{b}}', 6, tokens.templateBracket, null);
 	});
 	it('tag bracket', () => {
-		tagTest('<p>', 0, tokens.htmlTagBracket, null);
-		tagTest('<ref></ref>', 5, tokens.extTagBracket, null);
+		tagTest('<p>', 0, tokens.htmltagBracket, null);
+		tagTest('<ref></ref>', 5, tokens.exttagBracket, null);
 	});
 	it('incomplete tag', () => {
-		tagTest('<p id=', 3, tokens.htmlTagAttribute, null);
-		tagTest('<ref name=', 5, tokens.extTagAttribute, null);
+		tagTest('<p id=', 3, tokens.htmltagAttribute, null);
+		tagTest('<ref name=', 5, tokens.exttagAttribute, null);
 	});
 	it('tag name', () => {
-		tagTest('<p id="a">', 1, tokens.htmlTagName, [0, 10]);
-		tagTest('<ref name="b"/>', 2, tokens.extTagName, [0, 15]);
+		tagTest('<p id="a">', 1, tokens.htmltagName, [0, 10]);
+		tagTest('<ref name="b"/>', 2, tokens.exttagName, [0, 15]);
 	});
 	it('tag attribute', () => {
-		tagTest('<p id="a">', 4, tokens.htmlTagAttribute, [0, 10]);
-		tagTest('<ref name="b"/>', 7, tokens.extTagAttribute, [0, 15]);
+		tagTest('<p id="a">', 4, tokens.htmltagAttribute, [0, 10]);
+		tagTest('<ref name="b"/>', 7, tokens.exttagAttribute, [0, 15]);
 	});
 	it('tag attribute value', () => {
-		tagTest('<p id="a">', 8, tokens.htmlTagAttributeValue, [0, 10]);
-		tagTest('<ref name="b"/>', 11, tokens.extTagAttributeValue, [0, 15]);
-		tagTest('<templatestyles src="c.css" />', 22, tokens.extTagAttributeValue, [0, 30]);
+		tagTest('<p id="a">', 8, tokens.htmltagAttributeValue, [0, 10]);
+		tagTest('<ref name="b"/>', 11, tokens.exttagAttributeValue, [0, 15]);
+		tagTest('<templatestyles src="c.css" />', 22, tokens.exttagAttributeValue, [0, 30]);
 	});
 });
 

@@ -379,7 +379,7 @@ export class FullMediaWiki extends MediaWiki {
 					to: t,
 				} = node,
 				types = getTypes(n),
-				isParserFunction = hasTag(types, 'parserFunctionName'),
+				isParserFunction = hasTag(types, 'parserfunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
 			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
@@ -412,10 +412,10 @@ export class FullMediaWiki extends MediaWiki {
 					};
 				}
 				// 页面名
-				const isPage = hasTag(types, 'pageName'),
-					isPageFunc = isPage && hasTag(types, 'parserFunction') || 0,
-					isTemplateStyles = isPage && hasTag(types, 'extTagAttributeValue');
-				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPageName')) {
+				const isPage = hasTag(types, 'pagename'),
+					isPageFunc = isPage && hasTag(types, 'parserfunction') || 0,
+					isTemplateStyles = isPage && hasTag(types, 'exttagAttributeValue');
+				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPagename')) {
 					if (!this.config.linkSuggest) {
 						return null;
 					}
@@ -486,12 +486,12 @@ export class FullMediaWiki extends MediaWiki {
 					}
 				}
 			}
-			const isTagName = hasTag(types, ['htmlTagName', 'extTagName']),
+			const isTagName = hasTag(types, ['htmltagName', 'exttagName']),
 				explicitMatch = explicit && context.matchBefore(/\s$/u),
 				validForAttr = /^[a-z]*$/iu;
 			if (
 				isTagName && explicitMatch
-				|| hasTag(types, ['htmlTagAttribute', 'extTagAttribute', 'tableDefinition'])
+				|| hasTag(types, ['htmltagAttribute', 'exttagAttribute', 'tableDefinition'])
 			) {
 				const tagName = isTagName ? search.trim() : /mw-(?:ext|html)-([a-z]+)/u.exec(n)![1]!,
 					mt = explicitMatch || context.matchBefore(
@@ -526,12 +526,12 @@ export class FullMediaWiki extends MediaWiki {
 				}
 			} else if (hasTag(types, [
 				'comment',
-				'templateVariableName',
+				'templatevariableName',
 				'templateName',
-				'parserFunctionName',
-				'linkPageName',
-				'linkToSection',
-				'extLink',
+				'parserfunctionName',
+				'linkPagename',
+				'linkTosection',
+				'extlink',
 			])) {
 				// 不可能是状态开关、标签、协议或图片参数名
 				return null;
@@ -619,7 +619,7 @@ export class FullMediaWiki extends MediaWiki {
 						: this.imgKeys,
 					validFor: /^[^|{}<>[\]$]*$/u,
 				};
-			} else if (!hasTag(types, ['linkText', 'extLinkText'])) {
+			} else if (!hasTag(types, ['linkText', 'extlinkText'])) {
 				mt = context.matchBefore(/(?:^|[^[])\[[a-z:/]*$/iu);
 				if (mt && (explicit || !mt.text.endsWith('['))) {
 					return {

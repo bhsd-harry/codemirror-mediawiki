@@ -55,9 +55,9 @@ export class WikiTag {
 }
 
 const isTag = ({name}: SyntaxNode): boolean => /-(?:ext|html)tag-(?!bracket)/u.test(name),
-	isTagName = ({name}: SyntaxNode): boolean => hasTag(name, ['extTagName', 'htmlTagName']),
+	isTagName = ({name}: SyntaxNode): boolean => hasTag(name, ['exttagName', 'htmltagName']),
 	isTagComponent = (s: string) => ({name}: SyntaxNode, type: TagType): boolean =>
-		hasTag(name, `${type === 'ext' ? 'ext' : 'html'}Tag${s}` as TagName),
+		hasTag(name, `${type === 'ext' ? 'ext' : 'html'}tag${s}` as TagName),
 	isBracket = isTagComponent('Bracket'),
 	isName = isTagComponent('Name'),
 	isClosing = (node: SyntaxNode, type: TagType, state: EditorState, first?: boolean): boolean => isBracket(node, type)

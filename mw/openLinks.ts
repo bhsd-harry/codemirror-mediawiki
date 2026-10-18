@@ -35,21 +35,21 @@ export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 1
 			return {page};
 		}
 		let ns = 0;
-		if (hasTag(types, 'extTagAttributeValue')) {
+		if (hasTag(types, 'exttagAttributeValue')) {
 			ns = templateStylesDefaultNamespace;
 		} else {
 			if (hasTag(types, 'templateName')) {
 				ns = 10;
 			} else if (
-				hasTag(types, 'mw-tag-gallery' as TagName) && hasTag(types, 'linkPageName') && !isWikiLink(name)
+				hasTag(types, 'mw-tag-gallery' as TagName) && hasTag(types, 'linkPagename') && !isWikiLink(name)
 			) {
 				ns = 6;
-			} else if (hasTag(types, 'parserFunction')) {
+			} else if (hasTag(types, 'parserfunction')) {
 				ns = Number(/mw-function-(-?\d+)/u.exec(name)?.[1] ?? 0);
 				if (ns !== 10) {
 					page = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces] + page;
 				}
-			} else if (hasTag(nextSibling?.name, 'linkToSection')) {
+			} else if (hasTag(nextSibling?.name, 'linkTosection')) {
 				page += sliceDoc(state, nextSibling!).trim();
 			}
 			const pageName = mw.config.get('wgPageName');

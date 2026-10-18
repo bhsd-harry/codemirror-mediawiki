@@ -835,7 +835,7 @@ export class MediaWiki {
 								ch === ' '
 								&& !/^ \s*(?=<!--)(?:\s|<!--(?:(?!-->).)*-->)+$/u.test(stream.string)
 							) {
-								return tokens.skipFormatting;
+								return tokens.skipformatting;
 							}
 						}
 				}
@@ -877,7 +877,7 @@ export class MediaWiki {
 					if (stream.match(/^\{\{(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 						state.nVar++;
 						chain(state, this.inVariable());
-						return makeLocalTagStyle('templateVariableBracket', state);
+						return makeLocalTagStyle('templatevariableBracket', state);
 					}
 					const mt = stream.match(/^\{(?!\{(?!\{))/u);
 					if (mt) {
@@ -924,14 +924,14 @@ export class MediaWiki {
 							if (mt[1]) {
 								chain(
 									state,
-									this.inChars('<', 'extTagBracket'),
+									this.inChars('<', 'exttagBracket'),
 									this.eatTagName('tvar'),
 									this.inExternalLink(true),
 								);
 							} else {
 								chain(state, this.eatExternalLinkProtocol(mt[2]!, false));
 							}
-							return makeLocalTagStyle('extLinkBracket', state);
+							return makeLocalTagStyle('extlinkBracket', state);
 						}
 					}
 					break;
@@ -1012,8 +1012,8 @@ export class MediaWiki {
 			stream.pos += length;
 			state.tokenize = free ? this.eatFreeExternalLink : this.inExternalLink();
 			return free
-				? makeTagStyle('freeExtLinkProtocol', state)
-				: makeLocalTagStyle('extLinkProtocol', state);
+				? makeTagStyle('freeExtlinkProtocol', state)
+				: makeLocalTagStyle('extlinkProtocol', state);
 		};
 	}
 
@@ -1032,13 +1032,13 @@ export class MediaWiki {
 				|| equal && peek === '='
 			) {
 				pop(state);
-				return makeLocalTagStyle('extLinkBracket', state, 'nExtLink');
+				return makeLocalTagStyle('extlinkBracket', state, 'nExtLink');
 			} else if (text) {
 				return stream.match(getExtLinkTextRegex(pipe))
-					? makeTagStyle('extLinkText', state)
-					: this.eatWikiText('extLinkText')(stream, state);
+					? makeTagStyle('extlinkText', state)
+					: this.eatWikiText('extlinkText')(stream, state);
 			} else if (stream.match(getExtLinkRegex(pipe))) {
-				return makeLocalTagStyle('extLink', state);
+				return makeLocalTagStyle('extlink', state);
 			}
 			state.tokenize = this.inExternalLink(true);
 			return '';
@@ -1051,12 +1051,12 @@ export class MediaWiki {
 			stream.match(freeRegex[1]);
 		}
 		pop(state);
-		return makeTagStyle('freeExtLink', state);
+		return makeTagStyle('freeExtlink', state);
 	}
 
 	@getTokenizer
 	inLink(file: boolean, section?: boolean): Tokenizer {
-		const style = section ? tokens[file ? 'error' : 'linkToSection'] : `${tokens.linkPageName} ${tokens.pageName}`,
+		const style = section ? tokens[file ? 'error' : 'linkTosection'] : `${tokens.linkPagename} ${tokens.pagename}`,
 			re = section
 				? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu
 				: /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}%]|%(?!3[ce]|[57][bd]))+/iu;
@@ -1078,7 +1078,7 @@ export class MediaWiki {
 				{redirect} = state;
 			if (!section && stream.match(/^#\s*/u)) {
 				state.tokenize = this.inLink(file, true);
-				return makeTagStyle(file ? 'error' : 'linkToSection', state);
+				return makeTagStyle(file ? 'error' : 'linkTosection', state);
 			} else if (stream.match(/^\|\s*/u)) {
 				state.tokenize = this.inLinkText(file);
 				let s: TagName = redirect ? 'error' : 'linkDelimiter';
@@ -1124,7 +1124,7 @@ export class MediaWiki {
 			const {imgLink, stack} = state,
 				tmpstyle = `${tokens[file ? 'fileText' : 'linkText']} ${linkState.bold ? tokens.strong : ''} ${
 					linkState.italic ? tokens.em : ''
-				} ${file && imgLink ? tokens.pageName : ''}`,
+				} ${file && imgLink ? tokens.pagename : ''}`,
 				{redirect, lbrack} = state,
 				closing = stream.match(']]');
 			if (
@@ -1372,7 +1372,7 @@ export class MediaWiki {
 			return makeLocalTagStyle('error', state);
 		}
 		chain(state, this.eatTagName(tagname));
-		return makeLocalTagStyle('extTagBracket', state);
+		return makeLocalTagStyle('exttagBracket', state);
 	}
 
 	eatHtmlTag(tagname: string, isCloseTag: boolean, state: State): string {
@@ -1393,7 +1393,7 @@ export class MediaWiki {
 			}
 		}
 		chain(state, this.eatTagName(tagname, isCloseTag, true));
-		return makeLocalTagStyle('htmlTagBracket', state);
+		return makeLocalTagStyle('htmltagBracket', state);
 	}
 
 	@getTokenizer<string>
@@ -1403,21 +1403,21 @@ export class MediaWiki {
 			stream.eatSpace();
 			if (isHtmlTag) {
 				state.tokenize = isCloseTag
-					? this.inStr('>', 'htmlTagBracket')
+					? this.inStr('>', 'htmltagBracket')
 					: this.inHtmlTagAttribute(name);
-				return makeLocalTagStyle('htmlTagName', state);
+				return makeLocalTagStyle('htmltagName', state);
 			}
 			// it is the extension tag
-			state.tokenize = isCloseTag ? this.inStr('>', 'extTagBracket') : this.inExtTagAttribute(name);
-			return makeLocalTagStyle('extTagName', state);
+			state.tokenize = isCloseTag ? this.inStr('>', 'exttagBracket') : this.inExtTagAttribute(name);
+			return makeLocalTagStyle('exttagName', state);
 		};
 	}
 
 	@getTokenizer
 	inHtmlTagAttribute(name: string, quote?: string, css?: boolean): Tokenizer {
 		const style = quote === undefined
-			? `${tokens.htmlTagAttribute} mw-html-${name}`
-			: tokens.htmlTagAttributeValue + (css ? ' mw-css' : '');
+			? `${tokens.htmltagAttribute} mw-html-${name}`
+			: tokens.htmltagAttributeValue + (css ? ' mw-css' : '');
 		return (stream, state) => {
 			if (stream.match(new RegExp(`^${lookahead('<', state)}`, 'iu'), false)) {
 				pop(state);
@@ -1430,7 +1430,7 @@ export class MediaWiki {
 					state.dt.html++;
 				}
 				pop(state);
-				return makeLocalTagStyle('htmlTagBracket', state);
+				return makeLocalTagStyle('htmltagBracket', state);
 			}
 			const t = state.stack[0]!,
 				pipe = (pipeTokenizers.has(t.name) ? '|' : '') + getEqual(t);
@@ -1473,7 +1473,7 @@ export class MediaWiki {
 		isPage?: boolean,
 		css?: boolean,
 	): Tokenizer<string> {
-		const style = `${tokens.extTagAttribute} mw-ext-${name}`,
+		const style = `${tokens.exttagAttribute} mw-ext-${name}`,
 			cssStyle = css ? ' mw-css' : '';
 		const advance = (stream: StringStream, state: State, re: RegExp): string => {
 			const mt = stream.match(re)!;
@@ -1493,7 +1493,7 @@ export class MediaWiki {
 				}
 			}
 			return makeLocalStyle(
-				tokens.extTagAttributeValue + (isPage ? ` ${tokens.pageName}` : '') + cssStyle,
+				tokens.exttagAttributeValue + (isPage ? ` ${tokens.pagename}` : '') + cssStyle,
 				state,
 			);
 		};
@@ -1505,7 +1505,7 @@ export class MediaWiki {
 				}
 				state.extMode = false;
 				pop(state);
-				return makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('exttagBracket', state);
 			} else if (stream.eat('>')) {
 				const {tagModes} = this.config;
 				state.extName = name;
@@ -1518,7 +1518,7 @@ export class MediaWiki {
 					state.extState = state.extMode.startState!(0);
 				}
 				state.tokenize = this.eatExtTagArea(name);
-				return makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('exttagBracket', state);
 			} else if (quote) { // 有引号的属性值
 				if (stream.eat(quote[0]!)) {
 					const [, remains] = quote;
@@ -1529,7 +1529,7 @@ export class MediaWiki {
 						isPage && Boolean(remains),
 						css,
 					);
-					return makeLocalStyle(tokens.extTagAttributeValue + cssStyle, state);
+					return makeLocalStyle(tokens.exttagAttributeValue + cssStyle, state);
 				}
 				return advance(stream, state, getExtAttrRegex(quote[0]!));
 			} else if (quote === '') { // 无引号的属性值
@@ -1573,7 +1573,7 @@ export class MediaWiki {
 				state.extName = false;
 				state.extMode = false;
 				state.extState = false;
-				return makeLocalTagStyle('extTagBracket', state);
+				return makeLocalTagStyle('exttagBracket', state);
 			}
 			let origString = '';
 			if (i !== -1) {
@@ -1591,7 +1591,7 @@ export class MediaWiki {
 			const {extMode, extName, extState, section} = state;
 			let ret = `mw-tag-${extName} ${section ? `mw-section--${section}` : ''}`;
 			if (typeof extMode === 'boolean') {
-				ret += ` ${tokens.extTag}`;
+				ret += ` ${tokens.exttag}`;
 				stream.skipToEnd();
 			} else {
 				ret += ` ${extMode.token(stream, extState as object) ?? ''}`;
@@ -1610,9 +1610,9 @@ export class MediaWiki {
 	inVariable(pos = 0): Tokenizer {
 		let tag: TagName = 'comment';
 		if (pos === 0) {
-			tag = 'templateVariableName';
+			tag = 'templatevariableName';
 		} else if (pos === 1) {
-			tag = 'templateVariable';
+			tag = 'templatevariable';
 		}
 		const re = variableRegex[pos === 1 ? 1 : 0];
 		return (stream, state) => {
@@ -1624,10 +1624,10 @@ export class MediaWiki {
 				if (pos < 2) {
 					state.tokenize = this.inVariable(pos + 1);
 				}
-				return makeLocalTagStyle('templateVariableDelimiter', state);
+				return makeLocalTagStyle('templatevariableDelimiter', state);
 			} else if (stream.match(/^\}{2,3}/u)) {
 				pop(state);
-				return makeLocalTagStyle('templateVariableBracket', state, 'nVar');
+				return makeLocalTagStyle('templatevariableBracket', state, 'nVar');
 			} else if (stream.match('<!--')) {
 				chain(state, this.inComment);
 				return makeLocalTagStyle('comment', state);
@@ -1651,7 +1651,7 @@ export class MediaWiki {
 			stream.backUp(length);
 			state.nExt++;
 			chain(state, ...tokenizers, this.inParserFunctionName());
-			return makeLocalTagStyle('parserFunctionBracket', state);
+			return makeLocalTagStyle('parserfunctionBracket', state);
 		}
 		// Check for parser function without '#'
 		const name = stream.match(/^([^}<{|:：]+)(.?)/u, false);
@@ -1682,7 +1682,7 @@ export class MediaWiki {
 				stream.backUp(length);
 				state.nExt++;
 				chain(state, ...tokenizers, this.inParserFunctionName());
-				return makeLocalTagStyle('parserFunctionBracket', state);
+				return makeLocalTagStyle('parserfunctionBracket', state);
 			}
 		}
 		if (stream.match('}}')) {
@@ -1703,11 +1703,11 @@ export class MediaWiki {
 				stream.match(subst);
 				stream.backUp(1);
 				state.tokenize = this.inSubst();
-				return makeLocalTagStyle('parserFunctionName', state);
+				return makeLocalTagStyle('parserfunctionName', state);
 			}
 			stream.next();
 			pop(state);
-			return makeLocalTagStyle('parserFunctionDelimiter', state);
+			return makeLocalTagStyle('parserfunctionDelimiter', state);
 		};
 	}
 
@@ -1725,7 +1725,7 @@ export class MediaWiki {
 			} else if (stream.eat('}')) {
 				pop(state);
 				return makeLocalTagStyle(
-					stream.eat('}') ? 'parserFunctionBracket' : 'error',
+					stream.eat('}') ? 'parserfunctionBracket' : 'error',
 					state,
 					'nExt',
 				);
@@ -1745,7 +1745,7 @@ export class MediaWiki {
 					n,
 					ns,
 				);
-				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserFunctionDelimiter', state);
+				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserfunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
 			if (mt) {
@@ -1780,7 +1780,7 @@ export class MediaWiki {
 						}
 					}
 				}
-				return makeLocalTagStyle('parserFunctionName', state);
+				return makeLocalTagStyle('parserfunctionName', state);
 			}
 			pop(state);
 			return makeLocalStyle('', state, 'nExt');
@@ -1789,7 +1789,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inTemplatePageName(haveEaten?: boolean, anchor?: boolean): Tokenizer {
-		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pageName}`,
+		const style = anchor ? tokens.error : `${tokens.templateName} ${tokens.pagename}`,
 			chars = '{}<',
 			re = anchor ? templateRegex : /^(?:&#(?:\d+|x[a-f\d]+);|[^|{}<>[\]#%]|%(?![\da-f]{2}))+/iu;
 		return (stream, state) => {
@@ -1857,7 +1857,7 @@ export class MediaWiki {
 			return this.inTemplateArgument(true, true);
 		}
 		const chars = n === 2 ? '}{<' : "}{<~'_＿-"; // `#invoke`/`#tag`
-		let style = `${tokens.parserFunction} ${module ? tokens.pageName : ''}`;
+		let style = `${tokens.parserfunction} ${module ? tokens.pagename : ''}`;
 		switch (module) {
 			case 1:
 				style += ' mw-function-274';
@@ -1876,21 +1876,21 @@ export class MediaWiki {
 				} else if (n !== Infinity) {
 					state.tokenize = this.inParserFunctionArgument(undefined, n - 1);
 				}
-				return makeLocalTagStyle('parserFunctionDelimiter', state);
+				return makeLocalTagStyle('parserfunctionDelimiter', state);
 			} else if (stream.match('}}')) {
 				pop(state);
-				return makeLocalTagStyle('parserFunctionBracket', state, 'nExt');
+				return makeLocalTagStyle('parserfunctionBracket', state, 'nExt');
 			}
 			return !isSolSyntax(stream)
 				&& stream.match(parserFunctionRegex[module ? 0 : Number(needColon(state)) + 1]!(chars))
 				? makeLocalStyle(style, state)
-				: this.eatWikiText('parserFunction')(stream, state);
+				: this.eatWikiText('parserfunction')(stream, state);
 		};
 	}
 
 	@getTokenizer
 	inTemplateArgument(expectName?: boolean, parserFunction?: boolean): Tokenizer {
-		const tag = parserFunction ? 'parserFunction' : 'template';
+		const tag = parserFunction ? 'parserfunction' : 'template';
 		return (stream, state) => {
 			const space = stream.eatSpace();
 			if (stream.eol()) {
@@ -1899,7 +1899,7 @@ export class MediaWiki {
 				if (!expectName) {
 					state.tokenize = this.inTemplateArgument(true, parserFunction);
 				}
-				return makeLocalTagStyle(parserFunction ? 'parserFunctionDelimiter' : 'templateDelimiter', state);
+				return makeLocalTagStyle(parserFunction ? 'parserfunctionDelimiter' : 'templateDelimiter', state);
 			} else if (stream.match('}}', false)) {
 				if (space) {
 					return makeLocalTagStyle(tag, state);
@@ -1907,7 +1907,7 @@ export class MediaWiki {
 				stream.pos += 2;
 				pop(state);
 				return makeLocalTagStyle(
-					parserFunction ? 'parserFunctionBracket' : 'templateBracket',
+					parserFunction ? 'parserfunctionBracket' : 'templateBracket',
 					state,
 					parserFunction ? 'nExt' : 'nTemplate',
 				);
@@ -1925,7 +1925,7 @@ export class MediaWiki {
 			) {
 				state.tokenize = this.inTemplateArgument(false, parserFunction);
 				return makeLocalTagStyle(
-					parserFunction ? 'parserFunctionArgumentName' : 'templateArgumentName',
+					parserFunction ? 'parserfunctionArgumentName' : 'templateArgumentName',
 					state,
 				);
 			} else if (isSolSyntax(stream) && stream.peek() !== '=') {
@@ -1971,7 +1971,7 @@ export class MediaWiki {
 
 	eatEntity(stream: StringStream, style: string): string {
 		const entity = stream.match(/^(?:#x[a-f\d]+|#\d+|[a-z][a-z\d]*);/iu);
-		return entity && isHtmlEntity(entity[0]) ? tokens.htmlEntity : style;
+		return entity && isHtmlEntity(entity[0]) ? tokens.entity : style;
 	}
 
 	/**
@@ -2080,9 +2080,9 @@ export class MediaWiki {
 						style = state.tokenize(stream, state);
 					if (contains(style, '-argument-name')) {
 						const isTemplate = style.includes(tokens.templateArgumentName),
-							argument = tokens[isTemplate ? 'template' : 'parserFunction'],
-							argumentName = tokens[isTemplate ? 'templateArgumentName' : 'parserFunctionArgumentName'],
-							delimiter = tokens[isTemplate ? 'templateDelimiter' : 'parserFunctionDelimiter'];
+							argument = tokens[isTemplate ? 'template' : 'parserfunction'],
+							argumentName = tokens[isTemplate ? 'templateArgumentName' : 'parserfunctionArgumentName'],
+							delimiter = tokens[isTemplate ? 'templateDelimiter' : 'parserfunctionDelimiter'];
 						for (let i = readyTokens.length - 1; i >= 0; i--) {
 							const token = readyTokens[i]!;
 							if (cmpNesting(state, token.state, true)) {
@@ -2226,7 +2226,7 @@ export class MediaWiki {
 					return makeLocalTagStyle('comment', state);
 				} else if (stream.match(/^\{{3}(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 					chain(state, this.inVariable());
-					return tokens.templateVariableBracket;
+					return tokens.templatevariableBracket;
 				}
 				const mt = stream.match(/^\{\{(?!\{(?!\{))/u);
 				if (mt) {
@@ -2238,7 +2238,7 @@ export class MediaWiki {
 			}
 			stream.eat('<');
 			chain(state, this.eatTagName(tag));
-			return tokens.extTagBracket;
+			return tokens.exttagBracket;
 		};
 	}
 
@@ -2290,7 +2290,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inGallery(section?: boolean): Tokenizer {
-		const style = section ? tokens.error : `${tokens.linkPageName} ${tokens.pageName}`,
+		const style = section ? tokens.error : `${tokens.linkPagename} ${tokens.pagename}`,
 			regex = section ? /^(?:[[}\]]|\{(?!\{))+/u : /^(?:[>[}\]]|\{(?!\{)|<(?!!--))+/u,
 			re = section ? /^(?:[^|<[\]{}]|<(?!!--))+/u : /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}])+/u;
 		return (stream, state) => {

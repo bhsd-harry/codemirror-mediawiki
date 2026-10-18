@@ -16,16 +16,16 @@ const colorNames = Object.keys(colorsNamed);
 export const discoverColors: DiscoverColors = (_, {from, to, name}, doc) => {
 	const types = getTypes(name);
 	// HTML tag attribute values, including wikitext tables
-	return hasTag(types, ['extTagAttributeValue', 'htmlTagAttributeValue', 'tableDefinition'])
+	return hasTag(types, ['exttagAttributeValue', 'htmltagAttributeValue', 'tableDefinition'])
 
 		// template and parser function arguments, immediately following a pipe or equals sign,
 		// and immediately preceding a pipe, newline, or closing braces
-		|| hasTag(types, ['template', 'parserFunction'])
+		|| hasTag(types, ['template', 'parserfunction'])
 		&& /[|=]/u.test(doc.sliceString(from - 1, from))
 		&& (/[|\n]/u.test(doc.sliceString(to, to + 1)) || doc.sliceString(to, to + 2) === '}}')
 
 		// variable defaults, immediately following a pipe, and immediately preceding a pipe or closing braces
-		|| hasTag(types, 'templateVariable')
+		|| hasTag(types, 'templatevariable')
 		&& doc.sliceString(from - 1, from) === '|'
 		&& (doc.sliceString(to, to + 1) === '|' || doc.sliceString(to, to + 3) === '}}}')
 

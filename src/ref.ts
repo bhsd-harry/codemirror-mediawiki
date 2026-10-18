@@ -75,7 +75,7 @@ export const needHover = (state: EditorState, {name, selfClosing, first, last}: 
 			nextSibling: SyntaxNode | null = null;
 		while (prevSibling && prevSibling.from > first.to) {
 			const key = getRefName(state, prevSibling);
-			if (hasTag(prevSibling.name, 'extTagAttribute') && /(?:^|\s)name(?:$|[\s=])/iu.test(key)) {
+			if (hasTag(prevSibling.name, 'exttagAttribute') && /(?:^|\s)name(?:$|[\s=])/iu.test(key)) {
 				if (/(?:^|\s)name\s*=/iu.test(key)) {
 					({nextSibling} = prevSibling);
 				}
@@ -83,7 +83,7 @@ export const needHover = (state: EditorState, {name, selfClosing, first, last}: 
 			}
 			({prevSibling} = prevSibling);
 		}
-		if (hasTag(nextSibling?.name, 'extTagAttributeValue')) {
+		if (hasTag(nextSibling?.name, 'exttagAttributeValue')) {
 			let target = getRefName(state, nextSibling!);
 			const quote = target.charAt(0);
 			if (quote === '"' || quote === "'") {

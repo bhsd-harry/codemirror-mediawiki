@@ -151,13 +151,13 @@ export const updateSelection: AnchorUpdate = (pos, {to}): number => Math.max(pos
 const isComponent = (keys: TagName[]) => (node: SyntaxNode | null): boolean => hasTag(node?.name, keys),
 
 	/** Check if a SyntaxNode is a template bracket (`{{` or `}}`) */
-	isTemplateBracket = /* #__PURE__ */ isComponent(['templateBracket', 'parserFunctionBracket']),
+	isTemplateBracket = /* #__PURE__ */ isComponent(['templateBracket', 'parserfunctionBracket']),
 
 	/** Check if a SyntaxNode is a template name */
-	isTemplateName = /* #__PURE__ */ isComponent(['templateName', 'parserFunctionName']),
+	isTemplateName = /* #__PURE__ */ isComponent(['templateName', 'parserfunctionName']),
 
 	/** Check if a SyntaxNode is a template delimiter (`|` or `:`) */
-	isDelimiter = /* #__PURE__ */ isComponent(['templateDelimiter', 'parserFunctionDelimiter']),
+	isDelimiter = /* #__PURE__ */ isComponent(['templateDelimiter', 'parserfunctionDelimiter']),
 
 	/**
 	 * Check if a SyntaxNode is a template delimiter (`|` or `:`), excluding `subst:` and `safesubst:`
@@ -173,7 +173,7 @@ const isComponent = (keys: TagName[]) => (node: SyntaxNode | null): boolean => h
 		/-(?:template|ext)[a-z\d-]+ground/u.test(node.name) && !isTemplateBracket(node),
 
 	/** Check if a SyntaxNode is an extension tag bracket (`<` or `>`) */
-	isExtBracket = /* #__PURE__ */ isComponent(['extTagBracket']),
+	isExtBracket = /* #__PURE__ */ isComponent(['exttagBracket']),
 
 	/**
 	 * Check if a SyntaxNode is part of a extension tag

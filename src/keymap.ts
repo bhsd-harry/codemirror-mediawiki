@@ -33,7 +33,7 @@ export const getExtNames = (state: EditorState, tree: Tree, pos: number, side: 1
 		return [];
 	}
 	const ext = name.includes(mwTag) ? getExtTags(name.split('_')) : [];
-	if (hasTag(name, 'extTagBracket')) {
+	if (hasTag(name, 'exttagBracket')) {
 		const bracket = sliceDoc(state, node),
 			{from} = node;
 		// `<score>`、`<maplink>`和`<mapfram>`内部均不可包含其他扩展标签，所以可以省略一些情形

@@ -97,14 +97,14 @@ export const getLinkParser = (
 			return undefined;
 		}
 		let node = tree.resolve(pos, assoc);
-		if (hasTag(node.name, 'linkToSection')) {
+		if (hasTag(node.name, 'linkTosection')) {
 			node = node.prevSibling!;
 		}
 		const {name, from, to, nextSibling, prevSibling} = node,
 			types = getTypes(name);
-		if (hasTag(types, ['extLinkProtocol', 'freeExtLinkProtocol'])) {
+		if (hasTag(types, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
 			return wrapURL(state, [from, nextSibling!.to], str);
-		} else if (hasTag(types, ['extLink', 'freeExtLink'])) {
+		} else if (hasTag(types, ['extlink', 'freeExtlink'])) {
 			return wrapURL(state, [prevSibling!.from, to], str);
 		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);
@@ -116,10 +116,10 @@ export const getLinkParser = (
 			return link.startsWith('RFC')
 				? `https://datatracker.ietf.org/doc/html/rfc${link.slice(3).trim()}`
 				: `https://pubmed.ncbi.nlm.nih.gov/${link.slice(4).trim()}`;
-		} else if (titleParser && hasTag(types, 'pageName')) {
+		} else if (titleParser && hasTag(types, 'pagename')) {
 			return str
 				? titleParser(state, node)?.page
-				: [from, hasTag(nextSibling?.name, 'linkToSection') ? nextSibling!.to : to];
+				: [from, hasTag(nextSibling?.name, 'linkTosection') ? nextSibling!.to : to];
 		}
 		return undefined;
 	}) as LinkParser;
