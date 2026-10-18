@@ -74,14 +74,14 @@ export const getLinkParser = (
 			return undefined;
 		}
 		let node = tree.resolve(pos, assoc);
-		if (hasTag(node.name, 'linkToSection')) {
+		if (hasTag(node.name, 'linkTosection')) {
 			node = node.prevSibling!;
 		}
 		const {name, from, to, nextSibling, prevSibling} = node,
 			types = getTypes(name);
-		if (hasTag(types, ['extLinkProtocol', 'freeExtLinkProtocol'])) {
+		if (hasTag(types, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
 			return wrapURL(state, [from, nextSibling!.to], str);
-		} else if (hasTag(types, ['extLink', 'freeExtLink'])) {
+		} else if (hasTag(types, ['extlink', 'freeExtlink'])) {
 			return wrapURL(state, [prevSibling!.from, to], str);
 		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);

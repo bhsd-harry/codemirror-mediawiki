@@ -112,7 +112,7 @@ export class FullMediaWiki extends MediaWiki {
 					from: f,
 				} = node,
 				types = getTypes(n),
-				isParserFunction = hasTag(types, 'parserFunctionName'),
+				isParserFunction = hasTag(types, 'parserfunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
 			const obj =
@@ -133,12 +133,12 @@ export class FullMediaWiki extends MediaWiki {
 					...obj,
 				};
 			}
-			const isTagName = hasTag(types, ['htmlTagName', 'extTagName']),
+			const isTagName = hasTag(types, ['htmltagName', 'exttagName']),
 				explicitMatch = explicit && context.matchBefore(/\s$/u),
 				validForAttr = /^[a-z]*$/iu;
 			if (
 				isTagName && explicitMatch
-				|| hasTag(types, ['htmlTagAttribute', 'extTagAttribute', 'tableDefinition'])
+				|| hasTag(types, ['htmltagAttribute', 'exttagAttribute', 'tableDefinition'])
 			) {
 				const tagName = isTagName ? search.trim() : /mw-(?:ext|html)-([a-z]+)/u.exec(n)![1]!,
 					mt = explicitMatch || context.matchBefore(
@@ -173,12 +173,12 @@ export class FullMediaWiki extends MediaWiki {
 				}
 			} else if (hasTag(types, [
 				'comment',
-				'templateVariableName',
+				'templatevariableName',
 				'templateName',
-				'parserFunctionName',
-				'linkPageName',
-				'linkToSection',
-				'extLink',
+				'parserfunctionName',
+				'linkPagename',
+				'linkTosection',
+				'extlink',
 			])) {
 				// 不可能是状态开关、标签、协议或图片参数名
 				return null;
@@ -266,7 +266,7 @@ export class FullMediaWiki extends MediaWiki {
 						: this.imgKeys,
 					validFor: /^[^|{}<>[\]$]*$/u,
 				};
-			} else if (!hasTag(types, ['linkText', 'extLinkText'])) {
+			} else if (!hasTag(types, ['linkText', 'extlinkText'])) {
 				mt = context.matchBefore(/(?:^|[^[])\[[a-z:/]*$/iu);
 				if (mt && (explicit || !mt.text.endsWith('['))) {
 					return {

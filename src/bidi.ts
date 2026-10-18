@@ -42,7 +42,7 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 				const {name, from: f, to: t, nextSibling} = node as SyntaxNode,
 					types = getTypes(name);
 				if (
-					hasTag(types, ['extTagBracket', 'htmlTagBracket'])
+					hasTag(types, ['exttagBracket', 'htmltagBracket'])
 					&& state.sliceDoc(f, t).includes('<')
 				) {
 					const tag = getTag(state, nextSibling!);
@@ -61,12 +61,12 @@ export const computeIsolates = ({visibleRanges, state, textDirection}: EditorVie
 				} else if (td && hasTag(types, 'tableDelimiter2')) {
 					pushDecoration(set, isolateLTR, td, f);
 					td = 0;
-				} else if (hasTag(types, ['templateDelimiter', 'parserFunctionDelimiter'])) {
+				} else if (hasTag(types, ['templateDelimiter', 'parserfunctionDelimiter'])) {
 					if (parameter) {
 						pushDecoration(set, isolate, parameter, f);
 					}
 					parameter = t;
-				} else if (parameter && hasTag(types, ['templateBracket', 'parserFunctionBracket'])) {
+				} else if (parameter && hasTag(types, ['templateBracket', 'parserfunctionBracket'])) {
 					if (state.sliceDoc(f, f + 1) === '}') {
 						pushDecoration(set, isolate, parameter, f);
 					}

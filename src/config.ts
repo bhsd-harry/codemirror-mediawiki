@@ -11,6 +11,77 @@ import {
 } from '@lezer/highlight';
 import {html} from 'wikiparser-node/config/default.json';
 
+const tagNames = [
+	'apostrophes',
+	'comment',
+	'convertBracket',
+	'convertDelimiter',
+	'convertFlag',
+	'convertLang',
+	'doubleUnderscore',
+	'em',
+	'entity',
+	'error',
+	'extlink',
+	'extlinkBracket',
+	'extlinkProtocol',
+	'extlinkText',
+	'exttag',
+	'exttagAttribute',
+	'exttagAttributeValue',
+	'exttagBracket',
+	'exttagName',
+	'fileDelimiter',
+	'fileText',
+	'freeExtlink',
+	'freeExtlinkProtocol',
+	'hr',
+	'htmltagAttribute',
+	'htmltagAttributeValue',
+	'htmltagBracket',
+	'htmltagName',
+	'ignored',
+	'imageParameter',
+	'linkBracket',
+	'linkDelimiter',
+	'linkPagename',
+	'linkText',
+	'linkTosection',
+	'list',
+	'magicLink',
+	'pagename',
+	'parserfunction',
+	'parserfunctionArgumentName',
+	'parserfunctionBracket',
+	'parserfunctionDelimiter',
+	'parserfunctionName',
+	'redirect',
+	'section',
+	'sectionHeader',
+	'signature',
+	'skipformatting',
+	'strong',
+	'tableBracket',
+	'tableCaption',
+	'tableDefinition',
+	'tableDefinitionValue',
+	'tableDelimiter',
+	'tableDelimiter2',
+	'tableTd',
+	'tableTh',
+	'template',
+	'templateArgumentName',
+	'templateBracket',
+	'templateDelimiter',
+	'templateName',
+	'templatevariable',
+	'templatevariableBracket',
+	'templatevariableDelimiter',
+	'templatevariableName',
+] as const;
+
+export type TagName = (typeof tagNames)[number];
+
 /**
  * All HTML/XML tags permitted in MediaWiki Core.
  *
@@ -22,87 +93,24 @@ export const htmlTags = /* #__PURE__ */ html.flat(),
 	voidHtmlTags = /* #__PURE__ */ (() => html[2]!)(),
 
 	/** HTML tags that can be self-closing. */
-	selfClosingTags = /* #__PURE__ */ (() => html[1]!)(),
+	selfClosingTags = /* #__PURE__ */ (() => html[1]!)();
 
-	/**
-	 * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
-	 * Values are one of the default highlighting tags.
-	 *
-	 * Once we allow use of other themes, we may want to tweak these values for aesthetic reasons.
-	 *
-	 * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
-	 * @internal
-	 */
-	tokens = {
-		apostrophes: 'mw-apostrophes',
-		comment: 'mw-comment',
-		convertBracket: 'mw-convert-bracket',
-		convertDelimiter: 'mw-convert-delimiter',
-		convertFlag: 'mw-convert-flag',
-		convertLang: 'mw-convert-lang',
-		doubleUnderscore: 'mw-double-underscore',
-		em: 'mw-em',
-		error: 'mw-error',
-		extLink: 'mw-extlink',
-		extLinkBracket: 'mw-extlink-bracket',
-		extLinkProtocol: 'mw-extlink-protocol',
-		extLinkText: 'mw-extlink-text',
-		extTag: 'mw-exttag',
-		extTagAttribute: 'mw-exttag-attribute',
-		extTagAttributeValue: 'mw-exttag-attribute-value',
-		extTagBracket: 'mw-exttag-bracket',
-		extTagName: 'mw-exttag-name',
-		fileDelimiter: 'mw-file-delimiter',
-		fileText: 'mw-file-text',
-		freeExtLink: 'mw-free-extlink',
-		freeExtLinkProtocol: 'mw-free-extlink-protocol',
-		hr: 'mw-hr',
-		htmlEntity: 'mw-entity',
-		htmlTagAttribute: 'mw-htmltag-attribute',
-		htmlTagAttributeValue: 'mw-htmltag-attribute-value',
-		htmlTagBracket: 'mw-htmltag-bracket',
-		htmlTagName: 'mw-htmltag-name',
-		ignored: 'mw-ignored',
-		imageParameter: 'mw-image-parameter',
-		linkBracket: 'mw-link-bracket',
-		linkDelimiter: 'mw-link-delimiter',
-		linkPageName: 'mw-link-pagename',
-		linkText: 'mw-link-text',
-		linkToSection: 'mw-link-tosection',
-		list: 'mw-list',
-		magicLink: 'mw-magic-link',
-		pageName: 'mw-pagename',
-		parserFunction: 'mw-parserfunction',
-		parserFunctionArgumentName: 'mw-parserfunction-argument-name',
-		parserFunctionBracket: 'mw-parserfunction-bracket',
-		parserFunctionDelimiter: 'mw-parserfunction-delimiter',
-		parserFunctionName: 'mw-parserfunction-name',
-		redirect: 'mw-redirect',
-		section: 'mw-section',
-		sectionHeader: 'mw-section-header',
-		signature: 'mw-signature',
-		skipFormatting: 'mw-skipformatting',
-		strong: 'mw-strong',
-		tableBracket: 'mw-table-bracket',
-		tableCaption: 'mw-table-caption',
-		tableDefinition: 'mw-table-definition',
-		tableDefinitionValue: 'mw-table-definition-value',
-		tableDelimiter: 'mw-table-delimiter',
-		tableDelimiter2: 'mw-table-delimiter2',
-		tableTd: 'mw-table-td',
-		tableTh: 'mw-table-th',
-		template: 'mw-template',
-		templateArgumentName: 'mw-template-argument-name',
-		templateBracket: 'mw-template-bracket',
-		templateDelimiter: 'mw-template-delimiter',
-		templateName: 'mw-template-name',
-		templateVariable: 'mw-templatevariable',
-		templateVariableBracket: 'mw-templatevariable-bracket',
-		templateVariableDelimiter: 'mw-templatevariable-delimiter',
-		templateVariableName: 'mw-templatevariable-name',
-	};
-
-export type TagName = keyof typeof tokens;
+/**
+ * Mapping of MediaWiki-esque token identifiers to a standardized lezer highlighting tag.
+ * Values are one of the default highlighting tags.
+ *
+ * Once we allow use of other themes, we may want to tweak these values for aesthetic reasons.
+ *
+ * @see https://lezer.codemirror.net/docs/ref/#highlight.tags
+ * @internal
+ */
+export const tokens = /* #__PURE__ */ (() => {
+	const table = {} as Record<TagName, string>;
+	for (const tagName of tagNames) {
+		table[tagName] = `mw-${tagName.replaceAll(/[A-Z]/gu, c => `-${c.toLowerCase()}`)}`;
+	}
+	return table;
+})();
 
 /**
  * These are custom tokens (a.k.a. tags) that aren't mapped to any of the standardized tags.
@@ -111,56 +119,54 @@ export type TagName = keyof typeof tokens;
  * @see https://lezer.codemirror.net/docs/ref/#highlight.Tag%5Edefine
  */
 export const tokenTable = /* #__PURE__ */ (() => {
-	const table: Record<string, Tag | Tag[]> = {
-		//
-	};
+	const table: Record<string, Tag | Tag[]> = {};
 	const highlight = new Map<Tag | Tag[], TagName[]>([
 		[tags.strong, ['section', 'strong', 'tableCaption', 'tableTh']],
-		[tags.link, ['pageName']],
+		[tags.link, ['pagename']],
 		[tags.emphasis, ['em']],
 		// #940
 		[tags.comment, ['comment', 'ignored']],
 		// #f00
 		[tags.invalid, ['error']],
 		// #a11
-		[tags.character, ['htmlEntity']],
+		[tags.character, ['entity']],
 		// #404740
 		[tags.processingInstruction, ['apostrophes', 'list', 'sectionHeader', 'signature', 'hr']],
 		// #219
 		[tags.labelName, ['redirect', 'doubleUnderscore']],
 		// #708
-		[tags.operatorKeyword, ['parserFunctionName', 'parserFunctionBracket', 'parserFunctionDelimiter']],
+		[tags.operatorKeyword, ['parserfunctionName', 'parserfunctionBracket', 'parserfunctionDelimiter']],
 		// #00f
 		[tags.definition(tags.variableName), ['templateName', 'templateDelimiter', 'templateBracket']],
 		// #256
-		[tags.special(tags.variableName), ['parserFunctionArgumentName', 'templateArgumentName']],
+		[tags.special(tags.variableName), ['parserfunctionArgumentName', 'templateArgumentName']],
 		// #30a
 		[
 			tags.local(tags.variableName),
-			['templateVariableName', 'templateVariableBracket', 'templateVariableDelimiter'],
+			['templatevariableName', 'templatevariableBracket', 'templatevariableDelimiter'],
 		],
 		// #085
-		[tags.tagName, ['extTagName', 'extTagBracket', 'htmlTagName', 'htmlTagBracket']],
+		[tags.tagName, ['exttagName', 'exttagBracket', 'htmltagName', 'htmltagBracket']],
 		// #e40
 		[tags.special(tags.string), ['tableBracket', 'tableDelimiter', 'tableDelimiter2']],
 		// #00c
 		[
 			tags.definition(tags.attributeName),
-			['extTagAttribute', 'htmlTagAttribute', 'tableDefinition', 'imageParameter'],
+			['exttagAttribute', 'htmltagAttribute', 'tableDefinition', 'imageParameter'],
 		],
 		// #a11
-		[tags.attributeValue, ['extTagAttributeValue', 'htmlTagAttributeValue', 'tableDefinitionValue']],
+		[tags.attributeValue, ['exttagAttributeValue', 'htmltagAttributeValue', 'tableDefinitionValue']],
 		// #219
-		[tags.url, ['linkPageName', 'linkBracket', 'linkDelimiter', 'fileDelimiter', 'extLinkBracket']],
+		[tags.url, ['linkPagename', 'linkBracket', 'linkDelimiter', 'fileDelimiter', 'extlinkBracket']],
 		[
 			[tags.url, tags.link],
 			[
-				'linkToSection',
+				'linkTosection',
 				'magicLink',
-				'extLink',
-				'extLinkProtocol',
-				'freeExtLink',
-				'freeExtLinkProtocol',
+				'extlink',
+				'extlinkProtocol',
+				'freeExtlink',
+				'freeExtlinkProtocol',
 			],
 		],
 		// #164

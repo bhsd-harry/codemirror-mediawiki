@@ -5,7 +5,7 @@ import {hasTag} from './config.js';
 import type {Extension} from '@codemirror/state';
 import type {TagName} from './config';
 
-const brackets: TagName[] = ['extTagBracket', 'htmlTagBracket'];
+const brackets: TagName[] = ['exttagBracket', 'htmltagBracket'];
 
 /**
  * Get the [closeTags](https://github.com/bhsd-harry/codemirror-mediawiki/tree/wikitext#closetags)
