@@ -11,6 +11,7 @@
 
 - The [openLinks](./README.md#openlinks) extension for parser function arguments in the MediaWiki mode on a MediaWiki site
 - Highlighting of language conversion syntax in a template argument in the MediaWiki mode
+- RangeError from the [signatureHelp](./README.md#signaturehelp) extension when deleting characters at the end of the document in the MediaWiki mode
 
 ## 4.7.1
 

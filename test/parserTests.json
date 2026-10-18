@@ -2930,7 +2930,7 @@
 	{
 		"desc": "{{#contentmodel}} parser function for a JS page using the title argument",
 		"wikitext": "{{#contentmodel: canonical | MediaWiki:Common.js}}",
-		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#contentmodel</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> canonical </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction> MediaWiki:Common.js</><ext-ground parserfunction-bracket>}}</>"
+		"parsed": "<ext-ground parserfunction-bracket>{{</><ext-ground parserfunction-name>#contentmodel</><ext-ground parserfunction-delimiter>:</><ext-ground parserfunction> canonical </><ext-ground parserfunction-delimiter>|</><ext-ground parserfunction pagename function-0> MediaWiki:Common.js</><ext-ground parserfunction-bracket>}}</>"
 	},
 	{
 		"desc": "1. T400845: Dom/Handlers/CleanUp.php: Added mw:DisplaySpace spaces removal",

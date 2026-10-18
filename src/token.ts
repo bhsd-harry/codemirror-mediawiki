@@ -1711,12 +1711,14 @@ export class MediaWiki {
 		};
 	}
 
+	/**
+	 * 解析器函数名称
+	 * @param n 强制匿名参数数量，Infinity 表示所有参数都为匿名参数
+	 * @param ns 第`m`个参数的命名空间编号
+	 * @param m 不是页面名的参数数量
+	 */
 	@getTokenizer<string>
-	inParserFunctionName(
-		invoke?: number,
-		n?: number,
-		ns?: number,
-	): Tokenizer<string> {
+	inParserFunctionName(n = Infinity, ns?: number, m?: number): Tokenizer<string> {
 		return (stream, state) => {
 			const sol = stream.sol(),
 				space = stream.eatSpace();
@@ -1740,11 +1742,7 @@ export class MediaWiki {
 			}
 			const ch = stream.eat(/[:：|]/u);
 			if (ch) {
-				state.tokenize = this.inParserFunctionArgument(
-					invoke,
-					n,
-					ns,
-				);
+				state.tokenize = this.inParserFunctionArgument(n, ns, m);
 				return makeLocalTagStyle(space || ch === '|' ? 'error' : 'parserfunctionDelimiter', state);
 			}
 			const mt = stream.match(/^(?:[^:：}{|<>[\]\s]|\s(?![:：]))+/u);
@@ -1758,25 +1756,26 @@ export class MediaWiki {
 						: cmName;
 				switch (canonicalName) {
 					case 'invoke':
-						state.tokenize = this.inParserFunctionName(2);
+						state.tokenize = this.inParserFunctionName(2, 828);
 						break;
 					case 'widget':
-						state.tokenize = this.inParserFunctionName(1);
+						state.tokenize = this.inParserFunctionName(1, 274);
 						break;
 					case 'switch':
-						state.tokenize = this.inParserFunctionName(undefined, 1);
+						state.tokenize = this.inParserFunctionName(1);
 						break;
 					case 'tag':
-						state.tokenize = this.inParserFunctionName(undefined, 2);
+						state.tokenize = this.inParserFunctionName(2);
+						break;
+					case 'protectionlevel':
+					case 'protectionexpiry':
+					case 'contentmodel':
+						state.tokenize = this.inParserFunctionName(Infinity, 0, 1);
 						break;
 					default: {
 						const namespace = pageFunctions.get(canonicalName);
 						if (namespace !== undefined || pageVariables.has(canonicalName)) {
-							state.tokenize = this.inParserFunctionName(
-								Infinity,
-								Infinity,
-								namespace,
-							);
+							state.tokenize = this.inParserFunctionName(Infinity, namespace ?? 0);
 						}
 					}
 				}
@@ -1847,34 +1846,30 @@ export class MediaWiki {
 		};
 	}
 
+	/**
+	 * 解析器函数参数
+	 * @param n 强制匿名参数数量，Infinity 表示所有参数都为匿名参数
+	 * @param ns 第`m`个参数的命名空间编号
+	 * @param m 不是页面名的参数数量
+	 */
 	@getTokenizer
-	inParserFunctionArgument(
-		module?: number,
-		n = module ?? Infinity,
-		ns = 0,
-	): Tokenizer {
+	inParserFunctionArgument(n: number, ns?: number, m = 0): Tokenizer {
 		if (n === 0) {
 			return this.inTemplateArgument(true, true);
 		}
-		const chars = n === 2 ? '}{<' : "}{<~'_＿-"; // `#invoke`/`#tag`
-		let style = `${tokens.parserfunction} ${module ? tokens.pagename : ''}`;
-		switch (module) {
-			case 1:
-				style += ' mw-function-274';
-				break;
-			case 2:
-				style += ' mw-function-828';
-				break;
-			case Infinity:
-				style += ` mw-function-${ns}`;
-			// no default
-		}
+		const chars = n === 2 ? '}{<' : "}{<~'_＿-", // `#invoke`/`#tag`
+			isPage = m === 0 && ns !== undefined,
+			style = `${tokens.parserfunction} ${
+				isPage ?
+					`${tokens.pagename} mw-function-${ns}`
+					: ''
+			}`;
 		return (stream, state) => {
 			if (stream.eat('|')) {
-				if (module) {
-					state.tokenize = this.inParserFunctionArgument(undefined, module - 1);
-				} else if (n !== Infinity) {
-					state.tokenize = this.inParserFunctionArgument(undefined, n - 1);
+				if (m) {
+					state.tokenize = this.inParserFunctionArgument(n - 1, ns, m - 1);
+				} else if (isPage || n !== Infinity) {
+					state.tokenize = this.inParserFunctionArgument(n - 1);
 				}
 				return makeLocalTagStyle('parserfunctionDelimiter', state);
 			} else if (stream.match('}}')) {
@@ -1882,7 +1877,7 @@ export class MediaWiki {
 				return makeLocalTagStyle('parserfunctionBracket', state, 'nExt');
 			}
 			return !isSolSyntax(stream)
-				&& stream.match(parserFunctionRegex[module ? 0 : Number(needColon(state)) + 1]!(chars))
+				&& stream.match(parserFunctionRegex[isPage ? 0 : Number(needColon(state)) + 1]!(chars))
 				? makeLocalStyle(style, state)
 				: this.eatWikiText('parserfunction')(stream, state);
 		};
