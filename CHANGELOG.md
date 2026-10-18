@@ -7,6 +7,7 @@
 
 - More parser functions now have their first argument highlighted as a page name
 - Highlighting of language conversion syntax in a template argument
+- RangeError from the [signatureHelp](./README.md#signaturehelp) extension when deleting characters at the end of the document
 
 ## 0.12.0
 
