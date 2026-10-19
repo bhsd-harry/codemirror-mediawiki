@@ -1,4 +1,16 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 4.8.0
+
+*2026-10-19*
+
+**Added**
+
+- `Alt` + `Backspace`/`Alt` + `Delete` now deletes from the cursor to the start/end of the line on Windows
+
+**Changed**
+
+- `Ctrl` + `d`/`Cmd` + `d` now deletes the current lines instead of [selecting the next occurrence](https://codemirror.net/docs/ref/#search.selectNextOccurrence) of the selected text
+
 ## 4.7.2
 
 *2026-10-18*
@@ -1136,7 +1148,7 @@
 
 **Changed**
 
-- Keyboard shortcuts for `<s>` is now `Ctrl-Shift-5` on Mac in the MediaWiki mode
+- Keyboard shortcuts for `<s>` is now `Ctrl` + `Shift` + `5` on Mac in the MediaWiki mode
 - The [closeBrackets](./README.md#closebrackets) extension no longer automatically closes brackets before `:` and `;` in the MediaWiki mode
 
 ## 2.19.7
@@ -1219,7 +1231,7 @@
 
 **Added**
 
-- `Ctrl-Shift-z` now triggers the redo command on Windows
+- `Ctrl` + `Shift` + `z` now triggers the redo command on Windows
 - When the [wikiEditor](./mw/README.md#wikieditor) extension is enabled, a button is added to the toolbar to switch on/off the CodeMirror/Monaco editor
 
 **Fixed**

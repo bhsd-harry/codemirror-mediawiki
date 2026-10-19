@@ -22,8 +22,11 @@ import {
 	insertTab,
 	indentLess,
 	deleteCharBackwardStrict,
+	deleteLine,
+	deleteToLineEnd,
+	deleteLineBoundaryBackward,
 } from '@codemirror/commands';
-import {search, searchKeymap} from '@codemirror/search';
+import {search, searchKeymap, selectNextOccurrence} from '@codemirror/search';
 import {
 	linter,
 	lintGutter,
@@ -371,7 +374,7 @@ export class CodeMirror6 {
 				}),
 				keymap.of([
 					...defaultKeymap,
-					...searchKeymap,
+					...searchKeymap.filter(({run}) => run !== selectNextOccurrence),
 					{
 						key: 'Mod-Shift-x',
 						run: (): true => {
@@ -452,6 +455,9 @@ export class CodeMirror6 {
 							...historyKeymap,
 							{key: 'Tab', run: insertTab, shift: indentLess},
 							{win: 'Ctrl-Shift-z', run: redo, preventDefault: true},
+							{key: 'Mod-d', run: deleteLine, preventDefault: true},
+							{win: 'Alt-Delete', run: deleteToLineEnd},
+							{win: 'Alt-Backspace', run: deleteLineBoundaryBackward},
 						]),
 					],
 			];
