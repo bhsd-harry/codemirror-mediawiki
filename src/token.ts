@@ -20,7 +20,6 @@ import type {StreamParser, StringStream as StringStreamBase} from '@codemirror/l
 import type {CloseBracketConfig} from '@codemirror/autocomplete';
 import type {SyntaxNode} from '@lezer/common';
 import type {TagName} from './config';
-import type {MimeTypes} from './static';
 
 export type Style = string | [string];
 declare type Tokenizer<T = Style> = ((stream: StringStream, state: State) => T) & {args?: unknown[]};
@@ -1510,7 +1509,7 @@ export class MediaWiki {
 				const {tagModes} = this.config;
 				state.extName = name;
 				state.extMode ||= Object.hasOwn(tagModes, name) && (tagModes[name]!) in this
-					&& this[tagModes[name] as MimeTypes]([
+					&& this[tagModes[name] as 'mediawiki']([
 						...state.data.tags.filter(tag => tag !== name),
 						...name === 'translate' ? ['tvar'] : [],
 					]);

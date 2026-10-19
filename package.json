@@ -116,7 +116,7 @@
 		"globals": "^17.13.0",
 		"http-server": "^14.1.1",
 		"luacheck-browserify": "^1.2.0",
-		"marked": "^18.1.0",
+		"marked": "^18.1.1",
 		"monaco-editor": "^0.57.0",
 		"stylelint": "^17.16.0",
 		"types-mediawiki": "^2.1.0",

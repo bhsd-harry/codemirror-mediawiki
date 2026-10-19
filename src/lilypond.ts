@@ -250,10 +250,7 @@ export const lilypond: StreamParser<State> = {
 			scoreFetch ??= (async () => {
 				const data: string[] = await (await fetch(`${wikiparse.CDN}/data/ext/score.json`)).json();
 				extData['score'] = new Set(data.flatMap(item => item.split('.')));
-				extCompletion['score'] = getCompletions(
-					data.filter(s => s.startsWith('\\')),
-					'keyword',
-				);
+				extCompletion['score'] = getCompletions(data.filter(s => s.startsWith('\\')));
 			})();
 		}
 		return {

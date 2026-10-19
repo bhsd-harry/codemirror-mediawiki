@@ -2,7 +2,7 @@ import {isUnderscore, getBCP47Variants} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
-export const tagModes = {
+export const tagModes = /* #__PURE__*/ (() => ({
 	...Object.fromEntries([
 		'onlyinclude',
 		'includeonly',
@@ -36,9 +36,7 @@ export const tagModes = {
 	maplink: 'jsonc',
 	mapframe: 'jsonc',
 	score: 'lilypond',
-} as const;
-
-export type MimeTypes = typeof tagModes[keyof typeof tagModes] | 'text/mediawiki';
+}))();
 
 const getDoubleUnderscore = (newSchema: Record<string, string>): Record<string, string> =>
 	Object.fromEntries(Object.entries(newSchema).map(([k, v]) => [isUnderscore(k) ? `__${k}__` : k, v]));

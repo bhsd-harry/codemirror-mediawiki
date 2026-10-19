@@ -3640,6 +3640,26 @@
 		"parsed": "<template-ground template-bracket>{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground convert-bracket>-{</><template-ground convert-flag>R</><template-ground convert-delimiter>|</><template-ground template>foo=bar</><template-ground convert-bracket>}-</><template-ground template-bracket>}}{{</><template-ground template-name pagename>1x</><template-ground template-delimiter>|</><template-ground convert-bracket>-{</><template-ground template>foo=bar</><template-ground convert-bracket>}-</><template-ground template-bracket>}}</>"
 	},
 	{
+		"desc": "SyntaxHighlight with line numbers",
+		"wikitext": "<syntaxhighlight lang=\"python\" line>\ndef quick_sort(arr):\n\tless = []\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "SyntaxHighlight with first line number",
+		"wikitext": "<syntaxhighlight lang=\"python\" line start=\"55\">\ndef quick_sort(arr):\n\tless = []\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line start=</><exttag-attribute-value>\"55\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "SyntaxHighlight with link anchors to each line",
+		"wikitext": "<syntaxhighlight lang=\"python\" line linelinks=\"example\">\ndef quick_sort(arr):\n\tless = []\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line linelinks=</><exttag-attribute-value>\"example\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
+		"desc": "SyntaxHighlight with marked lines",
+		"wikitext": "<syntaxhighlight lang=\"python\" line start=\"3\" highlight=\"1,5-7\">\ndef quick_sort(arr):\n\tless = []\n\tpivot_list = []\n\tmore = []\n\tif len(arr) <= 1:\n\t\treturn arr\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line start=</><exttag-attribute-value>\"3\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"1,5-7\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []\tpivot_list = []\tmore = []\tif len(arr) &lt;= 1:\t\treturn arr</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{
