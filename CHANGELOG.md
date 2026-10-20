@@ -1,11 +1,15 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 4.8.0
 
-*2026-10-19*
+*2026-10-21*
 
 **Added**
 
 - `Alt` + `Backspace`/`Alt` + `Delete` now deletes from the cursor to the start/end of the line on Windows
+
+**Fixed**
+
+- External links containing HTML comments in the MediaWiki mode
 
 **Changed**
 

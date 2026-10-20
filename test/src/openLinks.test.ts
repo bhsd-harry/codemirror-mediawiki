@@ -51,6 +51,8 @@ describe('openLinks', () => {
 		mockTest('[//c]', 1, 1, 'https://c', [1, 4]);
 		mockTest('[//c]', 1, -1);
 		mockTest('[//c]', 3, -1, 'https://c', [1, 4]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 1, 1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!--', 1, 1, 'https://dd', [1, 13]);
 	});
 	it('extlink', () => {
 		mockTest('[git://b b]', 8, -1, 'git://b', [1, 8]);
@@ -59,16 +61,34 @@ describe('openLinks', () => {
 		mockTest('[//c]', 4, -1, 'https://c', [1, 4]);
 		mockTest('[//c]', 4, 1);
 		mockTest('[//c]', 3, 1, 'https://c', [1, 4]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 4, -1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 12, 1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 13, -1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 21, 1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!-- -->d]', 22, -1, 'https://ddd', [1, 22]);
+		mockTest('[//d<!-- -->d<!--', 4, -1, 'https://dd', [1, 13]);
+		mockTest('[//d<!-- -->d<!--', 12, 1, 'https://dd', [1, 13]);
+		mockTest('[//d<!-- -->d<!--', 13, -1, 'https://dd', [1, 13]);
 	});
 	it('free-extlink-protocol', () => {
 		mockTest(' news:a', 1, 1, 'news:a', [1, 7]);
 		mockTest(' news:a', 1, -1);
 		mockTest(' news:a', 6, -1, 'news:a', [1, 7]);
+		mockTest('git://b<!-- -->b<!-- -->b', 1, 1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!--', 1, 1, 'git://bb', [0, 16]);
 	});
 	it('free-extlink', () => {
 		mockTest('git://b ', 7, -1, 'git://b', [0, 7]);
 		mockTest('git://b ', 7, 1);
 		mockTest('git://b ', 6, 1, 'git://b', [0, 7]);
+		mockTest('git://b<!-- -->b<!-- -->b', 7, -1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!-- -->b', 15, 1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!-- -->b', 16, -1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!-- -->b', 24, 1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!-- -->b', 25, -1, 'git://bbb', [0, 25]);
+		mockTest('git://b<!-- -->b<!--', 7, -1, 'git://bb', [0, 16]);
+		mockTest('git://b<!-- -->b<!--', 15, 1, 'git://bb', [0, 16]);
+		mockTest('git://b<!-- -->b<!--', 16, -1, 'git://bb', [0, 16]);
 	});
 	it('RFC', () => {
 		mockTest('RFC 1', 0, 1, 'https://datatracker.ietf.org/doc/html/rfc1', [0, 5]);

@@ -3660,6 +3660,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line start=</><exttag-attribute-value>\"3\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"1,5-7\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []\tpivot_list = []\tmore = []\tif len(arr) &lt;= 1:\t\treturn arr</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "Comment in external links",
+		"wikitext": "[//example<!-- -->.com]\n\nhttp://example<!-- -->.com",
+		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>example</><link-ground comment>&lt;!-- --&gt</><link-ground extlink>.com</><link-ground extlink-bracket>]</><free-extlink-protocol>http://</><free-extlink>example</><comment>&lt;!-- --&gt</><free-extlink>.com</>"
+	},
+	{
 		"desc": "badCharacters"
 	},
 	{

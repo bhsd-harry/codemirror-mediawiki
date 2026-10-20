@@ -1,11 +1,7 @@
 import {EditorView, Decoration} from '@codemirror/view';
 import {StateEffect, StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {
-	hasTag,
-	getTypes,
-	tokens,
-} from './config.js';
+import {hasTag, getTypes} from './config.js';
 import {
 	isMac,
 	linkCls,
@@ -15,6 +11,7 @@ import {
 import {commentTypes, getNeighborSelector} from './util.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
+import type {SyntaxNode} from '@lezer/common';
 import type {} from 'types-mediawiki';
 import type {CodeMirror6} from './codemirror';
 import type {TitleParser} from './token';
@@ -63,7 +60,7 @@ const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string 
 	if (!str) {
 		return range;
 	}
-	const url = state.sliceDoc(...range);
+	const url = state.sliceDoc(...range).replaceAll(/<!--.*?(?:$|-->)/gsu, '');
 	return url.startsWith('//') ? location.protocol + url : url;
 };
 
@@ -83,6 +80,21 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 	}
 	: undefined;
 
+const endOfExtlink = (node: SyntaxNode): number => {
+	let cur = node,
+		last = node;
+	while (cur.nextSibling) {
+		cur = cur.nextSibling;
+		const types = getTypes(cur.name);
+		if (hasTag(types, ['extlink', 'freeExtlink'])) {
+			last = cur;
+		} else if (!hasTag(types, 'comment')) {
+			break;
+		}
+	}
+	return last.to;
+};
+
 /**
  * @ignore
  * @test
@@ -100,12 +112,16 @@ export const getLinkParser = (
 		if (hasTag(node.name, 'linkTosection')) {
 			node = node.prevSibling!;
 		}
-		const {name, from, to, nextSibling, prevSibling} = node,
+		const {name, from, to, nextSibling} = node,
 			types = getTypes(name);
+		let {prevSibling} = node;
 		if (hasTag(types, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
-			return wrapURL(state, [from, nextSibling!.to], str);
+			return wrapURL(state, [from, endOfExtlink(nextSibling!)], str);
 		} else if (hasTag(types, ['extlink', 'freeExtlink'])) {
-			return wrapURL(state, [prevSibling!.from, to], str);
+			while (!hasTag(prevSibling!.name, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
+				({prevSibling} = prevSibling!);
+			}
+			return wrapURL(state, [prevSibling!.from, endOfExtlink(node)], str);
 		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);
 			if (link.startsWith('ISBN')) {
@@ -245,7 +261,7 @@ export const openLinks = (
 			((state, posAndSide, str) => {
 				const {pos} = posAndSide,
 					node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
-				if (node?.name === tokens.comment) { // eslint-disable-line unicorn/prefer-ternary
+				if (hasTag(node?.name, 'comment')) { // eslint-disable-line unicorn/prefer-ternary
 					return linkParserForComment(state, posAndSide, str as true);
 				}
 				return linkParser(state, posAndSide, str as true);

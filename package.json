@@ -95,7 +95,7 @@
 		"@bhsd/code-standard": "^5.0.0",
 		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/eslint-browserify": "^10.13.0",
-		"@bhsd/test-util": "^3.2.1",
+		"@bhsd/test-util": "^3.3.0",
 		"@codemirror/autocomplete": "^6.20.3",
 		"@codemirror/commands": "^6.11.1",
 		"@codemirror/language": "^6.13.1",

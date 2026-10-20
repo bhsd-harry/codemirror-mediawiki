@@ -850,8 +850,7 @@ export class MediaWiki {
 					break;
 				case '<': {
 					if (stream.match('!--')) { // comment
-						chain(state, this.inComment);
-						return makeLocalTagStyle('comment', state);
+						return this.eatComment(state);
 					}
 					const isCloseTag = Boolean(stream.eat('/')),
 						mt = stream.match(/^([a-z][^\s/>]*)>?/iu, false);
@@ -1009,7 +1008,7 @@ export class MediaWiki {
 	eatExternalLinkProtocol({length}: string, free = true): Tokenizer {
 		return (stream, state) => {
 			stream.pos += length;
-			state.tokenize = free ? this.eatFreeExternalLink : this.inExternalLink();
+			state.tokenize = free ? this.inFreeExternalLink : this.inExternalLink();
 			return free
 				? makeTagStyle('freeExtlinkProtocol', state)
 				: makeLocalTagStyle('extlinkProtocol', state);
@@ -1038,19 +1037,28 @@ export class MediaWiki {
 					: this.eatWikiText('extlinkText')(stream, state);
 			} else if (stream.match(getExtLinkRegex(pipe))) {
 				return makeLocalTagStyle('extlink', state);
+			} else if (stream.match('<!--')) {
+				return this.eatComment(state);
 			}
 			state.tokenize = this.inExternalLink(true);
 			return '';
 		};
 	}
 
-	eatFreeExternalLink(this: void, stream: StringStream, state: State): Style {
-		const mt = stream.match(freeRegex[0])!;
-		if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
-			stream.match(freeRegex[1]);
-		}
-		pop(state);
-		return makeTagStyle('freeExtlink', state);
+	@getTokenizer
+	get inFreeExternalLink(): Tokenizer {
+		return (stream, state) => {
+			const mt = stream.match(freeRegex[0])!;
+			if (!stream.eol() && mt[0].includes('(') && getPunctuations().includes(stream.peek()!)) {
+				stream.match(freeRegex[1]);
+			}
+			if (stream.match('<!--', false)) {
+				chain(state, this.inComment);
+			} else {
+				pop(state);
+			}
+			return makeTagStyle('freeExtlink', state);
+		};
 	}
 
 	@getTokenizer
@@ -1365,6 +1373,11 @@ export class MediaWiki {
 		return this.inStr('-->', 'comment', 'comment');
 	}
 
+	eatComment(state: State): string {
+		chain(state, this.inComment);
+		return makeLocalTagStyle('comment', state);
+	}
+
 	eatExtTag(tagname: string, isCloseTag: boolean, state: State): string {
 		if (isCloseTag) {
 			chain(state, this.inStr('>', 'error'));
@@ -1628,8 +1641,7 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('templatevariableBracket', state, 'nVar');
 			} else if (stream.match('<!--')) {
-				chain(state, this.inComment);
-				return makeLocalTagStyle('comment', state);
+				return this.eatComment(state);
 			} else if (pos === 0 && sol) {
 				state.nVar--;
 				pop(state);
@@ -1731,8 +1743,7 @@ export class MediaWiki {
 					'nExt',
 				);
 			} else if (stream.match('<!--')) {
-				chain(state, this.inComment);
-				return makeLocalTagStyle('comment', state);
+				return this.eatComment(state);
 			} else if (sol) {
 				state.nExt--;
 				pop(state);
@@ -1799,8 +1810,7 @@ export class MediaWiki {
 				pop(state);
 				return makeLocalTagStyle('templateBracket', state, 'nTemplate');
 			} else if (stream.match('<!--')) {
-				chain(state, this.inComment);
-				return makeLocalTagStyle('comment', state);
+				return this.eatComment(state);
 			} else if (
 				stream.match(/^<\/?onlyinclude>/u)
 				|| stream.match(
@@ -2216,8 +2226,7 @@ export class MediaWiki {
 		return (stream, state) => {
 			if (tag === 'ref') {
 				if (stream.match('<!--')) {
-					chain(state, this.inComment);
-					return makeLocalTagStyle('comment', state);
+					return this.eatComment(state);
 				} else if (stream.match(/^\{{3}(?!\{|[^{}]*\}\}(?!\}))\s*/u)) {
 					chain(state, this.inVariable());
 					return tokens.templatevariableBracket;
