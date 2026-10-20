@@ -1,15 +1,13 @@
 import {EditorView, Decoration} from '@codemirror/view';
 import {StateEffect, StateField} from '@codemirror/state';
 import {ensureSyntaxTree} from '@codemirror/language';
-import {
-	hasTag,
-	getTypes,
-} from './config.js';
+import {hasTag, getTypes} from './config.js';
 import {
 	isMac,
 } from './constants.js';
 import type {Extension, EditorState} from '@codemirror/state';
 import type {DecorationSet} from '@codemirror/view';
+import type {SyntaxNode} from '@lezer/common';
 import type {ConfigData} from 'wikiparser-node';
 
 declare type ISBNParser = (link: string) => string;
@@ -43,7 +41,7 @@ const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string 
 	if (!str) {
 		return range;
 	}
-	const url = state.sliceDoc(...range);
+	const url = state.sliceDoc(...range).replaceAll(/<!--.*?(?:$|-->)/gsu, '');
 	return url.startsWith('//') ? location.protocol + url : url;
 };
 
@@ -62,6 +60,21 @@ export const getISBNParser = (articlePath?: string): ISBNParser | undefined => a
 	}
 	: undefined;
 
+const endOfExtlink = (node: SyntaxNode): number => {
+	let cur = node,
+		last = node;
+	while (cur.nextSibling) {
+		cur = cur.nextSibling;
+		const types = getTypes(cur.name);
+		if (hasTag(types, ['extlink', 'freeExtlink'])) {
+			last = cur;
+		} else if (!hasTag(types, 'comment')) {
+			break;
+		}
+	}
+	return last.to;
+};
+
 /**
  * @ignore
  */
@@ -77,12 +90,16 @@ export const getLinkParser = (
 		if (hasTag(node.name, 'linkTosection')) {
 			node = node.prevSibling!;
 		}
-		const {name, from, to, nextSibling, prevSibling} = node,
+		const {name, from, to, nextSibling} = node,
 			types = getTypes(name);
+		let {prevSibling} = node;
 		if (hasTag(types, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
-			return wrapURL(state, [from, nextSibling!.to], str);
+			return wrapURL(state, [from, endOfExtlink(nextSibling!)], str);
 		} else if (hasTag(types, ['extlink', 'freeExtlink'])) {
-			return wrapURL(state, [prevSibling!.from, to], str);
+			while (!hasTag(prevSibling!.name, ['extlinkProtocol', 'freeExtlinkProtocol'])) {
+				({prevSibling} = prevSibling!);
+			}
+			return wrapURL(state, [prevSibling!.from, endOfExtlink(node)], str);
 		} else if (hasTag(types, 'magicLink')) {
 			const link = state.sliceDoc(from, to);
 			if (link.startsWith('ISBN')) {

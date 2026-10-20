@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 0.12.2
+
+*2026-10-21*
+
+**Fixed**
+
+- External links containing HTML comments
+
 ## 0.12.1
 
 *2026-10-18*
