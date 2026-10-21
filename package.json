@@ -57,7 +57,7 @@
 		"@bhsd/stylelint-util": "^1.1.0",
 		"culori": "^4.0.2",
 		"marked": "^18.1.1",
-		"wikiparser-node": "^1.48.0"
+		"wikiparser-node": "^1.48.1"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^5.0.0",

@@ -13,6 +13,9 @@ name: CodeQL
 
 on:
   push:
+    branches:
+      - npm
+      - wikitext
     paths:
       - 'src/*.ts'
   pull_request:
