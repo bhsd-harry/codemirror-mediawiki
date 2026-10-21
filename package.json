@@ -89,7 +89,7 @@
 		"@bhsd/lezer-json": "^2.3.0",
 		"@bhsd/stylelint-util": "^1.1.0",
 		"culori": "^4.0.2",
-		"wikiparser-node": "^1.48.0"
+		"wikiparser-node": "^1.48.1"
 	},
 	"devDependencies": {
 		"@bhsd/code-standard": "^5.0.0",
