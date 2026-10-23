@@ -102,24 +102,19 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		// eslint-disable-next-line @typescript-eslint/require-await
-		return async (context): Promise<CompletionResult | null> => {
+		return (context): CompletionResult | null => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolveInner(pos, -1),
-				{
-					name: n,
-					prevSibling,
-					from: f,
-				} = node,
+				{name: n, prevSibling, from: f} = node,
 				types = getTypes(n),
 				isParserFunction = hasTag(types, 'parserfunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
-			const obj =
-				{
-					options: this.functionSynonyms,
-					validFor: /^[^|{}<>[\]#]*$/u,
-				};
+			const obj = {
+				options: this.functionSynonyms,
+				validFor: /^[^|{}<>[\]#:]*$/u,
+			};
+			// 模板名
 			if (isParserFunction || hasTag(types, 'templateName')) {
 				return search.includes(':')
 					? null
