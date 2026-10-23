@@ -42,12 +42,15 @@ import {
 import type {
 	TagStyle,
 } from '@codemirror/language';
+import type {EditorState} from '@codemirror/state';
 import type {
+	CompletionContext,
 	CompletionSource,
 	Completion,
 	CompletionResult,
 	CompletionInfo,
 } from '@codemirror/autocomplete';
+import type {SyntaxNode} from '@lezer/common';
 import type {StyleSpec} from 'style-mod';
 import type {Marked} from 'marked';
 import type {
@@ -56,6 +59,22 @@ import type {
 } from './token';
 import type {TagName} from './config';
 import type {CodeMirror6} from './codemirror';
+
+declare interface CompletionData {
+	state: EditorState;
+	name: string;
+	types: Set<string>;
+	prevSibling: SyntaxNode | null;
+	pos: number;
+	to: number;
+	start: number;
+	search: string;
+	explicit: boolean;
+	isTemplate: boolean;
+	isParserFunction: boolean;
+	needAPI: boolean;
+	node: SyntaxNode;
+}
 
 declare const marked: Marked;
 
@@ -139,6 +158,30 @@ const updateItems = (
 			});
 		}
 	}
+};
+
+const getDataForCompletion = (context: CompletionContext): CompletionData => {
+	const {state, pos, explicit} = context,
+		node = syntaxTree(state).resolveInner(pos, -1),
+		{name, prevSibling, from, to} = node,
+		types = getTypes(name),
+		isParserFunction = hasTag(types, 'parserfunctionName'),
+		/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(from, pos).trimStart();
+	return {
+		state,
+		name,
+		types,
+		prevSibling,
+		pos,
+		to,
+		start: pos - search.length,
+		search,
+		explicit,
+		isTemplate: isParserFunction || hasTag(types, 'templateName'),
+		isParserFunction,
+		needAPI: explicit || isWMF,
+		node,
+	};
 };
 
 /** @test */
@@ -370,21 +413,26 @@ export class FullMediaWiki extends MediaWiki {
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
 		return (context): CompletionResult | null => {
-			const {state, pos, explicit} = context,
-				node = syntaxTree(state).resolveInner(pos, -1),
-				{name: n, prevSibling, from: f} = node,
-				types = getTypes(n),
-				isParserFunction = hasTag(types, 'parserfunctionName'),
-				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
-				start = pos - search.length;
-			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
-			if (explicit || isWMF || isParserFunction && search.includes('#')) {
+			const {
+				state,
+				name: n,
+				types,
+				prevSibling,
+				pos,
+				start,
+				search,
+				explicit,
+				isTemplate,
+				isParserFunction,
+				needAPI,
+			} = getDataForCompletion(context);
+			if (needAPI || isParserFunction && search.includes('#')) {
 				const obj = {
 					options: this.functionSynonyms,
 					validFor: /^[^|{}<>[\]#:]*$/u,
 				};
 				// 模板名
-				if (isParserFunction || hasTag(types, 'templateName')) {
+				if (isTemplate) {
 					return search.includes(':')
 						? null
 						: {
@@ -548,22 +596,24 @@ export class FullMediaWiki extends MediaWiki {
 	/** 利用API提供的自动补全 */
 	get completionApi(): CompletionSource {
 		return async (context): Promise<CompletionResult | null> => {
-			const {state, pos, explicit} = context,
-				node = syntaxTree(state).resolveInner(pos, -1),
-				{
-					name: n,
-					prevSibling,
-					from: f,
-					to: t,
-				} = node,
-				types = getTypes(n),
-				isParserFunction = hasTag(types, 'parserfunctionName'),
-				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
-				start = pos - search.length;
+			const {
+				state,
+				name: n,
+				types,
+				prevSibling,
+				pos,
+				to: t,
+				start,
+				search,
+				explicit,
+				isTemplate,
+				needAPI,
+				node,
+			} = getDataForCompletion(context);
 			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
-			if (explicit || isWMF) {
+			if (needAPI) {
 				// 模板名
-				if (isParserFunction || hasTag(types, 'templateName')) {
+				if (isTemplate) {
 					const {options, offset} = await this.#linkSuggest(search, 10, 'type') ?? {};
 					return options?.length
 						? {

@@ -37,7 +37,7 @@ Object.assign(globalThis, {
 
 const mockTest = (dialect?: Dialect): (doc: string, result: CompletionResult | null) => Promise<void> => {
 	const lang = css(dialect),
-		[source] = createState('*', lang).languageDataAt<CompletionSource>('autocomplete', 0);
+		[source] = createState('*', lang).languageDataAt<CompletionSource>('autocomplete', 0, 0);
 	// eslint-disable-next-line require-unicode-regexp, regexp/no-empty-alternative
 	return autocompletionTest(source!, lang, /^(\w[\w-]*|-\w[\w-]*|)$/);
 };

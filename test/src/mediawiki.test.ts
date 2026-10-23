@@ -1,11 +1,20 @@
 import {describe, it} from '@bhsd/test-util/mocha';
-import {FullMediaWiki, apply, applyDisplayLabel} from '../../dist/mediawiki.js';
+import {FullMediaWiki, applyLabel, applyDisplayLabel} from '../../dist/mediawiki.js';
 import {mwConfig, autocompletionTest, createDispatchableView} from './util.js';
 import type {Completion, CompletionResult} from '@codemirror/autocomplete';
 
 const mediawiki = new FullMediaWiki(mwConfig);
 
-const mockTest = autocompletionTest(mediawiki.completionSource);
+const completionTest = autocompletionTest(mediawiki.completionSource),
+	apiTest = autocompletionTest(mediawiki.completionApi),
+	mockTest = async (
+		doc: string,
+		result?: CompletionResult | null,
+		apiResult?: CompletionResult | null,
+	): Promise<void> => {
+		await completionTest(doc, result);
+		await apiTest(doc, apiResult);
+	};
 
 const applyFunctionTest = (applyFunction: Exclude<Completion['apply'], string | undefined>) => async (
 	doc: string,
@@ -20,7 +29,7 @@ const applyFunctionTest = (applyFunction: Exclude<Completion['apply'], string | 
 	return view.dispatched;
 };
 
-const applyTest = applyFunctionTest(apply),
+const applyTest = applyFunctionTest(applyLabel),
 	applyDisplayLabelTest = applyFunctionTest(applyDisplayLabel);
 
 const completion: Omit<CompletionResult, 'from'> = {
@@ -30,7 +39,7 @@ const completion: Omit<CompletionResult, 'from'> = {
 		{label: 'a (user)', type: 'redirect'},
 		{label: 'a (disambiguation)', type: 'text', detail: '↳ Help:a'},
 	],
-	validFor: /^[^|{}<>[\]#]*$/u,
+	filter: false,
 };
 
 describe('autocompletion', () => {
@@ -44,9 +53,13 @@ describe('autocompletion', () => {
 					{label: 'fullurle', type: 'function'},
 					{label: 'FULLPAGENAME', type: 'constant'},
 					{label: 'FULLPAGENAMEE', type: 'constant'},
-					{label: 'full', type: 'type'},
 				],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				validFor: /^[^|{}<>[\]#:]*$/u,
+			},
+			{
+				from: 3,
+				options: [{label: 'full', type: 'type'}],
+				filter: false,
 			},
 		);
 		await mockTest(
@@ -54,11 +67,12 @@ describe('autocompletion', () => {
 			{
 				from: 3,
 				options: [{label: '#switch', type: 'function'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				validFor: /^[^|{}<>[\]#:]*$/u,
 			},
 		);
 		await mockTest(
 			'{{ :a',
+			null,
 			{
 				from: 4,
 				...completion,
@@ -66,17 +80,19 @@ describe('autocompletion', () => {
 		);
 		await mockTest(
 			'{{ help:a',
+			null,
 			{
 				from: 8,
 				options: [{label: 'a (help)', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
-		await mockTest('{{ >', null);
+		await mockTest('{{ >');
 	});
 	it('page', async () => {
 		await mockTest(
 			'{{#ifexist: a',
+			null,
 			{
 				from: 12,
 				...completion,
@@ -84,66 +100,74 @@ describe('autocompletion', () => {
 		);
 		await mockTest(
 			'{{filepath: a',
+			null,
 			{
 				from: 12,
 				options: [{label: 'a (file)', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'{{int: a',
+			null,
 			{
 				from: 7,
 				options: [{label: 'a (mediawiki)', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'{{raw: a',
+			null,
 			{
 				from: 7,
 				options: [{label: 'a', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'{{#widget: a',
+			null,
 			{
 				from: 11,
 				options: [{label: 'a (widget)', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'{{#invoke: a',
+			null,
 			{
 				from: 11,
 				options: [{label: 'a (module)', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'[[ a',
+			null,
 			{
 				from: 3,
 				...completion,
 			},
 		);
-		await mockTest('[[ >', null);
+		await mockTest('[[ >');
 		await mockTest(
 			'<gallery> a',
+			null,
 			{
 				from: 10,
 				options: [{label: 'a', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 		await mockTest(
 			'<templatestyles src="a',
+			null,
 			{
 				from: 21,
 				options: [{label: 'a', type: 'text'}],
-				validFor: /^[^|{}<>[\]#]*$/u,
+				filter: false,
 			},
 		);
 	});
@@ -156,6 +180,7 @@ describe('autocompletion', () => {
 		] as const;
 		await mockTest(
 			'{{template|',
+			null,
 			{
 				from: 11,
 				options: [
@@ -193,6 +218,7 @@ describe('autocompletion', () => {
 		);
 		await mockTest(
 			'{{template| a',
+			null,
 			{
 				from: 12,
 				options: [
@@ -213,7 +239,7 @@ describe('autocompletion', () => {
 				validFor: /^[^|{}=]*$/u,
 			},
 		);
-		await mockTest('{{template| p=', null);
+		await mockTest('{{template| p=');
 	});
 	it('tag attribute', async () => {
 		await mockTest(

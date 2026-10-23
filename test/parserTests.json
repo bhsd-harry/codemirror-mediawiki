@@ -3660,6 +3660,11 @@
 		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"python\"</><exttag-attribute ext-syntaxhighlight> line start=</><exttag-attribute-value>\"3\"</><exttag-attribute ext-syntaxhighlight> highlight=</><exttag-attribute-value>\"1,5-7\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>def quick_sort(arr):\tless = []\tpivot_list = []\tmore = []\tif len(arr) &lt;= 1:\t\treturn arr</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
 	},
 	{
+		"desc": "SyntaxHighlight for Vue SFC",
+		"wikitext": "<syntaxhighlight lang=\"vue\">\n<template>\n    <p v-i18n-html=\"fooOrBarMsg\"></p>\n</template>\n<script>\nconst { defineComponent } = require( 'vue' );\nmodule.exports = defineComponent( {\n    computed: {\n        fooOrBarMsg: function () {\n            // Note that this returns a Message object, not a string\n            return mw.message( this.foo ? 'foo-msg' : 'bar-msg' )\n                .params( [ this.baz, this.quux ] );\n        }\n    }\n} );\n</script>\n</syntaxhighlight>",
+		"parsed": "<exttag-bracket>&lt;</><exttag-name>syntaxhighlight </><exttag-attribute ext-syntaxhighlight>lang=</><exttag-attribute-value>\"vue\"</><exttag-bracket>&gt</><tag-syntaxhighlight exttag>&lt;template&gt    &lt;p v-i18n-html=\"fooOrBarMsg\"&gt&lt;/p&gt&lt;/template&gt&lt;script&gtconst { defineComponent } = require( 'vue' );module.exports = defineComponent( {    computed: {        fooOrBarMsg: function () {            // Note that this returns a Message object, not a string            return mw.message( this.foo ? 'foo-msg' : 'bar-msg' )                .params( [ this.baz, this.quux ] );        }    }} );&lt;/script&gt</><exttag-bracket>&lt;/</><exttag-name>syntaxhighlight</><exttag-bracket>&gt</>"
+	},
+	{
 		"desc": "Comment in external links",
 		"wikitext": "[//example<!-- -->.com]\n\nhttp://example<!-- -->.com",
 		"parsed": "<link-ground extlink-bracket>[</><link-ground extlink-protocol>//</><link-ground extlink>example</><link-ground comment>&lt;!-- --&gt</><link-ground extlink>.com</><link-ground extlink-bracket>]</><free-extlink-protocol>http://</><free-extlink>example</><comment>&lt;!-- --&gt</><free-extlink>.com</>"

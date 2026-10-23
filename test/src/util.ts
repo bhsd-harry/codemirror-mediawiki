@@ -106,7 +106,7 @@ export const createDispatchableView = (
 };
 
 export const autocompletionTest = (source: CompletionSource, lang?: LanguageSupport, validFor?: RegExp) =>
-	async (doc: string, result: CompletionResult | null): Promise<void> => {
+	async (doc: string, result: CompletionResult | null = null): Promise<void> => {
 		const state = createState(doc, lang),
 			context = new CompletionContext(state, doc.length, true),
 			completion = await source(context);

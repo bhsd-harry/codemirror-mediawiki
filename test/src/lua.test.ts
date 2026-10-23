@@ -12,7 +12,7 @@ const nil = [
 		{label: 'not', type: 'keyword'},
 	],
 	lang = lua(),
-	[source] = createState('', lang).languageDataAt<CompletionSource>('autocomplete', 0);
+	[source] = createState('', lang).languageDataAt<CompletionSource>('autocomplete', 0, 0);
 
 const mockTest = autocompletionTest(source!, lang, /^\w*$/u);
 
@@ -52,14 +52,14 @@ const stringFullTest = (doc: string, result: [number, string, string] | null): v
 
 describe('Lua autocompletion', () => {
 	it('comment', async () => {
-		await mockTest('-- a', null);
-		await mockTest('--[[\na', null);
+		await mockTest('-- a');
+		await mockTest('--[[\na');
 	});
 	it('string', async () => {
-		await mockTest('"a', null);
-		await mockTest("'a", null);
-		await mockTest('[[a', null);
-		await mockTest('[=[a', null);
+		await mockTest('"a');
+		await mockTest("'a");
+		await mockTest('[[a');
+		await mockTest('[=[a');
 	});
 	it('object access', async () => {
 		await mockTest(
