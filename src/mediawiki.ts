@@ -23,15 +23,52 @@ import type {
 	StreamParser,
 	Language,
 } from '@codemirror/language';
+import type {EditorState} from '@codemirror/state';
 import type {
+	CompletionContext,
 	CompletionSource,
 	Completion,
 	CompletionResult,
 } from '@codemirror/autocomplete';
+import type {SyntaxNode} from '@lezer/common';
 import type {
 	MwConfig,
 } from './token';
 import type {TagName} from './config';
+
+declare interface CompletionData {
+	state: EditorState;
+	name: string;
+	types: Set<string>;
+	prevSibling: SyntaxNode | null;
+	pos: number;
+	to: number;
+	start: number;
+	search: string;
+	explicit: boolean;
+	isTemplate: boolean;
+}
+
+const getDataForCompletion = (context: CompletionContext): CompletionData => {
+	const {state, pos, explicit} = context,
+		node = syntaxTree(state).resolveInner(pos, -1),
+		{name, prevSibling, from, to} = node,
+		types = getTypes(name),
+		isParserFunction = hasTag(types, 'parserfunctionName'),
+		/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(from, pos).trimStart();
+	return {
+		state,
+		name,
+		types,
+		prevSibling,
+		pos,
+		to,
+		start: pos - search.length,
+		search,
+		explicit,
+		isTemplate: isParserFunction || hasTag(types, 'templateName'),
+	};
+};
 
 export class FullMediaWiki extends MediaWiki {
 	declare readonly extTags;
@@ -103,19 +140,23 @@ export class FullMediaWiki extends MediaWiki {
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
 		return (context): CompletionResult | null => {
-			const {state, pos, explicit} = context,
-				node = syntaxTree(state).resolveInner(pos, -1),
-				{name: n, prevSibling, from: f} = node,
-				types = getTypes(n),
-				isParserFunction = hasTag(types, 'parserfunctionName'),
-				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
-				start = pos - search.length;
+			const {
+				state,
+				name: n,
+				types,
+				prevSibling,
+				pos,
+				start,
+				search,
+				explicit,
+				isTemplate,
+			} = getDataForCompletion(context);
 			const obj = {
 				options: this.functionSynonyms,
 				validFor: /^[^|{}<>[\]#:]*$/u,
 			};
 			// 模板名
-			if (isParserFunction || hasTag(types, 'templateName')) {
+			if (isTemplate) {
 				return search.includes(':')
 					? null
 					: {
