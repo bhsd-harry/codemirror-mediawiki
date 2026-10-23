@@ -10,6 +10,7 @@
 **Fixed**
 
 - External links containing HTML comments in the MediaWiki mode
+- The [autocompletion](./README.md#autocompletion) extension may fail to suggest page names when language conversion is involved on a MediaWiki site
 
 **Changed**
 

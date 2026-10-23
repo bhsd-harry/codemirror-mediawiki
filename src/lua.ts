@@ -483,7 +483,7 @@ const getSource = (linkSuggest?: ApiSuggest<LinkSuggestion>, titleParser?: Title
 						label: useUnderscore(label, underscore),
 						type: 'text',
 					})),
-					...isWMF ? {filter: false} : {validFor: /^[^|{}<>[\]#]*$/u},
+					filter: false,
 				};
 		}
 		return null;

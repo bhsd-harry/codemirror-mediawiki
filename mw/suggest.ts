@@ -1,4 +1,3 @@
-import {isWMF} from '../src/constants';
 import {getSubpageLevel} from '../src/util';
 import {templateData, getParentDir} from './util';
 import type {ApiQueryParams, TemplateDataApiTemplateDataParams} from 'types-mediawiki-api';
@@ -54,7 +53,6 @@ const linkSuggestFactory = (api: mw.Api, title: string): ApiSuggest<LinkSuggesti
 							generator: 'prefixsearch',
 							gpssearch,
 							gpsnamespace,
-							...!isWMF && {gpslimit: 'max'},
 							...!subpage && {redirects: true},
 							...contentmodel && {prop: 'info'},
 						},

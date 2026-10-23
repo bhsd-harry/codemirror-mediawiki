@@ -91,7 +91,7 @@ export const applyDisplayLabel = (view: EditorView, completion: Completion, from
  * @param to 结束位置
  * @test
  */
-export const apply = (view: EditorView, completion: Completion, from: number, to: number): void => {
+export const applyLabel = (view: EditorView, completion: Completion, from: number, to: number): void => {
 	const {label, info} = completion;
 	let {displayLabel = label} = completion,
 		selection;
@@ -369,121 +369,33 @@ export class FullMediaWiki extends MediaWiki {
 
 	/** 自动补全魔术字和标签名 */
 	get completionSource(): CompletionSource {
-		return async (context): Promise<CompletionResult | null> => {
+		return (context): CompletionResult | null => {
 			const {state, pos, explicit} = context,
 				node = syntaxTree(state).resolveInner(pos, -1),
-				{
-					name: n,
-					prevSibling,
-					from: f,
-					to: t,
-				} = node,
+				{name: n, prevSibling, from: f} = node,
 				types = getTypes(n),
 				isParserFunction = hasTag(types, 'parserfunctionName'),
 				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
 				start = pos - search.length;
 			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
 			if (explicit || isWMF || isParserFunction && search.includes('#')) {
-				const obj =
-					!isWMF &&
-					{
-						validFor: /^[^|{}<>[\]#]*$/u,
-					};
+				const obj = {
+					options: this.functionSynonyms,
+					validFor: /^[^|{}<>[\]#:]*$/u,
+				};
 				// 模板名
 				if (isParserFunction || hasTag(types, 'templateName')) {
-					const options = search.includes(':') ? [] : [...this.functionSynonyms],
-						suggestions = await this.#linkSuggest(search, 10, 'type')
-							?? {offset: 0, options: []};
-					options.push(
-						...suggestions.options.map((option): Completion => ({...option, apply: applyDisplayLabel})),
-					);
-					return options.length === 0
+					return search.includes(':')
 						? null
 						: {
-							from: start + suggestions.offset,
-							options,
+							from: start,
 							...obj,
 						};
 				} else if (explicit && hasTag(types, 'templateBracket') && context.matchBefore(/\{\{$/u)) {
 					return {
 						from: pos,
-						options: this.functionSynonyms,
 						...obj,
 					};
-				}
-				// 页面名
-				const isPage = hasTag(types, 'pagename'),
-					isPageFunc = isPage && hasTag(types, 'parserfunction') || 0,
-					isTemplateStyles = isPage && hasTag(types, 'exttagAttributeValue');
-				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPagename')) {
-					if (!this.config.linkSuggest) {
-						return null;
-					}
-					const isLink = isWikiLink(n);
-					let prefix = '',
-						ns = 0,
-						contentmodel: string | undefined;
-					if (isPageFunc) {
-						ns = Number(
-							[...types].find(type => type.startsWith('mw-function-'))!.slice(12),
-						);
-						if (ns !== 10) {
-							prefix = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces];
-							if (prefix === 'Module:') {
-								contentmodel = 'Scribunto';
-							}
-						}
-					} else if (isTemplateStyles) {
-						ns = this.config.templateStylesDefaultNamespace ?? 10;
-						contentmodel = 'sanitized-css';
-					} else if (!isLink && hasTag(types, 'mw-tag-gallery' as TagName)) {
-						ns = 6;
-					}
-					const suggestions = await this.#linkSuggest(prefix + search, ns, undefined, contentmodel);
-					if (!suggestions) {
-						return null;
-					} else if (!isPageFunc && !isTemplateStyles && isLink) {
-						suggestions.options = suggestions.options.map((option): Completion => ({...option, apply}));
-					} else {
-						suggestions.options = suggestions.options
-							.map((option): Completion => ({...option, apply: applyDisplayLabel}));
-					}
-					return {
-						// eslint-disable-next-line unicorn/explicit-length-check
-						from: start + suggestions.offset - (isPageFunc && prefix.length),
-						options: suggestions.options,
-						...isWMF && {filter: false},
-						...obj,
-					};
-				}
-			}
-			// 需要TemplateData API的建议，只在显式触发时提供
-			if (
-				this.config.paramSuggest
-				&& (explicit || this.templatedata)
-				&& this.tags.includes('templatedata')
-			) {
-				const isArgument = hasTag(types, 'templateArgumentName'),
-					prevIsDelimiter = hasTag(prevSibling?.name, 'templateDelimiter'),
-					isDelimiter = hasTag(types, 'templateDelimiter')
-						|| hasTag(types, 'templateBracket') && prevIsDelimiter;
-				if (
-					isDelimiter
-					|| isArgument && !search.includes('=')
-					|| prevIsDelimiter && hasTag(types, 'template')
-				) {
-					const [page] = findTemplateName(state, node);
-					if (page) {
-						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
-							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
-						if (suggestions?.options.length) {
-							return {
-								from: isDelimiter ? pos : start + suggestions.offset,
-								options: suggestions.options,
-								validFor: /^[^|{}=]*$/u,
-							};
-						}
-					}
 				}
 			}
 			const isTagName = hasTag(types, ['htmltagName', 'exttagName']),
@@ -627,6 +539,109 @@ export class FullMediaWiki extends MediaWiki {
 						options: this.protocols,
 						validFor: /^[a-z:/]*$/iu,
 					};
+				}
+			}
+			return null;
+		};
+	}
+
+	/** 利用API提供的自动补全 */
+	get completionApi(): CompletionSource {
+		return async (context): Promise<CompletionResult | null> => {
+			const {state, pos, explicit} = context,
+				node = syntaxTree(state).resolveInner(pos, -1),
+				{
+					name: n,
+					prevSibling,
+					from: f,
+					to: t,
+				} = node,
+				types = getTypes(n),
+				isParserFunction = hasTag(types, 'parserfunctionName'),
+				/** 开头不包含` `，但可能包含`_` */ search = state.sliceDoc(f, pos).trimStart(),
+				start = pos - search.length;
+			// 需要opensearch API的建议，只在显式触发时或WMF网站上提供
+			if (explicit || isWMF) {
+				// 模板名
+				if (isParserFunction || hasTag(types, 'templateName')) {
+					const {options, offset} = await this.#linkSuggest(search, 10, 'type') ?? {};
+					return options?.length
+						? {
+							from: start + offset!,
+							options: options.map((option): Completion => ({...option, apply: applyDisplayLabel})),
+							filter: false,
+						}
+						: null;
+				}
+				// 页面名
+				const isPage = hasTag(types, 'pagename'),
+					isPageFunc = isPage && hasTag(types, 'parserfunction') || 0,
+					isTemplateStyles = isPage && hasTag(types, 'exttagAttributeValue');
+				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPagename')) {
+					if (!this.config.linkSuggest) {
+						return null;
+					}
+					const isLink = isWikiLink(n);
+					let prefix = '',
+						ns = 0,
+						contentmodel: string | undefined;
+					if (isPageFunc) {
+						ns = Number(
+							[...types].find(type => type.startsWith('mw-function-'))!.slice(12),
+						);
+						if (ns !== 10) {
+							prefix = autocompleteNamespaces[ns as keyof typeof autocompleteNamespaces];
+							if (prefix === 'Module:') {
+								contentmodel = 'Scribunto';
+							}
+						}
+					} else if (isTemplateStyles) {
+						ns = this.config.templateStylesDefaultNamespace ?? 10;
+						contentmodel = 'sanitized-css';
+					} else if (!isLink && hasTag(types, 'mw-tag-gallery' as TagName)) {
+						ns = 6;
+					}
+					const suggestions = await this.#linkSuggest(prefix + search, ns, undefined, contentmodel);
+					if (!suggestions) {
+						return null;
+					}
+					const {options, offset} = suggestions,
+						apply = !isPageFunc && !isTemplateStyles && isLink ? applyLabel : applyDisplayLabel;
+					return {
+						// eslint-disable-next-line unicorn/explicit-length-check
+						from: start + offset - (isPageFunc && prefix.length),
+						options: options.map((option): Completion => ({...option, apply})),
+						filter: false,
+					};
+				}
+			}
+			// 需要TemplateData API的建议，只在显式触发时提供
+			if (
+				this.config.paramSuggest
+				&& (explicit || this.templatedata)
+				&& this.tags.includes('templatedata')
+			) {
+				const isArgument = hasTag(types, 'templateArgumentName'),
+					prevIsDelimiter = hasTag(prevSibling?.name, 'templateDelimiter'),
+					isDelimiter = hasTag(types, 'templateDelimiter')
+						|| hasTag(types, 'templateBracket') && prevIsDelimiter;
+				if (
+					isDelimiter
+					|| isArgument && !search.includes('=')
+					|| prevIsDelimiter && hasTag(types, 'template')
+				) {
+					const [page] = findTemplateName(state, node);
+					if (page) {
+						const equal = isArgument && state.sliceDoc(pos, t).trim() === '=' ? '' : '=',
+							suggestions = await this.#paramSuggest(isDelimiter ? '' : search, page, equal);
+						if (suggestions?.options.length) {
+							return {
+								from: isDelimiter ? pos : start + suggestions.offset,
+								options: suggestions.options,
+								validFor: /^[^|{}=]*$/u,
+							};
+						}
+					}
 				}
 			}
 			return null;
@@ -858,6 +873,7 @@ export const mediawikiBase = (
 		getHighlightExtension(mode.getTagStyles()),
 		wikiTheme,
 		lang.data.of({autocomplete: mode.completionSource}),
+		lang.data.of({autocomplete: mode.completionApi}),
 		getFoldService(myService),
 		getMarkPlugin(markLinkBasic((_, {name}) => commentTypes.test(name)), cm),
 	]);
