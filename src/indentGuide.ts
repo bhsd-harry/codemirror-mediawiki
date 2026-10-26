@@ -33,8 +33,8 @@ export default (): Extension => [
 					if (f !== view.lineBlockAt(f).from) {
 						// 跳过被折叠的行
 					} else if (text.trim()) {
-						const width = (view.coordsAtPos(f + numLeadingSpaces(text))?.left ?? NaN)
-							- (view.coordsAtPos(f)?.left ?? NaN)
+						const width = (view.coordsAtPos(f + numLeadingSpaces(text), -1)?.left ?? NaN)
+							- (view.coordsAtPos(f, 1)?.left ?? NaN)
 							|| 0;
 						if (blankLines.length > 0) {
 							const min = Math.min(prevWidth, width);

@@ -70,7 +70,7 @@ export const markGlobalsAndDocTag: Mark = (tree, visibleRanges, state, cm) => {
 			enter({type, from: f, to: t}) {
 				const name = state.sliceDoc(f, t),
 					isBlockComment = type.is('BlockComment');
-				if (!javascriptLanguage.isActiveAt(state, f)) {
+				if (!javascriptLanguage.isActiveAt(state, t, -1)) {
 					//
 				} else if (type.is('VariableName') && allGlobals.has(name)) {
 					const completions = localCompletionSource({state, pos: t, explicit: true} as CompletionContext);

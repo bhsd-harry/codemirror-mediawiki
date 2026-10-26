@@ -353,8 +353,8 @@ export class CodeMirror6 {
 				search({
 					scrollToMatch(range, view) {
 						const scrollRect = view.scrollDOM.getBoundingClientRect(),
-							startCoords = view.coordsAtPos(range.from),
-							endCoords = view.coordsAtPos(range.to),
+							startCoords = view.coordsAtPos(range.from, 1),
+							endCoords = view.coordsAtPos(range.to, -1),
 							isInViewport = startCoords && startCoords.top >= scrollRect.top
 								&& endCoords && endCoords.bottom <= scrollRect.bottom;
 						return EditorView.scrollIntoView(range, {y: isInViewport ? 'nearest' : 'center'});
@@ -656,7 +656,7 @@ export class CodeMirror6 {
 			return [];
 		}
 		const color = `var(${guideColor})`,
-			padding = this.#view!.coordsAtPos(this.#view!.viewport.from)!.left
+			padding = this.#view!.coordsAtPos(this.#view!.viewport.from, 1)!.left
 				- this.#view!.contentDOM.querySelector('.cm-line')!.getBoundingClientRect().x;
 		return EditorView.theme({
 			[contentSelector]: {

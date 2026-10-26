@@ -66,7 +66,7 @@ export const cssCompletion = (dialect?: Dialect): Extension => {
  * 高亮显示注释中的链接
  * @test
  */
-export const markLink = markLinkBasic((state, {from}) => !cssLanguage.isActiveAt(state, from));
+export const markLink = markLinkBasic((state, {to}) => !cssLanguage.isActiveAt(state, to, -1));
 
 export const markLinkPlugin = (cm?: CodeMirror6): DecorationPlugin => getMarkPlugin(markLink, cm);
 

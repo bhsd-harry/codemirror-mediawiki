@@ -18,7 +18,7 @@ export const getCommonSupport = (cm?: CodeMirror6): Extension => [
 	cssCompletion(),
 	markGlobalsAndDocTagPlugin(cm),
 	markLinkPlugin(cm),
-	getMarkPlugin(markLinkBasic((state, {to}) => !htmlLanguage.isActiveAt(state, to)), cm),
+	getMarkPlugin(markLinkBasic((state, {to}) => !htmlLanguage.isActiveAt(state, to, -1)), cm),
 ];
 
 export default (config: MwConfig, cm?: CodeMirror6): LanguageSupport => {
