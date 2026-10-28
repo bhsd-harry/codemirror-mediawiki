@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/prefer-regexp-test */
 import {inComment} from './util.js';
 import type {StreamParser, StringStream} from '@codemirror/language';
 

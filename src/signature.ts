@@ -53,7 +53,7 @@ export default (
 							cdn: baseData.CDN,
 						},
 					);
-				// eslint-disable-next-line prefer-const
+				// oxlint-disable-next-line prefer-const
 				let signatureHelp: SignatureHelp | undefined = await lsp?.provideSignatureHelp(
 					text,
 					indexToPos(state.doc, cursor),

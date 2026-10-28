@@ -123,7 +123,7 @@ export class FullMediaWiki extends MediaWiki {
 		})));
 	}
 
-	override mediawiki(tags?: string[]): StreamParser<any> { // eslint-disable-line @typescript-eslint/no-explicit-any
+	override mediawiki(tags?: string[]): StreamParser<any> { // oxlint-disable-line @typescript-eslint/no-explicit-any
 		const parser = super.mediawiki(tags);
 		parser.languageData!['autocomplete'] = this.completionSource;
 		return parser;

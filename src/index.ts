@@ -5,6 +5,7 @@ import {
 	autocompletion,
 } from '@codemirror/autocomplete';
 import {LanguageSupport} from '@codemirror/language';
+// oxlint-disable-next-line unicorn/prefer-export-from
 import bidiIsolates from './bidi.js';
 import closeTags from './closeTags.js';
 import {
@@ -91,7 +92,7 @@ export {
 	magicWordHover as hover,
 	signatureHelpBase as signatureHelp,
 	escapeKeymap,
-	bidiIsolates, // eslint-disable-line unicorn/prefer-export-from
+	bidiIsolates,
 	refHover,
 	inlayHints,
 	formatKeymap,

@@ -3,7 +3,8 @@
  * @license GPL-2.0-or-later
  * @see https://gerrit.wikimedia.org/g/mediawiki/extensions/CodeMirror
  */
-/* eslint-disable @typescript-eslint/class-methods-use-this, unicorn/prefer-simple-condition-first */
+/* eslint-disable unicorn/prefer-simple-condition-first */
+/* oxlint-disable @typescript-eslint/class-methods-use-this, unicorn/prefer-regexp-test */
 import {Tag} from '@lezer/highlight';
 import {getRegex} from '@bhsd/common';
 import {decodeHTML} from '@bhsd/browser';

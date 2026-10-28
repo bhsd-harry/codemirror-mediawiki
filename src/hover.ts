@@ -73,7 +73,7 @@ export default (
 							cdn: baseData.CDN,
 						},
 					);
-				// eslint-disable-next-line prefer-const
+				// oxlint-disable-next-line prefer-const
 				let hover = await lsp?.provideHover(doc.toString(), indexToPos(doc, pos));
 				if (hover) {
 					const {end} = hover.range!;
