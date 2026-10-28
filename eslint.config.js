@@ -1,7 +1,13 @@
-import {jsDoc, browser, extend} from '@bhsd/code-standard';
+import {jsDoc, browser, extend, getOxlintConfig} from '@bhsd/code-standard';
 import globals from 'globals';
 
-const config = extend(
+jsDoc.settings.jsdoc.structuredTags ??= {};
+jsDoc.settings.jsdoc.structuredTags.test = {
+	name: false,
+	type: false,
+};
+
+const config = getOxlintConfig(extend(
 	jsDoc,
 	browser,
 	{
@@ -74,16 +80,6 @@ const config = extend(
 			'arrow-body-style': 0,
 			'jsdoc/no-bad-blocks': 0,
 		},
-		settings: {
-			jsdoc: {
-				structuredTags: {
-					test: {
-						name: false,
-						type: false,
-					},
-				},
-			},
-		},
 	},
 	{
 		files: ['mw/*.ts'],
@@ -111,6 +107,6 @@ const config = extend(
 			'@typescript-eslint/strict-void-return': 0,
 		},
 	},
-);
+));
 
 export default config;

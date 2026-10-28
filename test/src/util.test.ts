@@ -105,7 +105,7 @@ describe('find links in comments', () => {
 	before(() => {
 		Object.assign(globalThis, {
 			mw: {
-				Title: class { // eslint-disable-line unicorn/no-static-only-class
+				Title: class { // oxlint-disable-line unicorn/no-static-only-class
 					static newFromText(): true {
 						return true;
 					}

@@ -18,7 +18,7 @@ const createAction = (
 ): editor.IActionDescriptor => ({
 	id,
 	label,
-	keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode[key]], // eslint-disable-line no-bitwise
+	keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode[key]], // oxlint-disable-line no-bitwise
 	contextMenuGroupId: '1_modification',
 	run(editor): void {
 		const model = editor.getModel()!,

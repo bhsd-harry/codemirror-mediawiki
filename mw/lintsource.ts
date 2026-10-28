@@ -78,7 +78,7 @@ const getExecuter = <T = ApiValidateError>(
 			}, 3e3);
 		});
 		return content
-			? post(content).catch<T[]>((_, e) => { // eslint-disable-line promise/prefer-await-to-then
+			? post(content).catch<T[]>((_, e) => { // oxlint-disable-line promise/prefer-await-to-then
 				if (typeof e !== 'object' || e.textStatus !== 'abort') {
 					console.error('API linting failed:', e);
 				}
@@ -102,7 +102,7 @@ const getValidator = async (
 			contentmodel,
 			content,
 			title: title || 'Extension:CodeMirror',
-			formatversion: 2, // eslint-disable-next-line promise/prefer-await-to-then
+			formatversion: 2, // oxlint-disable-next-line promise/prefer-await-to-then
 		}).then((r: ApiResponse) => r['codemirror-validate']!.errors ?? []) as unknown as ReturnType<mw.Api['get']>,
 	);
 };
@@ -141,7 +141,7 @@ export const getParsoidLintSource = async (title: string, opt?: Option | LiveOpt
 		return errors
 			.filter(({type, dsr: [from, to]}) => from <= to
 				&& Number(config?.[getRuleKey(type)] ?? defaultSeverity) > 1 - Number(error.has(type)))
-			.reduce<ParsoidError[]>((acc, cur) => { // eslint-disable-line unicorn/no-array-reduce
+			.reduce<ParsoidError[]>((acc, cur) => { // oxlint-disable-line unicorn/no-array-reduce
 				if (!acc.some(err => isEqualParsoidError(err, cur))) {
 					acc.push(cur);
 				}
@@ -198,7 +198,7 @@ export const getTemplateDataLintSource = async (
 			running = (async () => { // eslint-disable-line require-atomic-updates
 				for (let i = 0; i < names.length / 50; i++) {
 					const batch = names.slice(i * 50, (i + 1) * 50),
-						// eslint-disable-next-line no-await-in-loop
+						// oxlint-disable-next-line no-await-in-loop
 						{pages, normalized = [], redirects = []} = await api.post({
 							titles: batch.join('|'),
 						}) as ApiResponse,

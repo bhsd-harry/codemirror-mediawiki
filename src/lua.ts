@@ -1,4 +1,4 @@
-/* eslint-disable no-template-curly-in-string */
+/* oxlint-disable no-template-curly-in-string */
 import {lua} from '@codemirror/legacy-modes/mode/lua';
 import {Decoration} from '@codemirror/view';
 import {countColumn} from '@codemirror/state';

@@ -136,10 +136,10 @@ export const plain = (): Extension => [
 	]),
 ];
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// oxlint-disable-next-line @typescript-eslint/no-explicit-any
 export const languages = new Map<string, (config?: any, cm?: CodeMirror6) => Extension>([['plain', plain]]);
 
-export const avail = new Map<string, Addon<any>>(); // eslint-disable-line @typescript-eslint/no-explicit-any
+export const avail = new Map<string, Addon<any>>(); // oxlint-disable-line @typescript-eslint/no-explicit-any
 
 export const linterRegistry = new Map<string, LintSourceGetter>();
 
@@ -904,6 +904,5 @@ export class CodeMirror6 {
 	 * to a CodeMirror-MediaWiki configuration
 	 * @param config WikiParser-Node configuration
 	 */
-	// @ts-expect-error abstract static method
-	abstract static getMwConfig(config: ConfigData): MwConfig;
+	declare static getMwConfig: (config: ConfigData) => MwConfig;
 }

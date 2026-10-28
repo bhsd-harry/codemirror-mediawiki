@@ -46,7 +46,7 @@ export type LintSource<T = unknown> = (
 ) & {
 	config?: T;
 	disabled?: boolean;
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	// oxlint-disable-next-line @typescript-eslint/method-signature-style
 	fixer?: (doc: Text, rule?: string) => string | Promise<string>;
 };
 export type LintSources = LintSource | [LintSource, ...LintSource[]];

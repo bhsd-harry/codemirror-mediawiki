@@ -658,7 +658,7 @@ export class FullMediaWiki extends MediaWiki {
 					const {options, offset} = suggestions,
 						apply = !isPageFunc && !isTemplateStyles && isLink ? applyLabel : applyDisplayLabel;
 					return {
-						// eslint-disable-next-line unicorn/explicit-length-check
+						// oxlint-disable-next-line unicorn/explicit-length-check
 						from: start + offset - (isPageFunc && prefix.length),
 						options: options.map((option): Completion => ({...option, apply})),
 						filter: false,
@@ -862,7 +862,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	[`${mwSelector}exttag,${mwSelector}tag-score-scheme`]: {
 		backgroundColor: 'rgb(119,0,170,.04)',
 	},
-	/* eslint-disable no-sparse-arrays */
+	/* oxlint-disable no-sparse-arrays */
 	...getGrounds([[1]], 170, 17, 17, 0.04),
 	...getGrounds([[2]], 170, 17, 17, 0.08),
 	...getGrounds([[3]], 170, 17, 17, 0.12),
@@ -887,7 +887,7 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 	...getGrounds([[3, 1, 1]], 123, 13, 89, 0.16),
 	...getGrounds([[3, 2, 1]], 122, 10, 105, 0.2),
 	...getGrounds([[3, 3, 1]], 122, 9, 116, 0.24),
-	/* eslint-enable no-sparse-arrays */
+	/* oxlint-enable no-sparse-arrays */
 	[getSelector(['pre', 'nowiki'], 'tag-')]: {
 		backgroundColor: 'rgb(0,0,0,.04)',
 	},

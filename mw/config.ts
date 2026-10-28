@@ -97,7 +97,7 @@ export const getMwConfig: MwConfigGetter = async modes => {
 				...config?.functionHooks ? [] : ['functionhooks'],
 			],
 			formatversion: 2,
-		}) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+		}) as any; // oxlint-disable-line @typescript-eslint/no-explicit-any
 
 		// 先处理魔术字和状态开关
 		if (config && !isIPE) { // 情形2或3

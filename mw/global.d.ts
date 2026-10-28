@@ -4,9 +4,10 @@ import type * as Monaco from 'monaco-editor';
 declare global {
 	namespace mw {
 		const addWikiEditor: ($textarea: JQuery<HTMLTextAreaElement>) => void;
-	}
-	namespace mw.libs {
-		const wphl: {CDN?: string} | undefined;
+
+		namespace libs {
+			const wphl: {CDN?: string} | undefined;
+		}
 	}
 
 	interface WikiEditorContext {

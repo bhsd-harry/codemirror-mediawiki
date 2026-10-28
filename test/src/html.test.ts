@@ -8,9 +8,10 @@ const lang = html(mwConfig),
 	state = createState('', lang),
 	[source] = state.languageDataAt<CompletionSource>('autocomplete', 0, 0);
 
-// eslint-disable-next-line @stylistic/max-len
-// eslint-disable-next-line require-unicode-regexp, no-useless-escape, regexp/no-useless-escape, regexp/letter-case, regexp/hexadecimal-escape
+/* eslint-disable regexp/no-useless-escape, regexp/letter-case, regexp/hexadecimal-escape */
+// oxlint-disable-next-line require-unicode-regexp, no-useless-escape
 const mockTest = autocompletionTest(source!, lang, /^\/?[:\-\.\w\u00b7-\uffff]*$/);
+/* eslint-enable regexp/no-useless-escape, regexp/letter-case, regexp/hexadecimal-escape */
 
 const sublangTest = (doc: string, pos: number, langguagedata: string, data: unknown): void => {
 	const st = createState(doc, lang);

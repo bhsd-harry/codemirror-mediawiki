@@ -261,7 +261,7 @@ export const openLinks = (
 			((state, posAndSide, str) => {
 				const {pos} = posAndSide,
 					node = ensureSyntaxTree(state, pos)?.resolve(pos, 0);
-				if (hasTag(node?.name, 'comment')) { // eslint-disable-line unicorn/prefer-ternary
+				if (hasTag(node?.name, 'comment')) {
 					return linkParserForComment(state, posAndSide, str as true);
 				}
 				return linkParser(state, posAndSide, str as true);

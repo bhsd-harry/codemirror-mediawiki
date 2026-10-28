@@ -388,7 +388,7 @@ export class CodeMirror extends CodeMirror6 implements CodeMirrorBase {
 			multiCursorModifier: 'ctrlCmd',
 			...this.#getMonacoOptions(),
 		});
-		// eslint-disable-next-line no-bitwise
+		// oxlint-disable-next-line no-bitwise
 		this.#editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyMod.Shift | monaco.KeyCode.Comma, () => {
 			void openPreference();
 		});
@@ -561,7 +561,7 @@ export class CodeMirror extends CodeMirror6 implements CodeMirrorBase {
 	 * @param lang 语言
 	 * @param i18n I18n 语言列表
 	 */
-	#getBasicOpt(lang: string, i18n?: string[]): any { // eslint-disable-line @typescript-eslint/no-explicit-any
+	#getBasicOpt(lang: string, i18n?: string[]): any { // oxlint-disable-line @typescript-eslint/no-explicit-any
 		switch (lang) {
 			case 'javascript':
 				return {...jsConfig, ...codeConfigs.get('ESLint')};

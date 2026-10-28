@@ -76,7 +76,7 @@ export const escapeHTML = (str: string): string => [...str].map(c => {
 			{ranges} = state.selection,
 			replacements = new WeakMap<SelectionRange, string | undefined>();
 		for (const range of ranges) {
-			// eslint-disable-next-line no-await-in-loop
+			// oxlint-disable-next-line no-await-in-loop
 			const [action] = await lsp.provideRefactoringAction(sliceDoc(state, range));
 			replacements.set(range, action?.edit!.changes!['']![0]!.newText);
 		}

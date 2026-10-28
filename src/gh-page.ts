@@ -138,7 +138,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 		} else {
 			url.searchParams.delete(key);
 		}
-		history.replaceState(null, '', url.href); // eslint-disable-line no-restricted-globals
+		history.replaceState(null, '', url.href); // oxlint-disable-line no-restricted-globals
 	};
 
 	/** 设置扩展 */
@@ -170,7 +170,7 @@ if (location.pathname.startsWith('/codemirror-mediawiki')) {
 	for (const input of languages) {
 		input.addEventListener('change', () => {
 			void init(input.id);
-			history.replaceState( // eslint-disable-line no-restricted-globals
+			history.replaceState( // oxlint-disable-line no-restricted-globals
 				null,
 				'',
 				`#${input.id.charAt(0).toUpperCase()}${input.id.slice(1)}`,

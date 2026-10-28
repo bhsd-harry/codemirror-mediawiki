@@ -74,7 +74,7 @@ const widgets: Partial<Record<string, OO.ui.MultilineTextInputWidget>> = {};
  * @param code 错误代码
  * @param e 错误信息
  */
-const apiErr = (code: string, e: any): void => { // eslint-disable-line @typescript-eslint/no-explicit-any
+const apiErr = (code: string, e: any): void => { // oxlint-disable-line @typescript-eslint/no-explicit-any
 	const message = code === 'http' || code === 'okay-but-empty'
 		? `MediaWiki API request failed: ${code}`
 		: $('<ul>', {html: (e as {errors: {html: string}[]}).errors.map(({html}) => $('<li>', {html}))});
@@ -100,7 +100,7 @@ export const loadJSON = (async () => {
 		rvprop: 'content',
 		rvlimit: 1,
 	};
-	(await api)!.get(params).then( // eslint-disable-line promise/prefer-await-to-then
+	(await api)!.get(params).then( // oxlint-disable-line promise/prefer-await-to-then
 		res => {
 			const [page] = (res as MediaWikiResponse).query.pages;
 			if (page?.revisions) {
@@ -450,7 +450,7 @@ export const openPreference = async (): Promise<void> => {
 					} satisfies Preferences),
 					summary: msg('save-summary'),
 				};
-				// eslint-disable-next-line promise/prefer-await-to-then
+				// oxlint-disable-next-line promise/prefer-await-to-then
 				(await api)!.postWithToken('csrf', params).then(
 					() => {
 						void mw.notify(parseMsg('save-success'), {type: 'success'});

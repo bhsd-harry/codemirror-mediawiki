@@ -24,16 +24,8 @@
 	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"require": "./dist/index.js",
-			"import": "./dist/index.js"
-		},
-		"./*": {
-			"types": "./dist/*.d.ts",
-			"require": "./dist/*.js",
-			"import": "./dist/*.js"
-		}
+		".": "./dist/index.js",
+		"./*": "./dist/*.js"
 	},
 	"type": "module",
 	"sideEffects": false,
@@ -52,11 +44,12 @@
 		"build:gh-page": "esbuild src/*-page.ts --charset=utf8 --bundle --minify --sourcemap --target=es2019 --format=esm --outdir=. --external:/codemirror-mediawiki/dist/* --external:/wikiparser-node/extensions/dist/test-page-common.js",
 		"build:demo": "esbuild ./bundle/*.ts --charset=utf8 --bundle --format=esm --outdir=build --drop-labels=GH && esbuild ./bundle/mediawiki.ts --charset=utf8 --bundle --minify --target=es2019 --format=esm --outfile=dist/demo.min.js",
 		"build": "npm run build:css && rm -rf dist/ && npm run build:demo && npm run build:core && npm run build:wiki && npm run build:mw && gsed -i 's|^ *@getTokenizer|// @getTokenizer|g' build/*.js && gsed -i '/^\\/\\/ /d' dist/*.js && eslint --no-config-lookup -c eslint.dist.js dist/*.min.js",
-		"lint:ts": "tsc --noEmit && tsc -p mw/tsconfig.json --noEmit && tsc -p test/tsconfig.json --noEmit && tsc -p bundle/tsconfig.json --noEmit && eslint --cache .",
+		"lint:ts": "tsc --noEmit && tsc -p mw/tsconfig.json --noEmit && tsc -p test/tsconfig.json --noEmit && tsc -p bundle/tsconfig.json --noEmit && oxlint && eslint --cache .",
 		"lint:css": "stylelint --cache '**/*.css'",
 		"lint:md": "myMarkdownlint",
 		"lint:bundle": "eslint --no-config-lookup --no-inline-config --rule 'no-unused-vars: [2, {args: none, caughtErrors: none, varsIgnorePattern: ^getTokenizer$}]' build/main.js build/wiki.js",
 		"lint": "npm run lint:ts && npm run lint:css && npm run lint:md",
+		"migrate": "oxlint-migrate",
 		"prof": "node test/dist/prof.js",
 		"server": "npm run test:end; http-server .. -c-1 --cors -s &",
 		"test": "rm -rf test/dist/; tsc -p test/tsconfig.json && testUtil test/dist/*.test.js test/dist/test.js",
@@ -88,7 +81,9 @@
 		"@bhsd/lezer-abusefilter": "^0.5.1",
 		"@bhsd/lezer-json": "^2.3.0",
 		"@bhsd/stylelint-util": "^1.1.0",
+		"@oxlint/migrate": "^1.89.0",
 		"culori": "^4.0.2",
+		"oxlint": "^1.89.0",
 		"wikiparser-node": "^1.48.1"
 	},
 	"devDependencies": {
@@ -96,7 +91,7 @@
 		"@bhsd/nodejs": "^1.2.1",
 		"@bhsd/eslint-browserify": "^10.13.0",
 		"@bhsd/test-util": "^3.3.0",
-		"@codemirror/autocomplete": "^6.20.3",
+		"@codemirror/autocomplete": "^6.20.4",
 		"@codemirror/commands": "^6.11.1",
 		"@codemirror/language": "^6.13.1",
 		"@codemirror/lang-css": "^6.3.1",
@@ -107,7 +102,7 @@
 		"@codemirror/lint": "^6.9.7",
 		"@codemirror/search": "^6.7.2",
 		"@codemirror/state": "^6.7.6",
-		"@codemirror/view": "^6.43.14",
+		"@codemirror/view": "^6.43.15",
 		"@types/jquery": "^3.5.34",
 		"@types/oojs-ui": "^0.50.0",
 		"diff2html-cli": "^5.2.15",

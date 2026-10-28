@@ -1,3 +1,4 @@
+/* oxlint-disable unicorn/prefer-regexp-test */
 import {inComment, getCompletions, isWikiparseLoaded} from './util.js';
 import {extData, extCompletion} from './constants.js';
 import type {StreamParser, StringStream} from '@codemirror/language';

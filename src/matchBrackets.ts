@@ -12,7 +12,7 @@ export interface Selection {
 }
 
 export interface BracketConfig extends Config {
-	// eslint-disable-next-line @typescript-eslint/method-signature-style
+	// oxlint-disable-next-line @typescript-eslint/method-signature-style
 	exclude?: (state: EditorState, pos: number) => boolean;
 }
 

@@ -16,7 +16,7 @@ import type {Range} from 'vscode-languageserver-types';
 
 const wikitext = `<p style="top: 0;
 left: 0;">`,
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 	css = `p#1{
 top: 0; left: 0;
 }`,

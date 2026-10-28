@@ -2,7 +2,7 @@ import {isUnderscore, getBCP47Variants} from '@bhsd/cm-util';
 import type {ConfigData} from 'wikiparser-node';
 import type {MwConfig} from './token';
 
-export const tagModes = /* #__PURE__*/ (() => ({
+export const tagModes = /* #__PURE__ */ (() => ({
 	...Object.fromEntries([
 		'onlyinclude',
 		'includeonly',

@@ -18,7 +18,7 @@ const /** @type {esbuild.BuildOptions} */ config = {
 				name: 'tree-shaking',
 				setup(build) {
 					build.onLoad(
-						// eslint-disable-next-line require-unicode-regexp
+						// oxlint-disable-next-line require-unicode-regexp
 						{filter: /\/(?:commands|highlight|language)\/dist\/index.js$/},
 						({path: p}) => {
 							const contents = new ReplacableString(fs.readFileSync(p, 'utf8'), p),

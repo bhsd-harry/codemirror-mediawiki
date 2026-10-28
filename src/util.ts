@@ -329,7 +329,7 @@ export const markLinks = (str: string, decorations: Range<Decoration>[], from: n
 				range[1] -= trail[0].length - 1;
 			}
 			try {
-				new URL(str.slice(...range)); // eslint-disable-line no-new
+				new URL(str.slice(...range)); // oxlint-disable-line no-new
 				pushDecoration(decorations, linkMark, from + range[0], from + range[1]);
 			} catch {}
 		} else {
