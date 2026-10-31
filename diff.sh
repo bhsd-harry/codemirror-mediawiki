@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/env bash
 if [[ -z "$1" ]]
 then
 	git diff -w --color-moved --minimal --diff-filter=ad npm wikitext -- src/*.ts \

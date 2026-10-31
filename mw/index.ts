@@ -4,14 +4,13 @@ import {CodeMirror} from './codemirror';
 import {msg, cmSetI18N, welcome, localize} from './msg';
 import {openPreference} from './preference';
 import {instances} from './util';
-
-declare const $STYLE: string;
+import STYLE from '../css/index.css';
 
 // 每次新增插件都需要修改这里
 const baseVersion = '4.5',
 	addons = ['stickyScroll'];
 
-mw.loader.addStyleTag($STYLE);
+mw.loader.addStyleTag(STYLE);
 
 /**
  * jQuery.val overrides for CodeMirror.

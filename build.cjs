@@ -4,6 +4,7 @@ const fs = require('fs'),
 	path = require('path'),
 	esbuild = require('esbuild'),
 	{ReplacableString} = require('@bhsd/nodejs'),
+	{cssPlugin} = require('@bhsd/browser/esbuild'),
 	{version} = require('./package.json');
 
 const langs = fs.readdirSync('i18n').map(file => file.slice(0, -5)),
@@ -14,6 +15,7 @@ const /** @type {esbuild.BuildOptions} */ config = {
 		format: 'esm',
 		logLevel: 'info',
 		plugins: [
+			cssPlugin,
 			{
 				name: 'tree-shaking',
 				setup(build) {
@@ -57,7 +59,6 @@ const /** @type {esbuild.BuildOptions} */ config = {
 				define: {
 					$LANGS: JSON.stringify(langs),
 					$VERSION: JSON.stringify(version),
-					$STYLE: JSON.stringify(fs.readFileSync('mediawiki.css', 'utf8').trim()),
 				},
 			}
 			: {
