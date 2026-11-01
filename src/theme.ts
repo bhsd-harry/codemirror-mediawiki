@@ -104,9 +104,7 @@ export const lightHighlightStyle = /* #__PURE__ */ (() => getHighlightExtension(
 			},
 		}),
 	])(),
-	hoverDecoration = {textDecorationColor: 'currentcolor'},
 	linkStyles = {
 		textDecoration: 'underline',
 		textDecorationColor: 'transparent',
-		'&:hover': hoverDecoration,
 	};

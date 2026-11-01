@@ -214,7 +214,7 @@ export const jsConfig = /* #__PURE__ */ ((): Option => ({
  * @test
  */
 export const getJsLinter: getAsyncLinter<Linter.LintMessage[], string> = async (cdn = eslintRepo) => {
-	await loadScript(cdn, 'eslint');
+	await loadScript(cdn, 'eslint', false, true);
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	const esLinter = new (eslint.LegacyLinter ?? eslint.Linter)(),
 		conf: Linter.LegacyConfig = {

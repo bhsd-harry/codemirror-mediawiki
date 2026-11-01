@@ -715,7 +715,7 @@ export class MediaWiki {
 		this.addToken('unknown', true);
 		this.addToken('css', true);
 		for (const tag of this.tags) {
-			this.addToken(`tag-${tag}`, tag !== 'nowiki' && tag !== 'pre' && tag !== 'ref');
+			this.addToken(`tag-${tag}`, !['nowiki', 'pre', 'ref'].includes(tag));
 			if (tag === 'score') {
 				this.addToken('tag-score-scheme');
 			}

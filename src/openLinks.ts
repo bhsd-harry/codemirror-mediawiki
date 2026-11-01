@@ -42,7 +42,7 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 		`exttag-attribute-value${pagename}`,
 		`file-text${pagename}`,
 	])(),
-	activeStyle = {color: 'var(--cm-active)'},
+	activeStyle = {color: 'var(--cm-active)', textDecorationColor: 'currentcolor'},
 	openLinksCls = 'cm-open-links',
 	activeLinkCls = 'cm-active-link',
 	activeLink = Decoration.mark({class: activeLinkCls}),
@@ -51,9 +51,6 @@ let frame: number | undefined;
 
 const toggleOpenLinks = (view: EditorView, toggle = false): void => {
 	view.dom.classList.toggle(openLinksCls, toggle);
-	if (!toggle) {
-		view.dispatch({effects: openLinksEffect.of(null)});
-	}
 };
 
 const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string | ActiveRange => {
@@ -203,11 +200,8 @@ export const getOpenLinksExtension = (
 					cancelAnimationFrame(frame);
 				}
 				frame = requestAnimationFrame(() => {
-					const toggle = e[modKey];
-					toggleOpenLinks(view, toggle);
-					if (toggle) {
-						view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
-					}
+					toggleOpenLinks(view, e[modKey]);
+					view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
 				});
 			},
 			mousedown(e, view) {

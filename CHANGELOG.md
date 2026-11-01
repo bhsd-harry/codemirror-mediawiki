@@ -1,4 +1,12 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
+## 4.8.1
+
+*2026-11-06*
+
+**Changed**
+
+- Underlines for links are now only shown when the [openLinks](./README.md#openlinks) extension is enabled
+
 ## 4.8.0
 
 *2026-10-26*

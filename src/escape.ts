@@ -111,7 +111,7 @@ const handlerBase = (view: EditorView, e: PointerEvent): void => {
 
 let items: HTMLElement[] | undefined;
 
-menuRegistry.push({ // eslint-disable-line unicorn/no-top-level-side-effects
+menuRegistry.push({
 	name: 'escape',
 	isActionable({lang, view}): boolean {
 		return lang === 'mediawiki' && view!.state.selection.ranges.some(({empty}) => !empty);

@@ -319,7 +319,7 @@ const getVueOrHtmlLintSource = (rules?: Config['rules'], globals?: Linter.Legacy
 			if (globals) {
 				js = {...js, globals: {...globals, ...js?.globals}};
 				if ('defineProps' in globals && typeof eslint.loadPlugin === 'function') {
-					await eslint.loadPlugin('eslint-plugin-vue');
+					await eslint.loadPlugin('vue');
 					pluginEnabled = true;
 					const extendsArray = js.extends ?? [];
 					js = {
