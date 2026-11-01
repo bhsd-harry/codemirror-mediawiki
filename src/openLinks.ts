@@ -31,12 +31,6 @@ const modKey = isMac ? 'metaKey' : 'ctrlKey',
 	openLinksEffect = StateEffect.define<Pos | null>();
 let frame: number | undefined;
 
-const toggleOpenLinks = (view: EditorView, toggle = false): void => {
-	if (!toggle) {
-		view.dispatch({effects: openLinksEffect.of(null)});
-	}
-};
-
 const wrapURL = (state: EditorState, range: ActiveRange, str?: boolean): string | ActiveRange => {
 	if (!str) {
 		return range;
@@ -160,21 +154,12 @@ export const getOpenLinksExtension = (
 			},
 		}),
 		EditorView.domEventHandlers({
-			keyup(e, view) {
-				if (e.key === key) {
-					toggleOpenLinks(view);
-				}
-			},
 			mousemove(e, view) {
 				if (frame) {
 					cancelAnimationFrame(frame);
 				}
 				frame = requestAnimationFrame(() => {
-					const toggle = e[modKey];
-					toggleOpenLinks(view, toggle);
-					if (toggle) {
-						view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
-					}
+					view.dispatch({effects: openLinksEffect.of(view.posAndSideAtCoords(e))});
 				});
 			},
 			mousedown(e, view) {
