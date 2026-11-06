@@ -6,6 +6,7 @@
 **Changed**
 
 - Underlines for links are now only shown when the [openLinks](./README.md#openlinks) extension is enabled
+- File links in the MediaWiki mode are now assigned different CSS classes instead of the same CSS classes as regular links
 
 ## 4.8.0
 

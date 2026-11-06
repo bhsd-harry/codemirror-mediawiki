@@ -41,7 +41,7 @@ export const getTitleParser = ({urlProtocols, templateStylesDefaultNamespace = 1
 			if (hasTag(types, 'templateName')) {
 				ns = 10;
 			} else if (
-				hasTag(types, 'mw-tag-gallery' as TagName) && hasTag(types, 'linkPagename') && !isWikiLink(name)
+				hasTag(types, 'mw-tag-gallery' as TagName) && hasTag(types, 'filePagename') && !isWikiLink(name)
 			) {
 				ns = 6;
 			} else if (hasTag(types, 'parserfunction')) {

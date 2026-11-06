@@ -48,10 +48,6 @@
 	color: var(--cm-link);
 	text-decoration: underline;
 	text-decoration-color: transparent;
-
-	&:hover {
-		text-decoration-color: currentcolor;
-	}
 }
 
 .cm-content {
@@ -149,12 +145,14 @@
 	font-weight: bold;
 }
 .cm-mw-section-header,
-.cm-mw-file-delimiter,
 .cm-mw-magic-link,
 .cm-mw-templatevariable,
 .cm-mw-link-pagename,
 .cm-mw-link-bracket,
 .cm-mw-link-delimiter,
+.cm-mw-file-pagename,
+.cm-mw-file-bracket,
+.cm-mw-file-delimiter,
 .cm-mw-extlink,
 .cm-mw-free-extlink,
 .cm-mw-exttag-bracket,
@@ -253,6 +251,8 @@
 .cm-mw-link-pagename,
 .cm-mw-link-bracket,
 .cm-mw-link-delimiter,
+.cm-mw-file-pagename,
+.cm-mw-file-bracket,
 .cm-mw-file-delimiter,
 .cm-mw-magic-link,
 .cm-mw-extlink,
@@ -266,14 +266,6 @@
 .cm-mw-link-tosection {
 	color: var(--cm-sect);
 	font-weight: normal;
-}
-.cm-mw-link-pagename:hover + .cm-mw-link-tosection,
-.cm-mw-link-pagename:has(+ .cm-mw-link-tosection:hover),
-.cm-mw-extlink-protocol:hover + .cm-mw-extlink,
-.cm-mw-extlink-protocol:has(+ .cm-mw-extlink:hover),
-.cm-mw-free-extlink-protocol:hover + .cm-mw-free-extlink,
-.cm-mw-free-extlink-protocol:has(+ .cm-mw-free-extlink:hover) {
-	text-decoration-color: currentcolor;
 }
 .cm-mw-exttag-name,
 .cm-mw-htmltag-name,
@@ -416,14 +408,17 @@
 	.cm-mw-link-pagename,
 	/* stylelint-enable no-descending-specificity */
 	.cm-mw-link-pagename + .cm-mw-link-tosection,
+	.cm-mw-file-pagename,
 	.cm-mw-parserfunction.cm-mw-pagename,
 	.cm-mw-exttag-attribute-value.cm-mw-pagename,
 	.cm-mw-file-text.cm-mw-pagename {
 		color: var(--cm-active);
+		text-decoration: currentcolor;
 	}
 
 	.cm-link {
 		color: var(--cm-active);
+		text-decoration: currentcolor;
 	}
 }
 .cm-editor.cm-open-link {
@@ -435,6 +430,7 @@
 	.cm-mw-template-name,
 	.cm-mw-link-pagename,
 	.cm-mw-link-pagename + .cm-mw-link-tosection,
+	.cm-mw-file-pagename,
 	.cm-mw-parserfunction.cm-mw-pagename,
 	.cm-mw-exttag-attribute-value.cm-mw-pagename,
 	.cm-mw-file-text.cm-mw-pagename {
@@ -442,12 +438,14 @@
 
 		&:hover {
 			color: var(--cm-active);
+			text-decoration: currentcolor;
 		}
 	}
 
 	.cm-mw-link-pagename:hover + .cm-mw-link-tosection,
 	.cm-mw-link-pagename:has(+ .cm-mw-link-tosection:hover) {
 		color: var(--cm-active);
+		text-decoration: currentcolor;
 	}
 
 	.cm-link {
@@ -455,6 +453,7 @@
 
 		&:hover {
 			color: var(--cm-active);
+			text-decoration: currentcolor;
 		}
 	}
 }

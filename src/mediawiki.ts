@@ -490,6 +490,7 @@ export class FullMediaWiki extends MediaWiki {
 				'parserfunctionName',
 				'linkPagename',
 				'linkTosection',
+				'filePagename',
 				'extlink',
 			])) {
 				// 不可能是状态开关、标签、协议或图片参数名
@@ -625,8 +626,9 @@ export class FullMediaWiki extends MediaWiki {
 				// 页面名
 				const isPage = hasTag(types, 'pagename'),
 					isPageFunc = isPage && hasTag(types, 'parserfunction') || 0,
-					isTemplateStyles = isPage && hasTag(types, 'exttagAttributeValue');
-				if (isTemplateStyles || isPageFunc && search.trim() || hasTag(types, 'linkPagename')) {
+					isTemplateStyles = isPage && hasTag(types, 'exttagAttributeValue'),
+					isFile = hasTag(types, 'filePagename');
+				if (isTemplateStyles || isFile || isPageFunc && search.trim() || hasTag(types, 'linkPagename')) {
 					if (!this.config.linkSuggest) {
 						return null;
 					}
@@ -655,7 +657,7 @@ export class FullMediaWiki extends MediaWiki {
 						return null;
 					}
 					const {options, offset} = suggestions,
-						apply = !isPageFunc && !isTemplateStyles && isLink ? applyLabel : applyDisplayLabel;
+						apply = !isPageFunc && !isTemplateStyles && !isFile && isLink ? applyLabel : applyDisplayLabel;
 					return {
 						// oxlint-disable-next-line unicorn/explicit-length-check
 						from: start + offset - (isPageFunc && prefix.length),
@@ -743,9 +745,9 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 		fontWeight: 'bold',
 	},
 	[`${
-		getSelector(['section-header', 'file-delimiter', 'magic-link', 'templatevariable'])
+		getSelector(['section-header', 'magic-link', 'templatevariable'])
 	},${
-		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
+		getSelector(['pagename', 'bracket', 'delimiter'], ['link-', 'file-'])
 	},${
 		getSelector(['extlink'], ['', 'free-'])
 	},${
@@ -817,9 +819,9 @@ const wikiTheme = /* #__PURE__ */ EditorView.theme({
 		fontWeight: 'bold',
 	},
 	[`${
-		getSelector(['pagename', 'bracket', 'delimiter'], 'link-')
+		getSelector(['pagename', 'bracket', 'delimiter'], ['link-', 'file-'])
 	},${
-		getSelector(['file-delimiter', 'magic-link'])
+		getSelector(['magic-link'])
 	},${
 		getSelector(['', '-protocol', '-bracket'], 'extlink')
 	},${
