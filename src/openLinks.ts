@@ -25,7 +25,6 @@ declare interface LinkParser {
 }
 
 const modKey = isMac ? 'metaKey' : 'ctrlKey',
-	key = isMac ? 'Meta' : 'Control',
 	activeLinkCls = 'cm-active-link',
 	activeLink = Decoration.mark({class: activeLinkCls}),
 	openLinksEffect = StateEffect.define<Pos | null>();

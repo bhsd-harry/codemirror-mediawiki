@@ -214,6 +214,7 @@ export class FullMediaWiki extends MediaWiki {
 				'parserfunctionName',
 				'linkPagename',
 				'linkTosection',
+				'filePagename',
 				'extlink',
 			])) {
 				// 不可能是状态开关、标签、协议或图片参数名

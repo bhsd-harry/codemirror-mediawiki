@@ -866,11 +866,9 @@ export class MediaWiki {
 						if (redirect || /[^[\]|]/u.test(stream.peek() || '')) {
 							state.nLink++;
 							state.lbrack = undefined;
-							chain(
-								state,
-								this.inLink(!redirect && Boolean(stream.match(this.fileRegex, false))),
-							);
-							return makeLocalTagStyle('linkBracket', state);
+							const isFile = !redirect && Boolean(stream.match(this.fileRegex, false));
+							chain(state, this.inLink(isFile));
+							return makeLocalTagStyle(isFile ? 'fileBracket' : 'linkBracket', state);
 						} else if (stream.match(']]')) {
 							return makeStyle(style, state);
 						}
@@ -1022,7 +1020,9 @@ export class MediaWiki {
 
 	@getTokenizer
 	inLink(file: boolean, section?: boolean): Tokenizer {
-		const style = section ? tokens[file ? 'error' : 'linkTosection'] : `${tokens.linkPagename} ${tokens.pagename}`,
+		const style = section
+				? tokens[file ? 'error' : 'linkTosection']
+				: `${tokens[file ? 'filePagename' : 'linkPagename']} ${tokens.pagename}`,
 			re = section
 				? /^(?:[^|<[\]{}]|<(?!!--|\/?[a-z]))+/iu
 				: /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}%]|%(?!3[ce]|[57][bd]))+/iu;
@@ -1037,7 +1037,7 @@ export class MediaWiki {
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
-				return makeLocalTagStyle('linkBracket', state, 'nLink');
+				return makeLocalTagStyle(file ? 'fileBracket' : 'linkBracket', state, 'nLink');
 			}
 			lt = undefined;
 			const space = stream.eatSpace(),
@@ -1110,7 +1110,7 @@ export class MediaWiki {
 				state.redirect = false;
 				state.lbrack = false;
 				pop(state);
-				return makeLocalTagStyle('linkBracket', state, 'nLink');
+				return makeLocalTagStyle(file ? 'fileBracket' : 'linkBracket', state, 'nLink');
 			} else if (redirect) {
 				if (!stream.skipTo(']]')) {
 					stream.skipToEnd();
@@ -2252,7 +2252,7 @@ export class MediaWiki {
 
 	@getTokenizer
 	inGallery(section?: boolean): Tokenizer {
-		const style = section ? tokens.error : `${tokens.linkPagename} ${tokens.pagename}`,
+		const style = section ? tokens.error : `${tokens.filePagename} ${tokens.pagename}`,
 			regex = section ? /^(?:[[}\]]|\{(?!\{))+/u : /^(?:[>[}\]]|\{(?!\{)|<(?!!--))+/u,
 			re = section ? /^(?:[^|<[\]{}]|<(?!!--))+/u : /^(?:&#(?:\d+|x[a-f\d]+);|[^#|<>[\]{}])+/u;
 		return (stream, state) => {

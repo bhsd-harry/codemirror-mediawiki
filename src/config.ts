@@ -31,7 +31,9 @@ const tagNames = [
 	'exttagAttributeValue',
 	'exttagBracket',
 	'exttagName',
+	'fileBracket',
 	'fileDelimiter',
+	'filePagename',
 	'fileText',
 	'freeExtlink',
 	'freeExtlinkProtocol',
@@ -157,7 +159,18 @@ export const tokenTable = /* #__PURE__ */ (() => {
 		// #a11
 		[tags.attributeValue, ['exttagAttributeValue', 'htmltagAttributeValue', 'tableDefinitionValue']],
 		// #219
-		[tags.url, ['linkPagename', 'linkBracket', 'linkDelimiter', 'fileDelimiter', 'extlinkBracket']],
+		[
+			tags.url,
+			[
+				'linkPagename',
+				'linkBracket',
+				'linkDelimiter',
+				'filePagename',
+				'fileBracket',
+				'fileDelimiter',
+				'extlinkBracket',
+			],
+		],
 		[
 			[tags.url, tags.link],
 			[
