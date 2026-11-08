@@ -1,7 +1,11 @@
 <!-- markdownlint-disable first-line-h1 line-length -->
 ## 4.8.1
 
-*2026-11-06*
+*2026-11-08*
+
+**Fixed**
+
+- Console warning due to missing source map
 
 **Changed**
 

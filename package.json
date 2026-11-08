@@ -1,6 +1,6 @@
 {
 	"name": "@bhsd/codemirror-mediawiki",
-	"version": "4.8.0",
+	"version": "4.8.1",
 	"description": "Modified CodeMirror mode based on wikimedia/mediawiki-extensions-CodeMirror",
 	"keywords": [
 		"mediawiki",
@@ -35,7 +35,7 @@
 	},
 	"scripts": {
 		"ls": "npm i --package-lock-only && npm ls --package-lock-only -a --omit=dev",
-		"prepublishOnly": "npm run build",
+		"prepublishOnly": "npm run build && gsed -i '/\\/\\/# sourceMappingURL=/d' dist/*.min.js",
 		"checkout": "git checkout wikitext wikitext.html wikitext-page.js wikitext-page.css",
 		"build:core": "node build.cjs && tsc && esbuild src/config.ts src/javascript-globals.ts --bundle --format=esm --external:@lezer/highlight --outdir=dist --legal-comments=inline && rm dist/*-page.{js,d.ts} && gsed -i 's|globals/globals.json|globals|' dist/javascript-globals.d.ts && grep -rl --include='*.d.ts' '@private' dist/ | xargs gsed -i -E '/^\\s+\\/\\*\\* @private/,+1d'",
 		"build:mw": "MODE=mw node build.cjs && esbuild ./mw/config.ts --charset=utf8 --bundle --target=es2019 --format=esm --outfile=dist/mwConfig.js --external:@bhsd/*",
